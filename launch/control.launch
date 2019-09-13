@@ -1,0 +1,5 @@
+<?xml version='1.0'?>
+<launch>
+  <node name="cmd_mux" pkg="rover_control" type="cmd_mux.py" output="screen">
+  </node>
+</launch>
