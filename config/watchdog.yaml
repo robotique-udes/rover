@@ -1,0 +1,23 @@
+nb_sensors: 3
+sensor_1:
+  name: cam_0
+  sensor_id: cam_0
+  topic: /usb_cam_0/image_raw
+  max_freq: 40
+  min_freq: 20
+
+sensor_2:
+  name: cam_1
+  sensor_id: cam_1
+  topic: /usb_cam_1/image_raw
+  max_freq: 40
+  min_freq: 20
+
+sensor_3:
+  name: gps
+  sensor_id: gps
+  topic: /fix
+  max_freq: 2
+  min_freq: 0.2
+
+
