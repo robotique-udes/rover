@@ -2,9 +2,9 @@
 
 import sys
 
-from rover_base.rover_base_plugin import RoverBasePlugin
+from rover_gui.rover_gui_plugin import RoverGuiPlugin
 from rqt_gui.main import Main
 
-plugin = 'rover_base_plugin'
+plugin = 'rover_gui_plugin'
 main = Main(filename=plugin)
 sys.exit(main.main(sys.argv, standalone=plugin))

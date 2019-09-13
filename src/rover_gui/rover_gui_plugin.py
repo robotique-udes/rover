@@ -6,15 +6,15 @@ import rosnode
 from rospkg import RosPack
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
-from rover_base_widget import RoverBaseWidget
+from rover_gui_widget import RoverGuiWidget
 from qt_gui.plugin import Plugin
 import subprocess
 
 
-class RoverBasePlugin(Plugin):
+class RoverGuiPlugin(Plugin):
 
     def __init__(self, context):
-        super(RoverBasePlugin, self).__init__(context)
+        super(RoverGuiPlugin, self).__init__(context)
         # Give QObjects reasonable names
         self.setObjectName('RoverUI')
 
@@ -29,7 +29,7 @@ class RoverBasePlugin(Plugin):
             print 'unknowns: ', unknowns
 
         # Create QWidget
-        self._widget = RoverBaseWidget()
+        self._widget = RoverGuiWidget()
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() +
                                         (' (%d)' % context.serial_number()))

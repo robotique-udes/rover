@@ -1,7 +1,7 @@
 <?xml version='1.0'?>
 <launch>
 
-<node pkg="rover_base" name="rover_base" type="rover_base" respawn="false" output="screen">
+<node pkg="rover_gui" name="rover_gui" type="rover_gui" respawn="false" output="screen">
 	</node>
 
 </launch>
