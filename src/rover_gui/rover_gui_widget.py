@@ -29,15 +29,17 @@ class RoverGuiWidget(QtWidgets.QWidget):
         self.right = 0.0
         self.is_active = False
 
-        self.left_foward_btn.clicked[bool].connect(self.left_foward_btn_callback)
-        self.right_foward_btn.clicked[bool].connect(self.right_foward_btn_callback)
-        self.left_backward_btn.clicked[bool].connect(self.left_backward_btn_callback)
-        self.right_backward_btn.clicked[bool].connect(self.right_backward_btn_callback)
+        self.left_foward_btn.pressed.connect(self.left_foward_btn_callback)
+        self.right_foward_btn.pressed.connect(self.right_foward_btn_callback)
+        self.left_backward_btn.pressed.connect(self.left_backward_btn_callback)
+        self.right_backward_btn.pressed.connect(self.right_backward_btn_callback)
 
         self.left_foward_btn.released.connect(self.left_foward_btn_released_callback)
         self.right_foward_btn.released.connect(self.right_foward_btn_released_callback)
         self.left_backward_btn.released.connect(self.left_backward_btn_released_callback)
         self.right_backward_btn.released.connect(self.right_backward_btn_released_callback)
+
+        self.keyboard_check_box.clicked[bool].connect(self.keyboard_check_box_callback)
         
         self.left_foward_shortcut = QShortcut(QKeySequence(self.tr("W", "File|Open")),self)
         self.right_foward_shortcut = QShortcut(QKeySequence(self.tr("O", "File|Open")),self)
@@ -84,19 +86,22 @@ class RoverGuiWidget(QtWidgets.QWidget):
     def right_backward_btn_released_callback(self):
         self.right_backward_flag = False
         self.update_command()
+    
+    def keyboard_check_box_callback(self):
+        self.update_command()
 
     def update_command(self):
         if self.left_foward_flag:
-            self.left = self.speed_slider.value()/100
+            self.left = self.speed_slider.value()/100.0
         elif self.left_backward_flag:
-            self.left = -(self.speed_slider.value()/100)
+            self.left = -(self.speed_slider.value()/100.0)
         else:
             self.left = 0
 
         if self.right_foward_flag:
-            self.right = self.speed_slider.value()/100
-        elif self.left_backward_flag:
-            self.right = -(self.speed_slider.value()/100)
+            self.right = self.speed_slider.value()/100.0
+        elif self.right_backward_flag:
+            self.right = -(self.speed_slider.value()/100.0)
         else:
             self.right = 0
             
