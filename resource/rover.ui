@@ -23,13 +23,6 @@
        </property>
       </widget>
      </item>
-     <item row="2" column="1">
-      <widget class="QCheckBox" name="controller_check_box">
-       <property name="text">
-        <string>Controller</string>
-       </property>
-      </widget>
-     </item>
      <item row="2" column="2">
       <widget class="QPushButton" name="left_backward_btn">
        <property name="text">
