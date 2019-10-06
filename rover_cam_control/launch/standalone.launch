@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<launch>
+
+<node pkg="rover_cam_control" name="rover_cam_control" type="rover_cam_control" respawn="false" output="screen">
+	</node>
+
+</launch>
