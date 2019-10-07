@@ -8,17 +8,17 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider
-from rover_control.msg import Command
+# from rover_control.msg import Command
 
 
-class RoverGuiWidget(QtWidgets.QWidget):
+class RoverCamControlWidget(QtWidgets.QWidget):
 
     def __init__(self):
-        super(RoverGuiWidget, self).__init__()
+        super(RoverCamControlWidget, self).__init__()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('rover_gui'), 'resource', 'rover.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('rover_cam_control'), 'resource', 'rover.ui')
         loadUi(ui_file, self)
-        self.setObjectName('RoverGuiWidget')
+        self.setObjectName('RoverCamControlWidget')
 
         self.left_foward_flag = False
         self.right_foward_flag = False
@@ -41,20 +41,19 @@ class RoverGuiWidget(QtWidgets.QWidget):
 
         self.keyboard_check_box.clicked[bool].connect(self.keyboard_check_box_callback)
         
-        self.left_foward_shortcut = QShortcut(QKeySequence(self.tr("W", "File|Open")),self)
-        self.right_foward_shortcut = QShortcut(QKeySequence(self.tr("O", "File|Open")),self)
-        self.left_backward_shortcut = QShortcut(QKeySequence(self.tr("S", "File|Open")),self)
-        self.right_backward_shortcut = QShortcut(QKeySequence(self.tr("K", "File|Open")),self)
+        self.left_foward_shortcut = QShortcut(QKeySequence(self.tr("W", "File|Open")), self)
+        self.right_foward_shortcut = QShortcut(QKeySequence(self.tr("O", "File|Open")), self)
+        self.left_backward_shortcut = QShortcut(QKeySequence(self.tr("S", "File|Open")), self)
+        self.right_backward_shortcut = QShortcut(QKeySequence(self.tr("K", "File|Open")), self)
 
         self.left_foward_shortcut.activated.connect(self.left_foward_btn.animateClick)
         self.right_foward_shortcut.activated.connect(self.right_foward_btn.animateClick)
         self.left_backward_shortcut.activated.connect(self.left_backward_btn.animateClick)
         self.right_backward_shortcut.activated.connect(self.right_backward_btn.animateClick)
 
-        self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
-        rospy.Timer(rospy.Duration(1.0/10.0),self.publish_command)
+        # self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
+        rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
         
-
     def left_foward_btn_callback(self):
         self.left_foward_flag = True
         self.update_command()
@@ -107,12 +106,12 @@ class RoverGuiWidget(QtWidgets.QWidget):
             
         self.is_active = self.keyboard_check_box.isChecked()
 
-    def publish_command(self, event):
-        command = Command()
-        command.left = self.left
-        command.right = self.right
-        command.is_active = self.is_active
-        self.gui_cmd_pub.publish(command)
+    # def publish_command(self, event):
+    #     command = Command()
+    #     command.left = self.left
+    #     command.right = self.right
+    #     command.is_active = self.is_active
+    #     self.gui_cmd_pub.publish(command)
 
 
 

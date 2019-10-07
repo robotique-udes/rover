@@ -2,8 +2,8 @@
 from distutils.core import setup
 from catkin_pkg.python_setup import generate_distutils_setup
 d = generate_distutils_setup(
-packages=['rover_cam_control'],
-package_dir={'': 'src'},
-scripts=['scripts/rover_gui'],
+    packages=['rover_cam_control'],
+    package_dir={'': 'src'},
+    scripts=['scripts/rover_cam_control'],
 )
 setup(**d)
