@@ -37,7 +37,7 @@
      </spacer>
     </item>
     <item row="9" column="4">
-     <widget class="QPushButton" name="camDownBtn">
+     <widget class="QPushButton" name="cam_down_btn">
       <property name="maximumSize">
        <size>
         <width>150</width>
@@ -76,7 +76,7 @@
      </spacer>
     </item>
     <item row="9" column="1">
-     <widget class="QPushButton" name="camLeftBtn">
+     <widget class="QPushButton" name="cam_left_btn">
       <property name="maximumSize">
        <size>
         <width>150</width>
@@ -89,14 +89,14 @@
      </widget>
     </item>
     <item row="9" column="3">
-     <widget class="QPushButton" name="camRightBtn">
+     <widget class="QPushButton" name="cam_right_btn">
       <property name="text">
        <string>Right</string>
       </property>
      </widget>
     </item>
     <item row="5" column="4">
-     <widget class="QPushButton" name="camUpBtn">
+     <widget class="QPushButton" name="cam_up_btn">
       <property name="maximumSize">
        <size>
         <width>150</width>
@@ -109,7 +109,7 @@
      </widget>
     </item>
     <item row="11" column="1" colspan="3">
-     <widget class="QSlider" name="camHorizontalSlider">
+     <widget class="QSlider" name="cam_horizontal_slider">
       <property name="minimum">
        <number>-180</number>
       </property>
@@ -122,7 +122,7 @@
      </widget>
     </item>
     <item row="5" column="5" rowspan="5">
-     <widget class="QSlider" name="camVerticalSlider">
+     <widget class="QSlider" name="cam_vertical_slider">
       <property name="minimum">
        <number>-90</number>
       </property>
@@ -148,7 +148,7 @@
      </widget>
     </item>
     <item row="7" column="3">
-     <widget class="QCheckBox" name="keyboardCheckBox">
+     <widget class="QCheckBox" name="keyboard_check_box">
       <property name="layoutDirection">
        <enum>Qt::LeftToRight</enum>
       </property>
@@ -158,17 +158,17 @@
      </widget>
     </item>
     <item row="8" column="2" colspan="2">
-     <widget class="QPushButton" name="updateBtn">
+     <widget class="QPushButton" name="update_btn">
       <property name="text">
        <string>Update</string>
       </property>
      </widget>
     </item>
     <item row="7" column="4">
-     <widget class="QSpinBox" name="camVerticalField"/>
+     <widget class="QSpinBox" name="cam_vertical_field"/>
     </item>
     <item row="9" column="2">
-     <widget class="QSpinBox" name="camHorizontalField"/>
+     <widget class="QSpinBox" name="cam_horizontal_field"/>
     </item>
    </layout>
   </widget>
