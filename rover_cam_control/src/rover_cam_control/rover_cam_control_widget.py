@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QAbstractSlider, QSpinBox
-# from rover_control.msg import Command
+# from rover_control.msg import CamCommand
 
 
 class RoverCamControlWidget(QtWidgets.QWidget):
@@ -120,7 +120,7 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.is_active = self.cam_keyboard_check_box.isChecked()
 
     # def publish_command(self, event):
-    #     command = Command()
+    #     command = CamCommand()
     #     command.cam_horizontal = self.cam_horizontal_pos_signal
     #     command.cam_vertical = self.cam_vertical_pos_signal
     #     command.is_active = self.is_active
