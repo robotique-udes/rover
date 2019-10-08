@@ -16,7 +16,7 @@ class RoverCamControlWidget(QtWidgets.QWidget):
     def __init__(self):
         super(RoverCamControlWidget, self).__init__()
 
-        ui_file = os.path.join(rospkg.RosPack().get_path('rover_cam_control'), 'resource', 'rover.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('rover_cam_control'), 'resource', 'cam_control.ui')
         loadUi(ui_file, self)
         self.setObjectName('RoverCamControlWidget')
 
@@ -51,9 +51,15 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.left_backward_shortcut.activated.connect(self.left_backward_btn.animateClick)
         self.right_backward_shortcut.activated.connect(self.right_backward_btn.animateClick)
 
-        # self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
+       
+        self.cam_vertical_field.valuechage.connect(self.fix_slider)
+       
+       # self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
         rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
         
+    def fix_slider(self):
+        self.vertical_slider.setvalue(cam_vertical_field.value())
+
     def left_foward_btn_callback(self):
         self.left_foward_flag = True
         self.update_command()
