@@ -1,3 +1,3 @@
 bool is_active
-int cam_horizontal
-int cam_vertical
+int32 cam_horizontal
+int32 cam_vertical
