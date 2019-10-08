@@ -20,11 +20,15 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         loadUi(ui_file, self)
         self.setObjectName('RoverCamControlWidget')
 
+        self.is_active = False
+
         self.cam_horizontal_pos = 0
         self.cam_vertical_pos = 0
 
         self.cam_horizontal_pos_signal = 0
         self.cam_vertical_pos_signal = 0
+
+        self.init_fields
 
         self.cam_left_btn.clicked.connect(self.cam_left_btn_callback)
         self.cam_right_btn.clicked.connect(self.cam_right_btn_callback)
@@ -32,7 +36,7 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_down_btn.clicked.connect(self.cam_down_btn_callback)
         self.cam_update_btn.clicked.connect(self.update_command)
 
-        # self.cam_keyboard_check_box.clicked[bool].connect(self.cam_keyboard_check_box_callback)
+        self.cam_keyboard_check_box.clicked[bool].connect(self.cam_keyboard_check_box_callback)
         
         self.cam_left_shortcut = QShortcut(QKeySequence(self.tr("G", "File|Open")), self)
         self.cam_right_shortcut = QShortcut(QKeySequence(self.tr("J", "File|Open")), self)
@@ -40,12 +44,11 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_down_shortcut = QShortcut(QKeySequence(self.tr("H", "File|Open")), self)
         self.cam_update_shortcut = QShortcut(QKeySequence(self.tr("B", "File|Open")), self)
 
-        if self.cam_keyboard_check_box.isChecked():
-            self.cam_left_shortcut.activated.connect(self.cam_left_btn.animateClick)
-            self.cam_right_shortcut.activated.connect(self.cam_right_btn.animateClick)
-            self.cam_up_shortcut.activated.connect(self.cam_up_btn.animateClick)
-            self.cam_down_shortcut.activated.connect(self.cam_down_btn.animateClick)
-            self.cam_update_btn.activated.connect(self.cam_update_btn.animateClick)
+        self.cam_left_shortcut.activated.connect(self.cam_left_btn.animateClick)
+        self.cam_right_shortcut.activated.connect(self.cam_right_btn.animateClick)
+        self.cam_up_shortcut.activated.connect(self.cam_up_btn.animateClick)
+        self.cam_down_shortcut.activated.connect(self.cam_down_btn.animateClick)
+        self.cam_update_shortcut.activated.connect(self.cam_update_btn.animateClick)
 
         self.cam_horizontal_slider.valueChanged.connect(self.update_fields)
         self.cam_vertical_slider.valueChanged.connect(self.update_fields)
@@ -67,28 +70,31 @@ class RoverCamControlWidget(QtWidgets.QWidget):
     def cam_left_btn_callback(self):
         self.cam_horizontal_slider.triggerAction(2)
         self.update_fields()
+        self.update_command()
 
     def cam_right_btn_callback(self):
         self.cam_horizontal_slider.triggerAction(1)
         self.update_fields()
+        self.update_command()
 
     def cam_up_btn_callback(self):
         self.cam_vertical_slider.triggerAction(1)
         self.update_fields()
+        self.update_command()
 
     def cam_down_btn_callback(self):
         self.cam_vertical_slider.triggerAction(2)
         self.update_fields()
+        self.update_command()
 
-       # self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
-       #  rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
-
-    def update_sliders(self):
-        self.cam_horizontal_slider.setValue(self.cam_horizontal_field.value())
-        self.cam_vertical_slider.setValue(self.cam_vertical_field.value())
-    
     def cam_keyboard_check_box_callback(self):
         self.update_command()
+
+    def update_sliders(self):
+        self.cam_horizontal_pos = self.cam_horizontal_field.value()
+        self.cam_vertical_pos = self.cam_vertical_field.value()
+        self.cam_horizontal_slider.setValue(self.cam_horizontal_pos)
+        self.cam_vertical_slider.setValue(self.cam_vertical_pos)
 
     def update_fields(self):
         self.cam_horizontal_pos = self.cam_horizontal_slider.value()
@@ -96,10 +102,8 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_horizontal_field.setValue(self.cam_horizontal_pos)
         self.cam_vertical_field.setValue(self.cam_vertical_pos)
 
-    def update_position(self):
-        self.cam_horizontal_pos_info.setValue(self.cam_horizontal_slider.value())
-        self.cam_vertical_pos_info.setValue(self.cam_vertical_slider.value())
-    # CHANGEMENT DU SIGNAL DE POSITION ENVOYE AU ROBOT
+    # self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
+    # rospy.Timer(rospy.Duration(1.0 / 10.0), self.publish_command)
 
     def update_command(self):
         self.cam_horizontal_pos_signal = self.cam_horizontal_pos
@@ -107,6 +111,7 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_horizontal_pos_info.setValue(self.cam_horizontal_pos_signal)
         self.cam_vertical_pos_info.setValue(self.cam_vertical_pos_signal)
 
+        self.is_active = self.cam_keyboard_check_box.isChecked()
 
         # if self.left_foward_flag:
         #     self.left = self.speed_slider.value()/100.0
@@ -121,14 +126,13 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         #     self.right = -(self.speed_slider.value()/100.0)
         # else:
         #     self.right = 0
-        # self.is_active = self.keyboard_check_box.isChecked()
 
     # def publish_command(self, event):
     #     command = Command()
-    #     command.left = self.left
-    #     command.right = self.right
+    #     command.cam_horizontal = self.cam_horizontal_pos_signal
+    #     command.cam_vertical = self.cam_vertical_pos_signal
     #     command.is_active = self.is_active
-    #     self.gui_cmd_pub.publish(command)
+    #     self.cam_cmd_pub.publish(command)
 
 
 

@@ -18,8 +18,8 @@
     <rect>
      <x>10</x>
      <y>10</y>
-     <width>541</width>
-     <height>351</height>
+     <width>551</width>
+     <height>341</height>
     </rect>
    </property>
    <layout class="QGridLayout" name="gridLayout">
@@ -205,6 +205,12 @@
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::NoButtons</enum>
       </property>
+      <property name="minimum">
+       <number>-180</number>
+      </property>
+      <property name="maximum">
+       <number>180</number>
+      </property>
      </widget>
     </item>
     <item row="7" column="3">
@@ -220,6 +226,12 @@
       </property>
       <property name="buttonSymbols">
        <enum>QAbstractSpinBox::NoButtons</enum>
+      </property>
+      <property name="minimum">
+       <number>-90</number>
+      </property>
+      <property name="maximum">
+       <number>90</number>
       </property>
      </widget>
     </item>
