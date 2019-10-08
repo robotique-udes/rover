@@ -32,6 +32,10 @@ class CmdMux:
         if (joy.buttons[4] == 1) and not self.gui_control_on:
             self.left_cmd = joy.axes[1]
             self.right_cmd = joy.axes[4] 
+        else:
+            self.left_cmd = 0
+            self.right_cmd = 0 
+
 
     def publish_cmd(self, event):
         cmd = Command()
