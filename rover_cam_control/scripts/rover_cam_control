@@ -2,7 +2,7 @@
 
 import sys
 
-from rover_cam_control.rover_cam_control_plugin import RoverGuiPlugin
+from rover_cam_control.rover_cam_control_plugin import RoverCamControlPlugin
 from rqt_gui.main import Main
 
 plugin = 'rover_cam_control_plugin'

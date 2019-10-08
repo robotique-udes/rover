@@ -16,7 +16,7 @@ class RoverCamControlPlugin(Plugin):
     def __init__(self, context):
         super(RoverCamControlPlugin, self).__init__(context)
         # Give QObjects reasonable names
-        self.setObjectName('RoverUI')
+        self.setObjectName('RoverCamUI')
 
         # Process standalone plugin command-line arguments
         from argparse import ArgumentParser
