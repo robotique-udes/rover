@@ -165,10 +165,10 @@
      </widget>
     </item>
     <item row="7" column="4">
-     <widget class="QDoubleSpinBox" name="doubleSpinBox"/>
+     <widget class="QSpinBox" name="camVerticalField"/>
     </item>
     <item row="9" column="2">
-     <widget class="QDoubleSpinBox" name="doubleSpinBox_2"/>
+     <widget class="QSpinBox" name="camHorizontalField"/>
     </item>
    </layout>
   </widget>
