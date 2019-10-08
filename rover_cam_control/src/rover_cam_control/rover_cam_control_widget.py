@@ -82,7 +82,34 @@ class RoverCamControlWidget(QtWidgets.QWidget):
 
     def cam_left_btn_released_callback(self):
         self.left_cam_flag = False
-        self.update_command()
+       
+        # self.cam_vertical_field.valuechage.connect(self.fix_slider)
+       
+       # self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
+       #  rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
+        
+#     def fix_slider(self):
+#         self.vertical_slider.setvalue(cam_vertical_field.value())
+#
+#     def left_foward_btn_callback(self):
+#         self.left_foward_flag = True
+#         self.update_command()
+#
+#     def right_foward_btn_callback(self):
+#         self.right_foward_flag = True
+#         self.update_command()
+#
+#     def left_backward_btn_callback(self):
+#         self.left_backward_flag = True
+#         self.update_command()
+#
+#     def right_backward_btn_callback(self):
+#         self.right_backward_flag = True
+#         self.update_command()
+#
+#     def left_foward_btn_released_callback(self):
+#         self.left_foward_flag = False
+#         self.update_command()
 
     def cam_right_btn_released_callback(self):
         self.right_cam_flag = False
