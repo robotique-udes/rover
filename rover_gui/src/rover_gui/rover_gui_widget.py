@@ -25,8 +25,8 @@ class RoverGuiWidget(QtWidgets.QWidget):
         self.left_flag = False
         self.backward_flag = False
 
-        self.linear = 0.0
-        self.angular= 0.0
+        self.right = 0.0
+        self.left= 0.0
         self.is_active = False
 
         self.foward_btn.pressed.connect(self.foward_btn_callback)
@@ -92,18 +92,24 @@ class RoverGuiWidget(QtWidgets.QWidget):
 
     def update_command(self):
         if self.foward_flag:
-            self.linear = self.speed_slider.value()/100.0
+            self.right = self.speed_slider.value()/100.0
+            self.left = self.speed_slider.value()/100.0
         elif self.backward_flag:
-            self.linear = -(self.speed_slider.value()/100.0)
+            self.right = -(self.speed_slider.value()/100.0)
+            self.right = -(self.speed_slider.value()/100.0)
         else:
-            self.linear = 0
+            self.right = 0.0
+            self.left = 0.0
 
         if self.right_flag:
-            self.angular = self.speed_slider.value()/100.0
+            self.right = -(self.speed_slider.value()/100.0)
+            self.left = self.speed_slider.value()/100.0
         elif self.left_flag:
-            self.angular = -(self.speed_slider.value()/100.0)
+            self.right = self.speed_slider.value()/100.0
+            self.left = -(self.speed_slider.value()/100.0)
         else:
-            self.angular = 0
+            self.right = 0.0
+            self.left = 0.0
             
         self.is_active = self.keyboard_check_box.isChecked()
 
