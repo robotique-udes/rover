@@ -10,7 +10,6 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QAbstractSlider, QSpinBox
 # from rover_control.msg import CamCommand
 
-
 class RoverCamControlWidget(QtWidgets.QWidget):
 
     def __init__(self):
@@ -125,7 +124,3 @@ class RoverCamControlWidget(QtWidgets.QWidget):
     #     command.cam_vertical = self.cam_vertical_pos_signal
     #     command.is_active = self.is_active
     #     self.cam_cmd_pub.publish(command)
-
-
-
-
