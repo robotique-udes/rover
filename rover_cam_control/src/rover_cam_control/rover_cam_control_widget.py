@@ -9,6 +9,7 @@ from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QAbstractSlider, QSpinBox
 from rover_control.msg import CamCommand
+from std_msgs.msg import Bool
 
 
 class RoverCamControlWidget(QtWidgets.QWidget):
@@ -58,6 +59,12 @@ class RoverCamControlWidget(QtWidgets.QWidget):
 
         self.cam_cmd_pub = rospy.Publisher('cam_cmd', CamCommand, queue_size=10)
         rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
+
+        self.photo_cmd_pub = rospy.Publisher('take_photo', Bool, queue_size=10)
+        self.pano_cmd_pub = rospy.Publisher('stitch_pano', Bool, queue_size=10)
+
+        self.take_photo_btn.clicked.connect(self.publish_photo_cmd)
+        self.stitch_pano_btn.clicked.connect(self.publish_pano_cmd)
 
     def init_fields(self):
         self.cam_horizontal_field.setValue(0)
@@ -131,3 +138,13 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         command.cam_vertical = self.cam_vertical_pos_signal
         command.is_active = self.is_active
         self.cam_cmd_pub.publish(command)
+
+    def publish_photo_cmd(self, event):
+        msg = Bool()
+        msg.data = True
+        self.photo_cmd_pub.publish(msg)
+
+    def publish_pano_cmd(self, event):
+        msg = Bool()
+        msg.data = True
+        self.pano_cmd_pub.publish(msg)
