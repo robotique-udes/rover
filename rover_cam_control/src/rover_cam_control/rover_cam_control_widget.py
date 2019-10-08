@@ -8,7 +8,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QAbstractSlider, QSpinBox
-# from rover_control.msg import CamCommand
+from rover_control.msg import CamCommand
+
 
 class RoverCamControlWidget(QtWidgets.QWidget):
 
@@ -55,8 +56,8 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_horizontal_field.valueChanged.connect(self.update_sliders)
         self.cam_vertical_field.valueChanged.connect(self.update_sliders)
 
-        # self.cam_cmd_pub = rospy.Publisher('cam_cmd', Command, queue_size=10)
-        # rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
+        self.cam_cmd_pub = rospy.Publisher('cam_cmd', CamCommand, queue_size=10)
+        rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
 
     def init_fields(self):
         self.cam_horizontal_field.setValue(0)
@@ -104,11 +105,15 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_horizontal_slider.setValue(self.cam_horizontal_pos)
         self.cam_vertical_slider.setValue(self.cam_vertical_pos)
 
+        self.cam_update_btn.setDown(False)
+
     def update_fields(self):
         self.cam_horizontal_pos = self.cam_horizontal_slider.value()
         self.cam_vertical_pos = self.cam_vertical_slider.value()
         self.cam_horizontal_field.setValue(self.cam_horizontal_pos)
         self.cam_vertical_field.setValue(self.cam_vertical_pos)
+
+        self.cam_update_btn.setDown(False)
 
     def update_command(self):
         self.cam_horizontal_pos_signal = self.cam_horizontal_pos
@@ -116,11 +121,13 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_horizontal_pos_info.setValue(self.cam_horizontal_pos_signal)
         self.cam_vertical_pos_info.setValue(self.cam_vertical_pos_signal)
 
+        self.cam_update_btn.setDown(True)
+
         self.is_active = self.cam_keyboard_check_box.isChecked()
 
-    # def publish_command(self, event):
-    #     command = CamCommand()
-    #     command.cam_horizontal = self.cam_horizontal_pos_signal
-    #     command.cam_vertical = self.cam_vertical_pos_signal
-    #     command.is_active = self.is_active
-    #     self.cam_cmd_pub.publish(command)
+    def publish_command(self, event):
+        command = CamCommand()
+        command.cam_horizontal = self.cam_horizontal_pos_signal
+        command.cam_vertical = self.cam_vertical_pos_signal
+        command.is_active = self.is_active
+        self.cam_cmd_pub.publish(command)
