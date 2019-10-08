@@ -1,6 +1,6 @@
 <library path="src">
 <!-- type=ros package, filename, className -->
-  <class name="RoverCamControlPLugin" type="rover_cam_control.rover_cam_control_plugin.RoverCamControlPlugin" base_class_type="rqt_gui_py::Plugin">
+  <class name="RoverCamControlPlugin" type="rover_cam_control.rover_cam_control_plugin.RoverCamControlPlugin" base_class_type="rqt_gui_py::Plugin">
     <description>
       UdeS Rover User Interface
     </description>
@@ -9,7 +9,7 @@
         <label>Robotique UdeS</label>
       </group>
 
-      <label>Rover UI</label>
+      <label>Rover Cam Control</label>
     </qtgui>
   </class>
 </library>
