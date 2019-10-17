@@ -1,0 +1,4 @@
+<launch>
+	<include file="$(find mapviz)/launch/mapviz.launch"/>
+	<node pkg="rover_nav" name="simGPS" type="sim_gps.py"/>
+</launch>
