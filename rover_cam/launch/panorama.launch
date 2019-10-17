@@ -1,0 +1,9 @@
+<?xml version='1.0'?>
+<launch>
+
+  <!-- Launch panorama node -->
+  <node name="panorama_node" pkg="rover_cam" type="panorama_node.py" output="screen" >
+  </node>
+  
+
+</launch>
