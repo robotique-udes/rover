@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider
-from rover_control.msg import Command
+from rover_udes.msg import Command
 
 
 class RoverGuiWidget(QtWidgets.QWidget):

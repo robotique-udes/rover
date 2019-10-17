@@ -8,7 +8,7 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QAbstractSlider, QSpinBox
-from rover_control.msg import CamCommand
+from rover_udes.msg import CamCommand
 from std_msgs.msg import Bool
 
 
