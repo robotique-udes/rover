@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 import roslib
 import rospy
-from rover_control.msg import Command
+from rover_udes.msg import Command
 from std_msgs.msg import Float32, Int32
 from sensor_msgs.msg import Joy
 
