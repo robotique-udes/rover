@@ -126,7 +126,7 @@
        </property>
       </widget>
      </item>
-     <item row="5" column="5" rowspan="7">
+     <item row="5" column="7" rowspan="7">
       <widget class="QSlider" name="cam_vertical_slider">
        <property name="minimum">
         <number>-90</number>
@@ -166,13 +166,6 @@
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
-       </property>
-      </widget>
-     </item>
-     <item row="5" column="2">
-      <widget class="QPushButton" name="take_photo_btn">
-       <property name="text">
-        <string>Take Photo</string>
        </property>
       </widget>
      </item>
@@ -254,12 +247,30 @@
        </property>
       </spacer>
      </item>
-     <item row="5" column="1">
-      <widget class="QPushButton" name="stitch_pano_btn">
-       <property name="text">
-        <string>Panorama</string>
-       </property>
-      </widget>
+     <item row="5" column="1" colspan="2">
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <widget class="QPushButton" name="pano_btn">
+         <property name="text">
+          <string>Panorama ON</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="take_photo_btn">
+         <property name="text">
+          <string>Take Photo</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="stitch_pano_btn">
+         <property name="text">
+          <string>Stitch</string>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>

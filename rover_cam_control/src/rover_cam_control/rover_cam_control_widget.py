@@ -10,6 +10,7 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QAbstractSlider, QSpinBox
 from rover_udes.msg import CamCommand
 from std_msgs.msg import Bool
+from std_srvs.srv import SetBool
 
 
 class RoverCamControlWidget(QtWidgets.QWidget):
@@ -63,6 +64,7 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.photo_cmd_pub = rospy.Publisher('take_photo', Bool, queue_size=10)
         self.pano_cmd_pub = rospy.Publisher('stitch_pano', Bool, queue_size=10)
 
+        self.pano_btn.clicked.connect(self.change_pano_state)
         self.take_photo_btn.clicked.connect(self.publish_photo_cmd)
         self.stitch_pano_btn.clicked.connect(self.publish_pano_cmd)
 
@@ -80,6 +82,9 @@ class RoverCamControlWidget(QtWidgets.QWidget):
 
         self.cam_horizontal_pos_signal = 0
         self.cam_vertical_pos_signal = 0
+
+        self.take_photo_btn.setEnabled(False)
+        self.stitch_pano_btn.setEnabled(False)
 
         self.update_command()
 
@@ -148,3 +153,31 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         msg = Bool()
         msg.data = True
         self.pano_cmd_pub.publish(msg)
+
+    def change_pano_state(self, event):
+        if self.pano_btn.text() == 'Panorama ON':
+            turn_on = True
+        else:
+            turn_on = False
+        
+        try:
+            rospy.wait_for_service('change_pano_state', 0.5)
+            change_pano_state = rospy.ServiceProxy('change_pano_state', SetBool)
+            request = SetBool()
+            request.data = turn_on
+            response = change_pano_state(turn_on)
+            if response.success:
+                self.take_photo_btn.setEnabled(True)
+                self.stitch_pano_btn.setEnabled(True)
+                self.pano_btn.setText('Panorama OFF')
+            else:
+                self.take_photo_btn.setEnabled(False)
+                self.stitch_pano_btn.setEnabled(False)
+                self.pano_btn.setText('Panorama ON')
+        except:
+            print("Service call failed")
+
+
+
+
+
