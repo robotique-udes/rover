@@ -7,8 +7,9 @@ from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QShortcut, QSlider
+from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber
 from rover_udes.msg import Command
+from sensor_msgs.msg import NavSatFix
 
 
 class RoverGuiWidget(QtWidgets.QWidget):
@@ -50,6 +51,10 @@ class RoverGuiWidget(QtWidgets.QWidget):
         self.right_shortcut.activated.connect(self.right_btn.animateClick)
         self.left_shortcut.activated.connect(self.left_btn.animateClick)
         self.backward_shortcut.activated.connect(self.backward_btn.animateClick)
+
+        # Print current position
+        self.currentPos_sub = rospy.Subscriber('pos', NavSatFix, self.gps_pos_callback)
+
 
         self.gui_cmd_pub = rospy.Publisher('gui_cmd', Command, queue_size=10)
         rospy.Timer(rospy.Duration(1.0/10.0),self.publish_command)
@@ -115,10 +120,14 @@ class RoverGuiWidget(QtWidgets.QWidget):
 
     def publish_command(self, event):
         command = Command()
-        command.linear = self.linear
-        command.angular = self.angular
+        command.linear = self.right
+        command.angular = self.left
         command.is_active = self.is_active
         self.gui_cmd_pub.publish(command)
+
+    def gps_pos_callback(self, data):
+        self.latDisp.display(data.latitude)
+        self.longDisp.display(data.longitude)
 
 
 
