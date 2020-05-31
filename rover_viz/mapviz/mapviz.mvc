@@ -1,0 +1,62 @@
+capture_directory: ~
+fixed_frame: map
+target_frame: base_link
+fix_orientation: false
+rotate_90: true
+enable_antialiasing: true
+show_displays: true
+show_status_bar: true
+show_capture_tools: true
+window_width: 1440
+window_height: 763
+view_scale: 0.02273572
+offset_x: -3.431054
+offset_y: -2.351789
+use_latest_transforms: true
+background: "#a0a0a4"
+displays:
+  - type: mapviz_plugins/tile_map
+    name: new display
+    config:
+      visible: true
+      collapsed: false
+      custom_sources:
+        - base_url: http://localhost:8080/wmts/gm_layer/gm_grid/{level}/{x}/{y}.png
+          max_zoom: 19
+          name: Google Maps
+          type: wmts
+      bing_api_key: ""
+      source: Google Maps
+  - type: mapviz_plugins/navsat
+    name: new display
+    config:
+      visible: true
+      collapsed: false
+      topic: /gps/filtered
+      color: "#cc0000"
+      draw_style: points
+      position_tolerance: 0
+      buffer_size: 0
+  - type: mapviz_plugins/tf_frame
+    name: new display
+    config:
+      visible: true
+      collapsed: false
+      frame: base_link
+      color: "#00ff00"
+      draw_style: lines
+      position_tolerance: 0
+      buffer_size: 0
+      static_arrow_sizes: false
+      arrow_size: 25
+  - type: mapviz_plugins/robot_image
+    name: new display
+    config:
+      visible: true
+      collapsed: false
+      frame: base_link
+      image: /home/jeremie/catkin_ws/src/rover_control/rover_viz/images/indigo.png
+      width: 1
+      height: 1
+      offset_x: 0
+      offset_y: 0

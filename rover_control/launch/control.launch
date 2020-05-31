@@ -1,5 +1,30 @@
 <?xml version='1.0'?>
 <launch>
-  <node name="cmd_mux" pkg="rover_control" type="cmd_mux.py" output="screen">
+
+  <!-- Load robot description -->
+  <include file="$(find rover_description)/launch/description.launch" />
+
+  <node name="cmd_mux" pkg="rover_control" type="cmd_mux.py" output="screen" />
+
+  <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
+
+  <node name="robot_state_publisher" pkg="robot_state_publisher" type="robot_state_publisher" />
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="local_ekf_localization">
+    <rosparam command="load" file="$(find rover_control)/config/local_ekf_localization.yaml" />
+    <remap from="/odometry/filtered" to="/local_ekf_localization/odom" />
   </node>
+
+  <node pkg="robot_localization" type="ekf_localization_node" name="global_ekf_localization">
+    <rosparam command="load" file="$(find rover_control)/config/global_ekf_localization.yaml" />
+    <remap from="/odometry/filtered" to="/global_ekf_localization/odom" />
+  </node>
+
+  <node name="navsat_transform_node" pkg="robot_localization" type="navsat_transform_node" >
+    <param name="zero_altitude" value="true" />
+    <param name="publish_filtered_gps" value="true" />
+    <remap from="/gps/fix" to="/navsat/fix" />
+    <remap from="/odometry/filtered" to="/global_ekf_localization/odom" />
+  </node>
+
 </launch>

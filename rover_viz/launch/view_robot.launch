@@ -1,0 +1,4 @@
+<launch>
+  <!-- Launcher to visualize robot, sensor data, etc. -->
+  <node name="rviz" pkg="rviz" type="rviz" args="-d $(find rover_viz)/rviz/robot.rviz" output="screen"/>
+</launch>
