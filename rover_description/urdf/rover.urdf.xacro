@@ -1,7 +1,11 @@
 <?xml version="1.0" ?>
 <robot name="rover" xmlns:xacro="http://ros.org/wiki/xacro">
 
-   <xacro:arg name="robot_namespace" default="/" />
+  <xacro:include filename="$(find rover_description)/urdf/camera.urdf.xacro"/>
+  <xacro:include filename="$(find rover_description)/urdf/stereo_camera.urdf.xacro"/>
+  <xacro:include filename="$(find rover_description)/urdf/realsense_d435.urdf.xacro" />
+
+  <xacro:arg name="robot_namespace" default="/" />
 
   <!-- TODO: adjust geometry-->
   <!-- Base size -->
@@ -72,7 +76,7 @@
   <!-- Wheel macro -->
   <xacro:macro name="wheel" params="wheel_prefix *joint_pose" >
     <link name="${wheel_prefix}_wheel_link" >
-      <inertial>
+      <inertial>#
         <mass value="2" />
 				<origin xyz="0 0 0" />
 				<inertia  ixx="0.02" ixy="0" ixz="0" iyy="0.04" iyz="0" izz="0.02" />
@@ -131,8 +135,22 @@
     <origin xyz="${-wheelbase/2} ${-track/2  - wheel_length/2} ${wheel_vertical_offset}" rpy="0 0 0" />
   </xacro:wheel>
 
+  <!-- Camera -->
+  <xacro:camera_sensor name="camera1" parent="base_link" hfov="1.3962634" image_width="800" image_height="600"  >
+    <origin xyz="0 0 0.5" rpy="0 0 0" />
+  </xacro:camera_sensor>
+
+  <!-- Stereo camera -->
+  <!--<xacro:stereo_camera_sensor name="stereo_camera" parent="base_link" hfov="1.3962634" image_width="800" image_height="600" camera_distance="0.1" >
+    <origin xyz="${base_x_size/2} 0 0" rpy="0 0 0" />
+  </xacro:stereo_camera_sensor>-->
+
+  <!-- Intel RealSense d435 -->
+  <xacro:realsense_d435_sensor name="d435" parent="base_link" >
+    <origin xyz="${base_x_size/2} 0 ${base_z_size}" rpy="0 0 0" />
+  </xacro:realsense_d435_sensor>
+
   <!-- gazebo plugins -->
-  
   <gazebo>
     <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
       <updateRate>100.0</updateRate>

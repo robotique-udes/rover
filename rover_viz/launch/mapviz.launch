@@ -5,7 +5,7 @@
   <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
     <param name="config" value="$(find rover_viz)/mapviz.mvc" />
     <param name="local_xy_frame" value="map"/>
-    <param name="local_xy_origin" value="udes"/>
+    <param name="local_xy_origin" value="auto"/> <!-- use "auto" for real rover, don't know why it doesn't work for sim -->
     <rosparam param="local_xy_origins">
       [{ name: udes,
          latitude: 45.37833584,

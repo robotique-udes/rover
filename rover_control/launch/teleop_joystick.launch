@@ -5,6 +5,6 @@
     <param name="dev" value="/dev/input/js0" />
   </node>
   <node pkg="teleop_twist_joy" name="teleop_twist_joy" type="teleop_node" >
-    <remap from="/cmd_vel" to="/base_controller/cmd_vel" />
+    <remap from="cmd_vel" to="base_controller/cmd_vel" />
   </node>
 </launch>
