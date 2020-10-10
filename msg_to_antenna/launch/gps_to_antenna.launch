@@ -1,0 +1,10 @@
+<?xml version="1.0"?>
+<launch>
+
+    <node name="gps_to_antenna" pkg="msg_to_antenna" type="gps_to_antenna.py" output="screen" >
+        <param name="host" value="10.42.0.30" />
+        <param name="port" value="65432" />
+        <param name="time_between_msgs" value="1" />
+    </node>
+
+</launch>
