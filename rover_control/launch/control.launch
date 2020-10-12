@@ -39,4 +39,20 @@
     <remap from="/points2" to="/stereo_camera_pointcloud" />
   </node>-->
 
+  <!-- Launch map related nodes -->
+  <node pkg="swri_transform_util" type="initialize_origin.py" name="initialize_origin" >
+    <param name="config" value="$(find rover_viz)/mapviz.mvc" />
+    <param name="local_xy_frame" value="map"/>
+    <param name="local_xy_origin" value="auto"/> <!-- use "auto" for real rover, don't know why it doesn't work for sim -->
+    <rosparam param="local_xy_origins">
+      [{ name: udes,
+         latitude: 45.37833584,
+         longitude: -71.9276222,
+         altitude: 0.0,
+         heading: 0.0}]
+    </rosparam>
+  </node>
+
+  <node pkg="tf" type="static_transform_publisher" name="swri_transform" args="0 0 0 0 0 0 /map /origin 100"  />
+
 </launch>
