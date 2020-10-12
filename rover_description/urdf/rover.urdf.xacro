@@ -198,7 +198,7 @@
       <velocityTopicName>navsat/vel</velocityTopicName>
       <referenceLatitude>45.37833584</referenceLatitude>
       <referenceLongitude>-71.9276222</referenceLongitude>
-      <referenceHeading>90</referenceHeading>
+      <referenceHeading>180</referenceHeading>
       <referenceAltitude>0</referenceAltitude>
       <drift>0.0001 0.0001 0.0001</drift>
     </plugin>
