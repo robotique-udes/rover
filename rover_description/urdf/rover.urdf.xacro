@@ -154,7 +154,7 @@
   <gazebo>
     <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
       <updateRate>100.0</updateRate>
-      <robotNamespace>/base_controller</robotNamespace>
+      <robotNamespace></robotNamespace>
       <leftFrontJoint>front_left_wheel</leftFrontJoint>
       <rightFrontJoint>front_right_wheel</rightFrontJoint>
       <leftRearJoint>rear_left_wheel</leftRearJoint>
