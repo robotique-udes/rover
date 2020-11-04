@@ -12,5 +12,7 @@
     <param name="scale_angular" type="double" value="1.0"/>
     <param name="axis_linear" type="int" value="1"/>
     <param name="axis_angular" type="int" value="0"/>
+    <param name="ptu_y_axis" type="int" value="4"/>
+    <param name="ptu_z_axis" type="int" value="3"/>
   </node> 
 </launch>
