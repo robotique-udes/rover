@@ -3,13 +3,14 @@
 import rospy
 from sensor_msgs.msg import Joy
 from geometry_msgs.msg import Twist
+from rover_udes.msg import CamCommand
 
 class TeleopJoystick():
     def __init__(self):
         rospy.init_node("teleop_joystick", anonymous = True)
         self.joy_sub = rospy.Subscriber('/joy', Joy, self.joyCB)
         self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=2)
-        self.cmd_ptu_pub = rospy.Publisher('/cmd_ptu', Twist, queue_size=2)
+        self.cmd_ptu_pub = rospy.Publisher('/cmd_ptu', CamCommand, queue_size=2)
 
         #Getting parameters initialized at the launch file
         self.enable_button = rospy.get_param("~enable_button", 4)
@@ -19,8 +20,10 @@ class TeleopJoystick():
         self.angular_scaling = rospy.get_param("~scale_angular", 1.0)
         self.axis_linear = rospy.get_param("~axis_linear", 1)
         self.axis_angular = rospy.get_param("~axis_angular", 0)
-        self.ptu_y_axis = rospy.get_param("~ptu_y_axis", 4)
-        self.ptu_z_axis = rospy.get_param("~ptu_z_axis", 3)
+        self.ptu_vertical_axis = rospy.get_param("~ptu_vertical_axis", 4)
+        self.ptu_horizontal_axis = rospy.get_param("~ptu_horizontal_axis", 3)
+        self.ptu_horizontal_scaling = rospy.get_param("~ptu_horizontal_scaling", 1)
+        self.ptu_vertical_scaling = rospy.get_param("~ptu_vertical_scaling", 1)
 
     def joyCB(self, data): #calls both commands functions (for PTU and vehicle movements)
         self.vehicleCMD(data)
@@ -46,10 +49,11 @@ class TeleopJoystick():
             self.cmd_pub.publish(twist)
 
     def ptuCMD(self,data): #Publishes the pan and tilt unit commands to the cmd_panTilt topic
-        twist = Twist()
-        twist.angular.y = data.axes[self.ptu_y_axis]
-        twist.angular.z = data.axes[self.ptu_z_axis]
-        self.cmd_ptu_pub.publish(twist)
+        cam_cmd = CamCommand()
+        cam_cmd.mode = 1  # Velocity mode
+        cam_cmd.cam_horizontal = data.axes[self.ptu_vertical_axis]
+        cam_cmd.cam_vertical = data.axes[self.ptu_horizontal_axis]
+        self.cmd_ptu_pub.publish(cam_cmd)
 
 if __name__ == '__main__':
     teleop_joystick = TeleopJoystick()

@@ -1,86 +1,105 @@
 #!/usr/bin/env python
-import roslib
+
 import rospy
-from rover_udes.msg import Command
-from std_msgs.msg import Float32, Int32
-from sensor_msgs.msg import Joy
+from rover_udes.msg import CamCommand
 from geometry_msgs.msg import Twist
 
-
-MAX_VALUE = 100
-MIN_VALUE = -100
-
+class Input:
+    def __init__(self):
+        self.state = False
+        self.message = None
+        self.time_of_last_msg = 0.0
 
 class CmdMux:
-    def __init__(self):
-        # By default, commands come from joystick
-        self.gui_control_on = False
-        self.nav_control_on = False
-        self.right_cmd = 0.0
-        self.left_cmd = 0.0
-        
+    def __init__(self):        
         rospy.init_node("cmd_mux")
-        rospy.on_shutdown(self.on_shutdown)
-        self.gui_sub = rospy.Subscriber('/gui_cmd', Command, self.gui_cmd_callback)
-        self.joy_sub = rospy.Subscriber('/joy', Joy, self.joy_callback)
-        self.nav_sub = rospy.Subscriber('/nav_cmd', Twist, self.nav_cmd_callback)
 
-        self.cmd_pub = rospy.Publisher('mux_cmd', Command, queue_size=1)
-        rospy.Timer(rospy.Duration(1.0 / 10.0), self.publish_cmd)
+        # velocity topics
+        self.gui_vel_sub = rospy.Subscriber('/gui_cmd_vel', Twist, self.gui_vel_callback)
+        self.joystick_vel_sub = rospy.Subscriber('/cmd_vel', Twist, self.joystick_vel_callback)
+        self.nav_vel_sub = rospy.Subscriber('/nav_cmd', Twist, self.nav_vel_callback)
+        self.vel_pub = rospy.Publisher('mux_cmd_vel', Twist, queue_size=1)
 
-    def gui_cmd_callback(self, cmd):
-        self.gui_control_on = cmd.is_active
-        if self.gui_control_on:
-            self.right_cmd = cmd.right
-            self.left_cmd = cmd.left
+        # ptu topics
+        self.gui_ptu_sub = rospy.Subscriber('/gui_cmd_ptu', CamCommand, self.gui_ptu_callback)
+        self.joystick_ptu_sub = rospy.Subscriber('/cmd_ptu', CamCommand, self.joystick_ptu_callback)
+        self.ptu_pub = rospy.Publisher('mux_cmd_ptu', CamCommand, queue_size=1)
 
-    def joy_callback(self, joy):
-        # Left bumper acts as dead-man switch
-        if (joy.buttons[4] == 1) and not self.gui_control_on:
-            self.left_cmd = joy.axes[1]*100
-            self.right_cmd = joy.axes[4]*100
-        else:
-            self.left_cmd = 0
-            self.right_cmd = 0
+        # parameters
+        self.timeout = rospy.Duration(rospy.get_param("~timeout", 1))
 
-    def nav_cmd_callback(self, cmd):
-        uncapped_left, uncapped_right = twistToTank(cmd.linear.x, cmd.angular.z)
-        self.left_cmd, self.right_cmd = limitCmd(uncapped_left, uncapped_right)
+        # inputs
+        self.gui_vel_input = Input()
+        self.joystick_vel_input = Input()
+        self.nav_vel_input = Input()
+        self.gui_ptu_input = Input()
+        self.joystick_ptu_input = Input()
+        self.vel_inputs = [self.joystick_vel_input, self.gui_vel_input, self.nav_vel_input]  # velocity inputs in order of priority
+        self.ptu_inputs = [self.joystick_ptu_input, self.gui_ptu_input]  # ptu inputs in order of priority
 
-    def publish_cmd(self, event):
-        cmd = Command()
-        cmd.is_active = True
-        cmd.right = self.right_cmd
-        cmd.left = self.left_cmd
-        self.cmd_pub.publish(cmd)
+    def gui_vel_callback(self, msg): 
+        self.gui_vel_input.message = msg
+        if msg.linear.x != 0 or msg.angular.z != 0:  # empty message
+            self.gui_vel_input.state = True
+            self.gui_vel_input.time_of_last_msg = rospy.Time.now()
 
-    def on_shutdown(self):
-        pass
+    def joystick_vel_callback(self, msg):
+        self.joystick_vel_input.message = msg
+        if msg.linear.x != 0 or msg.angular.z != 0:  # empty message
+            self.joystick_vel_input.state = True
+            self.joystick_vel_input.time_of_last_msg = rospy.Time.now()
 
+    def nav_vel_callback(self, msg):
+        self.nav_vel_input.message = msg
+        if msg.linear.x != 0 or msg.angular.z != 0:  # empty message
+            self.nav_vel_input.state = True
+            self.nav_vel_input.time_of_last_msg = rospy.Time.now()
 
-# Convert twist commands to tank (left and right) command
-def twistToTank(linear, angular):
-    left_cmd = linear + angular
-    right_cmd = linear - angular
-    return left_cmd, right_cmd
+    def gui_ptu_callback(self, msg):
+        self.gui_ptu_input.message = msg
+        if msg.cam_horizontal != 0 or msg.cam_vertical != 0:  # empty message
+            self.gui_ptu_input.state = True
+            self.gui_ptu_input.time_of_last_msg = rospy.Time.now()
 
+    def joystick_ptu_callback(self, msg):
+        self.joystick_ptu_input.message = msg
+        if msg.cam_horizontal != 0 or msg.cam_vertical != 0:  # empty message
+            self.joystick_ptu_input.state = True
+            self.joystick_ptu_input.time_of_last_msg = rospy.Time.now()
+    
+    def publish_cmd(self):
+        #print("publish loop")
+        for vel_input in self.vel_inputs:
+            if vel_input.state:
+                #print("Found state true")
+                if rospy.Time.now() - vel_input.time_of_last_msg > self.timeout:
+                    vel_input.state = False
+                else:
+                    #print("publishing vel msg")
+                    self.vel_pub.publish(vel_input.message)
+                    break
+                
+        for ptu_input in self.ptu_inputs:
+            if ptu_input.state:
+                #print("Found state true")
+                if rospy.Time.now() - ptu_input.time_of_last_msg > self.timeout:
+                    ptu_input.state = False
+                else:
+                    #print("publishing vel msg")
+                    self.ptu_pub.publish(ptu_input.message)
+                    break
 
-# Limits right and left command from -100 to 100 while keeping the difference between the two proportional
-def limitCmd(left, right):
-    if not(MIN_VALUE < right < MAX_VALUE and MIN_VALUE < left < MAX_VALUE):
-        if abs(right) >= abs(left):
-            capped_right = 100
-            capped_left = (left/abs(right)) * 100
-        else:
-            capped_left = 100
-            capped_right = (right/abs(left)) * 100
-        return capped_left, capped_right
-    return left, right
+    def run(self):
+        r = rospy.Rate(100)
+        while not rospy.is_shutdown():
+            self.publish_cmd()
+            r.sleep()
 
 
 if __name__ == '__main__':
     try:
         mux = CmdMux()
-        rospy.spin()
+        print("cmd_mux ready")
+        mux.run()
     except rospy.ROSInterruptException:
         pass

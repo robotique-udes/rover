@@ -8,7 +8,9 @@
   <!--<include file="$(find rover_control)/launch/nmea_serial_driver.launch" />
   <include file="$(find rover_control)/launch/rtimulib_ros.launch" />-->
 
-  <node name="cmd_mux" pkg="rover_control" type="cmd_mux.py" output="screen" />
+  <node name="cmd_mux" pkg="rover_control" type="cmd_mux.py" output="screen" >
+    <param name="timeout" type="double" value="1" />
+  </node>
 
   <node name="joint_state_publisher" pkg="joint_state_publisher" type="joint_state_publisher" />
 
