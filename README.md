@@ -25,4 +25,7 @@ The following packages need to be installed in order for the rover to work prope
 * teleop_twist_joy `sudo apt install ros-melodic-teleop-twist-joy`
 * teleop_twist_keyboard `sudo apt install ros-melodic-teleop-twist-keyboard`
 * [rover_udes](https://github.com/robotique-udes/rover_udes)
+* [rover_base](https://github.com/robotique-udes/rover_base)
+* [rover_drivers](https://github.com/robotique-udes/rover_drivers)
+* rosserial_arduino `sudo apt install ros-melodic-rosserial-arduino`
 
