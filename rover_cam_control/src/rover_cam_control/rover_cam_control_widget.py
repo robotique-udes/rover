@@ -58,7 +58,7 @@ class RoverCamControlWidget(QtWidgets.QWidget):
         self.cam_horizontal_field.valueChanged.connect(self.update_sliders)
         self.cam_vertical_field.valueChanged.connect(self.update_sliders)
 
-        self.cam_cmd_pub = rospy.Publisher('cmd_ptu', CamCommand, queue_size=10)
+        self.cam_cmd_pub = rospy.Publisher('gui_cmd_ptu', CamCommand, queue_size=10)
         rospy.Timer(rospy.Duration(1.0/10.0), self.publish_command)
 
         self.photo_cmd_pub = rospy.Publisher('take_photo', Bool, queue_size=10)
