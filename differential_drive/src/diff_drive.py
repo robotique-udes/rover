@@ -34,6 +34,18 @@ class DifferentialDrive():
         self.odometry = Odometry()
         self.odometry.header.frame_id = self.odom_frame_id
         self.odometry.child_frame_id = self.base_frame_id
+        self.odometry.pose.covariance = [1, 0, 0, 0, 0, 0,
+                                         0, 1, 0, 0, 0, 0,
+                                         0, 0, 1, 0, 0, 0,
+                                         0, 0, 0, 1, 0, 0,
+                                         0, 0, 0, 0, 1, 0,
+                                         0, 0, 0, 0, 0, 1]
+        self.odometry.twist.covariance = [1, 0, 0, 0, 0, 0,
+                                         0, 1, 0, 0, 0, 0,
+                                         0, 0, 1, 0, 0, 0,
+                                         0, 0, 0, 1, 0, 0,
+                                         0, 0, 0, 0, 1, 0,
+                                         0, 0, 0, 0, 0, 1]
         self.position_x = 0
         self.position_y = 0
         self.orientation_z = 0

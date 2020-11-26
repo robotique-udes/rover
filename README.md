@@ -16,7 +16,7 @@ Follow this [tutorial](http://wiki.ros.org/joy/Tutorials/ConfiguringALinuxJoysti
 The following packages need to be installed in order for the rover to work properly. Most of them can be installed automatically with by running `rosdep install --from-paths src --ignore-src -r -y` in the root of the catkin workspace.
 
 * realsense2_camera `sudo apt install ros-melodic-realsense2-camera`
-* realsense2_description `sudo apt install ros-meldic-realsense2-description`
+* realsense2_description `sudo apt install ros-melodic-realsense2-description`
 * robot_localization `sudo apt install ros-melodic-robot-localization`
 * [mapviz](https://swri-robotics.github.io/mapviz/)
 * hector_gazebo_plugins `sudo apt install ros-meldic-hector-gazebo-plugins`

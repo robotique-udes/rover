@@ -26,5 +26,9 @@
   <exec_depend>joy</exec_depend>
   <exec_depend>message_runtime</exec_depend>
   <exec_depend>rosserial_arduino</exec_depend>
+  <exec_depend>realsense2_camera</exec_depend>
+  <exec_depend>realsense2_camera_description</exec_depend>
+  <exec_depend>video_stream_opencv</exec_depend>
+  <exec_depend>image_proc</exec_depend>
 
 </package>
