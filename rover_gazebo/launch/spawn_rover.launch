@@ -10,7 +10,9 @@
   <group ns="$(arg robot_namespace)">
 
     <!-- Note that rover_simulation/description.launch is already included in rover_control/control.launch. -->
-    <include file="$(find rover_control)/launch/control.launch" />
+    <include file="$(find rover_control)/launch/control.launch" >
+      <arg name="simulation" value="true" />
+    </include>
 
     <!-- Spawn robot in gazebo -->
     <node name="spawn_rover_model" pkg="gazebo_ros" type="spawn_model"
