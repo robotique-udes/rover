@@ -19,7 +19,7 @@ The following packages need to be installed in order for the rover to work prope
 * realsense2_description `sudo apt install ros-melodic-realsense2-description`
 * robot_localization `sudo apt install ros-melodic-robot-localization`
 * [mapviz](https://swri-robotics.github.io/mapviz/)
-* hector_gazebo_plugins `sudo apt install ros-meldic-hector-gazebo-plugins`
+* hector_gazebo_plugins `sudo apt install ros-melodic-hector-gazebo-plugins`
 * rviz_imu_plugin `sudo apt install ros-melodic-rviz-imu-plugin`
 * joy `sudo apt install ros-melodic-joy`
 * teleop_twist_joy `sudo apt install ros-melodic-teleop-twist-joy`
