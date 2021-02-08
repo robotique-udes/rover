@@ -40,8 +40,8 @@ namespace talon
 class TalonSRX
 {
 	public:
-		TalonSRX(ros::NodeHandle* nh, std::string motor_nb);
-		void setup(unsigned char ID, unsigned char mode);
+		TalonSRX(ros::NodeHandle* nh, char motor_nb);
+		void setup(unsigned char ID, unsigned char mode, char motor_nb);
 
 	private:
 		uint32_t _data32;

@@ -4,7 +4,7 @@ namespace talon
 {
 
 
-	TalonSRX::TalonSRX(ros::NodeHandle* nh, std::string motor_nb)
+	TalonSRX::TalonSRX(ros::NodeHandle* nh, char motor_nb)
     {
     	/*
     	Publish to the /sent_messages topic.
@@ -16,13 +16,15 @@ namespace talon
     	Publish to the ros_talon/current_position topic.
     	This is taken care of by TalonSRX::unpackStatus3(const can_msgs::Frame &f).
     	*/
-    	_posPub = nh->advertise<std_msgs::Float32>("ros_talon" + motor_nb + "/current_position", 10);
+    	std::string topic = "ros_talon";
+    	topic.push_back(motor_nb);
+    	_posPub = nh->advertise<std_msgs::Float32>(topic + "/current_position", 10);
 
     	/*
 		Publish to the ros_talon/status topic.
 		This is taken care of by TalonSRX::publishStatus(), and gets called every loop.
     	*/
-    	_statusPub = nh->advertise<ros_talon::Status>("ros_talon/status",10);
+    	_statusPub = nh->advertise<ros_talon::Status>(topic + "/status",10);
 
     	/*
 		Every CAN Frame received by the socket_can bridge gets published to the /recieved_messages
@@ -36,7 +38,7 @@ namespace talon
 		This is done by TalonSRX::setPID(ros_talon::SetPID::Request  &req, ros_talon::SetPID::Response &res)
 		This function is located at TalonCfg.cpp.
     	*/
-    	_spid = nh->advertiseService("ros_talon/SetPID", &TalonSRX::setPID, this);
+    	_spid = nh->advertiseService(topic + "/SetPID", &TalonSRX::setPID, this);
 
     	/*
 		Advertise the setPID service. When called, drive the motor on percentOutput mode in the right direction
@@ -44,7 +46,7 @@ namespace talon
 		TalonSRX::FindCenter(ros_talon::SetPID::Request  &req, ros_talon::SetPID::Response &res)
 		This function is located at TalonRoutines.cpp.
     	*/
-    	_fcenter = nh->advertiseService("ros_talon/FindCenter", &TalonSRX::FindCenter, this);
+    	_fcenter = nh->advertiseService(topic + "/FindCenter", &TalonSRX::FindCenter, this);
 
     	/*
 		Run the loop at 20Hz to prevent the device from idling.
@@ -55,7 +57,7 @@ namespace talon
 	}
 
 
-	void TalonSRX::setup(unsigned char ID, unsigned char mode)
+	void TalonSRX::setup(unsigned char ID, unsigned char mode, char motor_nb)
 	{
 		_ccwLimit = 0; // Limits initially unactive
 		_cwLimit = 0;
@@ -71,6 +73,9 @@ namespace talon
 		_statusOutputCurrent = 0.0;
 		_statusBusVoltage = 0.0;
 		_statusClosedLoopError = 0.0;
+
+		std::string topic = "ros_talon";
+    	topic.push_back(motor_nb);
 
 		//device ID 0x3F is reserved for general addressing on enable frames.
 		if(ID == 0x3F)
@@ -92,7 +97,7 @@ namespace talon
 				Listen to the motor_percent topic. Pass incoming messages to
 				TalonSRX::setPercentVal(const std_msgs::Int32 &f), located at TalonModes.cpp
 				*/
-				_TalonInput = _nh->subscribe("ros_talon/motor_percent", 10, &TalonSRX::setPercentVal, this);
+				_TalonInput = _nh->subscribe(topic + "/motor_percent", 10, &TalonSRX::setPercentVal, this);
 				break;
 
 			case modeServoPosition:
@@ -103,7 +108,7 @@ namespace talon
 				Listen to the motor_percent topic. Pass incoming messages to
 				TalonSRX::setPos(const std_msgs::Float32 &f), located at TalonModes.cpp
 				*/
-				_TalonInput = _nh->subscribe("ros_talon/steering_angle", 10, &TalonSRX::setPos, this);
+				_TalonInput = _nh->subscribe(topic + "/steering_angle", 10, &TalonSRX::setPos, this);
 
 				// Center the drive train.
 				TalonSRX::findCenter();

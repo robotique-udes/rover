@@ -1,15 +1,15 @@
 /*
-Node to control a TalonSRX device on position servo mode.
+Node to control a TalonSRX device on percent output mode.
 Internally, it subscribes to
 
 /received_messages
 /sent_messages
-/ros_talon/steering_angle
+/ros_talon/motor_percent
 
 The two first of type can_msgs::Frame from the socketcan_bridge
 package, to talk to the Talon through CAN protocol. The last one
-of type std_msgs::Float32 which corresponds to the actual position
-being fixed by the motor.
+of type std_msgs::Int32 which corresponds to the actual output
+Voltage in percentage at which the motor will be driven.
 
 This node also publishes the following topics:
 
@@ -43,12 +43,13 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 
 	std::string motor_nb_str;
-	motor_nb_str = n.getNamespace();
-	unsigned char motor_nb = motor_nb_str.back();
+	motor_nb_str = ros::this_node::getName();
 	char motor_nb_c = motor_nb_str.back();
 
 	talon::TalonSRX talon(&n, motor_nb_c);
-	talon.setup(motor_nb, modeServoPosition, motor_nb_c);
+	talon.setup(2, modePercentOutput, motor_nb_c);
+
+	ROS_WARN_STREAM("Motor ID 2 : " << motor_nb_c);
 	ros::spin();
 	return 0;
 }

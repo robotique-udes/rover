@@ -43,11 +43,13 @@ int main(int argc, char **argv)
 	ros::NodeHandle n;
 
 	std::string motor_nb_str;
-	motor_nb_str = n.getNamespace();
-	unsigned char motor_nb = motor_nb_str.back();
+	motor_nb_str = ros::this_node::getName();
+	char motor_nb_c = motor_nb_str.back();
 
-	talon::TalonSRX talon(&n, motor_nb_str);
-	talon.setup(motor_nb, modePercentOutput);
+	talon::TalonSRX talon(&n, motor_nb_c);
+	talon.setup(5, modePercentOutput, motor_nb_c);
+
+	ROS_WARN_STREAM("Motor ID 5 : " << motor_nb_c);
 	ros::spin();
 	return 0;
 }
