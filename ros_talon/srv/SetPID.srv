@@ -1,0 +1,6 @@
+float32 kp
+float32 ki
+float32 kd
+---
+#For the moment the response is empty. In the future it might be nice to add a success Bool or similar.
+#I'm not adding it now because I haven't implemented any interface to check if the operation was successfull.
