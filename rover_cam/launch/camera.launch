@@ -23,13 +23,18 @@
         <arg name="flip_vertical" value="false" />
         <!-- visualize on an image_view window the stream generated -->
         <arg name="visualize" value="false" />
+        <!-- <arg name="width" default="1080"/>
+        <arg name="height" default="720"/> -->
    </include>
 
-   <!-- Resize video size -->
-   <node pkg="nodelet" type="nodelet" args="standalone image_proc/resize" name="camera1_resize">
-        <remap from="image" to="camera1/image_raw" />
-        <remap from="camera_info" to="camera1/camera_info" />
-        <param name="scale_height" value="0.25" />
-        <param name="scale_width" value="0.25" />
+   <!-- Camera image filter -->
+   <node pkg="rover_cam" type="camera_filter.py" name="camera1_filter" output="screen">
+      <remap from="/image" to="/camera1/image_raw"/>
+      <remap from="/image_filtered" to="image_filter/image"/>
+      <param name="size_sampling_ratio" type="double" value="0.25"/>
+      <param name="fps" type="int" value="5"/>
+      <param name="gray_filter_activated" type="bool" value="true"/>
+      <param name="size_filter_activated" type="bool" value="true"/>
+      <param name="fps_filter_activated" type="bool" value="true"/>
    </node>
 </launch>
