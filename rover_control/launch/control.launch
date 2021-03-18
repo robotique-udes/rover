@@ -1,20 +1,38 @@
 <?xml version='1.0'?>
 <launch>
 
+  <arg name="mini" default="true"/>
   <arg name="simulation" default="false"/>
 
+  <group if="$(arg mini)">
+    <!-- Load robot description -->
+    <include file="$(find rover_mini_description)/launch/description.launch" />
+
+    <group unless="$(arg simulation)">
+      <!-- Launch rover base controller-->
+      <include file="$(find rover_mini_control)/launch/base_controller.launch" />
+    </group>
+  </group>
+
+  <group unless="$(arg mini)">
+    <!-- Load robot description -->
+    <include file="$(find rover_description)/launch/description.launch" />
+
+    <group unless="$(arg simulation)">
+      <!-- Launch rover base controller-->
+      <!-- <include file="$(find rover_control)/launch/base_controller.launch" /> -->
+    </group>
+  </group>
   <!-- Load robot description -->
   <include file="$(find rover_description)/launch/description.launch" />
 
   <!-- Only launch the following if not in simulation -->
   <group unless="$(arg simulation)">
-    <!-- Launch rover base controller-->
-    <include file="$(find rover_mini_control)/launch/base_controller.launch" />
-
     <!-- Launch sensors on real rover-->
     <include file="$(find rover_control)/launch/nmea_serial_driver.launch" />
     <include file="$(find imu_bno055)/launch/imu.launch" />
     <include file="$(find rover_cam)/launch/camera.launch" />
+    <include file="$(find rover_cam)/launch/realsense.launch" />
 
     <!-- Launch differential drive -->
     <node name="diff_drive" pkg="differential_drive" type="diff_drive.py" output="screen">
