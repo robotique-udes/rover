@@ -12,6 +12,7 @@
     <!-- Note that rover_simulation/description.launch is already included in rover_control/control.launch. -->
     <include file="$(find rover_control)/launch/control.launch" >
       <arg name="simulation" value="true" />
+      <arg name="mini" value="false" />
     </include>
 
     <!-- Spawn robot in gazebo -->
