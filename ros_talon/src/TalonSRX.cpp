@@ -4,8 +4,9 @@ namespace talon
 {
 
 
-	TalonSRX::TalonSRX(ros::NodeHandle* nh, char motor_nb)
+	TalonSRX::TalonSRX(ros::NodeHandle* nh, unsigned char motor_nb)
     {
+    	_motor_nb = motor_nb;
     	/*
     	Publish to the /sent_messages topic.
     	socketcan_bridge will take care of sending the can_msgs/Frame message through CAN.
@@ -303,7 +304,8 @@ namespace talon
 
 		uint32_t command_id = (_data32&0x0007FFC0);
 
-		if((int) device_id == 2){
+
+		if((int) device_id == 2 && ((int)device_number == (int)_motor_nb -48) ){
 			switch(command_id){
 				case STATUS_01:
 					unpackStatus1(f);

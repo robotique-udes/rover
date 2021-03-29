@@ -40,7 +40,7 @@ namespace talon
 class TalonSRX
 {
 	public:
-		TalonSRX(ros::NodeHandle* nh, char motor_nb);
+		TalonSRX(ros::NodeHandle* nh, unsigned char motor_nb);
 		void setup(unsigned char ID, unsigned char mode, char motor_nb);
 
 	private:
@@ -54,6 +54,7 @@ class TalonSRX
 		unsigned char _ignoreTopics;
 		unsigned char _pauseFunction;
 		int32_t _currentPos;
+		unsigned char _motor_nb;
 
 		float _statusTemp;
 		float _statusOutputCurrent;
