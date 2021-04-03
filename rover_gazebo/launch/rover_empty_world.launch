@@ -10,6 +10,8 @@
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
     <arg name="verbose" value="true"/>
+    <arg name="use_clock_frequency" value="true"/>
+    <arg name="pub_clock_frequency" value="1000"/>
   </include>
 
   <include file="$(find rover_gazebo)/launch/spawn_rover.launch" />

@@ -32,6 +32,8 @@ ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE POSSI
     <arg name="gui" value="true"/>
     <arg name="headless" value="false"/>
     <arg name="debug" value="false"/>
+    <arg name="use_clock_frequency" value="true" />
+    <arg name="pub_clock_frequency" value="1000" />
   </include>
 
   <include file="$(find rover_gazebo)/launch/spawn_rover.launch" >

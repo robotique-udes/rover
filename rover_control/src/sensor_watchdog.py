@@ -1,5 +1,4 @@
 #!/usr/bin/env python
-import roslib
 import rospy
 import rostopic
 from rostopic import ROSTopicHz
@@ -81,6 +80,12 @@ class FrequencyStatus(DiagnosticTask):
 
 if __name__ == '__main__':
     rospy.init_node("sensor_check")
+    # Wait for the ROS clock to be initialized
+
+    r = rospy.Rate(100)
+    while not rospy.Time.now().to_sec() > 0:
+        r.sleep
+        
     nb_sensors = int(rospy.get_param("~nb_sensors", 0))
     updaters = []
     pkg_name = rospy.get_name()
