@@ -87,6 +87,10 @@ class DifferentialDrive():
             self.updateOdometry(elapsed_time)
         self.prev_time = current_time
 
+	self.pub_odom.publish(self.odometry)
+	if(self.publish_tf):
+	    self.publishTf()
+
     def updateOdometry(self, elapsed_time):
         if self.prev_wheel_enc.left_encoder == None or self.prev_wheel_enc.right_encoder == None:
             d_left = 0
@@ -150,10 +154,7 @@ class DifferentialDrive():
                 self.vel_target.left_wheel_vel_target = 0
                 self.vel_target.right_wheel_vel_target = 0
             self.odometry.header.stamp = rospy.Time.now()
-            self.pub_odom.publish(self.odometry)
             self.pub_vel_target.publish(self.vel_target)
-            if(self.publish_tf):
-                self.publishTf()
             self.ticks_since_target += 1
             r.sleep()
             

@@ -34,9 +34,9 @@
             <cameraName>${name}</cameraName>
             <imageTopicName>/${name}/color/image_raw</imageTopicName>
             <cameraInfoTopicName>/${name}/color/camera_info</cameraInfoTopicName>
-            <depthImageTopicName>/${name}/depth/image_raw</depthImageTopicName>
+            <depthImageTopicName>/${name}/depth/image_rect_raw</depthImageTopicName>
             <depthImageCameraInfoTopicName>/${name}/depth/camera_info</depthImageCameraInfoTopicName>
-            <pointCloudTopicName>/${name}/depth/points</pointCloudTopicName>
+            <pointCloudTopicName>/${name}/depth/color/points</pointCloudTopicName>
             <frameName>${name}_depth_optical_frame</frameName>
             <pointCloudCutoff>0.4</pointCloudCutoff>
             <pointCloudCutoffMax>20.0</pointCloudCutoffMax>
