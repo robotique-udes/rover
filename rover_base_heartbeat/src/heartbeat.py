@@ -26,7 +26,7 @@ class HeartBeat:
         
     def heartbeatCB(self):
         #Frequence du heartbeat
-        freq = rospy.Rate(2)
+        freq = rospy.Rate(20)
 
         #Etat du message
         self.state = 0
