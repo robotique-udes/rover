@@ -8,9 +8,6 @@ from rover_udes.msg import CamCommand
 class TeleopJoystick():
     def __init__(self):
         rospy.init_node("teleop_joystick", anonymous = True)
-        self.joy_sub = rospy.Subscriber('/joy', Joy, self.joyCB)
-        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=2)
-        self.cmd_ptu_pub = rospy.Publisher('/cmd_ptu', CamCommand, queue_size=2)
 
         #Getting parameters initialized at the launch file
         self.enable_button = rospy.get_param("~enable_button", 4)
@@ -24,6 +21,10 @@ class TeleopJoystick():
         self.ptu_horizontal_axis = rospy.get_param("~ptu_horizontal_axis", 3)
         self.ptu_horizontal_scaling = rospy.get_param("~ptu_horizontal_scaling", 1)
         self.ptu_vertical_scaling = rospy.get_param("~ptu_vertical_scaling", 1)
+
+        self.joy_sub = rospy.Subscriber('/joy', Joy, self.joyCB)
+        self.cmd_pub = rospy.Publisher('/cmd_vel', Twist, queue_size=2)
+        self.cmd_ptu_pub = rospy.Publisher('/cmd_ptu', CamCommand, queue_size=2)
 
     def joyCB(self, data): #calls both commands functions (for PTU and vehicle movements)
         self.vehicleCMD(data)

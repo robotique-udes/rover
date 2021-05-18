@@ -153,7 +153,7 @@
   <!-- gazebo plugins -->
   <gazebo>
     <plugin name="skid_steer_drive_controller" filename="libgazebo_ros_skid_steer_drive.so">
-      <updateRate>100.0</updateRate>
+      <updateRate>50.0</updateRate>
       <robotNamespace></robotNamespace>
       <leftFrontJoint>front_left_wheel</leftFrontJoint>
       <rightFrontJoint>front_right_wheel</rightFrontJoint>
@@ -163,7 +163,7 @@
       <wheelDiameter>${wheel_radius*2}</wheelDiameter>
       <robotBaseFrame>base_link</robotBaseFrame>
       <torque>20</torque>
-      <commandTopic>mux_cmd_vel</commandTopic>
+      <commandTopic>watchdog/cmd_vel</commandTopic>
       <odometryTopic>odom</odometryTopic>
       <odometryFrame>odom</odometryFrame>
       <covariance_x>0.0001</covariance_x>
@@ -176,7 +176,7 @@
   <gazebo>
     <plugin name="imu_controller" filename="libhector_gazebo_ros_imu.so">
       <robotNamespace>$(arg robot_namespace)</robotNamespace>
-      <updateRate>50.0</updateRate>
+      <updateRate>100.0</updateRate>
       <bodyName>base_link</bodyName>
       <topicName>imu/data</topicName>
       <accelDrift>0.005 0.005 0.005</accelDrift>

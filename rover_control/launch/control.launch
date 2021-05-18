@@ -5,6 +5,8 @@
   <arg name="simulation" default="false"/>
   <arg name="gps_enabled" default="false" />
 
+  
+
   <group if="$(arg mini)">
     <!-- Load robot description -->
     <include file="$(find rover_mini_description)/launch/description.launch" />
@@ -35,6 +37,8 @@
     <!--<include file="$(find rover_cam)/launch/camera.launch" />-->
     <include file="$(find rover_cam)/launch/realsense.launch" />
   </group>
+
+  <include file="$(find rover_control)/launch/watchdog.launch" />
 
   <node name="cmd_mux" pkg="rover_control" type="cmd_mux.py" output="screen" >
     <param name="timeout" type="double" value="1" />

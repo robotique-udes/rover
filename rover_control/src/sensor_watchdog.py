@@ -4,7 +4,8 @@ import rostopic
 from rostopic import ROSTopicHz
 from diagnostic_updater import *
 import diagnostic_msgs
-from std_msgs.msg import Float32, Int32
+from std_msgs.msg import Float32, Int32, Int16 
+from geometry_msgs.msg import Twist
 
 
 class FrequencyStatus(DiagnosticTask):
@@ -45,7 +46,7 @@ class FrequencyStatus(DiagnosticTask):
             curtime = rospy.Time.now()
             curseq = self.count
             events = curseq - self.seq_nums[self.hist_indx]
-            window = (curtime - self.times[self.hist_indx]).to_sec()
+            window = (curtime - self.times[self.hist_indx]).to_sec() + 0.0001
             freq = events / window
             self.seq_nums[self.hist_indx] = curseq
             self.times[self.hist_indx] = curtime
@@ -77,6 +78,28 @@ class FrequencyStatus(DiagnosticTask):
 
         return stat
 
+class Emergency_stop:
+
+    def __init__(self, freq_check_list):
+        self.freq_check = freq_check_list
+
+        #Subscribed to move command topic
+        self.Move_sub = rospy.Subscriber('/mux_cmd_vel', Twist, self.E_STOP_CB, queue_size=1 )
+        self.Move_pub = rospy.Publisher('/watchdog/cmd_vel', Twist, queue_size=1)
+
+    def E_STOP_CB(self, data):
+        self.stop = 0
+        
+        for i in self.freq_check:
+            if i.state != 0:
+                self.stop = 1
+
+        if self.stop == 0:
+            self.Move_pub.publish(data)
+        else :
+            # Publish a 0 velocity message for safety
+            self.Move_pub.publish(Twist())
+        
 
 if __name__ == '__main__':
     rospy.init_node("sensor_check")
@@ -89,10 +112,11 @@ if __name__ == '__main__':
     nb_sensors = int(rospy.get_param("~nb_sensors", 0))
     updaters = []
     pkg_name = rospy.get_name()
+    freq_check_list = []
 
     for i in range(1, nb_sensors + 1):
         name = ('~' + pkg_name + '/sensor_' + str(i))
-        
+
         # sensor parameters
         path = str(rospy.get_param((name + '/name'), ''))
         sensor_id = str(rospy.get_param((name + '/sensor_id'), ''))
@@ -105,20 +129,23 @@ if __name__ == '__main__':
 
         # Diagnostic tasks are added to the Updater. They will later be run when
         # the updater decides to update.
-        param = FrequencyStatusParam({'min': min_freq, 'max': max_freq})
+        param = FrequencyStatusParam({'min': min_freq, 'max': max_freq}, tolerance=0, window_size=20)
         freq_check = FrequencyStatus(path, param, topic, sensor_id)
         updater.add(freq_check)
-
+        freq_check_list.append(freq_check)
         # If we know that the state of the node just changed, we can force an
         # immediate update.
         updater.force_update()
         updaters.append(updater)
 
+    E_stop = Emergency_stop(freq_check_list)
+    
     while not rospy.is_shutdown():
         rospy.sleep(0.1)
         # We can call updater.update whenever is convenient. It will take care
         # of rate-limiting the updates.
         for u in updaters:
+             
             u.force_update()
 
 

@@ -19,7 +19,7 @@ Contains Services :
 		bool result	#True : filter active / False : filter inactive
 
 	/camera_filter/size_filter :
-		float32 size	#resolution reduction wanted (1.0 : no reduction / 0.5 : 50% reduction)
+		float32 size	#resolution reduction wanted (1.0 : no reduction ; 0.5 : 50% reduction ; etc)
 		bool active	#True : enable filter / False : disable filter
 		---
 		bool result	#True : filter active / False : filter inactive

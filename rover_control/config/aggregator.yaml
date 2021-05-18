@@ -5,5 +5,5 @@ analyzers:
     path: sensors
     timeout: 5.0
     find_and_remove_prefix: 'sensor_watchdog: '
-    num_items: 3
+    num_items: 5
 
