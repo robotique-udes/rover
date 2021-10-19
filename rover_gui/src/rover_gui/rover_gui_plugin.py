@@ -1,3 +1,4 @@
+from __future__ import (print_function, absolute_import, division, unicode_literals)
 
 import os
 import rospkg
@@ -6,7 +7,7 @@ import rosnode
 from rospkg import RosPack
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
-from rover_gui_widget import RoverGuiWidget
+from .rover_gui_widget import RoverGuiWidget
 from qt_gui.plugin import Plugin
 import subprocess
 
@@ -25,8 +26,8 @@ class RoverGuiPlugin(Plugin):
         parser.add_argument("-q", "--quiet", action="store_true", dest="quiet", help="Put plugin in silent mode")
         args, unknowns = parser.parse_known_args(context.argv())
         if not args.quiet:
-            print 'arguments: ', args
-            print 'unknowns: ', unknowns
+            print('arguments: ', args)
+            print('unknowns: ', unknowns)
 
         # Create QWidget
         self._widget = RoverGuiWidget()

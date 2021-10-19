@@ -1,3 +1,4 @@
+from __future__ import (print_function, absolute_import, division, unicode_literals)
 
 import os
 import rospkg
@@ -128,6 +129,3 @@ class RoverGuiWidget(QtWidgets.QWidget):
     def gps_pos_callback(self, data):
         self.latDisp.display(data.latitude)
         self.longDisp.display(data.longitude)
-
-
-

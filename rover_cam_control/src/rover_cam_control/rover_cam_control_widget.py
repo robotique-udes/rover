@@ -1,3 +1,4 @@
+from __future__ import (print_function, absolute_import, division, unicode_literals)
 
 import os
 import rospkg
@@ -177,8 +178,3 @@ class RoverCamControlWidget(QtWidgets.QWidget):
                 self.pano_btn.setText('Panorama ON')
         except:
             print("Service call failed")
-
-
-
-
-
