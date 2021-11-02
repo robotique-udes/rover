@@ -1,0 +1,25 @@
+<?xml version="1.0"?>
+
+<launch>
+
+    <!-- Launch socketcan bridge node -->
+    <node pkg="socketcan_bridge" name="socketcan_bridge_node" type="socketcan_bridge_node"></node>
+
+    <!-- Launch driver for each motor -->
+    <node pkg="ros_talon" type="direct_drive1" name="motor1" output="screen">
+        <param name="motor_nb" value="1" />
+    </node>
+
+    <node pkg="ros_talon" type="direct_drive2" name="motor2" output="screen">
+        <param name="motor_nb" value="2" />
+    </node>
+
+    <node pkg="ros_talon" type="direct_drive3" name="motor3" output="screen">
+        <param name="motor_nb" value="3" />
+    </node>
+
+    <node pkg="ros_talon" type="direct_drive4" name="motor4" output="screen">
+        <param name="motor_nb" value="4" />
+    </node>
+
+</launch>
