@@ -1,5 +1,12 @@
 sudo modprobe peak_usb
+<<<<<<< HEAD
 sudo modprobe peak_pci
+=======
+if [ $(hostname) != "rover" ]
+then
+    sudo modprobe peak_pci
+fi
+>>>>>>> canbus_local
 # sudo modprobe pcan
 sudo modprobe esd_usb2
 

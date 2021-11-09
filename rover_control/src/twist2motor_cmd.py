@@ -36,11 +36,12 @@ class LowLevelControlNode(object):
         # Init publishers
         self.m1_pub = rospy.Publisher(
             '/ros_talon1/motor_percent', Int32, queue_size=10)  # Front left
-        ############# EDITER ICI ###################
-        self.m2_pub = ()  # Front right
-        self.m3_pub = ()  # Rear left
-        self.m4_pub = ()  # Rear right
-        ############################################
+        self.m2_pub = rospy.Publisher(
+            '/ros_talon2/motor_percent', Int32, queue_size=10)  # Front right
+        self.m3_pub = rospy.Publisher(
+            '/ros_talon3/motor_percent', Int32, queue_size=10)  # Rear left
+        self.m4_pub = rospy.Publisher(
+            '/ros_talon4/motor_percent', Int32, queue_size=10)  # Rear right
 
         self.linear_factor_percentage = 100
         self.angular_factor_percentage = 30
@@ -84,30 +85,31 @@ class LowLevelControlNode(object):
         msg: Twist
             Twist message
         """
-        ############# EDITER ICI ###################
-        pass
-        ############################################
+        linear_part = msg.linear.x * self.linear_factor_percentage
+        angular_part = msg.angular.z * self.angular_factor_percentage * self.angular_gain
 
+        self.l_cmd = 0.1 * (- linear_part - angular_part)
+        self.r_cmd = 0.1 * (linear_part - angular_part)
 
     def send_cmd(self):
         """
         Publishes commands
         """
-        ############# EDITER ICI ###################
         # Left wheels
+        self.m1_pub.publish(int(self.l_cmd))
+        self.m3_pub.publish(int(self.l_cmd))
 
         # Right wheels
-
-        pass
-        ############################################
+        self.m2_pub.publish(int(self.r_cmd))
+        self.m4_pub.publish(int(self.r_cmd))
 
     def on_shutdown(self):
         """
         Set commands to 0 at shutdown
         """
-        ############# EDITER ICI ###################
-        pass
-        ############################################
+        self.l_cmd = 0
+        self.r_cmd = 0
+        self.send_cmd()
 
 
 if __name__ == '__main__':
