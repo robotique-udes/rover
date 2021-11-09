@@ -88,8 +88,8 @@ class LowLevelControlNode(object):
         linear_part = msg.linear.x * self.linear_factor_percentage
         angular_part = msg.angular.z * self.angular_factor_percentage * self.angular_gain
 
-        self.l_cmd = - linear_part - angular_part
-        self.r_cmd = linear_part - angular_part
+        self.l_cmd = 0.1 * (- linear_part - angular_part)
+        self.r_cmd = 0.1 * (linear_part - angular_part)
 
     def send_cmd(self):
         """
