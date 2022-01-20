@@ -18,6 +18,7 @@
   <depend>roscpp</depend>
   <depend>can_msgs</depend>
   <depend>std_msgs</depend>
+  <depend>ros_canopen</depend>
 
   <export>
   </export>
