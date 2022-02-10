@@ -39,35 +39,18 @@ center of the drive train when called.
 
 int main(int argc, char **argv)
 {
-    ros::init(argc, argv, "ros_talon");
-    ros::NodeHandle n;
-    ros::NodeHandle private_nh("~");
+	ros::init(argc, argv, "ros_talon");
+	ros::NodeHandle n;
+	ros::NodeHandle private_nh("~");
 
-    std::string motor_nb_str;
+	std::string motor_nb_str;
+	motor_nb_str = ros::this_node::getName();
+	unsigned char motor_nb_c = motor_nb_str.back();
 
-    if (private_nh.getParam("motor_nb", motor_nb_str))
-    {
-        unsigned char motor_nb_c = motor_nb_str.back();
+	talon::TalonSRX talon(&n, private_nh, motor_nb_c);
+	talon.setup(4);
 
-        if (stoi(motor_nb_str) > 6 || stoi(motor_nb_str) < 1)
-        {
-            ROS_WARN_STREAM("Motor ID " + motor_nb_str + 
-                " - Status: STOPPED [Motor ID is not in the correct range]");
-            return 0;
-        }
-
-        talon::TalonSRX talon(&n, motor_nb_c);
-        talon.setup(1, modePercentOutput, motor_nb_c);
-
-        ROS_INFO_STREAM("Motor ID " + motor_nb_str + " - Status: STARTED");
-
-        ros::spin();
-    }
-    else 
-    {
-        ROS_WARN_STREAM("Motor ID " + ros::this_node::getName() + 
-            " - Status: STOPPPED [Could not find parameter (motor_nb)]");
-    }
-
-    return 0;
+	ROS_WARN_STREAM("Motor ID 4 : " << motor_nb_c);
+	ros::spin();
+	return 0;
 }

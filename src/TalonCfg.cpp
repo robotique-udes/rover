@@ -7,7 +7,7 @@ namespace talon
 		TalonSRX::setKP(req.kp);
 		TalonSRX::setKI(req.ki);
 		TalonSRX::setKD(req.kd);
-		TalonSRX::setKF(0.0);
+		TalonSRX::setKF(req.kf);
 		return true;
 	}
 

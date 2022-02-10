@@ -6,6 +6,7 @@
 #include "std_msgs/Int32.h"
 #include "std_msgs/Float32.h"
 #include "ros_talon/Status.h"
+#include "ros_talon/cmd.h"
 #include "ros_talon/SetPID.h"
 #include "ros_talon/FindCenter.h"
 
@@ -33,21 +34,34 @@
 #define modeNoAction		0x00
 #define modePercentOutput	0x01
 #define modeServoPosition	0x02
-#define modeMotionProfile	0x03
+#define modeSpeedPID		0x03
+#define modeMotionProfile	0x04
+
+# define PI 3.14159265358979323846  /* pi */
 
 namespace talon
 {
+
+
+
 class TalonSRX
 {
 	public:
-		TalonSRX(ros::NodeHandle* nh, unsigned char motor_nb);
-		void setup(unsigned char ID, unsigned char mode, char motor_nb);
+		TalonSRX(ros::NodeHandle* nh, ros::NodeHandle private_nh, unsigned char motor_nb);
+		void setup(unsigned char ID);
 
 	private:
+		std::map<std::string, float> _gains = {{"kp",0.0}, {"ki",0.0}, {"kd",0.0}, {"kf", 0.0}};
+
 		uint32_t _data32;
 		uint _baseArbID;
+		uint _mode;
 		int32_t _percent;
-		float _pos;
+		//float _pos;
+		//float _speed; // in ticks per 100ms
+		float _cmd;
+
+		std::string _topic;
 		unsigned char _center;
 		unsigned char _cwLimit;
 		unsigned char _ccwLimit;
@@ -68,12 +82,14 @@ class TalonSRX
 		void (TalonSRX::*_recoverFunc)() = NULL;
 
 		ros::NodeHandle* _nh;
+		ros::NodeHandle _private_nh;
 
 		ros::Publisher _CANSender;
 		ros::Publisher _posPub;
 		ros::Publisher _statusPub;
 
 		ros::Subscriber _TalonInput;
+		ros::Subscriber _TalonInput_all;
 		ros::Subscriber _CANReceiver;
 
 		ros::Timer _talon_timer;
@@ -81,17 +97,23 @@ class TalonSRX
 		ros::ServiceServer _fcenter;
 		ros::ServiceServer _spid;
 
-		
+		// Control frames functions
 		void TalonLoop(const ros::TimerEvent& event);
 		void enableFrame();
 
+		void setCmdVal(const ros_talon::cmd &c);
+
 		void percentOutput();
-		void setPercentVal(const std_msgs::Int32 &f);
+		//void setPercentVal(const std_msgs::Int32 &f);
 		
-		void ServoPos();
-		void setPos(const std_msgs::Float32 &f);
+		//void ServoPos();
+		//void setPos(const std_msgs::Float32 &f);
 		void setFeedback2QuadEncoder(); //Actually, this function is not necessary as the Talon defaults to QuadEncoder.
 
+		void speedPID();
+		//void setSpeed(const std_msgs::Float32 &f);
+
+		// Feedback frames processing
 		void processCanFrame(const can_msgs::Frame &f);
 		void unpackStatus1(const can_msgs::Frame &f);
 		void unpackStatus2(const can_msgs::Frame &f);
