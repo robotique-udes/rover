@@ -81,7 +81,7 @@ namespace talon
 		f.data[5] = (unsigned char) (2);
 		_CANSender.publish(f);
 	}
-	*/
+
 
 
 }; // namespace talon_interface
