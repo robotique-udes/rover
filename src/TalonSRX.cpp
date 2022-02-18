@@ -21,13 +21,15 @@ namespace talon
         Publish to the ros_talon/current_position topic.
         This is taken care of by TalonSRX::unpackStatus3(const can_msgs::Frame &f).
         */
-        _posPub = nh->advertise<std_msgs::Float32>(_topic + "/out/current_position", 10);
+
+        _posPub = nh->advertise<std_msgs::Float32>(_topic + "/current_position", 10);
 
         /*
         Publish to the ros_talon/status topic.
         This is taken care of by TalonSRX::publishStatus(), and gets called every loop.
         */
-        _statusPub = nh->advertise<ros_talon::Status>(_topic + "/out/status",10);
+          
+        _statusPub = nh->advertise<ros_talon::Status>(_topic + "/status",10);
 
         /*
         Every CAN Frame received by the socket_can bridge gets published to the /recieved_messages
@@ -89,8 +91,9 @@ namespace talon
         TalonSRX::ClearStickyFaults();
 
         //Add subscriber
-        _TalonInput = _nh->subscribe(_topic + "/in/cmd", 10, &TalonSRX::setCmdVal, this);
-        _TalonInput_all = _nh->subscribe("cmd_all_motors", 10, &TalonSRX::setCmdVal, this);
+
+        _TalonInput = _nh->subscribe(_topic + "/cmd", 10, &TalonSRX::setCmdVal, this);
+        _TalonInput_all = _nh->subscribe("cmd_percent_motors", 10, &TalonSRX::setCmdPercent, this);
 
         //set default mode to be percent output
         _cmd = 0.0;
@@ -101,10 +104,10 @@ namespace talon
         bool gains_exists = _private_nh.getParam("gains", _gains);
 
         if(!gains_exists)
-            ROS_INFO_STREAM("\t*No gains set; grabbing default values");
+            ROS_INFO_STREAM("MOTOR " << (int)ID << ": No gains set; grabbing default values");
         else
         {
-            ROS_INFO_STREAM("\t*Setting up the gains -> {kp, ki, kd, kf}: {" + 
+            ROS_INFO_STREAM("MOTOR " << (int)ID << ": Setting up the gains -> {kp, ki, kd, kf}: {" + 
                 std::to_string(_gains["kp"]) + ", " +
                 std::to_string(_gains["ki"]) + ", " +
                 std::to_string(_gains["kd"]) + ", " +
@@ -113,56 +116,12 @@ namespace talon
 
         setKP(_gains["kp"]); setKI(_gains["ki"]); setKD(_gains["kd"]); setKF(_gains["kf"]);
 
-        /*
-        switch(mode){
-            case modePercentOutput:
-                _percent = 0; // Make sure to not drive the motor with a previously stored value.
-                _modeFunc = &TalonSRX::percentOutput; // Set the main function to percentOutput.
 
-                //Listen to the motor_percent topic. Pass incoming messages to
-                //TalonSRX::setPercentVal(const std_msgs::Int32 &f), located at TalonModes.cpp
-                
-                _TalonInput = _nh->subscribe(_topic + "/in/motor_percent", 10, &TalonSRX::setPercentVal, this);
-                break;
+        if (!_private_nh.getParam("verbose", _verbose))
+            _verbose = false;
 
-            case modeServoPosition:
-                _pos = 0.0; // Make sure to not drive the motor with a previously stored value.
-                _modeFunc = &TalonSRX::ServoPos; // Set the main function to position servo.
+        ROS_INFO_STREAM("MOTOR " << (int)ID << ": mode verbose : " << _verbose);
 
-                
-                //Listen to the motor_percent topic. Pass incoming messages to
-                //TalonSRX::setPos(const std_msgs::Float32 &f), located at TalonModes.cpp
-                
-                _TalonInput = _nh->subscribe(_topic + "/in/steering_angle", 10, &TalonSRX::setPos, this);
-
-
-                //setFeedback2QuadEncoder();
-
-                // Center the drive train.
-                TalonSRX::findCenter();
-                break;
-
-            case modeSpeedPID:
-                _speed = 0;
-                _modeFunc = &TalonSRX::speedPID; //Set the main function to PID speed
-
-                //Listen to the speed_cmd topic. Pass incoming messages to
-                //TalonSRX::setSpeed(const std_msgs::Float32 &f), located at TalonModes.cpp
-                
-                _TalonInput = _nh->subscribe(_topic + "/in/speed_cmd", 10, &TalonSRX::setSpeed, this);
-                
-                break;
-
-            //Not implemented yet
-            case modeMotionProfile:
-                _modeFunc = NULL;
-                break;
-
-
-            default:
-                _modeFunc = NULL;
-                break;
-        } */
     }
 
     /*

@@ -9,6 +9,7 @@
 #include "ros_talon/cmd.h"
 #include "ros_talon/SetPID.h"
 #include "ros_talon/FindCenter.h"
+#include "differential_drive/VelocityTargets.h"
 
 #define MIN_SPEED	60 // Speed at which the motors will be driven during recovery routines.
 
@@ -53,27 +54,28 @@ class TalonSRX
 	private:
 		std::map<std::string, float> _gains = {{"kp",0.0}, {"ki",0.0}, {"kd",0.0}, {"kf", 0.0}};
 
-		uint32_t _data32;
-		uint _baseArbID;
-		uint _mode;
-		int32_t _percent;
-		//float _pos;
-		//float _speed; // in ticks per 100ms
-		float _cmd;
 
-		std::string _topic;
-		unsigned char _center;
-		unsigned char _cwLimit;
-		unsigned char _ccwLimit;
-		unsigned char _ignoreTopics;
-		unsigned char _pauseFunction;
-		int32_t _currentPos;
-		unsigned char _motor_nb;
+		uint32_t 		_data32;
+		uint 			_baseArbID;
+		uint 			_mode;
+		int32_t 		_percent;
 
-		float _statusTemp;
-		float _statusOutputCurrent;
-		float _statusBusVoltage;
-		float _statusClosedLoopError;
+		bool 			_verbose;
+		float 			_cmd;
+
+		std::string 	_topic;
+		unsigned char 	_center;
+		unsigned char 	_cwLimit;
+		unsigned char 	_ccwLimit;
+		unsigned char 	_ignoreTopics;
+		unsigned char 	_pauseFunction;
+		int32_t 		_currentPos;
+		unsigned char 	_motor_nb;
+
+		float 			_statusTemp;
+		float 			_statusOutputCurrent;
+		float 			_statusBusVoltage;
+		float 			_statusClosedLoopError;
 
 		// Main function pointer.
 		void (TalonSRX::*_modeFunc)() = NULL;
@@ -102,16 +104,14 @@ class TalonSRX
 		void enableFrame();
 
 		void setCmdVal(const ros_talon::cmd &c);
+		void setCmdPercent(const std_msgs::Int32 &percent);
 
 		void percentOutput();
-		//void setPercentVal(const std_msgs::Int32 &f);
-		
+		void speedPID();
+
 		//void ServoPos();
 		//void setPos(const std_msgs::Float32 &f);
 		void setFeedback2QuadEncoder(); //Actually, this function is not necessary as the Talon defaults to QuadEncoder.
-
-		void speedPID();
-		//void setSpeed(const std_msgs::Float32 &f);
 
 		// Feedback frames processing
 		void processCanFrame(const can_msgs::Frame &f);
@@ -140,6 +140,7 @@ class TalonSRX
 		void setKI(float value);
 		void setKD(float value);
 		void setKF(float value);
+
 };// class TalonSRX
 };// namespace talon_interface
 

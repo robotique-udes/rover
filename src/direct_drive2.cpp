@@ -48,9 +48,9 @@ int main(int argc, char **argv)
 	unsigned char motor_nb_c = motor_nb_str.back();
 
 	talon::TalonSRX talon(&n, private_nh, motor_nb_c);
-	talon.setup(2);
+  talon.setup(2);
 
-	ROS_WARN_STREAM("Motor ID 2 : " << motor_nb_c);
+	ROS_INFO_STREAM("Motor ID 2 : " << motor_nb_c);
 	ros::spin();
 	return 0;
 }
