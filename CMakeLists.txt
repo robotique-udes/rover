@@ -30,15 +30,15 @@ generate_messages(
 )
 
 catkin_package(
-  INCLUDE_DIRS
-    include
-  LIBRARIES
-    talon_lib
-  DEPENDS
-    can_msgs
-    std_msgs
-    roscpp
-    message_runtime
+  # INCLUDE_DIRS
+  #   include
+  # LIBRARIES
+  #   talon_lib
+  # DEPENDS
+  #   can_msgs
+  #   std_msgs
+  #   roscpp
+  #   message_runtime
 )
 
 include_directories(
