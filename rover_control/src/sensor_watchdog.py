@@ -1,4 +1,7 @@
 #!/usr/bin/env python
+
+from __future__ import (print_function, absolute_import, division, unicode_literals)
+
 import rospy
 import rostopic
 from rostopic import ROSTopicHz
@@ -58,7 +61,7 @@ class FrequencyStatus(DiagnosticTask):
             elif freq < self.params.freq_bound['min'] * (1 - self.params.tolerance):
                 stat.summary(1, "Frequency too low.")
                 self.state = 1
-            elif self.params.freq_bound.has_key('max') and freq > self.params.freq_bound['max'] * (1 + self.params.tolerance):
+            elif 'max' in self.params.freq_bound and freq > self.params.freq_bound['max'] * (1 + self.params.tolerance):
                 stat.summary(1, "Frequency too high.")
                 self.state = 1
             else:
@@ -69,11 +72,11 @@ class FrequencyStatus(DiagnosticTask):
             stat.add("Events since startup", "%d" % self.count)
             stat.add("Duration of window (s)", "%f" % window)
             stat.add("Actual frequency (Hz)", "%f" % freq)
-            if self.params.freq_bound.has_key('max') and self.params.freq_bound['min'] == self.params.freq_bound['max']:
+            if 'max' in self.params.freq_bound and self.params.freq_bound['min'] == self.params.freq_bound['max']:
                 stat.add("Target frequency (Hz)", "%f" % self.params.freq_bound['min'])
             if self.params.freq_bound['min'] > 0:
                 stat.add("Minimum acceptable frequency (Hz)", "%f" % (self.params.freq_bound['min'] * (1 - self.params.tolerance)))
-            if self.params.freq_bound.has_key('max'):
+            if 'max' in self.params.freq_bound:
                 stat.add("Maximum acceptable frequency (Hz)", "%f" % (self.params.freq_bound['max'] * (1 + self.params.tolerance)))
 
         return stat
@@ -147,5 +150,3 @@ if __name__ == '__main__':
         for u in updaters:
              
             u.force_update()
-
-
