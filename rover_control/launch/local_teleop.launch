@@ -6,8 +6,12 @@
 
     <include file="$(find rover_control)/launch/simple_teleop.launch">
         <arg name="joy" value="$(arg joy)" />
+        <arg name="use_simple_watchdog" value="false" />
     </include>
 
-    <include file="$(find rover_control)/launch/motor_drivers.launch" />
+    <include file="$(find rover_control)/launch/motor_drivers.launch">
+        <arg name="use_simple_watchdog" value="false" />
+    </include>
+
 
 </launch>
