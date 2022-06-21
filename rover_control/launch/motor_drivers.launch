@@ -2,24 +2,27 @@
 
 <launch>
 
+    <arg name="use_simple_watchdog" default="true" />
+
+    <include if="$(arg use_simple_watchdog)" file="$(find rover_control)/launch/watchdog.launch">
+        <arg name="config_file_postfix" value="_simple" />
+    </include>
+
     <!-- Launch socketcan bridge node -->
     <node pkg="socketcan_bridge" name="socketcan_bridge_node" type="socketcan_bridge_node"></node>
 
     <!-- Launch driver for each motor -->
-    <node pkg="ros_talon" type="direct_drive1" name="motor1" output="screen">
-        <param name="motor_nb" value="1" />
+    <node pkg="ros_talon" name="motor1" type="direct_drive" output="screen">
+        <param name="motor_id" value="1" />
     </node>
-
-    <node pkg="ros_talon" type="direct_drive2" name="motor2" output="screen">
-        <param name="motor_nb" value="2" />
+    <node pkg="ros_talon" name="motor2" type="direct_drive" output="screen">
+        <param name="motor_id" value="2" />
     </node>
-
-    <node pkg="ros_talon" type="direct_drive3" name="motor3" output="screen">
-        <param name="motor_nb" value="3" />
+    <node pkg="ros_talon" name="motor3" type="direct_drive" output="screen">
+        <param name="motor_id" value="3" />
     </node>
-
-    <node pkg="ros_talon" type="direct_drive4" name="motor4" output="screen">
-        <param name="motor_nb" value="4" />
+    <node pkg="ros_talon" name="motor4" type="direct_drive" output="screen">
+        <param name="motor_id" value="4" />
     </node>
 
 </launch>

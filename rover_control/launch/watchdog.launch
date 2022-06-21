@@ -1,15 +1,15 @@
 <?xml version='1.0'?>
 <launch>
-  <node name="sensor_watchdog" pkg="rover_control" type="sensor_watchdog.py" output="screen" >
-    <rosparam command="load" 
-              file="$(find rover_control)/config/watchdog.yaml" />
-  </node>
+    <arg name="config_file_postfix" default="" />
 
-  <node 
-        pkg="diagnostic_aggregator" type="aggregator_node"
-        name="diag_agg" output="screen" >
-    <rosparam command="load" 
-              file="$(find rover_control)/config/aggregator.yaml" />
-  </node>
+    <node name="sensor_watchdog" pkg="rover_control" type="sensor_watchdog.py" output="screen">
+        <rosparam command="load" file="$(find rover_control)/config/watchdog$(arg config_file_postfix).yaml" />
+
+        <remap from="/mux_cmd_vel" to="/cmd_vel" />
+    </node>
+
+    <node pkg="diagnostic_aggregator" type="aggregator_node" name="diag_agg" output="screen">
+        <rosparam command="load" file="$(find rover_control)/config/aggregator$(arg config_file_postfix).yaml" />
+    </node>
 
 </launch>

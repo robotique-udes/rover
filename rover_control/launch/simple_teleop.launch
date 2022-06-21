@@ -2,10 +2,17 @@
 
 <launch>
 
-    <arg name="joy" default="true"></arg>
+    <arg name="joy" default="true" />
+    <arg name="use_simple_watchdog" default="true" />
 
     <!-- Launch twist to motor_cmd node -->
-    <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py"></node>
+    <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py">
+        <!-- If we use the watchdog, we remap the topic -->
+        <remap if="$(arg use_simple_watchdog)" from="cmd_vel" to="watchdog/cmd_vel" />
+    </node>
+
+    <!-- If we use the watchdog, we launch it here -->
+    <node if="$(arg use_simple_watchdog)" pkg="rover_base_heartbeat" type="heartbeat.py" name="heartbeat"></node>
 
     <!-- Launch teleop -->
     <!-- NEEDS TO BE LAST FOR THE KEYBOARD NODE WHICH IS INTERACTIVE -->
