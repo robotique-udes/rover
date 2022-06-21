@@ -1,3 +1,4 @@
+from __future__ import (print_function, absolute_import, division, unicode_literals)
 
 import os
 import rospkg
@@ -6,7 +7,7 @@ import rosnode
 from rospkg import RosPack
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
-from rover_cam_control_widget import RoverCamControlWidget
+from .rover_cam_control_widget import RoverCamControlWidget
 from qt_gui.plugin import Plugin
 import subprocess
 
