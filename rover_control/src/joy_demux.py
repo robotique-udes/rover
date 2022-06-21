@@ -35,7 +35,6 @@ class JoyDemuxNode:
                 and msg.buttons[self._toggle_arm_joy_btn] == 1
             ):
                 self._is_arm_joy = not self._is_arm_joy
-                rospy.logwarn(f"Toggling arm joy to {self._is_arm_joy}; last state is {self._last_arm_joy_btn_state}")
             self._last_arm_joy_btn_state = msg.buttons[self._toggle_arm_joy_btn]
             is_arm = self._is_arm_joy
 
