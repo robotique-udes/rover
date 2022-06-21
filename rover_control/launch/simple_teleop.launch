@@ -4,6 +4,7 @@
 
     <arg name="joy" default="true" />
     <arg name="use_simple_watchdog" default="true" />
+    <arg name="joy_topic_name" default="joy" />
 
     <!-- Launch twist to motor_cmd node -->
     <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py">
@@ -17,7 +18,9 @@
     <!-- Launch teleop -->
     <!-- NEEDS TO BE LAST FOR THE KEYBOARD NODE WHICH IS INTERACTIVE -->
     <group if="$(arg joy)">
-        <include file="$(find rover_control)/launch/teleop_joystick.launch"></include>
+        <include file="$(find rover_control)/launch/teleop_joystick.launch">
+            <arg name="joy_topic_name" value="$(arg joy_topic_name)" />
+        </include>
     </group>
     <group unless="$(arg joy)">
         <include file="$(find rover_control)/launch/teleop_keyboard.launch"></include>
