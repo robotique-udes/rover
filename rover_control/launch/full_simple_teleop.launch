@@ -1,10 +1,11 @@
 <launch>
     <arg name="use_joystick_instead_of_keyboard" default="true" />
     <arg name="use_simple_watchdog" default="true" />
+    <arg name="allow_toggle_with_button" default="false" />
 
     <include file="$(find rover_control)/launch/joy_demux.launch">
         <arg name="start_as_arm_joy" value="$(eval not arg('use_joystick_instead_of_keyboard'))" />
-        <arg name="allow_toggle" value="$(arg use_joystick_instead_of_keyboard)" />
+        <arg name="allow_toggle_with_button" value="$(arg allow_toggle_with_button)" />
     </include>
 
     <include file="$(find rover_control)/launch/simple_teleop.launch">

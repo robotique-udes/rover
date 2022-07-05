@@ -2,6 +2,7 @@
 # -*- coding: utf8 -*-
 
 from __future__ import print_function, division, unicode_literals, absolute_import
+from email import message
 
 import rospy
 from std_msgs.msg import Bool
@@ -18,11 +19,12 @@ class JoyDemuxNode:
         self.joy_state_pub = rospy.Publisher("/joy_state_is_arm", Bool, queue_size=1)
 
         self.set_arm_joy_srv = rospy.Service("set_arm_joy", SetBool, self.set_arm_joy_cb)
+        self.get_arm_joy_srv = rospy.Service("get_arm_joy", SetBool, self.get_arm_joy_cb)
 
         self._is_arm_joy_lock = Lock()
         self._is_arm_joy = rospy.get_param("~start_as_arm_joy", False)
         self._toggle_arm_joy_btn = rospy.get_param("~toggle_arm_joy_btn", 3)
-        self._allow_toggle = rospy.get_param("~allow_toggle", True)
+        self._allow_toggle_with_button = rospy.get_param("~allow_toggle_with_button", True)
         self._last_arm_joy_btn_state = False
 
         self.joy_state_pub_rate = rospy.Timer(rospy.Duration(1), self.publish_joy_state)
@@ -30,7 +32,7 @@ class JoyDemuxNode:
     def joy_cb(self, msg):
         with self._is_arm_joy_lock:
             if (
-                self._allow_toggle
+                self._allow_toggle_with_button
                 and msg.buttons[self._toggle_arm_joy_btn] != self._last_arm_joy_btn_state
                 and msg.buttons[self._toggle_arm_joy_btn] == 1
             ):
@@ -47,6 +49,10 @@ class JoyDemuxNode:
         with self._is_arm_joy_lock:
             self._is_arm_joy = req.data
         return SetBoolResponse(success=True, message="")
+
+    def get_arm_joy_cb(self, req):
+        with self._is_arm_joy_lock:
+            return SetBoolResponse(success=self._is_arm_joy, message="")
 
     def publish_joy_state(self, _):
         with self._is_arm_joy_lock:
