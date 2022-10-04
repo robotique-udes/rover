@@ -1,15 +1,15 @@
 # rover_base_heartbeat
 
 Contains heartbeat_node node: 
-	subscribed to : none
+    subscribed to : none
 
-	publish to : heartbeat
+    publish to : heartbeat
 
 Contains Services :
-	/heartbeat_node/E_stop :
-		bool E_Stop	#True : enable E_stop / False : disable E_stop
-		---
-		bool result	#True : E_stop active / False : E_stop inactive
+    /heartbeat_node/E_stop :
+        bool E_Stop	#True : enable E_stop / False : disable E_stop
+        ---
+        bool result	#True : E_stop active / False : E_stop inactive
 
 Notes:
 
