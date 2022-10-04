@@ -11,6 +11,15 @@
 ### Joystick/Gamepad setup
 Follow this [tutorial](http://wiki.ros.org/joy/Tutorials/ConfiguringALinuxJoystick) and in `rover_control/launch/teleop_joystick.launch` make sure the device name is correct.
 
+### CAN hotplug
+Add the following to `/etc/network/interfaces` file to enable CAN hotplug:
+```
+allow-hotplug can0
+iface can0 can static
+        bitrate 1000000
+        up ip link set $IFACE txqueuelen 1000
+```
+
 ## Dependencies
 
 The following packages need to be installed in order for the rover to work properly. Most of them can be installed automatically with by running `rosdep install --from-paths src --ignore-src -r -y` in the root of the catkin workspace.
@@ -28,4 +37,3 @@ The following packages need to be installed in order for the rover to work prope
 * [rover_base](https://github.com/robotique-udes/rover_base)
 * [rover_drivers](https://github.com/robotique-udes/rover_drivers)
 * rosserial_arduino `sudo apt install ros-melodic-rosserial-arduino`
-

@@ -1,6 +1,6 @@
 <?xml version='1.0'?>
 <launch>
-    <arg name="config_file_postfix" default="" />
+    <arg name="config_file_postfix" default="_simple" />
 
     <node name="sensor_watchdog" pkg="rover_control" type="sensor_watchdog.py" output="screen">
         <rosparam command="load" file="$(find rover_control)/config/watchdog$(arg config_file_postfix).yaml" />
