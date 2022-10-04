@@ -46,6 +46,7 @@ class LowLevelControlNode(object):
         self.linear_factor_percentage = 100
         self.angular_factor_percentage = 30
         self.angular_gain = -4
+        self.linear_gain = 0.8
 
         # Subscribe to joystick
         self.twist_sub = rospy.Subscriber(
@@ -88,8 +89,8 @@ class LowLevelControlNode(object):
         linear_part = -msg.linear.x * self.linear_factor_percentage
         angular_part = msg.angular.z * self.angular_factor_percentage * self.angular_gain
 
-        self.l_cmd = 0.1 * (- linear_part - angular_part)
-        self.r_cmd = 0.1 * (linear_part - angular_part)
+        self.l_cmd = self.linear_gain * (- linear_part - angular_part)
+        self.r_cmd = self.linear_gain * (linear_part - angular_part)
 
     def send_cmd(self):
         """
