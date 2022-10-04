@@ -59,35 +59,9 @@ target_link_libraries(talon_lib
 add_dependencies(talon_lib
   ${catkin_EXPORTED_TARGETS}
 )
-add_executable(direct_drive1 src/direct_drive1.cpp)
-add_executable(direct_drive2 src/direct_drive2.cpp)
-add_executable(direct_drive3 src/direct_drive3.cpp)
-add_executable(direct_drive4 src/direct_drive4.cpp)
-add_executable(direct_drive5 src/direct_drive5.cpp)
-add_executable(direct_drive6 src/direct_drive6.cpp)
+add_executable(direct_drive src/direct_drive.cpp)
 
-target_link_libraries(direct_drive1
+target_link_libraries(direct_drive
   talon_lib
   ${catkin_LIBRARIES}
 )
-target_link_libraries(direct_drive2
-  talon_lib
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(direct_drive3
-  talon_lib
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(direct_drive4
-  talon_lib
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(direct_drive5
-  talon_lib
-  ${catkin_LIBRARIES}
-)
-target_link_libraries(direct_drive6
-  talon_lib
-  ${catkin_LIBRARIES}
-)
-
