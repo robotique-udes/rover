@@ -1,0 +1,14 @@
+<library path="src">
+<!-- type=ros package, filename, className -->
+  <class name="RoverArmGuiPlugin" type="rover_arm_gui.rover_arm_gui_plugin.RoverArmGuiPlugin" base_class_type="rqt_gui_py::Plugin">
+    <description>
+      UdeS Rover User Interface
+    </description>
+    <qtgui>
+      <group>
+        <label>Robotique UdeS</label>
+      </group>
+      <label>Rover Arm Gui</label>
+    </qtgui>
+  </class>
+</library>

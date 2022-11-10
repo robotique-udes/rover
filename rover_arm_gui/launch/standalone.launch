@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<launch>
+
+<node pkg="rover_arm_gui" name="rover_arm_gui" type="rover_arm_gui" respawn="false" output="screen">
+	</node>
+
+</launch>
