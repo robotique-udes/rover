@@ -9,13 +9,13 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1465</width>
-    <height>812</height>
+    <width>1201</width>
+    <height>711</height>
    </rect>
   </property>
   <property name="font">
    <font>
-    <pointsize>15</pointsize>
+    <pointsize>11</pointsize>
    </font>
   </property>
   <property name="contextMenuPolicy">
@@ -51,6 +51,21 @@
              <property name="text">
               <string>Enable</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
+             <property name="checked">
+              <bool>false</bool>
+             </property>
+             <property name="autoDefault">
+              <bool>false</bool>
+             </property>
+             <property name="default">
+              <bool>false</bool>
+             </property>
+             <property name="flat">
+              <bool>false</bool>
+             </property>
             </widget>
            </item>
           </layout>
@@ -67,13 +82,16 @@
            <item>
             <widget class="QLCDNumber" name="j1_currAngle">
              <property name="smallDecimalPoint">
-              <bool>true</bool>
+              <bool>false</bool>
              </property>
              <property name="digitCount">
               <number>5</number>
              </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
              <property name="value" stdset="0">
-              <double>9.888888000000000</double>
+              <double>10.000000000000000</double>
              </property>
              <property name="intValue" stdset="0">
               <number>10</number>
@@ -92,7 +110,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j1_currSpeed"/>
+            <widget class="QLCDNumber" name="j1_currSpeed">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -117,6 +139,9 @@
              <property name="text">
               <string>Enable</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>
@@ -131,7 +156,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j2_currAngle"/>
+            <widget class="QLCDNumber" name="j2_currAngle">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -145,7 +174,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j2_currSpeed"/>
+            <widget class="QLCDNumber" name="j2_currSpeed">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -170,6 +203,9 @@
              <property name="text">
               <string>Enable</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>
@@ -184,7 +220,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j3_currAngle"/>
+            <widget class="QLCDNumber" name="j3_currAngle">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -198,7 +238,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j3_currSpeed"/>
+            <widget class="QLCDNumber" name="j3_currSpeed">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -223,6 +267,9 @@
              <property name="text">
               <string>Enable</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>
@@ -237,7 +284,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j4_currAngle"/>
+            <widget class="QLCDNumber" name="j4_currAngle">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -251,7 +302,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j4_currSpeed"/>
+            <widget class="QLCDNumber" name="j4_currSpeed">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -276,6 +331,9 @@
              <property name="text">
               <string>Enable</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>
@@ -290,7 +348,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j1_currSpeed_18"/>
+            <widget class="QLCDNumber" name="j1_currSpeed_18">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -304,7 +366,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j1_currSpeed_19"/>
+            <widget class="QLCDNumber" name="j1_currSpeed_19">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -329,6 +395,9 @@
              <property name="text">
               <string>Enable</string>
              </property>
+             <property name="checkable">
+              <bool>true</bool>
+             </property>
             </widget>
            </item>
           </layout>
@@ -343,7 +412,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j1_currSpeed_4"/>
+            <widget class="QLCDNumber" name="j1_currSpeed_4">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -357,7 +430,11 @@
             </widget>
            </item>
            <item>
-            <widget class="QLCDNumber" name="j1_currSpeed_5"/>
+            <widget class="QLCDNumber" name="j1_currSpeed_5">
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
+             </property>
+            </widget>
            </item>
           </layout>
          </item>
@@ -474,6 +551,9 @@
              </property>
              <property name="digitCount">
               <number>5</number>
+             </property>
+             <property name="segmentStyle">
+              <enum>QLCDNumber::Flat</enum>
              </property>
              <property name="value" stdset="0">
               <double>10.000000000000000</double>
