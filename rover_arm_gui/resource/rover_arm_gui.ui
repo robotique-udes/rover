@@ -47,9 +47,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_2">
            <item>
-            <widget class="QPushButton" name="j1_enable">
+            <widget class="QPushButton" name="j1_enable_">
              <property name="text">
-              <string>Enable</string>
+              <string>Disable</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -135,9 +135,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_15">
            <item>
-            <widget class="QPushButton" name="j2_enable">
+            <widget class="QPushButton" name="j2_enable_">
              <property name="text">
-              <string>Enable</string>
+              <string>Disable</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -199,9 +199,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_21">
            <item>
-            <widget class="QPushButton" name="j3_enable">
+            <widget class="QPushButton" name="j3_enable_">
              <property name="text">
-              <string>Enable</string>
+              <string>Disable</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -263,9 +263,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_24">
            <item>
-            <widget class="QPushButton" name="j4_enable">
+            <widget class="QPushButton" name="j4_enable_">
              <property name="text">
-              <string>Enable</string>
+              <string>Disable</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -329,7 +329,7 @@
            <item>
             <widget class="QPushButton" name="pushButton_9">
              <property name="text">
-              <string>Enable</string>
+              <string>Disable</string>
              </property>
              <property name="checkable">
               <bool>true</bool>
@@ -391,9 +391,9 @@
          <item>
           <layout class="QHBoxLayout" name="horizontalLayout_5">
            <item>
-            <widget class="QPushButton" name="pushButton_2">
+            <widget class="QPushButton" name="pushButton_2_">
              <property name="text">
-              <string>Enable</string>
+              <string>Disable</string>
              </property>
              <property name="checkable">
               <bool>true</bool>

@@ -8,10 +8,12 @@ from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel
+from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel, QPushButton
 from rovus_bras.msg import feedback
 from rovus_bras.msg import arm_gui_cmd
 
+
+#Constantes
 JOINT_NUMBER = 4
 
 style_default = ""
@@ -20,6 +22,11 @@ style_Disable = "color: white; background-color: grey"
 style_Limiting = "color: black; background-color: yellow"
 
 class RoverArmGuiWidget(QtWidgets.QWidget):
+
+    j1_enable_state: bool = 1
+    j2_enable_state: bool = 1
+    j3_enable_state: bool = 1
+    j4_enable_state: bool = 1
 
     arm_gui_cmd_msg = arm_gui_cmd()
 
@@ -38,15 +45,10 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.currAngles = [self.j1_currAngle, self.j2_currAngle, self.j3_currAngle, self.j4_currAngle]
         self.speedLabels = [self.j1_speedLabel, self.j2_speedLabel, self.j3_speedLabel, self.j4_speedLabel]
 
-        self.j1_enable.pressed.connect(self.j1_enable_pressed_callback)
-        self.j1_enable.released.connect(self.j1_enable_released_callback)
-        self.j2_enable.pressed.connect(self.j2_enable_pressed_callback)
-        self.j2_enable.released.connect(self.j2_enable_released_callback)
-        self.j3_enable.pressed.connect(self.j3_enable_pressed_callback)
-        self.j3_enable.released.connect(self.j3_enable_released_callback)
-        self.j4_enable.pressed.connect(self.j4_enable_pressed_callback)
-        self.j4_enable.released.connect(self.j4_enable_released_callback)
-
+        self.j1_enable_.released.connect(self.j1_enable_released_callback)
+        self.j2_enable_.released.connect(self.j2_enable_released_callback)
+        self.j3_enable_.released.connect(self.j3_enable_released_callback)
+        self.j4_enable_.released.connect(self.j4_enable_released_callback)
 
     def feedback_callback(self, data):
         #________________________________________
@@ -124,33 +126,36 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.publish_command();
 
     def publish_command(self):
+        self.arm_gui_cmd_msg.enable[0] = self.j1_enable_state;
+        self.arm_gui_cmd_msg.enable[1] = self.j2_enable_state;
+        self.arm_gui_cmd_msg.enable[2] = self.j3_enable_state;
+        self.arm_gui_cmd_msg.enable[3] = self.j4_enable_state;
+        
         self.pub_arm_gui_cmd.publish(self.arm_gui_cmd_msg)
 
-    def j1_enable_pressed_callback(self):
-        self.arm_gui_cmd_msg.enable[0] = 0;
-    
     def j1_enable_released_callback(self):
-        self.arm_gui_cmd_msg.enable[0] = 1;
+        if self.j1_enable_state:
+            self.j1_enable_state = False
+        else:
+            self.j1_enable_state = True
 
-    def j2_enable_pressed_callback(self):
-        self.arm_gui_cmd_msg.enable[1] = 0;
-    
     def j2_enable_released_callback(self):
-        self.arm_gui_cmd_msg.enable[1] = 1;
+        if self.j2_enable_state :
+            self.j2_enable_state = False
+        else:
+            self.j2_enable_state = True
 
-    def j3_enable_pressed_callback(self):
-        self.arm_gui_cmd_msg.enable[2] = 0;
-    
     def j3_enable_released_callback(self):
-        self.arm_gui_cmd_msg.enable[2] = 1;
+        if self.j3_enable_state :
+            self.j3_enable_state = False
+        else:
+            self.j3_enable_state = True
 
-    def j4_enable_pressed_callback(self):
-        self.arm_gui_cmd_msg.enable[3] = 0;
-    
     def j4_enable_released_callback(self):
-        self.arm_gui_cmd_msg.enable[3] = 1;
-
-
+        if self.j4_enable_state :
+            self.j4_enable_state = False
+        else:
+            self.j4_enable_state = True
 
 
 
