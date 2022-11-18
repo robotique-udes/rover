@@ -3,12 +3,14 @@ from __future__ import (print_function, absolute_import, division, unicode_liter
 import os
 import rospkg
 import rospy
+import roslaunch
+import os
 from rospkg import RosPack
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
-from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel, QPushButton
+from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel, QPushButton, QFrame
 from rovus_bras.msg import feedback
 from rovus_bras.msg import arm_gui_cmd
 
@@ -27,7 +29,9 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
     j2_enable_state: bool = 1
     j3_enable_state: bool = 1
     j4_enable_state: bool = 1
-
+    launch_3d_view_flag: bool = 0
+    launch_all_views_flag: bool = 0
+    
     arm_gui_cmd_msg = arm_gui_cmd()
 
     def __init__(self):        
@@ -36,6 +40,9 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         ui_file = os.path.join(rospkg.RosPack().get_path('rover_arm_gui'), 'resource', 'rover_arm_gui.ui')
         loadUi(ui_file, self)
         self.setObjectName('RoverArmGuiWidget')
+
+        self.launch: roslaunch.ROSLaunch = roslaunch.scriptapi.ROSLaunch()
+        self.launch.start()
 
         self.is_active = False
         self.feedback_sub = rospy.Subscriber('rovus_bras_feedback', feedback, self.feedback_callback)
@@ -49,17 +56,19 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.j2_enable_.released.connect(self.j2_enable_released_callback)
         self.j3_enable_.released.connect(self.j3_enable_released_callback)
         self.j4_enable_.released.connect(self.j4_enable_released_callback)
+        self.launch_3d_view.released.connect(self.launch_3d_view_released_callback)
+        self.launch_all_views.released.connect(self.launch_all_views_released_callback)
 
     def feedback_callback(self, data):
         #________________________________________
         #Angles LCD displays
         for i in range(len(self.currAngles)):
-            self.currAngles[i].display(int(data.angles[i]))
+            self.currAngles[i].display(data.angles[i])
 
         #________________________________________
         #Speed LCD displays    
         for i in range(len(self.currSpeeds)):
-            self.currSpeeds[i].display(int(data.vitesses[i]))
+            self.currSpeeds[i].display(data.vitesses[i])
 
         #________________________________________
         #State
@@ -157,23 +166,28 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         else:
             self.j4_enable_state = True
 
+    def launch_3d_view_released_callback(self):
+        if not self.launch_3d_view_flag:
+            self.launch_3d_view_flag = 1
 
+            node_live3DView = roslaunch.core.Node("rovus_bras", "liveGraph3DView.py")
+            self.live3DView_process = self.launch.launch(node_live3DView)
+            self.launch_3d_view.setText("Close 3D view")
 
+        else:
+            self.launch_3d_view_flag = 0
+            self.live3DView_process.stop()
+            self.launch_3d_view.setText("Launch 3D view")
 
+    def launch_all_views_released_callback(self):
+        if not self.launch_all_views_flag:
+            self.launch_all_views_flag = 1
 
+            node_liveAllViews = roslaunch.core.Node("rovus_bras", "liveGraphAllViews.py")
+            self.liveAllViews_process = self.launch.launch(node_liveAllViews)
+            self.launch_all_views.setText("Close All views")
 
-
-
-
-
-
-
-
-
-
-
-
-
-
-
-    
+        else:
+            self.launch_all_views_flag = 0
+            self.liveAllViews_process.stop()
+            self.launch_all_views.setText("Launch all views")
