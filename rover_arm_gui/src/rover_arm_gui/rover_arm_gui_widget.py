@@ -22,6 +22,9 @@ style_default = ""
 style_Selected = "color: white; background-color: green"
 style_Disable = "color: white; background-color: grey"
 style_Limiting = "color: black; background-color: yellow"
+STANDBY = 0
+RUN = 1
+CALIB = 2
 
 class RoverArmGuiWidget(QtWidgets.QWidget):
 
@@ -31,6 +34,8 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
     j4_enable_state: bool = 1
     launch_3d_view_flag: bool = 0
     launch_all_views_flag: bool = 0
+    img_keybinding_state: bool = 0
+    curr_state = RUN
     
     arm_gui_cmd_msg = arm_gui_cmd()
 
@@ -48,6 +53,8 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.feedback_sub = rospy.Subscriber('rovus_bras_feedback', feedback, self.feedback_callback)
         self.pub_arm_gui_cmd = rospy.Publisher('arm_gui_cmd', arm_gui_cmd, queue_size=1)
 
+        self.img_keybinding.hide()
+
         self.currSpeeds = [self.j1_currSpeed, self.j2_currSpeed, self.j3_currSpeed, self.j4_currSpeed]
         self.currAngles = [self.j1_currAngle, self.j2_currAngle, self.j3_currAngle, self.j4_currAngle]
         self.speedLabels = [self.j1_speedLabel, self.j2_speedLabel, self.j3_speedLabel, self.j4_speedLabel]
@@ -58,6 +65,11 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.j4_enable_.released.connect(self.j4_enable_released_callback)
         self.launch_3d_view.released.connect(self.launch_3d_view_released_callback)
         self.launch_all_views.released.connect(self.launch_all_views_released_callback)
+        self.show_keybinding.released.connect(self.show_keybinding_callback)
+
+        self.state_standby.clicked.connect(self.state_standby_callback)
+        self.state_run.clicked.connect(self.state_run_callback)
+        self.state_calib.clicked.connect(self.state_calib_callback)
 
     def feedback_callback(self, data):
         #________________________________________
@@ -69,10 +81,6 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         #Speed LCD displays    
         for i in range(len(self.currSpeeds)):
             self.currSpeeds[i].display(data.vitesses[i])
-
-        #________________________________________
-        #State
-        self.currState.setText("Running")
         
         #________________________________________
         #Control Mode
@@ -139,6 +147,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.arm_gui_cmd_msg.enable[1] = self.j2_enable_state;
         self.arm_gui_cmd_msg.enable[2] = self.j3_enable_state;
         self.arm_gui_cmd_msg.enable[3] = self.j4_enable_state;
+        self.arm_gui_cmd_msg.state = self.curr_state;
         
         self.pub_arm_gui_cmd.publish(self.arm_gui_cmd_msg)
 
@@ -191,3 +200,33 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
             self.launch_all_views_flag = 0
             self.liveAllViews_process.stop()
             self.launch_all_views.setText("Launch all views")
+
+    def show_keybinding_callback(self):
+        if self.img_keybinding_state:
+            self.img_keybinding.hide()
+            self.img_keybinding_state = 0
+        else:
+            self.img_keybinding_state = 1
+            self.img_keybinding.show()
+
+    def state_standby_callback(self):
+        self.curr_state = STANDBY;
+        self.state_standby.setStyleSheet(style_Selected)
+        self.state_run.setStyleSheet(style_default)
+        self.state_calib.setStyleSheet(style_default)
+        self.currState.setText(" Standing by")
+
+    def state_run_callback(self):
+        self.curr_state = RUN;
+        self.state_standby.setStyleSheet(style_default)
+        self.state_run.setStyleSheet(style_Selected)
+        self.state_calib.setStyleSheet(style_default)
+        self.currState.setText(" Running")
+
+    def state_calib_callback(self):
+        self.curr_state = CALIB;
+        self.state_standby.setStyleSheet(style_default)
+        self.state_run.setStyleSheet(style_default)
+        self.state_calib.setStyleSheet(style_Selected)
+        self.currState.setText(" Calibration in progress")
+    
