@@ -1,6 +1,6 @@
 <?xml version="1.0"?>
 <package format="2">
-    <name>rover_control</name>
+    <name>rover_control_old</name>
     <version>0.0.0</version>
     <description>The rover_control package</description>
 
