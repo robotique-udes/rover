@@ -35,13 +35,13 @@ class LowLevelControlNode(object):
 
         # Init publishers
         self.m1_pub = rospy.Publisher(
-            '/ros_talon1/motor_percent', Int32, queue_size=10)  # Front left
+            '/ros_talon1/cmd', Int32, queue_size=10)  # Front left
         self.m2_pub = rospy.Publisher(
-            '/ros_talon2/motor_percent', Int32, queue_size=10)  # Front right
+            '/ros_talon2/cmd', Int32, queue_size=10)  # Front right
         self.m3_pub = rospy.Publisher(
-            '/ros_talon3/motor_percent', Int32, queue_size=10)  # Rear left
+            '/ros_talon3/cmd', Int32, queue_size=10)  # Rear left
         self.m4_pub = rospy.Publisher(
-            '/ros_talon4/motor_percent', Int32, queue_size=10)  # Rear right
+            '/ros_talon4/cmd', Int32, queue_size=10)  # Rear right
 
         self.linear_factor_percentage = 100
         self.angular_factor_percentage = 30
