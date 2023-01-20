@@ -33,10 +33,10 @@ class LowLevelControlNode(object):
         self.r_cmd = 0
 
         # Init publishers
-        self.m1_pub = rospy.Publisher("/ros_talon1/motor_percent", cmd, queue_size=10)  # Front left
-        self.m2_pub = rospy.Publisher("/ros_talon2/motor_percent", cmd, queue_size=10)  # Front right
-        self.m3_pub = rospy.Publisher("/ros_talon3/motor_percent", cmd, queue_size=10)  # Rear left
-        self.m4_pub = rospy.Publisher("/ros_talon4/motor_percent", cmd, queue_size=10)  # Rear right
+        self.m1_pub = rospy.Publisher("/ros_talon1/cmd", cmd, queue_size=10)  # Front left
+        self.m2_pub = rospy.Publisher("/ros_talon2/cmd", cmd, queue_size=10)  # Front right
+        self.m3_pub = rospy.Publisher("/ros_talon3/cmd", cmd, queue_size=10)  # Rear left
+        self.m4_pub = rospy.Publisher("/ros_talon4/cmd", cmd, queue_size=10)  # Rear right
 
         self.linear_factor_percentage = 100
         self.angular_factor_percentage = 30
@@ -49,7 +49,7 @@ class LowLevelControlNode(object):
         rospy.sleep(1)
 
         # Init command loop
-        rospy.Timer(rospy.Duration(1 / 50), self.send_cmd_callback)
+        rospy.Timer(rospy.Duration(50), self.send_cmd_callback)
 
     def run(self):
         rospy.spin()
