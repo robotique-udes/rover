@@ -4,8 +4,8 @@ namespace talon
 {
 
 
-    TalonSRX::TalonSRX(ros::NodeHandle* nh, ros::NodeHandle private_nh, unsigned char motor_nb):
-        _private_nh(private_nh)
+    TalonSRX::TalonSRX(ros::NodeHandle& nh, ros::NodeHandle& private_nh, unsigned char motor_nb)
+        : _nh{nh}, _private_nh{private_nh}
     {
         _motor_nb = motor_nb;
         _topic = "ros_talon";
@@ -15,35 +15,35 @@ namespace talon
         Publish to the /sent_messages topic.
         socketcan_bridge will take care of sending the can_msgs/Frame message through CAN.
         */
-        _CANSender = nh->advertise<can_msgs::Frame>("sent_messages", 10);
+        _CANSender = nh.advertise<can_msgs::Frame>("sent_messages", 10);
 
         /*
         Publish to the ros_talon/current_position topic.
         This is taken care of by TalonSRX::unpackStatus3(const can_msgs::Frame &f).
         */
 
-        _posPub = nh->advertise<std_msgs::Float32>(_topic + "/current_position", 10);
+        _posPub = nh.advertise<std_msgs::Float32>(_topic + "/current_position", 10);
 
         /*
         Publish to the ros_talon/status topic.
         This is taken care of by TalonSRX::publishStatus(), and gets called every loop.
         */
           
-        _statusPub = nh->advertise<ros_talon::Status>(_topic + "/status",10);
+        _statusPub = nh.advertise<ros_talon::Status>(_topic + "/status",10);
 
         /*
         Every CAN Frame received by the socket_can bridge gets published to the /recieved_messages
         topic. So we'll listen to that topic and process every frame according to its ID. This is
         done by TalonSRX::processCanFrame(const can_msgs::Frame &f)
         */
-        _CANReceiver = nh->subscribe("received_messages", 10, &TalonSRX::processCanFrame, this);
+        _CANReceiver = nh.subscribe("received_messages", 10, &TalonSRX::processCanFrame, this);
 
         /*
         Advertise the PID service. When called, get the desired valeus and pass them to the Talon.
         This is done by TalonSRX::setPID(ros_talon::SetPID::Request  &req, ros_talon::SetPID::Response &res)
         This function is located at TalonCfg.cpp.
         */
-        _spid = nh->advertiseService(_topic + "/SetPID", &TalonSRX::setPID, this);
+        _spid = nh.advertiseService(_topic + "/SetPID", &TalonSRX::setPID, this);
 
         /*
         Advertise the setPID service. When called, drive the motor on percentOutput mode in the right direction
@@ -51,14 +51,12 @@ namespace talon
         TalonSRX::FindCenter(ros_talon::SetPID::Request  &req, ros_talon::SetPID::Response &res)
         This function is located at TalonRoutines.cpp.
         */
-        _fcenter = nh->advertiseService(_topic + "/FindCenter", &TalonSRX::FindCenter, this);
+        _fcenter = nh.advertiseService(_topic + "/FindCenter", &TalonSRX::FindCenter, this);
 
         /*
         Run the loop at 20Hz to prevent the device from idling.
         */
-        _talon_timer = nh->createTimer(ros::Duration(0.05), &TalonSRX::TalonLoop, this);
-
-        _nh = nh; // Locally store the handle passed from the main()
+        _talon_timer = nh.createTimer(ros::Duration(0.05), &TalonSRX::TalonLoop, this);
     }
 
 
@@ -92,8 +90,8 @@ namespace talon
 
         //Add subscriber
 
-        _TalonInput = _nh->subscribe(_topic + "/cmd", 10, &TalonSRX::setCmdVal, this);
-        _TalonInput_all = _nh->subscribe("cmd_percent_motors", 10, &TalonSRX::setCmdPercent, this);
+        _TalonInput = _nh.subscribe(_topic + "/cmd", 10, &TalonSRX::setCmdVal, this);
+        _TalonInput_all = _nh.subscribe("cmd_percent_motors", 10, &TalonSRX::setCmdPercent, this);
 
         //set default mode to be percent output
         _cmd = 0.0;

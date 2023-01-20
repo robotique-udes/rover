@@ -71,8 +71,8 @@ int main(int argc, char **argv)
         }
     }
     
-	talon::TalonSRX talon(&nh, static_cast<unsigned char>(topic_nb));
-	talon.setup(static_cast<unsigned char>(id), modePercentOutput, topic_nb);
+	talon::TalonSRX talon(nh, pnh, static_cast<unsigned char>(topic_nb));
+	talon.setup(static_cast<unsigned char>(id));
 
     ROS_INFO_STREAM("Motor [ID: " << id << "] connected! Using topic postfix [" << topic_nb << "]");
 

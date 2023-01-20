@@ -48,7 +48,7 @@ namespace talon
 class TalonSRX
 {
 	public:
-		TalonSRX(ros::NodeHandle* nh, ros::NodeHandle private_nh, unsigned char motor_nb);
+		TalonSRX(ros::NodeHandle& nh, ros::NodeHandle& private_nh, unsigned char motor_nb);
 		void setup(unsigned char ID);
 
 	private:
@@ -83,7 +83,7 @@ class TalonSRX
 		// Recovery function pointer.
 		void (TalonSRX::*_recoverFunc)() = NULL;
 
-		ros::NodeHandle* _nh;
+		ros::NodeHandle _nh;
 		ros::NodeHandle _private_nh;
 
 		ros::Publisher _CANSender;
