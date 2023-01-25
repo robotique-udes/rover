@@ -53,7 +53,7 @@ class LowLevelControlNode(object):
         rospy.sleep(1)
 
         # Init command loop
-        rospy.Timer(rospy.Duration(50), self.send_cmd_callback)
+        rospy.Timer(rospy.Duration(1/50), self.send_cmd_callback)
 
     def run(self):
         rospy.spin()
