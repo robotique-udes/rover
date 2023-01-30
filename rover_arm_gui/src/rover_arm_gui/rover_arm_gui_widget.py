@@ -11,8 +11,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel, QPushButton, QFrame
-from rovus_bras.msg import feedback
-from rovus_bras.msg import arm_gui_cmd
+from rover_arm.msg import feedback
+from rover_arm.msg import arm_gui_cmd
 
 
 #Constantes
@@ -50,7 +50,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.launch.start()
 
         self.is_active = False
-        self.feedback_sub = rospy.Subscriber('rovus_bras_feedback', feedback, self.feedback_callback)
+        self.feedback_sub = rospy.Subscriber('rover_arm_feedback', feedback, self.feedback_callback)
         self.pub_arm_gui_cmd = rospy.Publisher('arm_gui_cmd', arm_gui_cmd, queue_size=1)
 
         self.img_keybinding.hide()
@@ -179,7 +179,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         if not self.launch_3d_view_flag:
             self.launch_3d_view_flag = 1
 
-            node_live3DView = roslaunch.core.Node("rovus_bras", "liveGraph3DView.py")
+            node_live3DView = roslaunch.core.Node("rover_arm", "liveGraph3DView.py")
             self.live3DView_process = self.launch.launch(node_live3DView)
             self.launch_3d_view.setText("Close 3D view")
 
@@ -192,7 +192,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         if not self.launch_all_views_flag:
             self.launch_all_views_flag = 1
 
-            node_liveAllViews = roslaunch.core.Node("rovus_bras", "liveGraphAllViews.py")
+            node_liveAllViews = roslaunch.core.Node("rover_arm", "liveGraphAllViews.py")
             self.liveAllViews_process = self.launch.launch(node_liveAllViews)
             self.launch_all_views.setText("Close All views")
 
