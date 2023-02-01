@@ -13,6 +13,8 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel, QPushButton, QFrame
 from rover_arm.msg import feedback
 from rover_arm.msg import arm_gui_cmd
+from std_srvs.srv import SetBool, SetBoolResponse
+import rosservice
 
 
 #Constantes
@@ -36,6 +38,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
     launch_all_views_flag: bool = 0
     img_keybinding_state: bool = 0
     curr_state = RUN
+    joy_demux_state: bool = 0
     
     arm_gui_cmd_msg = arm_gui_cmd()
 
@@ -52,6 +55,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.is_active = False
         self.feedback_sub = rospy.Subscriber('rover_arm_feedback', feedback, self.feedback_callback)
         self.pub_arm_gui_cmd = rospy.Publisher('arm_gui_cmd', arm_gui_cmd, queue_size=1)
+        self.set_arm_joy = rospy.ServiceProxy('set_arm_joy', SetBool)
 
         self.img_keybinding.hide()
 
@@ -66,6 +70,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.launch_3d_view.released.connect(self.launch_3d_view_released_callback)
         self.launch_all_views.released.connect(self.launch_all_views_released_callback)
         self.show_keybinding.released.connect(self.show_keybinding_callback)
+        self.ctrl_joy_demux.released.connect(self.ctrl_joy_demux_callback)
 
         self.state_standby.clicked.connect(self.state_standby_callback)
         self.state_run.clicked.connect(self.state_run_callback)
@@ -229,4 +234,14 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.state_run.setStyleSheet(style_default)
         self.state_calib.setStyleSheet(style_Selected)
         self.currState.setText(" Calibration in progress")
-    
+
+    def ctrl_joy_demux_callback(self):
+        if '/set_arm_joy' in rosservice.get_service_list():
+            if self.joy_demux_state:
+                if(self.set_arm_joy(False)):
+                    self.joy_demux_state = False;
+            else:
+                if(self.set_arm_joy(True)):
+                    self.joy_demux_state = True;
+        else:
+            rospy.logerr("Service 'set_arm_joy' not available")

@@ -553,7 +553,7 @@
                  </widget>
                 </item>
                 <item>
-                 <widget class="QPushButton" name="launch_3d_view_3">
+                 <widget class="QPushButton" name="ctrl_joy_demux">
                   <property name="text">
                    <string>Toggle Arm/Rover mode*</string>
                   </property>
