@@ -17,30 +17,29 @@ from std_srvs.srv import SetBool, SetBoolResponse
 import rosservice
 from threading import Lock
 
-
 #Constantes
 JOINT_NUMBER = 4
-FEEDBACK_CALLBACK_FREQUENCY = 100 #Hz
+FEEDBACK_CALLBACK_FREQUENCY = 10 #Hz
+STANDBY = 0
+RUN = 1
+CALIB = 2
 
+#Styling "MACROS"
 style_default = ""
 style_Selected = "color: white; background-color: green"
 style_Disable = "color: white; background-color: grey"
 style_Limiting = "color: black; background-color: yellow"
 style_Warn = "color: black; background-color: rgb(255, 124, 0);"
-STANDBY = 0
-RUN = 1
-CALIB = 2
+
 
 class RoverArmGuiWidget(QtWidgets.QWidget):
-    j1_enable_state: bool = 1
-    j2_enable_state: bool = 1
-    j3_enable_state: bool = 1
-    j4_enable_state: bool = 1
+    j_enable_state: bool = [1, 1, 1, 1]
     launch_3d_view_flag: bool = 0
     launch_all_views_flag: bool = 0
     img_keybinding_state: bool = 0
     curr_state = RUN
     joy_demux_state: bool = 0
+    cartesian_jog_mode_state: bool = 0
 
     arm_gui_cmd_msg = arm_gui_cmd()
 
@@ -64,20 +63,19 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
         self.set_arm_joy = rospy.ServiceProxy('set_arm_joy', SetBool)
 
         self.img_keybinding.hide()
-
         self.currSpeeds = [self.j1_currSpeed, self.j2_currSpeed, self.j3_currSpeed, self.j4_currSpeed]
         self.currAngles = [self.j1_currAngle, self.j2_currAngle, self.j3_currAngle, self.j4_currAngle]
-        self.speedLabels = [self.j1_speedLabel, self.j2_speedLabel, self.j3_speedLabel, self.j4_speedLabel]
 
-        self.j1_enable_.released.connect(self.j1_enable_released_callback)
-        self.j2_enable_.released.connect(self.j2_enable_released_callback)
-        self.j3_enable_.released.connect(self.j3_enable_released_callback)
-        self.j4_enable_.released.connect(self.j4_enable_released_callback)
+        self.j1_enable_.released.connect(lambda: self.j_enable_released_callback(1))
+        self.j2_enable_.released.connect(lambda: self.j_enable_released_callback(2))
+        self.j3_enable_.released.connect(lambda : self.j_enable_released_callback(3))
+        self.j4_enable_.released.connect(lambda : self.j_enable_released_callback(4))
+
         self.launch_3d_view.released.connect(self.launch_3d_view_released_callback)
         self.launch_all_views.released.connect(self.launch_all_views_released_callback)
         self.show_keybinding.released.connect(self.show_keybinding_callback)
         self.ctrl_joy_demux.released.connect(self.ctrl_joy_demux_callback)
-        
+        self.cartesian_jog_mode_.released.connect(self.cartesian_jog_mode_callback)
         self.state_standby.clicked.connect(self.state_standby_callback)
         self.state_run.clicked.connect(self.state_run_callback)
         self.state_calib.clicked.connect(self.state_calib_callback)
@@ -101,20 +99,15 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
             #Speed LCD displays    
             for i in range(len(self.currSpeeds)):
                 self.currSpeeds[i].setValue(data.vitesses[i])
-            
-            #________________________________________
-            #Control Mode
-            if data.ctrl_mode:
-                self.jogMode.setText("Joint")
-            else:
-                self.jogMode.setText("Cartesian")
 
             #________________________________________
             #Singular Matrix
             if data.singular_matrix:
                 self.singularMatrix.setText("Singular Matrix --> Jog in joint")
+                self.singularMatrix.setStyleSheet(style_Warn)
             else:
                 self.singularMatrix.setText("")
+                self.singularMatrix.setStyleSheet(style_default)
 
             #________________________________________
             #Style init
@@ -143,20 +136,7 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
             self.moteur2Label.setStyleSheet(jointLabelsStyle[1])
             self.moteur3Label.setStyleSheet(jointLabelsStyle[2])
             self.moteur4Label.setStyleSheet(jointLabelsStyle[3])
-            #________________________________________
-            #Limiting
-            speedLabelsStyle = []
-            for i in range(len(self.speedLabels)):
-                speedLabelsStyle.append(style_default)
 
-            if data.limiteur:
-                for i in range(len(self.speedLabels)):
-                    if abs(int(data.vitesses[i])) == 20:
-                        speedLabelsStyle[i] = style_Limiting
-
-            for i in range(len(self.speedLabels)):
-                self.speedLabels[i].setStyleSheet(speedLabelsStyle[i])
-            
             #________________________________________
             #Speed Multiplicator
             self.currSpeedMultiplicator.setValue(data.speed_multiplier)
@@ -165,37 +145,17 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
 
     def publish_command(self):
         with self.lock:
-            self.arm_gui_cmd_msg.enable[0] = self.j1_enable_state;
-            self.arm_gui_cmd_msg.enable[1] = self.j2_enable_state;
-            self.arm_gui_cmd_msg.enable[2] = self.j3_enable_state;
-            self.arm_gui_cmd_msg.enable[3] = self.j4_enable_state;
+            i = 0
+            for i in range(len(self.arm_gui_cmd_msg.enable)):
+                self.arm_gui_cmd_msg.enable[i] = self.j_enable_state[i]
+
             self.arm_gui_cmd_msg.state = self.curr_state;
+            self.arm_gui_cmd_msg.jog_is_cartesian = self.cartesian_jog_mode_state;
             
             self.pub_arm_gui_cmd.publish(self.arm_gui_cmd_msg)
 
-    def j1_enable_released_callback(self):
-        if self.j1_enable_state:
-            self.j1_enable_state = False
-        else:
-            self.j1_enable_state = True
-
-    def j2_enable_released_callback(self):
-        if self.j2_enable_state :
-            self.j2_enable_state = False
-        else:
-            self.j2_enable_state = True
-
-    def j3_enable_released_callback(self):
-        if self.j3_enable_state :
-            self.j3_enable_state = False
-        else:
-            self.j3_enable_state = True
-
-    def j4_enable_released_callback(self):
-        if self.j4_enable_state :
-            self.j4_enable_state = False
-        else:
-            self.j4_enable_state = True
+    def j_enable_released_callback(self, jointNb):
+        self.j_enable_state[jointNb-1] = not self.j_enable_state[jointNb-1]
 
     def launch_3d_view_released_callback(self):
         if not self.launch_3d_view_flag:
@@ -269,3 +229,11 @@ class RoverArmGuiWidget(QtWidgets.QWidget):
             rospy.logerr("Service 'set_arm_joy' not available")
             self.ctrl_joy_demux.setText("'set_arm_joy' not available")
             self.ctrl_joy_demux.setStyleSheet(style_Warn)
+
+    def cartesian_jog_mode_callback(self):
+        if (self.cartesian_jog_mode_state):
+            self.cartesian_jog_mode_.setStyleSheet(style_default)
+        else:
+            self.cartesian_jog_mode_.setStyleSheet(style_Selected)
+
+        self.cartesian_jog_mode_state = not self.cartesian_jog_mode_state

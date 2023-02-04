@@ -9,8 +9,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1675</width>
-    <height>615</height>
+    <width>1776</width>
+    <height>654</height>
    </rect>
   </property>
   <property name="font">
@@ -104,25 +104,39 @@
                   <item>
                    <layout class="QHBoxLayout" name="horizontalLayout_11">
                     <item>
-                     <widget class="QLabel" name="jogModeLabel">
+                     <widget class="QPushButton" name="cartesian_jog_mode_">
+                      <property name="styleSheet">
+                       <string notr="true"/>
+                      </property>
                       <property name="text">
-                       <string>Jog Mode :</string>
+                       <string>Cartesian Jog mode</string>
                       </property>
-                      <property name="alignment">
-                       <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                      <property name="iconSize">
+                       <size>
+                        <width>16</width>
+                        <height>40</height>
+                       </size>
                       </property>
-                     </widget>
-                    </item>
-                    <item>
-                     <widget class="QLabel" name="jogMode">
-                      <property name="text">
-                       <string>Cartesian</string>
+                      <property name="checkable">
+                       <bool>false</bool>
                       </property>
-                      <property name="alignment">
-                       <set>Qt::AlignLeading|Qt::AlignLeft|Qt::AlignVCenter</set>
+                      <property name="checked">
+                       <bool>false</bool>
                       </property>
-                      <property name="buddy">
-                       <cstring>jogMode</cstring>
+                      <property name="autoRepeat">
+                       <bool>false</bool>
+                      </property>
+                      <property name="autoExclusive">
+                       <bool>false</bool>
+                      </property>
+                      <property name="autoDefault">
+                       <bool>false</bool>
+                      </property>
+                      <property name="default">
+                       <bool>false</bool>
+                      </property>
+                      <property name="flat">
+                       <bool>false</bool>
                       </property>
                      </widget>
                     </item>
@@ -315,6 +329,9 @@
                   </item>
                   <item>
                    <widget class="QPushButton" name="state_run">
+                    <property name="styleSheet">
+                     <string notr="true">color: white; background-color: green</string>
+                    </property>
                     <property name="text">
                      <string>Run</string>
                     </property>
@@ -583,6 +600,9 @@
                 <property name="checkable">
                  <bool>true</bool>
                 </property>
+                <property name="checked">
+                 <bool>false</bool>
+                </property>
                </widget>
               </item>
               <item>
@@ -659,24 +679,172 @@
            <number>0</number>
           </property>
           <item>
+           <layout class="QVBoxLayout" name="verticalLayoutMoteur1_3">
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_39">
+              <item>
+               <widget class="QLabel" name="moteur1Label_7">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string/>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="buddy">
+                 <cstring>moteur1Label</cstring>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_20">
+              <item>
+               <widget class="QLabel" name="moteur1Label_4">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Enable Control :</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="buddy">
+                 <cstring>moteur1Label</cstring>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_30">
+              <item>
+               <widget class="QLabel" name="moteur1Label_5">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Angles :</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="buddy">
+                 <cstring>moteur1Label</cstring>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_32">
+              <item>
+               <widget class="QLabel" name="moteur1Label_6">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Speeds :</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="buddy">
+                 <cstring>moteur1Label</cstring>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+           </layout>
+          </item>
+          <item>
            <layout class="QVBoxLayout" name="verticalLayoutMoteur1">
             <item>
-             <widget class="QLabel" name="moteur1Label">
-              <property name="text">
-               <string>Moteur 1 (Stepper)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="buddy">
-               <cstring>moteur1Label</cstring>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_14">
+              <item>
+               <widget class="QLabel" name="moteur1Label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Moteur 1 (Stepper)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+                <property name="buddy">
+                 <cstring>moteur1Label</cstring>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_2">
               <item>
                <widget class="QPushButton" name="j1_enable_">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Disable</string>
                 </property>
@@ -702,16 +870,15 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_3">
               <item>
-               <widget class="QLabel" name="label_8">
-                <property name="text">
-                 <string>Angle</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j1_currAngle">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
@@ -719,17 +886,23 @@
                 <property name="frame">
                  <bool>true</bool>
                 </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+                </property>
                 <property name="readOnly">
                  <bool>true</bool>
                 </property>
                 <property name="buttonSymbols">
                  <enum>QAbstractSpinBox::NoButtons</enum>
                 </property>
+                <property name="showGroupSeparator" stdset="0">
+                 <bool>false</bool>
+                </property>
                 <property name="suffix">
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -744,22 +917,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_4">
               <item>
-               <widget class="QLabel" name="j1_speedLabel">
-                <property name="text">
-                 <string>Speed</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j1_currSpeed">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -771,7 +946,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -788,19 +963,47 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_5">
             <item>
-             <widget class="QLabel" name="moteur2Label">
-              <property name="text">
-               <string>Moteur 2 (Stepper)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_34">
+              <item>
+               <widget class="QLabel" name="moteur2Label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Moteur 2 (Stepper)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_15">
               <item>
                <widget class="QPushButton" name="j2_enable_">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Disable</string>
                 </property>
@@ -814,22 +1017,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_16">
               <item>
-               <widget class="QLabel" name="label_16">
-                <property name="text">
-                 <string>Angle</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j2_currAngle">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -841,7 +1046,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -856,22 +1061,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_17">
               <item>
-               <widget class="QLabel" name="j2_speedLabel">
-                <property name="text">
-                 <string>Speed</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j2_currSpeed">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -883,7 +1090,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -900,19 +1107,47 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_7">
             <item>
-             <widget class="QLabel" name="moteur3Label">
-              <property name="text">
-               <string>Moteur 3 (Stepper)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_35">
+              <item>
+               <widget class="QLabel" name="moteur3Label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Moteur 3 (Stepper)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_21">
               <item>
                <widget class="QPushButton" name="j3_enable_">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Disable</string>
                 </property>
@@ -926,22 +1161,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_22">
               <item>
-               <widget class="QLabel" name="label_20">
-                <property name="text">
-                 <string>Angle</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j3_currAngle">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -953,7 +1190,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -968,22 +1205,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_23">
               <item>
-               <widget class="QLabel" name="j3_speedLabel">
-                <property name="text">
-                 <string>Speed</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j3_currSpeed">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -995,7 +1234,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -1012,19 +1251,47 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
-             <widget class="QLabel" name="moteur4Label">
-              <property name="text">
-               <string>Moteur 4 (Stepper)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_36">
+              <item>
+               <widget class="QLabel" name="moteur4Label">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Moteur 4 (Stepper)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_24">
               <item>
                <widget class="QPushButton" name="j4_enable_">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Disable</string>
                 </property>
@@ -1038,22 +1305,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_25">
               <item>
-               <widget class="QLabel" name="label_22">
-                <property name="text">
-                 <string>Angle</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j4_currAngle">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -1065,7 +1334,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -1080,22 +1349,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_26">
               <item>
-               <widget class="QLabel" name="j4_speedLabel">
-                <property name="text">
-                 <string>Speed</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j4_currSpeed">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -1107,7 +1378,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -1124,19 +1395,47 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_9">
             <item>
-             <widget class="QLabel" name="moteur5Label">
-              <property name="text">
-               <string>Moteur 5 (Servo)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_37">
+              <item>
+               <widget class="QLabel" name="moteur5Label_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Moteur 5 (Servo)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_27">
               <item>
                <widget class="QPushButton" name="pushButton_9">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Disable</string>
                 </property>
@@ -1150,22 +1449,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_28">
               <item>
-               <widget class="QLabel" name="label_24">
-                <property name="text">
-                 <string>Angle</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j5_currAngle">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -1177,7 +1478,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -1192,22 +1493,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_29">
               <item>
-               <widget class="QLabel" name="j5_speedLabel">
-                <property name="text">
-                 <string>Speed</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j5_currSpeed">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -1219,7 +1522,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -1236,22 +1539,47 @@
           <item>
            <layout class="QVBoxLayout" name="verticalLayout_2">
             <item>
-             <widget class="QLabel" name="moteur6Label">
-              <property name="text">
-               <string>Moteur 6 (Servo)</string>
-              </property>
-              <property name="alignment">
-               <set>Qt::AlignCenter</set>
-              </property>
-              <property name="buddy">
-               <cstring>moteur6Label</cstring>
-              </property>
-             </widget>
+             <layout class="QHBoxLayout" name="horizontalLayout_38">
+              <item>
+               <widget class="QLabel" name="moteur6Label_2">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>Moteur 6 (Servo)</string>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignCenter</set>
+                </property>
+               </widget>
+              </item>
+             </layout>
             </item>
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_5">
               <item>
                <widget class="QPushButton" name="pushButton_2_">
+                <property name="sizePolicy">
+                 <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                  <horstretch>0</horstretch>
+                  <verstretch>0</verstretch>
+                 </sizepolicy>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
+                </property>
                 <property name="text">
                  <string>Disable</string>
                 </property>
@@ -1265,22 +1593,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_6">
               <item>
-               <widget class="QLabel" name="label_10">
-                <property name="text">
-                 <string>Angle</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j6_currAngle">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -1292,7 +1622,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
@@ -1307,22 +1637,24 @@
             <item>
              <layout class="QHBoxLayout" name="horizontalLayout_7">
               <item>
-               <widget class="QLabel" name="j6_speedLabel">
-                <property name="text">
-                 <string>Speed</string>
-                </property>
-               </widget>
-              </item>
-              <item>
                <widget class="QDoubleSpinBox" name="j6_currSpeed">
                 <property name="enabled">
                  <bool>true</bool>
+                </property>
+                <property name="minimumSize">
+                 <size>
+                  <width>0</width>
+                  <height>50</height>
+                 </size>
                 </property>
                 <property name="acceptDrops">
                  <bool>false</bool>
                 </property>
                 <property name="frame">
                  <bool>true</bool>
+                </property>
+                <property name="alignment">
+                 <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
                 </property>
                 <property name="readOnly">
                  <bool>true</bool>
@@ -1334,7 +1666,7 @@
                  <string/>
                 </property>
                 <property name="decimals">
-                 <number>0</number>
+                 <number>2</number>
                 </property>
                 <property name="minimum">
                  <double>-360.000000000000000</double>
