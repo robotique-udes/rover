@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<launch>
+
+<node pkg="rover_relay_control" name="rover_relay_control" type="rover_relay_control" respawn="true" output="screen">
+	</node>
+
+</launch>
