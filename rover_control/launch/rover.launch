@@ -1,16 +1,29 @@
 <!-- Full rover launch -->
 <launch>
-    <arg name="arm_serial_port" default="/dev/ttyACM0" />
-    <arg name="teleop_use_joystick_instead_of_keyboard" default="true" />
-    <arg name="teleop_use_simple_watchdog" default="true" />
-    <arg name="driver_allow_toggle_with_button" default="false" />
+    <arg name="arm_serial_port"
+        default="/dev/serial/by-id/usb-Arduino_Srl_Arduino_Mega_55632313538351A09120-if00" />
+
+    <arg name="control_use_joystick_instead_of_keyboard" default="true" />
+    <arg name="control_use_simple_watchdog" default="true" />
+    <arg name="control_allow_toggle_with_button" default="false" />
+    <arg name="control_relay_board_port"
+        default="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00" />
 
     <!-- rover_control -->
-    <include file="$(find rover_control)/launch/full_simple_teleop.launch" />
-    <arg name="use_joystick_instead_of_keyboard" value="$(arg teleop_use_joystick_instead_of_keyboard)" />
-    <arg name="use_simple_watchdog" value="$(arg teleop_use_simple_watchdog)" />
-    <include file="$(find rover_control)/launch/motor_drivers.launch" />
-    <arg name="allow_toggle_with_button" value="$(arg driver_allow_toggle_with_button)" />
+    <include file="$(find rover_control)/launch/full_simple_teleop.launch">
+        <arg name="use_joystick_instead_of_keyboard"
+            value="$(arg control_use_joystick_instead_of_keyboard)" />
+        <arg name="use_simple_watchdog" value="$(arg control_use_simple_watchdog)" />
+        <arg name="allow_toggle_with_button" value="$(arg control_allow_toggle_with_button)" />
+    </include>
+
+    <include file="$(find rover_control)/launch/motor_drivers.launch">
+
+    </include>
+
+    <include file="$(find rover_control)/launch/relay_control.launch">
+        <arg name="relay_board_port" value="$(arg control_relay_board_port)" />
+    </include>
 
     <!-- rover_arm -->
     <include file="$(find rover_arm)/launch/arm.launch">

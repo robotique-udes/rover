@@ -1,9 +1,14 @@
 <?xml version="1.0"?>
 <launch>
+	<arg name="relay_board_port" default="NOT YET SET" />
+
 	<node type="rly_08_node" name="rly_08_node" pkg="rly_08" output="screen">
-		<param name="port" value="/dev/ttyACM0" type="string"/>
-		<param name="outputs" value="8" type="int"/>
+		<param name="port" value="$(arg relay_board_port)" />
+		<!-- <param name="port"
+		value="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00"
+			type="string" /> -->
+		<param name="outputs" value="8" type="int" />
 	</node>
 
-    <node type="relay_board.py" name="relay_board" pkg="rover_control"> </node>
+	<!-- <node type="relay_board.py" name="relay_board" pkg="rover_control"> </node> -->
 </launch>
