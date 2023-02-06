@@ -37,3 +37,4 @@ The following packages need to be installed in order for the rover to work prope
 * [rover_base](https://github.com/robotique-udes/rover_base)
 * [rover_drivers](https://github.com/robotique-udes/rover_drivers)
 * rosserial_arduino `sudo apt install ros-melodic-rosserial-arduino`
+* [rly_08](https://github.com/RobotnikAutomation/rly_08); For noetic you'll need to remove `21 | #include <stropts.h>"` in file `rly_08/src/SerialDevice.cc`
