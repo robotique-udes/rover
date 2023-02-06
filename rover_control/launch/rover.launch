@@ -1,0 +1,24 @@
+<!-- Full rover launch -->
+<launch>
+    <arg name="arm_serial_port" default="/dev/ttyACM0" />
+    <arg name="teleop_use_joystick_instead_of_keyboard" default="true" />
+    <arg name="teleop_use_simple_watchdog" default="true" />
+    <arg name="driver_allow_toggle_with_button" default="false" />
+
+    <!-- rover_control -->
+    <include file="$(find rover_control)/launch/full_simple_teleop.launch" />
+    <arg name="use_joystick_instead_of_keyboard" value="$(arg teleop_use_joystick_instead_of_keyboard)" />
+    <arg name="use_simple_watchdog" value="$(arg teleop_use_simple_watchdog)" />
+    <include file="$(find rover_control)/launch/motor_drivers.launch" />
+    <arg name="allow_toggle_with_button" value="$(arg driver_allow_toggle_with_button)" />
+
+    <!-- rover_arm -->
+    <include file="$(find rover_arm)/launch/arm.launch">
+        <arg name="serialPort" value="$(arg arm_serial_port)" />
+    </include>
+
+    <!-- Antenna / GPS / etc? -->
+
+    <!-- rover_cam? -->
+
+</launch>
