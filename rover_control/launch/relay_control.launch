@@ -10,5 +10,5 @@
 		<param name="outputs" value="8" type="int" />
 	</node>
 
-	<!-- <node type="relay_board.py" name="relay_board" pkg="rover_control"> </node> -->
+    <node name = "rover_relay_control" pkg = "rqt_gui" type = "rqt_gui" respawn = "true" output = "screen"/>
 </launch>
