@@ -15,6 +15,10 @@ from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel, QPushButton, QFrame
 from std_srvs.srv import SetBool, SetBoolResponse
 from robotnik_msgs.srv import set_digital_output
+from robotnik_msgs.msg import inputs_outputs
+from threading import Lock
+import rosservice
+
 import rosservice
 
 style_default = ""
@@ -38,9 +42,12 @@ class RoverRelayControlWidget(QtWidgets.QWidget):
     RELAIS7 = [7]
     RELAIS8 = [8]
     TOUS = [0]
-    activate = [True,True,True,True,True,True,True,True]
+    activate = [False,False,False,False,False,False,False,False]
     states_lumieres = [activate[0], activate[1]]
+    lumiere_state = 0
     states_indicateurs = [activate[2], activate[3]]
+    lock = Lock()
+    
 
     def __init__(self):        
         super(RoverRelayControlWidget, self).__init__()
@@ -54,61 +61,95 @@ class RoverRelayControlWidget(QtWidgets.QWidget):
 
         self.is_active = False
 
-        # self.bouton_relay1.released.connect(lambda : self.activate_relay_callback(1,self.activate[0]))
-        # self.bouton_relay2.released.connect(lambda : self.activate_relay_callback(2,self.activate[1]))
-        # self.bouton_relay3.released.connect(lambda : self.activate_relay_callback(3,self.activate[2]))
-        # self.bouton_relay4.released.connect(lambda : self.activate_relay_callback(4,self.activate[3]))
-        # self.bouton_relay5.released.connect(lambda : self.activate_relay_callback(5,self.activate[4]))
-        # self.bouton_relay6.released.connect(lambda : self.activate_relay_callback(6,self.activate[5]))
-        # self.bouton_relay7.released.connect(lambda : self.activate_relay_callback(7,self.activate[6]))
-        # self.bouton_relay8.released.connect(lambda : self.activate_relay_callback(8,self.activate[7]))
-        # self.bouton_desactiver_relay.released.connect(lambda : self.activate_relay_callback(0,False))
-        self.bouton_relay1.released.connect(lambda : self.control_relay_group_callback(self.LUMIERE1, [self.activate[self.LUMIERE1[0]-1]]))
-        self.bouton_relay2.released.connect(lambda : self.control_relay_group_callback(self.LUMIERE2, [self.activate[self.LUMIERE2[0]-1]]))
-        self.bouton_relay3.released.connect(lambda : self.control_relay_group_callback(self.RELAIS3, [self.activate[self.RELAIS3[0]-1]]))
-        self.bouton_relay4.released.connect(lambda : self.control_relay_group_callback(self.RELAIS4, [self.activate[self.RELAIS4[0]-1]]))
-        self.bouton_relay5.released.connect(lambda : self.control_relay_group_callback(self.RELAIS5, [self.activate[self.RELAIS5[0]-1]]))
-        self.bouton_relay6.released.connect(lambda : self.control_relay_group_callback(self.RELAIS6, [self.activate[self.RELAIS6[0]-1]]))
-        self.bouton_relay7.released.connect(lambda : self.control_relay_group_callback(self.RELAIS7, [self.activate[self.RELAIS7[0]-1]]))
-        self.bouton_relay8.released.connect(lambda : self.control_relay_group_callback(self.RELAIS8, [self.activate[self.RELAIS8[0]-1]]))
-        self.bouton_desactiver_relay.released.connect(lambda : self.control_relay_group_callback(self.TOUS, [False]))
-        self.bouton_activer_lumieres.released.connect(lambda : self.control_relay_group_callback(self.LUMIERES, self.states_lumieres))        
-
-
-    def activate_relay_callback(self, relay, state):
-        rospy.wait_for_service('/rly_08_node/set_digital_outputs')
-        outputs = rospy.ServiceProxy('/rly_08_node/set_digital_outputs', set_digital_output)
-        if state:
-            outputs(relay, state)
-            self.activate[relay-1] = False
-        else:
-            outputs(relay, state)
-            self.activate[relay-1] = True
+        self.sub = rospy.Subscriber("state", inputs_outputs, self.update_state_callback)
+        self.output = rospy.ServiceProxy('/rly_08_node/set_digital_outputs', set_digital_output)
         
-        if relay == 0:
-            self.activate = [True,True,True,True,True,True,True,True]
+        # self.bouton_relay1.released.connect(lambda : self.relay_state_callback(self.LUMIERE1))
+        # self.bouton_relay2.released.connect(lambda : self.relay_state_callback(self.LUMIERE2))
+        # self.bouton_relay3.released.connect(lambda : self.relay_state_callback(self.RELAIS3))
+        # self.bouton_relay4.released.connect(lambda : self.relay_state_callback(self.RELAIS4))
+        # self.bouton_relay5.released.connect(lambda : self.relay_state_callback(self.RELAIS5))
+        # self.bouton_relay6.released.connect(lambda : self.relay_state_callback(self.RELAIS6))
+        # self.bouton_relay7.released.connect(lambda : self.relay_state_callback(self.RELAIS7))
+        # self.bouton_relay8.released.connect(lambda : self.relay_state_callback(self.RELAIS8))
+        # self.bouton_desactiver_relay.released.connect(lambda : self.relay_state_callback(self.TOUS))
+        # self.bouton_activer_lumieres.released.connect(lambda : self.relay_state_callback(self.LUMIERES))
+        self.bouton_activer_lumieres.released.connect(lambda : self.lumiere_callback)      
 
-    def control_relay_group_callback(self, relays, states):
-        rospy.wait_for_service('/rly_08_node/set_digital_outputs')
-        outputs = rospy.ServiceProxy('/rly_08_node/set_digital_outputs', set_digital_output)
+
+    def update_state_callback(self, state):
+        with self.lock:
+            self.activate = state
+    
+    def relay_state_callback(self, relays):
+        with self.lock:
+            # rospy.wait_for_service('/rly_08_node/set_digital_outputs')
+            outputs = rospy.ServiceProxy('/rly_08_node/set_digital_outputs', set_digital_output)
+
+            for i in range(len(relays)):
+                if self.activate[relays[i]-1] or relays == self.TOUS:
+                    outputs(relays[i], False)
+                    if relays != self.TOUS:
+                        self.activate[relays[i]-1] = False
+                    else:
+                        self.activate = [False,False,False,False,False,False,False,False]
+                else:
+                    outputs(relays[i], True) # self.activate[relays[i]-1]
+                    self.activate[relays[i]-1] = True
+
+    def relay_callback(self, index, state):
+        if "/rly_08_node/set_digital_outputs" in rosservice.get_service_list():
+            rospy.wait_for_service('/rly_08_node/set_digital_outputs')
+
+            for i in range(0, len(index)-1):
+                if self.output.call(index[i], state[i]):
+                    self.activate[index-1] = state[i]
+                else:
+                    rospy.logwarn("Service call failed")
+
+    def lumiere_callback(self):
+        for relay in self.LUMIERES:
+            self.relay_callback(self.LUMIERE, False)
+
+        self.relay_callback(self.LUMIERE, not self.lumiere_state)
+        self.lumiere_state = not self.lumiere_state
+
+    
+    # def activate_relay_callback(self, relay, state):
+    #         rospy.wait_for_service('/rly_08_node/set_digital_outputs')
+    #         outputs = rospy.ServiceProxy('/rly_08_node/set_digital_outputs', set_digital_output)
+    #         if state:
+    #             outputs(relay, state)
+    #             self.activate[relay-1] = False
+    #         else:
+    #             outputs(relay, state)
+    #             self.activate[relay-1] = True
+            
+    #         if relay == 0:
+    #             self.activate = [True,True,True,True,True,True,True,True]
+
+    # def control_relay_group_callback(self, relays, states):
+    #     # rospy.wait_for_service('/rly_08_node/set_digital_outputs')
+    #     outputs = rospy.ServiceProxy('/rly_08_node/set_digital_outputs', set_digital_output)
         
-        for i in range(len(relays)):
-            if states[i]:
-                outputs(relays[i], states[i])
-                self.activate[relays[i]-1] = False
-            else:
-                outputs(relays[i], states[i])
-                self.activate[relays[i]-1] = True
+    #     for i in range(len(relays)):
+    #         if states[i]:
+    #             outputs(relays[i], states[i])
+    #             self.activate[relays[i]-1] = False
+    #         else:
+    #             outputs(relays[i], states[i])
+    #             self.activate[relays[i]-1] = True
         
-        self.states_lumieres = [self.activate[0], self.activate[1]]
+    #     self.states_lumieres = [self.activate[0], self.activate[1]]
 
-        if relays == self.TOUS:
-            self.activate = [True,True,True,True,True,True,True,True]
+    #     if relays == self.TOUS:
+    #         self.activate = [True,True,True,True,True,True,True,True]
 
-        if self.states_lumieres != [True,True]:
-            self.bouton_activer_lumieres.setStyleSheet(style_Selected)
-        else:
-            self.bouton_activer_lumieres.setStyleSheet(style_default)
+    #     if self.states_lumieres != [True,True]:
+    #         self.bouton_activer_lumieres.setStyleSheet(style_Selected)
+    #     else:
+    #         self.bouton_activer_lumieres.setStyleSheet(style_default)
+
 
     # def j1_enable_released_callback(self):
     #     if self.j1_enable_state:
