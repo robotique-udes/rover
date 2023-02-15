@@ -33,16 +33,17 @@ class RoverRelayControlWidget(QtWidgets.QWidget):
     
     LUMIERES = [1, 2]
     INDICATEURS = [3, 4]
-    LUMIERE1 = [1]
-    LUMIERE2 = [2]
-    RELAIS3 = [3]
-    RELAIS4 = [4]
-    RELAIS5 = [5]
-    RELAIS6 = [6]
-    RELAIS7 = [7]
-    RELAIS8 = [8]
-    TOUS = [0]
-    activate = [False,False,False,False,False,False,False,False]
+    LUMIERE1 = 1
+    LUMIERE2 = 2
+    RELAIS3 = 3
+    RELAIS4 = 4
+    RELAIS5 = 5
+    RELAIS6 = 6
+    RELAIS7 = 7
+    RELAIS8 = 8
+    TOUS = 0
+    # activate = [False,False,False,False,False,False,False,False]
+    activate = [True,True,True,True,True,True,True,True]
     states_lumieres = [activate[0], activate[1]]
     lumiere_state = 0
     states_indicateurs = [activate[2], activate[3]]
@@ -74,7 +75,16 @@ class RoverRelayControlWidget(QtWidgets.QWidget):
         # self.bouton_relay8.released.connect(lambda : self.relay_state_callback(self.RELAIS8))
         # self.bouton_desactiver_relay.released.connect(lambda : self.relay_state_callback(self.TOUS))
         # self.bouton_activer_lumieres.released.connect(lambda : self.relay_state_callback(self.LUMIERES))
-        self.bouton_activer_lumieres.released.connect(lambda : self.lumiere_callback)      
+        self.bouton_relay1.released.connect(lambda : self.relay_callback(self.LUMIERE1, self.activate[self.LUMIERE1-1]))
+        self.bouton_relay2.released.connect(lambda : self.relay_callback(self.LUMIERE2, self.activate[self.LUMIERE2-1]))
+        self.bouton_relay3.released.connect(lambda : self.relay_callback(self.RELAIS3, self.activate[self.RELAIS3-1]))
+        self.bouton_relay4.released.connect(lambda : self.relay_callback(self.RELAIS4, self.activate[self.RELAIS4-1]))
+        self.bouton_relay5.released.connect(lambda : self.relay_callback(self.RELAIS5, self.activate[self.RELAIS5-1]))
+        self.bouton_relay6.released.connect(lambda : self.relay_callback(self.RELAIS6, self.activate[self.RELAIS6-1]))
+        self.bouton_relay7.released.connect(lambda : self.relay_callback(self.RELAIS7, self.activate[self.RELAIS7-1]))
+        self.bouton_relay8.released.connect(lambda : self.relay_callback(self.RELAIS8, self.activate[self.RELAIS8-1]))
+        self.bouton_activer_lumieres.released.connect(self.lumiere_callback)      
+        self.bouton_desactiver_relay.released.connect(self.all_relays_callback)
 
 
     def update_state_callback(self, state):
@@ -97,22 +107,55 @@ class RoverRelayControlWidget(QtWidgets.QWidget):
                     outputs(relays[i], True) # self.activate[relays[i]-1]
                     self.activate[relays[i]-1] = True
 
+
     def relay_callback(self, index, state):
         if "/rly_08_node/set_digital_outputs" in rosservice.get_service_list():
             rospy.wait_for_service('/rly_08_node/set_digital_outputs')
 
-            for i in range(0, len(index)-1):
-                if self.output.call(index[i], state[i]):
-                    self.activate[index-1] = state[i]
-                else:
-                    rospy.logwarn("Service call failed")
+            # for i in range(0, len(index)-1):
+            #     if self.output.call(index[i], state):
+            #         self.activate[index-1] = state
+            #     else:
+            #         rospy.logwarn("Service call failed")
+            # self.output(index, state)
+            if self.output.call(index, state):
+                self.activate[index-1] = not state
+            else:
+                rospy.logwarn("Service call failed")
+
+            self.button_state_callback()
 
     def lumiere_callback(self):
-        for relay in self.LUMIERES:
-            self.relay_callback(self.LUMIERE, False)
-
-        self.relay_callback(self.LUMIERE, not self.lumiere_state)
+        if not self.activate[self.LUMIERE1-1] and not self.activate[self.LUMIERE2-1]:
+            self.lumiere_state = True
+        else:
+            self.lumiere_state = False
+        
+        for relayOff in self.LUMIERES:
+            self.relay_callback(relayOff, False)
+        
+        for relayOn in self.LUMIERES:
+            self.relay_callback(relayOn, not self.lumiere_state)
+        
         self.lumiere_state = not self.lumiere_state
+
+        self.button_state_callback()
+
+
+    def all_relays_callback(self):
+        self.relay_callback(self.TOUS, False)
+
+        self.activate = [True,True,True,True,True,True,True,True]
+
+        self.button_state_callback()
+
+
+    def button_state_callback(self):
+        # bouton lumieres
+        if not self.activate[self.LUMIERE1-1] and not self.activate[self.LUMIERE2-1]:
+            self.bouton_activer_lumieres.setStyleSheet(style_Selected)
+        else:
+            self.bouton_activer_lumieres.setStyleSheet(style_default)
 
     
     # def activate_relay_callback(self, relay, state):
