@@ -1,8 +1,8 @@
 sudo modprobe peak_usb
-if [ $(hostname) != "rover" ]
-then
-    sudo modprobe peak_pci
-fi
+# if [ $(hostname) != "rover" ]
+# then
+#     sudo modprobe peak_pci
+# fi
 sudo modprobe esd_usb2
 
 sudo ip link set can0 up type can bitrate 1000000
