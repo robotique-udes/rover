@@ -2,7 +2,7 @@
 
 import sys
 
-from rover_launch_control.Rover_Launch_Control_Plugin import RoverLaunchControlPlugin
+# from rover_launch_control.Rover_Launch_Control_Plugin import RoverLaunchControlPlugin
 from rqt_gui.main import Main
 import rospy
 
