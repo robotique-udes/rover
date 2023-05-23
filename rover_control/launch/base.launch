@@ -1,4 +1,4 @@
-<!-- Full rover launch -->
+<!-- Full rover launch / Base side-->
 <launch>
 
     <arg name="control_use_joystick_instead_of_keyboard" default="true" />

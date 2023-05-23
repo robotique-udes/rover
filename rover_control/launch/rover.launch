@@ -1,4 +1,4 @@
-<!-- Full rover launch -->
+<!-- Full rover launch / Rover side -->
 <launch>
     <!-- <arg name="arm_serial_port"
         default="/dev/serial/by-id/usb-Arduino_Srl_Arduino_Mega_55632313538351A09120-if00" /> -->
