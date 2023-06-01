@@ -2,14 +2,12 @@
 <launch>
 
     <arg name="control_use_joystick_instead_of_keyboard" default="true" />
-    <arg name="control_use_simple_watchdog" default="true" />
     <arg name="control_allow_toggle_with_button" default="false" />
 
     <!-- rover_control -->
     <include file="$(find rover_control)/launch/full_simple_teleop.launch">
         <arg name="use_joystick_instead_of_keyboard"
             value="$(arg control_use_joystick_instead_of_keyboard)" />
-        <arg name="use_simple_watchdog" value="$(arg control_use_simple_watchdog)" />
         <arg name="allow_toggle_with_button" value="$(arg control_allow_toggle_with_button)" />
     </include>
 

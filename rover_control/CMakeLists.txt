@@ -197,3 +197,7 @@ include_directories(
 
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
+
+add_executable(base_heartbeat src/base_heartbeat.cpp)
+target_link_libraries(base_heartbeat ${catkin_LIBRARIES})
+add_dependencies(base_heartbeat rover_control_generate_messages_cpp)
