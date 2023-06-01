@@ -10,7 +10,6 @@ from sensor_msgs.msg import Joy
 from std_srvs.srv import SetBool, SetBoolResponse
 from threading import Lock
 
-
 class JoyDemuxNode:
     def __init__(self):
         self._is_arm_joy_lock = Lock()
@@ -70,7 +69,6 @@ class JoyDemuxNode:
         msg.buttons = [0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0, 0]
         self.arm_joy_pub.publish(msg)
         self.rover_joy_pub.publish(msg)
-
 
 if __name__ == "__main__":
     rospy.init_node("joy_demux")

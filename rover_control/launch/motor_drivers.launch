@@ -2,11 +2,11 @@
 
 <launch>
 
-    <arg name="use_simple_watchdog" default="true" />
+    <!-- <arg name="use_simple_watchdog" default="true" /> -->
 
-    <include if="$(arg use_simple_watchdog)" file="$(find rover_control)/launch/watchdog.launch">
+    <!-- <include if="$(arg use_simple_watchdog)" file="$(find rover_control)/launch/watchdog.launch">
         <arg name="config_file_postfix" value="_simple" />
-    </include>
+    </include> -->
 
     <!-- Launch socketcan bridge node -->
     <node pkg="socketcan_bridge" name="socketcan_bridge_node" type="socketcan_bridge_node"></node>
