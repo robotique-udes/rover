@@ -6,9 +6,6 @@
     <arg name="joy_topic_name" default="joy" />
     <arg name="heartbeat_frequency" default = "2" />
 
-    <!-- Launch twist to motor_cmd node -->
-    <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py" />
-
     <!-- Launch Heartbeat -->
     <node pkg="rover_control" name="base_heartbeat" type="base_heartbeat" output="screen">
         <param name="heartbeat_frequency" value="$(arg heartbeat_frequency)" />
