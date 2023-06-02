@@ -13,9 +13,9 @@
     <!-- rover_control -->
     <include file="$(find rover_control)/launch/motor_drivers.launch"/>
 
-    <include file="$(find rover_control)/launch/relay_control.launch">
+    <!-- <include file="$(find rover_control)/launch/relay_control.launch">
         <arg name="relay_board_port" value="$(arg control_relay_board_port)" />
-    </include>
+    </include> -->
 
     <!-- rover_arm -->
     <!-- <include file="$(find rover_arm)/launch/arm.launch">
