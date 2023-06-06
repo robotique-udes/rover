@@ -110,7 +110,6 @@ class LowLevelControlNode(object):
         msgR = cmd()
 
         if (self._watchdog_alive):
-            rospy.loginfo("Watchdog is alive sending real command")
             #Need to define cmd_mode
             msgL.cmd = float(self.l_cmd)
             msgL.cmd_mode = (int(0))
