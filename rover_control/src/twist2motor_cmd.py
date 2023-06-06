@@ -12,6 +12,7 @@
 ------------------------------------
 
 ROS Node to go from a Twist to commands for the 4 robot motors
+with watchdog security
 
 """
 
@@ -21,7 +22,9 @@ import rospy
 import numpy as np
 from geometry_msgs.msg import Twist
 from ros_talon.msg import cmd
+from std_msgs.msg import Empty
 
+WATCHDOG_REFRESH_FREQUENCY = 2 #Hz
 
 class LowLevelControlNode(object):
     def __init__(self):
@@ -29,8 +32,19 @@ class LowLevelControlNode(object):
         rospy.init_node("twist2cmd", anonymous=False)
         rospy.on_shutdown(self.on_shutdown)
 
+        # Getting params
+        self._with_watchdog = rospy.get_param("~joy_with_watchdog", True)
+        
+        #flags
+        self._watchdog_alive = False
+        self._com_is_alive = False
+
         self.l_cmd = 0
         self.r_cmd = 0
+
+        # Subscriber
+        self.twist_sub = rospy.Subscriber("/cmd_vel", Twist, self.twist_callback)
+        self.sub_watchdog = rospy.Subscriber("/base_heartbeat", Empty, self.watchdog_cb, queue_size=1)
 
         # Init publishers
         self.m1_pub = rospy.Publisher(
@@ -47,13 +61,11 @@ class LowLevelControlNode(object):
         self.angular_gain = -4
         self.linear_gain = 0.8
 
-        # Subscribe to joystick
-        self.twist_sub = rospy.Subscriber("/cmd_vel", Twist, self.twist_callback)
-
         rospy.sleep(1)
 
         # Init command loop
-        rospy.Timer(rospy.Duration(1/50), self.send_cmd_callback)
+        self.timer_send_cmd = rospy.Timer(rospy.Duration(1/50), self.send_cmd_callback)
+        self.timer_reset_watchdog = rospy.Timer(rospy.Duration(WATCHDOG_REFRESH_FREQUENCY), self.reset_watchdog)
 
     def run(self):
         rospy.spin()
@@ -94,18 +106,16 @@ class LowLevelControlNode(object):
         """
         Publishes commands
         """
-
         msgL = cmd()
         msgR = cmd()
 
+        if (self._watchdog_alive):
+            #Need to define cmd_mode
+            msgL.cmd = float(self.l_cmd)
+            msgL.cmd_mode = (int(0))
 
-        #Need to define cmd_mode
-        msgL.cmd = float(self.l_cmd)
-        msgL.cmd_mode = (int(0))
-
-        msgR.cmd = float(self.r_cmd)
-        msgR.cmd_mode = int(0)
-
+            msgR.cmd = float(self.r_cmd)
+            msgR.cmd_mode = int(0)
 
         # Left wheels
         self.m1_pub.publish(msgL)
@@ -114,6 +124,22 @@ class LowLevelControlNode(object):
         # Right wheels
         self.m2_pub.publish(msgR)
         self.m4_pub.publish(msgR)
+
+    def watchdog_cb(self, msg):
+        """
+        Set watchdog bool according to heartbeat if this isn't called faster 
+        then the heartbeat check, motors will only receive zeros
+        """
+        if self._with_watchdog:
+            self._com_is_alive = True
+
+    def reset_watchdog(self, none_arg_need_for_some_reason):
+        if self._com_is_alive:
+            self._watchdog_alive = True
+        else:
+            self._watchdog_alive = False
+        self._com_is_alive = False
+
 
     def on_shutdown(self):
         """

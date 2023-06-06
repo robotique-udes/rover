@@ -10,7 +10,7 @@
 
     <include file="$(find rover_control)/launch/simple_teleop.launch">
         <arg name="joy" value="$(arg use_joystick_instead_of_keyboard)" />
-        <arg name="use_simple_watchdog" value="$(arg use_simple_watchdog)" />
         <arg name="joy_topic_name" value="rover_joy" />
+        <arg name="heartbeat_frequency" value="4" />
     </include>
 </launch>
