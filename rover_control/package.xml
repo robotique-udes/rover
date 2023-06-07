@@ -4,7 +4,8 @@
     <version>0.0.0</version>
     <description>The rover_control package</description>
 
-    <maintainer email="simon@todo.todo">simon</maintainer>
+    <maintainer email="phil@todo.todo">phil</maintainer>
+    <maintainer email="aude@todo.todo">aude</maintainer>
 
     <license>TODO</license>
 
