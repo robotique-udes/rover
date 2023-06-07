@@ -1,7 +1,7 @@
 <launch>
     <arg name="start_as_arm_joy" default="false" />
     <arg name="toggle_arm_joy_btn" default="3" />
-    <arg name="allow_toggle_with_button" default="true" />
+    <arg name="allow_toggle_with_button" default="false" />
 
     <node pkg="rover_control" name="joy_demux" type="joy_demux.py">
         <param name="start_as_arm_joy" value="$(arg start_as_arm_joy)" />
