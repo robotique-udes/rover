@@ -11,11 +11,6 @@
         <arg name="allow_toggle_with_button" value="$(arg allow_toggle_with_button)" />
     </include>
 
-    <include file="$(find rover_control)/launch/simple_teleop.launch">
-        <arg name="joy_topic_name" value="rover_joy" />
-        <arg name="heartbeat_frequency" value="4" />
-    </include>
-
     <node pkg="rover_control" name="base_heartbeat" type="base_heartbeat" output="screen">
         <param name="heartbeat_frequency" value="$(arg heartbeat_frequency)" />
     </node>
