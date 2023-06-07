@@ -5,15 +5,29 @@ find_package(catkin REQUIRED COMPONENTS
   roscpp
   rospy
   std_msgs
-  message_generation
   sensor_msgs
+  move_base_msgs
+  joy
+  socketcan_bridge
+  usb_cam_hardware
+  usb_cam_controllers
+  ros_talon
 )
 
 catkin_package(
   INCLUDE_DIRS #include
   LIBRARIES rover_control
-  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs message_runtime
-  DEPENDS system_lib
+  CATKIN_DEPENDS 
+    roscpp
+    rospy
+    std_msgs
+    sensor_msgs
+    move_base_msgs
+    joy
+    socketcan_bridge
+    usb_cam_hardware
+    usb_cam_controllers
+    ros_talon
 )
 
 include_directories(
