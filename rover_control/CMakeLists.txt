@@ -12,10 +12,11 @@ find_package(catkin REQUIRED COMPONENTS
   usb_cam_hardware
   usb_cam_controllers
   ros_talon
+  rover_control_msgs
 )
 
 catkin_package(
-  INCLUDE_DIRS #include
+  INCLUDE_DIRS
   LIBRARIES rover_control
   CATKIN_DEPENDS 
     roscpp
@@ -28,6 +29,7 @@ catkin_package(
     usb_cam_hardware
     usb_cam_controllers
     ros_talon
+    rover_control_msgs
 )
 
 include_directories(
