@@ -13,6 +13,7 @@ find_package(catkin REQUIRED COMPONENTS
   std_msgs
   message_generation
   sensor_msgs
+  rover_control_msgs
 )
 
 ## System dependencies are found with CMake's conventions
@@ -105,7 +106,7 @@ find_package(catkin REQUIRED COMPONENTS
 catkin_package(
 #  INCLUDE_DIRS include
 #  LIBRARIES rover_control
-  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs message_runtime
+  CATKIN_DEPENDS roscpp rospy std_msgs sensor_msgs message_runtime rover_control_msgs
 #  DEPENDS system_lib
 )
 
@@ -116,7 +117,7 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
-# include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
@@ -201,3 +202,7 @@ include_directories(
 add_executable(base_heartbeat src/base_heartbeat.cpp)
 target_link_libraries(base_heartbeat ${catkin_LIBRARIES})
 add_dependencies(base_heartbeat rover_control_generate_messages_cpp)
+
+add_executable(teleop_joystick src/teleop_joystick.cpp)
+add_dependencies(teleop_joystick ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(teleop_joystick ${catkin_LIBRARIES})

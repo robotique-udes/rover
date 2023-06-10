@@ -7,19 +7,9 @@
         <param name="autorepeat_rate" value="10" />
         <param name="dev" value="/dev/input/js0" />
     </node>
-    <node pkg="rover_control" name="teleop_joy" type="teleop_joystick.py" output="screen">
-        <param name="enable_button" type="int" value="4" />
-        <param name="enable_turbo_button" type="int" value="5" />
-        <param name="scale_linear" type="double" value="1.0" />
-        <param name="scale_linear_turbo" type="double" value="4.0" />
-        <param name="scale_angular" type="double" value="2.0" />
-        <param name="axis_linear" type="int" value="1" />
-        <param name="axis_angular" type="int" value="0" />
-        <param name="ptu_vertical_axis" type="int" value="3" />
-        <param name="ptu_horizontal_axis" type="int" value="4" />
-        <param name="ptu_vertical_scaling" type="double" value="1" />
-        <param name="ptu_horizontal_scaling" type="double" value="1" />
 
-        <remap from="joy" to="$(arg joy_topic_name)" />
+    <node pkg="rover_control" name="teleop_joy" type="teleop_joystick" output="screen">
+        <rosparam file="$(find rover_control)/config/joy_keybind.yaml"/>
+        <!-- <remap from="joy" to="$(arg joy_topic_name)" /> -->
     </node>
 </launch>

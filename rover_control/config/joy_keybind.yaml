@@ -1,0 +1,20 @@
+#Deadman switch
+button_enable: 4
+
+axis_linear: 1
+axis_angular: 0
+
+button_enable_tank_mode: 2
+# Parameters to map the controls: The controller inputs will be map as this:
+# For linear speeds: [0.00; max_speed]
+# In car mode :
+#   For rotations: [smallest_radius; max_speed]
+#   Speed is sent like this: linear_speed * angular_speed
+#In tank mode :
+#   /*TODO*/
+max_speed: 1.00 # %
+smallest_radius: 0.30 # % 
+
+#Increase all commands by x times (float)
+button_turbo: 5
+turbo_factor: 1.5 # 
