@@ -199,13 +199,10 @@ include_directories(
 ## Add folders to be run by python nosetests
 # catkin_add_nosetests(test)
 
-<<<<<<< HEAD
 add_executable(base_heartbeat src/base_heartbeat.cpp)
 target_link_libraries(base_heartbeat ${catkin_LIBRARIES})
 add_dependencies(base_heartbeat rover_control_generate_messages_cpp)
 
-=======
->>>>>>> new_rover_control
 add_executable(teleop_joystick src/teleop_joystick.cpp)
 add_dependencies(teleop_joystick ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(teleop_joystick ${catkin_LIBRARIES})
