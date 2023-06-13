@@ -1,3 +1,4 @@
+<?xml version='1.0'?>
 <!-- Full rover launch / Rover side -->
 <launch>
     <!-- <arg name="arm_serial_port"
