@@ -1,10 +1,43 @@
+// =============================================================================
+// teleop_joystick node
+// =============================================================================
+// This node translate joy msgs into a in-house "motor_cmd" sent through the 
+// antenna
+//
+// Control modes:
+//    Speed:
+//      --> Normal
+//      --> Turbo
+//      --> Crawler /* TODO */
+//    Turn:
+//      --> Car (wheels turns in the same direction at different speeds)
+//      --> Tank (wheels turns in opposite direction at the same speed)
+//     
+// Available parameters are :
+//    button_enable: 4 --> Joy Mapping (button)
+//    axis_linear: 1 --> Joy Mapping (axes)
+//    axis_angular: 0 --> Joy Mapping (axes)
+//    button_enable_tank_mode: 2 --> Joy Mapping (button)
+//    button_turbo: 5 --> Joy Mapping (button)
+//    
+//    speed_factor_crawler: 0.01
+//    speed_factor_normal: 0.25
+//      --> Commands will be mapped: [0.0, 1.0] -> [0.0; speed_factor_normal]  
+//    speed_factor_turbo: 1.0 
+//      --> Overwrites normal speed: [0.0, 1.0] -> [0.0; speed_factor_turbo]
+//    smallest_radius: 0.30 
+//      --> While turning in car mode, it's the smallest speed in percent of fast wheel's
+//      --> speed the "slow" wheels can turn. 
+//      --> Ex while turning with smallest_radius: 0.30: At full speed, speed of wheels
+//      --> are in range of: ([0.30; 1.0]*speed_factor)
+//
+// =============================================================================
+// =============================================================================
+
+
 #include "ros/ros.h"
 #include "sensor_msgs/Joy.h"
 #include "rover_control_msgs/motor_cmd.h"
-
-// Keyword for readability
-#define IN
-#define OUT
 
 #define LINEAR_INPUT joy_msg->axes[m_u_INDEX_AXIS_LINEAR]
 #define ANGULAR_INPUT joy_msg->axes[m_u_INDEX_AXIS_ANGULAR]
