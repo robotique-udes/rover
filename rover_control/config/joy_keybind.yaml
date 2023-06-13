@@ -3,15 +3,11 @@ button_enable: 4
 axis_linear: 1
 axis_angular: 0
 button_enable_tank_mode: 2
+button_crawler: 69 #Find which one we want
 button_turbo: 5
 
 # Config for rover_teleop:
-# Commands will be mapped: [0.0, 1.0] -> [0.0; speed_factor_normal]
+speed_factor_crawler: 0.01
 speed_factor_normal: 0.25
-# Overwrites normal speed: [0.0, 1.0] -> [0.0; speed_factor_turbo]  
 speed_factor_turbo: 1.0 
-# While turning in car mode, it's the smallest speed in percent of fast wheel's
-# speed the "slow" wheels can turn. 
-# Ex while turning with smallest_radius: 0.30: At full speed, speed of wheels
-# are in range of: ([0.30; 1.0]*speed_factor)
 smallest_radius: 0.30 
