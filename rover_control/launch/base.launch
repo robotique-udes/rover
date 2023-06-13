@@ -1,4 +1,5 @@
-<!-- Full rover launch | Base side-->
+<?xml version='1.0'?>
+<!-- Full rover launch / Base side-->
 <launch>
     <arg name="control_allow_toggle_with_button" default="false" />
     <arg name="allow_toggle_with_button" default="false" />

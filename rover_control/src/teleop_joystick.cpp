@@ -9,6 +9,7 @@
 #define LINEAR_INPUT joy_msg->axes[m_u_INDEX_AXIS_LINEAR]
 #define ANGULAR_INPUT joy_msg->axes[m_u_INDEX_AXIS_ANGULAR]
 #define TANK_MODE joy_msg->buttons[m_u_INDEX_BUTTON_ENABLE_TANK_MODE]
+#define TURBO_MODE joy_msg->buttons[m_u_INDEX_BUTTON_TURBO]
 
 float map(float x, float in_min, float in_max, float out_min, float out_max);
 
@@ -53,6 +54,9 @@ private:
     float m_f_control_map_factor;
     bool m_b_control_mode_is_tank;
 
+    float m_f_SPEED_FACTOR_NORMAL;
+    float m_f_SPEED_FACTOR_TURBO;
+
     // The magic happens here
     void cbJoy(const sensor_msgs::Joy::ConstPtr &joy_msg)
     {
@@ -61,6 +65,7 @@ private:
 
         if (joy_msg->buttons[m_u_INDEX_BUTTON_ENABLE])
         {
+
             float f_speed_left_motor = LINEAR_INPUT;
             float f_speed_right_motor = LINEAR_INPUT;
 
@@ -78,7 +83,18 @@ private:
             else
             {
                 f_speed_left_motor = -ANGULAR_INPUT;
-                f_speed_right_motor = ANGULAR_INPUT; 
+                f_speed_right_motor = ANGULAR_INPUT;
+            }
+
+            if (TURBO_MODE)
+            {
+                f_speed_left_motor *= m_f_SPEED_FACTOR_TURBO;
+                f_speed_right_motor *= m_f_SPEED_FACTOR_TURBO;
+            }
+            else
+            {
+                f_speed_left_motor *= m_f_SPEED_FACTOR_NORMAL;
+                f_speed_right_motor *= m_f_SPEED_FACTOR_NORMAL;
             }
 
             msg_motor_cmd.front_left = f_speed_left_motor;
@@ -98,6 +114,8 @@ private:
         m_u_INDEX_AXIS_LINEAR = m_nh.param<int>(s_param_prefix + "axis_linear", 1);
         m_u_INDEX_AXIS_ANGULAR = m_nh.param<int>(s_param_prefix + "axis_angular", 0);
         m_u_INDEX_BUTTON_ENABLE_TANK_MODE = m_nh.param<int>(s_param_prefix + "button_enable_tank_mode", 2);
+        m_f_SPEED_FACTOR_NORMAL = m_nh.param<float>(s_param_prefix + "speed_factor_normal", 0.5);
+        m_f_SPEED_FACTOR_TURBO = m_nh.param<float>(s_param_prefix + "speed_factor_turbo", 1.0);
     }
 };
 
