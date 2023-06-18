@@ -16,6 +16,8 @@
     <!-- Launch twist to motor_cmd node, this is also where the watchdog is -->
     <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py" output="screen"/>
 
+    <include file="$(find rover_control)/launch/camera_control.launch"/>
+
     <!-- <include file="$(find rover_control)/launch/relay_control.launch">
         <arg name="relay_board_port" value="$(arg control_relay_board_port)" />
     </include> -->
