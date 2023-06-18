@@ -43,3 +43,7 @@ add_dependencies(base_heartbeat rover_control_generate_messages_cpp)
 add_executable(teleop_joystick src/teleop_joystick.cpp)
 add_dependencies(teleop_joystick ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(teleop_joystick ${catkin_LIBRARIES})
+
+add_executable(cmd_2_motors src/cmd_2_motors.cpp)
+add_dependencies(cmd_2_motors ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(cmd_2_motors ${catkin_LIBRARIES})

@@ -19,7 +19,7 @@
 //          axis_linear: 1 --> axes
 //          axis_angular: 0 --> axes
 //          button_enable_tank_mode: 2 --> button
-//          button_crawler: /* FIND DEFAULT */ --> button
+//          button_crawler: 1 --> button
 //          button_turbo: 5 --> button
 //
 //      speed_factor_crawler: 0.01
@@ -59,7 +59,7 @@ public:
     {
         m_nh = ros::NodeHandle();
         m_sub_joy = m_nh.subscribe("rover_joy", 1, &TeleopJoystick::cbJoy, this);
-        m_pub_motor_cmd = m_nh.advertise<rover_control_msgs::motor_cmd>("cmd_topic_name", 1);
+        m_pub_motor_cmd = m_nh.advertise<rover_control_msgs::motor_cmd>("cmd_motors", 1);
 
         m_b_control_mode_is_tank = false;
 
@@ -168,7 +168,7 @@ private:
         const std::string s_param_prefix = (ros::this_node::getName() + "/");
         m_u_INDEX_BUTTON_ENABLE = m_nh.param<int>(s_param_prefix + "button_enable", 4);
         m_u_INDEX_BUTTON_TURBO = m_nh.param<int>(s_param_prefix + "button_turbo_", 5);
-        m_u_INDEX_BUTTON_CRAWLER = m_nh.param<float>(s_param_prefix + "button_enable_crawler_mode", 69 /* TODO */);
+        m_u_INDEX_BUTTON_CRAWLER = m_nh.param<float>(s_param_prefix + "button_enable_crawler_mode", 1);
         m_u_INDEX_BUTTON_ENABLE_TANK_MODE = m_nh.param<int>(s_param_prefix + "button_enable_tank_mode", 2);
         m_u_INDEX_AXIS_LINEAR = m_nh.param<int>(s_param_prefix + "axis_linear", 1);
         m_u_INDEX_AXIS_ANGULAR = m_nh.param<int>(s_param_prefix + "axis_angular", 0);

@@ -3,7 +3,7 @@ button_enable: 4
 axis_linear: 1
 axis_angular: 0
 button_enable_tank_mode: 2
-button_crawler: 69 #Find which one we want
+button_crawler: 1
 button_turbo: 5
 
 # Config for rover_teleop:
