@@ -5,30 +5,31 @@
 // antenna
 //
 // Control modes:
-//    Speed:
-//      --> Crawler
-//      --> Normal
-//      --> Turbo
-//    Turn:
-//      --> Car (wheels turns in the same direction at different speeds)
-//      --> Tank (wheels turns in opposite direction at the same speed)
+//      Speed:
+//          --> Crawler
+//          --> Normal
+//          --> Turbo
+//      Turn:
+//          --> Car (wheels turns in the same direction at different speeds)
+//          --> Tank (wheels turns in opposite direction at the same speed)
 //
 // Available parameters:
-//    button_enable: 4 --> Joy Mapping (button)
-//    axis_linear: 1 --> Joy Mapping (axes)
-//    axis_angular: 0 --> Joy Mapping (axes)
-//    button_enable_tank_mode: 2 --> Joy Mapping (button)
-//    button_crawler: /* FIND DEFAULT */ --> Joy Mapping
-//    button_turbo: 5 --> Joy Mapping (button)
+//      Joy keybinding:
+//          button_enable: 4 --> button
+//          axis_linear: 1 --> axes
+//          axis_angular: 0 --> axes
+//          button_enable_tank_mode: 2 --> button
+//          button_crawler: /* FIND DEFAULT */ --> button
+//          button_turbo: 5 --> button
 //
-//    speed_factor_crawler: 0.01
-//      --> Commands will be mapped: [0.0, 1.0] -> [0.0; speed_factor_crawler]
-//    speed_factor_normal: 0.25
-//      --> Commands will be mapped: [0.0, 1.0] -> [0.0; speed_factor_normal]
-//    speed_factor_turbo: 1.0
-//      --> Overwrites normal speed: [0.0, 1.0] -> [0.0; speed_factor_turbo]
-//    smallest_radius: 0.30
-//      --> While turning in car mode, it's the smallest speed in percent of
+//      speed_factor_crawler: 0.01
+//          --> Commands will be mapped: [0.0, 1.0] -> [0.0; speed_factor_crawler]
+//      speed_factor_normal: 0.25
+//          --> Commands will be mapped: [0.0, 1.0] -> [0.0; speed_factor_normal]
+//      speed_factor_turbo: 1.0
+//          --> Overwrites normal speed: [0.0, 1.0] -> [0.0; speed_factor_turbo]
+//      smallest_radius: 0.30
+//          --> While turning in car mode, it's the smallest speed in percent of
 //          fast wheel's speed that the "slow" wheels can rotate.
 //          Ex: while turning with smallest_radius: 0.30: At full speed, speed
 //          of wheels are in range of: ([0.30; 1.0]*speed_factor)
@@ -167,10 +168,10 @@ private:
         const std::string s_param_prefix = (ros::this_node::getName() + "/");
         m_u_INDEX_BUTTON_ENABLE = m_nh.param<int>(s_param_prefix + "button_enable", 4);
         m_u_INDEX_BUTTON_TURBO = m_nh.param<int>(s_param_prefix + "button_turbo_", 5);
+        m_u_INDEX_BUTTON_CRAWLER = m_nh.param<float>(s_param_prefix + "button_enable_crawler_mode", 69 /* TODO */);
+        m_u_INDEX_BUTTON_ENABLE_TANK_MODE = m_nh.param<int>(s_param_prefix + "button_enable_tank_mode", 2);
         m_u_INDEX_AXIS_LINEAR = m_nh.param<int>(s_param_prefix + "axis_linear", 1);
         m_u_INDEX_AXIS_ANGULAR = m_nh.param<int>(s_param_prefix + "axis_angular", 0);
-        m_u_INDEX_BUTTON_ENABLE_TANK_MODE = m_nh.param<int>(s_param_prefix + "button_enable_tank_mode", 2);
-        m_u_INDEX_BUTTON_CRAWLER = m_nh.param<float>(s_param_prefix + "button_enable_crawler_mode", 69 /* TODO */);
         m_f_SPEED_FACTOR_CRAWLER = m_nh.param<float>(s_param_prefix + "speed_factor_crawler", 0.01);
         m_f_SPEED_FACTOR_NORMAL = m_nh.param<float>(s_param_prefix + "speed_factor_normal", 0.5);
         m_f_SPEED_FACTOR_TURBO = m_nh.param<float>(s_param_prefix + "speed_factor_turbo", 1.0);
