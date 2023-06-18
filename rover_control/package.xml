@@ -4,7 +4,8 @@
     <version>0.0.0</version>
     <description>The rover_control package</description>
 
-    <maintainer email="simon@todo.todo">simon</maintainer>
+    <maintainer email="phil@todo.todo">phil</maintainer>
+    <maintainer email="aude@todo.todo">aude</maintainer>
 
     <license>TODO</license>
 
@@ -14,20 +15,16 @@
     <depend>rospy</depend>
     <depend>std_msgs</depend>
     <depend>sensor_msgs</depend>
-    <depend>message_generation</depend>
+    <depend>move_base_msgs</depend>
+    <depend>joy</depend>
+    <depend>socketcan_bridge</depend>
+    <depend>usb_cam_hardware</depend>
+    <depend>usb_cam_controllers</depend>
     <depend>ros_talon</depend>
 
-    <exec_depend>robot_localization</exec_depend>
-    <exec_depend>teleop_twist_joy</exec_depend>
-    <exec_depend>teleop_twist_keyboard</exec_depend>
-    <exec_depend>robot_state_publisher</exec_depend>
-    <exec_depend>joy</exec_depend>
+    <!-- Needs to gtfo -->
+    <depend>rover_udes</depend>
+
     <exec_depend>message_runtime</exec_depend>
-    <exec_depend>rosserial_arduino</exec_depend>
-    <exec_depend>realsense2_camera</exec_depend>
-    <exec_depend>realsense2_description</exec_depend>
-    <exec_depend>rgbd_launch</exec_depend>
-    <exec_depend>video_stream_opencv</exec_depend>
-    <exec_depend>image_proc</exec_depend>
 
 </package>

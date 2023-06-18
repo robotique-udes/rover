@@ -1,15 +1,5 @@
 <!-- Full rover launch / Rover side -->
 <launch>
-    <!-- <arg name="arm_serial_port"
-        default="/dev/serial/by-id/usb-Arduino_Srl_Arduino_Mega_55632313538351A09120-if00" /> -->
-
-    <!-- <arg name="control_use_joystick_instead_of_keyboard" default="true" />
-    <arg name="control_use_simple_watchdog" default="true" />
-    <arg name="control_allow_toggle_with_button" default="false" /> -->
-    
-    <!-- <arg name="control_relay_board_port"
-        default="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00" /> -->
-
     <!-- rover_control -->
     <include file="$(find rover_control)/launch/motor_drivers.launch"/>
 
@@ -17,18 +7,4 @@
     <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py" output="screen"/>
 
     <include file="$(find rover_control)/launch/camera_control.launch"/>
-
-    <!-- <include file="$(find rover_control)/launch/relay_control.launch">
-        <arg name="relay_board_port" value="$(arg control_relay_board_port)" />
-    </include> -->
-
-    <!-- rover_arm -->
-    <!-- <include file="$(find rover_arm)/launch/arm.launch">
-        <arg name="serialPort" value="$(arg arm_serial_port)" />
-    </include> -->
-
-    <!-- Antenna / GPS / etc? -->
-
-    <!-- rover_cam? -->
-
 </launch>
