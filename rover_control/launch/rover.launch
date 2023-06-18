@@ -7,5 +7,4 @@
     <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py" output="screen"/>
 
     <include file="$(find rover_control)/launch/camera_control.launch"/>
-
 </launch>
