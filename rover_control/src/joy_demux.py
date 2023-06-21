@@ -29,6 +29,8 @@ class JoyDemuxNode:
         self.set_arm_joy_srv = rospy.Service("set_arm_joy", SetBool, self.set_arm_joy_cb)
         self.get_arm_joy_srv = rospy.Service("get_arm_joy", SetBool, self.get_arm_joy_cb)
 
+        rospy.on_shutdown(self.send_zeros)
+
     def joy_cb(self, msg):
         with self._is_arm_joy_lock:
             if (
