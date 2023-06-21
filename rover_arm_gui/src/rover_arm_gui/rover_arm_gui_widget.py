@@ -11,8 +11,8 @@ from PyQt5 import QtCore, QtGui, QtWidgets
 from PyQt5.QtCore import QObject
 from PyQt5.QtGui import QKeySequence
 from PyQt5.QtWidgets import QShortcut, QSlider, QLCDNumber, QLabel, QPushButton, QFrame
-from rover_arm.msg import feedback
-from rover_arm.msg import arm_gui_cmd
+from rover_arm_msgs.msg import feedback
+from rover_arm_msgs.msg import arm_gui_cmd
 from std_srvs.srv import SetBool, SetBoolResponse
 import rosservice
 from threading import Lock
