@@ -7,6 +7,4 @@
     <!-- Launch twist to motor_cmd node, this is also where the watchdog is -->
     <!-- <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py" output="screen"/> -->
     <node pkg="rover_control" name="cmd_2_motors" type="cmd_2_motors" output="screen"/>
-
-    <include file="$(find rover_control)/launch/camera_control.launch"/>
 </launch>
