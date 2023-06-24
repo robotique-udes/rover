@@ -47,3 +47,7 @@ target_link_libraries(teleop_joystick ${catkin_LIBRARIES})
 add_executable(cmd_2_motors src/cmd_2_motors.cpp)
 add_dependencies(cmd_2_motors ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(cmd_2_motors ${catkin_LIBRARIES})
+
+add_executable(gps_node src/gps_node.cpp)
+add_dependencies(gps_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(gps_node ${catkin_LIBRARIES})
