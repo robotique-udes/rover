@@ -24,8 +24,8 @@ class LaunchInterface():
         self.name_launchfile = launchfile_name
         self.uuid = uuid
         self.launchfile = roslaunch.rlutil.resolve_launch_arguments([pkg_name, launchfile_name + '.launch'])
-        self.launch_handler = roslaunch.parent.ROSLaunchParent(uuid, self.launchfile)
         self.launch_handler_started: bool = False
+        self.launch_handler = None
 
 class RoverLaunchControlWidget(QtWidgets.QWidget):
     
