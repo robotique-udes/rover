@@ -15,7 +15,16 @@ Manually clone the following git repo in your src folder:
 * ros_talon
 
 # Setup
-### CAN hotplug
+## Jetson Bashrc
+Comment these lines in bashrc for scripts to work:
+```
+If not running interactively, don't do anything
+case $- in
+    *i*) ;;
+      *) return;;
+esac
+```
+## CAN hotplug
 Add the following to `/etc/network/interfaces` file to enable CAN hotplug:
 ```
 allow-hotplug can0

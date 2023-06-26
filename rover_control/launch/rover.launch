@@ -1,10 +1,13 @@
 <?xml version='1.0'?>
 <!-- Full rover launch / Rover side -->
 <launch>
+    <arg name="local_only" default="false" />
+    <include file="$(find rover_control)/launch/machine_config.launch">
+        <arg name="local_only" value="$(arg local_only)" />
+    </include>
+
     <!-- rover_control -->
     <include file="$(find rover_control)/launch/motor_drivers.launch"/>
 
-    <!-- Launch twist to motor_cmd node, this is also where the watchdog is -->
-    <!-- <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py" output="screen"/> -->
-    <node pkg="rover_control" name="cmd_2_motors" type="cmd_2_motors" output="screen"/>
+    <node machine="rover" pkg="rover_control" name="cmd_2_motors" type="cmd_2_motors" output="screen"/>
 </launch>
