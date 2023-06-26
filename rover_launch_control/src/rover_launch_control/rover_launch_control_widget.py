@@ -10,6 +10,7 @@ from python_qt_binding import loadUi
 from PyQt5 import QtWidgets
 from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox
 from threading import Lock
+from copy import copy
 
 #Styling "MACROS"
 STYLE_DEFAULT = ""
@@ -18,14 +19,26 @@ STYLE_DISABLE = "color: white; background-color: grey"
 STYLE_LIMITING = "color: black; background-color: yellow"
 STYLE_WARN = "color: black; background-color: rgb(255, 124, 0);"
 
+launchmode_local = 'false'
+
 class LaunchInterface():
-    def __init__(self, uuid, pkg_name: str, launchfile_name: str):
+    def __init__(self, uuid, pkg_name: str, launchfile_name: str, parameters: list = []):
         self.name_pkg = pkg_name
         self.name_launchfile = launchfile_name
+        self.parameters = parameters
         self.uuid = uuid
-        self.launchfile = roslaunch.rlutil.resolve_launch_arguments([pkg_name, launchfile_name + '.launch'])
         self.launch_handler_started: bool = False
         self.launch_handler = None
+
+    def update_param(self):
+        self.launchfile = roslaunch.rlutil.resolve_launch_arguments([self.name_pkg, self.name_launchfile + '.launch'])
+        if self.parameters == None:
+            parameters = ['local_only:=' + launchmode_local]
+        else:
+            parameters = copy(self.parameters)
+            parameters = ['local_only:=' + launchmode_local]
+
+        self.launchfile = [(self.launchfile[0], parameters)]
 
 class RoverLaunchControlWidget(QtWidgets.QWidget):
     
@@ -51,6 +64,11 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
             "360p": ("480", "360"),
             "144p": ("192", "144"),
             }
+
+        #Mode selection buttons
+        self.pb_local_true.released.connect(lambda: self.localModeSelection(True, self.pb_local_true, [self.pb_local_false]))
+        self.pb_local_false.released.connect(lambda: self.localModeSelection(False, self.pb_local_false, [self.pb_local_true]))
+        self.pb_local_false.setStyleSheet(STYLE_SELECTED)
 
         #rover_control
         base_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='base')
@@ -103,12 +121,22 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                                                                                    self.cb_cam_sonix_framerate,
                                                                                    self.pb_current_cam_sonix_framerate))
 
+    def localModeSelection(self, value: bool, pb_toggle_self: QPushButton, pb_toggle_friends: "list[str]"):
+        global launchmode_local
+        launchmode_local = str(value)
+        pb_toggle_self.setStyleSheet(STYLE_SELECTED)
+        for friends in pb_toggle_friends:
+            friends.setStyleSheet(STYLE_DEFAULT)
+        rospy.loginfo("Already launched nodes needs to be restarted for mode to apply")
+
     def launchFile(self, launch_interface: LaunchInterface, button: QPushButton):
         with self.lockLaunchFile:
             if not launch_interface.launch_handler_started:
+                launch_interface.update_param()
                 launch_interface.launch_handler = roslaunch.parent.ROSLaunchParent(launch_interface.uuid, launch_interface.launchfile)
                 launch_interface.launch_handler_started = True
                 button.setStyleSheet(STYLE_SELECTED)
+                rospy.loginfo("Starting " + launch_interface.launchfile[0][0] + ' ' + ' '.join(launch_interface.launchfile[0][1]))
                 launch_interface.launch_handler.start()
             else:
                 launch_interface.launch_handler_started = False
