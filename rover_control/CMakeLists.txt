@@ -51,3 +51,7 @@ target_link_libraries(cmd_2_motors ${catkin_LIBRARIES})
 add_executable(gps_node src/gps_node.cpp)
 add_dependencies(gps_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(gps_node ${catkin_LIBRARIES})
+
+add_executable(panorama_server src/panorama_server.cpp)
+add_dependencies(panorama_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(panorama_server ${catkin_LIBRARIES})
