@@ -77,6 +77,9 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         rover_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='rover')
         self.pb_rover.released.connect(lambda: self.launchFile(rover_interface, self.pb_rover))
 
+        panorama_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='panorama')
+        self.pb_panorama_server.released.connect(lambda: self.launchFile(panorama_interface, self.pb_panorama_server))
+
         #rover_arm
         joints_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_arm', launchfile_name='joints')
         self.pb_joints.released.connect(lambda: self.launchFile(joints_interface, self.pb_joints))
@@ -156,7 +159,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                            pb_current_framerate: QPushButton):
         with self.lockLaunchCameraStream:
             if not launch_interface.launch_handler_started:
-                rosparam.set_param(cameraName + '/hardware/framerate', str(cameraFramerate))
+                rosparam.set_param('/' + cameraName + '/hardware/framerate', str(cameraFramerate))
                 framerate = int(cb_framerate.currentText())
                 param_skip = int(cameraFramerate/framerate)-1 
                 rosparam.set_param(cameraName + '/compressed_packet_controller/skip', str(param_skip))
@@ -173,8 +176,8 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 
                 param_imageWidth = self.resolutionDict[resolution][0]
                 param_imageHeight = self.resolutionDict[resolution][1]
-                rosparam.set_param(cameraName + '/hardware/image_width', param_imageWidth)
-                rosparam.set_param(cameraName + '/image_height', param_imageHeight)
+                rosparam.set_param('/' + cameraName + '/hardware/image_width', param_imageWidth)
+                rosparam.set_param('/' + cameraName + '/hardware/image_height', param_imageHeight)
                 
                 rospy.logwarn("Selected resolution: " + resolution + "(" + param_imageWidth + "x" + param_imageHeight + ")")
                 rospy.logwarn("selected framerate: " + str(framerate))
