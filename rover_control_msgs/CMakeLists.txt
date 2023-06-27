@@ -10,11 +10,6 @@ add_message_files(
  motor_cmd.msg
 )
 
-add_service_files(
- FILES
- panorama.srv
-)
-
 generate_messages(
   DEPENDENCIES
 )
