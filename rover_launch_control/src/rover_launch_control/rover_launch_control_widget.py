@@ -66,9 +66,22 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
             }
 
         #Mode selection buttons
+        #setting default value
+        global launchmode_local
+        launchmode_local = 'true' 
+
+        if launchmode_local == 'true':
+            self.pb_local_true.setStyleSheet(STYLE_SELECTED)
+            self.pb_local_false.setStyleSheet(STYLE_WARN)
+        elif launchmode_local == 'false':
+            self.pb_local_false.setStyleSheet(STYLE_SELECTED)
+            self.pb_local_false.setStyleSheet(STYLE_WARN)
+        else:
+            exit()
+            
         self.pb_local_true.released.connect(lambda: self.localModeSelection(True, self.pb_local_true, [self.pb_local_false]))
         self.pb_local_false.released.connect(lambda: self.localModeSelection(False, self.pb_local_false, [self.pb_local_true]))
-        self.pb_local_false.setStyleSheet(STYLE_SELECTED)
+
 
         #rover_control
         base_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='base')
