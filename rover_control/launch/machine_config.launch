@@ -24,16 +24,17 @@ export ROS_IP=<YOUR PC IP>
 <launch>
     <arg name="local_only" default="false" />
 
+<!-- if -->
     <group unless="$(arg local_only)">
-        <machine name="rover" address="192.168.1.50" env-loader="$(env ROS_ROOT)/../../env.sh"
-            user="rovus" password="rovus" />
-        <machine name="base" address="localhost" env-loader="$(env ROS_ROOT)/../../env.sh"
-            default="true" />
+        <machine name="rover" address="192.168.1.50" env-loader="$(env ROS_ROOT)/../../env.sh" user="rovus" password="rovus" />
     </group>
-
+<!-- else-->
     <group if="$(arg local_only)">
         <machine name="rover" address="localhost" env-loader="$(env ROS_ROOT)/../../env.sh" />
-        <machine name="base" address="localhost" env-loader="$(env ROS_ROOT)/../../env.sh"
-            default="true" />
     </group>
+<!-- endif-->
+
+    <machine name="base" address="localhost" env-loader="$(env ROS_ROOT)/../../env.sh"
+        default="true" />
+
 </launch>
