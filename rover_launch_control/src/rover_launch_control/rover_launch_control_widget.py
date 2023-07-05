@@ -7,8 +7,8 @@ import roslaunch
 import rosparam
 import os
 from python_qt_binding import loadUi
-from PyQt5 import QtWidgets
-from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox
+from PyQt5 import QtWidgets, QtCore
+from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication
 from threading import Lock
 from copy import copy
 
@@ -90,6 +90,9 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         rover_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='rover')
         self.pb_rover.released.connect(lambda: self.launchFile(rover_interface, self.pb_rover))
 
+        can_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='can')
+        self.pb_can.released.connect(lambda: self.launchFile(can_interface, self.pb_can))
+
         panorama_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='panorama')
         self.pb_panorama_server.released.connect(lambda: self.launchFile(panorama_interface, self.pb_panorama_server))
 
@@ -147,19 +150,26 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
 
     def launchFile(self, launch_interface: LaunchInterface, button: QPushButton):
         with self.lockLaunchFile:
-            if not launch_interface.launch_handler_started:
-                launch_interface.update_param()
-                launch_interface.launch_handler = roslaunch.parent.ROSLaunchParent(launch_interface.uuid, launch_interface.launchfile)
-                launch_interface.launch_handler_started = True
-                button.setStyleSheet(STYLE_SELECTED)
-                rospy.loginfo("Starting " + launch_interface.launchfile[0][0] + ' ' + ' '.join(launch_interface.launchfile[0][1]))
-                launch_interface.launch_handler.start()
-            else:
-                launch_interface.launch_handler_started = False
-                button.setStyleSheet(STYLE_DEFAULT)
-                launch_interface.launch_handler.shutdown()
+            QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+            try:
+                if not launch_interface.launch_handler_started:
+                    launch_interface.update_param()
+                    launch_interface.launch_handler = roslaunch.parent.ROSLaunchParent(launch_interface.uuid, launch_interface.launchfile)
+                    launch_interface.launch_handler_started = True
+                    button.setStyleSheet(STYLE_SELECTED)
+                    rospy.loginfo("Starting " + launch_interface.launchfile[0][0] + ' ' + ' '.join(launch_interface.launchfile[0][1]))
+                    launch_interface.launch_handler.start()
+                else:
+                    launch_interface.launch_handler_started = False
+                    button.setStyleSheet(STYLE_DEFAULT)
+                    launch_interface.launch_handler.shutdown()
 
-                rospy.logwarn(launch_interface.name_pkg + ' ' + launch_interface.name_launchfile + '.launch shutdowned')
+                    rospy.logwarn(launch_interface.name_pkg + ' ' + launch_interface.name_launchfile + '.launch shutdowned')
+            except:
+                button.setStyleSheet(STYLE_WARN);
+            
+            finally:
+                QApplication.restoreOverrideCursor()
 
     def launchCameraStream(self,
                            cameraName: str,
