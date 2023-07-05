@@ -1,8 +1,25 @@
 <?xml version='1.0'?>
 <!-- Full rover launch / Rover side -->
 <launch>
-    <!-- rover_control -->
-    <include file="$(find rover_control)/launch/motor_drivers.launch"/>
+    <arg name="local_only" default="false"/>
+    <include file="$(find rover_control)/launch/machine_config.launch">
+        <arg name="local_only" value="$(arg local_only)" />
+    </include>
 
     <node machine="rover" pkg="rover_control" name="cmd_2_motors" type="cmd_2_motors" output="screen"/>
+
+    <!-- Launch driver for each motor -->
+    <node machine="rover" pkg="ros_talon" name="motor1" type="direct_drive" output="screen">
+        <param name="motor_id" value="1" />
+    </node>
+    <node machine="rover" pkg="ros_talon" name="motor2" type="direct_drive" output="screen">
+        <param name="motor_id" value="2" />
+    </node>
+    <node machine="rover" pkg="ros_talon" name="motor3" type="direct_drive" output="screen">
+        <param name="motor_id" value="3" />
+    </node>
+    <node machine="rover" pkg="ros_talon" name="motor4" type="direct_drive" output="screen">
+        <param name="motor_id" value="4" />
+    </node>
+    
 </launch>
