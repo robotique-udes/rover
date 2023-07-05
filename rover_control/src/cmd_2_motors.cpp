@@ -118,9 +118,9 @@ private:
 
         if (m_b_watchdog_is_alive)
         {
-            cmd_motor_FL.cmd = m_st_motors_speed.f_FL;
+            cmd_motor_FL.cmd = -m_st_motors_speed.f_FL;
             cmd_motor_FR.cmd = m_st_motors_speed.f_FR;
-            cmd_motor_RL.cmd = m_st_motors_speed.f_RL;
+            cmd_motor_RL.cmd = -m_st_motors_speed.f_RL;
             cmd_motor_RR.cmd = m_st_motors_speed.f_RR;
         }
         m_pub_motor_FL.publish(cmd_motor_FL);
