@@ -1213,6 +1213,9 @@
            </item>
            <item>
             <widget class="QPushButton" name="pb_rover">
+             <property name="enabled">
+              <bool>false</bool>
+             </property>
              <property name="sizePolicy">
               <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                <horstretch>0</horstretch>
