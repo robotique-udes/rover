@@ -124,7 +124,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
 
         cam_sonix_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_sonix')
         self.pb_cam_sonix_launch.released.connect(lambda: self.launchCameraStream("cam_sonix",
-                                                                                     120,
+                                                                                     30,
                                                                                      cam_sonix_interface,
                                                                                      self.pb_cam_sonix_launch,
                                                                                      self.cb_cam_sonix_resolution,
@@ -132,7 +132,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                                                                                      self.cb_cam_sonix_framerate,
                                                                                      self.pb_current_cam_sonix_framerate))
         self.pb_cam_sonix_apply.released.connect(lambda: self.ApplyCameraStream("cam_sonix",
-                                                                                   120,
+                                                                                   30,
                                                                                    cam_sonix_interface,
                                                                                    self.pb_cam_sonix_launch,
                                                                                    self.cb_cam_sonix_resolution,
@@ -187,7 +187,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 param_skip = int(cameraFramerate/framerate)-1 
                 rosparam.set_param(cameraName + '/compressed_packet_controller/skip', str(param_skip))
                 
-                if ((param_skip + 1) * framerate != 120):
+                if ((param_skip + 1) * framerate != cameraFramerate):
                     rospy.logerr("Wrong framerate parameters node can't start")
                     return
 
