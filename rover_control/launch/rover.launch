@@ -8,6 +8,17 @@
 
     <node machine="rover" pkg="rover_control" name="cmd_2_motors" type="cmd_2_motors" output="screen"/>
 
+    <!-- Relay board -->
+    <arg name="relay_board_port" default="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00" />
+
+	<node type="rly_08_node" name="rly_08_node" pkg="rly_08" output="screen">
+		<param name="port" value="$(arg relay_board_port)" />
+		<!-- <param name="port"
+		value="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00"
+			type="string" /> -->
+		<param name="outputs" value="8" type="int" />
+	</node>
+
     <!-- Launch driver for each motor -->
     <node machine="rover" pkg="ros_talon" name="motor1" type="direct_drive" output="screen">
         <param name="motor_id" value="1" />
