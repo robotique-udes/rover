@@ -1,0 +1,10 @@
+<launch>
+    <arg name="local_only" default="false" />
+    <include file="$(find rover_control)/launch/machine_config.launch">
+        <arg name="local_only" value="$(arg local_only)" />
+    </include>
+
+    <!-- Launch socketcan bridge node -->
+    <node machine="rover" pkg="socketcan_bridge" name="socketcan_bridge_node" type="socketcan_bridge_node" />
+
+</launch>

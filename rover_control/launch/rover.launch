@@ -1,10 +1,36 @@
+<?xml version='1.0'?>
 <!-- Full rover launch / Rover side -->
 <launch>
-    <!-- rover_control -->
-    <include file="$(find rover_control)/launch/motor_drivers.launch"/>
+    <arg name="local_only" default="false"/>
+    <include file="$(find rover_control)/launch/machine_config.launch">
+        <arg name="local_only" value="$(arg local_only)" />
+    </include>
 
-    <!-- Launch twist to motor_cmd node, this is also where the watchdog is -->
-    <node pkg="rover_control" name="twist2motor_cmd" type="twist2motor_cmd.py" output="screen"/>
+    <node machine="rover" pkg="rover_control" name="cmd_2_motors" type="cmd_2_motors" output="screen"/>
 
-    <include file="$(find rover_control)/launch/camera_control.launch"/>
+    <!-- Relay board -->
+    <arg name="relay_board_port" default="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00" />
+
+	<node type="rly_08_node" name="rly_08_node" pkg="rly_08" output="screen">
+		<param name="port" value="$(arg relay_board_port)" />
+		<!-- <param name="port"
+		value="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00"
+			type="string" /> -->
+		<param name="outputs" value="8" type="int" />
+	</node>
+
+    <!-- Launch driver for each motor -->
+    <node machine="rover" pkg="ros_talon" name="motor1" type="direct_drive" output="screen">
+        <param name="motor_id" value="1" />
+    </node>
+    <node machine="rover" pkg="ros_talon" name="motor2" type="direct_drive" output="screen">
+        <param name="motor_id" value="2" />
+    </node>
+    <node machine="rover" pkg="ros_talon" name="motor3" type="direct_drive" output="screen">
+        <param name="motor_id" value="3" />
+    </node>
+    <node machine="rover" pkg="ros_talon" name="motor4" type="direct_drive" output="screen">
+        <param name="motor_id" value="4" />
+    </node>
+    
 </launch>

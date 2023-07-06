@@ -12,10 +12,11 @@ find_package(catkin REQUIRED COMPONENTS
   usb_cam_hardware
   usb_cam_controllers
   ros_talon
+  rover_control_msgs
 )
 
 catkin_package(
-  INCLUDE_DIRS #include
+  INCLUDE_DIRS
   LIBRARIES rover_control
   CATKIN_DEPENDS 
     roscpp
@@ -28,6 +29,7 @@ catkin_package(
     usb_cam_hardware
     usb_cam_controllers
     ros_talon
+    rover_control_msgs
 )
 
 include_directories(
@@ -37,3 +39,19 @@ include_directories(
 add_executable(base_heartbeat src/base_heartbeat.cpp)
 target_link_libraries(base_heartbeat ${catkin_LIBRARIES})
 add_dependencies(base_heartbeat rover_control_generate_messages_cpp)
+
+add_executable(teleop_joystick src/teleop_joystick.cpp)
+add_dependencies(teleop_joystick ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(teleop_joystick ${catkin_LIBRARIES})
+
+add_executable(cmd_2_motors src/cmd_2_motors.cpp)
+add_dependencies(cmd_2_motors ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(cmd_2_motors ${catkin_LIBRARIES})
+
+add_executable(gps_node src/gps_node.cpp)
+add_dependencies(gps_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(gps_node ${catkin_LIBRARIES})
+
+add_executable(panorama_server src/panorama_server.cpp)
+add_dependencies(panorama_server ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
+target_link_libraries(panorama_server ${catkin_LIBRARIES})

@@ -1,0 +1,40 @@
+<?xml version='1.0'?>
+<!--
+For remote connection with rover: 
+add these line to your env.sh file:
+
+sudo vi $ROS_ROOT/../../env.sh
+
+export ROS_WS=/home/rovus/catkin_ws
+export ROS_NOETIC=/etc/ros/noetic
+source $ROS_WS/devel/setup.bash
+source $ROS_KINETIC/setup.bash
+export PATH=$ROS_ROOT/bin:$PATH
+export ROS_PACKAGE_PATH=$ROS_PACKAGE_PATH:$ROS_WS
+export ROS_MASTER_URI=http://192.168.1.50:11311/
+export ROS_IP=<YOUR PC IP>
+
+and add these lines to your bashrc:
+
+sudo vi ~/.bashrc
+export ROS_MASTER_URI=http://192.168.1.50:11311/
+export ROS_IP=<YOUR PC IP>
+-->
+
+<launch>
+    <arg name="local_only" default="false" />
+
+<!-- if -->
+    <group unless="$(arg local_only)">
+        <machine name="rover" address="192.168.1.50" env-loader="$(env ROS_ROOT)/../../env.sh" user="rovus" password="rovus" />
+    </group>
+<!-- else-->
+    <group if="$(arg local_only)">
+        <machine name="rover" address="localhost" env-loader="$(env ROS_ROOT)/../../env.sh" />
+    </group>
+<!-- endif-->
+
+    <machine name="base" address="localhost" env-loader="$(env ROS_ROOT)/../../env.sh"
+        default="true" />
+
+</launch>
