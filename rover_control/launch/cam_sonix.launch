@@ -13,10 +13,10 @@
             <remap from="compressed_packet_controller/packet" to="packet/compressed" />
             <param name="video_device"
                 value="/dev/v4l/by-id/usb-Sonix_Technology_Co.__Ltd._USB_2.0_Camera_SN0001-video-index0" />
-            <param name="image_width" value="1920" />
-            <param name="image_height" value="1080" />
+            <!-- <param name="image_width" value="1920" />
+            <param name="image_height" value="1080" /> -->
             <param name="pixel_format" value="mjpeg" />
-            <param name="framerate" value="30" />
+            <!-- <param name="framerate" value="30" /> -->
         </node>
 
         <!-- Controller starter that asks the manager to start -->
@@ -38,7 +38,7 @@
             value="usb_cam_controllers/CompressedPacketController" />
         <param name="compressed_packet_controller/format" value="jpeg" />
         <!-- pub 1 packet and then skip 2 packets -->
-        <param name="compressed_packet_controller/skip" value="0" />
+        <!-- <param name="compressed_packet_controller/skip" value="0" /> -->
 
         <param name="mjpeg_controller/type" value="usb_cam_controllers/MjpegController" />
     </group>

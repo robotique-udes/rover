@@ -7,7 +7,7 @@ button_crawler: 1
 button_turbo: 5
 
 # Config for rover_teleop:
-speed_factor_crawler: 0.01
-speed_factor_normal: 0.25
+speed_factor_crawler: 0.20
+speed_factor_normal: 0.40
 speed_factor_turbo: 1.0 
-smallest_radius: 0.30 
+smallest_radius: 0.10 
