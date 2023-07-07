@@ -14,10 +14,7 @@ plugin -->
             <remap from="compressed_packet_controller/packet" to="packet/compressed" />
             <param name="video_device"
                 value="/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._Arducam_OV9782_USB_Camera_UC762-video-index0" />
-            <!-- <param name="image_width" value="1080" />
-            <param name="image_height" value="720" /> -->
             <param name="pixel_format" value="mjpeg" />
-            <!-- <param name="framerate" value="120" /> -->
         </node>
 
         <!-- Controller starter that asks the manager to start -->
@@ -35,8 +32,6 @@ plugin -->
         <param name="compressed_packet_controller/type"
             value="usb_cam_controllers/CompressedPacketController" />
         <param name="compressed_packet_controller/format" value="jpeg" />
-        <!-- The framerate is divided by skip+1 ex: 120 skip 3 = 120/4 = 30 fps -->
-        <!-- <param name="compressed_packet_controller/skip" value="0" /> -->
         <param name="mjpeg_controller/type" value="usb_cam_controllers/MjpegController" />
     </group>
 </launch>
