@@ -353,7 +353,7 @@ ReturnValue SerialDevice::Open(){
 
 	if(fd == -1){
 		//std::cout << "SerialDevice::OpenPort: Error opening " << cDevice << " port" << std::endl;
-		ROS_ERROR("%s::Open: Error opening %s port on mode %d", sComponentName.c_str(), cDevice, iOpenMode);
+        ROS_DEBUG("%s::Open: Error opening %s port on mode %d", sComponentName.c_str(), cDevice, iOpenMode);
 		return ERROR;  // invalid device file
 	}else{
 		//std::cout << "SerialDevice::Open: " << cDevice << " opened properly" << std::endl;

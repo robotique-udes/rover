@@ -90,7 +90,7 @@ ReturnValue Component::Setup(){
 	}
 	// Opens devices used by the component
 	if(Open() != OK){
-		ROS_ERROR("%s::Setup: Error in Open",sComponentName.c_str());
+		ROS_DEBUG("%s::Setup: Error in Open",sComponentName.c_str());
 		return ERROR;
 	}
 	//
@@ -546,7 +546,7 @@ ReturnValue Component::CreateTask(int prio, double frec, void *(*start_routine)(
         new_thread.pthreadPar.clock = CLOCK_REALTIME;
         // Adds information for the new thread
         vThreadData.push_back(new_thread);
-        ROS_DEBUG("%s::CreateTask: New thread created (%d, %d, %lf) at %d position", sComponentName.c_str(),(int) new_thread.pthreadId, new_thread.pthreadPar.prio, new_thread.dDesiredHz, vThreadData.size());
+        ROS_DEBUG("%s::CreateTask: New thread created (%d, %d, %lf) at %lu position", sComponentName.c_str(),(int) new_thread.pthreadId, new_thread.pthreadPar.prio, new_thread.dDesiredHz, static_cast<long unsigned int>(vThreadData.size()));
 
     pthread_mutex_unlock(&mutexThread);
 
