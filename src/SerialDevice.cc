@@ -18,7 +18,6 @@
 #include <sys/ioctl.h>
 #include <iostream>
 #include <errno.h>   /* Error number definitions */
-#include <stropts.h>
 
 /*! \fn SerialDevice::SerialDevice(void)
  	* Constructor by default
@@ -468,4 +467,3 @@ char *SerialDevice::GetDevice(){
 void SerialDevice::SetCanonicalInput(bool value){
 	bCanon = value;
 }
-
