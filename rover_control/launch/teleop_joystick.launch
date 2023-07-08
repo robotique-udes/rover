@@ -8,7 +8,8 @@
     <arg name="joy_topic_name" default="joy" />
 
     <node machine="base" pkg="joy" type="joy_node" name="joy">
-        <param name="autorepeat_rate" value="10" />
+         <!-- About the same rate as fastest rate during axis input-->
+        <param name="autorepeat_rate" value="115" />
         <param name="dev" value="/dev/input/js0" />
     </node>
 
