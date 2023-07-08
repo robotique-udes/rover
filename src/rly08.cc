@@ -260,4 +260,3 @@ int rly08::ReadRelayStatus(){
 	
 	return ret;
 }
-

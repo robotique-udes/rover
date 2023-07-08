@@ -32,77 +32,70 @@
 
 #include <rly_08/rly08.h>
 #include <rly_08/GetSwVersion.h>
-
 #include <robotnik_msgs/inputs_outputs.h>
 #include <robotnik_msgs/set_digital_output.h>
-
-
 #include <self_test/self_test.h>
 #include <diagnostic_msgs/DiagnosticStatus.h>
 #include <diagnostic_updater/diagnostic_updater.h>
 #include <diagnostic_updater/update_functions.h>
 #include <diagnostic_updater/DiagnosticStatusWrapper.h>
 
-
 class rly08Node
 {
 public:
-
 	rly08 *rly_;
-	
-  	robotnik_msgs::inputs_outputs reading;
+
+	robotnik_msgs::inputs_outputs reading;
 	self_test::TestRunner self_test_;
 	diagnostic_updater::Updater diagnostic_;
 
-	ros::NodeHandle	node_handle_;
-	ros::NodeHandle	private_node_handle_;
-	// services	
+	ros::NodeHandle node_handle_;
+	ros::NodeHandle private_node_handle_;
+	// services
 	ros::ServiceServer rly08_set_digital_outputs_;
 	ros::ServiceServer rly08_get_sw_version_;
 	// Topics
 	ros::Publisher rly08_io_data_pub_;
 
 	std::string sDevicePort;
-	std::string sDefaultPort;	
-	
+	std::string sDefaultPort;
+
 	bool running;
-	int	error_count_;
-	int	slow_count_;
-	std::string	was_slow_;
+	int error_count_;
+	int slow_count_;
+	std::string was_slow_;
 	double desired_freq_;
-	diagnostic_updater::FrequencyStatus	freq_diag_;	
-	int outputs_;	// Number of available digital outputs
+	diagnostic_updater::FrequencyStatus freq_diag_;
+	int outputs_; // Number of available digital outputs
 
-	rly08Node(ros::NodeHandle h) : 
-		self_test_(), 
-		diagnostic_(), 
-		node_handle_(h), 
-		private_node_handle_("~"), 
-		error_count_(0),
-		slow_count_(0),
-		desired_freq_(10),
-		freq_diag_(diagnostic_updater::FrequencyStatusParam(&desired_freq_, &desired_freq_, 0.1))
-		{
-			running = false;
-			ros::NodeHandle rly08_node_handle(node_handle_, "rly_08_node");
-			
-			// READING PARAMETERS
-			sDefaultPort.assign(RLY08_DEFAULT_PORT);
-			private_node_handle_.param("port", sDevicePort,  sDefaultPort);
-			private_node_handle_.param("outputs", outputs_,  RLY08_DEFAULT_OUTPUTS);
-			
-		
-			rly08_set_digital_outputs_ = rly08_node_handle.advertiseService("set_digital_outputs", &rly08Node::set_digital_outputs, this);
-			rly08_get_sw_version_ = rly08_node_handle.advertiseService("get_sw_version", &rly08Node::get_sw_version, this);
-			rly08_io_data_pub_ = rly08_node_handle.advertise<robotnik_msgs::inputs_outputs>("status", 100);
-			self_test_.add("Connect Test", this, &rly08Node::ConnectTest);
-			diagnostic_.add( freq_diag_ );
-			diagnostic_.add( "Device Status", this, &rly08Node::deviceStatus );
+	rly08Node(ros::NodeHandle h) : self_test_(),
+								   diagnostic_(),
+								   node_handle_(h),
+								   private_node_handle_("~"),
+								   error_count_(0),
+								   slow_count_(0),
+								   desired_freq_(10),
+								   freq_diag_(diagnostic_updater::FrequencyStatusParam(&desired_freq_, &desired_freq_, 0.1))
+	{
+		running = false;
+		ros::NodeHandle rly08_node_handle(node_handle_, "rly_08_node");
 
-			rly_ = new rly08(sDevicePort.c_str(), RLY08_THREAD_DESIRED_HZ);
-			// Resizes the number of digital outputs
-			reading.digital_outputs.resize(this->outputs_);
-		}
+		// READING PARAMETERS
+		sDefaultPort.assign(RLY08_DEFAULT_PORT);
+		private_node_handle_.param("port", sDevicePort, sDefaultPort);
+		private_node_handle_.param("outputs", outputs_, RLY08_DEFAULT_OUTPUTS);
+
+		rly08_set_digital_outputs_ = rly08_node_handle.advertiseService("set_digital_outputs", &rly08Node::set_digital_outputs, this);
+		rly08_get_sw_version_ = rly08_node_handle.advertiseService("get_sw_version", &rly08Node::get_sw_version, this);
+		rly08_io_data_pub_ = rly08_node_handle.advertise<robotnik_msgs::inputs_outputs>("status", 100);
+		self_test_.add("Connect Test", this, &rly08Node::ConnectTest);
+		diagnostic_.add(freq_diag_);
+		diagnostic_.add("Device Status", this, &rly08Node::deviceStatus);
+
+		rly_ = new rly08(sDevicePort.c_str(), RLY08_THREAD_DESIRED_HZ);
+		// Resizes the number of digital outputs
+		reading.digital_outputs.resize(this->outputs_);
+	}
 
 	~rly08Node() { Stop(); }
 
@@ -111,18 +104,19 @@ public:
 		int err_code = 0;
 
 		err_code = Stop();
-		if (err_code == ERROR) return err_code;
+		if (err_code == ERROR)
+			return err_code;
 
-		
 		err_code = rly_->Setup();
-		if (err_code == ERROR) return err_code;
+		if (err_code == ERROR)
+			return err_code;
 
 		// turns off all the outputs
 		rly_->RelayOff(0);
-		
-		err_code = rly_->Start();
-		if (err_code == ERROR) return err_code;
 
+		err_code = rly_->Start();
+		if (err_code == ERROR)
+			return err_code;
 
 		running = true;
 		return err_code;
@@ -130,7 +124,7 @@ public:
 
 	int Stop()
 	{
-		if(running)
+		if (running)
 		{
 			// turn off all the outputs
 			rly_->RelayOff(0);
@@ -142,23 +136,23 @@ public:
 
 	bool spin()
 	{
-		ros::Rate r(10.0);		
+		ros::Rate r(10.0);
 		// Using ros::isShuttingDown to avoid restarting the node during a shutdown-
-		while (!ros::isShuttingDown()) 
+		while (!ros::isShuttingDown())
 		{
 			if (Start() == OK)
 			{
-				while(node_handle_.ok())
+				while (node_handle_.ok())
 				{
-					  if(read_and_publish() < 0) 
-							break;
-					  self_test_.checkTest();
-					  diagnostic_.update();
-					  ros::spinOnce();
-					  r.sleep();
+					if (read_and_publish() < 0)
+						break;
+					self_test_.checkTest();
+					diagnostic_.update();
+					ros::spinOnce();
+					r.sleep();
 				}
-			} 
-			else 
+			}
+			else
 			{
 				// No need for diagnostic here since a broadcast occurs in start
 				// when there is an error.
@@ -166,7 +160,6 @@ public:
 				self_test_.checkTest();
 				ros::spinOnce();
 			}
-			
 		}
 		ROS_INFO("rly08Node::spin - calling stop !");
 		Stop();
@@ -185,14 +178,13 @@ public:
 			slow_count_++;
 		}
 
-		
 		int status = rly_->GetRelayStatus();
-		
-		for (int i=0; i<this->outputs_; i++)
+
+		for (int i = 0; i < this->outputs_; i++)
 		{
 			reading.digital_outputs[i] = status & 1;
 			status = status >> 1;
-		}		
+		}
 
 		double endtime = ros::Time::now().toSec();
 		if (endtime - starttime > 0.1)
@@ -217,10 +209,7 @@ public:
 		return 0;
 	}
 
-	
-
-
-	void ConnectTest(diagnostic_updater::DiagnosticStatusWrapper& status)
+	void ConnectTest(diagnostic_updater::DiagnosticStatusWrapper &status)
 	{
 		// connection test
 		// TBC
@@ -231,9 +220,9 @@ public:
 	{
 		if (!running)
 			status.summary(2, "rly08 is stopped");
-		else if(rly_->GetState() == FAILURE_STATE)
+		else if (rly_->GetState() == FAILURE_STATE)
 			status.summary(2, "rly08 is on FAILURE state");
-			
+
 		else if (!was_slow_.empty())
 		{
 			status.summary(1, "Excessive delay");
@@ -246,20 +235,19 @@ public:
 		status.add("Excessive delay", slow_count_);
 	}
 
-	
 	//! service to set the outputs value
 	bool set_digital_outputs(robotnik_msgs::set_digital_output::Request &req,
-		     robotnik_msgs::set_digital_output::Response &res)
+							 robotnik_msgs::set_digital_output::Response &res)
 	{
 		int iRelay = req.output;
 		int value = req.value;
-		
+
 		if (value != 0 && value != 1)
 		{
 			ROS_ERROR("Value must be 0 (off) or 1 (on).");
 			res.ret = false;
 		}
-		else if (iRelay<0 || iRelay> this->outputs_)
+		else if (iRelay < 0 || iRelay > this->outputs_)
 		{
 			ROS_ERROR("iRelay must be between 0 (all) and %d.", this->outputs_);
 			res.ret = false;
@@ -268,13 +256,13 @@ public:
 		{
 			rly_->RelayOff(iRelay);
 			res.ret = true;
-		}	
+		}
 		else
 		{
 			rly_->RelayOn(iRelay);
 			res.ret = true;
-		}	
-		
+		}
+
 		return true;
 	}
 
@@ -284,11 +272,9 @@ public:
 		rly_->GetSwVersion(&res.module_id, &res.sw_version);
 		return true;
 	}
-
-
 };
 
-int main(int argc, char** argv)
+int main(int argc, char **argv)
 {
 	ros::init(argc, argv, "rly08_node");
 
