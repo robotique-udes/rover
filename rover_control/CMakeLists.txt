@@ -37,8 +37,8 @@ include_directories(
 )
 
 add_executable(base_heartbeat src/base_heartbeat.cpp)
+add_dependencies(base_heartbeat ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 target_link_libraries(base_heartbeat ${catkin_LIBRARIES})
-add_dependencies(base_heartbeat rover_control_generate_messages_cpp)
 
 add_executable(teleop_joystick src/teleop_joystick.cpp)
 add_dependencies(teleop_joystick ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})

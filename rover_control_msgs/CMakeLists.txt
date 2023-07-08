@@ -8,6 +8,7 @@ find_package(catkin REQUIRED COMPONENTS
 add_message_files(
  FILES
  motor_cmd.msg
+ velocity_targets.msg
 )
 
 add_service_files(
