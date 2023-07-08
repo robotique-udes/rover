@@ -6,6 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   can_msgs
   std_msgs
   message_generation
+  rover_control_msgs
 )
 
 add_service_files(
@@ -34,11 +35,12 @@ catkin_package(
   #   include
   # LIBRARIES
   #   talon_lib
-  # DEPENDS
-  #   can_msgs
-  #   std_msgs
-  #   roscpp
-  #   message_runtime
+  DEPENDS
+    can_msgs
+    std_msgs
+    roscpp
+    message_runtime
+    rover_control_msgs
 )
 
 include_directories(

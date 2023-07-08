@@ -19,7 +19,6 @@
   <depend>can_msgs</depend>
   <depend>std_msgs</depend>
   <depend>ros_canopen</depend>
+  <depend>rover_control_msgs</depend>
 
-  <export>
-  </export>
 </package>

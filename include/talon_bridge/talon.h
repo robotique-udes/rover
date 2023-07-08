@@ -9,7 +9,7 @@
 #include "ros_talon/cmd.h"
 #include "ros_talon/SetPID.h"
 #include "ros_talon/FindCenter.h"
-#include "differential_drive/VelocityTargets.h"
+#include "rover_control_msgs/velocity_targets.h"
 
 #define MIN_SPEED	60 // Speed at which the motors will be driven during recovery routines.
 
