@@ -31,6 +31,12 @@
  * CONTRACT, STRICT LIABILITY, OR TORT (INCLUDING NEGLIGENCE OR OTHERWISE)
  * ARISING IN ANY WAY OUT OF THE USE OF THIS SOFTWARE, EVEN IF ADVISED OF THE
  * POSSIBILITY OF SUCH DAMAGE.
+ * 
+ * This version has been very sligthly modified to work with ROS noetic by 
+ * "Robotique UdeS" modifications includes:
+ * 	- Removed obsolete includes
+ *  - Changed Traces level to keep a cleaner terminal (more DEBUG less ERROR)
+ *  - More readable formatting
  *
  * \author Robotnik Automation SLL
  */
