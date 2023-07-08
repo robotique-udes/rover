@@ -33,17 +33,17 @@
  * POSSIBILITY OF SUCH DAMAGE.
  *
  * \author Robotnik Automation SLL
-*/
+ */
 
 #include <rly_08/rly08.h>
 
-
 /*!	\fn rly08::rly08(double hz)
  * 	\brief Public constructor
-*/
-rly08::rly08():SerialDevice(RLY08_DEFAULT_PORT, RLY08_DEFAULT_TRANSFERRATE, RLY08_DEFAULT_PARITY, RLY08_DEFAULT_DATA_SIZE, RLY08_THREAD_DESIRED_HZ){
+ */
+rly08::rly08() : SerialDevice(RLY08_DEFAULT_PORT, RLY08_DEFAULT_TRANSFERRATE, RLY08_DEFAULT_PARITY, RLY08_DEFAULT_DATA_SIZE, RLY08_THREAD_DESIRED_HZ)
+{
 	sComponentName.assign("rly08");
-	bRunning=false;
+	bRunning = false;
 	this->iStatus = 0;
 	// mutex intitialization
 	pthread_mutex_init(&mutexSerial, NULL);
@@ -51,10 +51,11 @@ rly08::rly08():SerialDevice(RLY08_DEFAULT_PORT, RLY08_DEFAULT_TRANSFERRATE, RLY0
 
 /*!	\fn rly08::rly08(const char *channel, int baud_rate, const char *parity, int datasize, double hz)
  * 	\brief Public constructor
-*/
-rly08::rly08(const char *device, int baud_rate, const char *parity, int datasize):SerialDevice(device, baud_rate, parity, datasize, RLY08_THREAD_DESIRED_HZ){
+ */
+rly08::rly08(const char *device, int baud_rate, const char *parity, int datasize) : SerialDevice(device, baud_rate, parity, datasize, RLY08_THREAD_DESIRED_HZ)
+{
 	sComponentName.assign("rly08");
-	bRunning=false;
+	bRunning = false;
 	this->iStatus = 0;
 	this->num_of_reading_errors = 0;
 	// mutex intitialization
@@ -63,10 +64,11 @@ rly08::rly08(const char *device, int baud_rate, const char *parity, int datasize
 
 /*!	\fn rly08::rly08(const char *device, double hz)
  * 	\brief Public constructor
-*/
-rly08::rly08(const char *device, double hz):SerialDevice(device, RLY08_DEFAULT_TRANSFERRATE, RLY08_DEFAULT_PARITY, RLY08_DEFAULT_DATA_SIZE, hz){
+ */
+rly08::rly08(const char *device, double hz) : SerialDevice(device, RLY08_DEFAULT_TRANSFERRATE, RLY08_DEFAULT_PARITY, RLY08_DEFAULT_DATA_SIZE, hz)
+{
 	sComponentName.assign("rly08");
-	bRunning=false;
+	bRunning = false;
 	this->iStatus = 0;
 	this->num_of_reading_errors = 0;
 	// mutex intitialization
@@ -75,8 +77,9 @@ rly08::rly08(const char *device, double hz):SerialDevice(device, RLY08_DEFAULT_T
 
 /*!	\fn rly08::~rly08()
  * 	\brief Public destructor
-*/
-rly08::~rly08(){
+ */
+rly08::~rly08()
+{
 
 	pthread_mutex_destroy(&mutexSerial);
 }
@@ -86,57 +89,64 @@ rly08::~rly08(){
  * \return OK
  * \return RUNNING if it's already running
  * \return NOT_INITIALIZED if the component is not initialized
-*/
-ReturnValue rly08::Start(){
-	if(SerialDevice::Start() == OK){
-		bRunning=true;
+ */
+ReturnValue rly08::Start()
+{
+	if (SerialDevice::Start() == OK)
+	{
+		bRunning = true;
 		return OK;
 	}
 	return ERROR;
 }
 
-
 /*!	\fn void rly08::InitState()
  * 	\brief Actions in the initial state
  *
-*/
-void rly08::InitState(){
+ */
+void rly08::InitState()
+{
 	ReadSwVersion();
-	
-    SwitchToState(READY_STATE);
+
+	SwitchToState(READY_STATE);
 }
 
 /*!	\fn void rly08::ReadyState()
  * 	\brief Actions in Ready state
 
 */
-void rly08::ReadyState(){
-	
-	//    if (!bRunning) return;	
+void rly08::ReadyState()
+{
+
+	//    if (!bRunning) return;
 	// Reads the status
-	if(ReadRelayStatus() == -1){
+	if (ReadRelayStatus() == -1)
+	{
 		this->num_of_reading_errors++;
-		if(num_of_reading_errors > RLY08_MAX_ERRORS){
+		if (num_of_reading_errors > RLY08_MAX_ERRORS)
+		{
 			ROS_ERROR("rly08::ReadyState: %d cycles with errors", this->num_of_reading_errors);
 			clock_gettime(threadData.pthreadPar.clock, &this->tRecovery);
 			SwitchToState(FAILURE_STATE);
 		}
-	}else
+	}
+	else
 		this->num_of_reading_errors = 0;
 }
 
 /*!	\fn void rly08::StandbyState()
  * 	\brief Actions in standby state
  */
-void rly08::StandbyState(){
-
+void rly08::StandbyState()
+{
 }
 
 /*!	\fn void rly08::FailureState()
  * 	\brief Actions in Failure State
  *         If time to recover, closes and tries to open the device again
-*/
-void rly08::FailureState(){
+ */
+void rly08::FailureState()
+{
 	struct timespec tNow;
 	long diff;
 
@@ -144,119 +154,128 @@ void rly08::FailureState(){
 
 	diff = calcdiff(tNow, tRecovery);
 
-	if(diff > RLY08_RECOVERY_TIME){
+	if (diff > RLY08_RECOVERY_TIME)
+	{
 		ROS_INFO("rly08::FailureState: Trying to recover from failure");
 		this->Close();
 		usleep(500000);
-		if((this->Open() == OK) && (this->Configure() == OK)){
+		if ((this->Open() == OK) && (this->Configure() == OK))
+		{
 			SwitchToState(READY_STATE);
 			this->num_of_reading_errors = 0;
-			//rlcLog->AddError((char*)"rly08::FailureState: Recovering from failure state");
+			// rlcLog->AddError((char*)"rly08::FailureState: Recovering from failure state");
 		}
 		tRecovery = tNow;
 	}
-
 }
 
 /*!	\fn void rly08::RelayOn()
  * 	\brief Relay On
  *         Swich On iRelay (0=ALL ON)
-*/
-void rly08::RelayOn(int iRelay){
-	int n=0;
-	char WriteBuffer[3]="\0";
+ */
+void rly08::RelayOn(int iRelay)
+{
+	int n = 0;
+	char WriteBuffer[3] = "\0";
 
-	WriteBuffer[0]=100+iRelay;
-	pthread_mutex_lock(&mutexSerial);		
-		WritePort(WriteBuffer,&n,1);
-	  	ROS_INFO("rly08::Switch On Relay %d",iRelay);
+	WriteBuffer[0] = 100 + iRelay;
+	pthread_mutex_lock(&mutexSerial);
+	WritePort(WriteBuffer, &n, 1);
+	ROS_INFO("rly08::Switch On Relay %d", iRelay);
 	pthread_mutex_unlock(&mutexSerial);
-    	
-    
 }
 
 /*!	\fn void rly08::RelayOff()
  * 	\brief Relay Off
  *         Swich Off iRelay (0=ALL Off)
-*/
-void rly08::RelayOff(int iRelay){
-	int n=0;
-    char WriteBuffer[3]="\0";
-	WriteBuffer[0]=110+iRelay;
+ */
+void rly08::RelayOff(int iRelay)
+{
+	int n = 0;
+	char WriteBuffer[3] = "\0";
+	WriteBuffer[0] = 110 + iRelay;
 
-	pthread_mutex_lock(&mutexSerial);		
-	    	WritePort(WriteBuffer,&n,1);
-	    	ROS_INFO("rly08::Switch Off Relay %d",iRelay);	
-	pthread_mutex_unlock(&mutexSerial);		
+	pthread_mutex_lock(&mutexSerial);
+	WritePort(WriteBuffer, &n, 1);
+	ROS_INFO("rly08::Switch Off Relay %d", iRelay);
+	pthread_mutex_unlock(&mutexSerial);
 }
 
 /*!	\fn void rly08::GetVersion()
-  * 	\brief Returns the Version and ModuleID
-*/
- void rly08::GetSwVersion(int *iMod_ID, int *iVer){
- 
-	*iMod_ID= this->iModuleID;
-	*iVer= this->iVersion;
-		
+ * 	\brief Returns the Version and ModuleID
+ */
+void rly08::GetSwVersion(int *iMod_ID, int *iVer)
+{
+
+	*iMod_ID = this->iModuleID;
+	*iVer = this->iVersion;
 }
 
 /*!	\fn void rly08::ReadSwVersion()
-  * 	\brief Performs the call to get Version and ModuleID
-*/
- void rly08::ReadSwVersion(){
-  //    char cAux[LOG_STRING_LENGTH] = "\0";
-	int n=0;
-	char WriteBuffer[3]="\0";
-	char ReadBuffer[3]="\0";
+ * 	\brief Performs the call to get Version and ModuleID
+ */
+void rly08::ReadSwVersion()
+{
+	//    char cAux[LOG_STRING_LENGTH] = "\0";
+	int n = 0;
+	char WriteBuffer[3] = "\0";
+	char ReadBuffer[3] = "\0";
 
-	WriteBuffer[0]=90;
-	pthread_mutex_lock(&mutexSerial);		
-		WritePort(WriteBuffer,&n,1);
-		usleep(500000);
-		if((ReadPort(ReadBuffer, &n, 64) == OK) && n > 0){
-			this->iModuleID=(int)ReadBuffer[0];
-			this->iVersion=(int)ReadBuffer[1];
-			//sprintf(cAux,"rly08::Get Version V:%d, ID:%d ",*iVer,*iMod_ID);
-			//rlcLog->AddEvent(cAux);
-		} else {
-			ROS_ERROR("rly08::ReadSwVersion: Can't Get Version ");
-			//rlcLog->AddError(cAux);
-		}
-	pthread_mutex_unlock(&mutexSerial);		
+	WriteBuffer[0] = 90;
+	pthread_mutex_lock(&mutexSerial);
+	WritePort(WriteBuffer, &n, 1);
+	usleep(500000);
+	if ((ReadPort(ReadBuffer, &n, 64) == OK) && n > 0)
+	{
+		this->iModuleID = (int)ReadBuffer[0];
+		this->iVersion = (int)ReadBuffer[1];
+		// sprintf(cAux,"rly08::Get Version V:%d, ID:%d ",*iVer,*iMod_ID);
+		// rlcLog->AddEvent(cAux);
+	}
+	else
+	{
+		ROS_ERROR("rly08::ReadSwVersion: Can't Get Version ");
+		// rlcLog->AddError(cAux);
+	}
+	pthread_mutex_unlock(&mutexSerial);
 	return;
 }
 
-
 /*!	\fn int rly08::GetRelaysStatus()
-  *  \brief Gets Relays Status
-*/
-unsigned int rly08::GetRelayStatus(){
-    return this->iStatus;
+ *  \brief Gets Relays Status
+ */
+unsigned int rly08::GetRelayStatus()
+{
+	return this->iStatus;
 }
 
 /*!	\fn int rly08::ReadRelayStatus()
-  *  \brief Reads Relays Status
-*/
-int rly08::ReadRelayStatus(){
-	int n=0, ret = 0;
-	char WriteBuffer[3]="\0";
-	char ReadBuffer[3]="\0";
+ *  \brief Reads Relays Status
+ */
+int rly08::ReadRelayStatus()
+{
+	int n = 0, ret = 0;
+	char WriteBuffer[3] = "\0";
+	char ReadBuffer[3] = "\0";
 
-	WriteBuffer[0]=91;
-	
-	pthread_mutex_lock(&mutexSerial);		
+	WriteBuffer[0] = 91;
 
-		WritePort(WriteBuffer,&n,1);
+	pthread_mutex_lock(&mutexSerial);
 
-		if((ReadPort(ReadBuffer, &n, 64) == OK) && n > 0){
-			this->iStatus=ReadBuffer[0];
-			//ROS_INFO("rly08::Relays Status %d",iStatus);
-		} else {
-			ROS_ERROR("rly08::ReadRelayStatus: Can't Get Relays Status");
-			ret = -1;
-		}
+	WritePort(WriteBuffer, &n, 1);
 
-	pthread_mutex_unlock(&mutexSerial);		
-	
+	if ((ReadPort(ReadBuffer, &n, 64) == OK) && n > 0)
+	{
+		this->iStatus = ReadBuffer[0];
+		// ROS_INFO("rly08::Relays Status %d",iStatus);
+	}
+	else
+	{
+		ROS_ERROR("rly08::ReadRelayStatus: Can't Get Relays Status");
+		ret = -1;
+	}
+
+	pthread_mutex_unlock(&mutexSerial);
+
 	return ret;
 }
