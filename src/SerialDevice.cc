@@ -266,7 +266,7 @@ ReturnValue SerialDevice::Configure()
 
         if (SetTermSpeed(iBaudRate) == ERROR)
         {
-            ROS_ERROR("%s::Configure: Error in %s setting terminal speed (%d) ", sComponentName.c_str(), cDevice, iBaudRate);
+            ROS_ERROR_THROTTLE(10, "%s::Configure: Error in %s setting terminal speed (%d) ", sComponentName.c_str(), cDevice, iBaudRate);
             return ERROR;
         }
 
@@ -310,7 +310,7 @@ ReturnValue SerialDevice::SetTermSpeed(int speed)
         break;
     default:
         term_speed = B19200;
-        ROS_ERROR("%s::SetTermSpeed: Unknown speed %d speedL. Setting default value to 19200", sComponentName.c_str(), speed);
+        ROS_ERROR_THROTTLE(10, "%s::SetTermSpeed: Unknown speed %d speedL. Setting default value to 19200", sComponentName.c_str(), speed);
         // std::cout << "SerialDevice::SetTermSpeed: Unknown speed ("<< speed <<") speedL Setting default value ("<< term_speed <<")"<< std::endl;
         break;
     }
@@ -330,13 +330,13 @@ ReturnValue SerialDevice::SetTermSpeed(int speed)
         // cfmakeraw( &term );
         if (cfsetispeed(&term, term_speed) < 0 || cfsetospeed(&term, term_speed) < 0)
         {
-            ROS_ERROR("%s::SetTermSpeed: Failed to set serial baudrate", sComponentName.c_str());
+            ROS_ERROR_THROTTLE(10, "%s::SetTermSpeed: Failed to set serial baudrate", sComponentName.c_str());
             return ERROR;
         }
 
         if (tcsetattr(fd, TCSAFLUSH, &term) < 0)
         {
-            ROS_ERROR("%s::SetTermSpeed: Unable to set device attributes", sComponentName.c_str());
+            ROS_ERROR_THROTTLE(10, "%s::SetTermSpeed: Unable to set device attributes", sComponentName.c_str());
             return ERROR;
         }
         // std::cout << "SerialDevice::SetTermSpeed: Communication rate changed to " << speed << std::endl;
@@ -344,7 +344,7 @@ ReturnValue SerialDevice::SetTermSpeed(int speed)
         break;
 
     default:
-        ROS_ERROR("%s::SetTermSpeed:  Unknown speed", sComponentName.c_str());
+        ROS_ERROR_THROTTLE(10, "%s::SetTermSpeed:  Unknown speed", sComponentName.c_str());
         return ERROR;
         break;
     }
@@ -373,7 +373,7 @@ ReturnValue SerialDevice::Open()
     if (fd == -1)
     {
         // std::cout << "SerialDevice::OpenPort: Error opening " << cDevice << " port" << std::endl;
-        ROS_DEBUG("%s::Open: Error opening %s port on mode %d", sComponentName.c_str(), cDevice, iOpenMode);
+        ROS_ERROR_THROTTLE(10, "%s::Open: Error opening %s port on mode %d", sComponentName.c_str(), cDevice, iOpenMode);
         return ERROR; // invalid device file
     }
     else
@@ -397,7 +397,7 @@ ReturnValue SerialDevice::Close()
 
     if (close(fd) != 0)
     {
-        ROS_ERROR("%s::ClosePort: Error closing port %s", sComponentName.c_str(), cDevice);
+        ROS_ERROR_THROTTLE(10, "%s::ClosePort: Error closing port %s", sComponentName.c_str(), cDevice);
         return ERROR;
     }
     else
@@ -474,7 +474,7 @@ ReturnValue SerialDevice::ReadPort(char *result, int *read_bytes, int num_bytes)
     }
     else
     {
-        ROS_ERROR("%s::ReadPort: Device %s not ready", sComponentName.c_str(), cDevice);
+        ROS_ERROR_THROTTLE(10, "%s::ReadPort: Device %s not ready", sComponentName.c_str(), cDevice);
         return NOT_INITIALIZED;
     }
 

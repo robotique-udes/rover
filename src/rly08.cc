@@ -131,7 +131,7 @@ void rly08::ReadyState()
 		this->num_of_reading_errors++;
 		if (num_of_reading_errors > RLY08_MAX_ERRORS)
 		{
-			ROS_ERROR("rly08::ReadyState: %d cycles with errors", this->num_of_reading_errors);
+			ROS_ERROR_THROTTLE(10, "rly08::ReadyState: %d cycles with errors", this->num_of_reading_errors);
 			clock_gettime(threadData.pthreadPar.clock, &this->tRecovery);
 			SwitchToState(FAILURE_STATE);
 		}
@@ -240,7 +240,7 @@ void rly08::ReadSwVersion()
 	}
 	else
 	{
-		ROS_ERROR("rly08::ReadSwVersion: Can't Get Version ");
+		ROS_ERROR_THROTTLE(10, "rly08::ReadSwVersion: Can't Get Version ");
 		// rlcLog->AddError(cAux);
 	}
 	pthread_mutex_unlock(&mutexSerial);
@@ -277,7 +277,7 @@ int rly08::ReadRelayStatus()
 	}
 	else
 	{
-		ROS_ERROR("rly08::ReadRelayStatus: Can't Get Relays Status");
+		ROS_ERROR_THROTTLE(10, "rly08::ReadRelayStatus: Can't Get Relays Status");
 		ret = -1;
 	}
 
