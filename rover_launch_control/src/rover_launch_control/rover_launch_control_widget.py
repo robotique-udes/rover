@@ -5,7 +5,9 @@ import rospkg
 import rospy
 import roslaunch
 import rosparam
+import rostopic
 import os
+import time
 from python_qt_binding import loadUi
 from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication
@@ -39,6 +41,47 @@ class LaunchInterface():
             parameters = ['local_only:=' + launchmode_local]
 
         self.launchfile = [(self.launchfile[0], parameters)]
+
+class BandwidthInterface:
+    def __init__(self, topic_name, window: float = 5.0):
+        self.topic_name = topic_name
+        self.window = window
+        self.bw_api = rostopic.ROSTopicBandwidth(self.window);
+        self.sub = rospy.Subscriber(self.topic_name, rospy.AnyMsg, self.bw_api.callback)
+        self._flag: bool = False
+        self.bw = None
+        self.t0 = None
+        self.tn = None
+
+    def get_bw(self) -> int :
+        """print the average publishing rate to screen"""
+        if len(self.bw_api.times) < 2:
+            return
+        with self.bw_api.lock:
+            n = len(self.bw_api.times)
+            tn = time.time()
+            t0 = self.bw_api.times[0]
+            
+            total = sum(self.bw_api.sizes)
+            bytes_per_s = total / (tn - t0)
+            mean = total / n
+
+            # min and max
+            max_s = max(self.bw_api.sizes)
+            min_s = min(self.bw_api.sizes)
+
+        #min/max and even mean are likely to be much smaller, but for now I prefer unit consistency
+        if bytes_per_s < 1000:
+            bw, mean, min_s, max_s = ["%.2fB"%v for v in [bytes_per_s, mean, min_s, max_s]]
+        elif bytes_per_s < 1000000:
+            bw, mean, min_s, max_s = ["%.2fKB"%(v/1000) for v in [bytes_per_s, mean, min_s, max_s]]  
+        else:
+            bw, mean, min_s, max_s = ["%.2fMB"%(v/1000000) for v in [bytes_per_s, mean, min_s, max_s]]
+        
+        self.bw = bw
+        self.t0 = t0
+        self.tn = tn
+        return
 
 class RoverLaunchControlWidget(QtWidgets.QWidget):
     
@@ -140,6 +183,13 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                                                                                    self.cb_cam_sonix_framerate,
                                                                                    self.pb_current_cam_sonix_framerate))
 
+        #Periodic tasks
+        cam_arducam_bandwidth = BandwidthInterface("/cam_arducam/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_arducam_bandwidth, self.pb_current_cam_arducam_bw));
+    
+        cam_sonix_bandwidth = BandwidthInterface("/cam_sonix/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_sonix_bandwidth, self.pb_current_cam_sonix_bw));
+
     def localModeSelection(self, value: bool, pb_toggle_self: QPushButton, pb_toggle_friends: "list[str]"):
         global launchmode_local
         launchmode_local = str(value)
@@ -205,8 +255,8 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 rospy.logwarn("Selected resolution: " + resolution + "(" + param_imageWidth + "x" + param_imageHeight + ")")
                 rospy.logwarn("selected framerate: " + str(framerate))
 
-                pb_current_framerate.setText(str(framerate))
-                pb_current_resolution.setText(resolution)
+                pb_current_framerate.setText("Fps: " + str(framerate))
+                pb_current_resolution.setText("Res: " + resolution)
             else:
                 pb_current_framerate.setText("")
                 pb_current_resolution.setText("")
@@ -229,3 +279,20 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 self.launchCameraStream(cameraName, cameraFramerate, launch_interface, button, cb_resolution, pb_current_resolution, cb_framerate, pb_current_framerate)
         else:
             rospy.logwarn(cameraName + " is not started yet")    
+
+    def bandwidthInfoUpdate(self, timer_obj: rospy.Timer, bandwidth_interface: BandwidthInterface, pb_current_bw: QPushButton):
+        bandwidth_interface.get_bw();
+                                              # No news msgs in last 2 seconds
+        if bandwidth_interface.bw == None or bandwidth_interface.tn == None or bandwidth_interface.t0 == None:
+            if not bandwidth_interface._flag:
+                pb_current_bw.setText("")
+                rospy.logdebug("Topic: " + bandwidth_interface.topic_name + " not published yet")
+                bandwidth_interface._flag = True
+        elif (bandwidth_interface.tn-bandwidth_interface.t0) > bandwidth_interface.window:
+            if not bandwidth_interface._flag:
+                pb_current_bw.setText("")
+                rospy.logdebug("Topic " + bandwidth_interface.topic_name + " stopped")
+                bandwidth_interface._flag = True
+        else:
+            bandwidth_interface._flag = False
+            pb_current_bw.setText(str(bandwidth_interface.bw) + "/s")
