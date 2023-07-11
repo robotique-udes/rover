@@ -19,7 +19,6 @@
         <param name="strength_RR" value="1.0" />
     </node>
 
-    <!-- Relay board -->
     <arg name="relay_board_port"
         default="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00" />
 
