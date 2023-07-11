@@ -1,4 +1,0 @@
-<?xml version='1.0'?>
-<launch>
-  <node name = "rover_dashboard" pkg = "rqt_gui" type = "rqt_gui" respawn = "false" output = "screen" args = "--perspective-file $(find rover_cam_control)/resource/rover_control.perspective"/>
-</launch>
