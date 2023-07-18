@@ -13,7 +13,7 @@ add_message_files(
 
 add_service_files(
  FILES
- panorama.srv
+ camera_control.srv
 )
 
 generate_messages(
