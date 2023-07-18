@@ -157,7 +157,6 @@ class RoverRelayControlWidget(QtWidgets.QWidget):
         else:
             self.bouton_activer_lumieres.setStyleSheet(style_default)
 
-    
     # def activate_relay_callback(self, relay, state):
     #         rospy.wait_for_service('/rly_08_node/set_digital_outputs')
     #         outputs = rospy.ServiceProxy('/rly_08_node/set_digital_outputs', set_digital_output)
