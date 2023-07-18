@@ -6,6 +6,6 @@
         <arg name="local_only" value="$(arg local_only)" />
     </include>
 
-    <node machine="base" pkg="rover_control" name="panorama_server" type="panorama_server" output="screen"/>
+    <node machine="base" pkg="rover_control" name="camera_control_server" type="camera_control_server" output="screen"/>
 
 </launch>
