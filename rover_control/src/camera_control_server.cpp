@@ -163,7 +163,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
 
         std::vector<int> marker_ids = getMarkerId(img);
 
-        if (static_cast<int>(marker_ids.size()) != 0)
+        for(;static_cast<int>(marker_ids.size()) != 0;)
         {
             res.detected_aruco_marker.push_back(static_cast<uint8_t>(marker_ids.back()));
             marker_ids.pop_back();
