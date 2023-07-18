@@ -1,6 +1,6 @@
 <library path="src">
 <!-- type=ros package, filename, className -->
-  <class name="RoverRelayControlPlugin" type="rover_relay_control.rover_relay_control_plugin.RoverRelayControlPlugin" base_class_type="rqt_gui_py::Plugin">
+  <class name="RoverControllerGuiPlugin" type="rover_controller_gui.rover_controller_gui_plugin.RoverControllerGuiPlugin" base_class_type="rqt_gui_py::Plugin">
     <description>
       UdeS Rover User Interface
     </description>
@@ -8,7 +8,7 @@
       <group>
         <label>Robotique UdeS</label>
       </group>
-      <label>Rover Relay Control</label>
+      <label>Rover Controller GUI</label>
     </qtgui>
   </class>
 </library>

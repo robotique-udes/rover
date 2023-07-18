@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rover_relay_control)
+project(rover_controller_gui)
 
 find_package(catkin REQUIRED COMPONENTS
   roscpp
@@ -17,7 +17,7 @@ include_directories(
 )
 
 install(PROGRAMS
-  scripts/rover_relay_control
+  scripts/rover_controller_gui
   DESTINATION ${CATKIN_PACKAGE_BIN_DESTINATION}
 )
 

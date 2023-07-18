@@ -2,9 +2,10 @@
 
 import sys
 
-from rover_relay_control.rover_relay_control_Plugin import RoverRelayControlPlugin
 from rqt_gui.main import Main
+import rospy
 
-plugin = 'rover_relay_control'
+plugin = 'rover_controller_gui'
+
 main = Main(filename=plugin)
 sys.exit(main.main(sys.argv, standalone=plugin))

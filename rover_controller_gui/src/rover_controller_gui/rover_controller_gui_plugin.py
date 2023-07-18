@@ -7,16 +7,16 @@ import rosnode
 from rospkg import RosPack
 from python_qt_binding import loadUi
 from PyQt5 import QtCore, QtGui, QtWidgets
-from .rover_relay_control_widget import RoverRelayControlWidget
+from .rover_controller_gui_widget import RoverControllerGuiWidget
 from qt_gui.plugin import Plugin
 import subprocess
 
-class RoverRelayControlPlugin(Plugin):
+class RoverControllerGuiPlugin(Plugin):
 
     def __init__(self, context):
-        super(RoverRelayControlPlugin, self).__init__(context)
+        super(RoverControllerGuiPlugin, self).__init__(context)
         # Give QObjects reasonable names
-        self.setObjectName('RoverRelayControl')
+        self.setObjectName('RoverControllerGui')
 
         # Process standalone plugin command-line arguments
         from argparse import ArgumentParser
@@ -29,7 +29,7 @@ class RoverRelayControlPlugin(Plugin):
             print('unknowns: ', unknowns)
 
         # Create QWidget
-        self._widget = RoverRelayControlWidget()
+        self._widget = RoverControllerGuiWidget()
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() +
                                         (' (%d)' % context.serial_number()))

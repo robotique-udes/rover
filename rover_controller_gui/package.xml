@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <package format="2">
-  <name>rover_relay_control</name>
+  <name>rover_controller_gui</name>
   <version>0.0.0</version>
-  <description>The rover_relay_control package</description>
+  <description>The rover_controller_gui package</description>
 
-  <maintainer email="aude@todo.todo">aude</maintainer>
+  <maintainer email="simon@todo.todo">simon</maintainer>
 
   <license>TODO</license>
 
@@ -21,5 +21,6 @@
 
   <export>
     <rqt_gui plugin="${prefix}/plugin.xml" />
+
   </export>
 </package>

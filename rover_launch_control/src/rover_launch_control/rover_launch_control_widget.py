@@ -13,8 +13,6 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication
 from threading import Lock
 from copy import copy
-from robotnik_msgs.msg import inputs_outputs
-from robotnik_msgs.srv import set_digital_output
 import rosservice
 
 # Styling "MACROS"
@@ -23,10 +21,6 @@ STYLE_SELECTED = "color: white; background-color: green"
 STYLE_DISABLE = "color: white; background-color: grey"
 STYLE_LIMITING = "color: black; background-color: yellow"
 STYLE_WARN = "color: black; background-color: rgb(255, 124, 0);"
-
-# Constant
-RELAY_BOARD_SERVICE_NAME = "/rly_08_node/set_digital_outputs"
-RELAY_BOARD_MESSAGE_NAME = "/rly_08_node/status"
 
 # Global Variables
 launchmode_local = 'false'
@@ -198,10 +192,6 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         cam_sonix_bandwidth = BandwidthInterface("/cam_sonix/packet/compressed")
         self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_sonix_bandwidth, self.pb_current_cam_sonix_bw));
 
-        #Lights
-        self.pb_lights.released.connect(lambda: self.toggleLights(self.pb_lights, 1))
-        self.light_status_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateLightStatus(self.light_status_updater, self.pb_lights, 1))
-
     def localModeSelection(self, value: bool, pb_toggle_self: QPushButton, pb_toggle_friends: "list[str]"):
         global launchmode_local
         launchmode_local = str(value)
@@ -308,40 +298,3 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         else:
             bandwidth_interface._flag = False
             pb_current_bw.setText(str(bandwidth_interface.bw) + "/s")
-
-    def updateLightStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
-        # Not locking way to check for service existing
-        lst_services: list = rosservice.get_service_list()
-        if RELAY_BOARD_SERVICE_NAME not in lst_services:
-            button.setStyleSheet(STYLE_DISABLE)
-        
-        # Actual callback
-        try:
-            data: inputs_outputs = rospy.wait_for_message(RELAY_BOARD_MESSAGE_NAME, inputs_outputs, rospy.Duration(0.1))
-
-            if data.digital_outputs[output_index]:
-                button.setStyleSheet(STYLE_SELECTED)
-            else:
-                button.setStyleSheet(STYLE_DEFAULT)
-
-        except:
-            rospy.logwarn_throttle(10, "Error rover_launch_control can't get relay status")
-
-    def toggleLights(self, button: QPushButton, index: int):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        try :
-            rospy.wait_for_service(RELAY_BOARD_SERVICE_NAME, rospy.Duration(1.0))
-
-            set_digital_output_service: set_digital_output = rospy.ServiceProxy(RELAY_BOARD_SERVICE_NAME, set_digital_output)
-            
-            data: inputs_outputs = rospy.wait_for_message(RELAY_BOARD_MESSAGE_NAME, inputs_outputs, rospy.Duration(1.0))
-            if data.digital_outputs.digital_outputs[index] == True:
-                set_digital_output_service(index, False)
-            else:
-                set_digital_output_service(index, True)
-
-        except:
-            rospy.logwarn("Error calling relay board service")
-            button.setStyleSheet(STYLE_WARN)
-        finally:
-            QApplication.restoreOverrideCursor()
