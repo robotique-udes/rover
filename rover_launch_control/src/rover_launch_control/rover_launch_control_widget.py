@@ -88,11 +88,12 @@ class BandwidthInterface:
 class RoverLaunchControlWidget(QtWidgets.QWidget):
     
     def __init__(self):
+        self.name = "RoverLaunchControlWidget"
         super(RoverLaunchControlWidget, self).__init__()
 
         ui_file = os.path.join(rospkg.RosPack().get_path('rover_launch_control'), 'resource', 'rover_launch_control.ui')
         loadUi(ui_file, self)
-        self.setObjectName('RoverLaunchControlWidget')
+        self.setObjectName(self.name)
 
         # I don't really understands qt and ros python threading so putting some locks on all button callback to only 
         # execute one at a time (probably useless but more secure nonetheless)
@@ -186,7 +187,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
 
 
         #Periodic tasks
-        cam_arducam_bandwidth = BandwidthInterface("/cam_arducam/packet/compressed")
+        cam_arducam_bandwidth = BandwidthInterface("/cam_ardu   cam/packet/compressed")
         self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_arducam_bandwidth, self.pb_current_cam_arducam_bw));
     
         cam_sonix_bandwidth = BandwidthInterface("/cam_sonix/packet/compressed")
@@ -198,7 +199,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         pb_toggle_self.setStyleSheet(STYLE_SELECTED)
         for friends in pb_toggle_friends:
             friends.setStyleSheet(STYLE_DEFAULT)
-        rospy.loginfo("Already launched nodes needs to be restarted for mode to apply")
+        rospy.loginfo(rospy.get_name() + "(" + self.name + "): " + "Already launched nodes needs to be restarted for mode to apply")
 
     def launchFile(self, launch_interface: LaunchInterface, button: QPushButton):
         with self.lockLaunchFile:
@@ -209,14 +210,14 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                     launch_interface.launch_handler = roslaunch.parent.ROSLaunchParent(launch_interface.uuid, launch_interface.launchfile)
                     launch_interface.launch_handler_started = True
                     button.setStyleSheet(STYLE_SELECTED)
-                    rospy.loginfo("Starting " + launch_interface.launchfile[0][0] + ' ' + ' '.join(launch_interface.launchfile[0][1]))
+                    rospy.loginfo(rospy.get_name() + "(" + self.name + "): " + "Starting " + launch_interface.launchfile[0][0] + ' ' + ' '.join(launch_interface.launchfile[0][1]))
                     launch_interface.launch_handler.start()
                 else:
                     launch_interface.launch_handler_started = False
                     button.setStyleSheet(STYLE_DEFAULT)
                     launch_interface.launch_handler.shutdown()
 
-                    rospy.logwarn(launch_interface.name_pkg + ' ' + launch_interface.name_launchfile + '.launch shutdowned')
+                    rospy.logwarn(rospy.get_name() + "(" + self.name + "): " + launch_interface.name_pkg + ' ' + launch_interface.name_launchfile + '.launch shutdowned')
             except:
                 button.setStyleSheet(STYLE_WARN);
             
@@ -240,13 +241,13 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 rosparam.set_param(cameraName + '/compressed_packet_controller/skip', str(param_skip))
                 
                 if ((param_skip + 1) * framerate != cameraFramerate):
-                    rospy.logerr("Wrong framerate parameters node can't start")
+                    rospy.logerr(rospy.get_name() + "(" + self.name + "): " + "Wrong framerate parameters node can't start")
                     return
 
                 try:
                     resolution = cb_resolution.currentText()
                 except KeyError:
-                    rospy.logerr("Selected resolution isn't defined ")
+                    rospy.logerr(rospy.get_name() + "(" + self.name + "): " + "Selected resolution isn't defined ")
                     return
                 
                 param_imageWidth = self.resolutionDict[resolution][0]
@@ -254,8 +255,8 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 rosparam.set_param('/' + cameraName + '/hardware/image_width', param_imageWidth)
                 rosparam.set_param('/' + cameraName + '/hardware/image_height', param_imageHeight)
                 
-                rospy.logwarn("Selected resolution: " + resolution + "(" + param_imageWidth + "x" + param_imageHeight + ")")
-                rospy.logwarn("selected framerate: " + str(framerate))
+                rospy.logwarn(rospy.get_name() + "(" + self.name + "): " + "Selected resolution: " + resolution + "(" + param_imageWidth + "x" + param_imageHeight + ")")
+                rospy.logwarn(rospy.get_name() + "(" + self.name + "): " + "selected framerate: " + str(framerate))
 
                 pb_current_framerate.setText("Fps: " + str(framerate))
                 pb_current_resolution.setText("Res: " + resolution)
@@ -280,7 +281,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
             for i in range(2):
                 self.launchCameraStream(cameraName, cameraFramerate, launch_interface, button, cb_resolution, pb_current_resolution, cb_framerate, pb_current_framerate)
         else:
-            rospy.logwarn(cameraName + " is not started yet")    
+            rospy.logwarn(rospy.get_name() + "(" + self.name + "): " + cameraName + " is not started yet")    
 
     def bandwidthInfoUpdate(self, timer_obj: rospy.Timer, bandwidth_interface: BandwidthInterface, pb_current_bw: QPushButton):
         bandwidth_interface.get_bw();
@@ -288,12 +289,12 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         if bandwidth_interface.bw == None or bandwidth_interface.tn == None or bandwidth_interface.t0 == None:
             if not bandwidth_interface._flag:
                 pb_current_bw.setText("")
-                rospy.logdebug("Topic: " + bandwidth_interface.topic_name + " not published yet")
+                rospy.logdebug(rospy.get_name() + "(" + self.name + "): " + "Topic: " + bandwidth_interface.topic_name + " not published yet")
                 bandwidth_interface._flag = True
         elif (bandwidth_interface.tn-bandwidth_interface.t0) > bandwidth_interface.window:
             if not bandwidth_interface._flag:
                 pb_current_bw.setText("")
-                rospy.logdebug("Topic " + bandwidth_interface.topic_name + " stopped")
+                rospy.logdebug(rospy.get_name() + "(" + self.name + "): " + "Topic " + bandwidth_interface.topic_name + " stopped")
                 bandwidth_interface._flag = True
         else:
             bandwidth_interface._flag = False

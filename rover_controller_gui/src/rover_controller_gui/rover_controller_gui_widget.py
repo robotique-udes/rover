@@ -11,6 +11,7 @@ from PyQt5 import QtWidgets, QtCore
 from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication
 from robotnik_msgs.msg import inputs_outputs
 from robotnik_msgs.srv import set_digital_output
+from std_srvs.srv import SetBool
 
 from rover_control_msgs.srv import camera_control
 from rover_control_msgs.srv import camera_controlRequest
@@ -26,23 +27,27 @@ STYLE_WARN = "color: black; background-color: rgb(255, 124, 0);"
 # Constant
 RELAY_BOARD_SERVICE_NAME = "/rly_08_node/set_digital_outputs"
 RELAY_BOARD_MESSAGE_NAME = "/rly_08_node/status"
-
 CAMERA_CONTROL_SERVICE_NAME = "/camera_control_server"
+SET_ARM_JOY_SERVICE_NAME = "/set_arm_joy"
 
 class RoverControllerGuiWidget(QtWidgets.QWidget):
     
     def __init__(self):
+        self.name: str = "RoverControllerGuiWidget"
         super(RoverControllerGuiWidget, self).__init__()
 
         ui_file = os.path.join(rospkg.RosPack().get_path('rover_controller_gui'), 'resource', 'rover_controller_gui.ui')
         loadUi(ui_file, self)
         self.setObjectName('RoverControllerGuiWidget')
 
-        #Lights
+        # Lights
         self.pb_lights.released.connect(lambda: self.toggleLights(self.pb_lights, 1))
         self.light_status_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateLightStatus(self.light_status_updater, self.pb_lights, 1))
 
-        #Aruco Marker live feed
+        # Arm Joy
+        self.pb_set_arm_joy.released.connect(lambda: self.ctrl_joy_demux_callback(self.pb_set_arm_joy))
+
+        # Aruco Marker live feed
         self.last_detected_marker = list()
         self.aruco_marker_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateDetectedArucoMarker(self.aruco_marker_updater, self.pb_aruco_marker))
 
@@ -60,7 +65,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
                 button.setStyleSheet(STYLE_DEFAULT)
 
         except:
-            rospy.logwarn_throttle(10, "Error rover_launch_control can't get relay status")
+            rospy.logwarn_throttle(10, rospy.get_name() + "|" + self.name + " " + "Error rover_launch_control can't get relay status")
 
     def toggleLights(self, button: QPushButton, index: int):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
@@ -91,12 +96,9 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
             detected_aruco_marker = list(data.detected_aruco_marker)
 
             feedback: str = ""
-            rospy.loginfo(str(detected_aruco_marker))
             for aruco_marker_ids in detected_aruco_marker:
                 if aruco_marker_ids in self.last_detected_marker:
                     feedback = feedback + str(aruco_marker_ids) + " | "
-
-            rospy.loginfo(feedback)
 
             if feedback != "":
                 feedback = feedback[:-2]
@@ -108,7 +110,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
             self.last_detected_marker = detected_aruco_marker
 
         except:
-            rospy.logwarn("Error while trying to get aruco markers")
+            rospy.logwarn(rospy.get_name() + "|" + self.name + " " + "Error while trying to get aruco markers")
 
     # Not locking way to check for service existing
     def checkIfServicePosted(self, service_name: str, button: QPushButton) -> bool:
@@ -117,3 +119,22 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
             button.setStyleSheet(STYLE_DISABLE)
             return False
         return True
+
+    def ctrl_joy_demux_callback(self, button: QPushButton):
+        if not self.checkIfServicePosted(SET_ARM_JOY_SERVICE_NAME, button):
+            button.setStyleSheet(STYLE_DISABLE)
+            return
+        
+        try:
+            rospy.wait_for_service(SET_ARM_JOY_SERVICE_NAME, rospy.Duration(1.0))
+            
+            if button.styleSheet() != STYLE_SELECTED:
+                if(rospy.ServiceProxy(SET_ARM_JOY_SERVICE_NAME, SetBool)(True)):
+                    button.setStyleSheet(STYLE_SELECTED)
+            else:
+                rospy.ServiceProxy(SET_ARM_JOY_SERVICE_NAME, SetBool)(False)
+                button.setStyleSheet(STYLE_DEFAULT)
+
+        except:
+            rospy.logerr(rospy.get_name() + "(" + self.name + "): " + "Error changing joy demux target")
+            button.setStyleSheet(STYLE_WARN)
