@@ -31,10 +31,7 @@ generate_messages(
 )
 
 catkin_package(
-  # INCLUDE_DIRS
-  #   include
-  # LIBRARIES
-  #   talon_lib
+  INCLUDE_DIRS include
   DEPENDS
     can_msgs
     std_msgs
@@ -54,16 +51,17 @@ add_library(talon_lib
   src/TalonModes.cpp
   src/TalonCfg.cpp
 )
+
+add_dependencies(talon_lib ${catkin_EXPORTED_TARGETS} ros_talon_generate_messages_cpp)
 target_link_libraries(talon_lib
   ${catkin_LIBRARIES}
+  ${roscpp_LIBRARIES}
 )
 
-add_dependencies(talon_lib
-  ${catkin_EXPORTED_TARGETS}
-)
 add_executable(direct_drive src/direct_drive.cpp)
-
-target_link_libraries(direct_drive
+add_dependencies(direct_drive ros_talon_generate_messages_cpp)
+target_link_libraries(
+  direct_drive
   talon_lib
   ${catkin_LIBRARIES}
 )
