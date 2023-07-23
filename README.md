@@ -32,7 +32,7 @@ iface can0 can static
         bitrate 1000000
         up ip link set $IFACE txqueuelen 1000
 ```
-If this doesn't work on your machine you run the following command each time you plug-in the can device:
+If this doesn't work on your machine can you run the following command each time you plug-in the can device:
 ```
 ./~/home/catkin_ws/src/rover_control/scripts/modprobe-setup.sh
 ```
