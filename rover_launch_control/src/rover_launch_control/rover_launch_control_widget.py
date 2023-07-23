@@ -184,14 +184,35 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                                                                                    self.pb_current_cam_sonix_resolution,
                                                                                    self.cb_cam_sonix_framerate,
                                                                                    self.pb_current_cam_sonix_framerate))
+        
+        cam_IR_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_IR')
+        self.pb_cam_IR_launch.released.connect(lambda: self.launchCameraStream("cam_IR",
+                                                                                     30,
+                                                                                     cam_IR_interface,
+                                                                                     self.pb_cam_IR_launch,
+                                                                                     self.cb_cam_IR_resolution,
+                                                                                     self.pb_current_cam_IR_resolution,
+                                                                                     self.cb_cam_IR_framerate,
+                                                                                     self.pb_current_cam_IR_framerate))
+        self.pb_cam_IR_apply.released.connect(lambda: self.ApplyCameraStream("cam_IR",
+                                                                                   30,
+                                                                                   cam_IR_interface,
+                                                                                   self.pb_cam_IR_launch,
+                                                                                   self.cb_cam_IR_resolution,
+                                                                                   self.pb_current_cam_IR_resolution,
+                                                                                   self.cb_cam_IR_framerate,
+                                                                                   self.pb_current_cam_IR_framerate))
 
 
         #Periodic tasks
-        cam_arducam_bandwidth = BandwidthInterface("/cam_ardu   cam/packet/compressed")
+        cam_arducam_bandwidth = BandwidthInterface("/cam_arducam/packet/compressed")
         self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_arducam_bandwidth, self.pb_current_cam_arducam_bw));
     
         cam_sonix_bandwidth = BandwidthInterface("/cam_sonix/packet/compressed")
         self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_sonix_bandwidth, self.pb_current_cam_sonix_bw));
+    
+        cam_IR_bandwidth = BandwidthInterface("/cam_IR/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_IR_bandwidth, self.pb_current_cam_IR_bw));
 
     def localModeSelection(self, value: bool, pb_toggle_self: QPushButton, pb_toggle_friends: "list[str]"):
         global launchmode_local
