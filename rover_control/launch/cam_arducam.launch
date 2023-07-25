@@ -1,11 +1,17 @@
 <!-- Commented params are kept as indication, those param should be set by the launch controller rqt
 plugin -->
 <launch>
+    <!--========================================================================
+    Machine header
+    =========================================================================-->
     <arg name="local_only" default="false" />
     <include file="$(find rover_control)/launch/machine_config.launch">
         <arg name="local_only" value="$(arg local_only)" />
     </include>
 
+    <!--========================================================================
+    Nodes
+    =========================================================================-->
     <group ns="cam_arducam"> <!-- USB camera driver + controller manager -->
         <node machine="rover" name="hardware" pkg="nodelet" type="nodelet"
             args="standalone usb_cam_hardware/USBCamHardware" output="screen">

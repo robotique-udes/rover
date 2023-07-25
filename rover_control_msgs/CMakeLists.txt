@@ -9,6 +9,7 @@ add_message_files(
  FILES
  motor_cmd.msg
  velocity_targets.msg
+ gps.msg
 )
 
 add_service_files(
