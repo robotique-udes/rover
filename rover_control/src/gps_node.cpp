@@ -9,23 +9,19 @@
 #define IN
 #define IN_OUT
 #define OUT
+#define GET_WORST_OF(X, Y) ((X) < (Y) ? (X) : (Y)) 
 
 #define SIZE_MSG_BUFFER 1000
 #define SIZE_NB_ELEMENTS 20
 #define SIZE_VALUES 20
 
-int getInfo(char read_buf[SIZE_MSG_BUFFER]);
-int strToInt(IN const char *str, IN uint8_t size);
-int findSizesDegreesMinutes(IN const char *str, OUT uint8_t* size_degrees, OUT uint8_t* size_minutes, IN uint8_t max = 100);
-float strToFloat(IN const char *str, IN uint8_t skip, IN uint8_t size);
-float strToFloat(IN const char *str, IN uint8_t size);
-// void getItemValue(IN int item_nb, IN char msg[SIZE_MSG_BUFFER], IN int index[SIZE_COMMA_ARRAY], OUT char value[SIZE_VALUES]);
-
 enum ErrorCodes
 {
-    SyntaxError = INT8_MIN,
-    Drop,
+    Failure = INT8_MIN,
     NotImplemented,
+    InvalidArguments,
+    SyntaxError,
+    Drop,
     EmptyMessage = 0,
     Success = 1
 } ErrorCodes;
@@ -50,6 +46,13 @@ enum GGAElements
     Height = 9,
     ReferenceStationID = 14
 };
+
+int getInfo(char read_buf[SIZE_MSG_BUFFER]);
+int strToInt(IN const char *str, IN uint8_t size);
+int findSizesDegreesMinutes(IN const char *str, OUT uint8_t* size_degrees, OUT uint8_t* size_minutes, IN uint8_t max = 100);
+float strToFloat(IN const char *str, IN uint8_t skip, IN uint8_t size);
+float strToFloat(IN const char *str, IN uint8_t size);
+int getLatLong(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN GGAElements data_type,  OUT float* data);
 
 int main(int argc, char *argv[])
 {
@@ -147,17 +150,20 @@ int getInfo(char zs_read_buf[SIZE_MSG_BUFFER])
 
     if (strncmp(elements[0], "$GPGGA", sizeof("$GPGGA") - 1UL) == 0)
     {
-        // for (int i = 0; i < size_elements; i++)
-        //     ROS_INFO("Value #%d: %s", i, elements[i]);
-        // ROS_INFO("");
+        float latitude = 0.0f;
+        float longitude = 0.0f;
+        int res = Failure;
 
-        uint8_t size_degrees = 0;
-        uint8_t size_minutes = 0;
-        if (findSizesDegreesMinutes(elements[Latitude], &size_degrees, &size_minutes) != Drop)
+        res = GET_WORST_OF(res, getLatLong(elements, Latitude, &latitude));
+        res = GET_WORST_OF(res, getLatLong(elements, Longitude, &longitude));
+
+        if (res != Success)
         {
-            float latitudeDeg = static_cast<float>(strToInt(elements[Latitude], 2));
-            float latitudeMinutes = strToFloat(elements[Latitude], size_degrees, size_minutes);
-            ROS_INFO("latitudeDeg= %f \tlatitudeMinutes= %f", latitudeDeg, latitudeMinutes);
+            ROS_WARN("%s: Error parsing message - dropping", ros::this_node::getName().c_str());
+        }
+        else
+        {
+            ROS_INFO("%s: Latitude is: %f\t Longitude is: %f", ros::this_node::getName().c_str(), latitude, longitude);
         }
     }
     else if (strncmp(elements[0], "$GPRMC", sizeof("$GPRMC") - 1UL) == 0)
@@ -185,12 +191,6 @@ int getInfo(char zs_read_buf[SIZE_MSG_BUFFER])
 
     return 1;
 }
-
-// void getItemValue(IN int item_nb, IN char msg[SIZE_MSG_BUFFER], IN int index[SIZE_COMMA_ARRAY], OUT char value[SIZE_VALUES])
-// {
-//     strncpy(value, msg + index[item_nb] + 1UL, index[item_nb + 1] - index[item_nb] - 1UL);
-//     value[index[item_nb + 1] - index[item_nb] + 1UL] = '\0';
-// }
 
 int strToInt(IN const char *str, IN uint8_t size)
 {
@@ -255,4 +255,37 @@ int findSizesDegreesMinutes(IN const char *str, OUT uint8_t* size_degrees, OUT u
     *size_minutes = i - *size_degrees;
 
     return ErrorCodes::Success;
+}
+
+int getLatLong(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN GGAElements data_type,  OUT float* data)
+{
+    ROS_INFO("%s: Element[data_type]= %s", ros::this_node::getName().c_str(), elements[data_type]);
+
+    if (data == NULL || elements == NULL && (data_type != Longitude && data_type != Latitude))
+    {
+        return InvalidArguments;
+    }
+
+    *data = 0;
+    uint8_t size_degrees = 0;
+    uint8_t size_minutes = 0;
+    if (findSizesDegreesMinutes(elements[data_type], &size_degrees, &size_minutes) != Drop)
+    {
+        ROS_WARN("size_degrees= %d", size_degrees);
+        float deg = static_cast<float>(strToInt(elements[data_type], size_degrees));
+        float minutes = strToFloat(elements[data_type], size_degrees, size_minutes);
+    
+        *data = deg + (minutes/60.0f);
+    }
+    else
+    {
+        return Drop;
+    }
+
+    if (strncmp(elements[data_type+1], "N", 1) != 0 && strncmp(elements[data_type+1], "E", 1) != 0)
+    {
+        *data *= -1;
+    }
+
+    return Success;
 }
