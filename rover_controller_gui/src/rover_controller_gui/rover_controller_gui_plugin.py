@@ -37,8 +37,7 @@ class RoverControllerGuiPlugin(Plugin):
 
     ####### Tutorial functions #########
     def shutdown_plugin(self):
-        # TODO unregister all publishers here
-        # Stopping the path_creator node
+        self._widget.exitingSafely()
         rospy.signal_shutdown('Shutting down')
 
     def save_settings(self, plugin_settings, instance_settings):

@@ -12,6 +12,7 @@ from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QAp
 from robotnik_msgs.msg import inputs_outputs
 from robotnik_msgs.srv import set_digital_output
 from std_srvs.srv import SetBool
+from datetime import datetime
 
 from rover_control_msgs.srv import camera_control
 from rover_control_msgs.srv import camera_controlRequest
@@ -62,13 +63,20 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         # Calib
         self.pb_calib.released.connect(lambda: self.calibrateJoint(self.pb_calib, self.cb_calib_select, self.dsb_angle_calib))
 
-        # Waypoint
+        # Waypoint:
+
+        # Create file
+        file = open("somefile.txt", "a")
+        file.write("================================================================================\n")
+        file.write("= " + str(datetime.now()) + "\n")
+        file.write("================================================================================\n")
+        file.close()
+
         self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
         self.waypoints = dict()
-        self.waypoints[self.cb_waypoint_label.currentText()] = ("Select a waypoint", "");
         self.cb_waypoint_label.currentIndexChanged.connect(lambda: self.updateSelectedWaypoint(self.cb_waypoint_label))
 
-        self.position_updater = rospy.Timer(rospy.Duration(0.50), lambda x: self.updateCurrentPosition(self.position_updater, self.pb_lights, 1))
+        self.position_updater = rospy.Timer(rospy.Duration(0.50), lambda x: self.updateCurrentPosition(self.position_updater))
 
     def updateLightStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
         if not self.checkIfServicePosted(RELAY_BOARD_SERVICE_NAME, button):
@@ -167,26 +175,44 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         label: str = self.le_waypoint_label.text()
         labels = [self.cb_waypoint_label.itemText(i) for i in range(self.cb_waypoint_label.count())]
         labels.append("");
-        if (label in labels):
+        if (label not in labels and "=" in label):
             rospy.loginfo("Invalid or already existing label")
             return 
 
         self.waypoints[label] = (self.dsb_latitude.value(), self.dsb_longitude.value())
         self.cb_waypoint_label.addItem(label)
+
+        button.setStyleSheet(STYLE_DEFAULT)
         
+        try:
+            file = open("somefile.txt", "a")
+            file.write(label + " " + str(self.dsb_latitude.value()) + " " + str(self.dsb_longitude.value()) + "\n")
+            file.close()
+        except:
+            rospy.logwarn(self.name + ": Error writing waypoint to file try again")
+            button.setStyleSheet(STYLE_WARN)
+
         self.le_waypoint_label.setText("")
         self.dsb_latitude.setValue(0.0)
         self.dsb_longitude.setValue(0.0)
 
+
     def updateSelectedWaypoint(self, combo_box: QComboBox):
         if combo_box.currentText() in self.waypoints:
             text: str = str(self.waypoints[combo_box.currentText()][0]) + ",  " + str(self.waypoints[combo_box.currentText()][1])
-            self.pb_target_position.setText(text)
         else:
             rospy.logwarn("\"" + combo_box.currentText() + "\" doesn't exist in current waypoint dictionnary")
+            text: str = ("Select a waypoint")
+
+        self.pb_target_position.setText(text)
 
     def updateCurrentPosition(self, timer_obj: rospy.Timer):
         todo = 1
 
     def recordWaypoint(self):
         todo = 1
+
+    def exitingSafely(self):
+        file = open("somefile.txt", "a")
+        file.write("\n\n")
+        file.close()
