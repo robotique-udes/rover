@@ -8,7 +8,7 @@ import rostopic
 import rosservice
 from python_qt_binding import loadUi
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication
+from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication, QDoubleSpinBox, QLineEdit
 from robotnik_msgs.msg import inputs_outputs
 from robotnik_msgs.srv import set_digital_output
 from std_srvs.srv import SetBool
@@ -16,6 +16,7 @@ from std_srvs.srv import SetBool
 from rover_control_msgs.srv import camera_control
 from rover_control_msgs.srv import camera_controlRequest
 from rover_control_msgs.srv import camera_controlResponse
+from std_msgs.msg import Float32
 
 # Styling "MACROS"
 STYLE_DEFAULT = ""
@@ -33,6 +34,13 @@ SET_ARM_JOY_SERVICE_NAME = "/set_arm_joy"
 class RoverControllerGuiWidget(QtWidgets.QWidget):
     
     def __init__(self):
+        # Types definition
+        self.cb_waypoint_label: QComboBox
+        self.le_waypoint_label: QLineEdit
+        self.dsb_latitude: QDoubleSpinBox
+        self.dsb_longitude: QDoubleSpinBox
+        self.pb_target_position: QPushButton
+        
         self.name: str = "RoverControllerGuiWidget"
         super(RoverControllerGuiWidget, self).__init__()
 
@@ -50,6 +58,17 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         # Aruco Marker live feed
         self.last_detected_marker = list()
         self.aruco_marker_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateDetectedArucoMarker(self.aruco_marker_updater, self.pb_aruco_marker))
+
+        # Calib
+        self.pb_calib.released.connect(lambda: self.calibrateJoint(self.pb_calib, self.cb_calib_select, self.dsb_angle_calib))
+
+        # Waypoint
+        self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
+        self.waypoints = dict()
+        self.waypoints[self.cb_waypoint_label.currentText()] = ("Select a waypoint", "");
+        self.cb_waypoint_label.currentIndexChanged.connect(lambda: self.updateSelectedWaypoint(self.cb_waypoint_label))
+
+        self.position_updater = rospy.Timer(rospy.Duration(0.50), lambda x: self.updateCurrentPosition(self.position_updater, self.pb_lights, 1))
 
     def updateLightStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
         if not self.checkIfServicePosted(RELAY_BOARD_SERVICE_NAME, button):
@@ -138,3 +157,36 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         except:
             rospy.logerr(rospy.get_name() + "(" + self.name + "): " + "Error changing joy demux target")
             button.setStyleSheet(STYLE_WARN)
+
+    def calibrateJoint(self, button: QPushButton, selected_joint: QComboBox, angle: QDoubleSpinBox):
+        pub = rospy.Publisher("/arm/" + selected_joint.currentText() + "/C", Float32, queue_size=1)
+        msg: Float32.data = angle.value()
+        pub.publish(msg)
+
+    def addWaypoint(self, button: QPushButton):
+        label: str = self.le_waypoint_label.text()
+        labels = [self.cb_waypoint_label.itemText(i) for i in range(self.cb_waypoint_label.count())]
+        labels.append("");
+        if (label in labels):
+            rospy.loginfo("Invalid or already existing label")
+            return 
+
+        self.waypoints[label] = (self.dsb_latitude.value(), self.dsb_longitude.value())
+        self.cb_waypoint_label.addItem(label)
+        
+        self.le_waypoint_label.setText("")
+        self.dsb_latitude.setValue(0.0)
+        self.dsb_longitude.setValue(0.0)
+
+    def updateSelectedWaypoint(self, combo_box: QComboBox):
+        if combo_box.currentText() in self.waypoints:
+            text: str = str(self.waypoints[combo_box.currentText()][0]) + ",  " + str(self.waypoints[combo_box.currentText()][1])
+            self.pb_target_position.setText(text)
+        else:
+            rospy.logwarn("\"" + combo_box.currentText() + "\" doesn't exist in current waypoint dictionnary")
+
+    def updateCurrentPosition(self, timer_obj: rospy.Timer):
+        todo = 1
+
+    def recordWaypoint(self):
+        todo = 1
