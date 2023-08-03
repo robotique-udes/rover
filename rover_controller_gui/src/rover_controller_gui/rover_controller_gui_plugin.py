@@ -29,7 +29,7 @@ class RoverControllerGuiPlugin(Plugin):
             print('unknowns: ', unknowns)
 
         # Create QWidget
-        self._widget = RoverControllerGuiWidget()
+        self._widget = RoverControllerGuiWidget(context)
         if context.serial_number() > 1:
             self._widget.setWindowTitle(self._widget.windowTitle() +
                                         (' (%d)' % context.serial_number()))

@@ -1,6 +1,7 @@
 from __future__ import (print_function, absolute_import, division, unicode_literals)
 
 import os
+import typing
 import rospkg
 import rospy
 import rosparam
@@ -8,7 +9,7 @@ import rostopic
 import rosservice
 from python_qt_binding import loadUi
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication, QDoubleSpinBox, QLineEdit
+from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication, QDoubleSpinBox, QLineEdit, QWidget
 from robotnik_msgs.msg import inputs_outputs
 from robotnik_msgs.srv import set_digital_output
 from std_srvs.srv import SetBool
@@ -37,7 +38,8 @@ SET_ARM_JOY_SERVICE_NAME = "/set_arm_joy"
 
 class RoverControllerGuiWidget(QtWidgets.QWidget):
     
-    def __init__(self):
+    def __init__(self, context):
+        self.context = context
         # Types definition
         self.cb_waypoint_label: QComboBox
         self.le_waypoint_label: QLineEdit
@@ -300,3 +302,20 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         Distance = R * c # in metres
         
         return [Distance, Heading]
+
+    def openPopup(self):
+        self.popUp = WaypointPopUp() 
+        self.popUp.show()
+        rospy.loginfo(str(self.context))
+
+class WaypointPopUp(QtWidgets.QWidget):
+    def __init__(self):
+        super().__init__()
+        ui_file = os.path.join(rospkg.RosPack().get_path('rover_controller_gui'), 'resource', 'record position.ui')
+        loadUi(ui_file, self)
+        self.setObjectName('Record Waypoint')
+        self.pb_add_new_waypoint_: QPushButton
+        self.pb_add_new_waypoint_.released.connect(self.hide)
+
+    def hide(self):
+        self.close()        
