@@ -9,62 +9,77 @@
 #define IN
 #define IN_OUT
 #define OUT
+
 #define GET_WORST_OF(X, Y) ((X) < (Y) ? (X) : (Y))
-#define ERROR(X) static_cast<int>(X)
-#define SUCCESS static_cast<int>(ErrorCodes::Success)
 
 #define SIZE_MSG_BUFFER 1000
 #define SIZE_NB_ELEMENTS 20
 #define SIZE_VALUES 20
 
-enum class ErrorCodes
+class ErrorCodes
 {
-    Failure = INT8_MIN,
-    NotImplemented,
-    InvalidArguments,
-    SyntaxError,
-    Drop,
-    DeviceError,
-    InvalidPosition,
-    EmptyMessage = 0,
-    Success = 1
+public:
+    enum
+    {
+        Failure = INT8_MIN,
+        NotImplemented,
+        InvalidArguments,
+        SyntaxError,
+        Drop,
+        DeviceError,
+        InvalidPosition,
+        EmptyMessage = 0,
+        Success = 1
+    };
 };
 
-enum class GPSFixQuality
+class GPSFixQuality
 {
-    Invalid = rover_control_msgs::gps::FIX_INVALID,       // Bad
-    Standalone = rover_control_msgs::gps::FIX_STANDALONE, // 30m +0m -20m
-    DGPS = rover_control_msgs::gps::FIX_DGPS,             // 10m +0m -8m
-    RTKFixed = rover_control_msgs::gps::FIX_RTK_FIXED,    // 1.0m +0.0m -0.9m
-    RTKFloat = rover_control_msgs::gps::FIX_RTK_FLOAT     // No info
+public:
+    enum
+    {
+        Invalid = rover_control_msgs::gps::FIX_INVALID,       // Bad
+        Standalone = rover_control_msgs::gps::FIX_STANDALONE, // 30m +0m -20m
+        DGPS = rover_control_msgs::gps::FIX_DGPS,             // 10m +0m -8m
+        RTKFixed = rover_control_msgs::gps::FIX_RTK_FIXED,    // 1.0m +0.0m -0.9m
+        RTKFloat = rover_control_msgs::gps::FIX_RTK_FLOAT     // No info
+    };
 };
 
-enum class GGAElements
+class GGAElements
 {
-    Latitude = 2,
-    LatitudeDir,
-    Longitude,
-    LongitudeDir,
-    GPSFixQuality,
-    Satellite,
-    Height = 9,
+public:
+    enum
+    {
+        Latitude = 2,
+        LatitudeDir,
+        Longitude,
+        LongitudeDir,
+        GPSFixQuality,
+        Satellite,
+        Height = 9,
+    };
 };
 
-enum class RMCElements
+class RMCElements
 {
-    PositionStatus = 2,
-    Latitude,
-    LatitudeDir,
-    Longitude,
-    LongitudeDir,
-    Speed,
-    TrackHeading,
-    GPSHeading = 10,
-    GPSHeadingDir
+public:
+    enum
+    {
+        PositionStatus = 2,
+        Latitude,
+        LatitudeDir,
+        Longitude,
+        LongitudeDir,
+        Speed,
+        TrackHeading,
+        GPSHeading = 10,
+        GPSHeadingDir
+    };
 };
 
 int initialiseDevice(IN std::string device_name, int *serial_port);
-int getInfo(char read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps* gps_msg);
+int getInfo(char read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps *gps_msg);
 int strToInt(IN const char *str, IN uint8_t size);
 int findSizesDegreesMinutes(IN const char *str, OUT uint8_t *size_degrees, OUT uint8_t *size_minutes, IN uint8_t max = 100);
 float strToFloat(IN const char *str, IN uint8_t skip, IN uint8_t size);
@@ -85,7 +100,7 @@ int main(int argc, char *argv[])
                          &serial_port) != 1)
     {
         ROS_ERROR("%s:main() Error in serial device init, exiting", ros::this_node::getName().c_str());
-        return ERROR(ErrorCodes::Failure);
+        return ErrorCodes::Failure;
     }
 
     rover_control_msgs::gps gps_msg;
@@ -106,11 +121,11 @@ int main(int argc, char *argv[])
         int res = getInfo(read_buf, &gps_msg);
         if (res != 1)
         {
-            if (res == ERROR(ErrorCodes::EmptyMessage))
+            if (res == ErrorCodes::EmptyMessage)
                 ROS_DEBUG("%s:main() Empty message, dropping message", ros::this_node::getName().c_str());
-            else if (res == ERROR(ErrorCodes::SyntaxError))
+            else if (res == ErrorCodes::SyntaxError)
                 ROS_ERROR("%s:main() Error \"%d\" in buffer, dropping message", ros::this_node::getName().c_str(), res);
-            else if (res == ERROR(ErrorCodes::InvalidPosition))
+            else if (res == ErrorCodes::InvalidPosition)
                 ROS_ERROR("%s:main() Error Position is invalid, dropping message", ros::this_node::getName().c_str());
         }
         else
@@ -133,7 +148,7 @@ int initialiseDevice(IN std::string device_name, int *serial_port)
     if (tcgetattr(*serial_port, &tty) != 0)
     {
         ROS_ERROR("Error on device %s: Failed to get attr: %s\n", device_name.c_str(), strerror(errno));
-        return ERROR(ErrorCodes::DeviceError);
+        return ErrorCodes::DeviceError;
     }
 
     // Baudrate
@@ -146,23 +161,23 @@ int initialiseDevice(IN std::string device_name, int *serial_port)
 
     if (serial_port < 0)
     {
-        ROS_ERROR("Error on device %s: %s", device_name.c_str(), strerror(errno));
-        return ERROR(ErrorCodes::Failure);
+        ROS_ERROR("%s::main() Error on device %s: %s", ros::this_node::getName().c_str(), device_name.c_str(), strerror(errno));
+        return ErrorCodes::Failure;
     }
     else
     {
-        return ERROR(ErrorCodes::Success);
+        return ErrorCodes::Success;
     }
 }
 
-int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps* gps_msg)
+int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps *gps_msg)
 {
     if (zs_read_buf[0] == '\n' || zs_read_buf[0] == '\0')
-        return ERROR(ErrorCodes::EmptyMessage);
+        return ErrorCodes::EmptyMessage;
     else if (zs_read_buf[0] != '$')
-        return ERROR(ErrorCodes::SyntaxError);
+        return ErrorCodes::SyntaxError;
 
-    int res = ERROR(ErrorCodes::Success);
+    int res = ErrorCodes::Success;
     char elements[SIZE_NB_ELEMENTS][SIZE_VALUES] = {0};
     uint8_t index_element = 0;
     uint8_t index_character = 0;
@@ -192,13 +207,13 @@ int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps* gps_msg)
         int8_t nb_satellite = -69;
         float height = -69.0f;
 
-        res = GET_WORST_OF(res, getLatLong(elements, ERROR(GGAElements::Latitude), &latitude));
-        res = GET_WORST_OF(res, getLatLong(elements, ERROR(GGAElements::Longitude), &longitude));
-        res = GET_WORST_OF(res, getElement(elements, ERROR(GGAElements::GPSFixQuality), &fix_quality));
-        res = GET_WORST_OF(res, getElement(elements, ERROR(GGAElements::Satellite), &nb_satellite));
-        res = GET_WORST_OF(res, getElement(elements, ERROR(GGAElements::Height), &height));
+        res = GET_WORST_OF(res, getLatLong(elements, GGAElements::Latitude, &latitude));
+        res = GET_WORST_OF(res, getLatLong(elements, GGAElements::Longitude, &longitude));
+        res = GET_WORST_OF(res, getElement(elements, GGAElements::GPSFixQuality, &fix_quality));
+        res = GET_WORST_OF(res, getElement(elements, GGAElements::Satellite, &nb_satellite));
+        res = GET_WORST_OF(res, getElement(elements, GGAElements::Height, &height));
 
-        if (res != ERROR(ErrorCodes::Success))
+        if (res != ErrorCodes::Success)
         {
             ROS_WARN("%s: Error parsing message - dropping", ros::this_node::getName().c_str());
             return res;
@@ -212,10 +227,9 @@ int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps* gps_msg)
     }
     else if (strncmp(elements[0], "$GPRMC", sizeof("$GPRMC") - 1UL) == 0)
     {
-        if (!(strncmp(elements[ERROR(RMCElements::PositionStatus)], "A", 1) == 0))
+        if (!(strncmp(elements[RMCElements::PositionStatus], "A", 1) == 0))
         {
-            ROS_WARN("%s", elements[ERROR(RMCElements::PositionStatus)]);
-            return ERROR(ErrorCodes::InvalidPosition);
+            return ErrorCodes::InvalidPosition;
         }
         else
         {
@@ -233,7 +247,7 @@ int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps* gps_msg)
 
             if (elements[static_cast<int>(RMCElements::GPSHeadingDir)] == "W")
             {
-                gps_heading =  -gps_heading + 360.0f;
+                gps_heading = -gps_heading + 360.0f;
             }
 
             gps_msg->latitude = latitude;
@@ -245,7 +259,7 @@ int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps* gps_msg)
     }
     else
     {
-        return ERROR(ErrorCodes::NotImplemented);
+        return ErrorCodes::NotImplemented;
     }
 
     return res;
@@ -301,7 +315,7 @@ int findSizesDegreesMinutes(IN const char *str, OUT uint8_t *size_degrees, OUT u
 
     if (i == max)
     {
-        return ERROR(ErrorCodes::Drop);
+        return ErrorCodes::Drop;
     }
 
     for (; (*str != '\0' && i < max); i++, str++)
@@ -310,12 +324,12 @@ int findSizesDegreesMinutes(IN const char *str, OUT uint8_t *size_degrees, OUT u
 
     if (i == max)
     {
-        return ERROR(ErrorCodes::Drop);
+        return ErrorCodes::Drop;
     }
 
     *size_minutes = i - *size_degrees;
 
-    return ERROR(ErrorCodes::Success);
+    return ErrorCodes::Success;
 }
 
 int getLatLong(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN int data_type, OUT float *data)
@@ -325,13 +339,13 @@ int getLatLong(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN int dat
                                              data_type != static_cast<int>(RMCElements::Longitude) &&
                                              data_type != static_cast<int>(RMCElements::Latitude)))
     {
-        return ERROR(ErrorCodes::InvalidArguments);
+        return ErrorCodes::InvalidArguments;
     }
 
     *data = 0;
     uint8_t size_degrees = 0;
     uint8_t size_minutes = 0;
-    if (findSizesDegreesMinutes(elements[data_type], &size_degrees, &size_minutes) != ERROR(ErrorCodes::Drop))
+    if (findSizesDegreesMinutes(elements[data_type], &size_degrees, &size_minutes) != ErrorCodes::Drop)
     {
         float deg = static_cast<float>(strToInt(elements[data_type], size_degrees));
         float minutes = strToFloat(elements[data_type], size_degrees, size_minutes);
@@ -340,7 +354,7 @@ int getLatLong(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN int dat
     }
     else
     {
-        return ERROR(ErrorCodes::Drop);
+        return ErrorCodes::Drop;
     }
 
     if (strncmp(elements[data_type + 1], "N", 1) != 0 && strncmp(elements[data_type + 1], "E", 1) != 0)
@@ -348,29 +362,29 @@ int getLatLong(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN int dat
         *data *= -1;
     }
 
-    return ERROR(ErrorCodes::Success);
+    return ErrorCodes::Success;
 }
 
 int getElement(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN int data_type, OUT int8_t *data)
 {
     if (elements[data_type][0] == '\0')
     {
-        return ERROR(ErrorCodes::EmptyMessage);
+        return ErrorCodes::EmptyMessage;
     }
 
     *data = atoi(elements[data_type]);
-    return ERROR(ErrorCodes::Success);
+    return ErrorCodes::Success;
 }
 
 int getElement(IN const char elements[SIZE_NB_ELEMENTS][SIZE_VALUES], IN int data_type, OUT float *data)
 {
     if (elements[data_type][0] == '\0')
     {
-        return ERROR(ErrorCodes::EmptyMessage);
+        return ErrorCodes::EmptyMessage;
     }
 
     *data = strToFloat(elements[data_type], 0, sizeof(elements[data_type]));
-    return ERROR(ErrorCodes::Success);
+    return ErrorCodes::Success;
 }
 
 void clearBuffer(char *buffer, uint16_t size)
