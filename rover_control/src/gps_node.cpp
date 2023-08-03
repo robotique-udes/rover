@@ -124,9 +124,9 @@ int main(int argc, char *argv[])
             if (res == ErrorCodes::EmptyMessage)
                 ROS_DEBUG("%s:main() Empty message, dropping message", ros::this_node::getName().c_str());
             else if (res == ErrorCodes::SyntaxError)
-                ROS_ERROR("%s:main() Error \"%d\" in buffer, dropping message", ros::this_node::getName().c_str(), res);
+                ROS_DEBUG("%s:main() Error \"%d\" in buffer, dropping message", ros::this_node::getName().c_str(), res);
             else if (res == ErrorCodes::InvalidPosition)
-                ROS_ERROR("%s:main() Error Position is invalid, dropping message", ros::this_node::getName().c_str());
+                ROS_DEBUG("%s:main() Error Position is invalid, dropping message", ros::this_node::getName().c_str());
         }
         else
         {
@@ -215,7 +215,7 @@ int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps *gps_msg)
 
         if (res != ErrorCodes::Success)
         {
-            ROS_WARN("%s: Error parsing message - dropping", ros::this_node::getName().c_str());
+            // ROS_WARN("%s: Error parsing message - dropping", ros::this_node::getName().c_str());
             return res;
         }
 
