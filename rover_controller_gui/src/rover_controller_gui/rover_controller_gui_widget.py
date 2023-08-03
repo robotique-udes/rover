@@ -13,11 +13,14 @@ from robotnik_msgs.msg import inputs_outputs
 from robotnik_msgs.srv import set_digital_output
 from std_srvs.srv import SetBool
 from datetime import datetime
+from threading import Lock
+import math
 
 from rover_control_msgs.srv import camera_control
 from rover_control_msgs.srv import camera_controlRequest
 from rover_control_msgs.srv import camera_controlResponse
 from std_msgs.msg import Float32
+from rover_control_msgs.msg import gps
 
 # Styling "MACROS"
 STYLE_DEFAULT = ""
@@ -41,6 +44,9 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.dsb_latitude: QDoubleSpinBox
         self.dsb_longitude: QDoubleSpinBox
         self.pb_target_position: QPushButton
+        self.pb_curr_position: QPushButton
+        self.pb_curr_heading: QPushButton
+        self.pb_target_heading: QPushButton
         
         self.name: str = "RoverControllerGuiWidget"
         super(RoverControllerGuiWidget, self).__init__()
@@ -64,19 +70,33 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.pb_calib.released.connect(lambda: self.calibrateJoint(self.pb_calib, self.cb_calib_select, self.dsb_angle_calib))
 
         # Waypoint:
-
-        # Create file
-        file = open("somefile.txt", "a")
+        file = open("saved_waypoint.txt", "a")
         file.write("================================================================================\n")
         file.write("= " + str(datetime.now()) + "\n")
         file.write("================================================================================\n")
         file.close()
 
-        self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
-        self.waypoints = dict()
-        self.cb_waypoint_label.currentIndexChanged.connect(lambda: self.updateSelectedWaypoint(self.cb_waypoint_label))
+        file = open("recorded_position.txt", "a")
+        file.write("================================================================================\n")
+        file.write("= " + str(datetime.now()) + "\n")
+        file.write("================================================================================\n")
+        file.close()
 
+        self.waypoints = dict()
+        self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
+        self.cb_waypoint_label.currentIndexChanged.connect(lambda: self.updateSelectedWaypoint(self.cb_waypoint_label))
+        self.recorded_waypoint_index: int = 0
+        self.pb_save_current.released.connect(lambda: self.recordWaypoint(self.pb_save_current))
         self.position_updater = rospy.Timer(rospy.Duration(0.50), lambda x: self.updateCurrentPosition(self.position_updater))
+
+        self.lock_position: Lock = Lock()
+        with self.lock_position:
+            self.current_latitude: float = 10.0
+            self.current_longitude: float = 0.0
+            self.current_height: float = -690.0
+            self.current_heading: float = -690.0
+
+        self.sub_gps = rospy.Subscriber("/gps_data", gps, self.cbGPSData)
 
     def updateLightStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
         if not self.checkIfServicePosted(RELAY_BOARD_SERVICE_NAME, button):
@@ -196,7 +216,6 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.dsb_latitude.setValue(0.0)
         self.dsb_longitude.setValue(0.0)
 
-
     def updateSelectedWaypoint(self, combo_box: QComboBox):
         if combo_box.currentText() in self.waypoints:
             text: str = str(self.waypoints[combo_box.currentText()][0]) + ",  " + str(self.waypoints[combo_box.currentText()][1])
@@ -207,12 +226,77 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.pb_target_position.setText(text)
 
     def updateCurrentPosition(self, timer_obj: rospy.Timer):
-        todo = 1
+        with self.lock_position:
+            self.pb_curr_position.setText(str(self.current_latitude) + ", " + str(self.current_longitude))
+            self.pb_curr_heading.setText(str(self.current_heading) + "°")
 
-    def recordWaypoint(self):
-        todo = 1
+            label: str = self.cb_waypoint_label.currentText()
+            if self.cb_waypoint_label.currentText() in self.waypoints:
+                Distance, Heading = self.coodinatesToHeading(self.current_latitude,
+                                                             self.current_longitude,
+                                                             self.waypoints[label][0],
+                                                             self.waypoints[label][1])
+                self.pb_target_heading.setText(str(round(Heading)) + "°")
+            elif label != "Select a waypoint":
+                rospy.logerr("Something wrong my guy")
+                self.pb_target_heading.setText("Something wrong my guy")
+
+    def recordWaypoint(self, button: QPushButton):
+        label: str = "Recorded #" + str(self.recorded_waypoint_index)
+        labels = [self.cb_waypoint_label.itemText(i) for i in range(self.cb_waypoint_label.count())]
+        labels.append("");
+        if (label not in labels and "=" in label):
+            rospy.loginfo("Invalid or already existing label")
+            return 
+
+        with self.lock_position:
+            self.waypoints[label] = (self.current_latitude, self.current_longitude)
+        self.cb_waypoint_label.addItem(label)
+
+        button.setStyleSheet(STYLE_DEFAULT)
+        
+        try:
+            file = open("recordedPosition.txt", "a")
+            with self.lock_position:
+                file.write(label + " " + str(self.current_latitude) + " " + str(self.current_latitude) + " " + str(datetime.now()) + "\n")
+            file.close()
+        except:
+            rospy.logwarn(self.name + ": Error writing waypoint to file try again")
+            button.setStyleSheet(STYLE_WARN)
+
+        self.recorded_waypoint_index += 1
+
+    def cbGPSData(self, data: gps):
+        with self.lock_position:
+            self.current_latitude = data.latitude
+            self.current_longitude = data.longitude
+            self.heading = data.heading_track
+            self.height = data.height
 
     def exitingSafely(self):
         file = open("somefile.txt", "a")
         file.write("\n\n")
         file.close()
+
+        file = open("recordedPosition.txt", "a")
+        file.write("\n\n")
+        file.close()
+        
+    def coodinatesToHeading(self, lat1, lon1, lat2, lon2):
+        R = 6371e3
+        lat1 = math.radians(lat1)
+        lat2 = math.radians(lat2)
+        lon1 = math.radians(lon1)
+        lon2 = math.radians(lon2)
+        
+        # Heading (B)
+        X = math.cos(lat2) * math.sin(lon2-lon1)
+        Y = math.cos(lat1) * math.sin(lat2) - math.sin(lat1) * math.cos(lat2) * math.cos(lon2-lon1)
+        Heading = math.degrees(math.atan2(X, Y))
+        
+        # Direction
+        a = math.sin((lat2-lat1)/2) * math.sin((lat2-lat1)/2) + math.cos(lat1) * math.cos(lat2) * math.sin((lon2-lon1)/2) * math.sin((lon2-lon1)/2)
+        c = 2 * math.atan2(math.sqrt(a), math.sqrt(1-a))
+        Distance = R * c # in metres
+        
+        return [Distance, Heading]
