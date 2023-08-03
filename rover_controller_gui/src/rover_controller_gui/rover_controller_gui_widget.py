@@ -1,15 +1,12 @@
 from __future__ import (print_function, absolute_import, division, unicode_literals)
 
 import os
-import typing
 import rospkg
 import rospy
-import rosparam
-import rostopic
 import rosservice
 from python_qt_binding import loadUi
 from PyQt5 import QtWidgets, QtCore
-from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QApplication, QDoubleSpinBox, QLineEdit, QWidget
+from PyQt5.QtWidgets import QPushButton, QComboBox, QApplication, QDoubleSpinBox, QLineEdit, QWidget, QFileDialog
 from robotnik_msgs.msg import inputs_outputs
 from robotnik_msgs.srv import set_digital_output
 from std_srvs.srv import SetBool
@@ -35,6 +32,8 @@ RELAY_BOARD_SERVICE_NAME = "/rly_08_node/set_digital_outputs"
 RELAY_BOARD_MESSAGE_NAME = "/rly_08_node/status"
 CAMERA_CONTROL_SERVICE_NAME = "/camera_control_server"
 SET_ARM_JOY_SERVICE_NAME = "/set_arm_joy"
+FILE_NAME_RECORDED_POSITION = rospkg.RosPack().get_path('rover_control') + "/../saved_elements/recorded_position.txt"
+FILE_NAME_SAVED_WAYPOINTS = rospkg.RosPack().get_path('rover_control') + "/../saved_elements/saved_waypoint.txt"
 
 class RoverControllerGuiWidget(QtWidgets.QWidget):
     
@@ -72,33 +71,36 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.pb_calib.released.connect(lambda: self.calibrateJoint(self.pb_calib, self.cb_calib_select, self.dsb_angle_calib))
 
         # Waypoint:
-        file = open("saved_waypoint.txt", "a")
+        file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
         file.write("================================================================================\n")
         file.write("= " + str(datetime.now()) + "\n")
         file.write("================================================================================\n")
         file.close()
 
-        file = open("recorded_position.txt", "a")
+        file = open(FILE_NAME_RECORDED_POSITION, "a")
         file.write("================================================================================\n")
         file.write("= " + str(datetime.now()) + "\n")
         file.write("================================================================================\n")
         file.close()
 
         self.waypoints = dict()
-        self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
+        self.pb_open_new_waypoint.released.connect(lambda: self.openPopup(WaypointPopUp))
         self.cb_waypoint_label.currentIndexChanged.connect(lambda: self.updateSelectedWaypoint(self.cb_waypoint_label))
         self.recorded_waypoint_index: int = 0
         self.pb_save_current.released.connect(lambda: self.recordWaypoint(self.pb_save_current))
+        
+        self.sub_gps = rospy.Subscriber("/gps_data", gps, self.cbGPSData)
         self.position_updater = rospy.Timer(rospy.Duration(0.50), lambda x: self.updateCurrentPosition(self.position_updater))
 
         self.lock_position: Lock = Lock()
         with self.lock_position:
-            self.current_latitude: float = 10.0
-            self.current_longitude: float = 0.0
+            self.current_latitude: float = -690.0
+            self.current_longitude: float = -690.0
             self.current_height: float = -690.0
             self.current_heading: float = -690.0
 
-        self.sub_gps = rospy.Subscriber("/gps_data", gps, self.cbGPSData)
+        self.pb_load_waypoint_file: QPushButton
+        self.pb_load_waypoint_file.released.connect(lambda: self.loadWaypointsFromFile(self.pb_load_waypoint_file))
 
     def updateLightStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
         if not self.checkIfServicePosted(RELAY_BOARD_SERVICE_NAME, button):
@@ -193,31 +195,6 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         msg: Float32.data = angle.value()
         pub.publish(msg)
 
-    def addWaypoint(self, button: QPushButton):
-        label: str = self.le_waypoint_label.text()
-        labels = [self.cb_waypoint_label.itemText(i) for i in range(self.cb_waypoint_label.count())]
-        labels.append("");
-        if (label not in labels and "=" in label):
-            rospy.loginfo("Invalid or already existing label")
-            return 
-
-        self.waypoints[label] = (self.dsb_latitude.value(), self.dsb_longitude.value())
-        self.cb_waypoint_label.addItem(label)
-
-        button.setStyleSheet(STYLE_DEFAULT)
-        
-        try:
-            file = open("somefile.txt", "a")
-            file.write(label + " " + str(self.dsb_latitude.value()) + " " + str(self.dsb_longitude.value()) + "\n")
-            file.close()
-        except:
-            rospy.logwarn(self.name + ": Error writing waypoint to file try again")
-            button.setStyleSheet(STYLE_WARN)
-
-        self.le_waypoint_label.setText("")
-        self.dsb_latitude.setValue(0.0)
-        self.dsb_longitude.setValue(0.0)
-
     def updateSelectedWaypoint(self, combo_box: QComboBox):
         if combo_box.currentText() in self.waypoints:
             text: str = str(self.waypoints[combo_box.currentText()][0]) + ",  " + str(self.waypoints[combo_box.currentText()][1])
@@ -248,7 +225,8 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         labels = [self.cb_waypoint_label.itemText(i) for i in range(self.cb_waypoint_label.count())]
         labels.append("");
         if (label not in labels and "=" in label):
-            rospy.loginfo("Invalid or already existing label")
+            button.setStyleSheet(STYLE_WARN)
+            rospy.logwarn("Invalid or already existing label")
             return 
 
         with self.lock_position:
@@ -258,7 +236,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         button.setStyleSheet(STYLE_DEFAULT)
         
         try:
-            file = open("recordedPosition.txt", "a")
+            file = open(FILE_NAME_RECORDED_POSITION, "a")
             with self.lock_position:
                 file.write(label + " " + str(self.current_latitude) + " " + str(self.current_latitude) + " " + str(datetime.now()) + "\n")
             file.close()
@@ -276,11 +254,11 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
             self.height = data.height
 
     def exitingSafely(self):
-        file = open("somefile.txt", "a")
+        file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
         file.write("\n\n")
         file.close()
 
-        file = open("recordedPosition.txt", "a")
+        file = open(FILE_NAME_RECORDED_POSITION, "a")
         file.write("\n\n")
         file.close()
         
@@ -303,19 +281,58 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         
         return [Distance, Heading]
 
-    def openPopup(self):
-        self.popUp = WaypointPopUp() 
+    def openPopup(self, class_type):
+        self.popUp = class_type(self) 
         self.popUp.show()
-        rospy.loginfo(str(self.context))
+
+    def loadWaypointsFromFile(self, button: QPushButton):
+        select_file_dialog: QFileDialog = QFileDialog()
+
+        file_name: str = select_file_dialog.getOpenFileName(self, 'Open file', FILE_NAME_RECORDED_POSITION + "/../" ,"Text files (*.txt)")
+        # with open(file_name, "r") as openfileobject
+
+        # line: str = file.read()
+        # while (line != EOF):         
 
 class WaypointPopUp(QtWidgets.QWidget):
-    def __init__(self):
+    def __init__(self, mainWindowsClass: RoverControllerGuiWidget):
         super().__init__()
-        ui_file = os.path.join(rospkg.RosPack().get_path('rover_controller_gui'), 'resource', 'record position.ui')
+        ui_file = os.path.join(rospkg.RosPack().get_path('rover_controller_gui'), 'resource', 'save_waypoint.ui')
         loadUi(ui_file, self)
         self.setObjectName('Record Waypoint')
-        self.pb_add_new_waypoint_: QPushButton
-        self.pb_add_new_waypoint_.released.connect(self.hide)
 
-    def hide(self):
-        self.close()        
+        self.mainWindowsClass = mainWindowsClass
+
+        self.pb_add_new_waypoint: QPushButton
+        self.pb_add_new_waypoint.released.connect(lambda: self.addNewWaypointAndQuit(self.pb_add_new_waypoint))
+
+    def addNewWaypointAndQuit(self, button: QPushButton):
+        self.addWaypoint(button)
+        self.hide()     
+        del self
+
+    def addWaypoint(self, button: QPushButton):
+        label: str = self.le_waypoint_label.text()
+        labels = [self.mainWindowsClass.cb_waypoint_label.itemText(i) for i in range(self.mainWindowsClass.cb_waypoint_label.count())]
+        labels.append("");
+        if (label in labels or "=" in label):
+            self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
+            rospy.logwarn("Invalid or already existing label")
+            return 
+
+        self.mainWindowsClass.waypoints[label] = (self.dsb_latitude.value(), self.dsb_longitude.value())
+        self.mainWindowsClass.cb_waypoint_label.addItem(label)
+
+        self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_DEFAULT)
+        
+        try:
+            file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
+            file.write(label + " " + str(self.dsb_latitude.value()) + " " + str(self.dsb_longitude.value()) + "\n")
+            file.close()
+        except:
+            rospy.logwarn(self.name + ": Error writing waypoint to file try again")
+            self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
+
+        self.le_waypoint_label.setText("")
+        # self.dsb_latitude.setValue(0.0)
+        # self.dsb_longitude.setValue(0.0)

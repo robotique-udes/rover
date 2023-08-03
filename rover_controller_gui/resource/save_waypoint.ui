@@ -98,7 +98,7 @@
      <item>
       <layout class="QHBoxLayout" name="horizontalLayout_5">
        <item>
-        <widget class="QLineEdit" name="le_waypoint_label_">
+        <widget class="QLineEdit" name="le_waypoint_label">
          <property name="maximumSize">
           <size>
            <width>100</width>
@@ -111,7 +111,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="dsb_latitude_">
+        <widget class="QDoubleSpinBox" name="dsb_latitude">
          <property name="buttonSymbols">
           <enum>QAbstractSpinBox::NoButtons</enum>
          </property>
@@ -127,7 +127,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QDoubleSpinBox" name="dsb_longitude_">
+        <widget class="QDoubleSpinBox" name="dsb_longitude">
          <property name="buttonSymbols">
           <enum>QAbstractSpinBox::NoButtons</enum>
          </property>
@@ -143,7 +143,7 @@
         </widget>
        </item>
        <item>
-        <widget class="QPushButton" name="pb_add_new_waypoint_">
+        <widget class="QPushButton" name="pb_add_new_waypoint">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
            <horstretch>0</horstretch>
