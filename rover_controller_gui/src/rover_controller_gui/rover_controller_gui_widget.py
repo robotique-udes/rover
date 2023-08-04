@@ -13,6 +13,7 @@ from std_srvs.srv import SetBool
 from datetime import datetime
 from threading import Lock
 import math
+import re as regex
 
 from rover_control_msgs.srv import camera_control
 from rover_control_msgs.srv import camera_controlRequest
@@ -288,11 +289,24 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
     def loadWaypointsFromFile(self, button: QPushButton):
         select_file_dialog: QFileDialog = QFileDialog()
 
-        file_name: str = select_file_dialog.getOpenFileName(self, 'Open file', FILE_NAME_RECORDED_POSITION + "/../" ,"Text files (*.txt)")
-        # with open(file_name, "r") as openfileobject
+        file_name: [str, str] = select_file_dialog.getOpenFileName(self, 'Open file', FILE_NAME_RECORDED_POSITION + "/../" ,"Text files (*.txt)")
 
-        # line: str = file.read()
-        # while (line != EOF):         
+        with open(file_name[0]) as openfileobject:
+            line_counter: int = 0
+            for line in openfileobject:
+                line_counter += 1
+                elements = line.split()
+                
+                # Skip comments, empty line, or empty string 
+                if line[0] == '=' or "" or len(elements) == 0: 
+                    continue
+
+                if len(elements) != 3:
+                    rospy.logwarn("Syntaxt error in waypoint at line #" + str(line_counter))
+                    continue
+                else:
+                    self.waypoints[elements[0]] = (float(elements[1]), float(elements[2]))
+                    self.cb_waypoint_label.addItem(elements[0])
 
 class WaypointPopUp(QtWidgets.QWidget):
     def __init__(self, mainWindowsClass: RoverControllerGuiWidget):
