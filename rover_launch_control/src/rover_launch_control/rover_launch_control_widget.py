@@ -203,7 +203,6 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                                                                                    self.cb_cam_IR_framerate,
                                                                                    self.pb_current_cam_IR_framerate))
 
-
         #Periodic tasks
         cam_arducam_bandwidth = BandwidthInterface("/cam_arducam/packet/compressed")
         self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_arducam_bandwidth, self.pb_current_cam_arducam_bw));

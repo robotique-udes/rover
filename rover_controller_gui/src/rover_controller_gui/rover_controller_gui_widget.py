@@ -1,6 +1,7 @@
 from __future__ import (print_function, absolute_import, division, unicode_literals)
 
 import os
+import sys
 import rospkg
 import rospy
 import rosservice
@@ -13,7 +14,10 @@ from std_srvs.srv import SetBool
 from datetime import datetime
 from threading import Lock
 import math
-import re as regex
+
+
+sys.path.insert(0, rospkg.RosPack().get_path('rover_launch_control'))
+from src.rover_launch_control.rover_launch_control_widget import RoverLaunchControlWidget
 
 from rover_control_msgs.srv import camera_control
 from rover_control_msgs.srv import camera_controlRequest
@@ -39,6 +43,7 @@ FILE_NAME_SAVED_WAYPOINTS = rospkg.RosPack().get_path('rover_control') + "/../sa
 class RoverControllerGuiWidget(QtWidgets.QWidget):
     
     def __init__(self, context):
+        # Type: QtGui.plugin_context.PluginContext
         self.context = context
         # Types definition
         self.cb_waypoint_label: QComboBox
@@ -57,12 +62,18 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         loadUi(ui_file, self)
         self.setObjectName('RoverControllerGuiWidget')
 
+        # Launcher UI
+        self.launcher_started: bool = False
+        self.launcher_flag: bool = False
+        self.rover_launch_control_widget = RoverLaunchControlWidget()
+        self.pb_launcher_ui.released.connect(lambda: self.launcherPluginCallback(self.pb_launcher_ui))
+
         # Lights
         self.pb_lights.released.connect(lambda: self.toggleLights(self.pb_lights, 1))
         self.light_status_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateLightStatus(self.light_status_updater, self.pb_lights, 1))
 
         # Arm Joy
-        self.pb_set_arm_joy.released.connect(lambda: self.ctrl_joy_demux_callback(self.pb_set_arm_joy))
+        self.pb_set_arm_joy.released.connect(lambda: self.changeArmJoy(self.pb_set_arm_joy))
 
         # Aruco Marker live feed
         self.last_detected_marker = list()
@@ -72,17 +83,8 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.pb_calib.released.connect(lambda: self.calibrateJoint(self.pb_calib, self.cb_calib_select, self.dsb_angle_calib))
 
         # Waypoint:
-        file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
-        file.write("================================================================================\n")
-        file.write("= " + str(datetime.now()) + "\n")
-        file.write("================================================================================\n")
-        file.close()
-
-        file = open(FILE_NAME_RECORDED_POSITION, "a")
-        file.write("================================================================================\n")
-        file.write("= " + str(datetime.now()) + "\n")
-        file.write("================================================================================\n")
-        file.close()
+        self.waypoint_files_name: list[str] = [FILE_NAME_SAVED_WAYPOINTS, FILE_NAME_SAVED_WAYPOINTS]
+        for file in self.waypoint_files_name: self.initFile(file) 
 
         self.waypoints = dict()
         self.pb_open_new_waypoint.released.connect(lambda: self.openPopup(WaypointPopUp))
@@ -103,6 +105,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.pb_load_waypoint_file: QPushButton
         self.pb_load_waypoint_file.released.connect(lambda: self.loadWaypointsFromFile(self.pb_load_waypoint_file))
 
+    # Timer Callback: Wait for relay board msg and update corresponding button's style 
     def updateLightStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
         if not self.checkIfServicePosted(RELAY_BOARD_SERVICE_NAME, button):
             return
@@ -119,25 +122,24 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         except:
             rospy.logwarn_throttle(10, rospy.get_name() + "|" + self.name + " " + "Error rover_launch_control can't get relay status")
 
-    def toggleLights(self, button: QPushButton, index: int):
-        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
-        try :
-            rospy.wait_for_service(RELAY_BOARD_SERVICE_NAME, rospy.Duration(1.0))
+    # Timer Callback: Update UI with correspond current position
+    def updateCurrentPosition(self, timer_obj: rospy.Timer):
+        with self.lock_position:
+            self.pb_curr_position.setText(str(self.current_latitude) + ", " + str(self.current_longitude))
+            self.pb_curr_heading.setText(str(self.current_heading) + "°")
 
-            set_digital_output_service: set_digital_output = rospy.ServiceProxy(RELAY_BOARD_SERVICE_NAME, set_digital_output)
-            
-            data: inputs_outputs = rospy.wait_for_message(RELAY_BOARD_MESSAGE_NAME, inputs_outputs, rospy.Duration(1.0))
-            if data.digital_outputs.digital_outputs[index] == True:
-                set_digital_output_service(index, False)
-            else:
-                set_digital_output_service(index, True)
+            label: str = self.cb_waypoint_label.currentText()
+            if self.cb_waypoint_label.currentText() in self.waypoints:
+                Distance, Heading = self.coordinatesToHeadingAndDistance(self.current_latitude,
+                                                             self.current_longitude,
+                                                             self.waypoints[label][0],
+                                                             self.waypoints[label][1])
+                self.pb_target_heading.setText(str(round(Heading)) + "°")
+            elif label != "Select a waypoint":
+                rospy.logerr("Something wrong my guy")
+                self.pb_target_heading.setText("Something wrong my guy")
 
-        except:
-            rospy.logwarn("Error calling relay board service")
-            button.setStyleSheet(STYLE_WARN)
-        finally:
-            QApplication.restoreOverrideCursor()
-
+    # Timer Callback: Ask ArucoMarker service if it sees any aruco marker and update ui corresponding field
     def updateDetectedArucoMarker(self, timer_obj: rospy.Timer, button: QPushButton):
         if not self.checkIfServicePosted(CAMERA_CONTROL_SERVICE_NAME, button):
             return
@@ -164,15 +166,44 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         except:
             rospy.logwarn(rospy.get_name() + "|" + self.name + " " + "Error while trying to get aruco markers")
 
-    # Not locking way to check for service existing
-    def checkIfServicePosted(self, service_name: str, button: QPushButton) -> bool:
-        lst_services: list = rosservice.get_service_list()
-        if service_name not in lst_services:
-            button.setStyleSheet(STYLE_DISABLE)
-            return False
-        return True
+    # Subscriber Callback: Update current position members with GPS data
+    def cbGPSData(self, data: gps):
+        with self.lock_position:
+            self.current_latitude = data.latitude
+            self.current_longitude = data.longitude
+            self.heading = data.heading_track
+            self.height = data.height
 
-    def ctrl_joy_demux_callback(self, button: QPushButton):
+    def launcherPluginCallback(self, button: QPushButton):
+        if not self.launcher_started:
+            self.context.add_widget(self.rover_launch_control_widget)
+        else:
+            self.context.remove_widget(self.rover_launch_control_widget)
+            
+        self.launcher_started = not self.launcher_started
+
+    # Button Callback: Wait for realy board msg and switch the state accordingly
+    def toggleLights(self, button: QPushButton, index: int):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        try :
+            rospy.wait_for_service(RELAY_BOARD_SERVICE_NAME, rospy.Duration(1.0))
+
+            set_digital_output_service: set_digital_output = rospy.ServiceProxy(RELAY_BOARD_SERVICE_NAME, set_digital_output)
+            
+            data: inputs_outputs = rospy.wait_for_message(RELAY_BOARD_MESSAGE_NAME, inputs_outputs, rospy.Duration(1.0))
+            if data.digital_outputs.digital_outputs[index] == True:
+                set_digital_output_service(index, False)
+            else:
+                set_digital_output_service(index, True)
+
+        except:
+            rospy.logwarn("Error calling relay board service")
+            button.setStyleSheet(STYLE_WARN)
+        finally:
+            QApplication.restoreOverrideCursor()
+
+    # Button Callback: Toggle joy state
+    def changeArmJoy(self, button: QPushButton):
         if not self.checkIfServicePosted(SET_ARM_JOY_SERVICE_NAME, button):
             button.setStyleSheet(STYLE_DISABLE)
             return
@@ -191,36 +222,27 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
             rospy.logerr(rospy.get_name() + "(" + self.name + "): " + "Error changing joy demux target")
             button.setStyleSheet(STYLE_WARN)
 
+    # Button Callback: Send calibrate signal to selected joint
     def calibrateJoint(self, button: QPushButton, selected_joint: QComboBox, angle: QDoubleSpinBox):
         pub = rospy.Publisher("/arm/" + selected_joint.currentText() + "/C", Float32, queue_size=1)
         msg: Float32.data = angle.value()
         pub.publish(msg)
 
+    # Button Callback: Update UI with correspond waypoint of the specified ComboBox selected item
     def updateSelectedWaypoint(self, combo_box: QComboBox):
         if combo_box.currentText() in self.waypoints:
             text: str = str(self.waypoints[combo_box.currentText()][0]) + ",  " + str(self.waypoints[combo_box.currentText()][1])
         else:
-            rospy.logwarn("\"" + combo_box.currentText() + "\" doesn't exist in current waypoint dictionnary")
-            text: str = ("Select a waypoint")
+            if (combo_box.currentText() == "Select a waypoint"):
+                text: str = ("Select a waypoint")
+            else:
+                rospy.logwarn("\"" + combo_box.currentText() + "\" doesn't exist in current waypoint dictionnary")
+                text: str = ("Error... How???")
+
 
         self.pb_target_position.setText(text)
-
-    def updateCurrentPosition(self, timer_obj: rospy.Timer):
-        with self.lock_position:
-            self.pb_curr_position.setText(str(self.current_latitude) + ", " + str(self.current_longitude))
-            self.pb_curr_heading.setText(str(self.current_heading) + "°")
-
-            label: str = self.cb_waypoint_label.currentText()
-            if self.cb_waypoint_label.currentText() in self.waypoints:
-                Distance, Heading = self.coodinatesToHeading(self.current_latitude,
-                                                             self.current_longitude,
-                                                             self.waypoints[label][0],
-                                                             self.waypoints[label][1])
-                self.pb_target_heading.setText(str(round(Heading)) + "°")
-            elif label != "Select a waypoint":
-                rospy.logerr("Something wrong my guy")
-                self.pb_target_heading.setText("Something wrong my guy")
-
+    
+    # Button Callback: Record a waypoint with current position and export it to a backup file in case of app crash
     def recordWaypoint(self, button: QPushButton):
         label: str = "Recorded #" + str(self.recorded_waypoint_index)
         labels = [self.cb_waypoint_label.itemText(i) for i in range(self.cb_waypoint_label.count())]
@@ -247,23 +269,16 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
 
         self.recorded_waypoint_index += 1
 
-    def cbGPSData(self, data: gps):
-        with self.lock_position:
-            self.current_latitude = data.latitude
-            self.current_longitude = data.longitude
-            self.heading = data.heading_track
-            self.height = data.height
+    # Helper: Check for service existing (not locking way)
+    def checkIfServicePosted(self, service_name: str, button: QPushButton) -> bool:
+        lst_services: list = rosservice.get_service_list()
+        if service_name not in lst_services:
+            button.setStyleSheet(STYLE_DISABLE)
+            return False
+        return True
 
-    def exitingSafely(self):
-        file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
-        file.write("\n\n")
-        file.close()
-
-        file = open(FILE_NAME_RECORDED_POSITION, "a")
-        file.write("\n\n")
-        file.close()
-        
-    def coodinatesToHeading(self, lat1, lon1, lat2, lon2):
+    # Helper: Convert two gps position to heading
+    def coordinatesToHeadingAndDistance(self, lat1, lon1, lat2, lon2):
         R = 6371e3
         lat1 = math.radians(lat1)
         lat2 = math.radians(lat2)
@@ -282,32 +297,101 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         
         return [Distance, Heading]
 
+    # Helper: Read waypoint from waypoint file syntaxt exemple is in 
+    def loadWaypointsFromFile(self, button: QPushButton):
+        # Syntaxt help:
+        # ======================================================================
+        # = Help:
+        # = 	Comments starts with '='
+        # = 	Format of waypoint:
+        # = 	"label" "latitude" "longitude" units are Decimal Degree
+        # = Exemple:
+        # = #69 69.000 -69.0000420
+        # ======================================================================
+        select_file_dialog: QFileDialog = QFileDialog()
+
+        try:
+            file_name: [str, str] = select_file_dialog.getOpenFileName(self, 'Open file', FILE_NAME_RECORDED_POSITION + "/../" ,"Text files (*.txt)")
+
+            with open(file_name[0]) as openfileobject:
+                line_counter: int = 0
+                for line in openfileobject:
+                    line_counter += 1
+                    elements = line.split()
+                    
+                    # Skip comments, empty line, or empty string 
+                    if line[0] == '=' or "" or len(elements) == 0: 
+                        continue
+
+                    if len(elements) != 3:
+                        rospy.loginfo("See help below for syntaxt:")
+                        self.printWaypointSyntaxtHelp(line, line_counter)
+                        continue
+                    else:
+                        try:
+                            self.waypoints[elements[0]] = (float(elements[1]), float(elements[2]))
+                            self.cb_waypoint_label.addItem(elements[0])
+                        except Exception as e:
+                            rospy.loginfo("")
+
+        except Exception as e: 
+            rospy.logwarn("Loading waypoints failed with " + str(e))
+
+    # Helper: Open a popup of another QWidget class
     def openPopup(self, class_type):
         self.popUp = class_type(self) 
         self.popUp.show()
 
-    def loadWaypointsFromFile(self, button: QPushButton):
-        select_file_dialog: QFileDialog = QFileDialog()
+    # Helper: Make waypoint file header
+    def initFile(self, file_path: str):
+        try:
+            file = open(file_path, "a")
 
-        file_name: [str, str] = select_file_dialog.getOpenFileName(self, 'Open file', FILE_NAME_RECORDED_POSITION + "/../" ,"Text files (*.txt)")
+        except FileNotFoundError:
+            rospy.logwarn("Error oppening file \"" + file_path + "\" \nTrying to make file...")
+            try: 
+                os.makedirs(os.path.dirname(file_path), exist_ok=True)
 
-        with open(file_name[0]) as openfileobject:
-            line_counter: int = 0
-            for line in openfileobject:
-                line_counter += 1
-                elements = line.split()
-                
-                # Skip comments, empty line, or empty string 
-                if line[0] == '=' or "" or len(elements) == 0: 
-                    continue
+            except Exception as e:
+                rospy.logwarn("Unknown execption exiting")
+                raise e
+            
+            finally:
+                rospy.logwarn("File created successfully!")
+            
+        except Exception as e:
+            rospy.logwarn("Unknown Exception exiting")
+            raise e
 
-                if len(elements) != 3:
-                    rospy.logwarn("Syntaxt error in waypoint at line #" + str(line_counter))
-                    continue
-                else:
-                    self.waypoints[elements[0]] = (float(elements[1]), float(elements[2]))
-                    self.cb_waypoint_label.addItem(elements[0])
+        file = open(file_path, "a")
+        file.write("================================================================================\n")
+        file.write("= " + str(datetime.now()) + "\n")
+        file.write("================================================================================\n")
+        file.close()
+    
+    # Helper: Print waypoint syntaxt help
+    def printWaypointSyntaxtHelp(line: str, index: int):
+        rospy.logwarn("Syntax error in waypoint at line #" + str(index) + ":")
+        rospy.loginfo("Line is: " + line.strip())
+        help: str = """
+================================================================================
+Help:
+    Comments starts with \'=\'
+    Format of waypoint:
+\"label\" \"latitude\" \"longitude\" units are Decimal Degree
 
+Exemple:
+#69 69.420 -69.0000420
+================================================================================"""
+
+    # Called when program is exiting safely (used for backup file beautify) 
+    def exitingSafely(self):
+        for file in self.waypoint_files_name: 
+            file = open(file, "a")
+            file.write("\n\n")
+            file.close()
+        
+# Qwidget for add waypoint popup
 class WaypointPopUp(QtWidgets.QWidget):
     def __init__(self, mainWindowsClass: RoverControllerGuiWidget):
         super().__init__()
@@ -348,5 +432,3 @@ class WaypointPopUp(QtWidgets.QWidget):
             self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
 
         self.le_waypoint_label.setText("")
-        # self.dsb_latitude.setValue(0.0)
-        # self.dsb_longitude.setValue(0.0)
