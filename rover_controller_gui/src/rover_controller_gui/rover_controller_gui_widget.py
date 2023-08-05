@@ -224,9 +224,8 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
 
     # Button Callback: Send calibrate signal to selected joint
     def calibrateJoint(self, button: QPushButton, selected_joint: QComboBox, angle: QDoubleSpinBox):
-        pub = rospy.Publisher("/arm/" + selected_joint.currentText() + "/C", Float32, queue_size=1)
-        msg: Float32.data = angle.value()
-        pub.publish(msg)
+        pub = rospy.Publisher("/arm/" + selected_joint.currentText() + "/C", Float32, queue_size=1)        
+        pub.publish(float(angle.text()))
 
     # Button Callback: Update UI with correspond waypoint of the specified ComboBox selected item
     def updateSelectedWaypoint(self, combo_box: QComboBox):
