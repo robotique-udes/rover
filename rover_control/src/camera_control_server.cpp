@@ -11,7 +11,7 @@
 #define OUT
 
 // Needs to be params
-#define CAM_TOPIC "/cam_arducam/image"
+#define CAM_TOPIC "/cam_sonix/image"
 #define NB_PICS 4
 
 bool takePicture(std::string topic_name, cv_bridge::CvImagePtr img);
