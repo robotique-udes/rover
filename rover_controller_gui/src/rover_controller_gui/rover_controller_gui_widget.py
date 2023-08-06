@@ -133,7 +133,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
                                                              self.current_longitude,
                                                              self.waypoints[label][0],
                                                              self.waypoints[label][1])
-                self.pb_target_heading.setText(str(round(Heading)) + "°")
+                self.pb_target_heading.setText(str(round(Distance)) + "m @ " + str(round(Heading)) + "°")
             elif label != "Select a waypoint":
                 rospy.logerr("Something wrong my guy")
                 self.pb_target_heading.setText("Something wrong my guy")
