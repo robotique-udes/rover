@@ -133,7 +133,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
                                                              self.current_longitude,
                                                              self.waypoints[label][0],
                                                              self.waypoints[label][1])
-                self.pb_target_heading.setText(str(round(Heading)) + "°")
+                self.pb_target_heading.setText(str(round(Distance)) + "m @ " + str(round(Heading)) + "°")
             elif label != "Select a waypoint":
                 rospy.logerr("Something wrong my guy")
                 self.pb_target_heading.setText("Something wrong my guy")
@@ -261,14 +261,13 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
     # Button Callback: Update UI with correspond waypoint of the specified ComboBox selected item
     def updateSelectedWaypoint(self, combo_box: QComboBox):
         if combo_box.currentText() in self.waypoints:
-            text: str = str(self.waypoints[combo_box.currentText()][0]) + ",  " + str(self.waypoints[combo_box.currentText()][1])
+            text: str = str(round(self.waypoints[combo_box.currentText()][0], 4)) + ",  " + str(round(self.waypoints[combo_box.currentText()][1], 4))
         else:
             if (combo_box.currentText() == "Select a waypoint"):
                 text: str = ("Select a waypoint")
             else:
                 rospy.logwarn("\"" + combo_box.currentText() + "\" doesn't exist in current waypoint dictionnary")
                 text: str = ("Error... How???")
-
 
         self.pb_target_position.setText(text)
     
@@ -326,6 +325,24 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         Distance = R * c # in metres
         
         return [Distance, Heading]
+
+    # Helper: Find gps from another position with a distance and a heading
+    def headingAndDistanceToCoordinates(self, D, B, lat1, lon1):
+        rospy.logwarn("D: %d, B: %d, lat1: %d, lat2: %d")
+
+        R = 6371e3
+        lat1 = math.radians(lat1)
+        lon1 = math.radians(lon1)
+
+        lat2 = lat1 + D/R * math.cos(math.radians(B))
+        a = math.log(math.tan(math.pi/4 + lat2/2)/math.tan(math.pi/4 + lat1/2))
+        q = (lat2-lat1)/a
+        lon2 = lon1 + D/R * math.sin(math.radians(B))/q
+        
+        lat2 = math.degrees(lat2)
+        lon2 = math.degrees(lon2)
+        
+        return [lat2, lon2]
 
     # Helper: Read waypoint from waypoint file syntaxt exemple is in 
     def loadWaypointsFromFile(self, button: QPushButton):
@@ -432,12 +449,9 @@ class WaypointPopUp(QtWidgets.QWidget):
         self.mainWindowsClass = mainWindowsClass
 
         self.pb_add_new_waypoint: QPushButton
-        self.pb_add_new_waypoint.released.connect(lambda: self.addNewWaypointAndQuit(self.pb_add_new_waypoint))
-
-    def addNewWaypointAndQuit(self, button: QPushButton):
-        self.addWaypoint(button)
-        self.hide()     
-        del self
+        self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
+        self.pb_add_new_waypoint_shifted.released.connect(lambda: self.addShiftedWaypoint(self.pb_add_new_waypoint_shifted))
+        self.cb_shifted_waypoint_type_selector: QComboBox
 
     def addWaypoint(self, button: QPushButton):
         label: str = self.le_waypoint_label.text()
@@ -446,19 +460,57 @@ class WaypointPopUp(QtWidgets.QWidget):
         if (label in labels or "=" in label):
             self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
             rospy.logwarn("Invalid or already existing label")
-            return 
-
-        self.mainWindowsClass.waypoints[label] = (self.dsb_latitude.value(), self.dsb_longitude.value())
-        self.mainWindowsClass.cb_waypoint_label.addItem(label)
-
-        self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_DEFAULT)
+        else:
+            self.mainWindowsClass.waypoints[label] = (self.dsb_latitude.value(), self.dsb_longitude.value())
+            self.mainWindowsClass.cb_waypoint_label.addItem(label)
+            self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_DEFAULT)
         
-        try:
-            file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
-            file.write(label + " " + str(self.dsb_latitude.value()) + " " + str(self.dsb_longitude.value()) + "\n")
-            file.close()
-        except:
-            rospy.logwarn(self.name + ": Error writing waypoint to file try again")
-            self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
+            try:
+                file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
+                file.write(label + " " + str(self.dsb_latitude.value()) + " " + str(self.dsb_longitude.value()) + "\n")
+                file.close()
+            except:
+                rospy.logwarn(self.name + ": Error writing waypoint to file try again")
+                self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
 
         self.le_waypoint_label.setText("")
+        self.closePopUp()
+
+    def addShiftedWaypoint(self, button: QPushButton):
+        label: str = self.le_shifted_waypoint_label.text()
+        labels = [self.mainWindowsClass.cb_waypoint_label.itemText(i) for i in range(self.mainWindowsClass.cb_waypoint_label.count())]
+        labels.append("");
+        if (label in labels or "=" in label):
+            self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
+            rospy.logwarn("Invalid or already existing label")
+
+        else:
+            coordinate: list(float)
+            if (self.cb_shifted_waypoint_type_selector.currentText() == "Current Position"):
+                coordinate = self.mainWindowsClass.headingAndDistanceToCoordinates(self.dsb_distance.value(),
+                                                                                   self.dsb_heading.value(),
+                                                                                   self.mainWindowsClass.current_latitude,
+                                                                                   self.mainWindowsClass.current_longitude)
+            else:
+                coordinate = self.mainWindowsClass.headingAndDistanceToCoordinates(self.dsb_distance.value(),
+                                                                                   self.dsb_heading.value(),
+                                                                                   self.dsb_latitude.value(),
+                                                                                   self.dsb_longitude.value())
+            self.mainWindowsClass.waypoints[label] = (coordinate[0], coordinate[1])
+            self.mainWindowsClass.cb_waypoint_label.addItem(label)
+            self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_DEFAULT)
+            
+            try:
+                file = open(FILE_NAME_SAVED_WAYPOINTS, "a")
+                file.write(label + " " + str(self.dsb_latitude.value()) + " " + str(self.dsb_longitude.value()) + "\n")
+                file.close()
+            except:
+                rospy.logwarn(self.name + ": Error writing waypoint to file try again")
+                self.mainWindowsClass.pb_open_new_waypoint.setStyleSheet(STYLE_WARN)
+                
+            self.le_waypoint_label.setText("")
+            self.closePopUp()
+
+    def closePopUp(self):
+        self.hide()
+        del self
