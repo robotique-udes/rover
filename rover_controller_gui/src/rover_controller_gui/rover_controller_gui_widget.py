@@ -15,7 +15,6 @@ from datetime import datetime
 from threading import Lock
 import math
 
-
 sys.path.insert(0, rospkg.RosPack().get_path('rover_launch_control'))
 from src.rover_launch_control.rover_launch_control_widget import RoverLaunchControlWidget
 
@@ -80,7 +79,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.aruco_marker_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateDetectedArucoMarker(self.aruco_marker_updater, self.pb_aruco_marker))
 
         # Calib
-        self.pb_calib.released.connect(lambda: self.calibrateJoint(self.pb_calib, self.cb_calib_select, self.dsb_angle_calib))
+        self.pb_calib.released.connect(lambda: self.calibrateWholeArm(self.pb_calib, self.cb_calib_select, self.dsb_angle_calib))
 
         # Waypoint:
         self.waypoint_files_name: list[str] = [FILE_NAME_SAVED_WAYPOINTS, FILE_NAME_SAVED_WAYPOINTS]
@@ -174,6 +173,8 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
             self.heading = data.heading_track
             self.height = data.height
 
+    # Button Callback: Adds (or remove) RoverLauncherGui from rqt but keeps 
+    # object reference
     def launcherPluginCallback(self, button: QPushButton):
         if not self.launcher_started:
             self.context.add_widget(self.rover_launch_control_widget)
@@ -224,8 +225,38 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
 
     # Button Callback: Send calibrate signal to selected joint
     def calibrateJoint(self, button: QPushButton, selected_joint: QComboBox, angle: QDoubleSpinBox):
-        pub = rospy.Publisher("/arm/" + selected_joint.currentText() + "/C", Float32, queue_size=1)        
+        pub: rospy.Subscriber = rospy.Publisher("/arm/" + selected_joint.currentText() + "/C", Float32, queue_size=1)     
+        
+        # Waits for pub to be registered
+        while (pub.get_num_connections() < 1):
+            pass
         pub.publish(float(angle.text()))
+
+    def calibrateWholeArm(self, button: QPushButton, selected_joint: QComboBox, angle: QDoubleSpinBox):
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+
+        # Args are useless but nice and used for quick swapping callback from calib button
+        timeout = rospy.Time.now() + rospy.Duration(5.0)
+
+        for i in range (0, 4):
+            pub: rospy.Subscriber = rospy.Publisher("/arm/j" + str(i) + "/C", Float32, queue_size=1)  
+            while (pub.get_num_connections() < 1 and rospy.Time.now() < timeout):
+                pass 
+
+            if (i == 0):
+                pub.publish(180.0)
+            elif (i > 1):
+                pub.publish(-90.0)
+            else:
+                pub.publish(0.0)
+
+            if (rospy.Time.now() > timeout):
+                rospy.logwarn("Timeout when trying to calib, make sure joints are running")
+                button.setStyleSheet(STYLE_WARN)
+            else:
+                button.setStyleSheet(STYLE_DEFAULT)
+
+            QApplication.restoreOverrideCursor()
 
     # Button Callback: Update UI with correspond waypoint of the specified ComboBox selected item
     def updateSelectedWaypoint(self, combo_box: QComboBox):
