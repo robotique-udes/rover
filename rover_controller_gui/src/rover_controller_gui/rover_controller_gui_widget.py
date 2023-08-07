@@ -189,10 +189,10 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         try :
             rospy.wait_for_service(RELAY_BOARD_SERVICE_NAME, rospy.Duration(1.0))
 
-            set_digital_output_service: set_digital_output = rospy.ServiceProxy(RELAY_BOARD_SERVICE_NAME, set_digital_output)
+            set_digital_output_service: rospy.ServiceProxy = rospy.ServiceProxy(RELAY_BOARD_SERVICE_NAME, set_digital_output)
             
             data: inputs_outputs = rospy.wait_for_message(RELAY_BOARD_MESSAGE_NAME, inputs_outputs, rospy.Duration(1.0))
-            if data.digital_outputs.digital_outputs[index] == True:
+            if data.digital_outputs[index - 1] == True:
                 set_digital_output_service(index, False)
             else:
                 set_digital_output_service(index, True)
