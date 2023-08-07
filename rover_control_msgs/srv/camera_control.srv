@@ -2,6 +2,7 @@ uint8 CMD_TAKE_PICTURE = 1
 uint8 CMD_SAVE_PANO = 2
 uint8 CMD_RESET_PICTURES = 3
 uint8 CMD_DETECT_ARUCO = 4
+uint8 CMD_TAKE_AND_SAVE_PANO = 5
 
 uint8 cmd
 ---

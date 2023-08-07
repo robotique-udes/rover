@@ -6,6 +6,7 @@
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
+#include "sensor_msgs/JointState.h"
 
 #define IN
 #define OUT
@@ -22,6 +23,7 @@ ros::NodeHandle *p_nh;
 
 std::list<cv::Mat> l_img;
 ros::ServiceServer srv_cmd_server;
+sensor_msgs::JointState joint_state;
 
 int main(int argc, char *argv[])
 {
@@ -171,6 +173,58 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
 
         res.result = true;
         break;
+    }
+
+    case rover_control_msgs::camera_controlRequest::CMD_TAKE_AND_SAVE_PANO:
+    {
+        sensor_msgs::JointState joint_state;
+        ros::Publisher pub = p_nh->advertise<sensor_msgs::JointState>("/desired_joint_state", 1); 
+        
+        ROS_INFO("Starting Panorama...");
+        ROS_INFO("Waiting 1 seconds for publisher subscription...");
+        ros::Duration(1.0).sleep();
+
+        // Get motor index
+        uint8_t index = 0;
+        for(; static_cast<uint8_t>(joint_state.name.size()); index++)
+        {
+            if (joint_state.name[index] == "gripper_rotation")
+                break;
+        }
+
+
+        double target_increments = 6.28318530718/NB_PICS;
+        double target = 0.01;
+
+        for (uint8_t i = 0; i < NB_PICS; i++, target += target_increments)
+        {
+            // Goes to next position 
+            sensor_msgs::JointState desired_joint_state;
+            desired_joint_state.name.push_back("gripper_rotation");
+            desired_joint_state.velocity.push_back(1.0f);
+            pub.publish(desired_joint_state);
+            for (; !(joint_state.position[index] < target + 0.05 && joint_state.position[index] > target + 0.05);)
+            {
+                boost::shared_ptr<const sensor_msgs::JointState> ptr_joint_state = ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", *p_nh);
+                if (ptr_joint_state != NULL)
+                {
+                    joint_state = *ptr_joint_state; 
+                }
+            }
+            // Stop joint
+            desired_joint_state = sensor_msgs::JointState();
+            desired_joint_state.name.push_back("gripper_rotation");
+            desired_joint_state.velocity.push_back(0.0f);
+            pub.publish(desired_joint_state);
+
+            // Take Picture
+            /*************/
+
+            ros::Duration(2.0);
+        }
+        
+
+
     }
 
     default:
