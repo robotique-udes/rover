@@ -36,7 +36,7 @@
         <param name="outputs" value="8" type="int" />
     </node>
 
-    <node type="gps_node" name="serial_gps_node" pkg="rover_control" output="screen">
+    <node machine="rover" type="gps_node" name="serial_gps_node" pkg="rover_control" output="screen">
         <param name="port" value="$(arg gps_device_port)" />
     </node>
 
