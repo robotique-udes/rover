@@ -19,7 +19,7 @@ plugin -->
             <remap from="mjpeg_controller/image" to="image" />
             <remap from="compressed_packet_controller/packet" to="packet/compressed" />
             <param name="video_device"
-                value="/dev/v4l/by-id/usb-Sonix_Technology_Co.__Ltd._USB_2.0_Camera-video-index0" />
+                value="/dev/v4l/by-id/usb-Arducam_Technology_Co.__Ltd._Arducam_OV9782_USB_Camera_UC762-video-index0" />
             <param name="pixel_format" value="mjpeg" />
         </node>
 
