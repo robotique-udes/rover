@@ -98,7 +98,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         # I don't really understands qt and ros python threading so putting some locks on all button callback to only 
         # execute one at a time (probably useless but more secure nonetheless)
         self.lockLaunchFile = Lock()
-        self.lockLaunchCameraStream = Lock()
+        
 
         self.uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
         uuid = self.uuid
@@ -194,8 +194,11 @@ class CameraLaunch(QtWidgets.QWidget):
         self.setObjectName('Launch Camera')
 
         self.mainWindowsClass = mainWindowsClass
-
         uuid = self.mainWindowsClass.uuid
+
+        self.name = "RoverLaunchControlWidget"
+
+        self.lockLaunchCameraStream = Lock()
 
         # self.pb_add_new_waypoint: QPushButton
         # self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
@@ -401,7 +404,7 @@ class CameraLaunch(QtWidgets.QWidget):
                 pb_current_resolution.setText("")
 
 
-            self.launchFile(launch_interface, button)
+            self.mainWindowsClass.launchFile(launch_interface, button)
 
     def ApplyCameraStream(self,
                 cameraName: str,

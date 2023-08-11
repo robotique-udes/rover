@@ -68,8 +68,12 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.pb_launcher_ui.released.connect(lambda: self.launcherPluginCallback(self.pb_launcher_ui))
 
         # Lights
-        self.pb_lights.released.connect(lambda: self.toggleLights(self.pb_lights, 1))
-        self.light_status_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateLightStatus(self.light_status_updater, self.pb_lights, 1))
+        self.pb_lights.released.connect(lambda: self.toggleRelay(self.pb_lights, 1))
+        self.light_status_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateRelayStatus(self.light_status_updater, self.pb_lights, 1))
+
+        # USB hub
+        self.pb_usb_hub.released.connect(lambda: self.toggleRelay(self.pb_usb_hub, 2))
+        self.USBhub_status_updater = rospy.Timer(rospy.Duration(1.0), lambda x: self.updateRelayStatus(self.USBhub_status_updater, self.pb_usb_hub, 2))
 
         # Arm Joy
         self.pb_set_arm_joy.released.connect(lambda: self.changeArmJoy(self.pb_set_arm_joy))
@@ -105,7 +109,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.pb_load_waypoint_file.released.connect(lambda: self.loadWaypointsFromFile(self.pb_load_waypoint_file))
 
     # Timer Callback: Wait for relay board msg and update corresponding button's style 
-    def updateLightStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
+    def updateRelayStatus(self, timer_obj: rospy.Timer, button: QPushButton, output_index: int):
         if not self.checkIfServicePosted(RELAY_BOARD_SERVICE_NAME, button):
             return
         
@@ -120,6 +124,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
 
         except:
             rospy.logwarn_throttle(10, rospy.get_name() + "|" + self.name + " " + "Error rover_launch_control can't get relay status")
+
 
     # Timer Callback: Update UI with correspond current position
     def updateCurrentPosition(self, timer_obj: rospy.Timer):
@@ -184,7 +189,7 @@ class RoverControllerGuiWidget(QtWidgets.QWidget):
         self.launcher_started = not self.launcher_started
 
     # Button Callback: Wait for realy board msg and switch the state accordingly
-    def toggleLights(self, button: QPushButton, index: int):
+    def toggleRelay(self, button: QPushButton, index: int):
         QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
         try :
             rospy.wait_for_service(RELAY_BOARD_SERVICE_NAME, rospy.Duration(1.0))
