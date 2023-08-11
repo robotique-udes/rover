@@ -10,7 +10,7 @@
     <!--========================================================================
     Nodes
     =========================================================================-->    
-    <group ns="cam_IR">
+    <group ns="cam_base_bras">
         <!-- USB camera driver + controller manager -->
         <node machine="rover" name="hardware" pkg="nodelet" type="nodelet"
             args="standalone usb_cam_hardware/USBCamHardware" output="screen">
@@ -18,7 +18,7 @@
             <remap from="mjpeg_controller/image" to="image" />
             <remap from="compressed_packet_controller/packet" to="packet/compressed" />
             <param name="video_device"
-                value="/dev/v4l/by-id/usb-Sonix_Technology_Co.__Ltd._USB_2.0_Camera-video-index0" />
+                value="/dev/v4l/by-id/usb-046d_0825_068C0DC0-video-index0" />
             <!-- <param name="image_width" value="1920" /> -->
             <!-- <param name="image_height" value="1080" /> -->
             <param name="pixel_format" value="mjpeg" />

@@ -1,0 +1,57 @@
+<launch>
+    <!--========================================================================
+    Machine header
+    =========================================================================-->
+    <arg name="local_only" default="false" />
+    <include file="$(find rover_control)/launch/machine_config.launch">
+        <arg name="local_only" value="$(arg local_only)" />
+    </include>
+
+    <!--========================================================================
+    Nodes
+    =========================================================================-->    
+    <group ns="cam_arriere">
+        <!-- USB camera driver + controller manager -->
+        <node machine="rover" name="hardware" pkg="nodelet" type="nodelet"
+            args="standalone usb_cam_hardware/USBCamHardware" output="screen">
+            <remap from="camera_info_controller/camera_info" to="camera_info" />
+            <remap from="mjpeg_controller/image" to="image" />
+            <remap from="compressed_packet_controller/packet" to="packet/compressed" />
+            <param name="video_device"
+                value="/dev/v4l/by-id/usb-046d_0825_242B0DC0-video-index0" />
+            <!-- <param name="image_width" value="1920" /> -->
+            <!-- <param name="image_height" value="1080" /> -->
+            <param name="pixel_format" value="mjpeg" />
+            <!-- <param name="framerate" value="30" /> -->
+        </node>
+
+        <!-- Controller starter that asks the manager to start -->
+        <node machine="rover" name="controller_starter" pkg="controller_manager" type="controller_manager"
+            args="spawn camera_info_controller compressed_packet_controller mjpeg_controller"
+            output="screen" />
+        <!-- Recommendation: use controllers you actually required -->
+        <!--   camera_info_controller publishes camera infos synchronized with images -->
+        <!--   compressed_packet_controller publishes packets from the camera (so requires
+            subscriber-side decoding) -->
+        <!--   mjpeg_controller does server-side decoding (usually heavy) and publishes images -->
+
+        <!-- Parameters for controllers -->
+        <param name="camera_info_controller/type"
+            value="usb_cam_controllers/CameraInfoController" />
+        <param name="camera_info_controller/camera_frame_id" value="insta360" />
+
+        <param name="compressed_packet_controller/type"
+            value="usb_cam_controllers/CompressedPacketController" />
+        <param name="compressed_packet_controller/format" value="jpeg" />
+        <!-- pub 1 packet and then skip 2 packets -->
+        <!-- <param name="compressed_packet_controller/skip" value="0" /> -->
+
+        <param name="mjpeg_controller/type" value="usb_cam_controllers/MjpegController" />
+    </group>
+</launch>
+
+<!-- 
+dependecies :
+- usb_cam_hardware
+- usb_cam_controller
+ -->
