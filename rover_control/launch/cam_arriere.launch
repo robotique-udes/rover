@@ -10,7 +10,7 @@
     <!--========================================================================
     Nodes
     =========================================================================-->    
-    <group ns="cam_">
+    <group ns="cam_arriere">
         <!-- USB camera driver + controller manager -->
         <node machine="rover" name="hardware" pkg="nodelet" type="nodelet"
             args="standalone usb_cam_hardware/USBCamHardware" output="screen">

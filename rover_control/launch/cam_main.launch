@@ -20,7 +20,7 @@
             <remap from="mjpeg_controller/image" to="image" />
             <remap from="compressed_packet_controller/packet" to="packet/compressed" />
             <param name="video_device"
-                value="/dev/v4l/by-id/usb-046d_0825_242B0DC0-video-index0" />
+                value="/dev/v4l/by-id/usb-046d_0825_E861A1D0-video-index0" />
             <!-- <param name="image_width" value="1920" />
             <param name="image_height" value="1080" /> -->
             <param name="pixel_format" value="mjpeg" />
