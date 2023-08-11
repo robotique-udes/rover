@@ -98,18 +98,11 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         # I don't really understands qt and ros python threading so putting some locks on all button callback to only 
         # execute one at a time (probably useless but more secure nonetheless)
         self.lockLaunchFile = Lock()
-        self.lockLaunchCameraStream = Lock()
+        
 
-        uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        self.uuid = roslaunch.rlutil.get_or_generate_uuid(None, False)
+        uuid = self.uuid
         roslaunch.configure_logging(uuid)
-
-        self.resolutionDict = {
-            "1080p": ("1920", "1080"),
-            "720p": ("1080", "720"),
-            "480p": ("640", "480"),
-            "360p": ("480", "360"),
-            "144p": ("192", "144"),
-            }
 
         #Mode selection buttons
         #setting default value
@@ -148,70 +141,11 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         controller_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_arm', launchfile_name='controller')
         self.pb_controller.released.connect(lambda: self.launchFile(controller_interface, self.pb_controller))
 
-        #cameras
-        cam_arducam_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_arducam')
-        self.pb_cam_arducam_launch.released.connect(lambda: self.launchCameraStream("cam_arducam",
-                                                                                     120,
-                                                                                     cam_arducam_interface,
-                                                                                     self.pb_cam_arducam_launch,
-                                                                                     self.cb_cam_arducam_resolution,
-                                                                                     self.pb_current_cam_arducam_resolution,
-                                                                                     self.cb_cam_arducam_framerate,
-                                                                                     self.pb_current_cam_arducam_framerate))
-        self.pb_cam_arducam_apply.released.connect(lambda: self.ApplyCameraStream("cam_arducam",
-                                                                                   120,
-                                                                                   cam_arducam_interface,
-                                                                                   self.pb_cam_arducam_launch,
-                                                                                   self.cb_cam_arducam_resolution,
-                                                                                   self.pb_current_cam_arducam_resolution,
-                                                                                   self.cb_cam_arducam_framerate,
-                                                                                   self.pb_current_cam_arducam_framerate))
+        #UI cameras
+        self.pb_launch_cam.released.connect(lambda: self.openPopup(CameraLaunch))
 
-        cam_sonix_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_sonix')
-        self.pb_cam_sonix_launch.released.connect(lambda: self.launchCameraStream("cam_sonix",
-                                                                                     30,
-                                                                                     cam_sonix_interface,
-                                                                                     self.pb_cam_sonix_launch,
-                                                                                     self.cb_cam_sonix_resolution,
-                                                                                     self.pb_current_cam_sonix_resolution,
-                                                                                     self.cb_cam_sonix_framerate,
-                                                                                     self.pb_current_cam_sonix_framerate))
-        self.pb_cam_sonix_apply.released.connect(lambda: self.ApplyCameraStream("cam_sonix",
-                                                                                   30,
-                                                                                   cam_sonix_interface,
-                                                                                   self.pb_cam_sonix_launch,
-                                                                                   self.cb_cam_sonix_resolution,
-                                                                                   self.pb_current_cam_sonix_resolution,
-                                                                                   self.cb_cam_sonix_framerate,
-                                                                                   self.pb_current_cam_sonix_framerate))
         
-        cam_IR_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_IR')
-        self.pb_cam_IR_launch.released.connect(lambda: self.launchCameraStream("cam_IR",
-                                                                                     30,
-                                                                                     cam_IR_interface,
-                                                                                     self.pb_cam_IR_launch,
-                                                                                     self.cb_cam_IR_resolution,
-                                                                                     self.pb_current_cam_IR_resolution,
-                                                                                     self.cb_cam_IR_framerate,
-                                                                                     self.pb_current_cam_IR_framerate))
-        self.pb_cam_IR_apply.released.connect(lambda: self.ApplyCameraStream("cam_IR",
-                                                                                   30,
-                                                                                   cam_IR_interface,
-                                                                                   self.pb_cam_IR_launch,
-                                                                                   self.cb_cam_IR_resolution,
-                                                                                   self.pb_current_cam_IR_resolution,
-                                                                                   self.cb_cam_IR_framerate,
-                                                                                   self.pb_current_cam_IR_framerate))
-
-        #Periodic tasks
-        cam_arducam_bandwidth = BandwidthInterface("/cam_arducam/packet/compressed")
-        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_arducam_bandwidth, self.pb_current_cam_arducam_bw));
-    
-        cam_sonix_bandwidth = BandwidthInterface("/cam_sonix/packet/compressed")
-        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_sonix_bandwidth, self.pb_current_cam_sonix_bw));
-    
-        cam_IR_bandwidth = BandwidthInterface("/cam_IR/packet/compressed")
-        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_IR_bandwidth, self.pb_current_cam_IR_bw));
+        
 
     def localModeSelection(self, value: bool, pb_toggle_self: QPushButton, pb_toggle_friends: "list[str]"):
         global launchmode_local
@@ -244,6 +178,191 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
             finally:
                 QApplication.restoreOverrideCursor()
 
+    
+
+    # Helper: Open a popup of another QWidget class
+    def openPopup(self, class_type):
+        self.popUp = class_type(self) 
+        self.popUp.show()
+
+# Qwidget for lauching camera
+class CameraLaunch(QtWidgets.QWidget):
+    def __init__(self, mainWindowsClass: RoverLaunchControlWidget):
+        super().__init__()
+        ui_file = os.path.join(rospkg.RosPack().get_path('rover_launch_control'), 'resource', 'rover_launch_camera.ui')
+        loadUi(ui_file, self)
+        self.setObjectName('Launch Camera')
+
+        self.mainWindowsClass = mainWindowsClass
+        uuid = self.mainWindowsClass.uuid
+
+        self.name = "RoverLaunchControlWidget"
+
+        self.lockLaunchCameraStream = Lock()
+
+        # self.pb_add_new_waypoint: QPushButton
+        # self.pb_add_new_waypoint.released.connect(lambda: self.addWaypoint(self.pb_add_new_waypoint))
+        # self.pb_add_new_waypoint_shifted.released.connect(lambda: self.addShiftedWaypoint(self.pb_add_new_waypoint_shifted))
+        # self.cb_shifted_waypoint_type_selector: QComboBox
+
+        self.resolutionDict = {
+            "1080p": ("1920", "1080"),
+            "720p": ("1080", "720"),
+            "480p": ("640", "480"),
+            "360p": ("480", "360"),
+            "144p": ("192", "144"),
+            }
+        
+        #Periodic tasks
+        cam_arducam_bandwidth = BandwidthInterface("/cam_arducam/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_arducam_bandwidth, self.pb_current_cam_arducam_bw));
+    
+        cam_main_bandwidth = BandwidthInterface("/cam_main/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_main_bandwidth, self.pb_current_cam_main_bw));
+    
+        cam_arriere_bandwidth = BandwidthInterface("/cam_arriere/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_arriere_bandwidth, self.pb_current_cam_arriere_bw));
+    
+        cam_desaxee_bandwidth = BandwidthInterface("/cam_desaxee/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_desaxee_bandwidth, self.pb_current_cam_desaxee_bw));
+
+        cam_bras_bandwidth = BandwidthInterface("/cam_bras/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_bras_bandwidth, self.pb_current_cam_bras_bw));
+    
+        cam_pelle_bandwidth = BandwidthInterface("/cam_pelle/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_pelle_bandwidth, self.pb_current_cam_pelle_bw));
+    
+        cam_base_bras_bandwidth = BandwidthInterface("/cam_base_bras/packet/compressed")
+        self.bandwidth_updater = rospy.Timer(rospy.Duration(0.5), lambda x: self.bandwidthInfoUpdate(self.bandwidth_updater, cam_base_bras_bandwidth, self.pb_current_cam_base_bras_bw));
+    
+
+        cam_arducam_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_arducam')
+        self.pb_cam_arducam_launch.released.connect(lambda: self.launchCameraStream("cam_arducam",
+                                                                                     120,
+                                                                                     cam_arducam_interface,
+                                                                                     self.pb_cam_arducam_launch,
+                                                                                     self.cb_cam_arducam_resolution,
+                                                                                     self.pb_current_cam_arducam_resolution,
+                                                                                     self.cb_cam_arducam_framerate,
+                                                                                     self.pb_current_cam_arducam_framerate))
+        self.pb_cam_arducam_apply.released.connect(lambda: self.ApplyCameraStream("cam_arducam",
+                                                                                   120,
+                                                                                   cam_arducam_interface,
+                                                                                   self.pb_cam_arducam_launch,
+                                                                                   self.cb_cam_arducam_resolution,
+                                                                                   self.pb_current_cam_arducam_resolution,
+                                                                                   self.cb_cam_arducam_framerate,
+                                                                                   self.pb_current_cam_arducam_framerate))
+
+        cam_main_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_main')
+        self.pb_cam_main_launch.released.connect(lambda: self.launchCameraStream("cam_main",
+                                                                                     30,
+                                                                                     cam_main_interface,
+                                                                                     self.pb_cam_main_launch,
+                                                                                     self.cb_cam_main_resolution,
+                                                                                     self.pb_current_cam_main_resolution,
+                                                                                     self.cb_cam_main_framerate,
+                                                                                     self.pb_current_cam_main_framerate))
+        self.pb_cam_main_apply.released.connect(lambda: self.ApplyCameraStream("cam_main",
+                                                                                   30,
+                                                                                   cam_main_interface,
+                                                                                   self.pb_cam_main_launch,
+                                                                                   self.cb_cam_main_resolution,
+                                                                                   self.pb_current_cam_main_resolution,
+                                                                                   self.cb_cam_main_framerate,
+                                                                                   self.pb_current_cam_main_framerate))
+        
+        cam_arriere_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_arriere')
+        self.pb_cam_arriere_launch.released.connect(lambda: self.launchCameraStream("cam_arriere",
+                                                                                     30,
+                                                                                     cam_arriere_interface,
+                                                                                     self.pb_cam_arriere_launch,
+                                                                                     self.cb_cam_arriere_resolution,
+                                                                                     self.pb_current_cam_arriere_resolution,
+                                                                                     self.cb_cam_arriere_framerate,
+                                                                                     self.pb_current_cam_arriere_framerate))
+        self.pb_cam_arriere_apply.released.connect(lambda: self.ApplyCameraStream("cam_arriere",
+                                                                                   30,
+                                                                                   cam_arriere_interface,
+                                                                                   self.pb_cam_arriere_launch,
+                                                                                   self.cb_cam_arriere_resolution,
+                                                                                   self.pb_current_cam_arriere_resolution,
+                                                                                   self.cb_cam_arriere_framerate,
+                                                                                   self.pb_current_cam_arriere_framerate))
+        
+        cam_desaxee_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_desaxee')
+        self.pb_cam_desaxee_launch.released.connect(lambda: self.launchCameraStream("cam_desaxee",
+                                                                                     30,
+                                                                                     cam_desaxee_interface,
+                                                                                     self.pb_cam_desaxee_launch,
+                                                                                     self.cb_cam_desaxee_resolution,
+                                                                                     self.pb_current_cam_desaxee_resolution,
+                                                                                     self.cb_cam_desaxee_framerate,
+                                                                                     self.pb_current_cam_desaxee_framerate))
+        self.pb_cam_desaxee_apply.released.connect(lambda: self.ApplyCameraStream("cam_desaxee",
+                                                                                   30,
+                                                                                   cam_desaxee_interface,
+                                                                                   self.pb_cam_desaxee_launch,
+                                                                                   self.cb_cam_desaxee_resolution,
+                                                                                   self.pb_current_cam_desaxee_resolution,
+                                                                                   self.cb_cam_desaxee_framerate,
+                                                                                   self.pb_current_cam_desaxee_framerate))
+        
+        cam_bras_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_bras')
+        self.pb_cam_bras_launch.released.connect(lambda: self.launchCameraStream("cam_bras",
+                                                                                     30,
+                                                                                     cam_bras_interface,
+                                                                                     self.pb_cam_bras_launch,
+                                                                                     self.cb_cam_bras_resolution,
+                                                                                     self.pb_current_cam_bras_resolution,
+                                                                                     self.cb_cam_bras_framerate,
+                                                                                     self.pb_current_cam_bras_framerate))
+        self.pb_cam_bras_apply.released.connect(lambda: self.ApplyCameraStream("cam_bras",
+                                                                                   30,
+                                                                                   cam_bras_interface,
+                                                                                   self.pb_cam_bras_launch,
+                                                                                   self.cb_cam_bras_resolution,
+                                                                                   self.pb_current_cam_bras_resolution,
+                                                                                   self.cb_cam_bras_framerate,
+                                                                                   self.pb_current_cam_bras_framerate))
+
+
+        cam_pelle_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_pelle')
+        self.pb_cam_pelle_launch.released.connect(lambda: self.launchCameraStream("cam_pelle",
+                                                                                     30,
+                                                                                     cam_pelle_interface,
+                                                                                     self.pb_cam_pelle_launch,
+                                                                                     self.cb_cam_pelle_resolution,
+                                                                                     self.pb_current_cam_pelle_resolution,
+                                                                                     self.cb_cam_pelle_framerate,
+                                                                                     self.pb_current_cam_pelle_framerate))
+        self.pb_cam_pelle_apply.released.connect(lambda: self.ApplyCameraStream("cam_pelle",
+                                                                                   30,
+                                                                                   cam_pelle_interface,
+                                                                                   self.pb_cam_pelle_launch,
+                                                                                   self.cb_cam_pelle_resolution,
+                                                                                   self.pb_current_cam_pelle_resolution,
+                                                                                   self.cb_cam_pelle_framerate,
+                                                                                   self.pb_current_cam_pelle_framerate))
+        
+        cam_base_bras_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='cam_base_bras')
+        self.pb_cam_base_bras_launch.released.connect(lambda: self.launchCameraStream("cam_base_bras",
+                                                                                     30,
+                                                                                     cam_base_bras_interface,
+                                                                                     self.pb_cam_base_bras_launch,
+                                                                                     self.cb_cam_base_bras_resolution,
+                                                                                     self.pb_current_cam_base_bras_resolution,
+                                                                                     self.cb_cam_base_bras_framerate,
+                                                                                     self.pb_current_cam_base_bras_framerate))
+        self.pb_cam_base_bras_apply.released.connect(lambda: self.ApplyCameraStream("cam_base_bras",
+                                                                                   30,
+                                                                                   cam_base_bras_interface,
+                                                                                   self.pb_cam_base_bras_launch,
+                                                                                   self.cb_cam_base_bras_resolution,
+                                                                                   self.pb_current_cam_base_bras_resolution,
+                                                                                   self.cb_cam_base_bras_framerate,
+                                                                                   self.pb_current_cam_base_bras_framerate))
+        
     def launchCameraStream(self,
                            cameraName: str,
                            cameraFramerate:int,
@@ -285,7 +404,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 pb_current_resolution.setText("")
 
 
-            self.launchFile(launch_interface, button)
+            self.mainWindowsClass.launchFile(launch_interface, button)
 
     def ApplyCameraStream(self,
                 cameraName: str,
@@ -302,6 +421,7 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
                 self.launchCameraStream(cameraName, cameraFramerate, launch_interface, button, cb_resolution, pb_current_resolution, cb_framerate, pb_current_framerate)
         else:
             rospy.logwarn(rospy.get_name() + "(" + self.name + "): " + cameraName + " is not started yet")    
+
 
     def bandwidthInfoUpdate(self, timer_obj: rospy.Timer, bandwidth_interface: BandwidthInterface, pb_current_bw: QPushButton):
         bandwidth_interface.get_bw();
