@@ -613,7 +613,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pb_current_cam_sonix_bw">
+                <widget class="QPushButton" name="pb_current_cam_main_bw">
                  <property name="enabled">
                   <bool>true</bool>
                  </property>
@@ -638,7 +638,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pb_current_cam_sonix_framerate">
+                <widget class="QPushButton" name="pb_current_cam_main_framerate">
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
@@ -651,7 +651,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pb_current_cam_sonix_resolution">
+                <widget class="QPushButton" name="pb_current_cam_main_resolution">
                  <property name="cursor">
                   <cursorShape>ArrowCursor</cursorShape>
                  </property>
@@ -664,7 +664,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pb_cam_sonix_launch">
+                <widget class="QPushButton" name="pb_cam_main_launch">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
@@ -785,7 +785,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="cb_cam_sonix_framerate">
+                <widget class="QComboBox" name="cb_cam_main_framerate">
                  <property name="cursor">
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
@@ -840,7 +840,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QComboBox" name="cb_cam_sonix_resolution">
+                <widget class="QComboBox" name="cb_cam_main_resolution">
                  <property name="cursor">
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
@@ -875,7 +875,7 @@
                 </widget>
                </item>
                <item>
-                <widget class="QPushButton" name="pb_cam_sonix_apply">
+                <widget class="QPushButton" name="pb_cam_main_apply">
                  <property name="sizePolicy">
                   <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
                    <horstretch>0</horstretch>
