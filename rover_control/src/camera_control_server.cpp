@@ -12,7 +12,7 @@
 #define OUT
 
 // Needs to be params
-#define CAM_TOPIC "/cam_sonix/image"
+// #define CAM_TOPIC "/cam_sonix/image"
 #define NB_PICS 4
 
 bool takePicture(std::string topic_name, cv_bridge::CvImagePtr img);
@@ -75,7 +75,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
     case rover_control_msgs::camera_controlRequest::CMD_TAKE_PICTURE:
     {
         cv::Mat img;
-        if (!takePicture(IN CAM_TOPIC, OUT & img))
+        if (!takePicture(IN req.cam_topic, OUT & img))
         {
             res.result = false;
             break;
@@ -157,7 +157,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
     case rover_control_msgs::camera_controlRequest::CMD_DETECT_ARUCO:
     {
         cv::Mat img;
-        if (!takePicture(IN CAM_TOPIC, OUT & img))
+        if (!takePicture(IN req.cam_topic, OUT & img))
         {
             res.result = false;
             break;
