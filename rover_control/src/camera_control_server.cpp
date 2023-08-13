@@ -10,6 +10,7 @@
 
 #define IN
 #define OUT
+#define INOUT
 
 // Needs to be params
 // #define CAM_TOPIC "/cam_sonix/image"
@@ -18,6 +19,7 @@
 bool takePicture(std::string topic_name, cv_bridge::CvImagePtr img);
 bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_msgs::camera_controlResponse &res);
 std::vector<int> getMarkerId(cv::Mat img);
+void normalize_rad(INOUT double *angle);
 
 ros::NodeHandle *p_nh;
 
@@ -85,7 +87,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
 
         std::vector<int> marker_ids = getMarkerId(img);
 
-        int detected_marker_nb = static_cast<int>(marker_ids.size()); 
+        int detected_marker_nb = static_cast<int>(marker_ids.size());
         ROS_INFO("Picture #%d taken. %d aruco marker detected", static_cast<int>(l_img.size()) - 1, detected_marker_nb);
         if (static_cast<int>(marker_ids.size()) != 0)
         {
@@ -165,7 +167,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
 
         std::vector<int> marker_ids = getMarkerId(img);
 
-        for(;static_cast<int>(marker_ids.size()) != 0;)
+        for (; static_cast<int>(marker_ids.size()) != 0;)
         {
             res.detected_aruco_marker.push_back(static_cast<uint8_t>(marker_ids.back()));
             marker_ids.pop_back();
@@ -178,53 +180,123 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
     case rover_control_msgs::camera_controlRequest::CMD_TAKE_AND_SAVE_PANO:
     {
         sensor_msgs::JointState joint_state;
-        ros::Publisher pub = p_nh->advertise<sensor_msgs::JointState>("/desired_joint_state", 1); 
-        
+        boost::shared_ptr<const sensor_msgs::JointState> ptr_joint_state = ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", *p_nh);
+        if (ptr_joint_state != NULL)
+        {
+            joint_state = *ptr_joint_state;
+        }
+        else
+        {
+            res.result = false;
+            break;
+        }
+
+        ros::Publisher pub = p_nh->advertise<sensor_msgs::JointState>("/desired_joint_states", 1);
+
         ROS_INFO("Starting Panorama...");
         ROS_INFO("Waiting 1 seconds for publisher subscription...");
         ros::Duration(1.0).sleep();
 
         // Get motor index
         uint8_t index = 0;
-        for(; static_cast<uint8_t>(joint_state.name.size()); index++)
+        for (; static_cast<uint8_t>(joint_state.name.size()); index++)
         {
-            if (joint_state.name[index] == "gripper_rotation")
+            if (joint_state.name[index] == "module_science")
                 break;
         }
 
-
-        double target_increments = 6.28318530718/NB_PICS;
-        double target = 0.01;
-
+        double target_increments = 6.28318530718 / NB_PICS;
+        double target = 0.00;
+        cv::Mat a_img_pano[NB_PICS];
         for (uint8_t i = 0; i < NB_PICS; i++, target += target_increments)
         {
-            // Goes to next position 
+            ROS_INFO("Taking pic #%d...", i);
+            // Goes to next position
             sensor_msgs::JointState desired_joint_state;
-            desired_joint_state.name.push_back("gripper_rotation");
-            desired_joint_state.velocity.push_back(1.0f);
+            desired_joint_state.name.push_back("module_science");
+            desired_joint_state.velocity.push_back(5.0f);
             pub.publish(desired_joint_state);
-            for (; !(joint_state.position[index] < target + 0.05 && joint_state.position[index] > target + 0.05);)
+
+            uint16_t max_loop = 0;
+            double normalized_position = joint_state.position[index];
+            normalize_rad(&normalized_position);
+            for (; !(normalized_position <= (target + 0.2f) && normalized_position >= (target - 0.2f)) && max_loop < 65000; max_loop++)
             {
+                ROS_WARN("Current normalized position: #%f | Target is: %f", normalized_position, target);
                 boost::shared_ptr<const sensor_msgs::JointState> ptr_joint_state = ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", *p_nh);
                 if (ptr_joint_state != NULL)
                 {
-                    joint_state = *ptr_joint_state; 
+                    joint_state = *ptr_joint_state;
+                    normalized_position = abs(joint_state.position[index]);
+                    normalize_rad(&normalized_position);
                 }
             }
             // Stop joint
             desired_joint_state = sensor_msgs::JointState();
-            desired_joint_state.name.push_back("gripper_rotation");
+            desired_joint_state.name.push_back("module_science");
             desired_joint_state.velocity.push_back(0.0f);
             pub.publish(desired_joint_state);
 
-            // Take Picture
-            /*************/
-
-            ros::Duration(2.0);
+            cv::Mat img;
+            if (!takePicture(IN req.cam_topic, OUT & img))
+            {
+                res.result = false;
+                break;
+            }
+            a_img_pano[i] = img;
+            ros::Duration(2.0).sleep();
         }
-        
 
+        // Goes back to position --0.0--
+        sensor_msgs::JointState desired_joint_state;
+        desired_joint_state.name.push_back("module_science");
+        desired_joint_state.velocity.push_back(-5.0f);
+        pub.publish(desired_joint_state);
 
+        double normalized_position = 0.0;
+        uint16_t max_loop = 0;
+        for (; !(normalized_position <= (target + 0.1f) && normalized_position >= (target - 0.1f)) && max_loop < 65000; max_loop++)
+        {
+            ROS_WARN("Current normalized position: #%f | Target is: %f", normalized_position, target);
+            boost::shared_ptr<const sensor_msgs::JointState> ptr_joint_state = ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", *p_nh);
+            if (ptr_joint_state != NULL)
+            {
+                joint_state = *ptr_joint_state;
+                normalized_position = abs(joint_state.position[index]);
+                normalize_rad(&normalized_position);
+            }
+        }
+
+        desired_joint_state = sensor_msgs::JointState();
+        desired_joint_state.name.push_back("module_science");
+        desired_joint_state.velocity.push_back(0.0f);
+        pub.publish(desired_joint_state);
+
+        // Concatenate pano
+        std::string path = ros::package::getPath("rover_control");
+        boost::posix_time::ptime my_posix_time = ros::Time::now().toBoost();
+        std::string time_stamp = boost::posix_time::to_iso_extended_string(my_posix_time);
+        std::replace(time_stamp.begin(), time_stamp.end(), ':', '-');
+
+        path.append("/img/panorama" + time_stamp + ".png");
+
+        cv::Mat img_panorama;
+        cv::hconcat(a_img_pano, NB_PICS, img_panorama);
+        if (!cv::imwrite(path + "_panorama", img_panorama))
+        {
+            ROS_ERROR("Can't save picture, path doesn't exist: \"%s\"", path.c_str());
+        }
+        ROS_INFO("Panorama as been save: %s ", path.c_str());
+
+        for (uint8_t i = 0; i < NB_PICS; i++)
+        {
+            if (!cv::imwrite(path + "_" + std::to_string(i), img_panorama))
+            {
+                ROS_ERROR("Can't save picture, path doesn't exist: \"%s\"", path.c_str());
+            }
+            ROS_INFO("Panorama pic #%d as been save: %s ", i, path.c_str());
+        }
+        break;
     }
 
     default:
@@ -243,4 +315,17 @@ std::vector<int> getMarkerId(cv::Mat img)
     cv::aruco::detectMarkers(img, cv::aruco::getPredefinedDictionary(cv::aruco::DICT_4X4_100), marker_corners, marker_ids);
 
     return marker_ids;
+}
+
+void normalize_rad(INOUT double *angle)
+{
+    if (*angle < 0.0f)
+    {
+        exit(-69);
+    }
+
+    for (; *angle > 6.28318530718;)
+    {
+        *angle -= 6.28318530718f;
+    }
 }

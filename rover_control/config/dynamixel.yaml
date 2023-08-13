@@ -1,0 +1,29 @@
+loop_rate: 50                      # desired rate for joint state updates. actual rate may be less depending on number
+                                  # of dynamixels on each port
+control_mode: velocity            # control mode, either 'position', 'velocity', or 'effort'
+disable_torque_on_shutdown: true  # with this enabled the motors will switch off when the controller closes
+ignore_input_velocity: false      # ignore input velocity commands in position mode (no profile velocity)
+diagnostics_rate: 1               # rate to publish diagnostic information
+dataport_rate: 1                  # rate to read from dynamixel external dataports
+
+# The below values are used as global defaults and are applied for each servo unless overridden in the entry for the servo below
+global_max_vel: 0.5               # maximum joint speed (rad/s) (in position or velocity control)
+global_torque_limit: 0.5          # maximum motor torque for all modes, given as a fraction of rated max (0-1)
+
+# PORT AND SERVO CONFIGURATIONS
+ports:
+
+  # PORT LIST
+  - name: Port_1               # name for this port in config
+    device: /dev/serial/by-id/usb-ROBOTIS_OpenCR_Virtual_ComPort_in_FS_Mode_FFFFFFFEFFFF-if00     # serial device this port will communicate on
+    baudrate: 57600            # baudrate in use
+    use_legacy_protocol: false # wether to use new 2.0 protocol (false) or legacy 1.0 protocol (true)
+    group_read_enabled: true   # specify whether to use group comms for reading
+    group_write_enabled: true  # specify whether to use group comms for writing
+    servos:
+        # SERVO LIST FOR THIS PORT
+        - id: 201
+          joint_name: module_science
+          zero_pos: 2048
+          min_pos: 0
+          max_pos: 4095
