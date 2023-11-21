@@ -18,11 +18,11 @@ import math
 sys.path.insert(0, rospkg.RosPack().get_path('rover_launch_control'))
 from src.rover_launch_control.rover_launch_control_widget import RoverLaunchControlWidget
 
-from rover_control_msgs.srv import camera_control
-from rover_control_msgs.srv import camera_controlRequest
-from rover_control_msgs.srv import camera_controlResponse
+from rover_msgs.srv import camera_control
+from rover_msgs.srv import camera_controlRequest
+from rover_msgs.srv import camera_controlResponse
 from std_msgs.msg import Float32
-from rover_control_msgs.msg import gps
+from rover_msgs.msg import gps
 
 # Styling "MACROS"
 STYLE_DEFAULT = ""
