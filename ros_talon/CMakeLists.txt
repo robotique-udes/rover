@@ -6,7 +6,7 @@ find_package(catkin REQUIRED COMPONENTS
   can_msgs
   std_msgs
   message_generation
-  rover_control_msgs
+  rover_msgs
 )
 
 add_service_files(
