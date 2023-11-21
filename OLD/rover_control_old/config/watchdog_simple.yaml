@@ -1,7 +1,0 @@
-nb_sensors: 1
-sensor_1:
-  name: Base_Station_Heartbeat
-  sensor_id: Heartbeat
-  topic: /heartbeat
-  max_freq: 25
-  min_freq: 15

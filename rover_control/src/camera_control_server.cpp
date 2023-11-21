@@ -2,7 +2,7 @@
 #include "ros/package.h"
 #include "sensor_msgs/Image.h"
 #include "cv_bridge/cv_bridge.h"
-#include "rover_control_msgs/camera_control.h"
+#include "rover_msgs/camera_control.h"
 #include "boost/date_time/posix_time/posix_time.hpp"
 #include <opencv2/opencv.hpp>
 #include <opencv2/aruco.hpp>
@@ -17,7 +17,7 @@
 #define NB_PICS 4
 
 bool takePicture(std::string topic_name, cv_bridge::CvImagePtr img);
-bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_msgs::camera_controlResponse &res);
+bool CBPanorama(rover_msgs::camera_controlRequest &req, rover_msgs::camera_controlResponse &res);
 std::vector<int> getMarkerId(cv::Mat img);
 void normalize_rad(INOUT double *angle);
 
@@ -33,8 +33,8 @@ int main(int argc, char *argv[])
     ros::NodeHandle nh;
     p_nh = &nh;
 
-    srv_cmd_server = nh.advertiseService<rover_control_msgs::camera_controlRequest,
-                                         rover_control_msgs::camera_controlResponse>("/camera_control_server",
+    srv_cmd_server = nh.advertiseService<rover_msgs::camera_controlRequest,
+                                         rover_msgs::camera_controlResponse>("/camera_control_server",
                                                                                      CBPanorama);
 
     while (!ros::isShuttingDown())
@@ -69,12 +69,12 @@ bool takePicture(IN std::string topic_name, OUT cv::Mat *img)
     return true;
 }
 
-bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_msgs::camera_controlResponse &res)
+bool CBPanorama(rover_msgs::camera_controlRequest &req, rover_msgs::camera_controlResponse &res)
 {
     res.result = false;
     switch (req.cmd)
     {
-    case rover_control_msgs::camera_controlRequest::CMD_TAKE_PICTURE:
+    case rover_msgs::camera_controlRequest::CMD_TAKE_PICTURE:
     {
         cv::Mat img;
         if (!takePicture(IN req.cam_topic, OUT & img))
@@ -106,7 +106,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
     }
     break;
 
-    case rover_control_msgs::camera_controlRequest::CMD_SAVE_PANO:
+    case rover_msgs::camera_controlRequest::CMD_SAVE_PANO:
     {
         int nb_pic = static_cast<int>(l_img.size());
 
@@ -146,7 +146,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
         break;
     }
 
-    case rover_control_msgs::camera_controlRequest::CMD_RESET_PICTURES:
+    case rover_msgs::camera_controlRequest::CMD_RESET_PICTURES:
     {
         ROS_INFO("Deleting all photos");
         l_img = std::list<cv::Mat>();
@@ -156,7 +156,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
         break;
     }
 
-    case rover_control_msgs::camera_controlRequest::CMD_DETECT_ARUCO:
+    case rover_msgs::camera_controlRequest::CMD_DETECT_ARUCO:
     {
         cv::Mat img;
         if (!takePicture(IN req.cam_topic, OUT & img))
@@ -177,7 +177,7 @@ bool CBPanorama(rover_control_msgs::camera_controlRequest &req, rover_control_ms
         break;
     }
 
-    case rover_control_msgs::camera_controlRequest::CMD_TAKE_AND_SAVE_PANO:
+    case rover_msgs::camera_controlRequest::CMD_TAKE_AND_SAVE_PANO:
     {
         sensor_msgs::JointState joint_state;
         boost::shared_ptr<const sensor_msgs::JointState> ptr_joint_state = ros::topic::waitForMessage<sensor_msgs::JointState>("/joint_states", *p_nh);

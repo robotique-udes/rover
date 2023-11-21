@@ -14,7 +14,7 @@
 #include "ros/ros.h"
 #include "std_msgs/Empty.h"
 #include "std_msgs/Bool.h"
-#include "rover_control_msgs/motor_cmd.h"
+#include "rover_msgs/motor_cmd.h"
 #include "ros_talon/cmd.h"
 
 class MovingAverage
@@ -98,7 +98,7 @@ public:
     {
         m_nh = ros::NodeHandle();
         m_sub_heartbeat = m_nh.subscribe<std_msgs::Empty>("base_heartbeat", 1, &CMD2Motors::CBWatchdog, this);
-        m_sub_motor_cmd = m_nh.subscribe<rover_control_msgs::motor_cmd>("cmd_motors", 1, &CMD2Motors::CBMotorCMD, this);
+        m_sub_motor_cmd = m_nh.subscribe<rover_msgs::motor_cmd>("cmd_motors", 1, &CMD2Motors::CBMotorCMD, this);
         m_pub_motor_FL = m_nh.advertise<ros_talon::cmd>("/ros_talon1/cmd", 1);
         m_pub_motor_FR = m_nh.advertise<ros_talon::cmd>("/ros_talon2/cmd", 1);
         m_pub_motor_RL = m_nh.advertise<ros_talon::cmd>("/ros_talon3/cmd", 1);
@@ -177,7 +177,7 @@ private:
         m_pub_watchdog_state.publish(msg);
     }
 
-    void CBMotorCMD(const rover_control_msgs::motor_cmdConstPtr &msg)
+    void CBMotorCMD(const rover_msgs::motor_cmdConstPtr &msg)
     {
         m_b_joy_is_alive = true;
         m_st_motors_speed.f_FL.addValue(msg->front_left * 100.0f);

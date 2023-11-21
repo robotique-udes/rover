@@ -1,5 +1,0 @@
-<launch>
-
-  <node pkg="mapviz" type="mapviz" name="mapviz"></node>
-
-</launch>

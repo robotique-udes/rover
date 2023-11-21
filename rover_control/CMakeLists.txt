@@ -12,7 +12,7 @@ find_package(catkin REQUIRED COMPONENTS
   usb_cam_hardware
   usb_cam_controllers
   ros_talon
-  rover_control_msgs
+  rover_msgs
 )
 
 catkin_package(
@@ -29,7 +29,7 @@ catkin_package(
     usb_cam_hardware
     usb_cam_controllers
     ros_talon
-    rover_control_msgs
+    rover_msgs
 )
 
 include_directories(

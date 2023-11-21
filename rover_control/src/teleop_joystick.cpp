@@ -39,7 +39,7 @@
 
 #include "ros/ros.h"
 #include "sensor_msgs/Joy.h"
-#include "rover_control_msgs/motor_cmd.h"
+#include "rover_msgs/motor_cmd.h"
 
 #define LINEAR_INPUT joy_msg->axes[m_u_INDEX_AXIS_LINEAR]
 #define ANGULAR_INPUT joy_msg->axes[m_u_INDEX_AXIS_ANGULAR]
@@ -59,7 +59,7 @@ public:
     {
         m_nh = ros::NodeHandle();
         m_sub_joy = m_nh.subscribe("rover_joy", 1, &TeleopJoystick::cbJoy, this);
-        m_pub_motor_cmd = m_nh.advertise<rover_control_msgs::motor_cmd>("cmd_motors", 1);
+        m_pub_motor_cmd = m_nh.advertise<rover_msgs::motor_cmd>("cmd_motors", 1);
 
         m_b_control_mode_is_tank = false;
 
@@ -80,7 +80,7 @@ public:
             ros::spinOnce();
         }
 
-        rover_control_msgs::motor_cmd empty_msg;
+        rover_msgs::motor_cmd empty_msg;
         m_pub_motor_cmd.publish(empty_msg);
     }
 
@@ -113,7 +113,7 @@ private:
     void cbJoy(const sensor_msgs::Joy::ConstPtr &joy_msg)
     {
         // msg will always be populated with zeros in constructor
-        rover_control_msgs::motor_cmd msg_motor_cmd;
+        rover_msgs::motor_cmd msg_motor_cmd;
 
         if (joy_msg->buttons[m_u_INDEX_BUTTON_ENABLE])
         {

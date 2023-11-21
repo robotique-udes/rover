@@ -1,5 +1,0 @@
-<launch>
-    <node pkg="interactive_marker_twist_server" type="marker_server" name="marker_server" >
-        <remap from="marker_server/cmd_vel" to="cmd_vel" />
-    </node>
-</launch>

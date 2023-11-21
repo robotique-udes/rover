@@ -1,7 +1,0 @@
-<?xml version='1.0'?>
-<launch>
-    <node name="ptu" pkg="rosserial_arduino" type="serial_node.py" output="screen">
-        <param name="port" type="string" value="/dev/ttyACM1" />
-        <param name="baud" type="int" value="57600" />
-    </node>
-</launch>

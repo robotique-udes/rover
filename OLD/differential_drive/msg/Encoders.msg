@@ -1,4 +1,0 @@
-int32 left_encoder
-int16 left_encoder_multiplier
-int32 right_encoder
-int16 right_encoder_multiplier

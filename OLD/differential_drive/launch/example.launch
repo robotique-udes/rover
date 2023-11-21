@@ -1,8 +1,0 @@
-<launch>
-    <node name="diff_drive" pkg="differential_drive" type="diff_drive.py" output="screen">
-		<param name="base_width" value="0.425" />
-		<param name="ticks_per_meter" value="26069" />
-		<param name="encoder_min" value="-2147483648" />
-		<param name="encoder_max" value="2147483647" />
-	</node>
-</launch>

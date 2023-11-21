@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 2.8.3)
-project(rover_control_msgs)
+project(rover_msgs)
 
 find_package(catkin REQUIRED COMPONENTS
   message_generation

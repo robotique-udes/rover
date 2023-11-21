@@ -20,7 +20,7 @@
     <depend>usb_cam_hardware</depend>
     <depend>usb_cam_controllers</depend>
     <depend>ros_talon</depend>
-    <depend>rover_control_msgs</depend>
+    <depend>rover_msgs</depend>
 
     <!-- Needs to gtfo -->
     <depend>rover_udes</depend>

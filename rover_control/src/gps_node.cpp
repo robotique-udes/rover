@@ -4,7 +4,7 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h>  // write(), read(), close()
 #include <unordered_map>
-#include "rover_control_msgs/gps.h"
+#include "rover_msgs/gps.h"
 
 #define IN
 #define IN_OUT
@@ -38,11 +38,11 @@ class GPSFixQuality
 public:
     enum
     {
-        Invalid = rover_control_msgs::gps::FIX_INVALID,       // Bad
-        Standalone = rover_control_msgs::gps::FIX_STANDALONE, // 30m +0m -20m
-        DGPS = rover_control_msgs::gps::FIX_DGPS,             // 10m +0m -8m
-        RTKFixed = rover_control_msgs::gps::FIX_RTK_FIXED,    // 1.0m +0.0m -0.9m
-        RTKFloat = rover_control_msgs::gps::FIX_RTK_FLOAT     // No info
+        Invalid = rover_msgs::gps::FIX_INVALID,       // Bad
+        Standalone = rover_msgs::gps::FIX_STANDALONE, // 30m +0m -20m
+        DGPS = rover_msgs::gps::FIX_DGPS,             // 10m +0m -8m
+        RTKFixed = rover_msgs::gps::FIX_RTK_FIXED,    // 1.0m +0.0m -0.9m
+        RTKFloat = rover_msgs::gps::FIX_RTK_FLOAT     // No info
     };
 };
 
@@ -79,7 +79,7 @@ public:
 };
 
 int initialiseDevice(IN std::string device_name, int *serial_port);
-int getInfo(char read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps *gps_msg);
+int getInfo(char read_buf[SIZE_MSG_BUFFER], rover_msgs::gps *gps_msg);
 int strToInt(IN const char *str, IN uint8_t size);
 int findSizesDegreesMinutes(IN const char *str, OUT uint8_t *size_degrees, OUT uint8_t *size_minutes, IN uint8_t max = 100);
 float strToFloat(IN const char *str, IN uint8_t skip, IN uint8_t size);
@@ -103,8 +103,8 @@ int main(int argc, char *argv[])
         return ErrorCodes::Failure;
     }
 
-    rover_control_msgs::gps gps_msg;
-    ros::Publisher pub_gps = nh.advertise<rover_control_msgs::gps>("gps_data", 1);
+    rover_msgs::gps gps_msg;
+    ros::Publisher pub_gps = nh.advertise<rover_msgs::gps>("gps_data", 1);
 
     while (!ros::isShuttingDown())
     {
@@ -170,7 +170,7 @@ int initialiseDevice(IN std::string device_name, int *serial_port)
     }
 }
 
-int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_control_msgs::gps *gps_msg)
+int getInfo(char zs_read_buf[SIZE_MSG_BUFFER], rover_msgs::gps *gps_msg)
 {
     if (zs_read_buf[0] == '\n' || zs_read_buf[0] == '\0')
         return ErrorCodes::EmptyMessage;
