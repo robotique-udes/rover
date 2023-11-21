@@ -5,5 +5,3 @@ img
 saved_elements/
 *.pyc
 .idea
-.vscode
-__pycache__
