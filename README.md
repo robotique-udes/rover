@@ -1,4 +1,3 @@
-# Readme update needed
 # Dependencies
 * move_base_msgs
 * joy
@@ -10,10 +9,6 @@ Run the following commands to download and install depedencies from apt:
 ```
 sudo apt install ros-noetic-move-base-msgs ros-noetic-joy ros-noetic-socketcan-bridge ros-noetic-usb-cam-hardware ros-noetic-usb-cam-controllers
 ```
-
-Manually clone the following git repo in your src folder:
-* rover_udes
-* ros_talon
 
 # Setup
 ## Jetson Bashrc
