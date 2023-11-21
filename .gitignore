@@ -3,3 +3,7 @@ __pycache__
 img
 .pio
 saved_elements/
+*.pyc
+.idea
+.vscode
+__pycache__

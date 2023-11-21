@@ -1,0 +1,7 @@
+<?xml version='1.0'?>
+<launch>
+
+<node pkg="rover_controller_gui" name="rover_controller_gui" type="rover_controller_gui" respawn="false" output="screen">
+	</node>
+
+</launch>
