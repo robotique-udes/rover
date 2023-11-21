@@ -1,0 +1,30 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>rover_control</name>
+    <version>0.0.0</version>
+    <description>The rover_control package</description>
+
+    <maintainer email="phil@todo.todo">phil</maintainer>
+    <maintainer email="aude@todo.todo">aude</maintainer>
+
+    <license>TODO</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+    <depend>roscpp</depend>
+    <depend>rospy</depend>
+    <depend>std_msgs</depend>
+    <depend>sensor_msgs</depend>
+    <depend>move_base_msgs</depend>
+    <depend>joy</depend>
+    <depend>socketcan_bridge</depend>
+    <depend>usb_cam_hardware</depend>
+    <depend>usb_cam_controllers</depend>
+    <depend>ros_talon</depend>
+    <depend>rover_msgs</depend>
+
+    <!-- Needs to gtfo -->
+    <depend>rover_udes</depend>
+
+    <exec_depend>message_runtime</exec_depend>
+
+</package>

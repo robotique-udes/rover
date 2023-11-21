@@ -1,0 +1,35 @@
+<?xml version='1.0'?>
+<!-- Full rover launch / Base side-->
+<launch>
+    <!--========================================================================
+    Args
+    =========================================================================-->
+    <arg name="local_only" default="false"/>
+    <arg name="control_allow_toggle_with_button" default="false" />
+    <arg name="allow_toggle_with_button" default="false" />
+    <arg name="start_as_arm_joy" default="false" />
+    <arg name="joy_topic_name" default="joy" />
+    <arg name="heartbeat_frequency" default="2" />
+
+    <!--========================================================================
+    Launchfiles
+    =========================================================================-->
+    <include file="$(find rover_control)/launch/joy_demux.launch">
+        <arg name="local_only" value="$(arg local_only)"/>
+        <arg name="start_as_arm_joy" value="$(arg start_as_arm_joy)" />
+        <arg name="allow_toggle_with_button" value="$(arg allow_toggle_with_button)" />
+    </include>
+
+    <include file="$(find rover_control)/launch/teleop_joystick.launch">
+        <arg name="local_only" value="$(arg local_only)"/>
+        <arg name="joy_topic_name" value="$(arg joy_topic_name)" />
+    </include>
+
+    <!--========================================================================
+    Nodes
+    =========================================================================-->
+    <node machine="base" pkg="rover_control" name="base_heartbeat" type="base_heartbeat" output="screen">
+        <param name="heartbeat_frequency" value="$(arg heartbeat_frequency)" />
+    </node>
+
+</launch>

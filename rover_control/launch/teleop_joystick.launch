@@ -1,0 +1,30 @@
+<?xml version='1.0'?>
+<launch>
+    <!--========================================================================
+    Machines Header
+    =========================================================================-->
+    <arg name="local_only" default="false" />
+    <include file="$(find rover_control)/launch/machine_config.launch">
+        <arg name="local_only" value="$(arg local_only)" />
+    </include>
+
+    <!--========================================================================
+    Args
+    =========================================================================-->
+    <arg name="relay_board_port" default="/dev/serial/by-id/usb-Devantech_Ltd._USB-RLY16L._00055872-if00" />
+    <arg name="gps_device_port" default="/dev/serial/by-id/usb-Prolific_Technology_Inc._USB-Serial_Controller_D-if00-port0" />
+    <arg name="joy_topic_name" default="joy" />
+
+    <!--========================================================================
+    Nodes
+    =========================================================================-->
+    <node machine="base" pkg="joy" type="joy_node" name="joy">
+         <!-- About the same rate as fastest rate during axis input-->
+        <param name="autorepeat_rate" value="115" />
+        <param name="dev" value="/dev/input/js0" />
+    </node>
+
+    <node machine="base" pkg="rover_control" name="teleop_joy" type="teleop_joystick" output="screen">
+        <rosparam file="$(find rover_control)/config/joy_keybind.yaml"/>
+    </node>
+</launch>

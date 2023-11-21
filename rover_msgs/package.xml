@@ -1,0 +1,15 @@
+<?xml version="1.0"?>
+<package format="2">
+    <name>rover_msgs</name>
+    <version>0.0.0</version>
+    <description>The rover_msgs package</description>
+
+    <maintainer email="phil@todo.todo">phil</maintainer>
+
+    <license>TODO</license>
+
+    <buildtool_depend>catkin</buildtool_depend>
+
+    <depend>message_generation</depend>
+
+</package>
