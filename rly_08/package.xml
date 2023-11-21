@@ -1,0 +1,29 @@
+<package>
+  <name>rly_08</name>
+  <version>1.0.0</version>
+  <description>
+    Driver for the rly_08 outputs device
+  </description>
+  <maintainer email="rnavarro@robotnik.es">Roman Navarro</maintainer>
+  
+  <license>BSD</license>
+  
+  <author email="rnavarro@robotnik.es">Roman Navarro</author>
+
+  <buildtool_depend>catkin</buildtool_depend>
+
+  <build_depend>roscpp</build_depend>
+  <build_depend>std_msgs</build_depend>
+  <build_depend>self_test</build_depend>
+  <build_depend>diagnostic_updater</build_depend>
+  <build_depend>robotnik_msgs</build_depend>
+
+  <run_depend>roscpp</run_depend>
+  <run_depend>std_msgs</run_depend>
+  <run_depend>self_test</run_depend>
+  <run_depend>diagnostic_updater</run_depend>
+  <run_depend>robotnik_msgs</run_depend>
+
+
+</package>
+

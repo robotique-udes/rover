@@ -1,0 +1,9 @@
+<?xml version="1.0"?>
+<launch>
+	
+	
+	<node type="rly_08_node" name="rly_08_node" pkg="rly_08" output="screen">
+		<param name="port" value="/dev/ttyACM0" type="string"/>
+		<param name="outputs" value="2" type="int"/>
+	</node>
+</launch>
