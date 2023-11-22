@@ -12,8 +12,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>956</width>
-    <height>478</height>
+    <width>970</width>
+    <height>483</height>
    </rect>
   </property>
   <property name="maximumSize">
@@ -365,8 +365,13 @@
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
                <property name="currentText">
-                <string>120</string>
+                <string>6</string>
                </property>
+               <item>
+                <property name="text">
+                 <string>6</string>
+                </property>
+               </item>
                <item>
                 <property name="text">
                  <string>120</string>
@@ -414,11 +419,6 @@
                </item>
                <item>
                 <property name="text">
-                 <string>6</string>
-                </property>
-               </item>
-               <item>
-                <property name="text">
                  <string>4</string>
                 </property>
                </item>
@@ -440,16 +440,16 @@
                 <cursorShape>PointingHandCursor</cursorShape>
                </property>
                <property name="currentText">
-                <string>720p</string>
+                <string>480p</string>
                </property>
                <item>
                 <property name="text">
-                 <string>720p</string>
+                 <string>480p</string>
                 </property>
                </item>
                <item>
                 <property name="text">
-                 <string>480p</string>
+                 <string>720p</string>
                 </property>
                </item>
                <item>
@@ -790,8 +790,13 @@
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="currentText">
-                  <string>30</string>
+                  <string>5</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>5</string>
+                  </property>
+                 </item>
                  <item>
                   <property name="text">
                    <string>30</string>
@@ -810,16 +815,6 @@
                  <item>
                   <property name="text">
                    <string>6</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>5</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>4</string>
                   </property>
                  </item>
                  <item>
@@ -845,8 +840,13 @@
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="currentText">
-                  <string>1080p</string>
+                  <string>480p</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>480p</string>
+                  </property>
+                 </item>
                  <item>
                   <property name="text">
                    <string>1080p</string>
@@ -855,11 +855,6 @@
                  <item>
                   <property name="text">
                    <string>720p</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>480p</string>
                   </property>
                  </item>
                  <item>
@@ -1202,8 +1197,13 @@
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="currentText">
-                  <string>30</string>
+                  <string>5</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>5</string>
+                  </property>
+                 </item>
                  <item>
                   <property name="text">
                    <string>30</string>
@@ -1222,16 +1222,6 @@
                  <item>
                   <property name="text">
                    <string>6</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>5</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>4</string>
                   </property>
                  </item>
                  <item>
@@ -1257,8 +1247,13 @@
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="currentText">
-                  <string>1080p</string>
+                  <string>480p</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>480p</string>
+                  </property>
+                 </item>
                  <item>
                   <property name="text">
                    <string>1080p</string>
@@ -1267,11 +1262,6 @@
                  <item>
                   <property name="text">
                    <string>720p</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>480p</string>
                   </property>
                  </item>
                  <item>
@@ -1614,8 +1604,13 @@
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="currentText">
-                  <string>30</string>
+                  <string>5</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>5</string>
+                  </property>
+                 </item>
                  <item>
                   <property name="text">
                    <string>30</string>
@@ -1634,11 +1629,6 @@
                  <item>
                   <property name="text">
                    <string>6</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>5</string>
                   </property>
                  </item>
                  <item>
@@ -1669,8 +1659,13 @@
                   <cursorShape>PointingHandCursor</cursorShape>
                  </property>
                  <property name="currentText">
-                  <string>1080p</string>
+                  <string>480p</string>
                  </property>
+                 <item>
+                  <property name="text">
+                   <string>480p</string>
+                  </property>
+                 </item>
                  <item>
                   <property name="text">
                    <string>1080p</string>
@@ -1679,11 +1674,6 @@
                  <item>
                   <property name="text">
                    <string>720p</string>
-                  </property>
-                 </item>
-                 <item>
-                  <property name="text">
-                   <string>480p</string>
                   </property>
                  </item>
                  <item>
@@ -2032,8 +2022,13 @@
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="currentText">
-                    <string>30</string>
+                    <string>5</string>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>5</string>
+                    </property>
+                   </item>
                    <item>
                     <property name="text">
                      <string>30</string>
@@ -2052,16 +2047,6 @@
                    <item>
                     <property name="text">
                      <string>6</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>5</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>4</string>
                     </property>
                    </item>
                    <item>
@@ -2087,8 +2072,13 @@
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="currentText">
-                    <string>1080p</string>
+                    <string>480p</string>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>480p</string>
+                    </property>
+                   </item>
                    <item>
                     <property name="text">
                      <string>1080p</string>
@@ -2097,11 +2087,6 @@
                    <item>
                     <property name="text">
                      <string>720p</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>480p</string>
                     </property>
                    </item>
                    <item>
@@ -2451,8 +2436,13 @@
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="currentText">
-                    <string>30</string>
+                    <string>5</string>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>5</string>
+                    </property>
+                   </item>
                    <item>
                     <property name="text">
                      <string>30</string>
@@ -2471,16 +2461,6 @@
                    <item>
                     <property name="text">
                      <string>6</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>5</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>4</string>
                     </property>
                    </item>
                    <item>
@@ -2506,8 +2486,13 @@
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="currentText">
-                    <string>1080p</string>
+                    <string>480p</string>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>480p</string>
+                    </property>
+                   </item>
                    <item>
                     <property name="text">
                      <string>1080p</string>
@@ -2516,11 +2501,6 @@
                    <item>
                     <property name="text">
                      <string>720p</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>480p</string>
                     </property>
                    </item>
                    <item>
@@ -2870,8 +2850,13 @@
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="currentText">
-                    <string>30</string>
+                    <string>5</string>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>5</string>
+                    </property>
+                   </item>
                    <item>
                     <property name="text">
                      <string>30</string>
@@ -2890,16 +2875,6 @@
                    <item>
                     <property name="text">
                      <string>6</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>5</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>4</string>
                     </property>
                    </item>
                    <item>
@@ -2925,8 +2900,13 @@
                     <cursorShape>PointingHandCursor</cursorShape>
                    </property>
                    <property name="currentText">
-                    <string>1080p</string>
+                    <string>480p</string>
                    </property>
+                   <item>
+                    <property name="text">
+                     <string>480p</string>
+                    </property>
+                   </item>
                    <item>
                     <property name="text">
                      <string>1080p</string>
@@ -2935,11 +2915,6 @@
                    <item>
                     <property name="text">
                      <string>720p</string>
-                    </property>
-                   </item>
-                   <item>
-                    <property name="text">
-                     <string>480p</string>
                     </property>
                    </item>
                    <item>
@@ -3006,17 +2981,241 @@
           </layout>
          </item>
          <item>
-          <spacer name="horizontalSpacer">
-           <property name="orientation">
-            <enum>Qt::Horizontal</enum>
-           </property>
-           <property name="sizeHint" stdset="0">
-            <size>
-             <width>40</width>
-             <height>20</height>
-            </size>
-           </property>
-          </spacer>
+          <layout class="QVBoxLayout" name="verticalLayout_39">
+           <item>
+            <layout class="QVBoxLayout" name="verticalLayout_40">
+             <item>
+              <layout class="QHBoxLayout" name="horizontalLayout_13">
+               <item>
+                <layout class="QVBoxLayout" name="verticalLayout_41">
+                 <item>
+                  <widget class="QPushButton" name="pb_current_cam_pelle_bw_2">
+                   <property name="enabled">
+                    <bool>true</bool>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>ArrowCursor</cursorShape>
+                   </property>
+                   <property name="focusPolicy">
+                    <enum>Qt::StrongFocus</enum>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="autoDefault">
+                    <bool>false</bool>
+                   </property>
+                   <property name="default">
+                    <bool>false</bool>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QLabel" name="label_29">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="MinimumExpanding" vsizetype="MinimumExpanding">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="maximumSize">
+                    <size>
+                     <width>16777215</width>
+                     <height>15</height>
+                    </size>
+                   </property>
+                   <property name="font">
+                    <font>
+                     <family>Ubuntu</family>
+                     <pointsize>12</pointsize>
+                     <weight>50</weight>
+                     <bold>false</bold>
+                    </font>
+                   </property>
+                   <property name="text">
+                    <string>Photo et panorama</string>
+                   </property>
+                   <property name="textFormat">
+                    <enum>Qt::AutoText</enum>
+                   </property>
+                   <property name="scaledContents">
+                    <bool>false</bool>
+                   </property>
+                   <property name="alignment">
+                    <set>Qt::AlignCenter</set>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_current_cam_pelle_framerate_2">
+                   <property name="cursor">
+                    <cursorShape>ArrowCursor</cursorShape>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_current_cam_pelle_resolution_2">
+                   <property name="cursor">
+                    <cursorShape>ArrowCursor</cursorShape>
+                   </property>
+                   <property name="text">
+                    <string/>
+                   </property>
+                   <property name="flat">
+                    <bool>true</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QComboBox" name="cb_topic_camera">
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="currentText">
+                    <string>/cam_arducam/image</string>
+                   </property>
+                   <item>
+                    <property name="text">
+                     <string>/cam_arducam/image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>/cam_main/image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>/cam_arriere/image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>/cam_base_bras/image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>/cam_desaxee/image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>/cam_bras/image</string>
+                    </property>
+                   </item>
+                   <item>
+                    <property name="text">
+                     <string>/cam_pelle/image</string>
+                    </property>
+                   </item>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_photo">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="text">
+                    <string>Photo</string>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>16</width>
+                     <height>16</height>
+                    </size>
+                   </property>
+                   <property name="checkable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                   <property name="autoDefault">
+                    <bool>false</bool>
+                   </property>
+                   <property name="default">
+                    <bool>false</bool>
+                   </property>
+                   <property name="flat">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                 <item>
+                  <widget class="QPushButton" name="pb_panorama">
+                   <property name="sizePolicy">
+                    <sizepolicy hsizetype="Minimum" vsizetype="Fixed">
+                     <horstretch>0</horstretch>
+                     <verstretch>0</verstretch>
+                    </sizepolicy>
+                   </property>
+                   <property name="minimumSize">
+                    <size>
+                     <width>0</width>
+                     <height>30</height>
+                    </size>
+                   </property>
+                   <property name="cursor">
+                    <cursorShape>PointingHandCursor</cursorShape>
+                   </property>
+                   <property name="text">
+                    <string>Panorama</string>
+                   </property>
+                   <property name="iconSize">
+                    <size>
+                     <width>16</width>
+                     <height>16</height>
+                    </size>
+                   </property>
+                   <property name="checkable">
+                    <bool>false</bool>
+                   </property>
+                   <property name="checked">
+                    <bool>false</bool>
+                   </property>
+                   <property name="autoDefault">
+                    <bool>false</bool>
+                   </property>
+                   <property name="default">
+                    <bool>false</bool>
+                   </property>
+                   <property name="flat">
+                    <bool>false</bool>
+                   </property>
+                  </widget>
+                 </item>
+                </layout>
+               </item>
+              </layout>
+             </item>
+            </layout>
+           </item>
+          </layout>
+         </item>
+         <item>
+          <layout class="QHBoxLayout" name="horizontalLayout_4"/>
          </item>
         </layout>
        </item>

@@ -14,6 +14,7 @@ from PyQt5.QtWidgets import QLabel, QPushButton, QAbstractButton, QComboBox, QAp
 from threading import Lock
 from copy import copy
 import rosservice
+from rover_msgs.srv import camera_control
 
 # Styling "MACROS"
 STYLE_DEFAULT = ""
@@ -21,6 +22,9 @@ STYLE_SELECTED = "color: white; background-color: green"
 STYLE_DISABLE = "color: white; background-color: grey"
 STYLE_LIMITING = "color: black; background-color: yellow"
 STYLE_WARN = "color: black; background-color: rgb(255, 124, 0);"
+
+# Service name
+CAMERA_SERVICE_NAME = "/camera_control_server"
 
 # Global Variables
 launchmode_local = 'false'
@@ -134,6 +138,12 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
         camera_control_server_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='camera_control_server')
         self.pb_panorama_server.released.connect(lambda: self.launchFile(camera_control_server_interface, self.pb_panorama_server))
 
+        gps_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='gps')
+        self.pb_gps.released.connect(lambda: self.launchFile(gps_interface, self.pb_gps))
+
+        module_science_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_control', launchfile_name='module_science')
+        self.pb_science.released.connect(lambda: self.launchFile(module_science_interface, self.pb_science))
+
         #rover_arm
         joints_interface = LaunchInterface(uuid= uuid, pkg_name= 'rover_arm', launchfile_name='joints')
         self.pb_joints.released.connect(lambda: self.launchFile(joints_interface, self.pb_joints))
@@ -178,7 +188,6 @@ class RoverLaunchControlWidget(QtWidgets.QWidget):
             finally:
                 QApplication.restoreOverrideCursor()
 
-    
 
     # Helper: Open a popup of another QWidget class
     def openPopup(self, class_type):
@@ -363,6 +372,12 @@ class CameraLaunch(QtWidgets.QWidget):
                                                                                    self.cb_cam_base_bras_framerate,
                                                                                    self.pb_current_cam_base_bras_framerate))
         
+        # Take picture and panorama
+        self.pb_photo.released.connect(lambda: self.takePicture(1, self.cb_topic_camera, self.pb_photo))
+        self.pb_panorama.released.connect(lambda: self.takePicture(5, self.cb_topic_camera, self.pb_panorama))
+
+
+
     def launchCameraStream(self,
                            cameraName: str,
                            cameraFramerate:int,
@@ -439,3 +454,32 @@ class CameraLaunch(QtWidgets.QWidget):
         else:
             bandwidth_interface._flag = False
             pb_current_bw.setText(str(bandwidth_interface.bw) + "/s")
+
+    def takePicture(self, cmd: int, camera_topic: QComboBox, button: QPushButton):
+        """
+        Crée un object rospy.ServiceProxy qui va te permettre de call ton service comme une fonction
+        ex: service = rospy.Ser........
+
+        Pour caller ton service utiliser le nom de ton service comme une function
+        service(req_arg1, req_arg2, etc)
+
+        La response est un retour sur ta "function" "service"
+        ex:
+        response = service(args...)
+        """
+
+        QApplication.setOverrideCursor(QtCore.Qt.WaitCursor)
+        try :
+            rospy.wait_for_service(CAMERA_SERVICE_NAME, rospy.Duration(3.0))
+
+            camera_control_service: rospy.ServiceProxy = rospy.ServiceProxy(CAMERA_SERVICE_NAME, camera_control)
+                        
+            camera_control_service(cmd, camera_topic.currentText())
+
+        except Exception as e:
+            rospy.logwarn("Error taking picture")
+            button.setStyleSheet(STYLE_WARN)
+            raise e
+        
+        finally:
+            QApplication.restoreOverrideCursor()
