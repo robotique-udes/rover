@@ -1,5 +1,4 @@
 # Dependencies
-* move_base_msgs
 * joy
 * socketcan_bridge
 * usb_cam_hardware
@@ -11,15 +10,6 @@ sudo apt install ros-noetic-move-base-msgs ros-noetic-joy ros-noetic-socketcan-b
 ```
 
 # Setup
-## Jetson Bashrc
-Comment these lines in bashrc for scripts to work:
-```
-If not running interactively, don't do anything
-case $- in
-    *i*) ;;
-      *) return;;
-esac
-```
 ## CAN hotplug
 Add the following to `/etc/network/interfaces` file to enable CAN hotplug:
 ```

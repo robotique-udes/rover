@@ -6,7 +6,6 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   sensor_msgs
-  move_base_msgs
   joy
   socketcan_bridge
   usb_cam_hardware
@@ -23,7 +22,6 @@ catkin_package(
     rospy
     std_msgs
     sensor_msgs
-    move_base_msgs
     joy
     socketcan_bridge
     usb_cam_hardware
