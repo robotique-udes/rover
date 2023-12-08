@@ -1,4 +1,0 @@
-uint32 iRelay
-uint32 value
----
-bool result
