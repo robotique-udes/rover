@@ -30,9 +30,9 @@ install(
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Joy.msg"
-  # "msg/Sphere.msg"
-  # "srv/AddThreeInts.srv"
-  # DEPENDENCIES geometry_msgs # Add packages that above messages depend on, in this case geometry_msgs for Sphere.msg
+  "srv/JoyDemuxSetState.srv"
+
+  # DEPENDENCIES geometry_msgs # Add packages that above messages depend on
 )
 
 ament_package()

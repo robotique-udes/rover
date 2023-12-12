@@ -22,17 +22,27 @@ include_directories(
 )
 
 add_executable(joy_formator src/joy_formator.cpp)
+add_executable(joy_demux src/joy_demux.cpp)
+
 ament_target_dependencies(joy_formator
                           rclcpp
                           joy
                           sensor_msgs
                           rover_msgs)
 
+
+ament_target_dependencies(joy_demux
+                          rclcpp
+                          joy
+                          rover_msgs)
+
+
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
           joy_formator
+          joy_demux
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
