@@ -1,102 +1,99 @@
 #include <Arduino.h>
 #include <micro_ros_platformio.h>
+#include <stdio.h>
 #include <rcl/rcl.h>
+#include <rcl/error_handling.h>
 #include <rclc/rclc.h>
 #include <rclc/executor.h>
+#include <rmw_microros/rmw_microros.h>
 
 #include <std_msgs/msg/int32.h>
 
-#include "lib_rover/helpers/macros.h"
+#include "helpers/macros.h"
+#include "helpers/connection_manager.h"
 
 // TODO Make helpers + logging publisher + clean up + write template with comments
 
-rcl_publisher_t publisher;
-std_msgs__msg__Int32 msg;
+#define LED_PIN 13
 
-rclc_executor_t executor;
 rclc_support_t support;
-rcl_allocator_t allocator;
 rcl_node_t node;
 rcl_timer_t timer;
-
-#define RCCHECK(fn)                  \
-    {                                \
-        rcl_ret_t temp_rc = fn;      \
-        if ((temp_rc != RCL_RET_OK)) \
-        {                            \
-            error_loop();            \
-        }                            \
-    }
-#define RCSOFTCHECK(fn)              \
-    {                                \
-        rcl_ret_t temp_rc = fn;      \
-        if ((temp_rc != RCL_RET_OK)) \
-        {                            \
-        }                            \
-    }
-
-// Error handle loop
-void error_loop()
-{
-    while (1)
-    {
-        delay(100);
-    }
-}
+rclc_executor_t executor;
+rcl_allocator_t allocator;
+rcl_publisher_t publisher;
+int32_t counter;
 
 void timer_callback(rcl_timer_t *timer, int64_t last_call_time)
 {
-    RCLC_UNUSED(last_call_time);
+    (void)last_call_time;
     if (timer != NULL)
     {
-        printf("Print test");
-        RCSOFTCHECK(rcl_publish(&publisher, &msg, NULL));
-        msg.data++;
+        std_msgs__msg__Int32 msg;
+        msg.data = counter++;
+        REMOVE_WARN_UNUSED(rcl_publish(&publisher, &msg, NULL));
     }
+}
+
+// Functions create_entities and destroy_entities can take several seconds.
+// In order to reduce this rebuild the library with
+// - RMW_UXRCE_ENTITY_CREATION_DESTROY_TIMEOUT=0
+// - UCLIENT_MAX_SESSION_CONNECTION_ATTEMPTS=3
+
+bool create_entities()
+{
+    allocator = rcl_get_default_allocator();
+
+    // create init_options
+    RCLC_RET_ON_ERR(rclc_support_init(&support, 0, NULL, &allocator));
+
+    // create node
+    RCLC_RET_ON_ERR(rclc_node_init_default(&node, "int32_publisher_rclc", "", &support));
+
+    // create publisher
+    std_msgs__msg__Int32 msg;
+    RCLC_RET_ON_ERR(rclc_publisher_init_default(&publisher,
+                                                &node,
+                                                ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
+                                                "std_msgs_msg_Int32"));
+
+    // create timer,
+    const unsigned int timer_timeout = 1000;
+    RCLC_RET_ON_ERR(rclc_timer_init_default(&timer,
+                                            &support,
+                                            RCL_MS_TO_NS(timer_timeout),
+                                            timer_callback));
+
+    // create executor
+    executor = rclc_executor_get_zero_initialized_executor();
+    RCLC_RET_ON_ERR(rclc_executor_init(&executor, &support.context, 1, &allocator));
+    RCLC_RET_ON_ERR(rclc_executor_add_timer(&executor, &timer));
+
+    return true;
+}
+
+void destroy_entities()
+{
+    rmw_context_t *rmw_context = rcl_context_get_rmw_context(&support.context);
+    (void)rmw_uros_set_context_entity_destroy_session_timeout(rmw_context, 0);
+
+    REMOVE_WARN_UNUSED(rcl_publisher_fini(&publisher, &node));
+    REMOVE_WARN_UNUSED(rcl_timer_fini(&timer));
+    rclc_executor_fini(&executor);
+    REMOVE_WARN_UNUSED(rcl_node_fini(&node));
+    rclc_support_fini(&support);
 }
 
 void setup()
 {
-    // Configure serial transport
     Serial.begin(115200);
     set_microros_serial_transports(Serial);
-    delay(2000);
 
-    allocator = rcl_get_default_allocator();
+    ConnectionManager rosManager(create_entities, destroy_entities);
+    // rosManager.setTimers(500UL, 200UL);
 
-    // create init_options
-    RCCHECK(rclc_support_init(&support, 0, NULL, &allocator));
-
-    // create node
-    RCCHECK(rclc_node_init_default(&node, "micro_ros_platformio_node", "", &support));
-
-    // create publisher
-    RCCHECK(rclc_publisher_init_default(&publisher,
-                                        &node,
-                                        ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32),
-                                        "micro_ros_platformio_node_publisher"));
-
-    // create timer,
-    const unsigned int timer_timeout = 1000;
-    RCCHECK(rclc_timer_init_default(
-        &timer,
-        &support,
-        RCL_MS_TO_NS(timer_timeout),
-        timer_callback));
-
-    // create executor
-    RCCHECK(rclc_executor_init(&executor, &support.context, 1, &allocator));
-    RCCHECK(rclc_executor_add_timer(&executor, &timer));
-
-    msg.data = 0;
-
-    for (;;)
+    for (EVER)
     {
-        delay(100);
-        RCSOFTCHECK(rclc_executor_spin_some(&executor, RCL_MS_TO_NS(100)));
+        rosManager.spinSome(&executor, 100UL);
     }
-}
-
-void loop()
-{
 }
