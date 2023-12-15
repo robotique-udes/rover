@@ -70,7 +70,7 @@ void setup()
     // This object handles all connection with the micro_ros_agent, you must 
     // pass two function pointer, createEntities which is called when connecting
     // and destroyEntitities which is called after a deconnection.
-    MicroROSManagerCustom rosManager(createEntities, destroyEntities, false);
+    MicroROSManagerCustom rosManager(createEntities, destroyEntities, true);
     rosManager.init();
 
     for (EVER)
