@@ -27,15 +27,17 @@ private:
     rcl_publisher_t _pubLogger;
     bool _alive = false;
 
-public:
-    char *nodeName = NULL;
+    char *_nodeName = NULL;
+    char *_ns = NULL;
 
+public:
     Logger() {}
     ~Logger() {}
 
-    bool createLogger(rcl_node_t *node, const char *nodeName_)
+    bool createLogger(rcl_node_t *node, const char *nodeName_, const char *ns_)
     {
-        nodeName = (char *)nodeName_;
+        _nodeName = (char *)(nodeName_);
+        _ns = (char *)(ns_);
 
         RCLC_RET_ON_ERR(rclc_publisher_init_default(&_pubLogger,
                                                     node,
@@ -62,7 +64,21 @@ public:
 
         msg.level = lvl_;
 
-        msg.name.data = (char *)(nodeName == NULL ? "node_name_not_set": nodeName);
+        char buffer[(sizeof(_ns) + 1 + sizeof(_nodeName) > sizeof("node_name_not_set"))
+                        ? (sizeof(_ns) + 1 + sizeof(_nodeName))
+                        : sizeof("node_name_not_set") + 1];
+
+        if (_nodeName == NULL || _ns == NULL)
+        {
+            strncat(buffer, "node_name_not_set", sizeof("node_name_not_set"));
+        }
+        else
+        {
+            strncat(buffer, _ns, sizeof(_ns));
+            strncat(buffer, "/", sizeof("/"));
+            strncat(buffer, _nodeName, sizeof(_nodeName));
+        }
+        msg.name.data = buffer;
 
         msg.name.size = strlen(msg.name.data);
 
@@ -75,7 +91,7 @@ public:
         msg.line = line_;
 
         // Buffer size is arbitrairy now,
-        // TODO  might want to evaluate actual necessary 
+        // TODO  might want to evaluate actual necessary
         char msgBuffer[strlen(str_) + 50];
         va_list strArgs;
         va_start(strArgs, str_);

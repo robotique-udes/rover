@@ -12,6 +12,9 @@
 #include "helpers/log.h"
 #include "helpers/microROS_manager.h"
 
+#define NAME_NS "/template_ESP32"
+#define NAME_NODE "simple_example"
+
 // =============================================================================
 //  This project can be used as a starting template for ESP32 microROS project
 //
@@ -95,12 +98,12 @@ bool createEntities()
     RCLC_RET_ON_ERR(rclc_support_init(&support, 0, NULL, &allocator));
 
     // create node (required)
-    RCLC_RET_ON_ERR(rclc_node_init_default(&node, NAME_NODE, "", &support));
+    RCLC_RET_ON_ERR(rclc_node_init_default(&node, NAME_NODE, NAME_NS, &support));
 
     // create logger (optionnal)
     // This creates a publisher for logging to /debug/rovus_debug, without 
     // this line you can't the the terminal_logger.
-    Logger.createLogger(&node, NAME_NODE);
+    Logger.createLogger(&node, NAME_NODE, NAME_NS);
 
     // create publisher (optional)
     RCLC_RET_ON_ERR(rclc_publisher_init_default(&pub, &node, ROSIDL_GET_MSG_TYPE_SUPPORT(std_msgs, msg, Int32), "pub_topic_name"));
