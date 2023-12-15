@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(rover_debug)
+project(rover_helper)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)

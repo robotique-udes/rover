@@ -7,7 +7,7 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld: LaunchDescription = LaunchDescription()
 
-    debug_printer = Node(package="rover_debug",
+    debug_printer = Node(package="rover_helper",
                            namespace="/debug",
                            executable="debug_printer",
                            name="debug_printer",

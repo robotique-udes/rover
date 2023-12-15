@@ -1,6 +1,7 @@
 #ifndef __MICRO_ROS_MANAGER_H__
 #define __MICRO_ROS_MANAGER_H__
 
+#include "Arduino.h"
 #include "helpers/timer.h"
 
 // This class is wrapper that connections with micro-ros-agent to simplify
@@ -8,7 +9,7 @@
 // perhaps predefined parameters
 class MicroROSManager
 {
-private:
+protected:
     enum eConnectionStates
     {
         WAITING_AGENT,
@@ -20,19 +21,35 @@ private:
     eConnectionStates _connectionState = eConnectionStates::WAITING_AGENT;
     TimerMillis _timerCheckReconnect;
     TimerMillis _timerCheckDisconnect;
+    bool _withLED;
+    uint8_t _ledPIN;
 
     virtual bool createEntities(void) = 0;
     virtual void destroyEntities(void) = 0;
 
 public:
-    MicroROSManager(uint32_t connectionValidationInterval = 200UL, uint32_t reconnectionInterval = 500UL)
+    MicroROSManager(bool withLED = 0, uint8_t ledPIN = LED_BUILTIN, uint32_t connectionValidationInterval = 200UL, uint32_t reconnectionInterval = 500UL)
     {
+        LOG(INFO, "%s()", __FUNCTION__);
+
+        _withLED = withLED;
+        _ledPIN = ledPIN;
+
         TimerMillis _timerCheckReconnect = TimerMillis(reconnectionInterval);
         TimerMillis _timerCheckDisconnect = TimerMillis(connectionValidationInterval);
     }
     ~MicroROSManager() {}
+    
+    // Calling hardware inside constructor isn't safe.
+    void init()
+    {
+        if (_withLED)
+        {
+            pinMode(_ledPIN, OUTPUT);
+        }
+    }
 
-    // Tries to spin passed executor, if for some reason it can't, it will try 
+    // Tries to spin passed executor, if for some reason it can't, it will try
     // to reconnect the node to ROS each time this method is called
     void spinSome(rclc_executor_t *executor, uint32_t timeout_mS)
     {
@@ -41,7 +58,6 @@ public:
         case WAITING_AGENT:
             if (_timerCheckReconnect.done())
             {
-                LOG(DEBUG, "Checking if MicroROS agent is available");
                 _connectionState = (RMW_RET_OK == rmw_uros_ping_agent(100, 1)) ? AGENT_AVAILABLE : WAITING_AGENT;
             }
             break;
@@ -49,7 +65,6 @@ public:
             _connectionState = (true == this->createEntities()) ? AGENT_CONNECTED : WAITING_AGENT;
             if (_connectionState == WAITING_AGENT)
             {
-                LOG(DEBUG, "Agent unavailable, destroying entities...");
                 this->destroyEntities();
             };
             break;
@@ -65,7 +80,6 @@ public:
             }
             break;
         case AGENT_DISCONNECTED:
-            LOG(DEBUG, "Agent disconnected, destroying entities...");
             this->destroyEntities();
             _connectionState = WAITING_AGENT;
             break;
@@ -73,19 +87,27 @@ public:
             break;
         }
 
-        if (_connectionState == AGENT_CONNECTED)
-        {
-            digitalWrite(LED_BUILTIN, 1);
-        }
-        else
-        {
-            digitalWrite(LED_BUILTIN, 0);
-        }
+        this->updateLED();
     }
 
     int8_t getConnectionState()
     {
         return _connectionState;
+    }
+
+    void updateLED()
+    {
+        if (_withLED)
+        {
+            if (_connectionState == AGENT_CONNECTED)
+            {
+                digitalWrite(_ledPIN, HIGH);
+            }
+            else
+            {
+                digitalWrite(_ledPIN, LOW);
+            }
+        }
     }
 };
 
@@ -111,22 +133,22 @@ private:
 public:
     MicroROSManagerCustom(bool (*createEntities_)(void),
                           void (*destroyEntities_)(void),
+                          bool withLED = 0,
+                          uint8_t ledPIN = LED_BUILTIN,
                           uint32_t connectionValidationInterval = 200UL,
-                          uint32_t reconnectionInterval = 500UL) : MicroROSManager(connectionValidationInterval, reconnectionInterval)
+                          uint32_t reconnectionInterval = 500UL)
+        : MicroROSManager(withLED, ledPIN, connectionValidationInterval, reconnectionInterval)
     {
         if (createEntities_ == NULL || destroyEntities_ == NULL)
         {
             while (true)
             {
-                LOG(WARN, "Functions can't be NULL pointers: %i");
+                LOG(FATAL, "Function pointers can't be NULL pointers!");
                 delay(1000);
             }
         }
         _createEntities = createEntities_;
         _destroyEntities = destroyEntities_;
-
-        TimerMillis _timerCheckReconnect = TimerMillis(reconnectionInterval);
-        TimerMillis _timerCheckDisconnect = TimerMillis(connectionValidationInterval);
     }
 
     ~MicroROSManagerCustom() {}
