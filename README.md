@@ -25,7 +25,8 @@ All the following tutorials are necessary steps to learning ROS
 - [ROS CLI tools tutorials](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools.html)
 - [ROS Client librairies](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
 
-< ### TODO Step by step microROS installation >
+## microROS Setup
+- TODO: installations steps and commons fixes
 
 ## ESP32 Setup
 Since were running ROS2, all microcontrollers will run [microROS](https://micro.ros.org/) and all developpement will be in platformIO. This [tutorial](https://www.youtube.com/watch?v=Nf7HP9y6Ovo&t=435s) is a great first step at learning microROS.
