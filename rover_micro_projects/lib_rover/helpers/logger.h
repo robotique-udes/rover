@@ -64,19 +64,26 @@ public:
 
         msg.level = lvl_;
 
-        char buffer[(sizeof(_ns) + 1 + sizeof(_nodeName) > sizeof("node_name_not_set"))
-                        ? (sizeof(_ns) + 1 + sizeof(_nodeName))
-                        : sizeof("node_name_not_set") + 1];
+        uint8_t buffer_size = 0;
+        if (_nodeName == NULL || _ns == NULL)
+        {
+            buffer_size = sizeof("node_name_not_set");
+        }
+        else
+        {
+            buffer_size = strlen(_ns) + 1 + strlen(_nodeName);
+        }
 
+        char buffer[buffer_size] = "\0";
         if (_nodeName == NULL || _ns == NULL)
         {
             strncat(buffer, "node_name_not_set", sizeof("node_name_not_set"));
         }
         else
         {
-            strncat(buffer, _ns, sizeof(_ns));
+            strncat(buffer, _ns, strlen(_ns) + 1);
             strncat(buffer, "/", sizeof("/"));
-            strncat(buffer, _nodeName, sizeof(_nodeName));
+            strncat(buffer, _nodeName, strlen(_nodeName) + 1);
         }
         msg.name.data = buffer;
 
@@ -92,9 +99,11 @@ public:
 
         // Buffer size is arbitrairy now,
         // TODO  might want to evaluate actual necessary
-        char msgBuffer[strlen(str_) + 50];
+
         va_list strArgs;
         va_start(strArgs, str_);
+        char msgBuffer[snprintf(NULL, 0, str_, strArgs) + 1];
+
         vsnprintf(msgBuffer, sizeof(msgBuffer), str_, strArgs);
         msg.msg.data = (char *)msgBuffer;
         msg.msg.size = strlen(msg.msg.data);

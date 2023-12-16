@@ -161,7 +161,7 @@ void cbTimer(rcl_timer_t *timer, int64_t last_call_time)
         std_msgs__msg__Int32 msg;
         msg.data = counter++;
         REMOVE_WARN_UNUSED(rcl_publish(&pub, &msg, NULL));
-        LOG(INFO, "Sent %d", msg.data);
+        LOG(INFO, "Sent %i", msg.data);
     }
 }
 
@@ -169,5 +169,5 @@ void cbSubscriber(const void *msg_)
 {
     const std_msgs__msg__Int32 *msg = (std_msgs__msg__Int32*)msg_; 
 
-    LOG(INFO, "Received: %d", msg->data);
+    LOG(INFO, "Received: %i", msg->data);
 }
