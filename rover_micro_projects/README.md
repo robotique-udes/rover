@@ -1,14 +1,14 @@
 # Micro controllers projects
 
 ## Table of content
-- [ESP32 Setup](esp32-setup)
-  - [General guidelines](general-guidelines)
-  - [platformio.ini](platformio.ini)
-  - [Buying guide](buying-guide)
-- [Creating a new project](creating-a-new-project)
-- [Connecting the ESP to the ROS network](connecting-the-esp-to-the-ros-network)
-- [Logging](logging)
-  - [Usage](usage)
+- [ESP32 Setup](#esp32-setup)
+  - [General guidelines](#general-guidelines)
+  - [platformio.ini](#platformio.ini)
+  - [Buying guide](#buying-guide)
+- [Creating a new project](#creating-a-new-project)
+- [Connecting the ESP to the ROS network](#connecting-the-esp-to-the-ros-network)
+- [Logging](#logging)
+  - [Usage](#usage)
 
 ## ESP32 Setup
 Since were running ROS2, all microcontrollers will run [microROS](https://micro.ros.org/) and all developpement will be in platformIO. This [tutorial](https://www.youtube.com/watch?v=Nf7HP9y6Ovo&t=435s) is a great first step at learning microROS.
