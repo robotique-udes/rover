@@ -59,7 +59,8 @@ When buying ESP32 or any microcontrollers, make sure it comes with a unique USB 
   - CH430
 
 Here is an example of the FTDI chip:
-[](../doc/img/esp32-ftdi.gif)
+
+![test](../doc/img/esp32-ftdi.gif)
 
 # ESP32 and micro controller ROS developpement:
 See [rover_micro_projects/readme.md] 
