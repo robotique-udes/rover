@@ -42,7 +42,7 @@ def generate_launch_description():
     node_joy_demux = Node(package="rover_joy",
                           namespace="/joy",
                           executable="joy_demux",
-                          name="joy_formator",
+                          name="joy_demux",
                           parameters=[{"controller_type": "Logitech"}],
                           remappings=[("main_joy", "main/formated"),
                                       ("secondary_joy", "secondary/formated")])

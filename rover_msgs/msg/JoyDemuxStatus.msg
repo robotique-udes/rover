@@ -7,8 +7,5 @@ uint8 DEST_ARM = 1
 uint8 DEST_ANTENNA = 2
 uint8 DEST_NONE = 3
 
-uint8 controller_type
-uint8 destination
-bool force
----
-bool success
+uint8 controller_main_topic
+uint8 controller_secondary_topic
