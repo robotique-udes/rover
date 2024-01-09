@@ -1,12 +1,10 @@
 # Dependencies
 * joy
-* socketcan_bridge
-* usb_cam_hardware
-* usb_cam_controllers
+* microROS ([see our micro ros projects distro](https://github.com/robotique-udes/rover_micro/)) 
 
 Run the following commands to download and install depedencies from apt:
 ```
-sudo apt install ros-noetic-move-base-msgs ros-noetic-joy ros-noetic-socketcan-bridge ros-noetic-usb-cam-hardware ros-noetic-usb-cam-controllers
+sudo apt install ros-humble-joy
 ```
 
 # Setup
@@ -27,15 +25,5 @@ All the following tutorials are necessary steps to learning ROS
 - [ROS CLI tools tutorials](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools.html)
 - [ROS Client librairies](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
 
-## CAN hotplug
-Add the following to `/etc/network/interfaces` file to enable CAN hotplug:
-```
-allow-hotplug can0
-iface can0 can static
-        bitrate 1000000
-        up ip link set $IFACE txqueuelen 1000
-```
-If this doesn't work on your machine can you run the following command each time you plug-in the can device:
-```
-./~/home/catkin_ws/src/rover_control/scripts/modprobe-setup.sh
-```
+# ESP32 and micro controller ROS developpement:
+See corresponding [repository](https://github.com/robotique-udes/rover_micro) 
