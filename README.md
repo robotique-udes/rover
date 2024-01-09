@@ -1,6 +1,6 @@
 # Dependencies
 * joy
-* microROS ([tutorial](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73)) 
+* microROS ([see our micro ros projects distro](https://github.com/robotique-udes/rover_micro/)) 
 
 Run the following commands to download and install depedencies from apt:
 ```
@@ -26,4 +26,4 @@ All the following tutorials are necessary steps to learning ROS
 - [ROS Client librairies](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
 
 # ESP32 and micro controller ROS developpement:
-See corresponding [README.md](rover_micro_projects/README.md) 
+See corresponding [repository](https://github.com/robotique-udes/rover_micro) 
