@@ -27,6 +27,7 @@ install(
 )
 
 rosidl_generate_interfaces(${PROJECT_NAME}
+  "msg/AntennaCmd.msg"
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   
