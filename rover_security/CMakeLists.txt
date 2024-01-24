@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(rover_helper)
+project(rover_security)
 
 # Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
@@ -20,19 +20,20 @@ include_directories(
   ${rover_msgs_INCLUDE_DIRS}
 )
 
-add_executable(debug_printer src/debug_printer.cpp)
+add_executable(heartbeat src/heartbeat.cpp)
 
-ament_target_dependencies(debug_printer
+ament_target_dependencies(heartbeat
                           rclcpp
                           rover_msgs
-                          rcl_interfaces)
+                          rcl_interfaces
+                          std_msgs)
 
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          debug_printer
+          heartbeat
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

@@ -6,16 +6,14 @@ int main(int argc, char *argv[])
     rclcpp::init(argc, argv);
     auto node = rclcpp::Node::make_shared("base_heartbeat");
 
-    int heartbeat_frequency = 2;
+    uint8_t heartbeat_frequency;
 
     bool _flag = false;
-    while (!node->get_parameter_or("heartbeat_frequency", heartbeat_frequency, heartbeat_frequency))
+    
+    if (!node->get_parameter_or("heartbeat_frequency", heartbeat_frequency, heartbeat_frequency))
     {
-        if (!_flag)
-        {
-            RCLCPP_WARN(node->get_logger(), "Failed to get frequency param, retrying...");
-            _flag = true;
-        }
+        RCLCPP_WARN(node->get_logger(), "Failed to get frequency param, retrying...");
+        _flag = true;
     }
 
     RCLCPP_INFO(node->get_logger(), "Starting heartbeat at %d Hz", heartbeat_frequency);

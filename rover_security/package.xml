@@ -1,12 +1,13 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rover_helper</name>
+  <name>rover_security</name>
   <version>0.0.0</version>
   <description>
-    rover_helper pkg contains helper node for developpement and debugging 
+    rover_security pkg contains heartbeat node 
   </description>
   <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
+  <maintainer email="save1403@usherbrooke.ca">emile</maintainer>
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
