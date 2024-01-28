@@ -25,5 +25,31 @@ All the following tutorials are necessary steps to learning ROS
 - [ROS CLI tools tutorials](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools.html)
 - [ROS Client librairies](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
 
+### bashrc
+The .basrc file is loaded each time a linux terminal is launched. You should see these lines at the end:
+```bash
+source /opt/ros/humble/setup.bash
+source ~/ros2_ws/install/local_setup.bash
+```
+To add them follow theses steps:
+- Open your bashrc file
+```
+sudo nano ~/.bashrc
+```
+- Navigate to the end with *shift-down_arrow*
+- Paste these lines (*ctrl+shift+v*):
+```
+# Additions
+source /opt/ros/humble/setup.bash
+source ~/ros2_ws/install/local_setup.bash
+```
+
+The following cmd create a cmd to always compile in the ros2_ws no matter where your terminal is. Add this line to the end of your bashrc and you'll be able to compile by entering "b" in any bash terminal anywhere.
+You can change the "b" to whatever you like and you'll be able to compile by entering the cmd you set.
+```
+alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build --symlink-install && popd > /dev/null'
+```
+
+
 # ESP32 and micro controller ROS developpement:
 See corresponding [repository](https://github.com/robotique-udes/rover_micro) 
