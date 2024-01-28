@@ -4,19 +4,20 @@
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
-    auto node = rclcpp::Node::make_shared("base_heartbeat");
+    rclcpp::Node::SharedPtr node = rclcpp::Node::make_shared("base_heartbeat");
+    node -> declare_parameter<uint8_t>("heartbeat_frequency", 2u);
 
-    uint8_t heartbeat_frequency;
+    uint8_t heartbeat_frequency = 1u;
 
-    bool _flag = false;
+    //bool _flag = false;
     
     if (!node->get_parameter_or("heartbeat_frequency", heartbeat_frequency, heartbeat_frequency))
     {
         RCLCPP_WARN(node->get_logger(), "Failed to get frequency param, retrying...");
-        _flag = true;
+        //_flag = true;
     }
 
-    RCLCPP_INFO(node->get_logger(), "Starting heartbeat at %d Hz", heartbeat_frequency);
+    RCLCPP_INFO(node->get_logger(), "Starting heartbeat at %u Hz", heartbeat_frequency);
 
     auto pub_heartbeat = node->create_publisher<std_msgs::msg::Empty>("base_heartbeat", 1);
     rclcpp::Rate timer(heartbeat_frequency);
