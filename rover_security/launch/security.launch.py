@@ -11,11 +11,11 @@ def generate_launch_description():
                                     namespace="/base",
                                     executable="heartbeat",
                                     name="base_heartbeat",
-                                    parameters=[{"heartbeat_frequency": 2}],
+                                    #parameters=[{"heartbeat_frequency": 4}],
                                     remappings=[("security", "raw")])
         
         node_heartbeat_base.cmd
-        
+ 
         node_heartbeat_rover = Node (package="rover_security",
                                     namespace="/rover",
                                     executable="heartbeat",
