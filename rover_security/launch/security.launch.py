@@ -3,7 +3,7 @@ import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
-
+sd
 def generate_launch_description():
         ld: LaunchDescription = LaunchDescription()
 
@@ -11,7 +11,7 @@ def generate_launch_description():
                                     namespace="/base",
                                     executable="heartbeat",
                                     name="base_heartbeat",
-                                    #parameters=[{"heartbeat_frequency": 4}],
+                                    parameters=[{"heartbeat_frequency": 4}],
                                     remappings=[("security", "raw")])
         
         node_heartbeat_base.cmd
@@ -20,7 +20,7 @@ def generate_launch_description():
                                     namespace="/rover",
                                     executable="heartbeat",
                                     name="rover_heartbeat",
-                                    parameters=[{"heartbeat_frequency": 2}],
+                                    parameters=[{"heartbeat_frequency": 4}],
                                     remappings=[("security", "raw")])
         
         ld.add_action(node_heartbeat_base)
