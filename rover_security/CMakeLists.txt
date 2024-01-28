@@ -13,18 +13,12 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(rover_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
-
-include_directories(
-  ${rover_msgs_INCLUDE_DIRS}
-)
 
 add_executable(heartbeat src/heartbeat.cpp)
 
 ament_target_dependencies(heartbeat
                           rclcpp
-                          rover_msgs
                           rcl_interfaces
                           std_msgs)
 
