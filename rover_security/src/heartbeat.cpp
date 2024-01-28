@@ -3,20 +3,23 @@
 
 int main(int argc, char *argv[])
 {
+    uint8_t heartbeat_frequency = 1;
+    
     rclcpp::init(argc, argv);
     rclcpp::Node::SharedPtr node = rclcpp::Node::make_shared("base_heartbeat");
-    node -> declare_parameter<uint8_t>("heartbeat_frequency", 2u);
+    node->declare_parameter<uint8_t>("heartbeat_frequency", 1);
 
-    uint8_t heartbeat_frequency = 1u;
-
-    //bool _flag = false;
+    heartbeat_frequency = node->get_parameter("heartbeat_frequency").as_int();
     
-    if (!node->get_parameter_or("heartbeat_frequency", heartbeat_frequency, heartbeat_frequency))
+    if (heartbeat_frequency == 1u)
     {
         RCLCPP_WARN(node->get_logger(), "Failed to get frequency param, retrying...");
-        //_flag = true;
     }
-
+    else if (heartbeat_frequency <= 0)
+    {
+        RCLCPP_WARN(node->get_logger(), "Parameter does not fit expected format");
+    }
+    
     RCLCPP_INFO(node->get_logger(), "Starting heartbeat at %u Hz", heartbeat_frequency);
 
     auto pub_heartbeat = node->create_publisher<std_msgs::msg::Empty>("base_heartbeat", 1);
