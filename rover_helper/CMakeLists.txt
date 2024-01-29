@@ -21,8 +21,14 @@ include_directories(
 )
 
 add_executable(debug_printer src/debug_printer.cpp)
+add_executable(rover_rosserial_manager src/rover_rosserial_manager.cpp)
 
 ament_target_dependencies(debug_printer
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
+ament_target_dependencies(rover_rosserial_manager
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
@@ -33,6 +39,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
           debug_printer
+          rover_rosserial_manager
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
