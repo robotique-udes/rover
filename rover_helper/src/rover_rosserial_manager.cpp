@@ -10,8 +10,10 @@
 
 typedef struct rover_msgs__msg__AntennaCmd
 {
+    uint8_t header;
     bool status;
     float speed;
+    uint8_t ofl;
 } rover_msgs__msg__AntennaCmd;
 
 union rover_msgs__msg__AntennaCmd__packet
@@ -20,11 +22,32 @@ union rover_msgs__msg__AntennaCmd__packet
     uint8_t data[sizeof(rover_msgs__msg__AntennaCmd)];
 };
 
+enum eHeaderCode : uint8_t
+{
+    logs = 128,
+    publisher = 130,
+    subscriber = 150,
+    config = 170,
+    eLast
+};
+
+typedef struct msgs__Logging
+{
+    uint8_t header;
+    char msg[255];
+} msgs__Logging;
+
+union msgs__Logging__packet
+{
+    msgs__Logging msg;
+    uint8_t data[sizeof(msgs__Logging)];
+};
+
 void clearBuffer(char *buffer, uint16_t size);
 
 int main(/*int argc, char *argv[]*/ void)
 {
-    int serial_port = open("/dev/ttyACM0", O_RDWR);
+    int serial_port = open("/dev/serial/by-id/usb-1a86_USB_Single_Serial_5573016028-if00", O_RDWR);
 
     if (serial_port < 0)
     {
@@ -32,7 +55,6 @@ int main(/*int argc, char *argv[]*/ void)
     }
 
     struct termios tty;
-
     if (tcgetattr(serial_port, &tty) != 0)
     {
         printf("Error %i from tcgetattr: %s\n", errno, strerror(errno));
@@ -46,10 +68,13 @@ int main(/*int argc, char *argv[]*/ void)
         printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
     }
 
-    rover_msgs__msg__AntennaCmd__packet packet;
+    rover_msgs__msg__AntennaCmd__packet packetPub;
+    msgs__Logging__packet packetLog;
+    uint8_t buffer[255];
     for (;;)
     {
-        int length = read(serial_port, &packet.data, sizeof(packet.data));
+        int length = read(serial_port, &buffer, sizeof(buffer));
+        buffer[length] = '\0';
 
         if (length < 0)
         {
@@ -57,22 +82,40 @@ int main(/*int argc, char *argv[]*/ void)
         }
         else if (length == 0)
         {
-            // printf("No data\n");
+            // printf("No data, skipping...\n");
+            // No data, skipping;
         }
         else
         {
-            printf("speed: %f\n", packet.msg.speed);
-            printf("status: %i\n", packet.msg.status);
+            // Checking header
+            printf("---\nheader: %u\n", (uint8_t)buffer[0]);
+
+            if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::logs)
+            {
+                memcpy(&packetLog.data, buffer, sizeof(packetLog.data));
+                printf("---\n");
+                printf("msg: %s\n", packetLog.msg.msg);
+            }
+            else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher)
+            {
+                memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
+                printf("---\n");
+                printf("speed: %f\n", packetPub.msg.speed);
+                printf("status: %i\n", packetPub.msg.status);
+            }
+            else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher + 1u)
+            {
+                memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
+                printf("---\n");
+                printf("speed2: %f\n", packetPub.msg.speed);
+                printf("status2: %i\n", packetPub.msg.status);
+            }
+            // else
+            // {
+            //     printf("Unknown header, dropping\n");
+            // }
         }
     }
 
     return 0;
-}
-
-void clearBuffer(char *buffer, uint16_t size)
-{
-    for (int i = 0; i < size; i++)
-    {
-        buffer[i] = '\0';
-    }
 }
