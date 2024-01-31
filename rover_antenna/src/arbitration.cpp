@@ -59,26 +59,24 @@ Arbitration::Arbitration() : Node("arbitration")
 void Arbitration::callbackJog(const rover_msgs::msg::AntennaCmd msg)
 {
     cmd_jog = msg;
-    sendCmd();
 
 }
 
 void Arbitration::callbackAuto(const rover_msgs::msg::AntennaCmd msg)
 {
     cmd_auto = msg;
-    sendCmd();
 }
 
 void Arbitration::sendCmd()
 {
-    rover_msgs::msg::AntennaCmd cmd_abtr = cmd_jog;
-    // if (cmd_jog.speed != 0.0)
-    // {
-    //     cmd_abtr = cmd_jog;
-    // }
-    // else 
-    // {
-    //     cmd_abtr = cmd_auto;
-    // }
+    rover_msgs::msg::AntennaCmd cmd_abtr;
+    if (cmd_jog.speed != 0.0)
+    {
+        cmd_abtr = cmd_jog;
+    }
+    else 
+    {
+        cmd_abtr = cmd_auto;
+    }
     _pub_abtr->publish(cmd_abtr);
 }
