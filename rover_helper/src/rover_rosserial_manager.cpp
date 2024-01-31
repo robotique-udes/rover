@@ -24,7 +24,7 @@ union rover_msgs__msg__AntennaCmd__packet
 
 enum eHeaderCode : uint8_t
 {
-    logs = 128,
+    BEGIN = 128,
     publisher = 130,
     subscriber = 150,
     config = 170,
@@ -73,48 +73,74 @@ int main(/*int argc, char *argv[]*/ void)
     uint8_t buffer[255];
     for (;;)
     {
-        int length = read(serial_port, &buffer, sizeof(buffer));
-        buffer[length] = '\0';
+        // Wait for begin sequence (0x69)
+        uint8_t __start = 0;
+        uint8_t __length = 0;
+        uint8_t __msg[255] = {0};
+        for(;;)
+        {
+            read(serial_port, &__start, sizeof(__start));
+            if (__start != 0)
+            {
+                printf("Code is: %i\n", __start);
 
-        if (length < 0)
-        {
-            printf("Error\n");
+                if (__start == 128)
+                {
+                    printf("Start of a msg detected!\n");
+                    break;
+                }
+            }
         }
-        else if (length == 0)
-        {
-            // printf("No data, skipping...\n");
-            // No data, skipping;
-        }
-        else
-        {
-            // Checking header
-            printf("---\nheader: %u\n", (uint8_t)buffer[0]);
 
-            if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::logs)
-            {
-                memcpy(&packetLog.data, buffer, sizeof(packetLog.data));
-                printf("---\n");
-                printf("msg: %s\n", packetLog.msg.msg);
-            }
-            else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher)
-            {
-                memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
-                printf("---\n");
-                printf("speed: %f\n", packetPub.msg.speed);
-                printf("status: %i\n", packetPub.msg.status);
-            }
-            else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher + 1u)
-            {
-                memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
-                printf("---\n");
-                printf("speed2: %f\n", packetPub.msg.speed);
-                printf("status2: %i\n", packetPub.msg.status);
-            }
-            // else
-            // {
-            //     printf("Unknown header, dropping\n");
-            // }
-        }
+        read(serial_port, &__length, sizeof(__length));
+        printf("__length: %i", __length);
+
+        read(serial_port, &__msg, __length);
+
+        printf("__msg: %s\n", __msg);
+
+        // int length = read(serial_port, &buffer, sizeof(buffer));
+        // buffer[length] = '\0';
+
+        // if (length < 0)
+        // {
+        //     printf("Error\n");
+        // }
+        // else if (length == 0)
+        // {
+        //     // printf("No data, skipping...\n");
+        //     // No data, skipping;
+        // }
+        // else
+        // {
+        //     // Checking header
+        //     printf("---\nheader: %u\n", (uint8_t)buffer[0]);
+
+        //     // if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::config)
+        //     // {
+        //     //     memcpy(&packetLog.data, buffer, sizeof(packetLog.data));
+        //     //     printf("---\n");
+        //     //     printf("msg: %s\n", packetLog.msg.msg);
+        //     // }
+        //     // else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher)
+        //     // {
+        //     //     memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
+        //     //     printf("---\n");
+        //     //     printf("speed: %f\n", packetPub.msg.speed);
+        //     //     printf("status: %i\n", packetPub.msg.status);
+        //     // }
+        //     // else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher + 1u)
+        //     // {
+        //     //     memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
+        //     //     printf("---\n");
+        //     //     printf("speed2: %f\n", packetPub.msg.speed);
+        //     //     printf("status2: %i\n", packetPub.msg.status);
+        //     // }
+        //     // else
+        //     // {
+        //     //     printf("Unknown header, dropping\n");
+        //     // }
+        // }
     }
 
     return 0;
