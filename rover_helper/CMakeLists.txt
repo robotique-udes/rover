@@ -18,6 +18,7 @@ find_package(rcl_interfaces REQUIRED)
 
 include_directories(
   ${rover_msgs_INCLUDE_DIRS}
+  include
 )
 
 add_executable(debug_printer src/debug_printer.cpp)

@@ -8,19 +8,7 @@
 #include <termios.h> // Contains POSIX terminal control definitions
 #include <unistd.h>  // write(), read(), close()
 
-typedef struct rover_msgs__msg__AntennaCmd
-{
-    uint8_t header;
-    bool status;
-    float speed;
-    uint8_t ofl;
-} rover_msgs__msg__AntennaCmd;
-
-union rover_msgs__msg__AntennaCmd__packet
-{
-    rover_msgs__msg__AntennaCmd msg;
-    uint8_t data[sizeof(rover_msgs__msg__AntennaCmd)];
-};
+#include "rover_ros_serial.hpp"
 
 enum eHeaderCode : uint8_t
 {
@@ -29,18 +17,6 @@ enum eHeaderCode : uint8_t
     subscriber = 150,
     config = 170,
     eLast
-};
-
-typedef struct msgs__Logging
-{
-    uint8_t header;
-    char msg[255];
-} msgs__Logging;
-
-union msgs__Logging__packet
-{
-    msgs__Logging msg;
-    uint8_t data[sizeof(msgs__Logging)];
 };
 
 void clearBuffer(char *buffer, uint16_t size);
@@ -68,79 +44,43 @@ int main(/*int argc, char *argv[]*/ void)
         printf("Error %i from tcsetattr: %s\n", errno, strerror(errno));
     }
 
-    rover_msgs__msg__AntennaCmd__packet packetPub;
-    msgs__Logging__packet packetLog;
-    uint8_t buffer[255];
     for (;;)
     {
-        // Wait for begin sequence (0x69)
         uint8_t __start = 0;
-        uint8_t __length = 0;
-        uint8_t __msg[255] = {0};
-        for(;;)
+        uint8_t __msg[1000] = {0};
+
+        for (;;)
         {
             read(serial_port, &__start, sizeof(__start));
-            if (__start != 0)
-            {
-                printf("Code is: %i\n", __start);
+            // printf("__start?: %u\n", __start);
 
-                if (__start == 128)
-                {
-                    printf("Start of a msg detected!\n");
-                    break;
-                }
+            if (__start == RoverRosSerial::Constant::BEGIN)
+            {
+                printf("Start of a msg detected!\n");
+                break;
             }
         }
 
-        read(serial_port, &__length, sizeof(__length));
-        printf("__length: %i", __length);
+        RoverRosSerial::Constant::uHeader packetHeader;
+        read(serial_port, &packetHeader, sizeof(packetHeader));
+        printf("Type: %u | Length: %u\n", packetHeader.header.type, packetHeader.header.length);
 
-        read(serial_port, &__msg, __length);
+        if (packetHeader.header.length < sizeof(__msg))
+        {
+            RoverRosSerial::MsgLogger packetLogger;
+            // if (packetLogger.getSerializedDataSize() != packetHeader.header.length)
+            // {
+            //     printf("Wrong length for msg");
+            //     break;
+            // }
 
-        printf("__msg: %s\n", __msg);
-
-        // int length = read(serial_port, &buffer, sizeof(buffer));
-        // buffer[length] = '\0';
-
-        // if (length < 0)
-        // {
-        //     printf("Error\n");
-        // }
-        // else if (length == 0)
-        // {
-        //     // printf("No data, skipping...\n");
-        //     // No data, skipping;
-        // }
-        // else
-        // {
-        //     // Checking header
-        //     printf("---\nheader: %u\n", (uint8_t)buffer[0]);
-
-        //     // if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::config)
-        //     // {
-        //     //     memcpy(&packetLog.data, buffer, sizeof(packetLog.data));
-        //     //     printf("---\n");
-        //     //     printf("msg: %s\n", packetLog.msg.msg);
-        //     // }
-        //     // else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher)
-        //     // {
-        //     //     memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
-        //     //     printf("---\n");
-        //     //     printf("speed: %f\n", packetPub.msg.speed);
-        //     //     printf("status: %i\n", packetPub.msg.status);
-        //     // }
-        //     // else if ((uint8_t)buffer[0] == (uint8_t)eHeaderCode::publisher + 1u)
-        //     // {
-        //     //     memcpy(&packetPub.data, buffer, sizeof(packetPub.data));
-        //     //     printf("---\n");
-        //     //     printf("speed2: %f\n", packetPub.msg.speed);
-        //     //     printf("status2: %i\n", packetPub.msg.status);
-        //     // }
-        //     // else
-        //     // {
-        //     //     printf("Unknown header, dropping\n");
-        //     // }
-        // }
+            read(serial_port, &packetLogger.uData.packetData, packetHeader.header.length);
+            printf("__msg: %s\n", packetLogger.uData.packetMsg.msg);
+        }
+        else
+        {
+            printf("Dropping msg too long\n");
+        }
     }
 
     return 0;
