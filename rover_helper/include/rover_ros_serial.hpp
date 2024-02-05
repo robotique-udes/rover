@@ -4,8 +4,6 @@
 #include <stdint.h>
 #include <cstring>
 
-#define ROVER_ROS_SERIAL
-
 namespace RoverRosSerial
 {
     namespace Constant
@@ -15,9 +13,10 @@ namespace RoverRosSerial
         enum eHeaderType : uint8_t
         {
             notInitialised = 0,
+            heartbeat = 129u,
             log = 130u,
-            msg = 140u,
-            srv = 150u
+            msg = 150u,
+            srv = 200u
         };
 
         struct sHeader
@@ -40,12 +39,12 @@ namespace RoverRosSerial
         virtual uint8_t getSerializedDataSize(void) = 0;
     };
 
-    class MsgLogger : protected RoverRosSerial::Msg
+    class SerialLogger : protected RoverRosSerial::Msg
     {
     public:
         struct sMsgLogger
         {
-
+            uint8_t severity;
             char msg[93];
         };
 
@@ -56,7 +55,7 @@ namespace RoverRosSerial
         };
 
     public:
-        MsgLogger()
+        SerialLogger()
         {
             uHeader.header.type = Constant::eHeaderType::log;
             uHeader.header.length = sizeof(uMsgLogger::packetData);
@@ -66,7 +65,7 @@ namespace RoverRosSerial
                 uData.packetMsg.msg[i] = '\0';
             }
         }
-        ~MsgLogger() {}
+        ~SerialLogger() {}
 
         uint8_t *getSerializedHeader(void)
         {
