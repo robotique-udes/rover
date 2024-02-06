@@ -60,9 +60,9 @@ namespace RoverRosSerial
             uHeader.header.type = Constant::eHeaderType::log;
             uHeader.header.length = sizeof(uMsgLogger::packetData);
 
-            for (uint8_t i = 0; i < sizeof(uData.packetMsg.msg); i++)
+            for (uint8_t i = 0; i < sizeof(uMsg.packetMsg.msg); i++)
             {
-                uData.packetMsg.msg[i] = '\0';
+                uMsg.packetMsg.msg[i] = '\0';
             }
         }
         ~SerialLogger() {}
@@ -79,7 +79,7 @@ namespace RoverRosSerial
 
         uint8_t *getSerializedData(void)
         {
-            return uData.packetData;
+            return uMsg.packetData;
         }
 
         uint8_t getSerializedDataSize(void)
@@ -89,7 +89,7 @@ namespace RoverRosSerial
 
         void setLog(const char *str, const uint16_t size)
         {
-            memcpy(this->uData.packetMsg.msg, str, size);
+            memcpy(this->uMsg.packetMsg.msg, str, size);
         }
 
         // void sendMsg(HardwareSerial *serial)
@@ -100,7 +100,7 @@ namespace RoverRosSerial
         // }
 
         Constant::uHeader uHeader;
-        uMsgLogger uData;
+        uMsgLogger uMsg;
     };
 }
 #endif // __ROVER_ROS_SERIAL_HPP__
