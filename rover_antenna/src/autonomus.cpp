@@ -65,6 +65,7 @@ Autonomus::Autonomus() : Node("autonomus")
 void Autonomus::callbackGPSRover(const rover_msgs::msg::Gps msg)
 {
     gps_rover = msg;
+    autonomusCommand();
 }
 
 void Autonomus::callbackGPSAntenna(const rover_msgs::msg::Gps msg)
@@ -74,21 +75,36 @@ void Autonomus::callbackGPSAntenna(const rover_msgs::msg::Gps msg)
 
 void Autonomus::autonomusCommand()
 {
-    float heading = calculateHeading(gps_antenna.latitude, gps_antenna.longitude, gps_rover.latitude, gps_rover.longitude);
+    float heading;
+    float heading_antenna = gps_antenna.heading;
+    if (heading_antenna > 180)
+    {
+        heading_antenna = heading_antenna - 360;
+    }
+    float heading_rover = calculateHeading(gps_antenna.latitude, gps_antenna.longitude, gps_rover.latitude, gps_rover.longitude);
+    if (heading_antenna > 0)
+    {
+        heading = heading_rover - heading_antenna;
+    }
+    else
+    {
+        heading = (heading_antenna - heading_rover) * (-1);
+    }
+    //float actual_antenna_heading = gps_antenna.heading;     // verifier que heading est le bon msg a prendre
+    //float heading = gps_rover.heading - gps_antenna.heading;    // verifier que heading est le bon msg a prendre
     rover_msgs::msg::AntennaCmd cmd;
 
-    //rajouter subsriber heading qui vient du esp32 pour l'angle de l'antenne
-
-    if (heading > 0 && heading < 15)
+    if (heading > 15)
     {
         cmd.status = true;
         cmd.speed = MAX_SPEED;
         _pub_cmd->publish(cmd);
     }
-    else if (heading < 0 && heading > -15)
+    else if (heading < -15)
     {
         cmd.status = true;
-        cmd.speed = -MAX_SPEED;
+        //cmd.speed = -MAX_SPEED;
+        cmd.speed = heading_rover;
         _pub_cmd->publish(cmd);
     }
 }
@@ -96,13 +112,12 @@ void Autonomus::autonomusCommand()
 float Autonomus::calculateHeading(float lat1, float lon1, float lat2, float lon2)
 {
     float R = 6371e3;
-    float PI = 3.14159;
-    lat1 = lat1 * (PI / 180.0);
-    lat2 = lat2 * (PI / 180.0);
-    lon1 = lon1 * (PI / 180.0);
-    lon2 = lon2 * (PI / 180.0);
+    float PI = 3.14159265359;
+    lat1 = lat1 * PI / 180.0;
+    lat2 = lat2 * PI / 180.0;
+    lon1 = lon1 * PI / 180.0;
+    lon2 = lon2 * PI / 180.0;
     
-    // Heading (B)
     float X = cos(lat2) * sin(lon2-lon1);
     float Y = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2-lon1);
     float heading = atan2(X, Y) * 180 / PI;
