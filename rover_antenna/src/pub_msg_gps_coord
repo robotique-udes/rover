@@ -1,0 +1,12 @@
+Coordonnees gps fac genie : 45.37860790754369, -71.92577959790682 (45 22 42.988N, 071 55 32.806W)
+Coordonnees gps studio : 45.3775933176427, -71.9250563483958 (45 22 39.336N, 071 55 30.202W)
+
+Rover (fac genie)
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.37860790754369', longitude: '-71.92577959790682'}"
+
+Antenne (studio)
+ros2 topic pub -r 10 /base/antenna/gps/position rover_msgs/msg/Gps "{latitude: '45.3775933176427', longitude: '-71.9250563483958', heading: '120.0'}"
+
+
+Site conversion coord gps
+https://www.coordonnees-gps.fr/conversion-coordonnees-gps
