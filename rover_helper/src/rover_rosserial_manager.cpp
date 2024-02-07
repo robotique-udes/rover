@@ -6,8 +6,10 @@
 #include <chrono>
 
 #include "rclcpp/rclcpp.hpp"
-#include "rover_ros_serial.hpp"
+#include "rover_ros_serial/rover_ros_serial.hpp"
 #include "rovus_lib/timer.hpp"
+
+#include "rover_msgs/msg/Gps.hpp"
 
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
@@ -59,7 +61,7 @@ private:
         _serialPortFD = open(_serialPortName.c_str(), O_RDWR);
         if (_serialPortFD < 0)
         {
-            RCLCPP_ERROR(rclcpp::get_logger(_nodeName), "Error %i from open: %s\n", errno, strerror(errno));
+            RCLCPP_ERROR(rclcpp::get_logger(_nodeName), "Error %i from open: %s\n\tOn device: %s", errno, strerror(errno), _serialPortName.c_str());
             return -1;
         }
 
@@ -171,6 +173,9 @@ private:
             this->cbWatchdog();
             break;
 
+        case RoverRosSerial::Constant::eHeaderType::Gps:
+            this->cbGps();
+
         default:
             RCLCPP_WARN(rclcpp::get_logger(_nodeName), "Unsupported package type, dropping");
             break;
@@ -209,6 +214,13 @@ private:
             RCLCPP_FATAL(rclcpp::get_logger(_nodeNameFromSerial), "%s", packetLogger.uMsg.packetMsg.msg);
         }
     }
+    void cbGps()
+    {
+        RoverRosSerial::rover_msgs::msg::Gps gpsMsg;
+        read(_serialPortFD, &gpsMsg.uMsg.packetData, sizeof(gpsMsg.uMsg.packetData));
+
+         RCLCPP_INFO(rclcpp::get_logger(_nodeName), "Heading is: %f", gpsMsg.uMsg.packetMsg.heading);
+    }
 };
 
 int main(int argc, char *argv[])
@@ -218,7 +230,7 @@ int main(int argc, char *argv[])
 
     rclcpp::Node::SharedPtr nodePtr = std::make_shared<rclcpp::Node>("rover_serial_node");
 
-    RoverRosSerialManager roverRosSerial(nodePtr->get_name(), "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5573016028-if00", B115200, 1000u);
+    RoverRosSerialManager roverRosSerial(nodePtr->get_name(), "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5573017171-if00", B115200, 1000u);
 
     while (!shutdownFlag)
     {
