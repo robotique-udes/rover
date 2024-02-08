@@ -175,9 +175,10 @@ private:
 
         case RoverRosSerial::Constant::eHeaderType::Gps:
             this->cbGps();
+            break;
 
         default:
-            RCLCPP_WARN(rclcpp::get_logger(_nodeName), "Unsupported package type, dropping");
+            RCLCPP_WARN(rclcpp::get_logger(_nodeName), "Unsupported package type: %u of length: %u, dropping", packetHeader.header.type, packetHeader.header.length);
             break;
         }
         return;
@@ -230,7 +231,7 @@ int main(int argc, char *argv[])
 
     rclcpp::Node::SharedPtr nodePtr = std::make_shared<rclcpp::Node>("rover_serial_node");
 
-    RoverRosSerialManager roverRosSerial(nodePtr->get_name(), "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5573017171-if00", B115200, 1000u);
+    RoverRosSerialManager roverRosSerial(nodePtr->get_name(), "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5573017171-if00", B1500000, 1000u);
 
     while (!shutdownFlag)
     {

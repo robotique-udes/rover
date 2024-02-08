@@ -5,7 +5,7 @@
 
 namespace RoverRosSerial::rover_msgs::msg
 {
-    class Gps : public RoverRosSerial::Msg
+    class Gps : protected RoverRosSerial::Msg
     {
     private:
         struct sGps
