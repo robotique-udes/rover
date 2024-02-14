@@ -19,7 +19,7 @@ def generate_launch_description():
                                   namespace="/joy/main",
                                   executable="joy_formator",
                                   name="joy_formator",
-                                  parameters=[{"controller_type": "DS4"}],
+                                  parameters=[{"controller_type": "PS4"}],
                                   remappings=[("raw/joy", "raw"),
                                               ("formated/joy", "formated")])
 
