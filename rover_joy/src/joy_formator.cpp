@@ -5,7 +5,7 @@
 #include "rovus_lib/macros.h"
 
 // =============================================================================
-// This node subscribe to a topic of message type "sensor_msgs/msg/joy" and
+// This node subscribes to a topic of message type "sensor_msgs/msg/joy" and
 // remaps the msg to a more readable/"humain friendly" custom ros msg
 // "rover_msgs/msg/joy". The keybinding will correspond to the specified
 // controller in parameter.
@@ -132,7 +132,7 @@ int main(int argc, char *argv[])
 
 JoyFormator::JoyFormator() : Node("joy_formator")
 {
-    this->declare_parameter<std::string>("controller_type", "not_set");
+    this->declare_parameter<std::string>("controller_type", "PS4");
     this->declare_parameter<int16_t>("disconnect_timeout_ms", 1000);
 
     rclcpp::Parameter param_controller_type = this->get_parameter("controller_type");
@@ -156,7 +156,7 @@ void JoyFormator::callbackJoy(const sensor_msgs::msg::Joy &msg)
     _current_joy = msg;
 }
 
-void JoyFormator::callbackPubJoy()
+void JoyFormator::callbackPubJoy()                                                                                                                                                                       
 {
     rover_msgs::msg::Joy formatted_joy_msg;
 
