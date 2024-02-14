@@ -10,7 +10,9 @@
 #include "rovus_lib/macros.h"
 #include "math.h"
 
-#define MAX_SPEED 1.0 // deg/s
+#define PI 3.14159265359
+#define MAX_SPEED 1.0*PI/180 // rad/s
+#define N_SMA 10
 
 using namespace std::chrono_literals;
 
@@ -36,6 +38,12 @@ private:
 
     rover_msgs::msg::Gps gps_rover;
     rover_msgs::msg::Gps gps_antenna;
+    rover_msgs::msg::Gps gps_rover_SMA[10];
+    rover_msgs::msg::Gps gps_antenna_SMA[10];
+    bool first_msgs_rover = true;
+    int count_rover = 0;
+    bool first_msgs_antenna = true;
+    int count_antenna = 0;
 };
 
 int main(int argc, char *argv[])
@@ -64,13 +72,84 @@ Autonomus::Autonomus() : Node("autonomus")
 
 void Autonomus::callbackGPSRover(const rover_msgs::msg::Gps msg)
 {
-    gps_rover = msg;
-    autonomusCommand();
+    float rover_lat;
+    float rover_long;
+    if (count_rover < N_SMA && first_msgs_rover)
+    {
+        gps_rover_SMA[count_rover].latitude = msg.latitude;
+        gps_rover_SMA[count_rover].longitude = msg.longitude;
+        count_rover++;
+    }
+    else if (count_rover == N_SMA && !first_msgs_rover)
+    {
+        for (int i=0; i<N_SMA-1; i++)
+        {
+            gps_rover_SMA[i].latitude = gps_rover_SMA[i+1].latitude;
+            gps_rover_SMA[i].longitude = gps_rover_SMA[i+1].longitude;
+        }
+    }
+    if (count_rover == 10)
+    {
+        first_msgs_rover = false;
+    }
+    if (!first_msgs_rover)
+    {
+        rover_lat = 0;
+        rover_long = 0;
+        for (int i=0; i<N_SMA; i++)
+        {
+            rover_lat = rover_lat + gps_rover_SMA[i].latitude;
+            rover_long = rover_long + gps_rover_SMA[i].longitude;
+        }
+        rover_lat = rover_lat/N_SMA;
+        rover_long = rover_long/N_SMA;
+        gps_rover.latitude = rover_lat;
+        gps_rover.longitude = rover_long;
+        RCLCPP_INFO(rclcpp::get_logger("lat"), "Latitude rover %f", rover_lat);
+        autonomusCommand();
+    }
+    
+    
+    
 }
 
 void Autonomus::callbackGPSAntenna(const rover_msgs::msg::Gps msg)
 {
-    gps_antenna = msg;
+    float antenna_lat;
+    float antenna_long;
+    if (count_antenna < N_SMA && first_msgs_antenna)
+    {
+        gps_antenna_SMA[count_antenna].latitude = msg.latitude;
+        gps_antenna_SMA[count_antenna].longitude = msg.longitude;
+        count_antenna++;
+    }
+    else if (count_antenna == N_SMA && !first_msgs_antenna)
+    {
+        for (int i=0; i<N_SMA-1; i++)
+        {
+            gps_antenna_SMA[i].latitude = gps_antenna_SMA[i+1].latitude;
+            gps_antenna_SMA[i].longitude = gps_antenna_SMA[i+1].longitude;
+        }
+    }
+    if (count_antenna == 10)
+    {
+        first_msgs_antenna = false;
+    }
+    if (!first_msgs_antenna)
+    {
+        antenna_lat = 0;
+        antenna_long = 0;
+        for (int i=0; i<N_SMA; i++)
+        {
+            antenna_lat = antenna_lat + gps_antenna_SMA[i].latitude;
+            antenna_long = antenna_long + gps_antenna_SMA[i].longitude;
+        }
+        antenna_lat = antenna_lat/N_SMA;
+        antenna_long = antenna_long/N_SMA;
+        gps_antenna.latitude = antenna_lat;
+        gps_antenna.longitude = antenna_long;
+        RCLCPP_INFO(rclcpp::get_logger("lat"), "Latitude antenna %f", antenna_lat);
+    }
 }
 
 void Autonomus::autonomusCommand()
@@ -90,8 +169,7 @@ void Autonomus::autonomusCommand()
     {
         heading = (heading_antenna - heading_rover) * (-1);
     }
-    //float actual_antenna_heading = gps_antenna.heading;     // verifier que heading est le bon msg a prendre
-    //float heading = gps_rover.heading - gps_antenna.heading;    // verifier que heading est le bon msg a prendre
+
     rover_msgs::msg::AntennaCmd cmd;
 
     if (heading > 15)
@@ -103,16 +181,15 @@ void Autonomus::autonomusCommand()
     else if (heading < -15)
     {
         cmd.status = true;
-        //cmd.speed = -MAX_SPEED;
-        cmd.speed = heading_rover;
+        cmd.speed = -MAX_SPEED;
         _pub_cmd->publish(cmd);
     }
+    RCLCPP_INFO(rclcpp::get_logger("angle"), "angle %f", heading);
 }
 
 float Autonomus::calculateHeading(float lat1, float lon1, float lat2, float lon2)
 {
-    float R = 6371e3;
-    float PI = 3.14159265359;
+    //float R = 6371e3;
     lat1 = lat1 * PI / 180.0;
     lat2 = lat2 * PI / 180.0;
     lon1 = lon1 * PI / 180.0;

@@ -9,7 +9,8 @@
 #include "rover_msgs/msg/antenna_cmd.hpp"
 #include "rovus_lib/macros.h"
 
-#define MAX_SPEED 1.0 // deg/s
+#define PI 3.14159265359
+#define MAX_SPEED 1.0*PI/180 // rad/s
 
 using namespace std::chrono_literals;
 
