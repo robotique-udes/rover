@@ -2,14 +2,18 @@
 #include <errno.h>    // Error integer and strerror() function
 #include <termios.h>  // Contains POSIX terminal control definitions
 #include <unistd.h>   // write(), read(), close()
-#include <sys/file.h> //flock()
-#include <chrono>
+#include <sys/file.h> // flock()
+
+#include <unordered_map>
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_ros_serial/rover_ros_serial.hpp"
 #include "rovus_lib/timer.hpp"
 
-#include "rover_msgs/msg/Gps.hpp"
+#include "rover_msgs/msg/gps.hpp" // ros2's definition
+#include "rover_msgs/msg/Gps.hpp" // rover_ros_serial's definition
+
+#include "rover_msgs/msg/antenna_cmd.hpp" // ros2's definition
 
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
@@ -17,7 +21,7 @@ void signal_handler(int signo);
 class RoverRosSerialManager
 {
 public:
-    RoverRosSerialManager(std::string nodeName_, std::string serialPortName_, speed_t baudrate_ = B115200, unsigned long timeoutUS_ = 1000u)
+    RoverRosSerialManager(std::string nodeName_, std::string serialPortName_, speed_t baudrate_ = B4000000, unsigned long serialTimeoutUS_ = 1000u)
     {
         _nodeName = nodeName_;
         _nodeNameFromSerial = nodeName_ + "(From UC)";
@@ -25,19 +29,18 @@ public:
         _serialPortName = serialPortName_;
         _baudrate = baudrate_;
 
-        if (timeoutUS_ < 1u)
+        if (serialTimeoutUS_ < 1u)
         {
             RCLCPP_WARN_ONCE(rclcpp::get_logger(_nodeName), "timeoutUS_ cannot be lower than 1us");
-            timeoutUS_ = 1u;
+            serialTimeoutUS_ = 1u;
         }
-        timerTimeout.init(timeoutUS_);
+        timerTimeout.init(serialTimeoutUS_);
     }
-    ~RoverRosSerialManager()
+    virtual ~RoverRosSerialManager()
     {
         flock(_serialPortFD, LOCK_UN);
     }
-
-    void spinOnce()
+    virtual void spinOnce()
     {
         this->checkWatchdog();
         this->checkSerialPortState();
@@ -108,7 +111,6 @@ private:
         flock(_serialPortFD, LOCK_UN);
         close(_serialPortFD);
     }
-
     void checkSerialPortState()
     {
         if (!_connected)
@@ -173,20 +175,15 @@ private:
             this->cbWatchdog();
             break;
 
-        case RoverRosSerial::Constant::eHeaderType::Gps:
-            this->cbGps();
-            break;
-
         default:
-            RCLCPP_WARN(rclcpp::get_logger(_nodeName), "Unsupported package type: %u of length: %u, dropping", packetHeader.header.type, packetHeader.header.length);
             break;
         }
+
+        // RCLCPP_ERROR(rclcpp::get_logger(_nodeName), "Shouldn't fall here, error in serialization, dropping current and next msgs");
         return;
     }
-
     void cbWatchdog()
     {
-        RCLCPP_WARN(rclcpp::get_logger(_nodeName), "Received heartbeat at %lu", RovusLib::millis());
         timerWatchdog.reset();
     }
     void cbLog(int _serialPortFD, uint16_t msgLength)
@@ -215,13 +212,6 @@ private:
             RCLCPP_FATAL(rclcpp::get_logger(_nodeNameFromSerial), "%s", packetLogger.uMsg.packetMsg.msg);
         }
     }
-    void cbGps()
-    {
-        RoverRosSerial::rover_msgs::msg::Gps gpsMsg;
-        read(_serialPortFD, &gpsMsg.uMsg.packetData, sizeof(gpsMsg.uMsg.packetData));
-
-         RCLCPP_INFO(rclcpp::get_logger(_nodeName), "Heading is: %f", gpsMsg.uMsg.packetMsg.heading);
-    }
 };
 
 int main(int argc, char *argv[])
@@ -231,11 +221,17 @@ int main(int argc, char *argv[])
 
     rclcpp::Node::SharedPtr nodePtr = std::make_shared<rclcpp::Node>("rover_serial_node");
 
-    RoverRosSerialManager roverRosSerial(nodePtr->get_name(), "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5573017171-if00", B1500000, 1000u);
+    // Create ROS objects here
+    rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr pubGps;
+    pubGps = nodePtr->create_publisher<rover_msgs::msg::Gps>("/base/antenna/gps/position", 1);
+    // rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr pubAntennaCmd;
+    // nodePtr->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/out/motor", 1);
+
+    RoverRosSerialManager roverRosSerialManager(nodePtr->get_name(), "/dev/serial/by-id/usb-1a86_USB_Single_Serial_5573017171-if00", B4000000, 1000u);
 
     while (!shutdownFlag)
     {
-        roverRosSerial.spinOnce();
+        roverRosSerialManager.spinOnce();
         rclcpp::spin_some(nodePtr);
     }
 

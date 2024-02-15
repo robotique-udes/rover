@@ -34,7 +34,7 @@ namespace RoverRosSerial::rover_msgs::msg
 
         Gps()
         {
-            uHeader.header.type = RoverRosSerial::Constant::msg + 1;
+            uHeader.header.type = RoverRosSerial::Constant::Gps;
             uHeader.header.length = sizeof(uGps);
         }
         ~Gps() {}
