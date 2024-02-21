@@ -8,6 +8,7 @@
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_msgs/msg/antenna_cmd.hpp"
 #include "rovus_lib/macros.h"
+#include "rovus_lib/moving_average.hpp"
 
 #define PI 3.14159265359
 #define MAX_SPEED 1.0*PI/180 // rad/s
@@ -29,6 +30,8 @@ private:
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_jog;
 
     void callbackJoy(const rover_msgs::msg::Joy msg);
+    MovingAverage<float, 10> jog_average_r1 = MovingAverage<float, 10>(0.0);
+    MovingAverage<float, 10> jog_average_l1 = MovingAverage<float, 10>(0.0);
 };
 
 int main(int argc, char *argv[])
@@ -53,18 +56,38 @@ JogAntenna::JogAntenna() : Node("jog_antenna")
 void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg)
 {
     rover_msgs::msg::AntennaCmd jog_cmd;
+
+    jog_average_l1.addValue(msg.l1);
+
+    
+    jog_average_r1.addValue(msg.r1);
+
     jog_cmd.status = true;
-    if (msg.l2 != 0.0 && msg.r2 == 0.0)
-    {   
-        jog_cmd.speed = -msg.l2 * MAX_SPEED;
-    }
-    else if (msg.r2 != 0.0 && msg.l2 == 0.0)
+
+    if(jog_average_l1.getAverage() != 0.0 && jog_average_r1.getAverage() == 0.0)
     {
-        jog_cmd.speed = msg.r2 * MAX_SPEED;
+        jog_cmd.speed = -jog_average_l1.getAverage();
+    }
+    else if(jog_average_l1.getAverage() == 0.0 && jog_average_r1.getAverage() != 0.0)
+    {
+        jog_cmd.speed = jog_average_r1.getAverage();
     }
     else
     {
         jog_cmd.speed = 0.0;
     }
+
+    // if (msg.l2 != 0.0 && msg.r2 == 0.0)
+    // {   
+    //     jog_cmd.speed = -msg.l2 * MAX_SPEED;
+    // }
+    // else if (msg.r2 != 0.0 && msg.l2 == 0.0)
+    // {
+    //     jog_cmd.speed = msg.r2 * MAX_SPEED;
+    // }
+    // else
+    // {
+    //     jog_cmd.speed = 0.0;
+    // }
     _pub_jog->publish(jog_cmd);
 }
