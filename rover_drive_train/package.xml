@@ -4,7 +4,7 @@
   <name>rover_drive_train</name>
   <version>0.0.0</version>
   <description>
-    rover_drive_train pkg contains heartbeat node 
+    rover_drive_train pkg teleop node
   </description>
   <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
   <maintainer email="save1403@usherbrooke.ca">emile</maintainer>
