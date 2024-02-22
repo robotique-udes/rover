@@ -38,7 +38,7 @@ ament_target_dependencies(arbitration
                           std_msgs
                           rover_msgs)
 
-# install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS

@@ -11,7 +11,7 @@
 #include "math.h"
 
 #define PI 3.14159265359
-#define MAX_SPEED 1.0*PI/180 // rad/s
+#define MAX_SPEED 5.0*PI/180 // rad/s
 #define N_SMA 10
 
 using namespace std::chrono_literals;
@@ -44,6 +44,9 @@ private:
     int count_rover = 0;
     bool first_msgs_antenna = true;
     int count_antenna = 0;
+
+    rclcpp::Parameter param_max_speed;
+    rclcpp::Parameter param_n_average;
 };
 
 int main(int argc, char *argv[])
@@ -68,6 +71,12 @@ Autonomus::Autonomus() : Node("autonomus")
 
     _pub_cmd = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto", 1);
     timer_ = this->create_wall_timer(500ms, std::bind(&Autonomus::timer_callback, this));
+
+    this->declare_parameter<float>("max_speed", PI/2);
+    this->declare_parameter<int16_t>("n_average", 10);
+
+    param_max_speed = this->get_parameter("max_speed");
+    param_n_average = this->get_parameter("n_average");
 }
 
 void Autonomus::callbackGPSRover(const rover_msgs::msg::Gps msg)
