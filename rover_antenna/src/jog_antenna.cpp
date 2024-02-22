@@ -11,7 +11,7 @@
 #include "rovus_lib/moving_average.hpp"
 
 #define PI 3.14159265359
-#define MAX_SPEED 1.0*PI/180 // rad/s
+#define N_AVERAGE 10
 
 using namespace std::chrono_literals;
 
@@ -30,8 +30,11 @@ private:
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_jog;
 
     void callbackJoy(const rover_msgs::msg::Joy msg);
-    MovingAverage<float, 10> jog_average_r1 = MovingAverage<float, 10>(0.0);
-    MovingAverage<float, 10> jog_average_l1 = MovingAverage<float, 10>(0.0);
+    rclcpp::Parameter param_max_speed;
+    rclcpp::Parameter param_n_average;
+    MovingAverage<float, N_AVERAGE> jog_average_r1 = MovingAverage<float, N_AVERAGE>(0.0);
+    MovingAverage<float, N_AVERAGE> jog_average_l1 = MovingAverage<float, N_AVERAGE>(0.0);
+    
 };
 
 int main(int argc, char *argv[])
@@ -51,6 +54,13 @@ JogAntenna::JogAntenna() : Node("jog_antenna")
 
     _pub_jog = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop", 1);
     timer_ = this->create_wall_timer(500ms, std::bind(&JogAntenna::timer_callback, this));
+
+    this->declare_parameter<float>("max_speed", PI/2);
+    this->declare_parameter<int16_t>("n_average", 10);
+
+    param_max_speed = this->get_parameter("max_speed");
+    param_n_average = this->get_parameter("n_average");
+    
 }
 
 void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg)
@@ -66,11 +76,11 @@ void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg)
 
     if(jog_average_l1.getAverage() != 0.0 && jog_average_r1.getAverage() == 0.0)
     {
-        jog_cmd.speed = -jog_average_l1.getAverage();
+        jog_cmd.speed = -jog_average_l1.getAverage() * param_max_speed.as_double();
     }
     else if(jog_average_l1.getAverage() == 0.0 && jog_average_r1.getAverage() != 0.0)
     {
-        jog_cmd.speed = jog_average_r1.getAverage();
+        jog_cmd.speed = jog_average_r1.getAverage() * param_max_speed.as_double();
     }
     else
     {
