@@ -46,30 +46,33 @@ void initConfig(Pilotes pilot, const PilotConfig& config)
     ActionToJoyMapping[pilot] = config;
 }
 
-void initConfigPilot(rover_msgs::msg::Joy)
+void initConfigPilot()
 {
     PilotConfig configPhil = {10, 0, 1, 4, 12, 13, 14, 15};
     initConfig(Pilotes::phil, configPhil);
 
     PilotConfig configsenile = {10, 13, 1, 4, 15, 11, 14, 6};
     initConfig(Pilotes::senile, configsenile);
-    
 }
 
 class Teleop : public rclcpp::Node
 {
 private:
+    std::map<Pilotes, Actions> ActionToJoyMapping;
+    PilotConfig currentConfig;
+    int lastKnownPilot = -1;
+
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_formatted;
     rclcpp::TimerBase::SharedPtr _timer;
 
     void callbackTeleop(const rover_msgs::msg::Joy &msg);
     void callbackTimer();
     void initConfig(Pilotes pilot, const PilotConfig& config);
+    void initConfigPilot();
 
 public:
     Teleop();
 };
-
 
 Teleop::Teleop() : Node("teleop")
 {
@@ -86,17 +89,32 @@ Teleop::Teleop() : Node("teleop")
     this->declare_parameter<float>("speed_factor_turbo", 1.0);
     this->declare_parameter<float>("smallest_radius", 0.30);
 
-     initConfig(Pilotes::phil);
+    initConfigPilot();
+
+    int initialPilotParam;
+    this->get_parameter("currentPilot", initialPilotParam);
+    Pilotes initialPilot = static_cast<Pilotes>(initialPilotParam);
+    
+    if(::ActionToJoyMapping.find(initialPilot) != ::ActionToJoyMapping.end())
+    {
+        currentConfig = ::ActionToJoyMapping[initialPilot];
+        lastKnownPilot = initialPilotParam;
+    }
 }
 
 void Teleop::callbackTeleop(const rover_msgs::msg::Joy &msg)
 {
     int pilotParam;
     this->get_parameter("currentPilot", pilotParam);
-    
     Pilotes currentPilot = static_cast<Pilotes>(pilotParam);
 
     const auto& config = ActionToJoyMapping[currentPilot];
+
+    if(pilotParam != lastKnownPilot)
+    {
+        initConfig(static_cast<Pilotes>(pilotParam), currentConfig);
+        lastKnownPilot = pilotParam;
+    }
 
     //RCLCPP_INFO(this->get_logger(), "Deadman Button State: %d", msg.
     //RCLCPP_INFO(this->get_logger(), "Throttle Button State: %d", );
