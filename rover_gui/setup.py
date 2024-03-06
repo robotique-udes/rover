@@ -16,10 +16,12 @@ setup(
     maintainer='nathan',
     maintainer_email='nathan.dumoulin11@outlook.com',
     description='TODO: Package description',
-    license='TODO: License declaration',
+    license='Apache-2.0',
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
+            "main_gui = rover_gui.main_gui:main",
+            "gps_talker = rover_gui.gps_talker:main"
         ],
     },
 )
