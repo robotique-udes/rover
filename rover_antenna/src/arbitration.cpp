@@ -66,6 +66,7 @@ void Arbitration::callbackJog(const rover_msgs::msg::AntennaCmd msg)
 void Arbitration::callbackAuto(const rover_msgs::msg::AntennaCmd msg)
 {
     cmd_auto = msg;
+    sendCmd();
 }
 
 void Arbitration::sendCmd()
@@ -79,7 +80,7 @@ void Arbitration::sendCmd()
     // {
     //     cmd_abtr = cmd_auto;
     // }
-    cmd_abtr = cmd_jog;
-    RCLCPP_INFO(LOGGER, "cmd_jog : %f", cmd_jog.speed);
+    cmd_abtr = cmd_auto;
+    // RCLCPP_INFO(LOGGER, "cmd_jog : %f", cmd_abtr.speed);
     _pub_abtr->publish(cmd_abtr);
 }
