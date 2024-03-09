@@ -1,5 +1,13 @@
 # Electric Standard
 
+- [Electric Standard](#electric-standard)
+  - [Low Current connectors and wire (\<1A)](#low-current-connectors-and-wire-1a)
+    - [Conventions](#conventions)
+      - [Color Code](#color-code)
+  - [High Current connectors and wire (\> 1A)](#high-current-connectors-and-wire--1a)
+    - [Connectors](#connectors)
+    - [Wires](#wires)
+
 ## Low Current connectors and wire (<1A)
 
 RJ45 connectors and ethernet cables are prefered for every low current application. Low current application basically refers to every logic data circuit. For example, signal from microcontrollers GPIOs or low current alimentation circuit.
