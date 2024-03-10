@@ -2,32 +2,50 @@
 
 ## Udev Rules
 
-To automatically setup the USB to CAN adapters the rover is using each time they are connected to your PC, follow these steps:
+To automatically setup the USB to CAN adapters the rover is using each time they are connected to your PC, follow these steps*:
 
-1. Open a text editor in the udev folder
+*A simple Udev rules won't init our canable pro 1.0 adapter so we have to create a service.
+
+1. Navigates to the /can_configuration folder inside of the rover_can/script package.
 
    ```Bash
-   sudo nano /etc/udev/rules.d/99-can-adapter.rules
+   cd ~/ros2_ws/src/rover/rover_can/scripts/can_configuration
    ```
 
-2. Add the following lines to the file
+2. Run theses commands to copy the necessary file into your computer
 
    ```udev
-   SUBSYSTEM=="usb", ATTRS{idVendor}=="1d50", ATTRS{idProduct}=="606f", RUN+="/bin/bash -c 'sudo ip link set can0 up txqueuelen 1000 restart-ms 1 type can bitrate 500000'"
+   sudo cp 90-usb-slcan.rules /etc/udev/rules.d/
+   sudo cp slcan_add.sh /usr/local/bin/
+   sudo cp slcan@.service /etc/systemd/system/
    ```
 
-3. Save and exit
-
-   ```keyboard
-   -> ctrl+x
-   -> y
-   -> enter
-   ```
-
-4. Restart the udev server
+3. Restart the udev server
 
    ```Bash
    sudo udevadm control --reload-rules
+   ```
+
+4. Unconnect and reconnect your device to your computer.
+
+5. If everything is setup correctly, you should see a "canRovus" network adapter when your USB-to-CAN adapter is plugged in. You can run the following command to confirm
+
+   ```Bash
+   ifconfig canRovus
+   ```
+
+   Expected output when adapter is connected:
+
+   ```Bash
+   canRovus: flags=193<UP,RUNNING,NOARP>  mtu 16
+        unspec 00-00-00-00-00-00-00-00-00-00-00-00-00-00-00-00  txqueuelen 1000  (UNSPEC)
+        RX packets ...
+   ```
+
+   Expected output with wrong configuration
+
+   ```bash
+   canRovus: error fetching interface information: Device not found
    ```
 
 ## Debugging

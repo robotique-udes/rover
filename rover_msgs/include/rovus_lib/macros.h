@@ -39,4 +39,8 @@
 
 #define PI 3.14159265359
 
+#define IN
+#define OUT
+#define INOUT
+    
 #endif //__MACROS_H__

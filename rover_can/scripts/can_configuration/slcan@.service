@@ -1,0 +1,8 @@
+[Unit]
+Description=slcan interface
+After=dev-ttyRovus.device
+BindsTo=dev-ttyRovus.device
+
+[Service]
+ExecStart=/usr/local/bin/slcan_add.sh %I
+Type=forking

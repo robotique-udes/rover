@@ -3,9 +3,11 @@
 - [Rover can IDs](#rover-can-ids)
   - [Summary](#summary)
   - [ID ranges](#id-ranges)
-  - [ID list](#id-list)
+  - [Device and message ID list](#device-and-message-id-list)
     - [Guidelines](#guidelines)
     - [list](#list)
+  - [Message Specific Id List](#message-specific-id-list)
+    - [PropulsionMotorMsg](#propulsionmotormsg)
 
 ## Summary
 
@@ -22,14 +24,15 @@ The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to
 | 0x4** | Accessory (lights, speakers, etc) |
 | 0x5** | Free Space                        |
 
-## ID list
+## Device and message ID list
 
 ### Guidelines
 
 - Add your can device ID to the list as soon as possible
 - Don't use range delimiter as ID
 - Leave space for ids where you think a module could fit there in the future
-  - Example: A MiddleLeft motor could be added in the future an empty space is left between FrontRight and RearLeft  
+  - Example: A MiddleLeft and a MiddleRight motor could be added in the future so empty space is left between FrontRight(0x102) and RearLeft(0x105)
+- If you change any already defined ID, you'll have to reupload into each microcontroller. (Basically don't)
 
 ### list
 
@@ -66,3 +69,19 @@ The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to
 |           |                                   |
 | **0x500** | Free Space                        |
 |           |                                   |
+
+## Message Specific Id List
+
+In the following section are defined all the message internal ID (byte #0 of the data field), remember, if you change any already defined ID, you'll have to reupload into each microcontroller. (Basically don't)
+
+### PropulsionMotorMsg
+
+| ID   | Device or Message |
+|------|-------------------|
+| 0x00 | closeLoop         |
+| 0x01 | enable            |
+| 0x02 | targetSpeed       |
+| 0x03 | currentSpeed      |
+| 0x04 | kp                |
+| 0x05 | ki                |
+| 0x06 | kd                |

@@ -10,6 +10,12 @@
 #include <linux/can.h>
 #include <linux/can/raw.h>
 
+#include <cstdint>
+#include <chrono>
+#include <thread>
+
+#include "rover_can_lib/rover_can_lib.hpp"
+
 int main(void)
 {
     int s;
@@ -25,7 +31,7 @@ int main(void)
         return 1;
     }
 
-    strcpy(ifr.ifr_name, "can0");
+    strcpy(ifr.ifr_name, "canRovus");
     ioctl(s, SIOCGIFINDEX, &ifr);
 
     memset(&addr, 0, sizeof(addr));
@@ -38,28 +44,24 @@ int main(void)
         return 1;
     }
 
-    frame.can_id = 0x21;
-    frame.can_dlc = 4;
-    frame.data[0] = 0xFA;
-    frame.data[1] = 0xFA;
-    frame.data[2] = 0xBE;
-    frame.data[3] = 0xBE;
+    frame.can_id = 0x101;
+    frame.can_dlc = 5;
+    frame.data[0] = 0x02;
 
-    while (true)
+    RoverCanLib::UnionDefinition::FloatUnion test;
+    for (float value = -100.0f; value <= 100.0f; value += 0.1f)
     {
-        if (write(s, &frame, sizeof(frame)) != sizeof(frame))
+        test.data = value;
+
+        for (uint8_t i = 0; i < sizeof(test); i++)
         {
-            perror("Write");
-            return 1;
-        }
-        else
-        {
-            printf("packet sent");
+            frame.data[i + 1] = test.dataBytes[i];
         }
 
-        sleep(1);
+        write(s, &frame, sizeof(frame)) != sizeof(frame);
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
+
     }
-
     if (close(s) < 0)
     {
         perror("Close");
