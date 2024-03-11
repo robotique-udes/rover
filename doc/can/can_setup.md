@@ -1,5 +1,11 @@
 # Can Setup
 
+- [Can Setup](#can-setup)
+  - [Udev Rules](#udev-rules)
+  - [Debugging](#debugging)
+    - [Wireshark](#wireshark)
+    - [can-utils](#can-utils)
+
 ## Udev Rules
 
 To automatically setup the USB to CAN adapters the rover is using each time they are connected to your PC, follow these steps*:
@@ -50,6 +56,8 @@ To automatically setup the USB to CAN adapters the rover is using each time they
 
 ## Debugging
 
+### Wireshark
+
 Wireshark is a great debugging tool, it allows the user to see every msg on the canbus network and record them
 
 To install:
@@ -63,4 +71,30 @@ To launch:
 
 ```Bash
 sudo wireshark
+```
+
+### can-utils
+
+can-utils include basic tools needed for debugging and setuping CAN devices.
+
+To install:
+
+```bash
+sudo apt install can-utils
+```
+
+candump is a terminal tool that you can use to see live packet on the canbus network.
+
+Usage:
+
+```bash
+candump canRovus #candump <canNetworkName>
+```
+
+cansend is a terminal tool to send message over the can network for testing purposes
+
+Usage:
+
+```bash
+cansend canRovus 001#2345678910ABCDEF #cansend <canNetworkName> <canId>#<canData (max 8 bytes)> 
 ```

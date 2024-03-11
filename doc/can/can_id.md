@@ -5,7 +5,7 @@
   - [ID ranges](#id-ranges)
   - [Device and message ID list](#device-and-message-id-list)
     - [Guidelines](#guidelines)
-    - [list](#list)
+    - [List](#list)
   - [Message Specific Id List](#message-specific-id-list)
     - [PropulsionMotorMsg](#propulsionmotormsg)
 
@@ -34,7 +34,7 @@ The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to
   - Example: A MiddleLeft and a MiddleRight motor could be added in the future so empty space is left between FrontRight(0x102) and RearLeft(0x105)
 - If you change any already defined ID, you'll have to reupload into each microcontroller. (Basically don't)
 
-### list
+### List
 
 | ID        | Device or Message                 |
 |-----------|-----------------------------------|
