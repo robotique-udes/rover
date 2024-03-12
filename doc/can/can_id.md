@@ -2,16 +2,27 @@
 
 - [Rover can IDs](#rover-can-ids)
   - [Summary](#summary)
+    - [RoverCanProtocol Syntaxt](#rovercanprotocol-syntaxt)
   - [ID ranges](#id-ranges)
   - [Device and message ID list](#device-and-message-id-list)
     - [Guidelines](#guidelines)
-    - [List](#list)
-  - [Message Specific Id List](#message-specific-id-list)
-    - [PropulsionMotorMsg](#propulsionmotormsg)
+    - [List of devices ID](#list-of-devices-id)
+    - [List of msgs ID](#list-of-msgs-id)
+  - [Message Content Id List](#message-content-id-list)
+    - [ErrorState](#errorstate)
+    - [Heartbeat](#heartbeat)
+    - [GPS](#gps)
+    - [PropulsionMotor](#propulsionmotor)
 
 ## Summary
 
-The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to 2047 or from 0x00 to 0x7FF in hex. The lower the id the higher it's priority. Each id can represent either a msg type or device/module on the rover.
+The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to 2047 or from 0x00 to 0x7FF in hex. The lower the id the higher it's priority. Each id can represent either a msg type or device/module on the rover. When sending a message on the can bus, you'll set an ID for the message and 8 bytes of data. The [RoverCanProtocol Syntaxt](#rovercanprotocol-syntaxt) section explain how those 8 bytes are used.
+
+### RoverCanProtocol Syntaxt
+
+| bytes index | 0x00  | 0x01            | 0x02    | 0x03 | 0x04 | 0x05 | 0x06 | 0x07 |
+|-------------|-------|-----------------|---------|------|------|------|------|------|
+| data        | msgID | Msg Content Id | data... | ...  | ...  | ...  | ...  | ...  |
 
 ## ID ranges
 
@@ -34,15 +45,16 @@ The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to
   - Example: A MiddleLeft and a MiddleRight motor could be added in the future so empty space is left between FrontRight(0x102) and RearLeft(0x105)
 - If you change any already defined ID, you'll have to reupload into each microcontroller. (Basically don't)
 
-### List
+### List of devices ID
 
-| ID        | Device or Message                 |
+Devices are organized into a specific order in relation to arbitration.
+
+| ID        | Devices                           |
 |-----------|-----------------------------------|
 |           |                                   |
 | **0x000** | RESERVED FOR MASTER               |
-| 0x001     | - Heartbeat (msg)                 |
 | 0x020     | - Master Computer unit            |
-| 0x021     | - GPS (msg)                       |
+| 0x021     | - BMS                             |
 |           |                                   |
 | **0x100** | PROPULSION                        |
 | 0x101     | - FrontLeft motor                 |
@@ -64,24 +76,61 @@ The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to
 | **0x300** | Science                           |
 |           |                                   |
 | **0x400** | Accessory (lights, speakers, etc) |
-| 0x401     | - Main Lights                     |
+| 0x401     | - GPS                             |
+| 0x402     | - Lights                          |
+| 0x402     | - Infrared lights                 |
 | 0x410     | - Speakers                        |
 |           |                                   |
 | **0x500** | Free Space                        |
 |           |                                   |
 
-## Message Specific Id List
+### List of msgs ID
 
-In the following section are defined all the message internal ID (byte #0 of the data field), remember, if you change any already defined ID, you'll have to reupload into each microcontroller. (Basically don't)
+Msgs Ids aren't organised as their order don't matter in the arbitration, just add new messages types at the end of the list.
 
-### PropulsionMotorMsg
+| ID   | Msgs               |
+|------|--------------------|
+| 0x00 | NOT_USED           |
+| 0x01 | ErrorState         |
+| 0x02 | Heartbeat (msg)    |
+| 0x10 | GPS (msg)          |
+| 0x11 | PropulsionMotorMsg |
 
-| ID   | Device or Message |
-|------|-------------------|
-| 0x00 | closeLoop         |
-| 0x01 | enable            |
-| 0x02 | targetSpeed       |
-| 0x03 | currentSpeed      |
-| 0x04 | kp                |
-| 0x05 | ki                |
-| 0x06 | kd                |
+## Message Content Id List
+
+In the following section are defined all the message content internal IDs, remember, if you change any already defined ID, you'll have to reupload into each microcontroller.
+
+### ErrorState
+
+| ID   | Device or Message | TYPE |
+|------|-------------------|------|
+| 0x00 | NOT_USED          | n/a  |
+| 0x01 | ERROR             | bool |
+| 0x02 | WARNING           | bool |
+
+### Heartbeat
+
+| ID   | Device or Message | TYPE |
+|------|-------------------|------|
+| 0x00 | NOT_USED          |      |
+| TODO | TODO              |      |
+
+### GPS
+
+| ID   | Device or Message | TYPE |
+|------|-------------------|------|
+| 0x00 | NOT_USED          |      |
+| TODO | TODO              |      |
+
+### PropulsionMotor
+
+| ID   | Device or Message | TYPE    |
+|------|-------------------|---------|
+| 0x00 | NOT_USED          |         |
+| 0x01 | enable            | bool    |
+| 0x02 | targetSpeed       | float32 |
+| 0x03 | currentSpeed      | float32 |
+| 0x04 | kp                | float32 |
+| 0x05 | ki                | float32 |
+| 0x06 | kd                | float32 |
+| 0x07 | closeLoop         | bool    |
