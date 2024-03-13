@@ -15,8 +15,7 @@ def generate_launch_description():
                                     parameters=[{"speed_factor_crawler": 0.01},
                                                 {"speed_factor_normal": 0.25},
                                                 {"speed_factor_turbo": 1.0},
-                                                {"smalllest_radius": 0.30},
-                                                {"currentPilot": 0}],
+                                                {"smalllest_radius": 0.30}],
                                     remappings=[("driver", "raw")])
         
         node_joy_formatted = LaunchDescription(

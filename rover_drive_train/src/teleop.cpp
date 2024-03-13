@@ -33,8 +33,10 @@ struct PilotConfig {
     uint8_t Throttle_Active;
     uint8_t Turn_Active;
     uint8_t TurnTank_Active;
-    uint8_t Speed_Mode_Active;
-    uint8_t Fast_Throttle;
+    uint8_t Tank_Actve;
+    uint8_t Fast_Active;
+    uint8_t Normal_Active;
+    uint8_t Crawl_Active;
     uint8_t Lights_Active;
     uint8_t Drift_lol_Active;
 };
@@ -48,11 +50,12 @@ void initConfig(Pilotes pilot, const PilotConfig& config)
 
 void initConfigPilot()
 {
-    PilotConfig configPhil = {10, 0, 1, 4, 12, 13, 14, 15};
+    PilotConfig configPhil = {10, 0, 1, 4, };
     initConfig(Pilotes::phil, configPhil);
 
     PilotConfig configsenile = {10, 13, 1, 4, 15, 11, 14, 6};
     initConfig(Pilotes::senile, configsenile);
+    
 }
 
 class Teleop : public rclcpp::Node
@@ -82,42 +85,18 @@ Teleop::Teleop() : Node("teleop")
                                                                         {callbackTeleop(msg); });
 
     _timer = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&Teleop::callbackTimer, this));
-
-    this->declare_parameter("currentPilot", static_cast<int>(Pilotes::phil));                                                               
+                                                                         
     this->declare_parameter<float>("speed_factor_crawler", 0.01);
     this->declare_parameter<float>("speed_factor_normal", 0.25);
     this->declare_parameter<float>("speed_factor_turbo", 1.0);
     this->declare_parameter<float>("smallest_radius", 0.30);
 
-    initConfigPilot();
-
-    int initialPilotParam;
-    this->get_parameter("currentPilot", initialPilotParam);
-    Pilotes initialPilot = static_cast<Pilotes>(initialPilotParam);
-    
-    if(::ActionToJoyMapping.find(initialPilot) != ::ActionToJoyMapping.end())
-    {
-        currentConfig = ::ActionToJoyMapping[initialPilot];
-        lastKnownPilot = initialPilotParam;
-    }
+     initConfig(Pilotes::phil);
 }
 
 void Teleop::callbackTeleop(const rover_msgs::msg::Joy &msg)
 {
-    int pilotParam;
-    this->get_parameter("currentPilot", pilotParam);
-    Pilotes currentPilot = static_cast<Pilotes>(pilotParam);
 
-    const auto& config = ActionToJoyMapping[currentPilot];
-
-    if(pilotParam != lastKnownPilot)
-    {
-        initConfig(static_cast<Pilotes>(pilotParam), currentConfig);
-        lastKnownPilot = pilotParam;
-    }
-
-    //RCLCPP_INFO(this->get_logger(), "Deadman Button State: %d", msg.
-    //RCLCPP_INFO(this->get_logger(), "Throttle Button State: %d", );
 }
 
 void Teleop::callbackTimer()
