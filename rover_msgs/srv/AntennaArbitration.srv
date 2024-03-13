@@ -1,0 +1,6 @@
+uint8 TELEOP = 0
+uint8 AUTONOMUS = 1
+
+uint8 arbitration
+---
+uint8 isArbitration

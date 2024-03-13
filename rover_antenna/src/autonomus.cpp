@@ -12,7 +12,7 @@
 #include "rovus_lib/moving_average.hpp"
 
 #define PI 3.14159265359
-#define MAX_SPEED 5.0*PI/180 // rad/s
+#define MAX_SPEED 20.0*PI/180 // rad/s
 #define N_AVERAGE 10
 
 
@@ -230,7 +230,6 @@ void Autonomus::autonomusCommand()
 
 float Autonomus::calculateHeading(float lat1, float lon1, float lat2, float lon2)
 {
-    //float R = 6371e3;
     lat1 = lat1 * PI / 180.0;
     lat2 = lat2 * PI / 180.0;
     lon1 = lon1 * PI / 180.0;
