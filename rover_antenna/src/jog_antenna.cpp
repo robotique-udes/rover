@@ -87,17 +87,5 @@ void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg)
         jog_cmd.speed = 0.0;
     }
 
-    // if (msg.l2 != 0.0 && msg.r2 == 0.0)
-    // {   
-    //     jog_cmd.speed = -msg.l2 * MAX_SPEED;
-    // }
-    // else if (msg.r2 != 0.0 && msg.l2 == 0.0)
-    // {
-    //     jog_cmd.speed = msg.r2 * MAX_SPEED;
-    // }
-    // else
-    // {
-    //     jog_cmd.speed = 0.0;
-    // }
     _pub_jog->publish(jog_cmd);
 }
