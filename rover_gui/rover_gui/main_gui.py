@@ -3,11 +3,15 @@ import rclpy
 import threading
 from .main_window import MainWindow
 from PyQt5.QtWidgets import QApplication
+from PyQt5.QtCore import QObject, pyqtSignal
 from rclpy.node import Node
 
 from rover_msgs.msg import Gps
 
-class MainGui(Node):
+class MainGui(Node, QObject):
+
+    message_received = pyqtSignal(float, float)  # Define a signal
+
     def __init__(self):
         super().__init__("main_gui")
         self.float_topic_name = '/gps_talker'
@@ -23,7 +27,7 @@ class MainGui(Node):
     ### ROS2 Data Updater
     def sub_gps_callback(self, msg):
         self.get_logger().info("Msg received : lon:%f lat:%f" % (msg.longitude, msg.latitude))
-        #self.message_received.emit(msg)
+        self.message_received.emit(msg.latitude, msg.longitude)
 
 def ros_spin(node):
     rclpy.spin(node)
