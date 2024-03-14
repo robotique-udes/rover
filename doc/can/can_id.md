@@ -88,13 +88,13 @@ Devices are organized into a specific order in relation to arbitration.
 
 Msgs Ids aren't organised as their order don't matter in the arbitration, just add new messages types at the end of the list.
 
-| ID   | Msgs               |
-|------|--------------------|
-| 0x00 | NOT_USED           |
-| 0x01 | ErrorState         |
-| 0x02 | Heartbeat (msg)    |
-| 0x10 | GPS (msg)          |
-| 0x11 | PropulsionMotorMsg |
+| ID   | Msgs             |
+|------|------------------|
+| 0x00 | NOT_USED         |
+| 0x01 | ERROR_STATE      |
+| 0x02 | HEARTBEAT (msg)  |
+| 0x10 | GPS (msg)        |
+| 0x11 | PROPULSION_MOTOR |
 
 ## Message Content Id List
 

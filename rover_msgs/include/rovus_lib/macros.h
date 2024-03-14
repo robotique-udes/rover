@@ -42,5 +42,8 @@
 #define IN
 #define OUT
 #define INOUT
+
+// Removes unused argument warning 
+#define REMOVE_UNUSED(x) (void)(x)
     
 #endif //__MACROS_H__
