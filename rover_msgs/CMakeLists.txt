@@ -28,6 +28,7 @@ install(
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AntennaCmd.msg"
+  "msg/PropulsionMotor.msg"
   "msg/CanDeviceStatus.msg"  
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"

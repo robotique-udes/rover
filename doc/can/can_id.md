@@ -20,8 +20,8 @@ The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to
 
 ### RoverCanProtocol Syntaxt
 
-| bytes index | 0x00  | 0x01            | 0x02    | 0x03 | 0x04 | 0x05 | 0x06 | 0x07 |
-|-------------|-------|-----------------|---------|------|------|------|------|------|
+| bytes index | 0x00  | 0x01           | 0x02    | 0x03 | 0x04 | 0x05 | 0x06 | 0x07 |
+|-------------|-------|----------------|---------|------|------|------|------|------|
 | data        | msgID | Msg Content Id | data... | ...  | ...  | ...  | ...  | ...  |
 
 ## ID ranges
@@ -113,6 +113,7 @@ In the following section are defined all the message content internal IDs, remem
 | ID   | Device or Message | TYPE |
 |------|-------------------|------|
 | 0x00 | NOT_USED          |      |
+| 0x01 | DONT_USE          |      |
 | TODO | TODO              |      |
 
 ### GPS

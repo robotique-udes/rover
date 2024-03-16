@@ -29,7 +29,7 @@ ament_target_dependencies(can_translator
 
 
 # install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-# install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS

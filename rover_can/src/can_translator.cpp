@@ -27,14 +27,18 @@
 #include "rover_can_lib/constant.hpp"
 #include "rovus_lib/macros.h"
 #include "rovus_lib/timer.hpp"
+#include "rover_can_lib/msgs/error_state.hpp"
 
 #include <iostream>
 #include <bitset>
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/can_device_status.hpp"
+// #include "rover_msgs/msg/"
 
 #define TIME_WATCHDOG 500
+
+void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg);
 
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
@@ -42,43 +46,35 @@ void signal_handler(int signo);
 class CanDevice
 {
 public:
-    CanDevice(uint16_t id_ /*, rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanBusState_*/)
+    CanDevice(uint16_t id_, void (*callback_)(uint16_t id_, const can_frame *frameMsg_))
     {
         _id = id_;
-        /*_pub_CanBusState = pub_CanBusState_;*/
+
+        assert(callback_ != NULL);
+        _callback = callback_;
     }
     ~CanDevice() {}
 
-    void parseMsg(uint8_t *data_, uint8_t dataLen_)
+    void parseMsg(can_frame *frameMsg)
     {
-        switch (data_[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
+        switch (frameMsg->data[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
         {
         case (uint8_t)RoverCanLib::Constant::eMsgId::HEARTBEAT:
-            RCLCPP_INFO(this->_getLogger(), "Received heartbeat!");
-            if (_timerWatchdog.getTime() > TIME_WATCHDOG)
-            {
-                _msg_canStatus.watchdog_ok = false;
-            }
-            else
-            {
-                _msg_canStatus.watchdog_ok = true;
-            }
-            _timerWatchdog.restart();
+            this->resetWatchdog();
             break;
 
         case (uint8_t)RoverCanLib::Constant::eMsgId::ERROR_STATE:
-#warning TODO
-            
-
-            RCLCPP_WARN(this->_getLogger(),
-                        "ERROR_STATE isn't impleted yet, but should be!!!",
-                        (uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID);
+            this->setErrorState(frameMsg);
+            break;
 
         default:
-            RCLCPP_ERROR(this->_getLogger(),
-                         "Received unexpected msg id: 0x%.3x Possible mismatch in library version between nodes",
-                         data_[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID]);
+            this->_callback(this->getId(), frameMsg);
         }
+    }
+
+    uint16_t getId()
+    {
+        return _id;
     }
 
 private:
@@ -86,14 +82,39 @@ private:
     // rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
     rover_msgs::msg::CanDeviceStatus _msg_canStatus;
     Chrono<uint64_t, millis> _timerWatchdog;
+    void (*_callback)(uint16_t id_, const can_frame *frameMsg_);
 
-    rclcpp::Logger _getLogger()
+    void resetWatchdog()
+    {
+        if (_timerWatchdog.getTime() > TIME_WATCHDOG)
+        {
+            _msg_canStatus.watchdog_ok = false;
+        }
+        else
+        {
+            _msg_canStatus.watchdog_ok = true;
+        }
+        _timerWatchdog.restart();
+    }
+    void setErrorState(can_frame *frameMsg)
+    {
+        RoverCanLib::Msgs::ErrorState msg;
+        if (msg.parseMsg(frameMsg, this->getLogger()) != RoverCanLib::Constant::eInternalErrorCode::OK)
+        {
+            RCLCPP_ERROR(this->getLogger(), "Error parsing ErrorCode message, dropping");
+        }
+        _msg_canStatus.error_state = msg.data.warning ? rover_msgs::msg::CanDeviceStatus::STATUS_WARNING : rover_msgs::msg::CanDeviceStatus::STATUS_OK;
+        _msg_canStatus.error_state = msg.data.error ? rover_msgs::msg::CanDeviceStatus::STATUS_ERROR : _msg_canStatus.error_state;
+    }
+    rclcpp::Logger getLogger()
     {
         std::stringstream ss;
         ss << std::hex << _id; // Set the stream to output in hexadecimal
         return rclcpp::get_logger("0x" + ss.str());
     }
 };
+
+std::unordered_map<int, CanDevice *> deviceMap;
 
 int main(int argc, char **argv)
 {
@@ -126,29 +147,33 @@ int main(int argc, char **argv)
         return 1;
     }
 
-    CanDevice d_0x101(0x101);
+    CanDevice d_0x101(0x101, CB_Can_PropulsionMotor);
+    deviceMap[(size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR] = &d_0x101;
 
     // Perform non-blocking read
     ssize_t bytes_read;
     while (1)
     {
         bytes_read = read(s, &frame, sizeof(struct can_frame));
-        if (bytes_read == sizeof(struct can_frame))
+        if (bytes_read == sizeof(can_frame))
         {
-            printf("\nReceived data, id: %x\n", frame.can_id);
-            if (frame.can_id == (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR)
+            // If device not already registered, add to the hash map
+            if (deviceMap[frame.can_id] != NULL)
             {
-                d_0x101.parseMsg(frame.data, frame.can_dlc);
+                deviceMap[frame.can_id]->parseMsg(&frame);
             }
-            // Data received successfully, process it
+            else
+            {
+                RCLCPP_WARN(rclcpp::get_logger("TODO"),
+                            "Received msg with device ID: 0x%.3x which isn't defined in deviceMap, dropping",
+                            frame.can_id);
+            }
         }
         else if (bytes_read == -1)
         {
             if (errno == EAGAIN || errno == EWOULDBLOCK)
             {
-                // printf("-");
                 // No data available, continue or do other work
-                // usleep(10000); // Sleep briefly before trying again
                 continue;
             }
             else
@@ -161,6 +186,33 @@ int main(int argc, char **argv)
 
     close(s);
     return 0;
+}
+
+void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
+{
+    if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR &&
+        id_ != (size_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR &&
+        id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR &&
+        id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR)
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("TODO"),
+                     "Provided device ID: 0x%.3x isn't a propulsion motor",
+                     id_);
+
+        return;
+    }
+
+    switch ((RoverCanLib::Constant::eMsgId)frameMsg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
+    {
+    case RoverCanLib::Constant::eMsgId::PROPULSION_MOTOR:
+        #warning TODO: Implement data copy
+        break;
+
+    default:
+        RCLCPP_ERROR(rclcpp::get_logger("TODO"),
+                     "Received unexpected msg id: 0x%.2x Possible mismatch in library version between nodes",
+                     frameMsg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID]);
+    }
 }
 
 // int main(void)
