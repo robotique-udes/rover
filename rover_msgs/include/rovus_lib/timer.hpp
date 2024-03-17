@@ -129,6 +129,32 @@ public:
 #if defined(__linux__)
 #include <cstdint>
 #include <time.h>
+#include <chrono>
+#include <thread>
+
+// TIME_TYPE ex: std::chrono::microseconds
+template <typename TIME_TYPE>
+class TimerFixedLoop
+{
+public:
+    TimerFixedLoop(TIME_TYPE interval_us_)
+    {
+        _interval = interval_us_;
+        _nextLoopTime = std::chrono::steady_clock::now();
+        _nextLoopTime += interval_us_;
+    }
+
+    void sleepUntilReady()
+    {
+        std::this_thread::sleep_until(_nextLoopTime);
+        _nextLoopTime += _interval;
+    }
+
+private:
+    TIME_TYPE _interval;
+    std::chrono::_V2::steady_clock::time_point _nextLoopTime;
+};
+
 uint64_t millis()
 {
     struct timespec ts;

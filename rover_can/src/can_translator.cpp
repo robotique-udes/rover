@@ -1,10 +1,7 @@
-// Flow
-//  Empty rx queue and call each callback accordingly (one callback byID) --> They should only modify values inside ros defined messages
-//  if device doesn't exist already, add it to the device array
-//      If watchdog, clear its watchdog --> Helper
-//      If error set error state --> Helper
-//      If other do specific actions --> Custom func
-//
+// Next steps:
+//   1. Send master heartbeat for other can nodes
+//   2. Add ros
+//      2.1 Add status publisher
 
 #include <stdio.h>
 #include <stdlib.h>
@@ -27,165 +24,130 @@
 #include "rover_can_lib/constant.hpp"
 #include "rovus_lib/macros.h"
 #include "rovus_lib/timer.hpp"
-#include "rover_can_lib/msgs/error_state.hpp"
 
 #include <iostream>
 #include <bitset>
 #include <memory>
 #include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/can_device_status.hpp"
-// #include "rover_msgs/msg/"
 
-#define TIME_WATCHDOG 500
+#include "rover_can_lib/can_device.hpp"
 
+#define LOGGER_NAME "CanMasterNode"
+
+int createSocket(const char *canNetworkName_);
+RoverCanLib::Constant::eInternalErrorCode readMsgFromCanSocket(int canSocket_, Chrono<uint64_t, millis> *chonoCanWatchdog_);
 void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg);
 
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
 
-class CanDevice
-{
-public:
-    CanDevice(uint16_t id_, void (*callback_)(uint16_t id_, const can_frame *frameMsg_))
-    {
-        _id = id_;
-
-        assert(callback_ != NULL);
-        _callback = callback_;
-    }
-    ~CanDevice() {}
-
-    void parseMsg(can_frame *frameMsg)
-    {
-        switch (frameMsg->data[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
-        {
-        case (uint8_t)RoverCanLib::Constant::eMsgId::HEARTBEAT:
-            this->resetWatchdog();
-            break;
-
-        case (uint8_t)RoverCanLib::Constant::eMsgId::ERROR_STATE:
-            this->setErrorState(frameMsg);
-            break;
-
-        default:
-            this->_callback(this->getId(), frameMsg);
-        }
-    }
-
-    uint16_t getId()
-    {
-        return _id;
-    }
-
-private:
-    uint16_t _id;
-    // rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
-    rover_msgs::msg::CanDeviceStatus _msg_canStatus;
-    Chrono<uint64_t, millis> _timerWatchdog;
-    void (*_callback)(uint16_t id_, const can_frame *frameMsg_);
-
-    void resetWatchdog()
-    {
-        if (_timerWatchdog.getTime() > TIME_WATCHDOG)
-        {
-            _msg_canStatus.watchdog_ok = false;
-        }
-        else
-        {
-            _msg_canStatus.watchdog_ok = true;
-        }
-        _timerWatchdog.restart();
-    }
-    void setErrorState(can_frame *frameMsg)
-    {
-        RoverCanLib::Msgs::ErrorState msg;
-        if (msg.parseMsg(frameMsg, this->getLogger()) != RoverCanLib::Constant::eInternalErrorCode::OK)
-        {
-            RCLCPP_ERROR(this->getLogger(), "Error parsing ErrorCode message, dropping");
-        }
-        _msg_canStatus.error_state = msg.data.warning ? rover_msgs::msg::CanDeviceStatus::STATUS_WARNING : rover_msgs::msg::CanDeviceStatus::STATUS_OK;
-        _msg_canStatus.error_state = msg.data.error ? rover_msgs::msg::CanDeviceStatus::STATUS_ERROR : _msg_canStatus.error_state;
-    }
-    rclcpp::Logger getLogger()
-    {
-        std::stringstream ss;
-        ss << std::hex << _id; // Set the stream to output in hexadecimal
-        return rclcpp::get_logger("0x" + ss.str());
-    }
-};
-
-std::unordered_map<int, CanDevice *> deviceMap;
+std::unordered_map<int, CanDevice> deviceMap{
+    {(size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR, CanDevice(0x101u, CB_Can_PropulsionMotor)}};
 
 int main(int argc, char **argv)
 {
-    int s;
-    struct sockaddr_can addr;
-    struct can_frame frame;
-
-    // Create socket
-    if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
+    for (EVER)
     {
-        perror("socket");
-        return 1;
+        int canSocket = createSocket("canRovus");
+        assert(canSocket > 0);
+
+        RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Canbus ready, starting loop");
+
+        TimerFixedLoop<std::chrono::microseconds> loopTimer(std::chrono::microseconds(10));
+        Chrono<uint64_t, millis> chonoCanWatchdog;
+        for (EVER)
+        {
+            if (chonoCanWatchdog.getTime() > TIME_WATCHDOG)
+            {
+                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Watchdog triggered, trying to reconnect to the can network...");
+                break;
+            }
+
+            if (readMsgFromCanSocket(canSocket, &chonoCanWatchdog) != RoverCanLib::Constant::eInternalErrorCode::OK)
+            {
+                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error detected on CAN socket, trying to reconnect to the network...");
+                break;
+            }
+
+            loopTimer.sleepUntilReady();
+        }
+
+        close(canSocket);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1000));
+    }
+    return 0;
+}
+
+// Returns a socket on success or -1 on error
+int createSocket(const char *canNetworkName_)
+{
+    int canSocket;
+    if ((canSocket = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
+    {
+        RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error creating socket");
+        return -1;
     }
 
-    // Bind socket to the CAN interface
+    struct sockaddr_can addr;
     addr.can_family = AF_CAN;
-    addr.can_ifindex = if_nametoindex("canRovus"); // Replace "can0" with your CAN interface
-    if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    addr.can_ifindex = if_nametoindex(canNetworkName_);
+    if (bind(canSocket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
     {
-        perror("bind");
-        close(s);
-        return 1;
+        RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error bind to socket");
+        close(canSocket);
+        return -1;
     }
 
     // Set socket to non-blocking mode
-    if (fcntl(s, F_SETFL, O_NONBLOCK) < 0)
+    if (fcntl(canSocket, F_SETFL, O_NONBLOCK) < 0)
     {
-        perror("fcntl");
-        close(s);
-        return 1;
+        RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error updating socket parameters");
+        close(canSocket);
+        return -1;
     }
 
-    CanDevice d_0x101(0x101, CB_Can_PropulsionMotor);
-    deviceMap[(size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR] = &d_0x101;
+    return canSocket;
+}
 
-    // Perform non-blocking read
-    ssize_t bytes_read;
-    while (1)
+// Read all msg in the rx queue and parse them accordingly. Also resets watchdog if msg is received
+RoverCanLib::Constant::eInternalErrorCode readMsgFromCanSocket(int canSocket_, Chrono<uint64_t, millis> *chonoCanWatchdog_)
+{
+    for (EVER)
     {
-        bytes_read = read(s, &frame, sizeof(struct can_frame));
+        struct can_frame frame;
+        ssize_t bytes_read;
+        bytes_read = read(canSocket_, &frame, sizeof(struct can_frame));
+
         if (bytes_read == sizeof(can_frame))
         {
-            // If device not already registered, add to the hash map
-            if (deviceMap[frame.can_id] != NULL)
+            chonoCanWatchdog_->restart();
+            // Check if the device exist in the hash map and parse can msg
+            if (deviceMap.find((size_t)frame.can_id) != deviceMap.end())
             {
-                deviceMap[frame.can_id]->parseMsg(&frame);
+                deviceMap.find((size_t)frame.can_id)->second.parseMsg(&frame);
             }
             else
             {
-                RCLCPP_WARN(rclcpp::get_logger("TODO"),
+                RCLCPP_WARN(rclcpp::get_logger(LOGGER_NAME),
                             "Received msg with device ID: 0x%.3x which isn't defined in deviceMap, dropping",
                             frame.can_id);
             }
+            continue;
         }
-        else if (bytes_read == -1)
+
+        if (errno == EAGAIN || errno == EWOULDBLOCK)
         {
-            if (errno == EAGAIN || errno == EWOULDBLOCK)
-            {
-                // No data available, continue or do other work
-                continue;
-            }
-            else
-            {
-                perror("read");
-                break;
-            }
+            return RoverCanLib::Constant::eInternalErrorCode::OK;
+            break;
+        }
+        if (bytes_read == -1 && errno != EAGAIN && errno != EWOULDBLOCK)
+        {
+            return RoverCanLib::Constant::eInternalErrorCode::ERROR;
+            break;
         }
     }
 
-    close(s);
-    return 0;
+    return RoverCanLib::Constant::eInternalErrorCode::OK;
 }
 
 void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
@@ -195,7 +157,7 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
         id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR &&
         id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("TODO"),
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
                      "Provided device ID: 0x%.3x isn't a propulsion motor",
                      id_);
 
@@ -205,11 +167,11 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
     switch ((RoverCanLib::Constant::eMsgId)frameMsg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
     {
     case RoverCanLib::Constant::eMsgId::PROPULSION_MOTOR:
-        #warning TODO: Implement data copy
+#warning TODO: Implement data copy
         break;
 
     default:
-        RCLCPP_ERROR(rclcpp::get_logger("TODO"),
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
                      "Received unexpected msg id: 0x%.2x Possible mismatch in library version between nodes",
                      frameMsg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID]);
     }
@@ -226,7 +188,7 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
 
 //     if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
 //     {
-//         perror("Socket");
+//         RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Socket");
 //         return 1;
 //     }
 
@@ -239,7 +201,7 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
 
 //     if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0)
 //     {
-//         perror("Bind");
+//         RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Bind");
 //         return 1;
 //     }
 
@@ -263,7 +225,7 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
 //     }
 //     if (close(s) < 0)
 //     {
-//         perror("Close");
+//         RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Close");
 //         return 1;
 //     }
 
