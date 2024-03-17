@@ -1,18 +1,22 @@
 #https://www.youtube.com/watch?v=jWxNfb7Hng8
 
+from ament_index_python.packages import get_package_share_directory
+
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox
 from PyQt5 import uic
 
-from pages_functions.home import Home
-from pages_functions.dashboard import Dashboard
-from pages_functions.navigation import Navigation
+from pages.home import Home
+from pages.dashboard import Dashboard
+from pages.navigation import Navigation
 
-from static import resource_rc
+from static.resource_rc import qt_resource_data
 
 class MainWindow(QMainWindow):
     def __init__(self):
         super(MainWindow, self).__init__()
-        uic.loadUi("ui/main_window.ui", self)
+
+        package_share_directory = get_package_share_directory('rover_gui')
+        uic.loadUi(package_share_directory+ "/ui/main_window.ui", self)
 
         self.pb_home : QPushButton
         self.pb_dashboard : QPushButton
@@ -92,8 +96,7 @@ class MainWindow(QMainWindow):
 
         return False,
 
-    
-if __name__ == '__main__':
+def main():
     import sys
 
     app = QApplication(sys.argv)
@@ -101,3 +104,7 @@ if __name__ == '__main__':
     window = MainWindow()
     window.show()
     sys.exit(app.exec())
+
+    
+if __name__ == '__main__':
+    main()
