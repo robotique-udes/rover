@@ -1,3 +1,5 @@
+from ament_index_python.packages import get_package_share_directory
+
 from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
@@ -5,7 +7,8 @@ from PyQt5 import uic
 class Home(QWidget):
     def __init__(self):
         super(Home,self).__init__()
-        uic.loadUi("./ui/pages/home.ui", self)
+        package_share_directory = get_package_share_directory('rover_gui')
+        uic.loadUi(package_share_directory+ "/ui/home.ui", self)
 
         pixmap = QPixmap('./static/icons/logo.png')
 
