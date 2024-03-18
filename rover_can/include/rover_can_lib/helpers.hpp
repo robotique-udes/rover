@@ -2,7 +2,6 @@
 #define __HELPERS_HPP__
 
 #include <type_traits>
-#include "rover_can_lib/msgs/error_state.hpp"
 #include "rover_can_lib/union_type_definition.hpp"
 
 #if defined(ESP32)
@@ -137,4 +136,4 @@ namespace RoverCanLib::Helpers
 #endif                   // defined(ESP32)
 }
 
-#endif                   // __HELPERS_HPP__
+#endif // __HELPERS_HPP__

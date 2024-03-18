@@ -45,7 +45,7 @@ namespace RoverCanLib::Msgs
             bool dontUse;
         };
 
-        Heartbeat() 
+        Heartbeat()
         {
             data.dontUse = false;
         }
@@ -135,7 +135,7 @@ namespace RoverCanLib::Msgs
 
             return Constant::eInternalErrorCode::OK;
         }
-#endif // defined(ESP32)
+#endif                   // defined(ESP32)
 
         uint8_t getMsgIDNb(void)
         {

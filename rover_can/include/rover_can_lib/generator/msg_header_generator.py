@@ -103,22 +103,6 @@ def generate_cpp_header(input_file):
 #include <linux/can.h>
 #endif // defined(ESP32)
 
-namespace RoverCanLib
-{{
-    namespace Helpers
-    {{
-#if defined(ESP32)
-        twai_message_t getErrorIdMsg(void);
-
-        template <typename COPY_TYPE, typename UNION_TYPE>
-        void canMsgToStruct(IN const twai_message_t *msg_, OUT COPY_TYPE *dest_);
-
-        template <typename COPY_TYPE, typename UNION_TYPE>
-        void structToCanMsg(IN const COPY_TYPE *structMember_, OUT twai_message_t *msg_);
-#endif
-    }}
-}}
-
 #include "rover_can_lib/helpers.hpp"
 
 namespace RoverCanLib::Msgs
