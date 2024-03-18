@@ -1,0 +1,4 @@
+bool example1a;
+float example2b;
+uint16_t example3c;
+int32_t example400d;

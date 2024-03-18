@@ -1,3 +1,0 @@
-bool example1;
-float example2;
-uint16_t example3;

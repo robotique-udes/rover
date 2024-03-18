@@ -1,12 +1,11 @@
 #ifndef __CAN_DEVICE_HPP__
 #define __CAN_DEVICE_HPP__
 
+#include "rover_can_lib/config.hpp"
 #include "rovus_lib/timer.hpp"
 #include "rover_can_lib/msgs/error_state.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/can_device_status.hpp"
-
-#define TIME_WATCHDOG 500
 
 class CanDevice
 {
@@ -51,7 +50,7 @@ private:
 
     void resetWatchdog()
     {
-        if (_timerWatchdog.getTime() > TIME_WATCHDOG)
+        if (_timerWatchdog.getTime() > RoverCanLib::Constant::WATCHDOG_TIMEOUT_MS)
         {
             _msg_canStatus.watchdog_ok = false;
         }
@@ -80,4 +79,4 @@ private:
 };
 
 
-#endif __CAN_DEVICE_HPP__
+#endif // __CAN_DEVICE_HPP__

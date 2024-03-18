@@ -1,36 +1,19 @@
 // Next steps:
-//   1. Send master heartbeat for other can nodes
-//   2. Add ros
-//      2.1 Add status publisher
+//   1. Add ros
+//      1.1 Add status publisher
 
-#include <stdio.h>
-#include <stdlib.h>
-#include <string.h>
-#include <unistd.h>
+// Network socket stuff
 #include <net/if.h>
-#include <sys/ioctl.h>
-#include <sys/socket.h>
 #include <fcntl.h>
-#include <linux/can.h>
-#include <linux/can/raw.h>
 
-#include <cstdint>
-#include <chrono>
-#include <thread>
-
-#include <signal.h>
-
-#include "rover_can_lib/union_type_definition.hpp"
-#include "rover_can_lib/constant.hpp"
-#include "rovus_lib/macros.h"
-#include "rovus_lib/timer.hpp"
-
-#include <iostream>
-#include <bitset>
-#include <memory>
+// ROS
 #include "rclcpp/rclcpp.hpp"
 
+// RoverCanLib
+#include "rover_can_lib/config.hpp"
 #include "rover_can_lib/can_device.hpp"
+#include "rover_can_lib/msgs/heartbeat.hpp"
+#include "rover_can_lib/msgs/propulsion_motor.hpp"
 
 #define LOGGER_NAME "CanMasterNode"
 
@@ -41,6 +24,14 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg);
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
 
+// Global msgs
+RoverCanLib::Msgs::PropulsionMotor msg_0x101;
+
+// Global hash map of msgs
+std::unordered_map<int, RoverCanLib::Msgs::Msg *> msgsMap{
+    {(size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR, &msg_0x101}};
+
+// Global hash map of devices
 std::unordered_map<int, CanDevice> deviceMap{
     {(size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR, CanDevice(0x101u, CB_Can_PropulsionMotor)}};
 
@@ -53,16 +44,30 @@ int main(int argc, char **argv)
 
         RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Canbus ready, starting loop");
 
+        RoverCanLib::Msgs::Heartbeat msgHeartbeat;
+        Timer<uint64_t, millis> timerHeartbeat((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
         TimerFixedLoop<std::chrono::microseconds> loopTimer(std::chrono::microseconds(10));
         Chrono<uint64_t, millis> chonoCanWatchdog;
         for (EVER)
         {
-            if (chonoCanWatchdog.getTime() > TIME_WATCHDOG)
+            // Send heartbeat at X Hz
+            if (timerHeartbeat.isDone())
+            {
+                can_frame canFrame;
+                canFrame.can_id = (canid_t)RoverCanLib::Constant::eDeviceId::MASTER_COMPUTER_UNIT;
+                msgHeartbeat.getMsg((uint8_t)RoverCanLib::Msgs::Heartbeat::eMsgID::DONT_USE, &canFrame, rclcpp::get_logger(LOGGER_NAME));
+#warning TODO Add check on write
+                write(canSocket, &canFrame, sizeof(canFrame));
+            }
+
+            // Checking watchdog
+            if (chonoCanWatchdog.getTime() > RoverCanLib::Constant::WATCHDOG_TIMEOUT_MS)
             {
                 RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Watchdog triggered, trying to reconnect to the can network...");
                 break;
             }
 
+            // Empty rx queue
             if (readMsgFromCanSocket(canSocket, &chonoCanWatchdog) != RoverCanLib::Constant::eInternalErrorCode::OK)
             {
                 RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error detected on CAN socket, trying to reconnect to the network...");
@@ -164,70 +169,15 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
         return;
     }
 
-    switch ((RoverCanLib::Constant::eMsgId)frameMsg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
+    if (frameMsg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID] == (size_t)RoverCanLib::Constant::eMsgId::PROPULSION_MOTOR)
     {
-    case RoverCanLib::Constant::eMsgId::PROPULSION_MOTOR:
 #warning TODO: Implement data copy
-        break;
-
-    default:
+        msgsMap.find(id_)->second->parseMsg(frameMsg, rclcpp::get_logger(LOGGER_NAME));
+    }
+    else
+    {
         RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
                      "Received unexpected msg id: 0x%.2x Possible mismatch in library version between nodes",
                      frameMsg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID]);
     }
 }
-
-// int main(void)
-// {
-//     int s;
-//     sockaddr_can addr;
-//     ifreq ifr;
-//     can_frame frame;
-
-//     printf("CAN Sockets Demo\r\n");
-
-//     if ((s = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
-//     {
-//         RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Socket");
-//         return 1;
-//     }
-
-//     strcpy(ifr.ifr_name, "canRovus");
-//     ioctl(s, SIOCGIFINDEX, &ifr);
-
-//     memset(&addr, 0, sizeof(addr));
-//     addr.can_family = AF_CAN;
-//     addr.can_ifindex = ifr.ifr_ifindex;
-
-//     if (bind(s, (struct sockaddr *)&addr, sizeof(addr)) < 0)
-//     {
-//         RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Bind");
-//         return 1;
-//     }
-
-//     frame.can_id = 0x101;
-//     frame.can_dlc = 5;
-//     frame.data[0] = (uint8_t)RoverCanLib::Constant::eMsgId::PROPULSION_MOTOR;
-
-//     RoverCanLib::UnionDefinition::FloatUnion test;
-//     for (float value = -100.0f; value <= 100.0f; value += 0.1f)
-//     {
-//         test.data = value;
-
-//         for (uint8_t i = 0; i < sizeof(test); i++)
-//         {
-//             frame.data[i + 1] = test.dataBytes[i];
-//         }
-
-//         write(s, &frame, sizeof(frame)) != sizeof(frame);
-//         std::this_thread::sleep_for(std::chrono::milliseconds(10));
-
-//     }
-//     if (close(s) < 0)
-//     {
-//         RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Close");
-//         return 1;
-//     }
-
-//     return 0;
-// }

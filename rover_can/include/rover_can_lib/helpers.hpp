@@ -2,8 +2,8 @@
 #define __HELPERS_HPP__
 
 #include <type_traits>
-#include "rover_can_lib/rover_can_lib.hpp"
 #include "rover_can_lib/msgs/error_state.hpp"
+#include "rover_can_lib/union_type_definition.hpp"
 
 #if defined(ESP32)
 #include "driver/twai.h"
@@ -20,7 +20,7 @@ namespace RoverCanLib::Helpers
     // nodes, it's used internally to say that theres no more message in the rx
     // queue
 #if defined(ESP32)
-    twai_message_t getErrorIdMsg(void)
+    inline twai_message_t getErrorIdMsg(void)
     {
         twai_message_t msg;
         msg.identifier = 0u;
@@ -134,6 +134,7 @@ namespace RoverCanLib::Helpers
             *((uint8_t *)msg_->data + (uint8_t)Constant::eDataIndex::START_OF_DATA + i) = copyUnion.dataBytes[i];
         }
     }
-}
 #endif                   // defined(ESP32)
+}
+
 #endif                   // __HELPERS_HPP__

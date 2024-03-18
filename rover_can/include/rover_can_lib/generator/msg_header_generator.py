@@ -2,25 +2,38 @@ import sys
 import re
 import os
 
-def camel_to_snake(name):
+def camel_to_upper_snake(name):
     # Convert camel case to snake case
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
-    return re.sub('([a-z0-9])([A-Z])', r'\1_\2', name).upper()
+    name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
+    # Separate numbers by underscore
+    name = re.sub(r'([0-9]+)([a-zA-Z])', r'\1_\2', name)
+    # Separate letters following numbers by underscore
+    name = re.sub(r'([a-zA-Z])([0-9]+)', r'\1_\2', name)
+    # Remove underscore at the front or the end if any
+    name = name.lstrip('_')
+    name = name.rstrip('_')
+    return name.upper()
+
+def camel_to_snake(name):
+    return camel_to_upper_snake(name).lower()
 
 def generate_class_name(input_file):
     class_name = input_file.split('.')[0]
     return class_name
 
+
 def generate_header_guard(input_file):
-    class_name_snake = camel_to_snake(input_file.split('.')[0])
+    class_name_snake = camel_to_upper_snake(input_file.split('.')[0])
     return f"__{class_name_snake.upper()}_HPP__"
+
 
 def generate_cpp_header(input_file):
     with open(input_file, 'r') as file:
         class_name = generate_class_name(input_file)
         header_guard = generate_header_guard(input_file)
-        output_file = input_file.split('.')[0] + ".hpp"
-        
+        output_file = (camel_to_snake(input_file.split('.')[0]) + ".hpp")
+
         if os.path.exists(output_file):
             os.remove(output_file)
 
@@ -31,13 +44,14 @@ def generate_cpp_header(input_file):
             if len(line.strip()) > 0:
                 members.append(line.strip())
 
-        enum_class = f"enum class eMsgID : uint8_t\n{' ' * 8}{{\n"
+        enum_class = f"enum class eMsgID : uint8_t\n{' ' * 8}{{\n{' ' * 12}NOT_USED = 0x00,\n"
         struct_members = f"struct sMsgData\n{' ' * 8}{{\n"
 
         for i, member in enumerate(members):
-            member_name = member.split()[1].replace(";", "")  # Remove semicolon
-            snake_case_name = camel_to_snake(member_name)
-            enum_class += f"{' ' * 12}{snake_case_name} = 0x{i:02X},\n"
+            member_name = member.split()[1].replace(";",
+                                                    "")  # Remove semicolon
+            snake_case_name = camel_to_upper_snake(member_name)
+            enum_class += f"{' ' * 12}{snake_case_name} = 0x{i+1:02X},\n"
             struct_members += f"{' ' * 12}{member}\n"
 
         enum_class += f"{' ' * 12}eLAST\n{' ' * 8}}};\n"
@@ -47,9 +61,12 @@ def generate_cpp_header(input_file):
         parseMsg_cases_linux = ""  # Define parseMsg_cases here
         getMsg_cases = ""
 
+        msg_type = camel_to_upper_snake(generate_class_name(input_file))
+
         for i, member in enumerate(members):
-            member_name = member.split()[1].replace(";", "")  # Remove semicolon
-            snake_case_name = camel_to_snake(member_name)
+            member_name = member.split()[1].replace(";",
+                                                    "")  # Remove semicolon
+            snake_case_name = camel_to_upper_snake(member_name)
             parseMsg_cases += f"{' ' * 12}case eMsgID::{snake_case_name}:\n"
             parseMsg_cases += f"{' ' * 16}RoverCanLib::Helpers::canMsgToStruct<{member.split()[0]}, UnionDefinition::{member.split()[0].capitalize()}Union>(msg_, &this->data.{member_name});\n"
             parseMsg_cases += f"{' ' * 16}break;\n\n"
@@ -59,6 +76,20 @@ def generate_cpp_header(input_file):
             getMsg_cases += f"{' ' * 12}case eMsgID::{snake_case_name}:\n"
             getMsg_cases += f"{' ' * 16}Helpers::structToCanMsg<{member.split()[0]}, UnionDefinition::{member.split()[0].capitalize()}Union>(&data.{member_name}, msg_);\n"
             getMsg_cases += f"{' ' * 16}break;\n\n"
+
+        constructor_init = ""
+        for member in members:
+            member_type, member_name = member.split()
+            member_name = member_name.replace(";", "")  # Remove semicolon
+            constructor_init += f"{' ' * 12}data.{member_name} = "
+            if (member_type == "bool"): constructor_init += "false"
+            if (member_type == "float"): constructor_init += "0.0f"
+            if (member_type == "uint8_t" or member_type == "uint16_t" or member_type == "uint32_t"): constructor_init += "0u"
+            if (member_type == "int8_t" or member_type == "int16_t" or member_type == "int32_t"): constructor_init += "0"
+            constructor_init += ";\n"
+            
+        #remove last '\n
+        constructor_init = constructor_init[:-1]
 
         cpp_template = """#ifndef {header_guard}
 #define {header_guard}
@@ -98,13 +129,16 @@ namespace RoverCanLib::Msgs
         {enum_class}
         {struct_members}
 
-        {class_name}() {{}}
+        {class_name}() 
+        {{
+{constructor_init}
+        }}
         ~{class_name}() {{}}
 
 #if defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const twai_message_t *msg_)
         {{
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::ERROR_STATE)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::{msg_type})
             {{
                 LOG(ERROR, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
@@ -122,7 +156,7 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT twai_message_t *msg_)
         {{
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::ERROR_STATE;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::{msg_type};
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
             switch ((RoverCanLib::Msgs::{class_name}::eMsgID)msgId_)
@@ -138,7 +172,7 @@ namespace RoverCanLib::Msgs
 #elif defined(__linux__) // defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const can_frame *msg_, rclcpp::Logger logger_)
         {{
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::ERROR_STATE)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::{msg_type})
             {{
                 RCLCPP_ERROR(logger_, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
@@ -156,7 +190,7 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT can_frame *msg_, rclcpp::Logger logger_)
         {{
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::ERROR_STATE;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::{msg_type};
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
             switch ((RoverCanLib::Msgs::{class_name}::eMsgID)msgId_)
@@ -181,10 +215,19 @@ namespace RoverCanLib::Msgs
 }}
 
 #endif // {header_guard}
-""".format(class_name=class_name, enum_class=enum_class, struct_members=struct_members, parseMsg_cases=parseMsg_cases, parseMsg_cases_linux=parseMsg_cases_linux, getMsg_cases=getMsg_cases, header_guard=header_guard)
+""".format(class_name=class_name,
+           enum_class=enum_class,
+           struct_members=struct_members,
+           parseMsg_cases=parseMsg_cases,
+           parseMsg_cases_linux=parseMsg_cases_linux,
+           getMsg_cases=getMsg_cases,
+           header_guard=header_guard,
+           msg_type=msg_type,
+           constructor_init=constructor_init)
 
         with open(output_file, 'w') as output:
             output.write(cpp_template)
+
 
 if __name__ == "__main__":
     if len(sys.argv) != 2:
