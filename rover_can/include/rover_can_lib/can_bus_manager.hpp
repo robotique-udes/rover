@@ -234,7 +234,7 @@ namespace RoverCanLib
         this->sendMsg(&msg);
     }
 
-    void CanBusManager::sendMsg(RoverCanLib::Msgs::Msg *msg, bool validateIntegrity_ = false)
+    void CanBusManager::sendMsg(RoverCanLib::Msgs::Msg *msg, bool validateIntegrity_)
     {
         twai_message_t canMsg;
         canMsg.identifier = _id;
