@@ -27,11 +27,15 @@ namespace RoverCanLib::Msgs
 
         struct sMsgData
         {
-            bool error = false;
-            bool warning = false;
+            bool error;
+            bool warning;
         };
 
-        ErrorState() {}
+        ErrorState() 
+        {
+            data.error = false;
+            data.warning = false;
+        }
         ~ErrorState() {}
 
 #if defined(ESP32)
@@ -45,12 +49,13 @@ namespace RoverCanLib::Msgs
 
             switch ((Msgs::ErrorState::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case Msgs::ErrorState::eMsgID::ERROR:
+            case eMsgID::ERROR:
                 RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.error);
                 break;
 
-            case Msgs::ErrorState::eMsgID::WARNING:
+            case eMsgID::WARNING:
                 RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.warning);
+                break;
 
             default:
                 LOG(WARN, "Unknown \"Message Specific Id\"");
@@ -94,11 +99,11 @@ namespace RoverCanLib::Msgs
 
             switch ((Msgs::ErrorState::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case Msgs::ErrorState::eMsgID::ERROR:
+            case eMsgID::ERROR:
                 RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.error, logger_);
                 break;
 
-            case Msgs::ErrorState::eMsgID::WARNING:
+            case eMsgID::WARNING:
                 RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.warning, logger_);
                 break;
 
@@ -112,7 +117,6 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT can_frame *msg_, rclcpp::Logger logger_)
         {
-            #warning TODO: Not implemented yet
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::ERROR_STATE;
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
@@ -134,8 +138,27 @@ namespace RoverCanLib::Msgs
 
             return Constant::eInternalErrorCode::OK;
         }
+        
+        Constant::eInternalErrorCode sendMsg(RoverCanLib::Constant::eDeviceId deviceID_, int canSocket_, rclcpp::Logger logger_)
+        {
+            can_frame canFrame;
+            canFrame.can_id = (canid_t)deviceID_;
 
+            static_assert((size_t)eMsgID::eLAST < UINT8_MAX); // Make sure to not overflow counter
+            for (uint8_t i = (uint8_t)eMsgID::NOT_USED + 1u; i < (uint8_t)eMsgID::eLAST; i++)
+            {
+                this->getMsg(i, &canFrame, logger_);
+                if (write(canSocket_, &canFrame, sizeof(canFrame)) != sizeof(canFrame))
+                {
+                    RCLCPP_ERROR(logger_, "Error while sending error state msg");
+                    return RoverCanLib::Constant::eInternalErrorCode::ERROR;
+                }
+            }
+
+            return RoverCanLib::Constant::eInternalErrorCode::OK;
+        }
 #endif // defined(ESP32)
+
         uint8_t getMsgIDNb(void)
         {
             return (uint8_t)eMsgID::eLAST;

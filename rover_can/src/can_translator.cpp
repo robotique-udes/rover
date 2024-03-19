@@ -8,6 +8,7 @@
 
 // ROS
 #include "rclcpp/rclcpp.hpp"
+#include "rover_msgs/msg/can_device_status.hpp"
 
 // RoverCanLib
 #include "rover_can_lib/config.hpp"
@@ -17,10 +18,15 @@
 
 #define LOGGER_NAME "CanMasterNode"
 
+// Forward declarations
 int createSocket(const char *canNetworkName_);
 RoverCanLib::Constant::eInternalErrorCode readMsgFromCanSocket(int canSocket_, Chrono<uint64_t, millis> *chonoCanWatchdog_);
+RoverCanLib::Constant::eInternalErrorCode updateHeartbeat(Timer<uint64_t, millis> *timerHeartbeat_, int canSocket_);
+RoverCanLib::Constant::eInternalErrorCode askStateCanDevices(int canSocket_);
+
 void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg);
 
+// Global variables
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
 
@@ -37,40 +43,49 @@ std::unordered_map<int, CanDevice> deviceMap{
 
 int main(int argc, char **argv)
 {
-    for (EVER)
+    rclcpp::init(argc, argv);
+    std::signal(SIGINT, signal_handler);
+
+    // rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("can_master");
+
+    // rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanStatus;
+    // pub_CanStatus = node->create_publisher<rover_msgs::msg::CanDeviceStatus>("/rover/can/device_status",
+    //                                                                          rclcpp::QoS(rclcpp::KeepLast(100)).reliable());
+
+    while (!shutdownFlag)
     {
         int canSocket = createSocket("canRovus");
         assert(canSocket > 0);
 
         RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Canbus ready, starting loop");
 
-        RoverCanLib::Msgs::Heartbeat msgHeartbeat;
         Timer<uint64_t, millis> timerHeartbeat((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
         TimerFixedLoop<std::chrono::microseconds> loopTimer(std::chrono::microseconds(10));
         Chrono<uint64_t, millis> chonoCanWatchdog;
-        for (EVER)
+
+#warning Send and receive all ErrorState request msg
+        askStateCanDevices(canSocket);
+
+        while (!shutdownFlag)
         {
-            // Send heartbeat at X Hz
-            if (timerHeartbeat.isDone())
+            // Send heartbeat at 4 Hz (see define)
+            if (updateHeartbeat(&timerHeartbeat, canSocket) != RoverCanLib::Constant::eInternalErrorCode::OK)
             {
-                can_frame canFrame;
-                canFrame.can_id = (canid_t)RoverCanLib::Constant::eDeviceId::MASTER_COMPUTER_UNIT;
-                msgHeartbeat.getMsg((uint8_t)RoverCanLib::Msgs::Heartbeat::eMsgID::DONT_USE, &canFrame, rclcpp::get_logger(LOGGER_NAME));
-#warning TODO Add check on write
-                write(canSocket, &canFrame, sizeof(canFrame));
+                RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Error while sending Heartbeat, trying to reconnect to the can network...");
+                break;
             }
 
             // Checking watchdog
             if (chonoCanWatchdog.getTime() > RoverCanLib::Constant::WATCHDOG_TIMEOUT_MS)
             {
-                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Watchdog triggered, trying to reconnect to the can network...");
+                RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Watchdog triggered, trying to reconnect to the can network...");
                 break;
             }
 
             // Empty rx queue
             if (readMsgFromCanSocket(canSocket, &chonoCanWatchdog) != RoverCanLib::Constant::eInternalErrorCode::OK)
             {
-                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error detected on CAN socket, trying to reconnect to the network...");
+                RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Error detected on CAN socket, trying to reconnect to the network...");
                 break;
             }
 
@@ -80,7 +95,15 @@ int main(int argc, char **argv)
         close(canSocket);
         std::this_thread::sleep_for(std::chrono::milliseconds(1000));
     }
+
+    rclcpp::shutdown();
     return 0;
+}
+
+void signal_handler(int signo)
+{
+    (void)signo;
+    shutdownFlag = 1;
 }
 
 // Returns a socket on success or -1 on error
@@ -153,6 +176,37 @@ RoverCanLib::Constant::eInternalErrorCode readMsgFromCanSocket(int canSocket_, C
     }
 
     return RoverCanLib::Constant::eInternalErrorCode::OK;
+}
+
+RoverCanLib::Constant::eInternalErrorCode updateHeartbeat(Timer<uint64_t, millis> *timerHeartbeat_, int canSocket_)
+{
+    if (timerHeartbeat_->isDone())
+    {
+        RoverCanLib::Msgs::Heartbeat msgHeartbeat;
+        
+        can_frame canFrame;
+        canFrame.can_id = (canid_t)RoverCanLib::Constant::eDeviceId::MASTER_COMPUTER_UNIT;
+        msgHeartbeat.getMsg((uint8_t)RoverCanLib::Msgs::Heartbeat::eMsgID::DONT_USE, &canFrame, rclcpp::get_logger(LOGGER_NAME));
+
+        if (write(canSocket_, &canFrame, sizeof(canFrame)) != sizeof(canFrame))
+        {
+            RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Error while writting");
+            return RoverCanLib::Constant::eInternalErrorCode::ERROR;
+        }
+    }
+
+    return RoverCanLib::Constant::eInternalErrorCode::OK;
+}
+
+// Send a ErrorState msg to every devices registered in deviceMap. 
+// They should all answer with their receptive state
+RoverCanLib::Constant::eInternalErrorCode askStateCanDevices(int canSocket_)
+{
+    RoverCanLib::Msgs::ErrorState msgErrorState;
+    msgErrorState.data.error = 0;
+    msgErrorState.data.warning = 0;
+
+    return msgErrorState.sendMsg(RoverCanLib::Constant::eDeviceId::MASTER_COMPUTER_UNIT, canSocket_, rclcpp::get_logger(LOGGER_NAME));
 }
 
 void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg)
