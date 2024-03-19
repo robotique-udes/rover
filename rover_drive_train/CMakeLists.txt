@@ -21,12 +21,11 @@ include_directories(
   ${rover_msgs_INCLUDE_DIRS}
 )
 
-add_executable(rover_drive_train src/teleop.cpp)
+add_executable(teleop src/teleop.cpp)
 
-
-ament_target_dependencies(rover_drive_train
+ament_target_dependencies(teleop
                           rclcpp
-                          joy
+                          std_msgs
                           rover_msgs)
 
 
@@ -34,7 +33,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          rover_drive_train
+          teleop
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

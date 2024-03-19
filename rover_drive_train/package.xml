@@ -4,7 +4,7 @@
   <name>rover_drive_train</name>
   <version>0.0.0</version>
   <description>
-    rover_drive_train pkg contains heartbeat node 
+    rover_drive_train pkg contains teleop node
   </description>
   <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
   <maintainer email="save1403@usherbrooke.ca">emile</maintainer>
@@ -17,8 +17,9 @@
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>joy</depend>
   <depend>rover_msgs</depend>
-  <depend>rcl_interfaces</depend>
 
   <exec_depend>ros2launch</exec_depend>
 
