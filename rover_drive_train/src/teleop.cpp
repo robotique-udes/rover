@@ -45,65 +45,76 @@ private:
     float ANGULAR_INPUT;
     
     float MODE_TANK;
+    float MODE_NORMAL_ENABLE;
     float MODE_TURBO_ENABLE;
-    float MODE_TURBO_CONTROL;
 
     float TOGGLE_LIGHTS;
 
     float control_map_factor = 1.0f - SMALLEST_RADIUS;
 
-    void topic_callback(const rover_msgs::msg::Joy::SharedPtr msg)
+    bool light_state = false;
+    bool last_lightButton_state = false;
+
+void topic_callback(const rover_msgs::msg::Joy::SharedPtr msg)
+{
+    auto message = rover_msgs::msg::MotorCmd();
+
+    if(msg->joy_data[DEADMAN_SWITCH])
     {
-        auto message = rover_msgs::msg::MotorCmd();
+        float linear_speed = msg->joy_data[LINEAR_INPUT];
+        float angular_speed = msg->joy_data[ANGULAR_INPUT];
+        float tank_angular_speed = msg->joy_data[MODE_TANK];
+        float speed_factor = SPEED_FACTOR_CRAWLER;
+        bool current_lightButton_state = msg->joy_data[TOGGLE_LIGHTS];
 
-        //Magic and stuff
-        if(msg->joy_data[DEADMAN_SWITCH])
+        if(current_lightButton_state && !last_lightButton_state)
         {
-            float f_speed_left_motor = LINEAR_INPUT;
-            float f_speed_right_motor = LINEAR_INPUT;
-
-            if(!msg->joy_data[MODE_TANK])
-            {
-                if (ANGULAR_INPUT > 0.0f)
-                {
-                    f_speed_left_motor *= 1.0f - (ANGULAR_INPUT * control_map_factor);
-                }
-                else
-                {
-                    f_speed_right_motor *= 1.0f + (ANGULAR_INPUT * control_map_factor);
-                }
-            }
-            else
-            {
-                f_speed_left_motor = -ANGULAR_INPUT;
-                f_speed_right_motor = ANGULAR_INPUT;
-            }
-
-            if(MODE_TURBO_ENABLE)
-            {
-                f_speed_left_motor *= SPEED_FACTOR_TURBO;
-                f_speed_right_motor *= SPEED_FACTOR_TURBO;
-            }
-
-            else if(MODE_TURBO_ENABLE)
-            {
-                f_speed_left_motor = MODE_TURBO_CONTROL * SPEED_FACTOR_TURBO;
-                f_speed_right_motor = MODE_TURBO_CONTROL * SPEED_FACTOR_TURBO;
-            }
-            else
-            {
-                f_speed_left_motor *= SPEED_FACTOR_CRAWLER;
-                f_speed_right_motor *= SPEED_FACTOR_CRAWLER;
-            }
-
-            message.front_left = f_speed_left_motor;
-            message.rear_left = f_speed_left_motor;
-
-            message.front_right = f_speed_right_motor;
-            message.rear_right = f_speed_right_motor;
+            light_state = !light_state;
         }
-        _pub_teleop_in->publish(message);
+        last_lightButton_state = current_lightButton_state;
+
+        if(msg->joy_data[MODE_NORMAL_ENABLE]) 
+        {
+            speed_factor = SPEED_FACTOR_NORMAL;
+        } 
+        if(msg->joy_data[MODE_TURBO_ENABLE] > 0.5 && msg->joy_data[MODE_NORMAL_ENABLE])
+        {
+            speed_factor = SPEED_FACTOR_TURBO;
+        }
+
+        float f_speed_left_motor = linear_speed * speed_factor;
+        float f_speed_right_motor = linear_speed * speed_factor;
+
+        if(tank_angular_speed != 0.0f) 
+        {
+            f_speed_left_motor += tank_angular_speed * speed_factor;
+            f_speed_right_motor -= tank_angular_speed * speed_factor;
+        } 
+        else 
+        {
+            float adjusted_factor;
+
+            if (angular_speed > 0.0f) 
+            {
+                adjusted_factor = 1.0f - angular_speed * control_map_factor;
+                f_speed_left_motor *= adjusted_factor < 0.01f ? 0.01f : adjusted_factor;
+            } 
+            else 
+            {
+                adjusted_factor = 1.0f + angular_speed * control_map_factor;
+                f_speed_right_motor *= adjusted_factor < 0.01f ? 0.01f : adjusted_factor;
+            }
+        }
+
+        message.front_left = f_speed_left_motor;
+        message.rear_left = f_speed_left_motor;
+        message.front_right = f_speed_right_motor;
+        message.rear_right = f_speed_right_motor;
+        message.toggle_lights = light_state;
     }
+
+    _pub_teleop_in->publish(message);
+}
     
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_formated;
     rclcpp::Publisher<rover_msgs::msg::MotorCmd>::SharedPtr _pub_teleop_in;
@@ -127,9 +138,8 @@ private:
         ANGULAR_INPUT = JOYSTICK_LEFT_SIDE;
 
         MODE_TANK = JOYSTICK_RIGHT_SIDE;
-        MODE_TURBO_ENABLE = R1;
-        MODE_TURBO_CONTROL = R2;
-        
+        MODE_NORMAL_ENABLE = R1;
+        MODE_TURBO_ENABLE = R2;        
 
         TOGGLE_LIGHTS = A;
     }
