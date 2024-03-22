@@ -30,6 +30,9 @@ void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg);
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
 
+// Global ROS Objects
+rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanStatus;
+
 // Global msgs
 RoverCanLib::Msgs::PropulsionMotor msg_0x101;
 
@@ -46,11 +49,16 @@ int main(int argc, char **argv)
     rclcpp::init(argc, argv);
     std::signal(SIGINT, signal_handler);
 
-    // rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("can_master");
+    rclcpp::Node::SharedPtr node = std::make_shared<rclcpp::Node>("can_master");
 
-    // rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanStatus;
-    // pub_CanStatus = node->create_publisher<rover_msgs::msg::CanDeviceStatus>("/rover/can/device_status",
-    //                                                                          rclcpp::QoS(rclcpp::KeepLast(100)).reliable());
+    // Using QoS reliable because msgs will only be sent one time when a device enters or exit an error state
+    // Performance/Speed isn't required either so a long queue 100 makes sens
+    pub_CanStatus = node->create_publisher<rover_msgs::msg::CanDeviceStatus>("/rover/can/device_status", 1);
+    // Link the now create publisher to every devices inside the device hashmap
+    for (std::pair<const int, CanDevice> &pair : deviceMap)
+    {
+        pair.second.linkErrorStatePublisher(pub_CanStatus);
+    }   
 
     while (!shutdownFlag)
     {
@@ -68,6 +76,8 @@ int main(int argc, char **argv)
 
         while (!shutdownFlag)
         {
+            rclcpp::spin_some(node);
+
             // Send heartbeat at 4 Hz (see define)
             if (updateHeartbeat(&timerHeartbeat, canSocket) != RoverCanLib::Constant::eInternalErrorCode::OK)
             {
@@ -183,7 +193,7 @@ RoverCanLib::Constant::eInternalErrorCode updateHeartbeat(Timer<uint64_t, millis
     if (timerHeartbeat_->isDone())
     {
         RoverCanLib::Msgs::Heartbeat msgHeartbeat;
-        
+
         can_frame canFrame;
         canFrame.can_id = (canid_t)RoverCanLib::Constant::eDeviceId::MASTER_COMPUTER_UNIT;
         msgHeartbeat.getMsg((uint8_t)RoverCanLib::Msgs::Heartbeat::eMsgID::DONT_USE, &canFrame, rclcpp::get_logger(LOGGER_NAME));
@@ -198,7 +208,7 @@ RoverCanLib::Constant::eInternalErrorCode updateHeartbeat(Timer<uint64_t, millis
     return RoverCanLib::Constant::eInternalErrorCode::OK;
 }
 
-// Send a ErrorState msg to every devices registered in deviceMap. 
+// Send a ErrorState msg to every devices registered in deviceMap.
 // They should all answer with their receptive state
 RoverCanLib::Constant::eInternalErrorCode askStateCanDevices(int canSocket_)
 {

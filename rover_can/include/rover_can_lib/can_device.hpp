@@ -19,6 +19,12 @@ public:
     }
     ~CanDevice() {}
 
+    // This MUST be called before your main loop but only after calling the node->create_publisher(...)
+    void linkErrorStatePublisher(rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanBusState_)
+    {
+        _pub_CanBusState = pub_CanBusState_; 
+    }
+
     void parseMsg(can_frame *frameMsg)
     {
         switch (frameMsg->data[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
@@ -43,7 +49,7 @@ public:
 
 private:
     uint16_t _id;
-    // rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
+    rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
     rover_msgs::msg::CanDeviceStatus _msg_canStatus;
     Chrono<uint64_t, millis> _timerWatchdog;
     void (*_callback)(uint16_t id_, const can_frame *frameMsg_);
@@ -60,6 +66,7 @@ private:
         }
         _timerWatchdog.restart();
     }
+
     void setErrorState(can_frame *frameMsg)
     {
         RoverCanLib::Msgs::ErrorState msg;
@@ -69,6 +76,22 @@ private:
         }
         _msg_canStatus.error_state = msg.data.warning ? rover_msgs::msg::CanDeviceStatus::STATUS_WARNING : rover_msgs::msg::CanDeviceStatus::STATUS_OK;
         _msg_canStatus.error_state = msg.data.error ? rover_msgs::msg::CanDeviceStatus::STATUS_ERROR : _msg_canStatus.error_state;
+
+        if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::ErrorState>(frameMsg))
+        {
+            RCLCPP_INFO(this->getLogger(), "Last element of message, sending to ROS network!");
+#warning ros errorState feedback
+
+            if (_pub_CanBusState)
+            {
+                _pub_CanBusState->publish(_msg_canStatus);
+            }
+            else
+            {
+                RCLCPP_FATAL(this->getLogger(), "ErrorState SharedPtr is null, implementation error");
+                assert(_pub_CanBusState);
+            }
+        }
     }
     rclcpp::Logger getLogger()
     {
@@ -77,6 +100,5 @@ private:
         return rclcpp::get_logger("0x" + ss.str());
     }
 };
-
 
 #endif // __CAN_DEVICE_HPP__

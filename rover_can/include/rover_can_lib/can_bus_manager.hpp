@@ -94,7 +94,7 @@ namespace RoverCanLib
         bool isOk(void);
 
         /// @brief Set an error code and send it to the master from this node ID,
-        /// this will allow us to see which node is having probleme problems
+        /// this will allow us to see which node is having problems
         void sendErrorCode(RoverCanLib::Constant::eInternalErrorCode errCode);
 
     private:
@@ -360,12 +360,12 @@ namespace RoverCanLib
         {
             this->readMsg(&msg);
 
-            if (msg.identifier == 0x00)
+            if (msg.identifier == 0x00) // No more msgs
             {
-                // No more msgs
+
                 break;
             }
-            else if (msg.identifier == (uint8_t)Constant::eDeviceId::MASTER_COMPUTER_UNIT)
+            else if (msg.identifier == (uint8_t)Constant::eDeviceId::MASTER_COMPUTER_UNIT) // Global msg coming from Master
             {
                 if (!_disableMasterWatchdog)
                 {
@@ -374,8 +374,31 @@ namespace RoverCanLib
                         this->resetWatchDog();
                     }
                 }
+
+                // When receiving ErrorState from master, each node must send back their current status, this will then
+                // be forwarded to a ros topic by the master. But only answer on a last element of a message to not
+                // flood the network for no reasons
+                if (msg.data[(uint8_t)Constant::eDataIndex::MSG_ID] == (uint8_t)Constant::eMsgId::ERROR_STATE &&
+                    RoverCanLib::Helpers::msgContentIsLastElement<Msgs::ErrorState>(&msg))
+                {
+                    LOG(WARN, "Asked by master to send error code, sending...");
+                    Constant::eInternalErrorCode errorState;
+                    if (_canBusState > eCanBusStatus::ERROR_DELIMITER)
+                    {
+                        this->sendErrorCode(Constant::eInternalErrorCode::ERROR);
+                    }
+                    else if (_canBusState == eCanBusStatus::warning)
+                    {
+                        this->sendErrorCode(Constant::eInternalErrorCode::WARNING);
+                    }
+                    else
+                    {
+                        this->sendErrorCode(Constant::eInternalErrorCode::OK);
+                    }
+                    LOG(WARN, "Done sending");
+                }
             }
-            else
+            else // Msgs for this node with custom execution
             {
                 _canMsgCallbackFunc(this, &msg);
             }

@@ -76,6 +76,12 @@ namespace RoverCanLib::Helpers
         }
     }
 
+    template <typename MSG_TYPE>
+    bool msgContentIsLastElement(IN twai_message_t *msg_)
+    {
+        return msg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_CONTENT_ID] == ((size_t)MSG_TYPE::eMsgID::eLAST - 1);
+    }
+
 #elif defined(__linux__) // defined(ESP32)
     can_frame getErrorIdMsg(void)
     {
@@ -132,6 +138,12 @@ namespace RoverCanLib::Helpers
         {
             *((uint8_t *)msg_->data + (uint8_t)Constant::eDataIndex::START_OF_DATA + i) = copyUnion.dataBytes[i];
         }
+    }
+
+    template <typename MSG_TYPE>
+    bool msgContentIsLastElement(IN can_frame *msg)
+    {
+        return msg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_CONTENT_ID] == ((size_t)MSG_TYPE::eMsgID::eLAST - 1);
     }
 #endif                   // defined(ESP32)
 }
