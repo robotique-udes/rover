@@ -7,23 +7,25 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/can_device_status.hpp"
 
+class CanMaster;
+
 class CanDevice
 {
 public:
-    CanDevice(uint16_t id_, void (*callback_)(uint16_t id_, const can_frame *frameMsg_))
+    CanDevice(uint16_t id_, CanMaster* canMasterPtr_, void (CanMaster::*callback_)(uint16_t id_, const can_frame *frameMsg_), rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanBusState_)
     {
         _id = id_;
 
         assert(callback_ != NULL);
         _callback = callback_;
-    }
-    ~CanDevice() {}
 
-    // This MUST be called before your main loop but only after calling the node->create_publisher(...)
-    void linkErrorStatePublisher(rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanBusState_)
-    {
+        assert(canMasterPtr_ != NULL);
+        _canMasterPtr = canMasterPtr_;
+
+        assert(pub_CanBusState_);
         _pub_CanBusState = pub_CanBusState_; 
     }
+    ~CanDevice() {}
 
     void parseMsg(can_frame *frameMsg)
     {
@@ -38,7 +40,7 @@ public:
             break;
 
         default:
-            this->_callback(this->getId(), frameMsg);
+            (_canMasterPtr->*_callback)(this->getId(), frameMsg);
         }
     }
 
@@ -52,7 +54,8 @@ private:
     rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
     rover_msgs::msg::CanDeviceStatus _msg_canStatus;
     Chrono<uint64_t, millis> _timerWatchdog;
-    void (*_callback)(uint16_t id_, const can_frame *frameMsg_);
+    CanMaster* _canMasterPtr;
+    void (CanMaster::*_callback)(uint16_t id_, const can_frame *frameMsg_);
 
     void resetWatchdog()
     {
@@ -76,12 +79,10 @@ private:
         }
         _msg_canStatus.error_state = msg.data.warning ? rover_msgs::msg::CanDeviceStatus::STATUS_WARNING : rover_msgs::msg::CanDeviceStatus::STATUS_OK;
         _msg_canStatus.error_state = msg.data.error ? rover_msgs::msg::CanDeviceStatus::STATUS_ERROR : _msg_canStatus.error_state;
+        _msg_canStatus.id = this->_id;
 
         if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::ErrorState>(frameMsg))
         {
-            RCLCPP_INFO(this->getLogger(), "Last element of message, sending to ROS network!");
-#warning ros errorState feedback
-
             if (_pub_CanBusState)
             {
                 _pub_CanBusState->publish(_msg_canStatus);
