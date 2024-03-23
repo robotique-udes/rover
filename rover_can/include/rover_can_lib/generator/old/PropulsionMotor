@@ -1,7 +1,0 @@
-bool enable;
-float targetSpeed;
-float currentSpeed;
-float kp;
-float ki;
-float kd;
-bool closeLoop;

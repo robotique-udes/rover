@@ -44,7 +44,8 @@ namespace RoverCanLib::Constant
         ERROR_STATE = 0x01,
         HEARTBEAT = 0x02,
         GPS = 0x10,
-        PROPULSION_MOTOR = 0x11
+        PROPULSION_MOTOR_CMD = 0x11,
+        PROPULSION_MOTOR_STATUS = 0x12
     };
 
     enum class eDataIndex : uint8_t

@@ -138,6 +138,9 @@ namespace RoverCanLib
         _id = deviceId_;
 
         twai_general_config_t configGen = TWAI_GENERAL_CONFIG_DEFAULT(txPin_, rxPin_, nodeMode_);
+        // Smaller queue often caused problems.
+        configGen.rx_queue_len = 20;
+        configGen.tx_queue_len = 20;
         // Filter are not supported at the stage
         twai_filter_config_t configFilter = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
@@ -173,9 +176,10 @@ namespace RoverCanLib
 
     void CanBusManager::sendMsg(twai_message_t *msg_)
     {
-        // Sending msg with timeout to zero, as a guideline we don't execute
-        // blocking call with motors as it can lead to security issues.
-        switch (twai_transmit(msg_, 0u))
+        // Sending msg with very samll timeout, as a guideline we don't execute
+        // blocking call with motors as it can lead to security issues. But 1ms
+        // maximum block should be safe.
+        switch (twai_transmit(msg_, pdMS_TO_TICKS(0)))
         {
         case ESP_OK:
             // Follow execution

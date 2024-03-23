@@ -141,7 +141,7 @@ namespace RoverCanLib::Helpers
     }
 
     template <typename MSG_TYPE>
-    bool msgContentIsLastElement(IN can_frame *msg)
+    bool msgContentIsLastElement(IN const can_frame *msg)
     {
         return msg->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_CONTENT_ID] == ((size_t)MSG_TYPE::eMsgID::eLAST - 1);
     }

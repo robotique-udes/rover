@@ -24,6 +24,8 @@ public:
 
         assert(pub_CanBusState_);
         _pub_CanBusState = pub_CanBusState_; 
+
+        RCLCPP_INFO(this->getLogger(), "Device registered with ID: 0x%.3x", _id);
     }
     ~CanDevice() {}
 

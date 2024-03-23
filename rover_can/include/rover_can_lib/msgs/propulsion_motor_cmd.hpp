@@ -1,5 +1,5 @@
-#ifndef __PROPULSION_MOTOR_HPP__
-#define __PROPULSION_MOTOR_HPP__
+#ifndef __PROPULSION_MOTOR_CMD_HPP__
+#define __PROPULSION_MOTOR_CMD_HPP__
 
 #include <cstdint>
 #include "rover_can_lib/msgs/msg.hpp"
@@ -14,7 +14,7 @@
 
 namespace RoverCanLib::Msgs
 {
-    class PropulsionMotor : public Msg
+    class PropulsionMotorCmd : public Msg
     {
     public:
         enum class eMsgID : uint8_t
@@ -22,11 +22,7 @@ namespace RoverCanLib::Msgs
             NOT_USED = 0x00,
             ENABLE = 0x01,
             TARGET_SPEED = 0x02,
-            CURRENT_SPEED = 0x03,
-            KP = 0x04,
-            KI = 0x05,
-            KD = 0x06,
-            CLOSE_LOOP = 0x07,
+            CLOSE_LOOP = 0x03,
             eLAST
         };
 
@@ -34,35 +30,27 @@ namespace RoverCanLib::Msgs
         {
             bool enable;
             float targetSpeed;
-            float currentSpeed;
-            float kp;
-            float ki;
-            float kd;
             bool closeLoop;
         };
 
-        PropulsionMotor() 
+        PropulsionMotorCmd() 
         {
             data.enable = false;
             data.targetSpeed = 0.0f;
-            data.currentSpeed = 0.0f;
-            data.kp = 0.0f;
-            data.ki = 0.0f;
-            data.kd = 0.0f;
             data.closeLoop = false;
         }
-        ~PropulsionMotor() {}
+        ~PropulsionMotorCmd() {}
 
 #if defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const twai_message_t *msg_)
         {
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::PROPULSION_MOTOR)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::PROPULSION_MOTOR_CMD)
             {
                 LOG(ERROR, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
             }
 
-            switch ((Msgs::PropulsionMotor::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
+            switch ((Msgs::PropulsionMotorCmd::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
             case eMsgID::ENABLE:
                 RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.enable);
@@ -70,22 +58,6 @@ namespace RoverCanLib::Msgs
 
             case eMsgID::TARGET_SPEED:
                 RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.targetSpeed);
-                break;
-
-            case eMsgID::CURRENT_SPEED:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.currentSpeed);
-                break;
-
-            case eMsgID::KP:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.kp);
-                break;
-
-            case eMsgID::KI:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.ki);
-                break;
-
-            case eMsgID::KD:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.kd);
                 break;
 
             case eMsgID::CLOSE_LOOP:
@@ -102,10 +74,10 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT twai_message_t *msg_)
         {
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::PROPULSION_MOTOR;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::PROPULSION_MOTOR_CMD;
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
-            switch ((RoverCanLib::Msgs::PropulsionMotor::eMsgID)msgId_)
+            switch ((RoverCanLib::Msgs::PropulsionMotorCmd::eMsgID)msgId_)
             {
             case eMsgID::ENABLE:
                 Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_);
@@ -113,22 +85,6 @@ namespace RoverCanLib::Msgs
 
             case eMsgID::TARGET_SPEED:
                 Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.targetSpeed, msg_);
-                break;
-
-            case eMsgID::CURRENT_SPEED:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.currentSpeed, msg_);
-                break;
-
-            case eMsgID::KP:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.kp, msg_);
-                break;
-
-            case eMsgID::KI:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.ki, msg_);
-                break;
-
-            case eMsgID::KD:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.kd, msg_);
                 break;
 
             case eMsgID::CLOSE_LOOP:
@@ -146,13 +102,13 @@ namespace RoverCanLib::Msgs
 #elif defined(__linux__) // defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const can_frame *msg_, rclcpp::Logger logger_)
         {
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::PROPULSION_MOTOR)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::PROPULSION_MOTOR_CMD)
             {
                 RCLCPP_ERROR(logger_, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
             }
 
-            switch ((Msgs::PropulsionMotor::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
+            switch ((Msgs::PropulsionMotorCmd::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
             case eMsgID::ENABLE:
                 RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.enable, logger_);
@@ -160,22 +116,6 @@ namespace RoverCanLib::Msgs
 
             case eMsgID::TARGET_SPEED:
                 RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.targetSpeed, logger_);
-                break;
-
-            case eMsgID::CURRENT_SPEED:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.currentSpeed, logger_);
-                break;
-
-            case eMsgID::KP:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.kp, logger_);
-                break;
-
-            case eMsgID::KI:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.ki, logger_);
-                break;
-
-            case eMsgID::KD:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.kd, logger_);
                 break;
 
             case eMsgID::CLOSE_LOOP:
@@ -192,10 +132,10 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT can_frame *msg_, rclcpp::Logger logger_)
         {
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::PROPULSION_MOTOR;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::PROPULSION_MOTOR_CMD;
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
-            switch ((RoverCanLib::Msgs::PropulsionMotor::eMsgID)msgId_)
+            switch ((RoverCanLib::Msgs::PropulsionMotorCmd::eMsgID)msgId_)
             {
             case eMsgID::ENABLE:
                 Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_);
@@ -203,22 +143,6 @@ namespace RoverCanLib::Msgs
 
             case eMsgID::TARGET_SPEED:
                 Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.targetSpeed, msg_);
-                break;
-
-            case eMsgID::CURRENT_SPEED:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.currentSpeed, msg_);
-                break;
-
-            case eMsgID::KP:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.kp, msg_);
-                break;
-
-            case eMsgID::KI:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.ki, msg_);
-                break;
-
-            case eMsgID::KD:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.kd, msg_);
                 break;
 
             case eMsgID::CLOSE_LOOP:
@@ -233,6 +157,25 @@ namespace RoverCanLib::Msgs
 
             return Constant::eInternalErrorCode::OK;
         }
+        
+        Constant::eInternalErrorCode sendMsg(RoverCanLib::Constant::eDeviceId deviceID_, int canSocket_, rclcpp::Logger logger_)
+        {
+            can_frame canFrame;
+            canFrame.can_id = (canid_t)deviceID_;
+
+            static_assert((size_t)eMsgID::eLAST < UINT8_MAX); // Make sure to not overflow counter
+            for (uint8_t i = (uint8_t)eMsgID::NOT_USED + 1u; i < (uint8_t)eMsgID::eLAST; i++)
+            {
+                this->getMsg(i, &canFrame, logger_);
+                if (write(canSocket_, &canFrame, sizeof(canFrame)) != sizeof(canFrame))
+                {
+                    RCLCPP_ERROR(logger_, "Error while sending error state msg");
+                    return RoverCanLib::Constant::eInternalErrorCode::ERROR;
+                }
+            }
+
+            return RoverCanLib::Constant::eInternalErrorCode::OK;
+        }
 #endif // defined(ESP32)
 
         uint8_t getMsgIDNb(void)
@@ -244,4 +187,4 @@ namespace RoverCanLib::Msgs
     };
 }
 
-#endif // __PROPULSION_MOTOR_HPP__
+#endif // __PROPULSION_MOTOR_CMD_HPP__
