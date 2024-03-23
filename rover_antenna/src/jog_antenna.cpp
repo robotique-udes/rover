@@ -1,13 +1,6 @@
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
-
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_msgs/msg/antenna_cmd.hpp"
-#include "rovus_lib/macros.h"
 #include "rovus_lib/moving_average.hpp"
 
 #define PI 3.14159265359
@@ -22,10 +15,6 @@ public:
     ~JogAntenna() {}
 
 private:
-    void timer_callback()
-    {
-    }
-    rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy;
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_jog;
 
@@ -47,13 +36,12 @@ int main(int argc, char *argv[])
 
 JogAntenna::JogAntenna() : Node("jog_antenna")
 {
-    _sub_joy = this->create_subscription<rover_msgs::msg::Joy>("/joy/main/formated" /*"/base/antenna/joy"*/,
+    _sub_joy = this->create_subscription<rover_msgs::msg::Joy>("/joy/main/formated",
                                                                1,
                                                                [this](const rover_msgs::msg::Joy msg)
                                                                { callbackJoy(msg); });
 
     _pub_jog = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop", 1);
-    timer_ = this->create_wall_timer(500ms, std::bind(&JogAntenna::timer_callback, this));
 
     this->declare_parameter<float>("max_speed", PI/2);
     this->declare_parameter<int16_t>("n_average", 10);
