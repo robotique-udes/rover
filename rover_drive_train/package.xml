@@ -6,8 +6,9 @@
   <description>
     rover_drive_train pkg contains teleop node
   </description>
-  <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
   <maintainer email="save1403@usherbrooke.ca">emile</maintainer>
+  <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
+  
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
@@ -17,7 +18,6 @@
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
-  <depend>sensor_msgs</depend>
   <depend>joy</depend>
   <depend>rover_msgs</depend>
 
