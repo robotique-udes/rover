@@ -16,10 +16,10 @@
   <widget class="QCheckBox" name="checkBox">
    <property name="geometry">
     <rect>
-     <x>160</x>
-     <y>90</y>
-     <width>51</width>
-     <height>23</height>
+     <x>130</x>
+     <y>70</y>
+     <width>1013</width>
+     <height>50</height>
     </rect>
    </property>
    <property name="styleSheet">

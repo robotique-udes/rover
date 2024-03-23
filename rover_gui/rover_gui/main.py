@@ -1,9 +1,13 @@
 #https://www.youtube.com/watch?v=jWxNfb7Hng8
+from threading import Thread 
 
 from ament_index_python.packages import get_package_share_directory
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox
 from PyQt5 import uic
+import rclpy
+from rclpy.executors import MultiThreadedExecutor
+from rover_gui.ui_node import UINode
 
 from pages.home import Home
 from pages.dashboard import Dashboard
@@ -12,17 +16,12 @@ from pages.navigation import Navigation
 from static.resource_rc import qt_resource_data
 
 class MainWindow(QMainWindow):
-    def __init__(self):
+    def __init__(self, ui_node):
         super(MainWindow, self).__init__()
+        self.ui_node = ui_node
 
         package_share_directory = get_package_share_directory('rover_gui')
         uic.loadUi(package_share_directory+ "/ui/main_window.ui", self)
-
-        self.pb_home : QPushButton
-        self.pb_dashboard : QPushButton
-        self.pb_navigation : QPushButton
-        self.tab_widget : QTabWidget
-        self.tool_box : QToolBox
 
         self.pb_home = self.findChild(QPushButton, "pb_home")
         self.pb_dashboard = self.findChild(QPushButton, "pb_dashboard")
@@ -32,9 +31,9 @@ class MainWindow(QMainWindow):
 
 
         self.menu_btns_dict = {
-            self.pb_home: Home,
-            self.pb_dashboard: Dashboard,
-            self.pb_navigation: Navigation
+            self.pb_home: lambda : Home(self.ui_node),
+            self.pb_dashboard: lambda : Dashboard(self.ui_node),
+            self.pb_navigation: lambda : Navigation(self.ui_node)
         }
 
         self.show_home_window()
@@ -53,7 +52,7 @@ class MainWindow(QMainWindow):
             self.tab_widget.setCurrentIndex(result[1])
         else:
             tab_title = self.pb_home.text()
-            curIndex = self.tab_widget.addTab(Home(), tab_title)
+            curIndex = self.tab_widget.addTab(Home(self.ui_node), tab_title)
             self.tab_widget.setCurrentIndex(curIndex)
             self.tab_widget.setVisible(True)
 
@@ -96,14 +95,32 @@ class MainWindow(QMainWindow):
 
         return False,
 
-def main():
+def main(args=None):
     import sys
+    rclpy.init(args=args)
+
+    ui_node = UINode()
+    executor = MultiThreadedExecutor()
+    executor.add_node(ui_node)
 
     app = QApplication(sys.argv)
+    window = MainWindow(ui_node)
 
-    window = MainWindow()
-    window.show()
-    sys.exit(app.exec())
+    # Start the ROS2 node on a separate thread
+    thread = Thread(target=executor.spin)
+    thread.start()
+    ui_node.get_logger().info("Spinned ROS2 Node . . .")
+
+    # Let the app running on the main thread
+    try:
+        window.show()
+        sys.exit(app.exec_())
+
+    finally:
+        ui_node.get_logger().info("Shutting down ROS2 Node . . .")
+        ui_node.destroy_node()
+        executor.shutdown()
+
 
     
 if __name__ == '__main__':
