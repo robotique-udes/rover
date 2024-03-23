@@ -8,24 +8,22 @@ def generate_launch_description():
     ld: LaunchDescription = LaunchDescription()
 
     node_antenna_abtr = Node(package="rover_antenna",
-                         namespace="/antenna/abtr",
+                         namespace="/base/antenna",
                          executable="arbitration",
-                         name="antenna_abtr")
+                         name="arbitration")
 
     node_antenna_jog = Node(package="rover_antenna",
-                                  namespace="/antenna/jog",
+                                  namespace="/base/antenna",
                                   executable="jog_antenna",
-                                  name="jog_antenna",
+                                  name="teleop",
                                   parameters=[{"max_speed": 3.14159/8}],
-                                  #remappings=[]
                                   )
 
     node_antenna_auto = Node(package="rover_antenna",
-                              namespace="/antenna/auto",
+                              namespace="/base/antenna",
                               executable="autonomus",
                               name="autonomus",
                               parameters=[{"max_speed": 3.14159/8}],
-                              #remappings=[]
                               )
 
     ld.add_action(node_antenna_abtr)

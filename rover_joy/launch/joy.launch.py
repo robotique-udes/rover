@@ -17,16 +17,8 @@ def generate_launch_description():
                          name="joy_node",
                          parameters=[{"autorepeat_rate": 20.0,
                                       "device_name": "Wireless Controller"}],
+#                                       "device_name": "Sony Interactive Entertainment Wireless Controller"}],
                          remappings=[("joy", "raw")])
-
-# pour manenette de PS4 brancher filaire
-    # node_joy_main = Node(package="joy",
-    #                      namespace="/joy/main",
-    #                      executable="joy_node",
-    #                      name="joy_node",
-    #                      parameters=[{"autorepeat_rate": 20.0,
-    #                                   "device_name": "Sony Interactive Entertainment Wireless Controller"}],
-    #                      remappings=[("joy", "raw")])
 
     node_joy_main_formator = Node(package="rover_joy",
                                   namespace="/joy/main",

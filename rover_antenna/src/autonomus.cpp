@@ -5,10 +5,7 @@
 
 #define PI 3.14159265359
 #define MAX_SPEED 20.0*PI/180 // rad/s
-#define N_AVERAGE 10
-
-
-using namespace std::chrono_literals;
+#define COEFF_NB 10
 
 class Autonomus : public rclcpp::Node
 {
@@ -17,32 +14,26 @@ public:
     ~Autonomus() {}
 
 private:
-    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps_rover;
-    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps_antenna;
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gpsRover;
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gpsAntenna;
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_cmd;
 
-    void callbackGPSRover(const rover_msgs::msg::Gps msg);
-    void callbackGPSAntenna(const rover_msgs::msg::Gps msg);
+    void callbackGPSRover(const rover_msgs::msg::Gps msg_);
+    void callbackGPSAntenna(const rover_msgs::msg::Gps msg_);
     void autonomusCommand();
-    float calculateHeading(float lat1, float lon1, float lat2, float lon2);
+    float calculateHeading(float lat1_, float lon1_, float lat2_, float lon2_);
 
-    rover_msgs::msg::Gps gps_rover;
-    rover_msgs::msg::Gps gps_antenna;
-    rover_msgs::msg::Gps gps_rover_SMA[10];
-    rover_msgs::msg::Gps gps_antenna_SMA[10];
-    bool first_msgs_rover = true;
-    int count_rover = 0;
-    bool first_msgs_antenna = true;
-    int count_antenna = 0;
+    rover_msgs::msg::Gps _gpsRover;
+    rover_msgs::msg::Gps _gpsAntenna;
 
-    rclcpp::Parameter param_max_speed;
-    rclcpp::Parameter param_n_average;
+    rclcpp::Parameter _paramMaxSpeed;
+    rclcpp::Parameter _paramCoeffNb;
 
-    MovingAverage<float, N_AVERAGE> latitude_rover = MovingAverage<float, N_AVERAGE>(0.0);
-    MovingAverage<float, N_AVERAGE> longitude_rover = MovingAverage<float, N_AVERAGE>(0.0);
+    MovingAverage<float, COEFF_NB> _latitudeRover = MovingAverage<float, COEFF_NB>(0.0f);
+    MovingAverage<float, COEFF_NB> _longitudeRover = MovingAverage<float, COEFF_NB>(0.0f);
 
-    MovingAverage<float, N_AVERAGE> latitude_antenna = MovingAverage<float, N_AVERAGE>(0.0);
-    MovingAverage<float, N_AVERAGE> longitude_antenna = MovingAverage<float, N_AVERAGE>(0.0);
+    MovingAverage<float, COEFF_NB> _latitudeAntenna = MovingAverage<float, COEFF_NB>(0.0f);
+    MovingAverage<float, COEFF_NB> _longitudeAntenna = MovingAverage<float, COEFF_NB>(0.0f);
 };
 
 int main(int argc, char *argv[])
@@ -55,36 +46,36 @@ int main(int argc, char *argv[])
 
 Autonomus::Autonomus() : Node("autonomus")
 {
-    _sub_gps_rover = this->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
+    _sub_gpsRover = this->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
                                                                      1,
-                                                                     [this](const rover_msgs::msg::Gps msg)
-                                                                     { callbackGPSRover(msg); });
+                                                                     [this](const rover_msgs::msg::Gps msg_)
+                                                                     { callbackGPSRover(msg_); });
 
-    _sub_gps_antenna = this->create_subscription<rover_msgs::msg::Gps>("/base/antenna/gps/position",
+    _sub_gpsAntenna = this->create_subscription<rover_msgs::msg::Gps>("/base/antenna/gps/position",
                                                                      1,
-                                                                     [this](const rover_msgs::msg::Gps msg)
-                                                                     { callbackGPSAntenna(msg); });
+                                                                     [this](const rover_msgs::msg::Gps msg_)
+                                                                     { callbackGPSAntenna(msg_); });
 
     _pub_cmd = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto", 1);
 
     this->declare_parameter<float>("max_speed", PI/2);
-    this->declare_parameter<int16_t>("n_average", 10);
+    this->declare_parameter<int16_t>("coeff_nb", 10);
 
-    param_max_speed = this->get_parameter("max_speed");
-    param_n_average = this->get_parameter("n_average");
+    _paramMaxSpeed = this->get_parameter("max_speed");
+    _paramCoeffNb = this->get_parameter("coeff_nb");
 }
 
-void Autonomus::callbackGPSRover(const rover_msgs::msg::Gps msg)
+void Autonomus::callbackGPSRover(const rover_msgs::msg::Gps msg_)
 {
-    gps_rover.latitude = msg.latitude;
-    gps_rover.longitude = msg.longitude;
+    _gpsRover.latitude = msg_.latitude;
+    _gpsRover.longitude = msg_.longitude;
 }
 
-void Autonomus::callbackGPSAntenna(const rover_msgs::msg::Gps msg)
+void Autonomus::callbackGPSAntenna(const rover_msgs::msg::Gps msg_)
 {
-    gps_antenna.latitude = msg.latitude;
-    gps_antenna.longitude = msg.longitude;
-    gps_antenna.heading = msg.heading;
+    _gpsAntenna.latitude = msg_.latitude;
+    _gpsAntenna.longitude = msg_.longitude;
+    _gpsAntenna.heading = msg_.heading;
     
     autonomusCommand();
 
@@ -93,12 +84,12 @@ void Autonomus::callbackGPSAntenna(const rover_msgs::msg::Gps msg)
 void Autonomus::autonomusCommand()
 {
     float heading;
-    float heading_antenna = gps_antenna.heading;
+    float heading_antenna = _gpsAntenna.heading;
     if (heading_antenna > 180)
     {
-        heading_antenna = heading_antenna - 360;
+        heading_antenna = heading_antenna - 360.0f;
     }
-    float heading_rover = calculateHeading(gps_antenna.latitude, gps_antenna.longitude, gps_rover.latitude, gps_rover.longitude);
+    float heading_rover = calculateHeading(_gpsAntenna.latitude, _gpsAntenna.longitude, _gpsRover.latitude, _gpsRover.longitude);
     if (heading_antenna > 0)
     {
         heading = heading_rover - heading_antenna;
@@ -110,12 +101,12 @@ void Autonomus::autonomusCommand()
 
     rover_msgs::msg::AntennaCmd cmd;
 
-    if (heading > 15.0)
+    if (heading > 15.0f)
     {
         cmd.status = true;
         cmd.speed = MAX_SPEED;
     }
-    else if (heading < -15.0)
+    else if (heading < -15.0f)
     {
         cmd.status = true;
         cmd.speed = -MAX_SPEED;
@@ -123,23 +114,23 @@ void Autonomus::autonomusCommand()
     else
     {
         cmd.status = false;
-        cmd.speed = 0.0;
+        cmd.speed = 0.0f;
 
     }
     RCLCPP_INFO(rclcpp::get_logger("angle"), "angle %f", heading);
     _pub_cmd->publish(cmd);
 }
 
-float Autonomus::calculateHeading(float lat1, float lon1, float lat2, float lon2)
+float Autonomus::calculateHeading(float lat1_, float lon1_, float lat2_, float lon2_)
 {
-    lat1 = lat1 * PI / 180.0;
-    lat2 = lat2 * PI / 180.0;
-    lon1 = lon1 * PI / 180.0;
-    lon2 = lon2 * PI / 180.0;
+    lat1_ = lat1_ * PI / 180.0f;
+    lat2_ = lat2_ * PI / 180.0f;
+    lon1_ = lon1_ * PI / 180.0f;
+    lon2_ = lon2_ * PI / 180.0f;
     
-    float X = cos(lat2) * sin(lon2-lon1);
-    float Y = cos(lat1) * sin(lat2) - sin(lat1) * cos(lat2) * cos(lon2-lon1);
-    float heading = atan2(X, Y) * 180 / PI;
+    float X = cos(lat2_) * sin(lon2_-lon1_);
+    float Y = cos(lat1_) * sin(lat2_) - sin(lat1_) * cos(lat2_) * cos(lon2_-lon1_);
+    float heading = atan2(X, Y) * 180.0f / PI;
 
     return heading;
 }

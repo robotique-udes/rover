@@ -2,6 +2,6 @@ uint8 NOT_MOVING = 0
 uint8 TELEOP = 1
 uint8 AUTONOMUS = 2
 
-uint8 abtr
+uint8 target_arbitration
 ---
-uint8 abtr_mode
+uint8 current_arbitration
