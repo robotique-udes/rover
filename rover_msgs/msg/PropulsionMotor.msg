@@ -6,7 +6,4 @@ uint8 REAR_RIGHT = 3
 bool[4] enable
 float32[4] target_speed
 float32[4] current_speed
-float32[4] kp
-float32[4] ki
-float32[4] kd
 bool[4] close_loop

@@ -12,28 +12,25 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
-# find_package(std_msgs REQUIRED)
-# find_package(rcl_interfaces REQUIRED)
 
 include_directories(
   include
   ${rover_msgs_INCLUDE_DIRS}
 )
 
-add_executable(can_translator src/can_translator.cpp)
+add_executable(can_master src/can_master.cpp)
 
-ament_target_dependencies(can_translator
+ament_target_dependencies(can_master
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
 
-
-# install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          can_translator
+          can_master
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

@@ -1,7 +1,3 @@
-// Next steps:
-//   1. Add ros
-//      1.1 Add status publisher
-
 // Network socket stuff
 #include <net/if.h>
 #include <fcntl.h>
@@ -23,7 +19,6 @@
 
 // Forward declarations
 int createSocket(const char *canNetworkName_);
-
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
 
@@ -42,8 +37,9 @@ class CanMaster : public rclcpp::Node
 public:
     CanMaster(int canSocket_);
 
-private:
+private: 
     void mainLoop();
+    // Sends heartbeat on the can network at specific rate
     RoverCanLib::Constant::eInternalErrorCode updateHeartbeat();
     // Read all msg in the rx queue and parse them accordingly. Also resets watchdog if a watchdog msg is received
     RoverCanLib::Constant::eInternalErrorCode readMsgFromCanSocket();
@@ -82,7 +78,7 @@ private:
 
 int main(int argc, char *argv[])
 {
-    signal(SIGINT, signal_handler);
+    signal(SIGINT, signal_handler); // Makes CTRL+C work
 
     while (!shutdownFlag)
     {

@@ -1,8 +1,6 @@
 # Rover can IDs
 
 - [Rover can IDs](#rover-can-ids)
-  - [Summary](#summary)
-    - [RoverCanProtocol Syntaxt](#rovercanprotocol-syntaxt)
   - [ID ranges](#id-ranges)
   - [Device and message ID list](#device-and-message-id-list)
     - [Guidelines](#guidelines)
@@ -12,17 +10,8 @@
     - [ErrorState](#errorstate)
     - [Heartbeat](#heartbeat)
     - [GPS](#gps)
-    - [PropulsionMotor](#propulsionmotor)
-
-## Summary
-
-The rover uses CAN2.0A. This standard use 11 bits long IDs. They range from 0 to 2047 or from 0x00 to 0x7FF in hex. The lower the id the higher it's priority. Each id can represent either a msg type or device/module on the rover. When sending a message on the can bus, you'll set an ID for the message and 8 bytes of data. The [RoverCanProtocol Syntaxt](#rovercanprotocol-syntaxt) section explain how those 8 bytes are used.
-
-### RoverCanProtocol Syntaxt
-
-| bytes index | 0x00  | 0x01           | 0x02    | 0x03 | 0x04 | 0x05 | 0x06 | 0x07 |
-|-------------|-------|----------------|---------|------|------|------|------|------|
-| data        | msgID | Msg Content Id | data... | ...  | ...  | ...  | ...  | ...  |
+    - [PROPULSION\_MOTOR\_CMD](#propulsion_motor_cmd)
+    - [PROPULSION\_MOTOR\_STATUS](#propulsion_motor_status)
 
 ## ID ranges
 
@@ -88,13 +77,14 @@ Devices are organized into a specific order in relation to arbitration.
 
 Msgs Ids aren't organised as their order don't matter in the arbitration, just add new messages types at the end of the list.
 
-| ID   | Msgs             |
-|------|------------------|
-| 0x00 | NOT_USED         |
-| 0x01 | ERROR_STATE      |
-| 0x02 | HEARTBEAT (msg)  |
-| 0x10 | GPS (msg)        |
-| 0x11 | PROPULSION_MOTOR |
+| ID   | Msgs                    |
+|------|-------------------------|
+| 0x00 | NOT_USED                |
+| 0x01 | ERROR_STATE             |
+| 0x02 | HEARTBEAT (msg)         |
+| 0x10 | GPS (msg)               |
+| 0x11 | PROPULSION_MOTOR_CMD    |
+| 0x12 | PROPULSION_MOTOR_STATUS |
 
 ## Message Content Id List
 
@@ -113,7 +103,7 @@ In the following section are defined all the message content internal IDs, remem
 | ID   | Device or Message | TYPE |
 |------|-------------------|------|
 | 0x00 | NOT_USED          |      |
-| 0x01 | DONT_USE          |      |
+| 0x01 | DONT_USE          | bool |
 | TODO | TODO              |      |
 
 ### GPS
@@ -123,15 +113,18 @@ In the following section are defined all the message content internal IDs, remem
 | 0x00 | NOT_USED          |      |
 | TODO | TODO              |      |
 
-### PropulsionMotor
+### PROPULSION_MOTOR_CMD
 
 | ID   | Device or Message | TYPE    |
 |------|-------------------|---------|
 | 0x00 | NOT_USED          |         |
-| 0x01 | enable            | bool    |
-| 0x02 | targetSpeed       | float32 |
-| 0x03 | currentSpeed      | float32 |
-| 0x04 | kp                | float32 |
-| 0x05 | ki                | float32 |
-| 0x06 | kd                | float32 |
-| 0x07 | closeLoop         | bool    |
+| 0x01 | ENABLE            | bool    |
+| 0x02 | TARGET_SPEED      | float32 |
+| 0x03 | CLOSE_LOOP        | bool    |
+
+### PROPULSION_MOTOR_STATUS
+
+| ID   | Device or Message | TYPE    |
+|------|-------------------|---------|
+| 0x00 | NOT_USED          |         |
+| 0x01 | CURRENT_SPEED     | float32 |
