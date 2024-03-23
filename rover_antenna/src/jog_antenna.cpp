@@ -4,9 +4,7 @@
 #include "rovus_lib/moving_average.hpp"
 
 #define PI 3.14159265359
-#define N_AVERAGE 10
-
-using namespace std::chrono_literals;
+#define COEFF_NB 10
 
 class JogAntenna : public rclcpp::Node
 {
@@ -18,11 +16,11 @@ private:
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy;
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_jog;
 
-    void callbackJoy(const rover_msgs::msg::Joy msg);
-    rclcpp::Parameter param_max_speed;
-    rclcpp::Parameter param_n_average;
-    MovingAverage<float, N_AVERAGE> jog_average_r1 = MovingAverage<float, N_AVERAGE>(0.0);
-    MovingAverage<float, N_AVERAGE> jog_average_l1 = MovingAverage<float, N_AVERAGE>(0.0);
+    void callbackJoy(const rover_msgs::msg::Joy msg_);
+    rclcpp::Parameter _paramMaxSpeed;
+    rclcpp::Parameter _paramCoeffNb;
+    MovingAverage<float, COEFF_NB> _jogAverage_r1 = MovingAverage<float, COEFF_NB>(0.0f);
+    MovingAverage<float, COEFF_NB> _jogAverage_l1 = MovingAverage<float, COEFF_NB>(0.0f);
     
 };
 
@@ -38,41 +36,41 @@ JogAntenna::JogAntenna() : Node("jog_antenna")
 {
     _sub_joy = this->create_subscription<rover_msgs::msg::Joy>("/joy/main/formated",
                                                                1,
-                                                               [this](const rover_msgs::msg::Joy msg)
-                                                               { callbackJoy(msg); });
+                                                               [this](const rover_msgs::msg::Joy msg_)
+                                                               { callbackJoy(msg_); });
 
     _pub_jog = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop", 1);
 
     this->declare_parameter<float>("max_speed", PI/2);
-    this->declare_parameter<int16_t>("n_average", 10);
+    this->declare_parameter<int16_t>("coeff_nb", 10);
 
-    param_max_speed = this->get_parameter("max_speed");
-    param_n_average = this->get_parameter("n_average");
+    _paramMaxSpeed = this->get_parameter("max_speed");
+    _paramCoeffNb = this->get_parameter("coeff_nb");
     
 }
 
-void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg)
+void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg_)
 {
     rover_msgs::msg::AntennaCmd jog_cmd;
 
-    jog_average_l1.addValue(msg.l1);
+    _jogAverage_l1.addValue(msg_.l1);
 
     
-    jog_average_r1.addValue(msg.r1);
+    _jogAverage_r1.addValue(msg_.r1);
 
     jog_cmd.status = true;
 
-    if(jog_average_l1.getAverage() != 0.0 && jog_average_r1.getAverage() == 0.0)
+    if(_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
     {
-        jog_cmd.speed = -jog_average_l1.getAverage() * param_max_speed.as_double();
+        jog_cmd.speed = -_jogAverage_l1.getAverage() * _paramMaxSpeed.as_double();
     }
-    else if(jog_average_l1.getAverage() == 0.0 && jog_average_r1.getAverage() != 0.0)
+    else if(_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() != 0.0f)
     {
-        jog_cmd.speed = jog_average_r1.getAverage() * param_max_speed.as_double();
+        jog_cmd.speed = _jogAverage_r1.getAverage() * _paramMaxSpeed.as_double();
     }
     else
     {
-        jog_cmd.speed = 0.0;
+        jog_cmd.speed = 0.0f;
     }
 
     _pub_jog->publish(jog_cmd);

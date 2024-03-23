@@ -11,7 +11,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(std_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 
@@ -25,21 +24,17 @@ add_executable(arbitration src/arbitration.cpp)
 
 ament_target_dependencies(jog_antenna
                           rclcpp
-                          std_msgs
                           rover_msgs)
 
 ament_target_dependencies(autonomus
                           rclcpp
-                          std_msgs
                           rover_msgs)
 
 ament_target_dependencies(arbitration
                           rclcpp
-                          std_msgs
                           rover_msgs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-# install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
         jog_antenna
