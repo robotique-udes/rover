@@ -21,7 +21,7 @@ def generate_launch_description():
         )
 
         teleop_node= Node (package="rover_drive_train",
-                                    namespace="/main",
+                                    namespace="/rover/drive_drain",
                                     executable="teleop",
                                     name="teleop",
                                     parameters=[{"speed_factor_crawler": 0.01},
