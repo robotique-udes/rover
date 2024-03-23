@@ -20,6 +20,9 @@ public:
 private:
     void timer_callback()
     {
+        RCLCPP_INFO(rclcpp::get_logger("timer_cb"), "timer_callback");
+        sendCmd();
+        
     }
     rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Subscription<rover_msgs::msg::AntennaCmd>::SharedPtr _sub_jog;
@@ -63,18 +66,20 @@ Arbitration::Arbitration() : Node("arbitration")
 
     _service = this->create_service<rover_msgs::srv::AntennaArbitration>("/base/antenna/set_arbitration", std::bind(&Arbitration::cbSetAbtr, this, std::placeholders::_1, std::placeholders::_2)); ///base/antenna/set_arbitration
 
+    timer_ = this->create_wall_timer(100ms, std::bind(&Arbitration::timer_callback, this));
+
 }
 
 void Arbitration::callbackJog(const rover_msgs::msg::AntennaCmd msg)
 {
     cmd_jog = msg;
-    sendCmd();
+    //sendCmd();
 }
 
 void Arbitration::callbackAuto(const rover_msgs::msg::AntennaCmd msg)
 {
     cmd_auto = msg;
-    sendCmd();
+    //sendCmd();
 }
 
 void Arbitration::sendCmd()
@@ -96,7 +101,6 @@ void Arbitration::sendCmd()
         cmd_abtr.status = false;
         _pub_abtr->publish(cmd_abtr);
     }
-
 }
 
 void Arbitration::cbSetAbtr(const std::shared_ptr<rover_msgs::srv::AntennaArbitration::Request> request, 
