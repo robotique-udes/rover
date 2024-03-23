@@ -1,14 +1,6 @@
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
-
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "rover_msgs/msg/antenna_cmd.hpp"
 #include "rover_msgs/msg/gps.hpp"
-#include "rovus_lib/macros.h"
-#include "math.h"
 #include "rovus_lib/moving_average.hpp"
 
 #define PI 3.14159265359
@@ -25,10 +17,6 @@ public:
     ~Autonomus() {}
 
 private:
-    void timer_callback()
-    {
-    }
-    rclcpp::TimerBase::SharedPtr timer_;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps_rover;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps_antenna;
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_cmd;
@@ -78,7 +66,6 @@ Autonomus::Autonomus() : Node("autonomus")
                                                                      { callbackGPSAntenna(msg); });
 
     _pub_cmd = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto", 1);
-    timer_ = this->create_wall_timer(500ms, std::bind(&Autonomus::timer_callback, this));
 
     this->declare_parameter<float>("max_speed", PI/2);
     this->declare_parameter<int16_t>("n_average", 10);

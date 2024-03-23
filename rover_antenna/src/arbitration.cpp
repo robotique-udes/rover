@@ -1,13 +1,6 @@
-#include <chrono>
-#include <functional>
-#include <memory>
-#include <string>
-
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"
 #include "rover_msgs/msg/antenna_cmd.hpp"
 #include "rover_msgs/srv/antenna_arbitration.hpp"
-#include "rovus_lib/macros.h"
 
 using namespace std::chrono_literals;
 
@@ -73,13 +66,11 @@ Arbitration::Arbitration() : Node("arbitration")
 void Arbitration::callbackJog(const rover_msgs::msg::AntennaCmd msg)
 {
     cmd_jog = msg;
-    //sendCmd();
 }
 
 void Arbitration::callbackAuto(const rover_msgs::msg::AntennaCmd msg)
 {
     cmd_auto = msg;
-    //sendCmd();
 }
 
 void Arbitration::sendCmd()
@@ -88,18 +79,20 @@ void Arbitration::sendCmd()
     if (abtr_request.abtr == abtr_request.TELEOP)
     {
         _pub_abtr->publish(cmd_jog);
-        // abtr_response.abtr_mode = abtr_response.TELEOP;
+        abtr_response.abtr_mode = abtr_request.TELEOP;
         RCLCPP_INFO(rclcpp::get_logger("abtr_mode"), "abtr_mode %d", abtr_request.abtr);
     }
     else if (abtr_request.abtr == abtr_request.AUTONOMUS)
     {
         _pub_abtr->publish(cmd_auto);
+        abtr_response.abtr_mode = abtr_request.AUTONOMUS;
     }
     else
     {
         cmd_abtr.speed = 0.0;
         cmd_abtr.status = false;
         _pub_abtr->publish(cmd_abtr);
+        abtr_response.abtr_mode = abtr_request.NOT_MOVING;
     }
 }
 
