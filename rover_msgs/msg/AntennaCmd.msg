@@ -1,2 +1,2 @@
-bool status
+bool enable
 float32 speed

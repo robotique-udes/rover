@@ -4,7 +4,6 @@
 #include "rovus_lib/moving_average.hpp"
 
 #define PI 3.14159265359
-#define MAX_SPEED 20.0*PI/180 // rad/s
 #define COEFF_NB 10
 
 class Autonomus : public rclcpp::Node
@@ -58,11 +57,8 @@ Autonomus::Autonomus() : Node("autonomus")
 
     _pub_cmd = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto", 1);
 
-    this->declare_parameter<float>("max_speed", PI/2);
-    this->declare_parameter<int16_t>("coeff_nb", 10);
-
+    this->declare_parameter<float>("max_speed", PI/2.0f);
     _paramMaxSpeed = this->get_parameter("max_speed");
-    _paramCoeffNb = this->get_parameter("coeff_nb");
 }
 
 void Autonomus::callbackGPSRover(const rover_msgs::msg::Gps msg_)
@@ -83,41 +79,41 @@ void Autonomus::callbackGPSAntenna(const rover_msgs::msg::Gps msg_)
 
 void Autonomus::autonomusCommand()
 {
-    float heading;
-    float heading_antenna = _gpsAntenna.heading;
-    if (heading_antenna > 180)
+    float relativeHeading;
+    float headingAntenna = _gpsAntenna.heading;
+    if (headingAntenna > 180.0f)
     {
-        heading_antenna = heading_antenna - 360.0f;
+        headingAntenna = headingAntenna - 360.0f;
     }
     float heading_rover = calculateHeading(_gpsAntenna.latitude, _gpsAntenna.longitude, _gpsRover.latitude, _gpsRover.longitude);
-    if (heading_antenna > 0)
+    if (headingAntenna > 0.0f)
     {
-        heading = heading_rover - heading_antenna;
+        relativeHeading = heading_rover - headingAntenna;
     }
     else
     {
-        heading = (heading_antenna - heading_rover) * (-1);
+        relativeHeading = (headingAntenna - heading_rover) * (-1);
     }
 
     rover_msgs::msg::AntennaCmd cmd;
 
-    if (heading > 15.0f)
+    if (relativeHeading > 15.0f)
     {
-        cmd.status = true;
-        cmd.speed = MAX_SPEED;
+        cmd.enable = true;
+        cmd.speed = _paramMaxSpeed.as_double();
     }
-    else if (heading < -15.0f)
+    else if (relativeHeading < -15.0f)
     {
-        cmd.status = true;
-        cmd.speed = -MAX_SPEED;
+        cmd.enable = true;
+        cmd.speed = -(_paramMaxSpeed.as_double());
     }
     else
     {
-        cmd.status = false;
+        cmd.enable = false;
         cmd.speed = 0.0f;
 
     }
-    RCLCPP_INFO(rclcpp::get_logger("angle"), "angle %f", heading);
+    RCLCPP_INFO(rclcpp::get_logger("angle"), "angle %f", relativeHeading);
     _pub_cmd->publish(cmd);
 }
 
