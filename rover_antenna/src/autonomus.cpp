@@ -2,8 +2,8 @@
 #include "rover_msgs/msg/antenna_cmd.hpp"
 #include "rover_msgs/msg/gps.hpp"
 #include "rovus_lib/moving_average.hpp"
+#include "rovus_lib/macros.h"
 
-#define PI 3.14159265359
 #define COEFF_NB 10
 
 class Autonomus : public rclcpp::Node
@@ -13,14 +13,14 @@ public:
     ~Autonomus() {}
 
 private:
-    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gpsRover;
-    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gpsAntenna;
-    rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_cmd;
-
     void callbackGPSRover(const rover_msgs::msg::Gps msg_);
     void callbackGPSAntenna(const rover_msgs::msg::Gps msg_);
     void autonomusCommand();
     float calculateHeading(float lat1_, float lon1_, float lat2_, float lon2_);
+
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gpsRover;
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gpsAntenna;
+    rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_cmd;
 
     rover_msgs::msg::Gps _gpsRover;
     rover_msgs::msg::Gps _gpsAntenna;
@@ -85,14 +85,14 @@ void Autonomus::autonomusCommand()
     {
         headingAntenna = headingAntenna - 360.0f;
     }
-    float heading_rover = calculateHeading(_gpsAntenna.latitude, _gpsAntenna.longitude, _gpsRover.latitude, _gpsRover.longitude);
+    float headingRover = calculateHeading(_gpsAntenna.latitude, _gpsAntenna.longitude, _gpsRover.latitude, _gpsRover.longitude);
     if (headingAntenna > 0.0f)
     {
-        relativeHeading = heading_rover - headingAntenna;
+        relativeHeading = headingRover - headingAntenna;
     }
     else
     {
-        relativeHeading = (headingAntenna - heading_rover) * (-1);
+        relativeHeading = (headingAntenna - headingRover) * (-1.0);
     }
 
     rover_msgs::msg::AntennaCmd cmd;

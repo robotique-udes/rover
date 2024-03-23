@@ -36,5 +36,7 @@
 
 // Returns sign as a float value
 #define SIGN(VAR) ((float)VAR > 0.0f ? 1.0f: -1.0f)
-    
+
+#define PI 3.14159265359
+
 #endif //__MACROS_H__
