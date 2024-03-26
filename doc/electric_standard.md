@@ -44,6 +44,14 @@ Below is the rovus custom PINOUT that should be respected as much as possible*:
 
 ## High Current connectors and wire (> 1A)
 
+#### Color Code
+    - RED = Unregulated 24V
+    - YELLOW = Regulated 12V
+    - BLUE = Regulated 5V
+    - GREEN = Regulated 3.3V
+
+*If needed, you can overwrite the convention but only if you use BLACK cables assemblies and p-touched clearly identified at both ends of the wire.
+
 ### Connectors
 
 Follow this table to choose the correct connector
