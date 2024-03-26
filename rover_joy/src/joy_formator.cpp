@@ -203,17 +203,14 @@ void JoyFormator::callbackPubJoy()
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT1] = getJoyValue<bool>(Keybinding::ext1);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT2] = getJoyValue<bool>(Keybinding::ext2);
 
-    // Getting joysticks and applying dead zone
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_left_front));
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_left_side));
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_right_front));
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_right_side));
 
-    // Triggers (l2, r2) are often mapped -1.0f to 1.0f
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(float, getJoyValue<float>(Keybinding::l2), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(float, getJoyValue<float>(Keybinding::r2), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
 
-    // Cross can be mapped to axes and buttons, formatting to always bool value
     float cross_temp = getJoyValue<float>(Keybinding::cross_front);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_UP] = cross_temp > 0.0f ? true : false; //cross up
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_DOWN] = cross_temp < 0.0f ? true : false; //cross down

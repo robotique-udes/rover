@@ -1,10 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/empty.hpp"
 #include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/motor_cmd.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
-
-using std::placeholders::_1;
 
 //Class definition
 class Teleop : public rclcpp::Node
@@ -46,7 +43,8 @@ class Teleop : public rclcpp::Node
 
     void joyCallback(const rover_msgs::msg::Joy::SharedPtr msg)
     {
-        rover_msgs::msg::MotorCmd message;
+        rover_msgs::msg:: message;
+
 
         _deadmanSwitch = msg->joy_data[rover_msgs::msg::Joy::L1];
 
@@ -104,16 +102,12 @@ class Teleop : public rclcpp::Node
         
         rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_formated;
         rclcpp::Publisher<rover_msgs::msg::MotorCmd>::SharedPtr _pub_teleop_in;
-
-
-
-
 };
 
 //Constructor
 Teleop::Teleop() : Node("teleop")
 {
-    getParams();
+    this->getParams();
 
     _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>("/rover/drive_train/joy",
                                                                          1,

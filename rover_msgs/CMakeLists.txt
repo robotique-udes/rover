@@ -33,11 +33,10 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   "msg/Gps.msg"
-  "msg/MotorCmd.msg"
+
+  "msg/PropulsionMotor.msg"
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
-
-  # DEPENDENCIES geometry_msgs # Add packages that above messages depend on
 )
 
 ament_package()
