@@ -34,7 +34,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/JoyDemuxStatus.msg"
   "msg/Gps.msg"
 
-  "msg/PropulsionMotor.msg"
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
 )
