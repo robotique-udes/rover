@@ -190,36 +190,33 @@ void JoyFormator::callbackPubJoy()
         _pub_joy_formatted->publish(_last_formatted_joy_msg);
         return;
     }
+    
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::A] = getJoyValue<bool>(Keybinding::a);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::B] = getJoyValue<bool>(Keybinding::b);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::X] = getJoyValue<bool>(Keybinding::x);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::Y] = getJoyValue<bool>(Keybinding::y);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L1] = getJoyValue<bool>(Keybinding::l1);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R1] = getJoyValue<bool>(Keybinding::r1);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_PUSH] = getJoyValue<bool>(Keybinding::joystick_left_push);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_PUSH] = getJoyValue<bool>(Keybinding::joystick_right_push);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT0] = getJoyValue<bool>(Keybinding::ext0);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT1] = getJoyValue<bool>(Keybinding::ext1);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT2] = getJoyValue<bool>(Keybinding::ext2);
 
-    formatted_joy_msg.a = getJoyValue<bool>(Keybinding::a);
-    formatted_joy_msg.b = getJoyValue<bool>(Keybinding::b);
-    formatted_joy_msg.x = getJoyValue<bool>(Keybinding::x);
-    formatted_joy_msg.y = getJoyValue<bool>(Keybinding::y);
-    formatted_joy_msg.l1 = getJoyValue<bool>(Keybinding::l1);
-    formatted_joy_msg.r1 = getJoyValue<bool>(Keybinding::r1);
-    formatted_joy_msg.joystick_left_push = getJoyValue<bool>(Keybinding::joystick_left_push);
-    formatted_joy_msg.joystick_right_push = getJoyValue<bool>(Keybinding::joystick_right_push);
-    formatted_joy_msg.ext0 = getJoyValue<bool>(Keybinding::ext0);
-    formatted_joy_msg.ext1 = getJoyValue<bool>(Keybinding::ext1);
-    formatted_joy_msg.ext2 = getJoyValue<bool>(Keybinding::ext2);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_left_front));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_left_side));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_right_front));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_right_side));
 
-    // Getting joysticks and applying dead zone
-    formatted_joy_msg.joystick_left_front = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_left_front));
-    formatted_joy_msg.joystick_left_side = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_left_side));
-    formatted_joy_msg.joystick_right_front = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_right_front));
-    formatted_joy_msg.joystick_right_side = applyJoystickDeadZone(getJoyValue<float>(Keybinding::joystick_right_side));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(float, getJoyValue<float>(Keybinding::l2), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(float, getJoyValue<float>(Keybinding::r2), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
 
-    // Triggers (l2, r2) are often mapped -1.0f to 1.0f
-    formatted_joy_msg.l2 = MAP(float, getJoyValue<float>(Keybinding::l2), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
-    formatted_joy_msg.r2 = MAP(float, getJoyValue<float>(Keybinding::r2), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
-
-    // Cross can be mapped to axes and buttons, formatting to always bool value
     float cross_temp = getJoyValue<float>(Keybinding::cross_front);
-    formatted_joy_msg.cross_up = cross_temp > 0.0f ? true : false;
-    formatted_joy_msg.cross_down = cross_temp < 0.0f ? true : false;
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_UP] = cross_temp > 0.0f ? true : false; //cross up
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_DOWN] = cross_temp < 0.0f ? true : false; //cross down
     cross_temp = getJoyValue<float>(Keybinding::cross_side);
-    formatted_joy_msg.cross_left = cross_temp > 0.0f ? true : false;
-    formatted_joy_msg.cross_right = cross_temp < 0.0f ? true : false;
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_LEFT] = cross_temp > 0.0f ? true : false; //cross left
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_RIGHT] = cross_temp < 0.0f ? true : false; //cross right
 
     executeCustomSteps(&formatted_joy_msg);
     _pub_joy_formatted->publish(formatted_joy_msg);
@@ -366,20 +363,20 @@ void JoyFormator::customStepsLogitech(rover_msgs::msg::Joy *formatted_joy)
     // Trying to catch disconnection->connection that the timeout couldn't catch
     // Should also work if controller was unpluged->pluged while the node was
     // offline
-    else if ((_last_formatted_joy_msg.joystick_left_front == 0.0f && formatted_joy->joystick_left_front == 1.0f) &&
-             (_last_formatted_joy_msg.joystick_left_side == 0.0f && formatted_joy->joystick_left_side == 1.0f) &&
-             (_last_formatted_joy_msg.joystick_right_front == 0.0f && formatted_joy->joystick_right_front == 1.0f) &&
-             (_last_formatted_joy_msg.joystick_right_side == 0.0f && formatted_joy->joystick_right_side == 1.0f))
+    else if ((_last_formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] == 0.0f && formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] == 1.0f) &&
+             (_last_formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] == 0.0f && formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] == 1.0f) &&
+             (_last_formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] == 0.0f && formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] == 1.0f) &&
+             (_last_formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] == 0.0f && formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] == 1.0f))
     {
         _controller_reset_needed = true;
         *formatted_joy = rover_msgs::msg::Joy();
     }
 
     else if (_controller_reset_needed &&
-             formatted_joy->joystick_left_front != 1.0f &&
-             formatted_joy->joystick_left_side != 1.0f &&
-             formatted_joy->joystick_right_front != 1.0f &&
-             formatted_joy->joystick_right_side != 1.0f)
+             formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] != 1.0f && //left front
+             formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] != 1.0f && //Lside
+             formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] != 1.0f && // RF
+             formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] != 1.0f)
     {
         _controller_reset_needed = false;
 
