@@ -13,6 +13,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 
 include_directories(
   ${rover_msgs_INCLUDE_DIRS}
@@ -32,6 +33,7 @@ ament_target_dependencies(autonomus
 
 ament_target_dependencies(arbitration
                           rclcpp
+                          std_msgs
                           rover_msgs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
