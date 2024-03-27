@@ -36,6 +36,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
+  "srv/DriveTrainArbitration.srv"
 )
 
 ament_package()
