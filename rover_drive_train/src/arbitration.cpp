@@ -3,7 +3,6 @@
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/srv/drive_train_arbitration.hpp"
 
 //Class definition
 class Arbitration : public rclcpp::Node
@@ -11,33 +10,25 @@ class Arbitration : public rclcpp::Node
     public:
         Arbitration();
 
-        enum DemuxDestination
-        {
-            security = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::SECURITY,
-            teleop = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::TELEOP,
-            autonomous = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::AUTONOMUS
-        };
-
     private:
-        rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_motor_cmd;
-        rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _sub_base_heartbeat;
-        rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _sub_rover_heartbeat;
 
-        rclcpp::Service<rover_msgs::srv::DriveTrainArbitration>::SharedPtr _srv_control_demux;
+        void arbCallback(const rover_msgs::msg::PropulsionMotor & msg)
+        {
+            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.FRONT_RIGHT);
+            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.FRONT_LEFT);
+            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.REAR_LEFT);
+            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.REAR_RIGHT);
+        }
 
-        void callbackDemux(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
-                                std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response);
+    rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_motor_cmd;
 };
 
 Arbitration::Arbitration() : Node("arbitration")
 {
-    _srv_control_demux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1, std::placeholders::_2));
-}
+    _sub_motor_cmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/joy",
+                                                                                    1,
+                                                                                    std::bind(&Arbitration::arbCallback, this, std::placeholders::_1)); 
 
-void Arbitration::callbackDemux(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
-                                      std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response)
-{
-  
 }
 
 int main(int argc, char *argv[])
