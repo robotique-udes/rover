@@ -39,7 +39,6 @@ private:
     eDemuxDestination _dest_main = eDemuxDestination::none;
     eDemuxDestination _dest_secondary = eDemuxDestination::none;
 
-
     void callbackJoy(const rover_msgs::msg::Joy &msg, int8_t controller_type);
     void callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
                        std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response);
