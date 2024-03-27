@@ -22,8 +22,14 @@ include_directories(
 )
 
 add_executable(teleop src/teleop.cpp)
+add_executable(arbitration src/arbitration.cpp)
 
 ament_target_dependencies(teleop
+                          rclcpp
+                          std_msgs
+                          rover_msgs)
+
+ament_target_dependencies(arbitration
                           rclcpp
                           std_msgs
                           rover_msgs)
@@ -34,6 +40,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
           teleop
+          arbitration
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
