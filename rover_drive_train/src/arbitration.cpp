@@ -14,21 +14,22 @@ class Arbitration : public rclcpp::Node
 
         void arbCallback(const rover_msgs::msg::PropulsionMotor & msg)
         {
-            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.FRONT_RIGHT);
-            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.FRONT_LEFT);
-            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.REAR_LEFT);
-            RCLCPP_INFO(this->get_logger(), "Front Right: %d", msg.REAR_RIGHT);
+
         }
 
     rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_motor_cmd;
+    rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_security;
+
 };
 
 Arbitration::Arbitration() : Node("arbitration")
 {
-    _sub_motor_cmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/joy",
+    _sub_motor_cmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
                                                                                     1,
-                                                                                    std::bind(&Arbitration::arbCallback, this, std::placeholders::_1)); 
-
+                                                                                    std::bind(&Arbitration::arbCallback, this, std::placeholders::_1));
+    _sub_security = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/security",
+                                                                                    1,
+                                                                                    std::bind(&Arbitration::arbCallback, this, std::placeholders::_1));
 }
 
 int main(int argc, char *argv[])
