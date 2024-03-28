@@ -20,6 +20,8 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui_node = ui_node
 
+        self.pages_created = [] 
+
         package_share_directory = get_package_share_directory('rover_gui')
         uic.loadUi(package_share_directory+ "/ui/main_window.ui", self)
 
@@ -31,9 +33,9 @@ class MainWindow(QMainWindow):
 
 
         self.menu_btns_dict = {
-            self.pb_home: lambda : Home(self.ui_node),
-            self.pb_dashboard: lambda : Dashboard(self.ui_node),
-            self.pb_navigation: lambda : Navigation(self.ui_node)
+            self.pb_home: lambda: self.create_page(Home),
+            self.pb_dashboard: lambda: self.create_page(Dashboard),
+            self.pb_navigation: lambda: self.create_page(Navigation)
         }
 
         self.show_home_window()
@@ -43,6 +45,11 @@ class MainWindow(QMainWindow):
         self.pb_home.clicked.connect(self.show_selected_window)
         self.pb_dashboard.clicked.connect(self.show_selected_window)
         self.pb_navigation.clicked.connect(self.show_selected_window)
+
+    def create_page(self, class_name):
+        obj = class_name(self.ui_node)  # Create an instance of the class
+        self.pages_created.append(obj)  # Add the object to the list
+        return obj
 
     def show_home_window(self):
         result = self.open_tab_flag(self.pb_home.text())
@@ -71,6 +78,12 @@ class MainWindow(QMainWindow):
             self.tab_widget.setVisible(True)
 
     def close_tab(self, index):
+        obj = self.tab_widget.widget(index)
+
+        if obj in self.pages_created:
+            self.pages_created.remove(obj)
+            obj.__del__()
+
         self.tab_widget.removeTab(index)
         if self.tab_widget.count() == 0:
             self.tool_box.setCurrentIndex(0)
@@ -109,7 +122,6 @@ def main(args=None):
     # Start the ROS2 node on a separate thread
     thread = Thread(target=executor.spin)
     thread.start()
-    ui_node.get_logger().info("Spinned ROS2 Node . . .")
 
     # Let the app running on the main thread
     try:
@@ -117,7 +129,6 @@ def main(args=None):
         sys.exit(app.exec_())
 
     finally:
-        ui_node.get_logger().info("Shutting down ROS2 Node . . .")
         ui_node.destroy_node()
         executor.shutdown()
 
