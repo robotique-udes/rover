@@ -1,0 +1,21 @@
+<RCC>
+  <qresource prefix="icons">
+    <file>icons/toggle_off.png</file>
+    <file>icons/toggle_on.png</file>
+    <file>icons/question.png</file>
+    <file>icons/close1.png</file>
+    <file>icons/close2.png</file>
+    <file>icons/logo.png</file>
+    <file>icons/arrow-left.png</file>
+    <file>icons/arrow-right.png</file>
+    <file>icons/home.png</file>
+    <file>icons/navigation.png</file>
+    <file>icons/arrow-right.png</file>
+    <file>icons/arrow-left.png</file>
+    <file>icons/navigation.png</file>
+    <file>icons/home.png</file>
+    <file>icons/home.png</file>
+    <file>icons/navigation.png</file>
+    <file>icons/navigation.png</file>
+  </qresource>
+</RCC>

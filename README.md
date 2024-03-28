@@ -52,4 +52,4 @@ alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build && popd > /dev/null
 
 
 # ESP32 and micro controller ROS developpement:
-See corresponding [repository](https://github.com/robotique-udes/rover_micro) 
+See corresponding [repository](https://github.com/robotique-udes/rover_micro)
