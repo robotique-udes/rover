@@ -1,0 +1,90 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+-- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+-- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+-- Found PythonLibs: /usr/lib/x86_64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+-- Using PYTHON_EXECUTABLE: /usr/bin/python3
+-- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+-- Using PYTHON_LIBRARIES: /usr/lib/x86_64-linux-gnu/libpython3.10.so
+-- Found PythonExtra: .so  
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/emile/ros2_ws/src/rover/build/rover_msgs
+[  1%] [34m[1mGenerating C code for ROS interfaces[0m
+[  2%] [32mBuilding CXX object CMakeFiles/lib_exec.dir/src/lib.cpp.o[0m
+[  3%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[  3%] Built target ament_cmake_python_copy_rover_msgs
+[  4%] [32m[1mLinking CXX static library liblib_exec.a[0m
+[  4%] Built target lib_exec
+running egg_info
+creating rover_msgs.egg-info
+writing rover_msgs.egg-info/PKG-INFO
+writing dependency_links to rover_msgs.egg-info/dependency_links.txt
+writing top-level names to rover_msgs.egg-info/top_level.txt
+writing manifest file 'rover_msgs.egg-info/SOURCES.txt'
+reading manifest file 'rover_msgs.egg-info/SOURCES.txt'
+writing manifest file 'rover_msgs.egg-info/SOURCES.txt'
+[  4%] Built target ament_cmake_python_build_rover_msgs_egg
+Traceback (most recent call last):
+  File "/opt/ros/humble/share/rosidl_generator_c/cmake/../../../lib/rosidl_generator_c/rosidl_generator_c", line 38, in <module>
+    sys.exit(main())
+  File "/opt/ros/humble/share/rosidl_generator_c/cmake/../../../lib/rosidl_generator_c/rosidl_generator_c", line 34, in main
+    generate_c(args.generator_arguments_file)
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_generator_c/__init__.py", line 37, in generate_c
+gmake[2]: *** Deleting file 'rosidl_generator_cpp/rover_msgs/msg/antenna_cmd.hpp'
+gmake[2]: *** Deleting file 'rosidl_generator_c/rover_msgs/msg/antenna_cmd.h'
+    return generate_files(
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_cmake/__init__.py", line 87, in generate_files
+    expand_template(
+  File "/opt/ros/humble/local/lib/python3.10/dist-packages/rosidl_cmake/__init__.py", line 149, in expand_template
+    interpreter.string(template_content, template_path, locals=data)
+  File "/usr/lib/python3/dist-packages/em.py", line 2391, in string
+gmake[2]: *** [CMakeFiles/rover_msgs__cpp.dir/build.make:131: rosidl_generator_cpp/rover_msgs/msg/antenna_cmd.hpp] Interrupt
+    self.safe(scanner, True, locals)
+  File "/usr/lib/python3/dist-packages/em.py", line 2401, in safe
+gmake[1]: *** [CMakeFiles/Makefile2:345: CMakeFiles/rover_msgs__cpp.dir/all] Interrupt
+    self.parse(scanner, locals)
+  File "/usr/lib/python3/dist-packages/em.py", line 2417, in parse
+    token = scanner.one()
+  File "/usr/lib/python3/dist-packages/em.py", line 1984, in one
+    token.scan(self)
+  File "/usr/lib/python3/dist-packages/em.py", line 1468, in scan
+    self.subscan(scanner, self.type)
+  File "/usr/lib/python3/dist-packages/em.py", line 1483, in subscan
+    token = scanner.one()
+  File "/usr/lib/python3/dist-packages/em.py", line 1992, in one
+    data = self.chop(loc)
+  File "/usr/lib/python3/dist-packages/em.py", line 1726, in chop
+    result = self[:count]
+  File "/usr/lib/python3/dist-packages/em.py", line 1684, in __getitem__
+    assert index.step is None or index.step == 1
+KeyboardInterrupt
+Exception ignored in: <function Interpreter.__del__ at 0x71f7bf7c20e0>
+Traceback (most recent call last):
+  File "/usr/lib/python3/dist-packages/em.py", line 2094, in __del__
+  File "/usr/lib/python3/dist-packages/em.py", line 2157, in shutdown
+  File "/usr/lib/python3/dist-packages/em.py", line 2647, in finalize
+  File "/usr/lib/python3/dist-packages/em.py", line 2200, in push
+AttributeError: '_io.TextIOWrapper' object has no attribute 'push'
+gmake[2]: *** [CMakeFiles/rover_msgs__rosidl_generator_c.dir/build.make:95: rosidl_generator_c/rover_msgs/msg/antenna_cmd.h] Interrupt
+gmake[1]: *** [CMakeFiles/Makefile2:240: CMakeFiles/rover_msgs__rosidl_generator_c.dir/all] Interrupt
+gmake: *** [Makefile:146: all] Interrupt

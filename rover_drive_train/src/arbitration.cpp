@@ -3,6 +3,7 @@
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
+
 #include "rover_msgs/srv/drive_train_arbitration.hpp"
 
 //Class definition
@@ -10,18 +11,12 @@ class Arbitration : public rclcpp::Node
 {
     public:
         Arbitration();
-
-        enum DemuxDestination
-        {
-            security = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::SECURITY,
-            teleop = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::TELEOP,
-            autonomous = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::AUTONOMUS
-        };
-
     private:
         rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_motor_cmd;
         rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _sub_base_heartbeat;
         rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _sub_rover_heartbeat;
+
+        rclcpp::Publisher<rover_msgs::msg::PropulsionMotor>::SharedPtr _pub_abtr;
 
         rclcpp::Service<rover_msgs::srv::DriveTrainArbitration>::SharedPtr _srv_control_demux;
 
@@ -31,6 +26,18 @@ class Arbitration : public rclcpp::Node
 
 Arbitration::Arbitration() : Node("arbitration")
 {
+    _sub_base_heartbeat = this->create_subscription<std_msgs::msg::Empty>("/base/heartbeat",
+                                                                                    1,
+                                                                                    std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1));
+    _sub_rover_heartbeat = this->create_subscription<std_msgs::msg::Empty>("/rover/heartbeat",
+                                                                                    1,
+                                                                                    std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1));
+    _sub_motor_cmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/security",
+                                                                                    1,
+                                                                                    std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1));
+
+    _pub_abtr = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/raw", 1);
+
     _srv_control_demux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1, std::placeholders::_2));
 }
 

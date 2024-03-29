@@ -1,0 +1,29 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rover_msgs/srv/JoyDemuxSetState.srv
+// generated code does not contain a copyright notice
+
+
+module rover_msgs {
+  module srv {
+    module JoyDemuxSetState_Request_Constants {
+      const uint8 CONTROLLER_MAIN = 0;
+      const uint8 CONTROLLER_SECONDARY = 1;
+      @verbatim (language="comment", text=
+        "Possible demux destinations")
+      const uint8 DEST_DRIVE_TRAIN = 0;
+      const uint8 DEST_ARM = 1;
+      const uint8 DEST_ANTENNA = 2;
+      const uint8 DEST_NONE = 3;
+    };
+    struct JoyDemuxSetState_Request {
+      uint8 controller_type;
+
+      uint8 destination;
+
+      boolean force;
+    };
+    struct JoyDemuxSetState_Response {
+      boolean success;
+    };
+  };
+};
