@@ -253,7 +253,7 @@ QRadioButton::indicator::checked {
      <property name="maximumSize">
       <size>
        <width>260</width>
-       <height>190</height>
+       <height>220</height>
       </size>
      </property>
      <property name="font">

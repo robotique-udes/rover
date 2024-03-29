@@ -7,7 +7,7 @@ package_name = 'rover_gui'
 setup(
     name=package_name,
     version='0.0.0',
-    packages=[package_name, 'pages', 'static', 'widgets'],
+    packages=[package_name, 'pages', 'static'],
     data_files=[
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),

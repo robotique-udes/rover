@@ -55,9 +55,12 @@ class Dashboard(QWidget):
         self.rb_joy_arm_sec.clicked.connect(self.joydemux_clicked)
         self.rb_joy_none_sec.clicked.connect(self.joydemux_clicked)
 
-    def handle_service_unavailability(self, service_name):
-        self.ui_node.get_logger().warn('%s not available.' % service_name)
-        QMessageBox.warning(self, "Service Not Available", "The %s is not available." % service_name)
+    def handle_service_unavailability(self, sender_rb, service_name):
+        sender_rb.setAutoExclusive(False)
+        sender_rb.setChecked(False)
+        sender_rb.setAutoExclusive(True)
+        self.ui_node.get_logger().warn('%s service not available.' % service_name)
+        QMessageBox.warning(self, "Service Not Available", "The %s service is not available." % service_name)
     
     def antenna_arbitration_clicked(self):
         sender_rb = self.sender()
@@ -68,7 +71,7 @@ class Dashboard(QWidget):
         antenna_req = AntennaArbitration.Request()
 
         if not antenna_client.wait_for_service(timeout_sec=1.0):
-            self.handle_service_unavailability("antenna_arbitration service")
+            self.handle_service_unavailability(sender_rb, "antenna_arbitration")
             return
 
         if sender_rb == self.rb_ant_static:
@@ -90,7 +93,8 @@ class Dashboard(QWidget):
         joydemux_req = JoyDemuxSetState.Request()
 
         if not joydemux_client.wait_for_service(timeout_sec=1.0):
-            self.handle_service_unavailability("joy_demux service")
+            sender_rb.setChecked(False)
+            self.handle_service_unavailability(sender_rb, "joy_demux")
             return
 
         if sender_rb in (self.rb_joy_drivetrain_main, self.rb_joy_drivetrain_sec):

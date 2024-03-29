@@ -3,12 +3,13 @@
 <package format="3">
   <name>rover_gui</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
-  <maintainer email="nathan.dumoulin11@outlook.com">nathan</maintainer>
-  <license>Apache-2.0</license>
+  <description>
+    rover_gui pkg contains the PyQt5 app to communicate with the rover
+  </description>
+  <maintainer email="Nathan.Dumoulin@usherbrooke.ca">nathan</maintainer>
+  <license>MIT</license>
 
   <depend>rclpy</depend>
-  <depend>std_msgs</depend>
   <depend>rover_msgs</depend>
 
   <test_depend>ament_copyright</test_depend>
