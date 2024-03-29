@@ -14,7 +14,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(joy REQUIRED)
-find_package(sensor_msgs REQUIRED)
 find_package(rover_msgs REQUIRED)
 
 include_directories(
@@ -37,6 +36,7 @@ ament_target_dependencies(arbitration
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
+# DEPENDENCIES geometry_msgs # Add packages that above messages depend on
 
 install(TARGETS
           teleop
