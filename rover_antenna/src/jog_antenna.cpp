@@ -51,9 +51,9 @@ void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg_)
 {
     rover_msgs::msg::AntennaCmd jogCmd;
 
-    _jogAverage_l1.addValue(msg_.l1);
+    _jogAverage_l1.addValue(msg_.L1);
     
-    _jogAverage_r1.addValue(msg_.r1);
+    _jogAverage_r1.addValue(msg_.R1);
 
     jogCmd.enable = true;
 
