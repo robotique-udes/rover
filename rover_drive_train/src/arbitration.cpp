@@ -20,7 +20,8 @@ class Arbitration : public rclcpp::Node
 
     private:
         rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_motor_cmd;
-        rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_security;
+        rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _sub_base_heartbeat;
+        rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _sub_rover_heartbeat;
 
         rclcpp::Service<rover_msgs::srv::DriveTrainArbitration>::SharedPtr _srv_control_demux;
 
