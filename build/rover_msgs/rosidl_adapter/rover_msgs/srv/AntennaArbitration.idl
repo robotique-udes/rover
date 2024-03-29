@@ -1,0 +1,20 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rover_msgs/srv/AntennaArbitration.srv
+// generated code does not contain a copyright notice
+
+
+module rover_msgs {
+  module srv {
+    module AntennaArbitration_Request_Constants {
+      const uint8 NOT_MOVING = 0;
+      const uint8 TELEOP = 1;
+      const uint8 AUTONOMUS = 2;
+    };
+    struct AntennaArbitration_Request {
+      uint8 target_arbitration;
+    };
+    struct AntennaArbitration_Response {
+      uint8 current_arbitration;
+    };
+  };
+};
