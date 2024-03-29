@@ -8,14 +8,15 @@
 //Class definition
 class Arbitration : public rclcpp::Node
 {
-    Arbitration();
+    public:
+        Arbitration();
 
-    enum DemuxDestination
-    {
-        security = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::SECURITY,
-        teleop = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::TELEOP,
-        autonomous = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::AUTONOMUS
-    };
+        enum DemuxDestination
+        {
+            security = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::SECURITY,
+            teleop = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::TELEOP,
+            autonomous = (int8_t)rover_msgs::srv::DriveTrainArbitration_Request::AUTONOMUS
+        };
 
     private:
         rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_motor_cmd;
@@ -25,28 +26,17 @@ class Arbitration : public rclcpp::Node
 
         void callbackDemux(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
                                 std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response);
-    
-    
 };
 
 Arbitration::Arbitration() : Node("arbitration")
 {
-    _sub_motor_cmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
-                                                                                    1,
-                                                                                    std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1));
-    _sub_security = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/security",
-                                                                                    1,
-                                                                                    std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1));
-
-    _srv_control_demux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&Arbitration::callbackDemux));
+    _srv_control_demux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&Arbitration::callbackDemux, this, std::placeholders::_1, std::placeholders::_2));
 }
 
 void Arbitration::callbackDemux(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
-                            std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response)
+                                      std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response)
 {
-        DemuxDestination dest = (DemuxDestination)((int8_t)request->destination);
-
-        
+  
 }
 
 int main(int argc, char *argv[])
