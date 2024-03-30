@@ -21,6 +21,7 @@ class Navigation(QWidget):
     def __init__(self, ui_node):
         super(Navigation, self).__init__()
         self.ui_node = ui_node
+        
         package_share_directory = get_package_share_directory('rover_gui')
         uic.loadUi(package_share_directory + "/ui/navigation.ui", self)
 
@@ -35,11 +36,10 @@ class Navigation(QWidget):
 
         self.lb_rover_icon.setPixmap(self.rover_logo_pixmap)
         self.lb_rover_icon.move(400, 100)
-        self.lb_rover_icon.setFixedWidth(600)
-        self.lb_rover_icon.setFixedHeight(600)
 
-        self.top_left = ReferencePoint(38, -275, 45.379342, -71.924912)
-        self.bottom_right = ReferencePoint(735, 350, 45.378358, -71.923317)
+        self.top_left = ReferencePoint(43, 33, 45.379342, -71.924912)
+        self.bottom_right = ReferencePoint(688, 628, 45.378358, -71.923317)
+        self.offset = 25
 
         self.top_left.pos = self.latlng_to_global_XY(self.top_left.lat, self.top_left.lng)
         self.bottom_right.pos = self.latlng_to_global_XY(self.bottom_right.lat, self.bottom_right.lng)
@@ -53,7 +53,13 @@ class Navigation(QWidget):
 
         self.gv_map.setScene(self.scene)
 
-    def update_current_position(self, timer_obj: rclpy.timer):
+        self.gps_sub = ui_node.create_subscription(
+            Gps,
+            '/rover/gps/position',
+            self.gps_data_callback,
+            1)
+
+    def update_current_position(self):
         with self.lock_position:
             pos = self.latlng_to_screenXY(self.current_latitude, self.current_longitude)
 
@@ -61,7 +67,8 @@ class Navigation(QWidget):
             self.lb_curr_xy_coord.setText("XY : (" + str(round(pos["x"], 4)) + ", " + str(round(pos["y"], 4)) + ")")
 
             if hasattr(self, 'lb_rover_icon') and self.lb_rover_icon:
-                self.lb_rover_icon.move(pos["x"], pos["y"])
+                #self.lb_rover_icon.move(43,33)
+                self.lb_rover_icon.move(round(pos["x"]) - self.offset, round(pos["y"]) - self.offset)
                 self.lb_rover_icon.show()
             else:
                 print("Rover icon is not initialized.")
@@ -72,6 +79,7 @@ class Navigation(QWidget):
             self.current_longitude = data.longitude
             self.heading = data.heading_track
             self.height = data.height
+        self.update_current_position()
         
 
     def latlng_to_global_XY(self, lat, lng):
@@ -88,7 +96,7 @@ class Navigation(QWidget):
         return {
             'x': self.top_left.scrX + (self.bottom_right.scrX - self.top_left.scrX) * perX,
             'y': self.top_left.scrY + (self.bottom_right.scrY - self.top_left.scrY) * perY
-    }
+        }
     
     def closePopUp(self):
         self.hide()

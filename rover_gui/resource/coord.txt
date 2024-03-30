@@ -1,0 +1,12 @@
+bout de ligne jaune :
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378832', longitude: '-71.923952', heading: '100.0'}"
+bout de ligne blanche :
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378866', longitude: '-71.924111', heading: '100.0'}"
+bout de stationnnement (gauche)
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378650', longitude: '-71.923838', heading: '100.0'}"
+milieu voiture blanche :
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378539', longitude: '-71.923806', heading: '100.0'}"
+milieu de l'image (coin asphalte noire)
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378747', longitude: '-71.924062', heading: '100.0'}"
+Voiture gauche en haut blanc
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378846', longitude: '-71.924850', heading: '100.0'}"
