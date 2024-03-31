@@ -9,7 +9,7 @@ from rclpy.node import Node
 
 from ament_index_python.packages import get_package_share_directory
 from PyQt5.QtWidgets import QWidget, QRadioButton, QLineEdit
-from PyQt5.QtGui import QPixmap
+from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5 import QtWidgets, QtCore, uic
 from PyQt5.QtWidgets import QGraphicsScene
 from rover_msgs.msg import Gps
@@ -39,7 +39,8 @@ class Navigation(QWidget):
 
         self.top_left = ReferencePoint(43, 33, 45.379342, -71.924912)
         self.bottom_right = ReferencePoint(688, 628, 45.378358, -71.923317)
-        self.offset = 25
+        self.offsetX = 12
+        self.offsetY = 15
 
         self.top_left.pos = self.latlng_to_global_XY(self.top_left.lat, self.top_left.lng)
         self.bottom_right.pos = self.latlng_to_global_XY(self.bottom_right.lat, self.bottom_right.lng)
@@ -67,8 +68,10 @@ class Navigation(QWidget):
             self.lb_curr_xy_coord.setText("XY : (" + str(round(pos["x"], 4)) + ", " + str(round(pos["y"], 4)) + ")")
 
             if hasattr(self, 'lb_rover_icon') and self.lb_rover_icon:
-                #self.lb_rover_icon.move(43,33)
-                self.lb_rover_icon.move(round(pos["x"]) - self.offset, round(pos["y"]) - self.offset)
+                rotated_pixmap = self.rover_logo_pixmap.transformed(QTransform().rotate(self.heading))
+                self.lb_rover_icon.setPixmap(rotated_pixmap)
+
+                self.lb_rover_icon.move(round(pos["x"] - rotated_pixmap.width() / 2) - self.offsetX, round(pos["y"] - rotated_pixmap.height() / 2) - self.offsetY)
                 self.lb_rover_icon.show()
             else:
                 print("Rover icon is not initialized.")
@@ -77,7 +80,7 @@ class Navigation(QWidget):
         with self.lock_position:
             self.current_latitude = data.latitude
             self.current_longitude = data.longitude
-            self.heading = data.heading_track
+            self.heading = data.heading
             self.height = data.height
         self.update_current_position()
         
