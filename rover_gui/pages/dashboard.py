@@ -29,19 +29,20 @@ class Dashboard(QWidget):
         uic.loadUi(package_share_directory+ "/ui/dashboard.ui", self)
 
         # Antenna arbitration ui elements
-        self.rb_ant_teleop = self.findChild(QRadioButton, "rb_ant_teleop")
-        self.rb_ant_autonomus = self.findChild(QRadioButton, "rb_ant_autonomus")
-        self.rb_ant_static = self.findChild(QRadioButton, "rb_ant_static")
+        self.rb_ant_teleop : QRadioButton
+        self.rb_ant_autonomus : QRadioButton
+        self.rb_ant_static : QRadioButton
 
         # Joy demux ui elements
-        self.rb_joy_drivetrain_main = self.findChild(QRadioButton, "rb_joy_drivetrain_main")
-        self.rb_joy_arm_main = self.findChild(QRadioButton, "rb_joy_arm_main")
-        self.rb_joy_antenna_main = self.findChild(QRadioButton, "rb_joy_antenna_main")
-        self.rb_joy_none_main = self.findChild(QRadioButton, "rb_joy_none_main")
-        self.rb_joy_drivetrain_sec = self.findChild(QRadioButton, "rb_joy_drivetrain_sec")
-        self.rb_joy_arm_sec = self.findChild(QRadioButton, "rb_joy_arm_sec")
-        self.rb_joy_antenna_sec = self.findChild(QRadioButton, "rb_joy_antenna_sec")
-        self.rb_joy_none_sec = self.findChild(QRadioButton, "rb_joy_none_sec")
+        self.rb_joy_force : QRadioButton
+        self.rb_joy_drivetrain_main : QRadioButton
+        self.rb_joy_arm_main : QRadioButton
+        self.rb_joy_antenna_main : QRadioButton
+        self.rb_joy_none_main : QRadioButton
+        self.rb_joy_drivetrain_sec : QRadioButton
+        self.rb_joy_arm_sec : QRadioButton
+        self.rb_joy_antenna_sec : QRadioButton
+        self.rb_joy_none_sec : QRadioButton
 
         self.rb_ant_teleop.clicked.connect(self.antenna_arbitration_clicked)
         self.rb_ant_autonomus.clicked.connect(self.antenna_arbitration_clicked)
@@ -111,6 +112,9 @@ class Dashboard(QWidget):
             joydemux_req.controller_type = JoyDemuxSetState.Request.CONTROLLER_MAIN
         else:
             joydemux_req.controller_type = JoyDemuxSetState.Request.CONTROLLER_SECONDARY
+
+        if self.rb_joy_force.isChecked():
+            joydemux_req.force = True
 
         response = joydemux_client.call(joydemux_req)
         self.ui_node.get_logger().info("Response : " + str(response.success))

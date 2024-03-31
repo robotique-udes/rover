@@ -65,7 +65,7 @@ class Navigation(QWidget):
             pos = self.latlng_to_screenXY(self.current_latitude, self.current_longitude)
 
             self.lb_curr_position.setText("lat : " + str(round(self.current_latitude, 4)) + ", lon : " + str(round(self.current_longitude, 4)))
-            self.lb_curr_xy_coord.setText("XY : (" + str(round(pos["x"], 4)) + ", " + str(round(pos["y"], 4)) + ")")
+            self.lb_curr_heading.setText("heading : " + str(self.heading) + "°")
 
             if hasattr(self, 'lb_rover_icon') and self.lb_rover_icon:
                 rotated_pixmap = self.rover_logo_pixmap.transformed(QTransform().rotate(self.heading))

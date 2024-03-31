@@ -74,21 +74,6 @@
       </property>
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
-        <widget class="QLabel" name="lb_curr_xy_coord">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>(0,0)</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-       <item>
         <widget class="QLabel" name="lb_curr_position">
          <property name="font">
           <font>
@@ -102,7 +87,22 @@
           <string notr="true"/>
          </property>
          <property name="text">
-          <string>-69.0 +69.0</string>
+          <string>lat : -69.0, lon :  +69.0</string>
+         </property>
+         <property name="alignment">
+          <set>Qt::AlignCenter</set>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLabel" name="lb_curr_heading">
+         <property name="font">
+          <font>
+           <pointsize>13</pointsize>
+          </font>
+         </property>
+         <property name="text">
+          <string>heading : 69.0°</string>
          </property>
          <property name="alignment">
           <set>Qt::AlignCenter</set>
