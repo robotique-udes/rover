@@ -9,7 +9,6 @@ from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
 class Dashboard(QWidget):
     def __init__(self, ui_node):
         super(Dashboard,self).__init__()
-        print(self)
         self.ui_node = ui_node
 
         self.joydemux_sub = ui_node.create_subscription(

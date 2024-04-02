@@ -37,8 +37,8 @@ class Navigation(QWidget):
         self.lb_rover_icon.setPixmap(self.rover_logo_pixmap)
         self.lb_rover_icon.move(400, 100)
 
-        self.top_left = ReferencePoint(45, 52, 45.379355, -71.924921)
-        self.bottom_right = ReferencePoint(684, 620, 45.378290, -71.923240)
+        self.top_left = ReferencePoint(self.frame.pos().x() + 5, self.frame.pos().y() + 22, 45.379355, -71.924921)
+        self.bottom_right = ReferencePoint(self.frame.pos().x() + 644, self.frame.pos().y() + 590, 45.378290, -71.923240)
         self.offsetX = 0
         self.offsetY = 0
 
