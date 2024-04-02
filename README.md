@@ -48,9 +48,8 @@ The following cmd create a cmd to always compile in the ros2_ws no matter where 
 You can change the "b" to whatever you like and you'll be able to compile by entering the cmd you set.
 ```
 alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build --symlink-install && popd > /dev/null'
-or
-alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build && popd > /dev/null'
 ```
+You need to delete the "build, install and log" folder from your workspaces before being able use the alias command
 
 
 # ESP32 and micro controller ROS developpement:
