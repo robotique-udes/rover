@@ -4,8 +4,6 @@ from PyQt5.QtWidgets import QWidget, QLabel
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
 
-from rclpy.node import Node
-
 class Home(QWidget):
     def __init__(self, ui_node):
         super(Home,self).__init__()

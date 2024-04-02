@@ -32,18 +32,15 @@ class Navigation(QWidget):
 
         self.rover_logo_size = 20
         self.rover_logo_pixmap: QPixmap = QPixmap(rover_icon_path).scaled(self.rover_logo_size, self.rover_logo_size, QtCore.Qt.KeepAspectRatio)
-        self.map_image = self.scene.addPixmap(QPixmap(map_image_path).scaled(700, 700, QtCore.Qt.KeepAspectRatio))
+        self.map_image = self.scene.addPixmap(QPixmap(map_image_path).scaled(640, 640, QtCore.Qt.KeepAspectRatio))
 
         self.lb_rover_icon.setPixmap(self.rover_logo_pixmap)
         self.lb_rover_icon.move(400, 100)
 
-        self.top_left = ReferencePoint(43, 33, 45.379342, -71.924912)
-        self.bottom_right = ReferencePoint(688, 628, 45.378358, -71.923317)
-        self.offsetX = 12
-        self.offsetY = 15
-
-        self.top_left.pos = self.latlng_to_global_XY(self.top_left.lat, self.top_left.lng)
-        self.bottom_right.pos = self.latlng_to_global_XY(self.bottom_right.lat, self.bottom_right.lng)
+        self.top_left = ReferencePoint(45, 52, 45.379355, -71.924921)
+        self.bottom_right = ReferencePoint(684, 620, 45.378290, -71.923240)
+        self.offsetX = 0
+        self.offsetY = 0
 
         self.lock_position: Lock = Lock()
         with self.lock_position:
@@ -64,43 +61,34 @@ class Navigation(QWidget):
         with self.lock_position:
             pos = self.latlng_to_screenXY(self.current_latitude, self.current_longitude)
 
-            self.lb_curr_position.setText("lat : " + str(round(self.current_latitude, 4)) + ", lon : " + str(round(self.current_longitude, 4)))
+            self.lb_curr_position.setText("lat : " + str(round(self.current_latitude, 6)) + ", lon : " + str(round(self.current_longitude, 6)))
             self.lb_curr_heading.setText("heading : " + str(self.heading) + "°")
 
             if hasattr(self, 'lb_rover_icon') and self.lb_rover_icon:
                 rotated_pixmap = self.rover_logo_pixmap.transformed(QTransform().rotate(self.heading))
                 self.lb_rover_icon.setPixmap(rotated_pixmap)
-
-                self.lb_rover_icon.move(round(pos["x"] - rotated_pixmap.width() / 2) - self.offsetX, round(pos["y"] - rotated_pixmap.height() / 2) - self.offsetY)
+                self.lb_rover_icon.move(round(pos["x"]) , round(pos["y"]))
                 self.lb_rover_icon.show()
             else:
-                print("Rover icon is not initialized.")
+                self.ui_node.get_logger().warn("Rover icon is not initialized.")
     
     def gps_data_callback(self, data: Gps):
         with self.lock_position:
-            self.current_latitude = data.latitude
-            self.current_longitude = data.longitude
+            self.current_latitude = round(data.latitude, 6)
+            self.current_longitude = round(data.longitude, 6)
             self.heading = data.heading
             self.height = data.height
         self.update_current_position()
         
-
-    def latlng_to_global_XY(self, lat, lng):
-        x = Navigation.EARTH_RADIUS*lng*math.cos((self.top_left.lat + self.bottom_right.lat)/2)
-        y = Navigation.EARTH_RADIUS*lat
-        return {'x': x, 'y': y}
-
-    
     def latlng_to_screenXY(self, lat, lng):
-        pos = self.latlng_to_global_XY(lat, lng)
-        perX = ((pos['x'] - self.top_left.pos['x']) / (self.bottom_right.pos['x'] - self.top_left.pos['x']))
-        perY = ((pos['y'] - self.top_left.pos['y']) / (self.bottom_right.pos['y'] - self.top_left.pos['y']))
+        perX = (lng - self.top_left.lng) / (self.bottom_right.lng - self.top_left.lng)
+        perY = (lat - self.top_left.lat) / (self.bottom_right.lat - self.top_left.lat)
 
-        return {
-            'x': self.top_left.scrX + (self.bottom_right.scrX - self.top_left.scrX) * perX,
-            'y': self.top_left.scrY + (self.bottom_right.scrY - self.top_left.scrY) * perY
-        }
-    
+        scrX = self.top_left.scrX + (self.bottom_right.scrX - self.top_left.scrX) * perX
+        scrY = self.top_left.scrY + (self.bottom_right.scrY - self.top_left.scrY) * perY
+
+        return {'x': scrX, 'y': scrY}
+        
     def closePopUp(self):
         self.hide()
 

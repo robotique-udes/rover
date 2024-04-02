@@ -2,12 +2,6 @@ from ament_index_python.packages import get_package_share_directory
 
 from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox
 from PyQt5 import uic
-
-from rover_gui import dashboard_node
-
-import rclpy
-from rclpy.client import Client
-from rclpy.node import Node
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
