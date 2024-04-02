@@ -92,6 +92,9 @@ class Navigation(QWidget):
     def closePopUp(self):
         self.hide()
 
+    def __del__(self):
+        self.ui_node.destroy_subscription(self.gps_sub)
+
 class ReferencePoint:
     def __init__(self, scrX, scrY, lat, lng):
         self.scrX = scrX
