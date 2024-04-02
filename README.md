@@ -47,6 +47,8 @@ source ~/ros2_ws/install/local_setup.bash
 The following cmd create a cmd to always compile in the ros2_ws no matter where your terminal is. Add this line to the end of your bashrc and you'll be able to compile by entering "b" in any bash terminal anywhere.
 You can change the "b" to whatever you like and you'll be able to compile by entering the cmd you set.
 ```
+alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build --symlink-install && popd > /dev/null'
+or
 alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build && popd > /dev/null'
 ```
 
