@@ -109,12 +109,9 @@ void Arbitration::cbRoverWatchdog()
 
 void Arbitration::sendCmd()
 {
-    RCLCPP_INFO(this->get_logger(), "Current Arbitration Request: %d", _arbitrationRequest.target_arbitration);
     if(_baseHrLost || _roverHrLost)
     {
         rover_msgs::msg::PropulsionMotor _zeroCmd;
-
-        RCLCPP_INFO(this->get_logger(), "No beans");
 
         for(int i = 0; i < 4; ++i)
         {
@@ -128,7 +125,6 @@ void Arbitration::sendCmd()
     }
     else if (_arbitrationRequest.target_arbitration == rover_msgs::srv::DriveTrainArbitration_Request::TELEOP)
     {
-        RCLCPP_INFO(this->get_logger(), "Executing TELEOP arbitration logic.");
 
         _pub_abtr->publish(_cmdTeleop);
         _arbitrationResponse.current_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::TELEOP;
