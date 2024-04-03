@@ -31,7 +31,7 @@ def generate_launch_description():
                                                 )
         
         arbitration_node = Node(package="rover_drive_train",
-                                        namespace="/rover/drive_dtrain",
+                                        namespace="/rover/drive_train",
                                         executable="arbitration",
                                         name="arbitration",
                                         )

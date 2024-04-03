@@ -36,7 +36,6 @@ ament_target_dependencies(arbitration
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
-# DEPENDENCIES geometry_msgs # Add packages that above messages depend on
 
 install(TARGETS
           teleop
