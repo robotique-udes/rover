@@ -3,8 +3,15 @@
 * microROS ([see our micro ros projects distro](https://github.com/robotique-udes/rover_micro/)) 
 
 Run the following commands to download and install depedencies from apt:
+
 ```
 sudo apt install ros-humble-joy
+```
+
+install setuptools version 58.2.0 for compatibility reasons ([further details](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/))
+
+```
+pip install setuptools==58.2.0
 ```
 
 # Setup

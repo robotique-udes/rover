@@ -2,12 +2,6 @@ from ament_index_python.packages import get_package_share_directory
 
 from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox
 from PyQt5 import uic
-
-from rover_gui import dashboard_node
-
-import rclpy
-from rclpy.client import Client
-from rclpy.node import Node
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
@@ -15,7 +9,6 @@ from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
 class Dashboard(QWidget):
     def __init__(self, ui_node):
         super(Dashboard,self).__init__()
-        print(self)
         self.ui_node = ui_node
 
         self.joydemux_sub = ui_node.create_subscription(
@@ -29,19 +22,20 @@ class Dashboard(QWidget):
         uic.loadUi(package_share_directory+ "/ui/dashboard.ui", self)
 
         # Antenna arbitration ui elements
-        self.rb_ant_teleop = self.findChild(QRadioButton, "rb_ant_teleop")
-        self.rb_ant_autonomus = self.findChild(QRadioButton, "rb_ant_autonomus")
-        self.rb_ant_static = self.findChild(QRadioButton, "rb_ant_static")
+        self.rb_ant_teleop : QRadioButton
+        self.rb_ant_autonomus : QRadioButton
+        self.rb_ant_static : QRadioButton
 
         # Joy demux ui elements
-        self.rb_joy_drivetrain_main = self.findChild(QRadioButton, "rb_joy_drivetrain_main")
-        self.rb_joy_arm_main = self.findChild(QRadioButton, "rb_joy_arm_main")
-        self.rb_joy_antenna_main = self.findChild(QRadioButton, "rb_joy_antenna_main")
-        self.rb_joy_none_main = self.findChild(QRadioButton, "rb_joy_none_main")
-        self.rb_joy_drivetrain_sec = self.findChild(QRadioButton, "rb_joy_drivetrain_sec")
-        self.rb_joy_arm_sec = self.findChild(QRadioButton, "rb_joy_arm_sec")
-        self.rb_joy_antenna_sec = self.findChild(QRadioButton, "rb_joy_antenna_sec")
-        self.rb_joy_none_sec = self.findChild(QRadioButton, "rb_joy_none_sec")
+        self.rb_joy_force : QRadioButton
+        self.rb_joy_drivetrain_main : QRadioButton
+        self.rb_joy_arm_main : QRadioButton
+        self.rb_joy_antenna_main : QRadioButton
+        self.rb_joy_none_main : QRadioButton
+        self.rb_joy_drivetrain_sec : QRadioButton
+        self.rb_joy_arm_sec : QRadioButton
+        self.rb_joy_antenna_sec : QRadioButton
+        self.rb_joy_none_sec : QRadioButton
 
         self.rb_ant_teleop.clicked.connect(self.antenna_arbitration_clicked)
         self.rb_ant_autonomus.clicked.connect(self.antenna_arbitration_clicked)
@@ -111,6 +105,9 @@ class Dashboard(QWidget):
             joydemux_req.controller_type = JoyDemuxSetState.Request.CONTROLLER_MAIN
         else:
             joydemux_req.controller_type = JoyDemuxSetState.Request.CONTROLLER_SECONDARY
+
+        if self.rb_joy_force.isChecked():
+            joydemux_req.force = True
 
         response = joydemux_client.call(joydemux_req)
         self.ui_node.get_logger().info("Response : " + str(response.success))

@@ -24,9 +24,7 @@ setup(
     tests_require=['pytest'],
     entry_points={
         'console_scripts': [
-            "main_gui = rover_gui.main:main",
-            "dashboard_node = rover_gui.dashboard_node:main"
-            "arbitration_srv = rover_gui.dashboard_service:main"
+            "main_gui = rover_gui.main:main"
         ],
     },
 )
