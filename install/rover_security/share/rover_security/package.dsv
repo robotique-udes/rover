@@ -1,5 +1,0 @@
-source;share/rover_security/local_setup.bash
-source;share/rover_security/local_setup.dsv
-source;share/rover_security/local_setup.ps1
-source;share/rover_security/local_setup.sh
-source;share/rover_security/local_setup.zsh
