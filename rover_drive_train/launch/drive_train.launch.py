@@ -20,8 +20,8 @@ def generate_launch_description():
                                 'launch/joy.launch.py'))
         )
 
-        teleop_node= Node (package="rover_drive_train",
-                                    namespace="/rover/drive_drain",
+        teleop_node = Node (package="rover_drive_train",
+                                    namespace="/rover/drive_train",
                                     executable="teleop",
                                     name="teleop",
                                     parameters=[{"speed_factor_crawler": 0.01},
@@ -30,7 +30,14 @@ def generate_launch_description():
                                                 {"smallest_radius": 0.30}]
                                                 )
         
+        arbitration_node = Node(package="rover_drive_train",
+                                        namespace="/rover/drive_train",
+                                        executable="arbitration",
+                                        name="arbitration",
+                                        )
+        
         ld.add_action(joy_launch_file)
         ld.add_action(teleop_node)
+        ld.add_action(arbitration_node)
 
         return ld

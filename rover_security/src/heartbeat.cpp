@@ -22,7 +22,7 @@ int main(int argc, char *argv[])
     
     RCLCPP_INFO(node->get_logger(), "Starting heartbeat at %u Hz", heartbeat_frequency);
 
-    rclcpp::Publisher<std_msgs:: msg::Empty>::SharedPtr pub_heartbeat = node->create_publisher<std_msgs::msg::Empty>("base_heartbeat", 1);
+    rclcpp::Publisher<std_msgs:: msg::Empty>::SharedPtr pub_heartbeat = node->create_publisher<std_msgs::msg::Empty>("heartbeat", 1);
     rclcpp::Rate timer(heartbeat_frequency);
 
     while (rclcpp::ok())

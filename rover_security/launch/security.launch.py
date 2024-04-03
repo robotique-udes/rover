@@ -8,14 +8,14 @@ def generate_launch_description():
         node_heartbeat_base = Node (package="rover_security",
                                     namespace="/base",
                                     executable="heartbeat",
-                                    name="base_heartbeat",
+                                    name="heartbeat",
                                     parameters=[{"heartbeat_frequency": 4}],
                                     remappings=[("security", "raw")])
  
         node_heartbeat_rover = Node (package="rover_security",
                                     namespace="/rover",
                                     executable="heartbeat",
-                                    name="rover_heartbeat",
+                                    name="heartbeat",
                                     parameters=[{"heartbeat_frequency": 4}],
                                     remappings=[("security", "raw")])
         
