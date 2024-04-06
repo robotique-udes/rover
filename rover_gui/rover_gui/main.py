@@ -1,9 +1,11 @@
 #https://www.youtube.com/watch?v=jWxNfb7Hng8
 from threading import Thread 
+import sys
 
 from ament_index_python.packages import get_package_share_directory
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox, QShortcut
+from PyQt5.QtGui import QKeySequence
 from PyQt5 import uic
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
@@ -16,9 +18,13 @@ from pages.navigation import Navigation
 from static.resource_rc import qt_resource_data
 
 class MainWindow(QMainWindow):
-    def __init__(self, ui_node):
+    def __init__(self, ui_node, executor):
         super(MainWindow, self).__init__()
         self.ui_node = ui_node
+        self.executor = executor
+
+        shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
+        shortcut.activated.connect(self.close_application)
 
         self.pages_created = [] 
 
@@ -108,8 +114,15 @@ class MainWindow(QMainWindow):
 
         return False,
 
+    def closeEvent(self, event):
+            self.close_application()
+
+    def close_application(self):
+        self.ui_node.destroy_node()
+        self.executor.shutdown()
+        QApplication.quit()
+
 def main(args=None):
-    import sys
     rclpy.init(args=args)
 
     ui_node = UINode()
@@ -117,21 +130,14 @@ def main(args=None):
     executor.add_node(ui_node)
 
     app = QApplication(sys.argv)
-    window = MainWindow(ui_node)
+    window = MainWindow(ui_node, executor)
 
     # Start the ROS2 node on a separate thread
     thread = Thread(target=executor.spin)
     thread.start()
 
-    # Let the app running on the main thread
-    try:
-        window.show()
-        sys.exit(app.exec_())
-
-    finally:
-        ui_node.destroy_node()
-        executor.shutdown()
-
+    window.show()
+    sys.exit(app.exec_())
 
     
 if __name__ == '__main__':

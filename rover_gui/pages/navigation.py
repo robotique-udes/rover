@@ -1,18 +1,15 @@
 #ros2 topic pub /gps_data rover_msgs/msg/Gps '{latitude: 60.0, longitude: 50.0}'
 
 
-import math
-import time
-from threading import Lock
-import rclpy
-from rclpy.node import Node
 
+from threading import Lock
 from ament_index_python.packages import get_package_share_directory
-from PyQt5.QtWidgets import QWidget, QRadioButton, QLineEdit
+from PyQt5.QtWidgets import QWidget, QPushButton
 from PyQt5.QtGui import QPixmap, QTransform
-from PyQt5 import QtWidgets, QtCore, uic
+from PyQt5 import QtCore, uic
 from PyQt5.QtWidgets import QGraphicsScene
 from rover_msgs.msg import Gps
+from pages.waypoint_popup import WaypointPopup
 
 
 class Navigation(QWidget):
@@ -29,6 +26,7 @@ class Navigation(QWidget):
         rover_icon_path = package_share_directory + "/images/arrow_icon.png"
 
         self.scene: QGraphicsScene = QGraphicsScene(self)
+        self.pb_add_waypoint : QPushButton
 
         self.rover_logo_size = 20
         self.rover_logo_pixmap: QPixmap = QPixmap(rover_icon_path).scaled(self.rover_logo_size, self.rover_logo_size, QtCore.Qt.KeepAspectRatio)
@@ -50,6 +48,8 @@ class Navigation(QWidget):
             self.current_heading: float = -690.0
 
         self.gv_map.setScene(self.scene)
+        
+        self.pb_add_waypoint.clicked.connect(self.open_add_waypoint_popup)
 
         self.gps_sub = ui_node.create_subscription(
             Gps,
@@ -88,6 +88,10 @@ class Navigation(QWidget):
         scrY = self.top_left.scrY + (self.bottom_right.scrY - self.top_left.scrY) * perY
 
         return {'x': scrX, 'y': scrY}
+    
+    def open_add_waypoint_popup(self):
+        self.add_waypoint_popup = WaypointPopup()
+        self.add_waypoint_popup.show()
         
     def closePopUp(self):
         self.hide()
