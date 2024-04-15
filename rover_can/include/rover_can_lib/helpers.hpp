@@ -6,7 +6,7 @@
 
 #if defined(ESP32)
 #include "driver/twai.h"
-#include "helpers/macros.hpp"
+#include "rover_helpers/macros.hpp"
 #elif defined(__linux__) // defined(ESP32)
 #include <linux/can.h>
 #include "rovus_lib/macros.h"

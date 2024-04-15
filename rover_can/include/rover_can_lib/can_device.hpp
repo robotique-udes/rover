@@ -1,6 +1,8 @@
 #ifndef __CAN_DEVICE_HPP__
 #define __CAN_DEVICE_HPP__
 
+#if defined(__linux__)
+
 #include "rover_can_lib/config.hpp"
 #include "rovus_lib/timer.hpp"
 #include "rover_can_lib/msgs/error_state.hpp"
@@ -29,20 +31,20 @@ public:
     }
     ~CanDevice() {}
 
-    void parseMsg(can_frame *frameMsg)
+    void parseMsg(can_frame *frameMsg_)
     {
-        switch (frameMsg->data[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
+        switch (frameMsg_->data[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
         {
         case (uint8_t)RoverCanLib::Constant::eMsgId::HEARTBEAT:
             this->resetWatchdog();
             break;
 
         case (uint8_t)RoverCanLib::Constant::eMsgId::ERROR_STATE:
-            this->setErrorState(frameMsg);
+            this->setErrorState(frameMsg_);
             break;
 
         default:
-            (_canMasterPtr->*_callback)(this->getId(), frameMsg);
+            (_canMasterPtr->*_callback)(this->getId(), frameMsg_);
         }
     }
 
@@ -59,7 +61,7 @@ private:
     CanMaster* _canMasterPtr;
     void (CanMaster::*_callback)(uint16_t id_, const can_frame *frameMsg_);
 
-    void resetWatchdog()
+    void resetWatchdog(void)
     {
         if (_timerWatchdog.getTime() > RoverCanLib::Constant::WATCHDOG_TIMEOUT_MS)
         {
@@ -72,10 +74,10 @@ private:
         _timerWatchdog.restart();
     }
 
-    void setErrorState(can_frame *frameMsg)
+    void setErrorState(can_frame *frameMsg_)
     {
         RoverCanLib::Msgs::ErrorState msg;
-        if (msg.parseMsg(frameMsg, this->getLogger()) != RoverCanLib::Constant::eInternalErrorCode::OK)
+        if (msg.parseMsg(frameMsg_, this->getLogger()) != RoverCanLib::Constant::eInternalErrorCode::OK)
         {
             RCLCPP_ERROR(this->getLogger(), "Error parsing ErrorCode message, dropping");
         }
@@ -83,7 +85,7 @@ private:
         _msg_canStatus.error_state = msg.data.error ? rover_msgs::msg::CanDeviceStatus::STATUS_ERROR : _msg_canStatus.error_state;
         _msg_canStatus.id = this->_id;
 
-        if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::ErrorState>(frameMsg))
+        if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::ErrorState>(frameMsg_))
         {
             if (_pub_CanBusState)
             {
@@ -96,12 +98,14 @@ private:
             }
         }
     }
-    rclcpp::Logger getLogger()
+    rclcpp::Logger getLogger(void)
     {
         std::stringstream ss;
         ss << std::hex << _id; // Set the stream to output in hexadecimal
         return rclcpp::get_logger("0x" + ss.str());
     }
 };
+
+#endif // defined(__linux__)
 
 #endif // __CAN_DEVICE_HPP__
