@@ -39,6 +39,7 @@ Below is the rovus custom PINOUT that should be respected as much as possible*:
     - YELLOW = 12V
     - BLUE = 5V
     - GREEN = 3.3V
+    - BLACK = Reuglar Ethernet
 
 *24V Ethernet should only be POE injected and used as networking cables.
 
