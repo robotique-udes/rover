@@ -44,6 +44,7 @@ Devices are organized into a specific order in relation to arbitration.
 | **0x000** | RESERVED FOR MASTER               |
 | 0x020     | - Master Computer unit            |
 | 0x021     | - BMS                             |
+| 0x022     | - PDB Controller                  |
 |           |                                   |
 | **0x100** | PROPULSION                        |
 | 0x101     | - FrontLeft motor                 |
