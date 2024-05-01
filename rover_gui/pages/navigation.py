@@ -1,15 +1,13 @@
-#ros2 topic pub /gps_data rover_msgs/msg/Gps '{latitude: 60.0, longitude: 50.0}'
-
-
-
 from threading import Lock
 from ament_index_python.packages import get_package_share_directory
-from PyQt5.QtWidgets import QWidget, QPushButton
+from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout
 from PyQt5.QtGui import QPixmap, QTransform
 from PyQt5 import QtCore, uic
-from PyQt5.QtWidgets import QGraphicsScene
+from PyQt5.QtWidgets import QGraphicsScene, QListWidget, QListWidgetItem
 from rover_msgs.msg import Gps
-from pages.waypoint_popup import WaypointPopup
+from pages.add_location_popup import AddLocationPopup
+from pages.folium_map import FoliumMapWidget
+
 
 
 class Navigation(QWidget):
@@ -24,21 +22,16 @@ class Navigation(QWidget):
 
         map_image_path = package_share_directory + "/images/studio_map.png"
         rover_icon_path = package_share_directory + "/images/arrow_icon.png"
+        self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/saved_locations.txt"
 
         self.scene: QGraphicsScene = QGraphicsScene(self)
-        self.pb_add_waypoint : QPushButton
+        self.pb_add_location : QPushButton
+        self.pb_delete_location : QPushButton
+        self.location_list : QListWidget
 
-        self.rover_logo_size = 20
-        self.rover_logo_pixmap: QPixmap = QPixmap(rover_icon_path).scaled(self.rover_logo_size, self.rover_logo_size, QtCore.Qt.KeepAspectRatio)
-        self.map_image = self.scene.addPixmap(QPixmap(map_image_path).scaled(640, 640, QtCore.Qt.KeepAspectRatio))
-
-        self.lb_rover_icon.setPixmap(self.rover_logo_pixmap)
-        self.lb_rover_icon.move(400, 100)
-
-        self.top_left = ReferencePoint(self.frame.pos().x() + 5, self.frame.pos().y() + 22, 45.379355, -71.924921)
-        self.bottom_right = ReferencePoint(self.frame.pos().x() + 644, self.frame.pos().y() + 590, 45.378290, -71.923240)
-        self.offsetX = 0
-        self.offsetY = 0
+        self.locations = []
+        self.location_list.clear()
+        self.load_locations()
 
         self.lock_position: Lock = Lock()
         with self.lock_position:
@@ -47,15 +40,22 @@ class Navigation(QWidget):
             self.current_height: float = -690.0
             self.current_heading: float = -690.0
 
-        self.gv_map.setScene(self.scene)
+        #self.gv_map.setScene(self.scene)
         
-        self.pb_add_waypoint.clicked.connect(self.open_add_waypoint_popup)
+        self.pb_add_location.clicked.connect(self.open_location_popup)
+        self.pb_delete_location.clicked.connect(self.delete_location)
 
         self.gps_sub = ui_node.create_subscription(
             Gps,
             '/rover/gps/position',
             self.gps_data_callback,
             1)
+
+
+        # Create FoliumMapWidget instance
+        self.folium_map_widget = FoliumMapWidget(ui_node)
+        self.verticalLayout.addWidget(self.folium_map_widget)
+        
 
     def update_current_position(self):
         with self.lock_position:
@@ -88,10 +88,49 @@ class Navigation(QWidget):
         scrY = self.top_left.scrY + (self.bottom_right.scrY - self.top_left.scrY) * perY
 
         return {'x': scrX, 'y': scrY}
+
+    def load_locations(self):
+        try:
+            with open(self.saved_locations_path, "r") as f:
+                for line in f:
+                    parts = line.strip().split(";")
+                    if len(parts) == 4: 
+                        index, name, latitude, longitude = parts
+                        location = {
+                            "index": int(index),
+                            "name": name,
+                            "latitude": float(latitude),
+                            "longitude": float(longitude)
+                        }
+                        self.locations.append(location)
+                        item = QListWidgetItem(f"{location['name']}: ({location['latitude']}, {location['longitude']})")
+                        self.location_list.addItem(item)
+        except FileNotFoundError:
+            with open(self.saved_locations_path, "w") as f:
+                lines = []
+
+    def delete_location(self):
+        selected_items = self.location_list.selectedItems()
+        if not selected_items:
+            return  
+
+        for item in selected_items:
+            index = self.location_list.row(item)  
+            del self.locations[index]  
+            self.location_list.takeItem(index) 
+
+        # Rewrite the locations to the file
+        with open(self.saved_locations_path, "w") as f:
+            for location in self.locations:
+                f.write(f"{location['index']};{location['name']};{location['latitude']};{location['longitude']}\n")
+            
     
-    def open_add_waypoint_popup(self):
-        self.add_waypoint_popup = WaypointPopup()
-        self.add_waypoint_popup.show()
+    def open_location_popup(self):
+        self.add_location_popup = AddLocationPopup(self)
+        self.add_location_popup.show()
+
+    def close_location_popup(self):
+        self.add_location_popup.quit
         
     def closePopUp(self):
         self.hide()

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>add_waypoint</class>
- <widget class="QWidget" name="add_waypoint">
+ <class>add_location</class>
+ <widget class="QWidget" name="add_location">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -36,14 +36,14 @@
      </property>
      <layout class="QHBoxLayout" name="horizontalLayout">
       <item>
-       <widget class="QPushButton" name="pushButton_2">
+       <widget class="QPushButton" name="pb_cancel">
         <property name="text">
          <string>Cancel</string>
         </property>
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pb_add_location">
         <property name="text">
          <string>Add</string>
         </property>
@@ -62,10 +62,29 @@
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
       <item row="3" column="1" colspan="2">
-       <widget class="QLineEdit" name="lineEdit_3"/>
+       <widget class="QLineEdit" name="le_latitude"/>
       </item>
       <item row="6" column="1" colspan="2">
-       <widget class="QComboBox" name="comboBox"/>
+       <widget class="QComboBox" name="cb_icon">
+        <item>
+         <property name="text">
+          <string>Red</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../static/resource.qrc">
+           <normaloff>:/icons/icons/red_waypoint.png</normaloff>:/icons/icons/red_waypoint.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>Blue</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../static/resource.qrc">
+           <normaloff>:/icons/icons/blue_waypoint.png</normaloff>:/icons/icons/blue_waypoint.png</iconset>
+         </property>
+        </item>
+       </widget>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
@@ -75,7 +94,7 @@
        </widget>
       </item>
       <item row="0" column="1" colspan="2">
-       <widget class="QLineEdit" name="lineEdit"/>
+       <widget class="QLineEdit" name="le_name"/>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_3">
@@ -99,13 +118,15 @@
        </widget>
       </item>
       <item row="2" column="1" colspan="2">
-       <widget class="QLineEdit" name="lineEdit_4"/>
+       <widget class="QLineEdit" name="le_longitude"/>
       </item>
      </layout>
     </widget>
    </item>
   </layout>
  </widget>
- <resources/>
+ <resources>
+  <include location="../static/resource.qrc"/>
+ </resources>
  <connections/>
 </ui>
