@@ -3,6 +3,7 @@
 
 #if defined(ESP32)
 #include "driver/twai.h"
+#include "rover_helpers/helpers.hpp"
 #elif defined(__linux__) // defined(ESP32)
 #include <linux/can.h>
 #include "rclcpp/rclcpp.hpp"
