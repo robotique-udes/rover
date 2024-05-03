@@ -32,7 +32,7 @@ class Teleop : public rclcpp::Node
         void getParams()
         {        
             this->declare_parameter("speedFactorCrawler", 0.01);
-            this->declare_parameter("_speedFactorNormal", 0.25);
+            this->declare_parameter("_speedFactorNormal", 0.26);
             this->declare_parameter("_speedFactorTurbo", 1.0);
             this->declare_parameter("_smallestRadius", 0.30);
 
