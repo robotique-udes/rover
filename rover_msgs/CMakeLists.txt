@@ -33,7 +33,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   "msg/Gps.msg"
-  "msg/CameraControl.msg"
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
