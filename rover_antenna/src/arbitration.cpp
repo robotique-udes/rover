@@ -1,5 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/antenna_cmd.hpp"
+#include "rover_msgs/msg/antenna_arbitration_status.hpp"
 #include "rover_msgs/srv/antenna_arbitration.hpp"
 #include "std_msgs/msg/string.hpp"
 #include "rovus_lib/macros.h"
@@ -22,7 +23,7 @@ private:
     rclcpp::Subscription<rover_msgs::msg::AntennaCmd>::SharedPtr _sub_jog;
     rclcpp::Subscription<rover_msgs::msg::AntennaCmd>::SharedPtr _sub_auto;
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_abtr;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr _pub_abtrStatus;
+    rclcpp::Publisher<rover_msgs::msg::AntennaArbitrationStatus>::SharedPtr _pub_abtrStatus;
     rclcpp::Service<rover_msgs::srv::AntennaArbitration>::SharedPtr _service_ArbitrationMode;
     
     rover_msgs::msg::AntennaCmd _cmdJog;
@@ -31,7 +32,7 @@ private:
     rover_msgs::srv::AntennaArbitration::Response _arbitrationResponse;
     rover_msgs::srv::AntennaArbitration::Request _arbitrationRequest;
 
-    std_msgs::msg::String _arbitrationStatus;
+    rover_msgs::msg::AntennaArbitrationStatus _arbitrationStatus;
 };
 
 int main(int argc, char *argv[])
@@ -56,7 +57,7 @@ Arbitration::Arbitration() : Node("arbitration")
     
     _pub_abtr = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/out/goal", 1);
 
-    _pub_abtrStatus = this->create_publisher<std_msgs::msg::String>("/base/antenna/arbitration/status", 1);
+    _pub_abtrStatus = this->create_publisher<rover_msgs::msg::AntennaArbitrationStatus>("/base/antenna/arbitration/status", 1);
 
     _service_ArbitrationMode = this->create_service<rover_msgs::srv::AntennaArbitration>("/base/antenna/set_arbitration", std::bind(&Arbitration::cbSetAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -84,22 +85,19 @@ void Arbitration::sendCmd()
     if (_arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::TELEOP)
     {
         _pub_abtr->publish(_cmdJog);
-        // _arbitrationResponse.current_arbitration = rover_msgs::srv::AntennaArbitration_Request::TELEOP;
-        _arbitrationStatus.data = "Teleop";
+        _arbitrationStatus.arbitration_status = rover_msgs::msg::AntennaArbitrationStatus::TELEOP;
     }
     else if (_arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::AUTONOMUS)
     {
         _pub_abtr->publish(_cmdAuto);
-        // _arbitrationResponse.current_arbitration = rover_msgs::srv::AntennaArbitration_Request::AUTONOMUS;
-        _arbitrationStatus.data = "Autonomus";
+        _arbitrationStatus.arbitration_status = rover_msgs::msg::AntennaArbitrationStatus::AUTONOMUS;
     }
     else if (_arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::NOT_MOVING)
     {
         cmdAbtr.speed = 0.0f;
         cmdAbtr.enable = false;
         _pub_abtr->publish(cmdAbtr);
-        // _arbitrationResponse.current_arbitration = rover_msgs::srv::AntennaArbitration_Request::NOT_MOVING;
-        _arbitrationStatus.data = "Not Moving";
+        _arbitrationStatus.arbitration_status = rover_msgs::msg::AntennaArbitrationStatus::NOT_MOVING;
     }
     else
     {
@@ -111,11 +109,11 @@ void Arbitration::sendCmd()
     
     _pub_abtrStatus->publish(_arbitrationStatus);
 
-    if ((_arbitrationStatus.data == "Teleop" and _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::TELEOP)
-        || (_arbitrationStatus.data == "Autonomus" and _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::AUTONOMUS)
-        || (_arbitrationStatus.data == "Not Moving" and _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::NOT_MOVING))
+    if ((_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::TELEOP && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::TELEOP)
+        || (_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::AUTONOMUS && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::AUTONOMUS)
+        || (_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::NOT_MOVING && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::NOT_MOVING))
     {
-        RCLCPP_ERROR(LOGGER, "Good arbitration status");
+        // RCLCPP_ERROR(LOGGER, "Good arbitration status");
         _arbitrationResponse.success = true;
     }
     else

@@ -5,7 +5,7 @@
 #include "rovus_lib/macros.h"
 #include "rovus_lib/timer.hpp"
 
-#define COEFF_NB 10
+#define COEFF_NB 5
 
 class JogAntenna : public rclcpp::Node
 {
@@ -21,8 +21,8 @@ private:
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_jog;
     rclcpp::TimerBase::SharedPtr _timer_JogCmd;
 
-    bool _l1;
-    bool _r1;
+    float _l1 = 0.0;
+    float _r1 = 0.0;
     bool _joyMsgReceived = false;
 
     rclcpp::Parameter _paramMaxSpeed;
@@ -43,7 +43,7 @@ int main(int argc, char *argv[])
 
 JogAntenna::JogAntenna() : Node("jog_antenna")
 {
-    _sub_joy = this->create_subscription<rover_msgs::msg::Joy>("/joy/main/formated",
+    _sub_joy = this->create_subscription<rover_msgs::msg::Joy>("/base/antenna/joy",
                                                                1,
                                                                [this](const rover_msgs::msg::Joy msg_)
                                                                { callbackJoy(msg_); });
@@ -61,16 +61,11 @@ void JogAntenna::cbTimerJogCmd()
 {   
     rover_msgs::msg::AntennaCmd jogCmd;
 
-    _jogAverage_l1.addValue(msg_.L1);
+    _jogAverage_l1.addValue(_l1);
     
-    _jogAverage_r1.addValue(msg_.R1);
+    _jogAverage_r1.addValue(_r1);
 
     jogCmd.enable = true;
-
-    if(_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
-    {
-        _joyMsgReceived = false;
-    }
 
     if(_joyMsgReceived)
     {
@@ -81,7 +76,12 @@ void JogAntenna::cbTimerJogCmd()
 
         jogCmd.enable = true;
 
-        if(_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
+        if(_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() == 0.0f)
+        {
+            jogCmd.speed = 0.0f;
+            jogCmd.enable = false;
+        }
+        else if(_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
         {
             jogCmd.speed = -_jogAverage_l1.getAverage() * _paramMaxSpeed.as_double();
         }
@@ -92,6 +92,7 @@ void JogAntenna::cbTimerJogCmd()
         else
         {
             jogCmd.speed = 0.0f;
+            jogCmd.enable = false;
         }
         jogCmd.enable = true;
         _pub_jog->publish(jogCmd);
@@ -107,8 +108,8 @@ void JogAntenna::cbTimerJogCmd()
 
 void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg_)
 {
-    _l1 = msg_.l1;
-    _r1 = msg_.r1;
+    _l1 = msg_.joy_data[rover_msgs::msg::Joy::L1];
+    _r1 = msg_.joy_data[rover_msgs::msg::Joy::R1];;
 
     _joyMsgReceived = true;
     _timer_joyMsg.init(250);
