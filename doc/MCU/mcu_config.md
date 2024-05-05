@@ -30,7 +30,17 @@ All the ros executables are now by default running on the rover when the compute
 2. Paste the following script and change the "**USERNAME**":
 
     ```ini
-    TODO
+    [Unit]
+    Description="rover layer"
+
+    [Service]
+    Environment="HOME=**USERNAME**"
+
+    ExecStart=/home/rover/ros2_ws/src/rover/rover_helper/script/auto_start_rover.sh
+    Restart=on-failure
+
+    [Install]
+    WantedBy=multi-user.target
     ```
 
     ExecStart=/opt/ros/humble/bin/ros2 launch rover_drive_train drive_train.launch.py
