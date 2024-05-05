@@ -64,7 +64,7 @@ Arbitration::Arbitration() : Node("arbitration")
                                                                                     1,
                                                                                     std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
 
-    _pubAbtr = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/raw", 1);
+    _pubAbtr = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1);
 
     _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
