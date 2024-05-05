@@ -13,13 +13,6 @@ from launch_ros.actions import Node
 def generate_launch_description():
         ld: LaunchDescription = LaunchDescription()
 
-        joy_launch_file = IncludeLaunchDescription(
-                PythonLaunchDescriptionSource(
-                        os.path.join(
-                                get_package_share_directory('rover_joy'),
-                                'launch/joy.launch.py'))
-        )
-
         teleop_node = Node (package="rover_drive_train",
                                     namespace="/rover/drive_train",
                                     executable="teleop",
@@ -36,7 +29,6 @@ def generate_launch_description():
                                         name="arbitration",
                                         )
         
-        ld.add_action(joy_launch_file)
         ld.add_action(teleop_node)
         ld.add_action(arbitration_node)
 
