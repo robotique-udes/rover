@@ -16,8 +16,5 @@ def generate_launch_description():
             PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_security'), 'launch', 'security.launch.py'])])),
         
         IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_joy'), 'launch', 'joy.launch.py'])])),
-        
-        IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_drive_train'), 'launch', 'drive_train.launch.py'])])),
     ])
