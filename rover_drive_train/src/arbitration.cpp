@@ -126,10 +126,10 @@ void Arbitration::sendCmd()
         }
 
         _pubAbtr->publish(_zeroCmd);
+        RCLCPP_INFO(this->get_logger(), "Published zero command due to lost heartbeat");
     }
     else if (_arbitrationRequest.target_arbitration == rover_msgs::srv::DriveTrainArbitration_Request::TELEOP)
     {
-
         _pubAbtr->publish(_cmdTeleop);
         _arbitrationResponse.current_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::TELEOP;
     }
@@ -146,6 +146,7 @@ void Arbitration::sendCmd()
         }
         _pubAbtr->publish(_zeroCmd);
         _arbitrationResponse.current_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::NONE;
+        RCLCPP_INFO(this->get_logger(), "Published zero command due to arbitration state");
     }
 }
 
