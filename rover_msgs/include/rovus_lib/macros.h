@@ -31,8 +31,12 @@
 #define IN_ERROR(VAR, ERROR, GOAL) \
     ((abs(VAR) < (abs(GOAL) + ERROR) && abs(VAR) > (abs(GOAL) - ERROR)))
 
-#define MAP(result_type, value, from_min, from_max, to_min, to_max) \
-    (result_type)(((float)value - (float)from_min) / ((float)from_max - (float)from_min)) * ((float)to_max - (float)to_min) + (float)to_min
+#define MAP(RESULT_TYPE, VALUE, FROM_MIN, FROM_MAX, TO_MIN, TO_MAX) \
+    (RESULT_TYPE)(((float)VALUE - (float)FROM_MIN) / ((float)FROM_MAX - (float)FROM_MIN)) * ((float)TO_MAX - (float)TO_MIN) + (float)TO_MIN
+
+//Returns a value between set constrains
+#define CONSTRAIN(VALUE, UPPER_RANGE, LOWER_RANGE) \
+    VALUE > UPPER_RANGE ? UPPER_RANGE: (VALUE < LOWER_RANGE ? LOWER_RANGE : VALUE)
 
 // Returns sign as a float value
 #define SIGN(VAR) ((float)VAR > 0.0f ? 1.0f: -1.0f)

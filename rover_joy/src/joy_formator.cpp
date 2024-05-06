@@ -204,13 +204,13 @@ void JoyFormator::callbackPubJoy()
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT1] = getJoyValue<bool>(Keybinding::ext1);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT2] = getJoyValue<bool>(Keybinding::ext2);
 
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] = tanhVal(getJoyValue<float>(Keybinding::joystick_left_front));
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] = tanhVal(getJoyValue<float>(Keybinding::joystick_left_side));
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] = tanhVal(getJoyValue<float>(Keybinding::joystick_right_front));
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] = tanhVal(getJoyValue<float>(Keybinding::joystick_right_side));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] = CONSTRAIN(tanhVal(getJoyValue<float>(Keybinding::joystick_left_front)), 1.0, -1.0);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] = CONSTRAIN(tanhVal(getJoyValue<float>(Keybinding::joystick_left_side)), 1.0, -1.0);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] = CONSTRAIN(tanhVal(getJoyValue<float>(Keybinding::joystick_right_front)), 1.0, -1.0);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] = CONSTRAIN(tanhVal(getJoyValue<float>(Keybinding::joystick_right_side)), 1.0, -1.0);
 
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(float, tanhVal(getJoyValue<float>(Keybinding::l2)), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(float, tanhVal(getJoyValue<float>(Keybinding::r2)), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(float, CONSTRAIN(tanhVal(getJoyValue<float>(Keybinding::l2)), 1.0, -1.0), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(float, CONSTRAIN(tanhVal(getJoyValue<float>(Keybinding::r2)), 1.0, -1.0), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
 
     float cross_temp = getJoyValue<float>(Keybinding::cross_front);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_UP] = cross_temp > 0.0f ? true : false; //cross up
@@ -395,6 +395,7 @@ void JoyFormator::customStepsLogitech(rover_msgs::msg::Joy *formatted_joy)
 
 float JoyFormator::tanhVal(float _value)
 {
-    float output = tanh(_value);
+    //input 0.8\arctan\left(3x\right) at https://www.desmos.com/calculator to view curve
+    float output = 0.8*atan(3*_value);
     return output;
 }
