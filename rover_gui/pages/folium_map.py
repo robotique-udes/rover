@@ -2,6 +2,7 @@ import io
 from PyQt5.QtWidgets import QVBoxLayout, QWidget
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
+from folium.plugins import Realtime
 
 class FoliumMapWidget(QWidget):
     def __init__(self, nav_widget):
