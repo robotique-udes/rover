@@ -171,6 +171,13 @@ border: none;</string>
              </widget>
             </item>
             <item>
+             <widget class="QPushButton" name="pb_cameras">
+              <property name="text">
+               <string>Cameras</string>
+              </property>
+             </widget>
+            </item>
+            <item>
              <spacer name="verticalSpacer">
               <property name="orientation">
                <enum>Qt::Vertical</enum>
@@ -190,8 +197,8 @@ border: none;</string>
             <rect>
              <x>0</x>
              <y>0</y>
-             <width>182</width>
-             <height>663</height>
+             <width>100</width>
+             <height>30</height>
             </rect>
            </property>
            <attribute name="icon">

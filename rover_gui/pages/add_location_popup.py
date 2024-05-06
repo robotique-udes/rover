@@ -1,6 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 
-from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit
+from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QComboBox
 from PyQt5 import uic
 
 class AddLocationPopup(QWidget):
@@ -18,6 +18,7 @@ class AddLocationPopup(QWidget):
         self.le_name : QLineEdit
         self.le_latitude : QLineEdit
         self.le_longitude : QLineEdit
+        self.cb_color : QComboBox
 
         self.pb_add_location.clicked.connect(self.add_location)
         self.pb_cancel.clicked.connect(self.cancel)
@@ -31,7 +32,7 @@ class AddLocationPopup(QWidget):
                 lines = []
         with open(self.nav_widget.saved_locations_path, "a") as f:
             index = len(lines) + 1 
-            f.write(f"{index};{self.le_name.text()};{self.le_latitude.text()};{self.le_longitude.text()}\n")
+            f.write(f"{index};{self.le_name.text()};{self.le_latitude.text()};{self.le_longitude.text()};{self.cb_color.currentText()}\n")
 
         self.nav_widget.location_list.clear()
         self.nav_widget.load_locations()

@@ -61,30 +61,8 @@
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QGridLayout" name="gridLayout_2">
-      <item row="3" column="1" colspan="2">
-       <widget class="QLineEdit" name="le_latitude"/>
-      </item>
-      <item row="6" column="1" colspan="2">
-       <widget class="QComboBox" name="cb_icon">
-        <item>
-         <property name="text">
-          <string>Red</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../static/resource.qrc">
-           <normaloff>:/icons/icons/red_waypoint.png</normaloff>:/icons/icons/red_waypoint.png</iconset>
-         </property>
-        </item>
-        <item>
-         <property name="text">
-          <string>Blue</string>
-         </property>
-         <property name="icon">
-          <iconset resource="../static/resource.qrc">
-           <normaloff>:/icons/icons/blue_waypoint.png</normaloff>:/icons/icons/blue_waypoint.png</iconset>
-         </property>
-        </item>
-       </widget>
+      <item row="0" column="1" colspan="2">
+       <widget class="QLineEdit" name="le_name"/>
       </item>
       <item row="0" column="0">
        <widget class="QLabel" name="label">
@@ -93,8 +71,56 @@
         </property>
        </widget>
       </item>
-      <item row="0" column="1" colspan="2">
-       <widget class="QLineEdit" name="le_name"/>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="2">
+       <widget class="QComboBox" name="cb_color">
+        <item>
+         <property name="text">
+          <string>red</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../static/resource.qrc">
+           <normaloff>:/icons/icons/red_waypoint.png</normaloff>:/icons/icons/red_waypoint.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>orange</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>green</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>black</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>blue</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../static/resource.qrc">
+           <normaloff>:/icons/icons/blue_waypoint.png</normaloff>:/icons/icons/blue_waypoint.png</iconset>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Longitude</string>
+        </property>
+       </widget>
       </item>
       <item row="3" column="0">
        <widget class="QLabel" name="label_3">
@@ -103,21 +129,10 @@
         </property>
        </widget>
       </item>
-      <item row="2" column="0">
-       <widget class="QLabel" name="label_2">
-        <property name="text">
-         <string>Longitude</string>
-        </property>
-       </widget>
+      <item row="3" column="1" colspan="2">
+       <widget class="QLineEdit" name="le_latitude"/>
       </item>
-      <item row="6" column="0">
-       <widget class="QLabel" name="label_4">
-        <property name="text">
-         <string>Icon</string>
-        </property>
-       </widget>
-      </item>
-      <item row="2" column="1" colspan="2">
+      <item row="4" column="1" colspan="2">
        <widget class="QLineEdit" name="le_longitude"/>
       </item>
      </layout>

@@ -7,7 +7,7 @@ from PyQt5.QtWidgets import QGraphicsScene, QListWidget, QListWidgetItem
 from rover_msgs.msg import Gps
 from pages.add_location_popup import AddLocationPopup
 from pages.folium_map import FoliumMapWidget
-
+import pandas
 
 
 class Navigation(QWidget):
@@ -20,18 +20,26 @@ class Navigation(QWidget):
         package_share_directory = get_package_share_directory('rover_gui')
         uic.loadUi(package_share_directory + "/ui/navigation.ui", self)
 
-        map_image_path = package_share_directory + "/images/studio_map.png"
         rover_icon_path = package_share_directory + "/images/arrow_icon.png"
         self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/saved_locations.txt"
 
-        self.scene: QGraphicsScene = QGraphicsScene(self)
+        self.lb_curr_position : QLabel
+        self.lb_curr_heading : QLabel
         self.pb_add_location : QPushButton
         self.pb_delete_location : QPushButton
         self.location_list : QListWidget
 
-        self.locations = []
-        self.location_list.clear()
-        self.load_locations()
+        self.locations = pandas.DataFrame({
+            'index':[],
+            'name':[],
+            'lat':[],
+            'lon':[],
+            'color':[]
+        }, dtype=str)
+
+        # Create FoliumMapWidget instance
+        self.folium_map_widget = FoliumMapWidget(self)
+        self.verticalLayout.addWidget(self.folium_map_widget)
 
         self.lock_position: Lock = Lock()
         with self.lock_position:
@@ -40,8 +48,6 @@ class Navigation(QWidget):
             self.current_height: float = -690.0
             self.current_heading: float = -690.0
 
-        #self.gv_map.setScene(self.scene)
-        
         self.pb_add_location.clicked.connect(self.open_location_popup)
         self.pb_delete_location.clicked.connect(self.delete_location)
 
@@ -51,26 +57,20 @@ class Navigation(QWidget):
             self.gps_data_callback,
             1)
 
-
-        # Create FoliumMapWidget instance
-        self.folium_map_widget = FoliumMapWidget(ui_node)
-        self.verticalLayout.addWidget(self.folium_map_widget)
+        self.location_list.clear()
+        self.load_locations()
         
 
-    def update_current_position(self):
+    def update_current_position(self): 
         with self.lock_position:
-            pos = self.latlng_to_screenXY(self.current_latitude, self.current_longitude)
 
             self.lb_curr_position.setText("lat : " + str(round(self.current_latitude, 6)) + ", lon : " + str(round(self.current_longitude, 6)))
-            self.lb_curr_heading.setText("heading : " + str(self.heading) + "°")
+            self.lb_curr_heading.setText("heading : " + str(self.current_heading) + "°")
 
-            if hasattr(self, 'lb_rover_icon') and self.lb_rover_icon:
-                rotated_pixmap = self.rover_logo_pixmap.transformed(QTransform().rotate(self.heading))
-                self.lb_rover_icon.setPixmap(rotated_pixmap)
-                self.lb_rover_icon.move(round(pos["x"]) , round(pos["y"]))
-                self.lb_rover_icon.show()
-            else:
-                self.ui_node.get_logger().warn("Rover icon is not initialized.")
+            print("update_current_position")
+            
+            self.folium_map_widget.update_rover_location(self.current_latitude, self.current_longitude, self.current_heading)
+            
     
     def gps_data_callback(self, data: Gps):
         with self.lock_position:
@@ -79,32 +79,28 @@ class Navigation(QWidget):
             self.heading = data.heading
             self.height = data.height
         self.update_current_position()
-        
-    def latlng_to_screenXY(self, lat, lng):
-        perX = (lng - self.top_left.lng) / (self.bottom_right.lng - self.top_left.lng)
-        perY = (lat - self.top_left.lat) / (self.bottom_right.lat - self.top_left.lat)
-
-        scrX = self.top_left.scrX + (self.bottom_right.scrX - self.top_left.scrX) * perX
-        scrY = self.top_left.scrY + (self.bottom_right.scrY - self.top_left.scrY) * perY
-
-        return {'x': scrX, 'y': scrY}
 
     def load_locations(self):
         try:
+            self.clear_locations_dataframe()
+            self.location_list.clear()
             with open(self.saved_locations_path, "r") as f:
                 for line in f:
                     parts = line.strip().split(";")
-                    if len(parts) == 4: 
-                        index, name, latitude, longitude = parts
+                    if len(parts) == 5: 
+                        index, name, latitude, longitude, color = parts
                         location = {
                             "index": int(index),
                             "name": name,
-                            "latitude": float(latitude),
-                            "longitude": float(longitude)
+                            "lat": float(latitude),
+                            "lon": float(longitude),
+                            "color": color
                         }
-                        self.locations.append(location)
-                        item = QListWidgetItem(f"{location['name']}: ({location['latitude']}, {location['longitude']})")
+                        self.locations = self.locations._append(location, ignore_index=True)
+                        item = QListWidgetItem(f" {location['index']} - {location['name']}: ({location['lat']}, {location['lon']})")
                         self.location_list.addItem(item)
+                self.folium_map_widget.update_locations()
+
         except FileNotFoundError:
             with open(self.saved_locations_path, "w") as f:
                 lines = []
@@ -115,16 +111,28 @@ class Navigation(QWidget):
             return  
 
         for item in selected_items:
-            index = self.location_list.row(item)  
-            del self.locations[index]  
-            self.location_list.takeItem(index) 
+            index = self.location_list.row(item)
+            self.locations = self.locations.drop(index)
+            self.location_list.takeItem(index)
 
-        # Rewrite the locations to the file
+        # Reset index
+        self.locations.reset_index(drop=True, inplace=True)
+
         with open(self.saved_locations_path, "w") as f:
-            for location in self.locations:
-                f.write(f"{location['index']};{location['name']};{location['latitude']};{location['longitude']}\n")
-            
-    
+            f.truncate(0)
+            for _, location in self.locations.iterrows():
+                f.write(f"{location['index']};{location['name']};{location['lat']};{location['lon']};{location['color']}\n")    
+
+        self.load_locations()
+
+    def clear_locations_dataframe(self):
+        self.locations = self.locations.drop(self.locations.index)
+        
+    def print_locations(self):
+        print("Locations:")
+        for index, location in self.locations.iterrows():
+            print(f"Index: {location['index']}, Name: {location['name']}, Latitude: {location['lat']}, Longitude: {location['lon']}, Color: {location['color']}")
+
     def open_location_popup(self):
         self.add_location_popup = AddLocationPopup(self)
         self.add_location_popup.show()
