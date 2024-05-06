@@ -35,8 +35,9 @@ All the ros executables are now by default running on the rover when the compute
 
     [Service]
     Environment="HOME=**USERNAME**"
+    Environment="ROS_DOMAIN_ID=69"
 
-    ExecStart=/home/${HOME}/ros2_ws/src/rover/rover_helper/script/auto_start_rover.sh
+    ExecStart=/home/**USERNAME**/ros2_ws/src/rover/rover_helper/script/auto_start_rover.sh
     Restart=on-failure
 
     [Install]
