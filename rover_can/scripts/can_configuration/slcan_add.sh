@@ -5,4 +5,4 @@
 sleep 1
 
 /sbin/ifconfig canRovus up
-/sbin/ifconfig canRovus txqueuelen 1000
+/sbin/ifconfig canRovus txqueuelen 10
