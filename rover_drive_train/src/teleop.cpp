@@ -82,8 +82,8 @@ class Teleop : public rclcpp::Node
 
             if(_modeTankAngularInput != 0.0f) 
             {
-                speedLeftMotor += _modeTankAngularInput * speedFactor;
-                speedRightMotor -= _modeTankAngularInput * speedFactor;
+                speedLeftMotor += -1 * _modeTankAngularInput * speedFactor;
+                speedRightMotor -= -1 * _modeTankAngularInput * speedFactor;
             } 
             else 
             {
