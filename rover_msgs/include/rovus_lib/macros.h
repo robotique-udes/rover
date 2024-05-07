@@ -35,7 +35,7 @@
     (RESULT_TYPE)(((float)VALUE - (float)FROM_MIN) / ((float)FROM_MAX - (float)FROM_MIN)) * ((float)TO_MAX - (float)TO_MIN) + (float)TO_MIN
 
 //Returns a value between set constrains
-#define CONSTRAIN(VALUE, LOVER_RANGE, UPPER_RANGE) \
+#define CONSTRAIN(VALUE, LOWER_RANGE, UPPER_RANGE) \
     VALUE > UPPER_RANGE ? UPPER_RANGE: (VALUE < LOWER_RANGE ? LOWER_RANGE : VALUE)
 
 // Returns sign as a float value
