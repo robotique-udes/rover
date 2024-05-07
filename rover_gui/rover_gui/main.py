@@ -6,7 +6,8 @@ import signal
 from ament_index_python.packages import get_package_share_directory
 
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox, QShortcut
-from PyQt5.QtGui import QKeySequence
+from PyQt5.QtGui import QKeySequence, QIcon
+from PyQt5 import QtGui
 from PyQt5 import uic
 import rclpy
 from rclpy.executors import MultiThreadedExecutor

@@ -10,7 +10,7 @@ class Home(QWidget):
         package_share_directory = get_package_share_directory('rover_gui')
         uic.loadUi(package_share_directory+ "/ui/home.ui", self)
 
-        pixmap = QPixmap('./static/icons/logo.png')
+        pixmap = QPixmap(package_share_directory + '/images/logo.png')
 
         self.lb_logo : QLabel
         self.lb_logo = self.findChild(QLabel, "lb_logo")
