@@ -4,7 +4,7 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QComboBox
 from PyQt5 import uic
 
 class AddLocationPopup(QWidget):
-    def __init__(self, nav_widget):
+    def __init__(self, nav_widget, is_record):
         super(AddLocationPopup, self).__init__()
 
         self.nav_widget = nav_widget
@@ -22,6 +22,12 @@ class AddLocationPopup(QWidget):
 
         self.pb_add_location.clicked.connect(self.add_location)
         self.pb_cancel.clicked.connect(self.cancel)
+
+        if is_record == True:
+            self.le_latitude.setText(str(self.nav_widget.current_latitude))
+            self.le_longitude.setText(str(self.nav_widget.current_longitude))
+            self.le_latitude.setEnabled(False)
+            self.le_longitude.setEnabled(False)
 
     def add_location(self, button: QPushButton):
         try:

@@ -6,7 +6,7 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1322</width>
+    <width>1632</width>
     <height>902</height>
    </rect>
   </property>
@@ -191,7 +191,14 @@
        </widget>
       </item>
       <item>
-       <widget class="QPushButton" name="pushButton">
+       <widget class="QPushButton" name="pb_update_location">
+        <property name="text">
+         <string>Update rover position</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pb_record_location">
         <property name="text">
          <string>Record location</string>
         </property>

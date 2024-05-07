@@ -1,6 +1,7 @@
 #https://www.youtube.com/watch?v=jWxNfb7Hng8
 from threading import Thread 
 import sys
+import signal
 
 from ament_index_python.packages import get_package_share_directory
 
@@ -128,6 +129,8 @@ class MainWindow(QMainWindow):
 
 def main(args=None):
     rclpy.init(args=args)
+
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     ui_node = UINode()
     executor = MultiThreadedExecutor()

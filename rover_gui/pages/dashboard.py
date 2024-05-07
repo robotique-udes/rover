@@ -3,6 +3,7 @@ from ament_index_python.packages import get_package_share_directory
 from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox
 from PyQt5 import uic
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
+from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
 
@@ -16,15 +17,19 @@ class Dashboard(QWidget):
             '/joy/demux/status',
             self.update_joydemux_button_status,
             1)
-        
 
         package_share_directory = get_package_share_directory('rover_gui')
         uic.loadUi(package_share_directory+ "/ui/dashboard.ui", self)
 
+        # Joy arbitration ui elements
+        self.rb_dt_none : QRadioButton
+        self.rb_dt_teleop : QRadioButton
+        self.rb_dt_autonomus : QRadioButton
+
         # Antenna arbitration ui elements
+        self.rb_ant_none : QRadioButton
         self.rb_ant_teleop : QRadioButton
         self.rb_ant_autonomus : QRadioButton
-        self.rb_ant_static : QRadioButton
 
         # Joy demux ui elements
         self.rb_joy_force : QRadioButton
@@ -37,9 +42,10 @@ class Dashboard(QWidget):
         self.rb_joy_antenna_sec : QRadioButton
         self.rb_joy_none_sec : QRadioButton
 
+
+        self.rb_ant_none.clicked.connect(self.antenna_arbitration_clicked)
         self.rb_ant_teleop.clicked.connect(self.antenna_arbitration_clicked)
         self.rb_ant_autonomus.clicked.connect(self.antenna_arbitration_clicked)
-        self.rb_ant_static.clicked.connect(self.antenna_arbitration_clicked)
         self.rb_joy_drivetrain_main.clicked.connect(self.joydemux_clicked)
         self.rb_joy_antenna_main.clicked.connect(self.joydemux_clicked)
         self.rb_joy_arm_main.clicked.connect(self.joydemux_clicked)
@@ -48,6 +54,9 @@ class Dashboard(QWidget):
         self.rb_joy_antenna_sec.clicked.connect(self.joydemux_clicked)
         self.rb_joy_arm_sec.clicked.connect(self.joydemux_clicked)
         self.rb_joy_none_sec.clicked.connect(self.joydemux_clicked)
+        self.rb_dt_none.clicked.connect(self.drivetrain_arbitration_clicked)
+        self.rb_dt_teleop.clicked.connect(self.drivetrain_arbitration_clicked)
+        self.rb_dt_autonomus.clicked.connect(self.drivetrain_arbitration_clicked)
 
     def handle_service_unavailability(self, sender_rb, service_name):
         sender_rb.setAutoExclusive(False)
@@ -56,6 +65,29 @@ class Dashboard(QWidget):
         self.ui_node.get_logger().warn('%s service not available.' % service_name)
         QMessageBox.warning(self, "Service Not Available", "The %s service is not available." % service_name)
     
+    def drivetrain_arbitration_clicked(self):
+        sender_rb = self.sender()
+        if sender_rb is None:
+            return
+
+        dt_arbitration_client = self.ui_node.create_client(DriveTrainArbitration, '/rover/drive_train/set_arbitration')
+        drivetrain_req = DriveTrainArbitration.Request()
+
+        if not dt_arbitration_client.wait_for_service(timeout_sec=1.0):
+            self.handle_service_unavailability(sender_rb, "drive_train_arbitration")
+            return
+
+        if sender_rb == self.rb_dt_none:
+            drivetrain_req.target_arbitration = DriveTrainArbitration.Request.NONE
+        elif sender_rb == self.rb_dt_teleop:
+            drivetrain_req.target_arbitration = DriveTrainArbitration.Request.TELEOP
+        elif sender_rb == self.rb_dt_autonomus:
+            drivetrain_req.target_arbitration = DriveTrainArbitration.Request.AUTONOMUS
+
+        response = dt_arbitration_client.call(drivetrain_req)
+        self.ui_node.get_logger().info("Response : " + str(response.current_arbitration))
+        
+
     def antenna_arbitration_clicked(self):
         sender_rb = self.sender()
         if sender_rb is None:
@@ -68,7 +100,7 @@ class Dashboard(QWidget):
             self.handle_service_unavailability(sender_rb, "antenna_arbitration")
             return
 
-        if sender_rb == self.rb_ant_static:
+        if sender_rb == self.rb_ant_none:
             antenna_req.target_arbitration = AntennaArbitration.Request.NOT_MOVING
         elif sender_rb == self.rb_ant_teleop:
             antenna_req.target_arbitration = AntennaArbitration.Request.TELEOP

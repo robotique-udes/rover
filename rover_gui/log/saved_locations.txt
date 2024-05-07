@@ -1,3 +1,2 @@
 1;Voiture noire gauche;45.378776;-71.924796;red
 2;Parc;45.379132;-71.924247;blue
-3;Maison;45.864923;-73.997848;orange
