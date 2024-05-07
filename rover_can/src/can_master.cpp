@@ -36,7 +36,6 @@ RoverCanLib::Msgs::camControl msg_CAN_CAMERA_A2;
 RoverCanLib::Msgs::camControl msg_CAN_CAMERA_R1M_1;
 RoverCanLib::Msgs::camControl msg_CAN_CAMERA_R1M_2;
 RoverCanLib::Msgs::camControl msg_CAN_CAMERA_R1M_3;
-RoverCanLib::Msgs::lightControl msg_CAN_LIGHTS;
 
 // Motors
 RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_FrontLeft;
@@ -177,7 +176,6 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_1] = &msg_CAN_CAMERA_R1M_1;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_2] = &msg_CAN_CAMERA_R1M_2;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3] = &msg_CAN_CAMERA_R1M_3;
-    _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::LIGHTS] = &msg_CAN_LIGHTS;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR] = &msg_CAN_FrontLeft;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR] = &msg_CAN_FrontRight;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR] = &msg_CAN_RearLeft;
@@ -192,7 +190,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_1, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_1, this, &CanMaster::CB_Can_None, _pub_canStatus));
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_2, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_2, this, &CanMaster::CB_Can_None, _pub_canStatus));
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3, this, &CanMaster::CB_Can_None, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::LIGHTS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3, this, &CanMaster::CB_Can_None, _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::LIGHTS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::LIGHTS, this, &CanMaster::CB_Can_None, _pub_canStatus));
 
     // Motor Drive
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
@@ -465,7 +463,6 @@ void CanMaster::CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::Share
 
 void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg)
 {
-    printf("Sending msg");
     RoverCanLib::Msgs::lightControl msg;
     msg.data.enable = rosMsg->enable[rover_msgs::msg::LightControl::LIGHT];
     msg.sendMsg(RoverCanLib::Constant::eDeviceId::LIGHTS, _canSocket, rclcpp::get_logger(LOGGER_NAME));
