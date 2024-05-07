@@ -8,6 +8,7 @@
 #include "rover_msgs/msg/can_device_status.hpp"
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/light_control.hpp"
 
 // RoverCanLib
 #include "rover_can_lib/config.hpp"
@@ -26,7 +27,7 @@ int createSocket(const char *canNetworkName_);
 volatile sig_atomic_t shutdownFlag = 0;
 void signal_handler(int signo);
 
-Timer<unsigned long, millis> motorSpeedLimiter(50); // 10 Hz
+Timer<unsigned long, millis> motorCmdSendTimer(50); // 10 Hz
 
 // =============================================================================
 //  Per devices msg object
@@ -82,6 +83,7 @@ private:
     //  Device subscriber
     rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_propulsionMotor;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_cameras;
+    rclcpp::Subscription<rover_msgs::msg::LightControl>::SharedPtr _sub_lights;
     // =========================================================================
 
     // =========================================================================
@@ -92,8 +94,9 @@ private:
 
     // =========================================================================
     //  Ros callbacks
-    void CB_ROS_PropulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr msg);
-    void CB_ROS_CameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg);
+    void CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr msg);
+    void CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg);
+    void CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg);
     // =========================================================================
 };
 
@@ -196,14 +199,17 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
-
     // =========================================================================
 
     this->askStateCanDevices();
 
+    // =========================================================================
+    //  Topic subscriber actual creation
     // _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1, std::bind(&CanMaster::CB_ROS_PropulsionMotor, this, std::placeholders::_1));
-    _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1, std::bind(&CanMaster::CB_ROS_PropulsionMotor, this, std::placeholders::_1));
-    _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_CameraControl, this, std::placeholders::_1));
+    _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1, std::bind(&CanMaster::CB_ROS_propulsionMotor, this, std::placeholders::_1));
+    _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
+    _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1, std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
+    // =========================================================================
 
     // Created last to make sure everything is init before it gets called
     _timerLoop = this->create_wall_timer(std::chrono::microseconds(10), std::bind(&CanMaster::mainLoop, this));
@@ -371,9 +377,9 @@ void CanMaster::CB_Can_None(uint16_t dontUse0_, const can_frame *dontUse1_)
 
 // =============================================================================
 //  Sub callbacks
-void CanMaster::CB_ROS_PropulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr rosMsg)
+void CanMaster::CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr rosMsg)
 {
-    if (!motorSpeedLimiter.isDone())
+    if (!motorCmdSendTimer.isDone())
     {
         return;
     }
@@ -415,7 +421,7 @@ void CanMaster::CB_ROS_PropulsionMotor(const rover_msgs::msg::PropulsionMotor::S
     }
 }
 
-void CanMaster::CB_ROS_CameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg)
+void CanMaster::CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg)
 {
     RCLCPP_INFO(rclcpp::get_logger(LOGGER_NAME), "Not implemented yet");
 
@@ -455,4 +461,15 @@ void CanMaster::CB_ROS_CameraControl(const rover_msgs::msg::CameraControl::Share
 
     //     canMsg.sendMsg((RoverCanLib::Constant::eDeviceId)deviceId, _canSocket, rclcpp::get_logger(LOGGER_NAME));
     // }
+}
+
+void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg)
+{
+    printf("Sending msg");
+    RoverCanLib::Msgs::lightControl msg;
+    msg.data.enable = rosMsg->enable[rover_msgs::msg::LightControl::LIGHT];
+    msg.sendMsg(RoverCanLib::Constant::eDeviceId::LIGHTS, _canSocket, rclcpp::get_logger(LOGGER_NAME));
+
+    msg.data.enable = rosMsg->enable[rover_msgs::msg::LightControl::LIGHT_INFRARED];
+    msg.sendMsg(RoverCanLib::Constant::eDeviceId::INFRARED_LIGHTS, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }

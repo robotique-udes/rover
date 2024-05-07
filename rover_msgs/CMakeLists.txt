@@ -34,10 +34,12 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/JoyDemuxStatus.msg"
   "msg/Gps.msg"
   "msg/CameraControl.msg"
+  "msg/LightControl.msg"
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
   "srv/DriveTrainArbitration.srv"
+  "srv/LightControl.srv"
 )
 
 ament_package()
