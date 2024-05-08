@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1031</width>
-    <height>754</height>
+    <width>1351</width>
+    <height>765</height>
    </rect>
   </property>
   <property name="font">
@@ -21,111 +21,350 @@
   <property name="styleSheet">
    <string notr="true"/>
   </property>
-  <layout class="QGridLayout" name="gridLayout">
-   <item row="0" column="0" alignment="Qt::AlignVCenter">
-    <widget class="QFrame" name="antenna_3">
+  <layout class="QHBoxLayout" name="horizontalLayout_2">
+   <item alignment="Qt::AlignLeft">
+    <widget class="QFrame" name="frame_4">
      <property name="minimumSize">
       <size>
-       <width>500</width>
-       <height>250</height>
+       <width>800</width>
+       <height>0</height>
       </size>
      </property>
      <property name="maximumSize">
       <size>
-       <width>260</width>
-       <height>190</height>
+       <width>800</width>
+       <height>16777215</height>
       </size>
      </property>
-     <property name="font">
-      <font>
-       <pointsize>16</pointsize>
-       <underline>false</underline>
-      </font>
-     </property>
      <property name="frameShape">
-      <enum>QFrame::Box</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
-     <property name="lineWidth">
-      <number>3</number>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout_4">
+     <layout class="QVBoxLayout" name="verticalLayout_2">
       <item>
-       <widget class="QFrame" name="frame_2">
+       <widget class="QFrame" name="frame_9">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QHBoxLayout" name="horizontalLayout">
+        <layout class="QHBoxLayout" name="horizontalLayout_4">
          <item>
-          <widget class="QLabel" name="label_5">
-           <property name="font">
-            <font>
-             <pointsize>20</pointsize>
-             <weight>50</weight>
-             <bold>false</bold>
-             <underline>true</underline>
-             <strikeout>false</strikeout>
-             <kerning>true</kerning>
-            </font>
-           </property>
-           <property name="styleSheet">
-            <string notr="true">margin-left : 90
-
-
-</string>
-           </property>
-           <property name="text">
-            <string>Joy demux</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignHCenter|Qt::AlignTop</set>
-           </property>
-           <property name="margin">
-            <number>0</number>
-           </property>
-          </widget>
-         </item>
-         <item alignment="Qt::AlignTop">
-          <widget class="QRadioButton" name="rb_joy_force">
-           <property name="enabled">
-            <bool>true</bool>
+          <widget class="QFrame" name="joy_demux">
+           <property name="minimumSize">
+            <size>
+             <width>500</width>
+             <height>250</height>
+            </size>
            </property>
            <property name="maximumSize">
             <size>
-             <width>80</width>
-             <height>16777215</height>
+             <width>500</width>
+             <height>250</height>
             </size>
            </property>
            <property name="font">
             <font>
-             <pointsize>12</pointsize>
+             <pointsize>16</pointsize>
              <underline>false</underline>
             </font>
            </property>
-           <property name="text">
-            <string>Force</string>
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
            </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <property name="lineWidth">
+            <number>3</number>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_4">
+            <item>
+             <widget class="QFrame" name="frame_2">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QHBoxLayout" name="horizontalLayout">
+               <item>
+                <widget class="QLabel" name="label_5">
+                 <property name="font">
+                  <font>
+                   <pointsize>20</pointsize>
+                   <weight>50</weight>
+                   <bold>false</bold>
+                   <underline>false</underline>
+                   <strikeout>false</strikeout>
+                   <kerning>true</kerning>
+                  </font>
+                 </property>
+                 <property name="styleSheet">
+                  <string notr="true">margin-left : 90
+
+
+</string>
+                 </property>
+                 <property name="text">
+                  <string>Joy demux</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                 </property>
+                 <property name="margin">
+                  <number>0</number>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QRadioButton" name="rb_joy_force">
+                 <property name="enabled">
+                  <bool>true</bool>
+                 </property>
+                 <property name="maximumSize">
+                  <size>
+                   <width>80</width>
+                   <height>16777215</height>
+                  </size>
+                 </property>
+                 <property name="font">
+                  <font>
+                   <pointsize>12</pointsize>
+                   <underline>false</underline>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Force</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QGridLayout" name="gridLayout_2">
+               <item row="1" column="1" alignment="Qt::AlignHCenter">
+                <widget class="QFrame" name="main_modes">
+                 <property name="styleSheet">
+                  <string notr="true">QRadioButton{
+	font: 14pt &quot;Ubuntu&quot;;
+}
+
+QRadioButton::indicator {
+    width: 40px;
+    height: 40px;
+}
+
+QRadioButton::indicator:unchecked:unchecked {
+    image: url(:/icons/icons/toggle_off.png);
+}
+
+QRadioButton::indicator::checked {
+   	image: url(:/icons/icons/toggle_on.png);
+}
+</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_5">
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_drivetrain_main">
+                    <property name="enabled">
+                     <bool>true</bool>
+                    </property>
+                    <property name="font">
+                     <font>
+                      <family>Ubuntu</family>
+                      <pointsize>14</pointsize>
+                      <weight>50</weight>
+                      <italic>false</italic>
+                      <bold>false</bold>
+                      <underline>false</underline>
+                      <kerning>true</kerning>
+                     </font>
+                    </property>
+                    <property name="text">
+                     <string>Drive train</string>
+                    </property>
+                    <property name="iconSize">
+                     <size>
+                      <width>41</width>
+                      <height>42</height>
+                     </size>
+                    </property>
+                    <property name="checkable">
+                     <bool>true</bool>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_arm_main">
+                    <property name="text">
+                     <string>Arm</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_antenna_main">
+                    <property name="text">
+                     <string>Antenna</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_none_main">
+                    <property name="text">
+                     <string>None</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="1" column="2" alignment="Qt::AlignHCenter">
+                <widget class="QFrame" name="sec_modes">
+                 <property name="styleSheet">
+                  <string notr="true">QRadioButton{
+	font: 14pt &quot;Ubuntu&quot;;
+}
+
+QRadioButton::indicator {
+    width: 40px;
+    height: 40px;
+}
+
+QRadioButton::indicator:unchecked:unchecked {
+    image: url(:/icons/icons/toggle_off.png);
+}
+
+QRadioButton::indicator::checked {
+   	image: url(:/icons/icons/toggle_on.png);
+}
+</string>
+                 </property>
+                 <property name="frameShape">
+                  <enum>QFrame::NoFrame</enum>
+                 </property>
+                 <property name="frameShadow">
+                  <enum>QFrame::Raised</enum>
+                 </property>
+                 <layout class="QVBoxLayout" name="verticalLayout_7">
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_drivetrain_sec">
+                    <property name="text">
+                     <string>Drive train</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_arm_sec">
+                    <property name="text">
+                     <string>Arm</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_antenna_sec">
+                    <property name="text">
+                     <string>Antenna</string>
+                    </property>
+                   </widget>
+                  </item>
+                  <item>
+                   <widget class="QRadioButton" name="rb_joy_none_sec">
+                    <property name="text">
+                     <string>None</string>
+                    </property>
+                   </widget>
+                  </item>
+                 </layout>
+                </widget>
+               </item>
+               <item row="0" column="2">
+                <widget class="QLabel" name="label_7">
+                 <property name="font">
+                  <font>
+                   <pointsize>18</pointsize>
+                   <underline>false</underline>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Secondary</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+               <item row="0" column="1">
+                <widget class="QLabel" name="label_6">
+                 <property name="font">
+                  <font>
+                   <pointsize>18</pointsize>
+                   <underline>false</underline>
+                  </font>
+                 </property>
+                 <property name="text">
+                  <string>Main</string>
+                 </property>
+                 <property name="alignment">
+                  <set>Qt::AlignHCenter|Qt::AlignTop</set>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
       <item>
-       <widget class="QFrame" name="frame">
+       <widget class="QFrame" name="frame_7">
         <property name="frameShape">
          <enum>QFrame::NoFrame</enum>
         </property>
         <property name="frameShadow">
          <enum>QFrame::Raised</enum>
         </property>
-        <layout class="QGridLayout" name="gridLayout_2">
-         <item row="1" column="1" alignment="Qt::AlignHCenter">
-          <widget class="QFrame" name="main_modes">
+        <layout class="QHBoxLayout" name="horizontalLayout_3">
+         <item>
+          <widget class="QFrame" name="antenna">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>190</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>220</height>
+            </size>
+           </property>
+           <property name="font">
+            <font>
+             <pointsize>16</pointsize>
+             <underline>false</underline>
+            </font>
+           </property>
            <property name="styleSheet">
             <string notr="true">QRadioButton{
 	font: 14pt &quot;Ubuntu&quot;;
@@ -146,68 +385,71 @@ QRadioButton::indicator::checked {
 </string>
            </property>
            <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
+            <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_5">
+           <property name="lineWidth">
+            <number>3</number>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_13">
             <item>
-             <widget class="QRadioButton" name="rb_joy_drivetrain_main">
-              <property name="enabled">
-               <bool>true</bool>
-              </property>
+             <widget class="QLabel" name="label_2">
               <property name="font">
                <font>
-                <family>Ubuntu</family>
-                <pointsize>14</pointsize>
+                <pointsize>20</pointsize>
                 <weight>50</weight>
-                <italic>false</italic>
                 <bold>false</bold>
                 <underline>false</underline>
-                <kerning>true</kerning>
                </font>
               </property>
               <property name="text">
-               <string>Drive train</string>
+               <string>Antenna arbitration</string>
               </property>
-              <property name="iconSize">
-               <size>
-                <width>41</width>
-                <height>42</height>
-               </size>
-              </property>
-              <property name="checkable">
-               <bool>true</bool>
+              <property name="alignment">
+               <set>Qt::AlignHCenter|Qt::AlignTop</set>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="rb_joy_arm_main">
-              <property name="text">
-               <string>Arm</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="rb_joy_antenna_main">
-              <property name="text">
-               <string>Antenna</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="rb_joy_none_main">
+             <widget class="QRadioButton" name="rb_ant_none">
               <property name="text">
                <string>None</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rb_ant_teleop">
+              <property name="text">
+               <string>Teleop</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rb_ant_autonomus">
+              <property name="text">
+               <string>Autonomus</string>
               </property>
              </widget>
             </item>
            </layout>
           </widget>
          </item>
-         <item row="1" column="2" alignment="Qt::AlignHCenter">
-          <widget class="QFrame" name="sec_modes">
+         <item>
+          <widget class="QFrame" name="frame_16">
+           <property name="minimumSize">
+            <size>
+             <width>300</width>
+             <height>190</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>300</width>
+             <height>220</height>
+            </size>
+           </property>
            <property name="styleSheet">
             <string notr="true">QRadioButton{
 	font: 14pt &quot;Ubuntu&quot;;
@@ -228,103 +470,83 @@ QRadioButton::indicator::checked {
 </string>
            </property>
            <property name="frameShape">
-            <enum>QFrame::NoFrame</enum>
+            <enum>QFrame::Box</enum>
            </property>
            <property name="frameShadow">
             <enum>QFrame::Raised</enum>
            </property>
-           <layout class="QVBoxLayout" name="verticalLayout_7">
+           <property name="lineWidth">
+            <number>3</number>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout_8">
             <item>
-             <widget class="QRadioButton" name="rb_joy_drivetrain_sec">
+             <widget class="QLabel" name="label_9">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <underline>false</underline>
+               </font>
+              </property>
               <property name="text">
-               <string>Drive train</string>
+               <string>Drive train arbitration</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignHCenter|Qt::AlignTop</set>
               </property>
              </widget>
             </item>
             <item>
-             <widget class="QRadioButton" name="rb_joy_arm_sec">
-              <property name="text">
-               <string>Arm</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="rb_joy_antenna_sec">
-              <property name="text">
-               <string>Antenna</string>
-              </property>
-             </widget>
-            </item>
-            <item>
-             <widget class="QRadioButton" name="rb_joy_none_sec">
+             <widget class="QRadioButton" name="rb_dt_none">
               <property name="text">
                <string>None</string>
               </property>
              </widget>
             </item>
+            <item>
+             <widget class="QRadioButton" name="rb_dt_teleop">
+              <property name="text">
+               <string>Teleop</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QRadioButton" name="rb_dt_autonomus">
+              <property name="text">
+               <string>Autonomus</string>
+              </property>
+             </widget>
+            </item>
            </layout>
-          </widget>
-         </item>
-         <item row="0" column="2">
-          <widget class="QLabel" name="label_7">
-           <property name="font">
-            <font>
-             <pointsize>18</pointsize>
-             <underline>false</underline>
-            </font>
-           </property>
-           <property name="text">
-            <string>Secondary</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignHCenter|Qt::AlignTop</set>
-           </property>
-          </widget>
-         </item>
-         <item row="0" column="1">
-          <widget class="QLabel" name="label_6">
-           <property name="font">
-            <font>
-             <pointsize>18</pointsize>
-             <underline>false</underline>
-            </font>
-           </property>
-           <property name="text">
-            <string>Main</string>
-           </property>
-           <property name="alignment">
-            <set>Qt::AlignHCenter|Qt::AlignTop</set>
-           </property>
           </widget>
          </item>
         </layout>
        </widget>
       </item>
-     </layout>
-    </widget>
-   </item>
-   <item row="0" column="1" alignment="Qt::AlignVCenter">
-    <widget class="QFrame" name="antenna">
-     <property name="minimumSize">
-      <size>
-       <width>260</width>
-       <height>190</height>
-      </size>
-     </property>
-     <property name="maximumSize">
-      <size>
-       <width>260</width>
-       <height>220</height>
-      </size>
-     </property>
-     <property name="font">
-      <font>
-       <pointsize>16</pointsize>
-       <underline>false</underline>
-      </font>
-     </property>
-     <property name="styleSheet">
-      <string notr="true">QRadioButton{
+      <item>
+       <widget class="QFrame" name="frame_10">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_5">
+         <item>
+          <widget class="QFrame" name="lights">
+           <property name="minimumSize">
+            <size>
+             <width>270</width>
+             <height>200</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>270</width>
+             <height>220</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QRadioButton{
 	font: 14pt &quot;Ubuntu&quot;;
 }
 
@@ -341,52 +563,273 @@ QRadioButton::indicator::checked {
    	image: url(:/icons/icons/toggle_on.png);
 }
 </string>
-     </property>
-     <property name="frameShape">
-      <enum>QFrame::Box</enum>
-     </property>
-     <property name="frameShadow">
-      <enum>QFrame::Raised</enum>
-     </property>
-     <property name="lineWidth">
-      <number>3</number>
-     </property>
-     <layout class="QVBoxLayout" name="verticalLayout">
-      <item>
-       <widget class="QLabel" name="label_2">
-        <property name="font">
-         <font>
-          <pointsize>20</pointsize>
-          <underline>true</underline>
-         </font>
-        </property>
-        <property name="text">
-         <string>Antenna modes</string>
-        </property>
-        <property name="alignment">
-         <set>Qt::AlignHCenter|Qt::AlignTop</set>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="rb_ant_static">
-        <property name="text">
-         <string>Static</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="rb_ant_teleop">
-        <property name="text">
-         <string>Teleop</string>
-        </property>
-       </widget>
-      </item>
-      <item>
-       <widget class="QRadioButton" name="rb_ant_autonomus">
-        <property name="text">
-         <string>Autonomus</string>
-        </property>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <property name="lineWidth">
+            <number>3</number>
+           </property>
+           <layout class="QGridLayout" name="gridLayout">
+            <item row="1" column="0">
+             <widget class="QFrame" name="frame_6">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_6">
+               <item>
+                <widget class="QRadioButton" name="rb_normal_light">
+                 <property name="text">
+                  <string>Normal Light</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="2" column="0">
+             <widget class="QFrame" name="frame_5">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_3">
+               <item>
+                <widget class="QRadioButton" name="rb_infrared_light">
+                 <property name="text">
+                  <string>Infrared</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item row="0" column="0">
+             <widget class="QLabel" name="label_3">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <underline>false</underline>
+               </font>
+              </property>
+              <property name="text">
+               <string>Lights</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignHCenter|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+         <item>
+          <widget class="QFrame" name="frame_8">
+           <property name="minimumSize">
+            <size>
+             <width>270</width>
+             <height>200</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>270</width>
+             <height>220</height>
+            </size>
+           </property>
+           <property name="styleSheet">
+            <string notr="true">QRadioButton{
+	font: 14pt &quot;Ubuntu&quot;;
+}
+
+QRadioButton::indicator {
+    width: 40px;
+    height: 40px;
+}
+
+QRadioButton::indicator:unchecked:unchecked {
+    image: url(:/icons/icons/toggle_off.png);
+}
+
+QRadioButton::indicator::checked {
+   	image: url(:/icons/icons/toggle_on.png);
+}
+</string>
+           </property>
+           <property name="frameShape">
+            <enum>QFrame::Box</enum>
+           </property>
+           <property name="frameShadow">
+            <enum>QFrame::Raised</enum>
+           </property>
+           <property name="lineWidth">
+            <number>3</number>
+           </property>
+           <layout class="QVBoxLayout" name="verticalLayout">
+            <item>
+             <widget class="QLabel" name="label_4">
+              <property name="font">
+               <font>
+                <pointsize>20</pointsize>
+                <underline>false</underline>
+               </font>
+              </property>
+              <property name="text">
+               <string>Cameras</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignHCenter|Qt::AlignTop</set>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_11">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_9">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="rb_ant_static_2">
+                 <property name="text">
+                  <string>A2</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_12">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_10">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="rb_ant_static_3">
+                 <property name="text">
+                  <string>r1m_1</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_13">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_11">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="rb_ant_teleop_2">
+                 <property name="text">
+                  <string>r1m_2</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="frame_14">
+              <property name="frameShape">
+               <enum>QFrame::NoFrame</enum>
+              </property>
+              <property name="frameShadow">
+               <enum>QFrame::Raised</enum>
+              </property>
+              <layout class="QVBoxLayout" name="verticalLayout_12">
+               <property name="spacing">
+                <number>0</number>
+               </property>
+               <property name="leftMargin">
+                <number>0</number>
+               </property>
+               <property name="topMargin">
+                <number>0</number>
+               </property>
+               <property name="rightMargin">
+                <number>0</number>
+               </property>
+               <property name="bottomMargin">
+                <number>0</number>
+               </property>
+               <item>
+                <widget class="QRadioButton" name="rb_ant_autonomus_2">
+                 <property name="text">
+                  <string>r1m_3</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </widget>
+            </item>
+           </layout>
+          </widget>
+         </item>
+        </layout>
        </widget>
       </item>
      </layout>

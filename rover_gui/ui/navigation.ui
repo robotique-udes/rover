@@ -6,131 +6,208 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1012</width>
-    <height>809</height>
+    <width>1632</width>
+    <height>902</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QLabel" name="lb_rover_icon">
-   <property name="geometry">
-    <rect>
-     <x>200</x>
-     <y>350</y>
-     <width>25</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-  </widget>
-  <widget class="QFrame" name="frame">
-   <property name="geometry">
-    <rect>
-     <x>30</x>
-     <y>31</y>
-     <width>671</width>
-     <height>671</height>
-    </rect>
-   </property>
-   <property name="frameShape">
-    <enum>QFrame::NoFrame</enum>
-   </property>
-   <property name="frameShadow">
-    <enum>QFrame::Raised</enum>
-   </property>
-   <layout class="QVBoxLayout" name="verticalLayout">
-    <item>
-     <widget class="QGraphicsView" name="gv_map">
-      <property name="autoFillBackground">
-       <bool>true</bool>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="3">
+    <widget class="QFrame" name="frame_4">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="0" rowspan="3" colspan="2" alignment="Qt::AlignLeft|Qt::AlignVCenter">
+    <widget class="QFrame" name="frame">
+     <property name="minimumSize">
+      <size>
+       <width>671</width>
+       <height>671</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>999999</width>
+       <height>999999</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout">
+      <property name="leftMargin">
+       <number>9</number>
       </property>
-      <property name="styleSheet">
-       <string notr="true">border: none</string>
+      <property name="topMargin">
+       <number>9</number>
       </property>
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="verticalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-      <property name="horizontalScrollBarPolicy">
-       <enum>Qt::ScrollBarAlwaysOff</enum>
-      </property>
-     </widget>
-    </item>
-    <item>
-     <widget class="QFrame" name="frame_2">
-      <property name="frameShape">
-       <enum>QFrame::NoFrame</enum>
-      </property>
-      <property name="frameShadow">
-       <enum>QFrame::Raised</enum>
-      </property>
-      <layout class="QHBoxLayout" name="horizontalLayout">
-       <property name="spacing">
-        <number>0</number>
-       </property>
-       <property name="leftMargin">
-        <number>0</number>
-       </property>
-       <property name="topMargin">
-        <number>0</number>
-       </property>
-       <property name="rightMargin">
-        <number>0</number>
-       </property>
-       <property name="bottomMargin">
-        <number>0</number>
-       </property>
-       <item>
-        <widget class="QLabel" name="lb_curr_position">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
+      <item>
+       <widget class="QLabel" name="lb_rover_icon">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="text">
+         <string/>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QFrame" name="frame_2">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout">
+         <property name="spacing">
+          <number>0</number>
          </property>
-         <property name="autoFillBackground">
-          <bool>false</bool>
+         <property name="leftMargin">
+          <number>0</number>
          </property>
-         <property name="styleSheet">
-          <string notr="true"/>
+         <property name="topMargin">
+          <number>0</number>
          </property>
-         <property name="text">
-          <string>lat : -69.0, lon :  +69.0</string>
+         <property name="rightMargin">
+          <number>0</number>
          </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
+         <property name="bottomMargin">
+          <number>0</number>
          </property>
-        </widget>
-       </item>
-       <item>
-        <widget class="QLabel" name="lb_curr_heading">
-         <property name="font">
-          <font>
-           <pointsize>13</pointsize>
-          </font>
-         </property>
-         <property name="text">
-          <string>heading : 69.0°</string>
-         </property>
-         <property name="alignment">
-          <set>Qt::AlignCenter</set>
-         </property>
-        </widget>
-       </item>
-      </layout>
-     </widget>
-    </item>
-   </layout>
-  </widget>
-  <zorder>frame</zorder>
-  <zorder>lb_rover_icon</zorder>
+         <item alignment="Qt::AlignBottom">
+          <widget class="QLabel" name="lb_curr_position">
+           <property name="font">
+            <font>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="styleSheet">
+            <string notr="true"/>
+           </property>
+           <property name="text">
+            <string>lat : -69.0, lon :  +69.0</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+         <item alignment="Qt::AlignBottom">
+          <widget class="QLabel" name="lb_curr_heading">
+           <property name="font">
+            <font>
+             <pointsize>13</pointsize>
+            </font>
+           </property>
+           <property name="text">
+            <string>heading : 69.0°</string>
+           </property>
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QFrame" name="frame_3">
+     <property name="minimumSize">
+      <size>
+       <width>310</width>
+       <height>671</height>
+      </size>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>400</width>
+       <height>671</height>
+      </size>
+     </property>
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QVBoxLayout" name="verticalLayout_2">
+      <item>
+       <widget class="QFrame" name="frame_5">
+        <property name="frameShape">
+         <enum>QFrame::NoFrame</enum>
+        </property>
+        <property name="frameShadow">
+         <enum>QFrame::Raised</enum>
+        </property>
+        <layout class="QHBoxLayout" name="horizontalLayout_2">
+         <item>
+          <widget class="QPushButton" name="pb_add_location">
+           <property name="text">
+            <string>Add location</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="pb_delete_location">
+           <property name="text">
+            <string>Delete location</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item>
+       <widget class="QListWidget" name="location_list">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>16777215</height>
+         </size>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pb_update_location">
+        <property name="text">
+         <string>Update rover position</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pb_record_location">
+        <property name="text">
+         <string>Record location</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
  </widget>
  <resources/>
  <connections/>

@@ -1,7 +1,7 @@
 voiture noire à gauche :
 ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378776', longitude: '-71.924796', heading: '0.0'}"
 bout du stationnement gauche : 
-ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378650', longitude: '-71.923845', heading: '0.0'}"
+ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.378650', longitude: '-71.923845', heading: '110.0'}"
 milieu voiture bleu en haut : 
 ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '45.379291', longitude: '-71.923720', heading: '0.0'}"
 milieu voiture noire en bas : 

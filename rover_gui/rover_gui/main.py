@@ -1,9 +1,13 @@
 #https://www.youtube.com/watch?v=jWxNfb7Hng8
 from threading import Thread 
+import sys
+import signal
 
 from ament_index_python.packages import get_package_share_directory
 
-from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox, QShortcut
+from PyQt5.QtGui import QKeySequence, QIcon
+from PyQt5 import QtGui
 from PyQt5 import uic
 import rclpy
 from rclpy.executors import MultiThreadedExecutor
@@ -12,13 +16,18 @@ from rover_gui.ui_node import UINode
 from pages.home import Home
 from pages.dashboard import Dashboard
 from pages.navigation import Navigation
+from pages.cameras import Cameras
 
 from static.resource_rc import qt_resource_data
 
 class MainWindow(QMainWindow):
-    def __init__(self, ui_node):
+    def __init__(self, ui_node, executor):
         super(MainWindow, self).__init__()
         self.ui_node = ui_node
+        self.executor = executor
+
+        shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
+        shortcut.activated.connect(self.close_application)
 
         self.pages_created = [] 
 
@@ -28,6 +37,7 @@ class MainWindow(QMainWindow):
         self.pb_home = self.findChild(QPushButton, "pb_home")
         self.pb_dashboard = self.findChild(QPushButton, "pb_dashboard")
         self.pb_navigation = self.findChild(QPushButton, "pb_navigation")
+        self.pb_cameras = self.findChild(QPushButton, "pb_cameras")
         self.tab_widget = self.findChild(QTabWidget, "tab_widget")
         self.tool_box = self.findChild(QToolBox, "tool_box")
 
@@ -35,7 +45,8 @@ class MainWindow(QMainWindow):
         self.menu_btns_dict = {
             self.pb_home: lambda: self.create_page(Home),
             self.pb_dashboard: lambda: self.create_page(Dashboard),
-            self.pb_navigation: lambda: self.create_page(Navigation)
+            self.pb_navigation: lambda: self.create_page(Navigation),
+            self.pb_cameras: lambda: self.create_page(Cameras)
         }
 
         self.show_home_window()
@@ -45,6 +56,7 @@ class MainWindow(QMainWindow):
         self.pb_home.clicked.connect(self.show_selected_window)
         self.pb_dashboard.clicked.connect(self.show_selected_window)
         self.pb_navigation.clicked.connect(self.show_selected_window)
+        self.pb_cameras.clicked.connect(self.show_selected_window)
 
     def create_page(self, class_name):
         obj = class_name(self.ui_node)  # Create an instance of the class
@@ -108,30 +120,32 @@ class MainWindow(QMainWindow):
 
         return False,
 
+    def closeEvent(self, event):
+            self.close_application()
+
+    def close_application(self):
+        self.ui_node.destroy_node()
+        self.executor.shutdown()
+        QApplication.quit()
+
 def main(args=None):
-    import sys
     rclpy.init(args=args)
+
+    signal.signal(signal.SIGINT, signal.SIG_DFL)
 
     ui_node = UINode()
     executor = MultiThreadedExecutor()
     executor.add_node(ui_node)
 
     app = QApplication(sys.argv)
-    window = MainWindow(ui_node)
+    window = MainWindow(ui_node, executor)
 
     # Start the ROS2 node on a separate thread
     thread = Thread(target=executor.spin)
     thread.start()
 
-    # Let the app running on the main thread
-    try:
-        window.show()
-        sys.exit(app.exec_())
-
-    finally:
-        ui_node.destroy_node()
-        executor.shutdown()
-
+    window.show()
+    sys.exit(app.exec_())
 
     
 if __name__ == '__main__':

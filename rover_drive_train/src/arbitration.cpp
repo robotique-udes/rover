@@ -6,63 +6,63 @@
 
 #include "rover_msgs/srv/drive_train_arbitration.hpp"
 
-//Class definition
+// Class definition
 class Arbitration : public rclcpp::Node
 {
-    public:
-        Arbitration();
-        ~Arbitration() {}
+public:
+    Arbitration();
+    ~Arbitration() {}
 
-    private:
-        void cbTimerSendCmd();
+private:
+    void cbTimerSendCmd();
 
-        void cbBaseWatchdog();
-        void cbRoverWatchdog();
+    void cbBaseWatchdog();
+    void cbRoverWatchdog();
 
-        void cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_);
-        void cbBaseHr(const std_msgs::msg::Empty msg_);
-        void cbRoverHr(const std_msgs::msg::Empty msg_);
+    void cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_);
+    void cbBaseHr(const std_msgs::msg::Empty msg_);
+    void cbRoverHr(const std_msgs::msg::Empty msg_);
 
-        void cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
-                    std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response);
-        
-        void sendCmd();
+    void cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
+                std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response);
 
-        rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _subMotorCmd;
-        rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _subBaseHr;
-        rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _subRoverHr;
+    void sendCmd();
 
-        rclcpp::Publisher<rover_msgs::msg::PropulsionMotor>::SharedPtr _pubAbtr;
+    rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _subMotorCmd;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _subBaseHr;
+    rclcpp::Subscription<std_msgs::msg::Empty>::SharedPtr _subRoverHr;
 
-        rclcpp::Service<rover_msgs::srv::DriveTrainArbitration>::SharedPtr _srvControlDemux;
+    rclcpp::Publisher<rover_msgs::msg::PropulsionMotor>::SharedPtr _pubAbtr;
 
-        rover_msgs::srv::DriveTrainArbitration::Request _arbitrationRequest;
-        rover_msgs::srv::DriveTrainArbitration::Response _arbitrationResponse;
+    rclcpp::Service<rover_msgs::srv::DriveTrainArbitration>::SharedPtr _srvControlDemux;
 
-        rover_msgs::msg::PropulsionMotor _cmdTeleop;
+    rover_msgs::srv::DriveTrainArbitration::Request _arbitrationRequest;
+    rover_msgs::srv::DriveTrainArbitration::Response _arbitrationResponse;
 
-        std_msgs::msg::Empty _hrBase;
-        std_msgs::msg::Empty _hrRover;
+    rover_msgs::msg::PropulsionMotor _cmdTeleop;
 
-        rclcpp::TimerBase::SharedPtr _timerSendCmd;
-        rclcpp::TimerBase::SharedPtr _watchdogBase;
-        rclcpp::TimerBase::SharedPtr _watchdogRover;
-        
-        bool _baseHrLost = false;
-        bool _roverHrLost = false;
+    std_msgs::msg::Empty _hrBase;
+    std_msgs::msg::Empty _hrRover;
+
+    rclcpp::TimerBase::SharedPtr _timerSendCmd;
+    rclcpp::TimerBase::SharedPtr _watchdogBase;
+    rclcpp::TimerBase::SharedPtr _watchdogRover;
+
+    bool _baseHrLost = false;
+    bool _roverHrLost = false;
 };
 
 Arbitration::Arbitration() : Node("arbitration")
 {
     _subBaseHr = this->create_subscription<std_msgs::msg::Empty>("/base/heartbeat",
-                                                                                    1,
-                                                                                    std::bind(&Arbitration::cbBaseHr, this, std::placeholders:: _1));
+                                                                 1,
+                                                                 std::bind(&Arbitration::cbBaseHr, this, std::placeholders::_1));
     _subRoverHr = this->create_subscription<std_msgs::msg::Empty>("/rover/heartbeat",
-                                                                                    1,
-                                                                                    std::bind(&Arbitration::cbRoverHr, this, std::placeholders:: _1));
+                                                                  1,
+                                                                  std::bind(&Arbitration::cbRoverHr, this, std::placeholders::_1));
     _subMotorCmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
-                                                                                    1,
-                                                                                    std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
+                                                                               1,
+                                                                               std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
 
     _pubAbtr = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1);
 
@@ -72,8 +72,8 @@ Arbitration::Arbitration() : Node("arbitration")
     _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&Arbitration::cbRoverWatchdog, this));
     _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&Arbitration::cbTimerSendCmd, this));
 
-    // Starting by default at drive_train for CRQRC, should be set when GUI 
-    // opens instead 
+    // Starting by default at drive_train for CRQRC, should be set when GUI
+    // opens instead
     _arbitrationRequest.target_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::TELEOP;
 }
 
@@ -113,11 +113,11 @@ void Arbitration::cbRoverWatchdog()
 
 void Arbitration::sendCmd()
 {
-    if(_baseHrLost || _roverHrLost)
+    if (_baseHrLost || _roverHrLost)
     {
         rover_msgs::msg::PropulsionMotor _zeroCmd;
 
-        for(int i = 0; i < 4; ++i)
+        for (int i = 0; i < 4; ++i)
         {
             _zeroCmd.enable[i] = false;
             _zeroCmd.target_speed[i] = 0.0;
@@ -136,7 +136,7 @@ void Arbitration::sendCmd()
     else
     {
         rover_msgs::msg::PropulsionMotor _zeroCmd;
-        for(int i = 0; i < 4; ++i)
+        for (int i = 0; i < 4; ++i)
         {
             _zeroCmd.enable[i] = false;
             _zeroCmd.target_speed[i] = 0.0;
@@ -149,7 +149,7 @@ void Arbitration::sendCmd()
 }
 
 void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request_,
-                                      std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
+                         std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
 {
     _arbitrationRequest = *request_;
     *response_ = _arbitrationResponse;
@@ -160,6 +160,6 @@ int main(int argc, char *argv[])
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<Arbitration>());
     rclcpp::shutdown();
-    
+
     return 0;
 }

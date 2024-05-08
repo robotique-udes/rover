@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>add_location</class>
+ <widget class="QWidget" name="add_location">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>375</width>
+    <height>250</height>
+   </rect>
+  </property>
+  <property name="minimumSize">
+   <size>
+    <width>375</width>
+    <height>250</height>
+   </size>
+  </property>
+  <property name="maximumSize">
+   <size>
+    <width>375</width>
+    <height>250</height>
+   </size>
+  </property>
+  <property name="windowTitle">
+   <string>Add waypoint</string>
+  </property>
+  <layout class="QGridLayout" name="gridLayout">
+   <item row="0" column="0">
+    <widget class="QFrame" name="frame_2">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QGridLayout" name="gridLayout_2">
+      <item row="0" column="1" colspan="2">
+       <widget class="QLineEdit" name="le_name"/>
+      </item>
+      <item row="0" column="0">
+       <widget class="QLabel" name="label">
+        <property name="text">
+         <string>Name</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="0">
+       <widget class="QLabel" name="label_4">
+        <property name="text">
+         <string>Icon</string>
+        </property>
+       </widget>
+      </item>
+      <item row="7" column="1" colspan="2">
+       <widget class="QComboBox" name="cb_color">
+        <item>
+         <property name="text">
+          <string>red</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../static/resource.qrc">
+           <normaloff>:/icons/icons/red_waypoint.png</normaloff>:/icons/icons/red_waypoint.png</iconset>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>orange</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>green</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>black</string>
+         </property>
+        </item>
+        <item>
+         <property name="text">
+          <string>blue</string>
+         </property>
+         <property name="icon">
+          <iconset resource="../static/resource.qrc">
+           <normaloff>:/icons/icons/blue_waypoint.png</normaloff>:/icons/icons/blue_waypoint.png</iconset>
+         </property>
+        </item>
+       </widget>
+      </item>
+      <item row="4" column="0">
+       <widget class="QLabel" name="label_2">
+        <property name="text">
+         <string>Longitude</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="0">
+       <widget class="QLabel" name="label_3">
+        <property name="text">
+         <string>Latitude</string>
+        </property>
+       </widget>
+      </item>
+      <item row="3" column="1" colspan="2">
+       <widget class="QLineEdit" name="le_latitude"/>
+      </item>
+      <item row="4" column="1" colspan="2">
+       <widget class="QLineEdit" name="le_longitude"/>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="1" column="0">
+    <widget class="QFrame" name="frame_3">
+     <property name="frameShape">
+      <enum>QFrame::NoFrame</enum>
+     </property>
+     <property name="frameShadow">
+      <enum>QFrame::Raised</enum>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout">
+      <item>
+       <widget class="QPushButton" name="pb_cancel">
+        <property name="text">
+         <string>Cancel</string>
+        </property>
+       </widget>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pb_add_location">
+        <property name="text">
+         <string>Add</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../static/resource.qrc"/>
+ </resources>
+ <connections/>
+</ui>
