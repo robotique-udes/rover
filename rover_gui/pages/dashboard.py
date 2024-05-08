@@ -6,6 +6,7 @@ from rover_msgs.srv._antenna_arbitration import AntennaArbitration
 from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
+from pages.rtsp_player import RTSPPlayer
 
 class Dashboard(QWidget):
     def __init__(self, ui_node):
@@ -20,6 +21,9 @@ class Dashboard(QWidget):
 
         package_share_directory = get_package_share_directory('rover_gui')
         uic.loadUi(package_share_directory+ "/ui/dashboard.ui", self)
+
+        self.rtsp_player = RTSPPlayer()
+        self.horizontalLayout_2.addWidget(self.rtsp_player)
 
         # Joy arbitration ui elements
         self.rb_dt_none : QRadioButton
@@ -57,6 +61,8 @@ class Dashboard(QWidget):
         self.rb_dt_none.clicked.connect(self.drivetrain_arbitration_clicked)
         self.rb_dt_teleop.clicked.connect(self.drivetrain_arbitration_clicked)
         self.rb_dt_autonomus.clicked.connect(self.drivetrain_arbitration_clicked)
+
+        
 
     def handle_service_unavailability(self, sender_rb, service_name):
         sender_rb.setAutoExclusive(False)
