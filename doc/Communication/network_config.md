@@ -21,12 +21,6 @@ This is a table of all IP addresses used.
 | 192.168.144.50 | Rover M2.4               |
 | 192.168.144.55 | Base station M2.4        |
 
-The ROS_DOMAIN_ID must be 69 on all computers : 
-
-```
-export ROS_DOMAIN_ID=69
-```
-
 ## Antennas
 
 The user and password for all the antennas is *rovus*.
