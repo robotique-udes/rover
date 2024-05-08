@@ -1,6 +1,8 @@
 # Rover
 
-#### Run the following commands to download and install dependencies from apt:
+## Setup
+
+### Run the following commands to download and install dependencies from apt
 
 ```bash
 sudo apt install ros-humble-joy
@@ -9,10 +11,13 @@ sudo apt install python3-venv
 sudo apt install python-is-python3
 sudo apt install can-utils
 sudo apt install python3-pyqt5.qtwebengine
+sudo apt install python3-pyqt5.qtmultimedia
+sudo apt install gstreamer1.0-rtsp
+sudo apt purge gstreamer1.0-vaapi 
+rm -r ~/.cache/gstreamer-1.0/
 ```
 
-#### Run the following commands to download and install dependencies from pip:
-
+### Run the following commands to download and install dependencies from pip
 
 install setuptools version 58.2.0 for compatibility reasons ([further details](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/))
 
@@ -22,8 +27,6 @@ pip install folium
 pip install pandas
 pip install PyQtWebEngine
 ```
-
-## Setup
 
 ### ROS Setup
 
