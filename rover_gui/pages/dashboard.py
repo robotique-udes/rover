@@ -5,6 +5,7 @@ from PyQt5 import uic
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
 from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
+from rover_msgs.srv._light_control import LightControl
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
 from pages.rtsp_player import RTSPPlayer
 
@@ -24,6 +25,10 @@ class Dashboard(QWidget):
 
         self.rtsp_player = RTSPPlayer()
         self.horizontalLayout_2.addWidget(self.rtsp_player)
+
+        # Lights
+        self.rb_normal_light : QPushButton
+        self.rb_infrared_light : QPushButton
 
         # Joy arbitration ui elements
         self.rb_dt_none : QRadioButton
@@ -61,7 +66,8 @@ class Dashboard(QWidget):
         self.rb_dt_none.clicked.connect(self.drivetrain_arbitration_clicked)
         self.rb_dt_teleop.clicked.connect(self.drivetrain_arbitration_clicked)
         self.rb_dt_autonomus.clicked.connect(self.drivetrain_arbitration_clicked)
-
+        self.rb_normal_light.clicked.connect(self.light_mode_clicked)
+        self.rb_infrared_light.clicked.connect(self.light_mode_clicked)
         
 
     def handle_service_unavailability(self, sender_rb, service_name):
@@ -92,6 +98,34 @@ class Dashboard(QWidget):
 
         response = dt_arbitration_client.call(drivetrain_req)
         self.ui_node.get_logger().info("Response : " + str(response.current_arbitration))
+
+    def light_mode_clicked(self):
+        sender_rb = self.sender()
+        if sender_rb is None:
+            return
+
+        lights_client = self.ui_node.create_client(LightControl, '/rover/auxiliary/set/lights')
+        lights_req = LightControl.Request()
+
+        if not lights_client.wait_for_service(timeout_sec=1.0):
+            self.handle_service_unavailability(sender_rb, "light_control")
+            return
+
+        if sender_rb == self.rb_normal_light:
+            lights_req.index = LightControl.Request.LIGHT
+            if sender_rb.isChecked():
+               lights_req.enable = True
+            else:
+                lights_req.enable = False
+        elif sender_rb == self.rb_infrared_light:
+            lights_req.index = LightControl.Request.LIGHT_INFRARED
+            if sender_rb.isChecked():
+               lights_req.enable = True
+            else:
+                lights_req.enable = False
+
+        response = lights_client.call(lights_req)
+        self.ui_node.get_logger().info("Response : " + str(response.success))
         
 
     def antenna_arbitration_clicked(self):

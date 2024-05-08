@@ -500,33 +500,6 @@ QRadioButton::indicator::checked {
               <property name="text">
                <string>None</string>
               </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_9">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QRadioButton" name="rb_ant_static_2">
-                 <property name="text">
-                  <string>A2</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </widget>
             </item>
             <item>
@@ -534,33 +507,6 @@ QRadioButton::indicator::checked {
               <property name="text">
                <string>Teleop</string>
               </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_10">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QRadioButton" name="rb_ant_static_3">
-                 <property name="text">
-                  <string>r1m_1</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </widget>
             </item>
             <item>
@@ -568,67 +514,6 @@ QRadioButton::indicator::checked {
               <property name="text">
                <string>Autonomus</string>
               </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_11">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QRadioButton" name="rb_ant_teleop_2">
-                 <property name="text">
-                  <string>r1m_2</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
-             </widget>
-            </item>
-            <item>
-             <widget class="QFrame" name="frame_14">
-              <property name="frameShape">
-               <enum>QFrame::NoFrame</enum>
-              </property>
-              <property name="frameShadow">
-               <enum>QFrame::Raised</enum>
-              </property>
-              <layout class="QVBoxLayout" name="verticalLayout_12">
-               <property name="spacing">
-                <number>0</number>
-               </property>
-               <property name="leftMargin">
-                <number>0</number>
-               </property>
-               <property name="topMargin">
-                <number>0</number>
-               </property>
-               <property name="rightMargin">
-                <number>0</number>
-               </property>
-               <property name="bottomMargin">
-                <number>0</number>
-               </property>
-               <item>
-                <widget class="QRadioButton" name="rb_ant_autonomus_2">
-                 <property name="text">
-                  <string>r1m_3</string>
-                 </property>
-                </widget>
-               </item>
-              </layout>
              </widget>
             </item>
            </layout>
@@ -699,7 +584,7 @@ QRadioButton::indicator::checked {
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_6">
                <item>
-                <widget class="QRadioButton" name="rb_light_2">
+                <widget class="QRadioButton" name="rb_normal_light">
                  <property name="text">
                   <string>Normal Light</string>
                  </property>
@@ -718,7 +603,7 @@ QRadioButton::indicator::checked {
               </property>
               <layout class="QVBoxLayout" name="verticalLayout_3">
                <item>
-                <widget class="QRadioButton" name="rb_light_1">
+                <widget class="QRadioButton" name="rb_infrared_light">
                  <property name="text">
                   <string>Infrared</string>
                  </property>
