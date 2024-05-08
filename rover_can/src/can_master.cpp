@@ -19,6 +19,7 @@
 #include "rover_can_lib/msgs/cam_control.hpp"
 #include "rover_can_lib/msgs/cam_control_a2.hpp"
 #include "rover_can_lib/msgs/light_control.hpp"
+// #include "rover_can_lib/msgs/"
 
 #define LOGGER_NAME "CanMasterNode"
 
@@ -43,6 +44,9 @@ RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_FrontLeft;
 RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_FrontRight;
 RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_RearLeft;
 RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_RearRight;
+
+// Aux
+// RoverCanLib::Msgs::
 // =============================================================================
 
 // =============================================================================

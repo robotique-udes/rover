@@ -178,7 +178,7 @@ namespace RoverCanLib
 
     void CanBusManager::sendMsg(twai_message_t *msg_)
     {
-        // Sending msg with very samll timeout, as a guideline we don't execute
+        // Sending msg with very small timeout, as a guideline we don't execute
         // blocking call with motors as it can lead to security issues. But 1ms
         // maximum block should be safe.
         switch (twai_transmit(msg_, pdMS_TO_TICKS(0)))
@@ -209,7 +209,10 @@ namespace RoverCanLib
 
         case ESP_ERR_INVALID_STATE:
             _canBusState = eCanBusStatus::error;
-            ASSERT(true, "Canbus/Twai controller has fallen in an invalid state");
+            if (twai_initiate_recovery() != ESP_OK)
+            {
+                ASSERT(true, "Canbus/Twai controller has fallen in an invalid state");
+            }
             break;
 
         default:
@@ -404,7 +407,7 @@ namespace RoverCanLib
                 }
             }
             else // Msgs for this node with custom execution
-            {   
+            {
                 if (msg.data_length_code < (uint8_t)RoverCanLib::Constant::eDataIndex::START_OF_DATA + 1u)
                 {
                     LOG(WARN, "Ill formed msg, dropping...");
