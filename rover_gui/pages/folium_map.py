@@ -13,7 +13,7 @@ class FoliumMapWidget(QWidget):
         self.setLayout(self.layout)
 
         self.start_zoom = 18
-        self.start_coordinate = (45.378511, -71.924161)
+        self.start_coordinate = (45.504678343997625, -73.61237975463509)
         
         self.m = folium.Map(
             title='Test map',
@@ -54,7 +54,7 @@ class FoliumMapWidget(QWidget):
             marker = folium.Marker(
                 location=[self.nav_widget.locations.iloc[i]['lat'], self.nav_widget.locations.iloc[i]['lon']],
                 popup=self.nav_widget.locations.iloc[i]['name'],
-                icon=folium.Icon(icon=str(self.nav_widget.locations.iloc[i]['index']), prefix='fa', color=self.nav_widget.locations.iloc[i]['color']),
+                icon=folium.Icon(icon=str(self.nav_widget.locations.iloc[i]['index']), prefix='fa', color=self.nav_widget.locations.iloc[i]['color'], shadow_size=(0,0)),
             )
             marker.add_to(self.m)
             self.markers.append(marker)
@@ -65,8 +65,8 @@ class FoliumMapWidget(QWidget):
         self.web_view.setHtml(self.data.getvalue().decode())
 
     def update_rover_location(self, new_lat, new_lon, new_heading):
-        kw = {"prefix": "fa", "color": "green", "icon": "arrow-up"}
-        icon = folium.Icon(angle=int(new_heading), **kw)
-        self.rover_marker = folium.Marker(location=[new_lat, new_lon], icon=icon, tooltip=str(int(new_heading)))
+        kw = {"prefix": "fa", "color": "green", "icon": "car"}
+        icon = folium.Icon(angle=int(new_heading), **kw, shadow_size=(0,0))
+        self.rover_marker = folium.Marker(location=[new_lat + self.nav_widget.lat_offset, new_lon + self.nav_widget.lon_offset], icon=icon, tooltip=str(int(new_heading)))
         self.rover_marker.add_to(self.m)
         self.markers.append(self.rover_marker)

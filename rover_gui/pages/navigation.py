@@ -19,8 +19,8 @@ class Navigation(QWidget):
         resources_directory = self.ui_node.get_resources_directory('rover_gui')
         uic.loadUi(resources_directory + "navigation.ui", self)
 
-        self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/saved_locations.txt"
-        self.recorded_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/recorded_locations.txt"
+        self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/saved_locations.txt"
+        self.gps_offset_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/gps_offset.txt"
 
         self.lb_curr_position = self.findChild(QLabel, 'lb_curr_position')
         self.lb_curr_heading = self.findChild(QLabel, 'lb_curr_heading')
@@ -29,6 +29,12 @@ class Navigation(QWidget):
         self.pb_update_location = self.findChild(QPushButton, 'pb_update_location')
         self.pb_record_location = self.findChild(QPushButton, 'pb_record_location')
         self.location_list = self.findChild(QListWidget, 'location_list')
+
+        self.le_lat_offset : QLineEdit
+        self.le_lon_offset : QLineEdit
+        self.pb_save_offset : QPushButton
+        self.lat_offset = 0
+        self.lon_offset = 0
 
         self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
 
@@ -44,9 +50,11 @@ class Navigation(QWidget):
         self.pb_delete_location.clicked.connect(self.delete_location)
         self.pb_update_location.clicked.connect(self.folium_map_widget.update_locations)
         self.pb_record_location.clicked.connect(lambda: self.open_add_location_popup(True))
+        self.pb_save_offset.clicked.connect(self.save_offset)
 
         self.gps_sub = ui_node.create_subscription(Gps, '/rover/gps/position', self.gps_data_callback, 1)
-
+        
+        self.load_gps_offset()
         self.load_locations()
         
     def update_current_position(self): 
@@ -119,6 +127,29 @@ class Navigation(QWidget):
     def open_add_location_popup(self, is_record):
         self.add_location_popup = AddLocationPopup(self, self.ui_node, is_record)
         self.add_location_popup.show()
+
+    def load_gps_offset(self):
+        with open(self.gps_offset_path, "r") as f:
+            for line in f:
+                values = line.strip().split(";")
+                if len(values) == 2:
+                    self.lat_offset = float(values[0])
+                    self.lon_offset = float(values[1])
+
+                    self.le_lat_offset.setText(str(self.lat_offset))
+                    self.le_lon_offset.setText(str(self.lon_offset))
+                    return
+        return None
+
+    def save_offset(self):
+        self.lat_offset = float(self.le_lat_offset.text())
+        self.lon_offset = float(self.le_lon_offset.text())
+
+        with open(self.gps_offset_path, "w") as f:
+            f.write(f"{self.lat_offset};{self.lon_offset}")
+
+        self.folium_map_widget.update_locations()
+
 
     def close_location_popup(self):
         self.add_location_popup.quit
