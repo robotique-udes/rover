@@ -24,19 +24,24 @@ private:
     {
         rover_msgs::msg::ScienceControl message;
 
-        _drillUp = msg->joy_data[rover_msgs::msg::Joy::CROSS_UP];
-        _drillDown = msg->joy_data[rover_msgs::msg::Joy::CROSS_DOWN];
+        if (msg->joy_data[rover_msgs::msg::Joy::CROSS_UP])
+        {
+            message.cmd = 1.0;
+        }
+        else if (msg->joy_data[rover_msgs::msg::Joy::CROSS_DOWN])
+        {
+            message.cmd = -1.0;
+        }
 
-        _drillIn = msg->joy_data[rover_msgs::msg::Joy::A];
-        _drillOut = msg->joy_data[rover_msgs::msg::Joy::Y];
-
-        message.cmd[rover_msgs::msg::ScienceControl::DRILL_UP] = _drillUp;
-        message.cmd[rover_msgs::msg::ScienceControl::DRILL_DOWN] = _drillDown;
-        
-        message.drill[rover_msgs::msg::ScienceControl::DRILL_IN] = _drillIn;
-        message.drill[rover_msgs::msg::ScienceControl::DRILL_OUT] = _drillOut;
+        if (msg->joy_data[rover_msgs::msg::Joy::A])
+        {
+            message.drill = 1.0;
+        }
+        else if(msg->joy_data[rover_msgs::msg::Joy::Y])
+        {
+            message.drill = -1.0;
+        }
     
-
         _pub_science_in->publish(message);
     }
 
