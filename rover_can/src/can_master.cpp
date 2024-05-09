@@ -532,8 +532,8 @@ void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedP
 void CanMaster::CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg_)
 {
     RoverCanLib::Msgs::Science canMsg;
-    canMsg.data.cmd = (int8_t)round(rosMsg_->cmd);
-    canMsg.data.drill = (int8_t)round(rosMsg_->drill);
+    canMsg.data.cmd = rosMsg_->cmd;
+    canMsg.data.drill = rosMsg_->drill;
 
     canMsg.sendMsg(RoverCanLib::Constant::eDeviceId::SCIENCE, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }
