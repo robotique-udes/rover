@@ -233,7 +233,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     // _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1, std::bind(&CanMaster::CB_ROS_propulsionMotor, this, std::placeholders::_1));
     _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
     _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1, std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
-    _sub_scienceControl = this->create_subscription<rover_msgs::msg::ScienceControl>("/rover/arm/cmd/in", 1, std::bind(&CanMaster::CB_ROS_scienceControl, this, std::placeholders::_1));
+    _sub_scienceControl = this->create_subscription<rover_msgs::msg::ScienceControl>("/rover/arm/cmd/in/science", 1, std::bind(&CanMaster::CB_ROS_scienceControl, this, std::placeholders::_1));
     // =========================================================================
 
     // Created last to make sure everything is init before it gets called
