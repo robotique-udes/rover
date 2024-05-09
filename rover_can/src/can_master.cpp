@@ -10,6 +10,7 @@
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_msgs/msg/light_control.hpp"
 #include "rover_msgs/msg/gps.hpp"
+#include "rover_msgs/msg/science_control.hpp"
 
 // RoverCanLib
 #include "rover_can_lib/config.hpp"
@@ -21,6 +22,7 @@
 #include "rover_can_lib/msgs/cam_control_a2.hpp"
 #include "rover_can_lib/msgs/light_control.hpp"
 #include "rover_can_lib/msgs/gps.hpp"
+#include "rover_can_lib/msgs/science.hpp"
 
 #define LOGGER_NAME "CanMasterNode"
 
@@ -96,6 +98,7 @@ private:
     rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_propulsionMotor;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_cameras;
     rclcpp::Subscription<rover_msgs::msg::LightControl>::SharedPtr _sub_lights;
+    rclcpp::Subscription<rover_msgs::msg::ScienceControl>::SharedPtr _sub_scienceControl;
     // =========================================================================
 
     // =========================================================================
@@ -110,6 +113,7 @@ private:
     void CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr msg);
     void CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg);
     void CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg);
+    void CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg);
     // =========================================================================
 };
 
@@ -214,6 +218,9 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
 
+    // Science
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::SCIENCE, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::SCIENCE, this, &CanMaster::CB_Can_None, _pub_canStatus));
+
     // Aux
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GPS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GPS, this, &CanMaster::CB_Can_GPS, _pub_canStatus));
     // =========================================================================
@@ -226,6 +233,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     // _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1, std::bind(&CanMaster::CB_ROS_propulsionMotor, this, std::placeholders::_1));
     _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
     _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1, std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
+    _sub_scienceControl = this->create_subscription<rover_msgs::msg::ScienceControl>("/rover/arm/cmd/in", 1, std::bind(&CanMaster::CB_ROS_scienceControl, this, std::placeholders::_1));
     // =========================================================================
 
     // Created last to make sure everything is init before it gets called
@@ -519,4 +527,13 @@ void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedP
 
     msg.data.enable = rosMsg_->enable[rover_msgs::msg::LightControl::LIGHT_INFRARED];
     msg.sendMsg(RoverCanLib::Constant::eDeviceId::INFRARED_LIGHTS, _canSocket, rclcpp::get_logger(LOGGER_NAME));
+}
+
+void CanMaster::CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg_)
+{
+    RoverCanLib::Msgs::Science canMsg;
+    canMsg.data.cmd = (int8_t)round(rosMsg_->cmd);
+    canMsg.data.drill = (int8_t)round(rosMsg_->drill);
+
+    canMsg.sendMsg(RoverCanLib::Constant::eDeviceId::SCIENCE, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }

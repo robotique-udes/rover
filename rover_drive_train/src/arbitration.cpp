@@ -74,7 +74,7 @@ Arbitration::Arbitration() : Node("arbitration")
 
     // Starting by default at drive_train for CRQRC, should be set when GUI
     // opens instead
-    // _arbitrationRequest.target_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::TELEOP;
+    _arbitrationRequest.target_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::TELEOP;
 }
 
 void Arbitration::cbTimerSendCmd()

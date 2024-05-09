@@ -29,6 +29,7 @@ namespace RoverCanLib::Constant
         J6_CONTROLLER = 0x216,
 
         // Science
+        SCIENCE = 0x301,
 
         // Accessory
         GPS = 0x401,
@@ -53,7 +54,9 @@ namespace RoverCanLib::Constant
         PROPULSION_MOTOR_STATUS = 0x12,
         CAM_CONTROL = 0x13,
         CAM_CONTROL_A2 = 0x14,
-        LIGHT_CONTROL = 0x15
+        LIGHT_CONTROL = 0x15,
+        SCIENCE = 0x16
+
     };
 
     enum class eDataIndex : uint8_t
