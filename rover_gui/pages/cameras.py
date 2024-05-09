@@ -12,8 +12,8 @@ class Cameras(QWidget):
         self.ui_node = ui_node
         self.statusThread = None
 
-        self.package_share_directory = get_package_share_directory('rover_gui')
-        uic.loadUi(self.package_share_directory+ "/ui/cameras.ui", self)
+        self.resources_directory = self.ui_node.get_resources_directory('rover_gui')
+        uic.loadUi(self.resources_directory+ "cameras.ui", self)
 
         self.media_players = []
         self.labels = []
@@ -21,7 +21,7 @@ class Cameras(QWidget):
         self.start_feeds()
         
     def start_feeds(self):
-        ip_list = self.load_file_into_list(self.package_share_directory+ "/resource/r1m_ips.txt")
+        ip_list = self.load_file_into_list(self.resources_directory+ "r1m_ips.txt")
 
         for i, ip in enumerate(ip_list):
             mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
