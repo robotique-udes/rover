@@ -3,8 +3,6 @@ from threading import Thread
 import sys
 import signal
 
-from ament_index_python.packages import get_package_share_directory
-
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox, QShortcut
 from PyQt5.QtGui import QKeySequence, QIcon
 from PyQt5 import QtGui
@@ -31,8 +29,8 @@ class MainWindow(QMainWindow):
 
         self.pages_created = [] 
 
-        package_share_directory = get_package_share_directory('rover_gui')
-        uic.loadUi(package_share_directory+ "/ui/main_window.ui", self)
+        resources_directory = self.ui_node.get_resources_directory('rover_gui')
+        uic.loadUi(resources_directory + "main_window.ui", self)
 
         self.pb_home = self.findChild(QPushButton, "pb_home")
         self.pb_dashboard = self.findChild(QPushButton, "pb_dashboard")
@@ -127,6 +125,11 @@ class MainWindow(QMainWindow):
         self.ui_node.destroy_node()
         self.executor.shutdown()
         QApplication.quit()
+
+def get_package_share_directory_parent(package_name):
+    package_share_directory = get_package_share_directory(package_name)
+    parent_directory = '/'.join(package_share_directory.split('/')[:-1]) + '/'
+    return parent_directory
 
 def main(args=None):
     rclpy.init(args=args)

@@ -1,5 +1,5 @@
-from threading import Lock
 from ament_index_python.packages import get_package_share_directory
+from threading import Lock
 from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QListWidget, QListWidgetItem, QLabel
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
@@ -15,8 +15,9 @@ class Navigation(QWidget):
         super(Navigation, self).__init__()
         self.ui_node = ui_node
         
-        package_share_directory = get_package_share_directory('rover_gui')
-        uic.loadUi(package_share_directory + "/ui/navigation.ui", self)
+        package_share_directory = get_package_share_directory("rover_gui")
+        resources_directory = self.ui_node.get_resources_directory('rover_gui')
+        uic.loadUi(resources_directory + "navigation.ui", self)
 
         self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/saved_locations.txt"
         self.recorded_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/recorded_locations.txt"
@@ -96,7 +97,6 @@ class Navigation(QWidget):
             self.locations = self.locations.drop(index)
             self.location_list.takeItem(index)
 
-        # Reset index
         self.locations.reset_index(drop=True, inplace=True)
 
         with open(self.saved_locations_path, "w") as f:
@@ -117,7 +117,7 @@ class Navigation(QWidget):
             f.write(f"{index};{str(self.current_latitude)};{str(self.current_longitude)}\n")
 
     def open_add_location_popup(self, is_record):
-        self.add_location_popup = AddLocationPopup(self, is_record)
+        self.add_location_popup = AddLocationPopup(self, self.ui_node, is_record)
         self.add_location_popup.show()
 
     def close_location_popup(self):

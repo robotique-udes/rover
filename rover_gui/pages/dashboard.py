@@ -20,8 +20,8 @@ class Dashboard(QWidget):
             self.update_joydemux_button_status,
             1)
 
-        package_share_directory = get_package_share_directory('rover_gui')
-        uic.loadUi(package_share_directory+ "/ui/dashboard.ui", self)
+        resources_directory = self.ui_node.get_resources_directory('rover_gui')
+        uic.loadUi(resources_directory+ "dashboard.ui", self)
 
         self.rtsp_player = RTSPPlayer()
         self.horizontalLayout_2.addWidget(self.rtsp_player)

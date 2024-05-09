@@ -5,18 +5,19 @@ from glob import glob
 package_name = 'rover_gui'
 
 setup(
+    data_files=[
+        ('share/' + package_name, ['package.xml']),
+        ('share/ament_index/resource_index/packages',
+            ['resource/' + package_name]),
+        (os.path.join('share/ament_index/resource_index/packages'), glob('ui/*')),
+        (os.path.join('share/ament_index/resource_index/packages'), glob('images/*')),
+        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
+        (os.path.join('share/ament_index/resource_index/packages'), glob('resource/*'))
+    ],
     name=package_name,
     version='0.0.0',
     packages=[package_name, 'pages', 'static'],
-    data_files=[
-        ('share/ament_index/resource_index/packages',
-            ['resource/' + package_name]),
-        ('share/' + package_name, ['package.xml']),
-        (os.path.join('share', package_name, 'ui'), glob('ui/*')),
-        (os.path.join('share', package_name, 'images'), glob('images/*')),
-        (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
-        (os.path.join('share', package_name, 'resource'), glob('resource/*'))
-    ],
+    
     install_requires=['setuptools'],
     zip_safe=True,
     maintainer='nathan',
