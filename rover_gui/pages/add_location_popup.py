@@ -4,14 +4,16 @@ from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QComboBox
 from PyQt5 import uic
 
 class AddLocationPopup(QWidget):
-    def __init__(self, nav_widget, is_record):
+    def __init__(self, nav_widget,ui_node, is_record):
         super(AddLocationPopup, self).__init__()
 
+        self.ui_node = ui_node
         self.nav_widget = nav_widget
 
         package_share_directory = get_package_share_directory('rover_gui')
+        resources_directory = self.ui_node.get_resources_directory('rover_gui')
         self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/saved_locations.txt"
-        uic.loadUi(package_share_directory + "/ui/add_location.ui", self)
+        uic.loadUi(resources_directory + "add_location.ui", self)
 
         self.pb_add_location : QPushButton
         self.pb_cancel : QPushButton

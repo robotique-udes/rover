@@ -9,8 +9,8 @@ class Cameras(QWidget):
 
         self.ui_node = ui_node
 
-        package_share_directory = get_package_share_directory('rover_gui')
-        uic.loadUi(package_share_directory+ "/ui/cameras.ui", self)
+        resources_directory = self.ui_node.get_resources_directory('rover_gui')
+        uic.loadUi(resources_directory+ "cameras.ui", self)
 
     def __del__(self):
         return
