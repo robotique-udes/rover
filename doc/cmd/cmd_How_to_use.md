@@ -32,7 +32,7 @@ In order to properly function, the user has to run the following commands to lau
 
 ### Arbitration
 
-Once packages launched, arbitration needs to be set trough ROS2 srv. This can be done through the gui. Refer to gui doc [here](/ros2_ws/src/rover/README.md)
+Once packages launched, arbitration needs to be set trough ROS2 srv. This can be done through the gui. Refer to gui doc for more info.
 
 If gui is down or you do not have access, call the following arbitrations in rqt service caller.
 
