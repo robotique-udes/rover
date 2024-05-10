@@ -3,3 +3,4 @@
 3;dik;45.0;-71.0;red
 4;dik;-690.0;-690.0;orange
 5;dikrecord;45.377941;-71.923874;orange
+6;test;-690.0;-690.0;red
