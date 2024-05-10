@@ -14,7 +14,6 @@ from rover_gui.ui_node import UINode
 from pages.home import Home
 from pages.dashboard import Dashboard
 from pages.navigation import Navigation
-from pages.cameras import Cameras
 
 from static.resource_rc import qt_resource_data
 
@@ -44,7 +43,7 @@ class MainWindow(QMainWindow):
             self.pb_home: lambda: self.create_page(Home),
             self.pb_dashboard: lambda: self.create_page(Dashboard),
             self.pb_navigation: lambda: self.create_page(Navigation),
-            self.pb_cameras: lambda: self.create_page(Cameras)
+            #self.pb_cameras: lambda: self.create_page(Cameras)
         }
 
         self.show_home_window()
@@ -54,7 +53,7 @@ class MainWindow(QMainWindow):
         self.pb_home.clicked.connect(self.show_selected_window)
         self.pb_dashboard.clicked.connect(self.show_selected_window)
         self.pb_navigation.clicked.connect(self.show_selected_window)
-        self.pb_cameras.clicked.connect(self.show_selected_window)
+        #self.pb_cameras.clicked.connect(self.show_selected_window)
 
     def create_page(self, class_name):
         obj = class_name(self.ui_node)  # Create an instance of the class

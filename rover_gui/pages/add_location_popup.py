@@ -12,7 +12,7 @@ class AddLocationPopup(QWidget):
 
         package_share_directory = get_package_share_directory('rover_gui')
         resources_directory = self.ui_node.get_resources_directory('rover_gui')
-        self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/saved_locations.txt"
+        self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/saved_locations.txt"
         uic.loadUi(resources_directory + "add_location.ui", self)
 
         self.pb_add_location : QPushButton

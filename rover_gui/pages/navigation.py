@@ -1,6 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 from threading import Lock
-from PyQt5.QtWidgets import QWidget, QPushButton, QVBoxLayout, QListWidget, QListWidgetItem, QLabel
+from PyQt5.QtWidgets import QWidget, QPushButton, QCheckBox, QListWidget, QListWidgetItem, QLabel, QSlider
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
 from rover_msgs.msg import Gps
@@ -19,8 +19,8 @@ class Navigation(QWidget):
         resources_directory = self.ui_node.get_resources_directory('rover_gui')
         uic.loadUi(resources_directory + "navigation.ui", self)
 
-        self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/saved_locations.txt"
-        self.recorded_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/log/recorded_locations.txt"
+        self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/saved_locations.txt"
+        self.gps_offset_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/gps_offset.txt"
 
         self.lb_curr_position = self.findChild(QLabel, 'lb_curr_position')
         self.lb_curr_heading = self.findChild(QLabel, 'lb_curr_heading')
@@ -29,6 +29,12 @@ class Navigation(QWidget):
         self.pb_update_location = self.findChild(QPushButton, 'pb_update_location')
         self.pb_record_location = self.findChild(QPushButton, 'pb_record_location')
         self.location_list = self.findChild(QListWidget, 'location_list')
+
+        self.slider_lat_offset : QSlider
+        self.slider_lon_offset : QSlider
+        self.pb_save_offset : QPushButton
+        self.lat_offset = 0
+        self.lon_offset = 0
 
         self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
 
@@ -44,9 +50,13 @@ class Navigation(QWidget):
         self.pb_delete_location.clicked.connect(self.delete_location)
         self.pb_update_location.clicked.connect(self.folium_map_widget.update_locations)
         self.pb_record_location.clicked.connect(lambda: self.open_add_location_popup(True))
+        self.pb_save_offset.clicked.connect(self.save_offset)
+        self.slider_lat_offset.valueChanged.connect(self.offset_rover)
+        self.slider_lon_offset.valueChanged.connect(self.offset_rover)
 
         self.gps_sub = ui_node.create_subscription(Gps, '/rover/gps/position', self.gps_data_callback, 1)
-
+        
+        self.load_gps_offset()
         self.load_locations()
         
     def update_current_position(self): 
@@ -56,8 +66,8 @@ class Navigation(QWidget):
             
     def gps_data_callback(self, data: Gps):
         with self.lock_position:
-            self.current_latitude = round(data.latitude, 6)
-            self.current_longitude = round(data.longitude, 6)
+            self.current_latitude = round(data.latitude, 6) + self.lat_offset
+            self.current_longitude = round(data.longitude, 6) + self.lon_offset
             self.current_heading = data.heading
             self.current_height = data.height
         self.update_current_position()
@@ -120,6 +130,36 @@ class Navigation(QWidget):
         self.add_location_popup = AddLocationPopup(self, self.ui_node, is_record)
         self.add_location_popup.show()
 
+    def load_gps_offset(self):
+        with open(self.gps_offset_path, "r") as f:
+            for line in f:
+                values = line.strip().split(";")
+                if len(values) == 2:
+                    self.lat_offset = float(values[0])
+                    self.lon_offset = float(values[1])
+
+                    self.slider_lat_offset.setValue(int(self.lat_offset * 100000))
+                    self.slider_lon_offset.setValue(int(self.lon_offset * 100000))
+                    return
+        return None
+    
+    def offset_rover(self):
+        sender = self.sender()
+        self.ui_node.get_logger().info("longitude : " + str(sender.value()))
+        if sender == self.slider_lat_offset:
+            self.lat_offset = sender.value() / 100000
+        else:
+            self.lon_offset = sender.value() / 100000
+
+        self.folium_map_widget.update_locations()
+        
+
+    def save_offset(self):
+        with open(self.gps_offset_path, "w") as f:
+            f.write(f"{self.lat_offset};{self.lon_offset}")
+
+
+
     def close_location_popup(self):
         self.add_location_popup.quit
         
@@ -128,6 +168,8 @@ class Navigation(QWidget):
 
     def __del__(self):
         self.ui_node.destroy_subscription(self.gps_sub)
+        self.alive = False
+        self.map_update_thread.join()
 
 class ReferencePoint:
     def __init__(self, scrX, scrY, lat, lng):
