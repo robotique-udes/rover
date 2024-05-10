@@ -140,8 +140,6 @@ class Navigation(QWidget):
 
                     self.slider_lat_offset.setValue(int(self.lat_offset * 100000))
                     self.slider_lon_offset.setValue(int(self.lon_offset * 100000))
-
-                    self.ui_node.get_logger().info("longitude saved : " + str(int(self.lon_offset * 100000)))
                     return
         return None
     
@@ -159,8 +157,6 @@ class Navigation(QWidget):
     def save_offset(self):
         with open(self.gps_offset_path, "w") as f:
             f.write(f"{self.lat_offset};{self.lon_offset}")
-
-            self.ui_node.get_logger().info("longitude saved : " + str(int(self.lon_offset * 100000)))
 
 
 
