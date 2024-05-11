@@ -22,8 +22,8 @@ class FoliumMapWidget(QWidget):
         self.setLayout(self.layout)
 
         self.start_zoom = 19
-        #self.start_coordinate = (45.504678343997625, -73.61237975463509)
-        self.start_coordinate = (45.378248113468025, -71.92403818175768)
+        self.start_coordinate = (45.50420239869423, -73.61248971745)
+        #self.start_coordinate = (45.378248113468025, -71.92403818175768)
         
         self.m = folium.Map(
             title='Test map',
