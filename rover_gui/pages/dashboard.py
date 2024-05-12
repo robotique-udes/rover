@@ -75,8 +75,7 @@ class Dashboard(QWidget):
         self.media_player_science.setVideoOutput(self.camera_science_widget) 
         
         self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://192.168.144.25:8554/main.264")))
-        self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen02.stream")))
-        self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream")))
+        self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://192.168.144.26:8554/main.264")))
         self.media_player_main.play()
         self.media_player_science.play()
 
