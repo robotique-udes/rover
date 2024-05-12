@@ -75,9 +75,24 @@ class Dashboard(QWidget):
         self.media_player_science.setVideoOutput(self.camera_science_widget) 
         
         self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://192.168.144.25:8554/main.264")))
-        self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://192.168.144.26:8554/main.264")))
+        self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen02.stream")))
+        self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://freja.hiof.no:1935/rtplive/_definst_/hessdalen03.stream")))
         self.media_player_main.play()
         self.media_player_science.play()
+
+        #self.media_player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        #self.media_player.setVideoOutput(self.camera_main_widget)
+
+        #media_content = QMediaContent(QUrl("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"))
+        #self.media_player.setMedia(media_content)
+        #self.media_player.play()
+
+        #self.media_player_2 = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        #self.media_player_2.setVideoOutput(self.camera_science_widget)
+
+        #media_content = QMediaContent(QUrl("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"))
+        #self.media_player_2.setMedia(media_content)
+        #self.media_player_2.play()
         
 
     def handle_service_unavailability(self, sender_rb, service_name):
