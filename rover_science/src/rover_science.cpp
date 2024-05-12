@@ -33,13 +33,13 @@ private:
             message.cmd = -1.0;
         }
 
-        if (msg->joy_data[rover_msgs::msg::Joy::A])
-        {
-            message.drill = 1.0;
-        }
-        else if(msg->joy_data[rover_msgs::msg::Joy::Y])
+        if (msg->joy_data[rover_msgs::msg::Joy::CROSS_LEFT])
         {
             message.drill = -1.0;
+        }
+        else if(msg->joy_data[rover_msgs::msg::Joy::CROSS_RIGHT])
+        {
+            message.drill = 1.0;
         }
     
         _pub_science_in->publish(message);
@@ -52,7 +52,7 @@ private:
 // Constructor
 Science::Science() : Node("Science")
 {
-    _sub_arm_joy = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
+    _sub_arm_joy = this->create_subscription<rover_msgs::msg::Joy>("/rover/drive_train/joy",
                                                                         1,
                                                                         std::bind(&Science::joyCallback, this, std::placeholders::_1));
 
