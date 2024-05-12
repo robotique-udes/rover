@@ -131,8 +131,8 @@ private:
                 }
                 else if(_bumbaDrift > 0.5)
                 {
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = 0.4f;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = 0.8f;
+                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = -0.4f;
+                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = -0.8f;
                     message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = 1.0f;
                     message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = 1.0f;
                 }
