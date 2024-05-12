@@ -28,13 +28,13 @@ namespace RoverCanLib::Msgs
         struct sMsgData
         {
             int8_t cmd;
-            bool drill;
+            int8_t drill;
         };
 
         Science() 
         {
             data.cmd = 0;
-            data.drill = false;
+            data.drill = 0;
         }
         ~Science() {}
 
@@ -54,7 +54,7 @@ namespace RoverCanLib::Msgs
                 break;
 
             case eMsgID::DRILL:
-                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.drill);
+                RoverCanLib::Helpers::canMsgToStruct<int8_t, UnionDefinition::Int8_tUnion>(msg_, &this->data.drill);
                 break;
 
             default:
@@ -77,7 +77,7 @@ namespace RoverCanLib::Msgs
                 break;
 
             case eMsgID::DRILL:
-                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.drill, msg_);
+                Helpers::structToCanMsg<int8_t, UnionDefinition::Int8_tUnion>(&data.drill, msg_);
                 break;
 
             default:
@@ -104,7 +104,7 @@ namespace RoverCanLib::Msgs
                 break;
 
             case eMsgID::DRILL:
-                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.drill, logger_);
+                RoverCanLib::Helpers::canMsgToStruct<int8_t, UnionDefinition::Int8_tUnion>(msg_, &this->data.drill, logger_);
                 break;
 
             default:
@@ -127,7 +127,7 @@ namespace RoverCanLib::Msgs
                 break;
 
             case eMsgID::DRILL:
-                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.drill, msg_);
+                Helpers::structToCanMsg<int8_t, UnionDefinition::Int8_tUnion>(&data.drill, msg_);
                 break;
 
             default:
