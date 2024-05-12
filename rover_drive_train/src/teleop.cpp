@@ -100,15 +100,11 @@ private:
             {
                 if(_bumbaBurn)
                 {
-                    speedLeftMotor = 1.0f * _bumbaFast;
-                    speedRightMotor = -1.0f * _bumbaFast;
+                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = 1.0f;
+                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = 1.0f;
+                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = -1.0f;
+                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = -1.0f;
 
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = speedLeftMotor;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = speedLeftMotor;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = speedRightMotor;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = speedRightMotor;
-
-                    _pub_teleop_in->publish(message);
                 }
                 else if(_bumbaDrift)
                 {
@@ -116,6 +112,7 @@ private:
                     message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = 0.8f;
                     message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = 1.0f;
                     message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = 1.0f;
+
                 }
             }
             else
@@ -133,15 +130,19 @@ private:
                     speedRightMotor *= adjusted_factor < 0.01f ? 0.01f : adjusted_factor;
                 }
                 
-                message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = speedLeftMotor;
-                message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = speedRightMotor;
-                message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = speedLeftMotor;
-                message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = speedRightMotor;
-                
-                _pub_teleop_in->publish(message);
             }
             
+            message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = speedLeftMotor;
+            message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = speedRightMotor;
+            message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = speedLeftMotor;
+            message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = speedRightMotor;
+            
+            
+            
         }
+        
+        _pub_teleop_in->publish(message);
+
 
         
     }
