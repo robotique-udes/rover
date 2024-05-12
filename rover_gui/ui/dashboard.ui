@@ -836,16 +836,44 @@ QRadioButton::indicator::checked {
     </widget>
    </item>
    <item>
-    <widget class="QFrame" name="frame_3">
+    <widget class="QFrame" name="camera_frame">
      <property name="frameShape">
-      <enum>QFrame::StyledPanel</enum>
+      <enum>QFrame::NoFrame</enum>
      </property>
      <property name="frameShadow">
       <enum>QFrame::Raised</enum>
      </property>
      <layout class="QVBoxLayout" name="verticalLayout_14">
+      <property name="spacing">
+       <number>9</number>
+      </property>
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
       <item>
-       <widget class="QVideoWidget" name="camera_main_widget" native="true"/>
+       <widget class="QVideoWidget" name="camera_main_widget" native="true">
+        <property name="minimumSize">
+         <size>
+          <width>0</width>
+          <height>0</height>
+         </size>
+        </property>
+        <property name="maximumSize">
+         <size>
+          <width>16777215</width>
+          <height>999999</height>
+         </size>
+        </property>
+       </widget>
       </item>
       <item>
        <widget class="QVideoWidget" name="camera_science_widget" native="true">
@@ -858,7 +886,7 @@ QRadioButton::indicator::checked {
         <property name="maximumSize">
          <size>
           <width>9999999</width>
-          <height>16777215</height>
+          <height>9999999</height>
          </size>
         </property>
        </widget>
