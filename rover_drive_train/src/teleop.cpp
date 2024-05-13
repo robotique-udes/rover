@@ -26,10 +26,6 @@ private:
     float _modeNormalEnable;
     float _modeTurboEnable;
 
-    float _bumbaFast;
-    float _bumbaBurn;
-    float _bumbaDrift;
-
     float _controlMapFactor = 1.0f - _smallestRadius;
 
     // Private methods
@@ -57,10 +53,6 @@ private:
         _modeTankAngularInput = msg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
         _modeNormalEnable = msg->joy_data[rover_msgs::msg::Joy::R1];
         _modeTurboEnable = msg->joy_data[rover_msgs::msg::Joy::R2];
-        _bumbaFast = msg->joy_data[rover_msgs::msg::Joy::A];
-        _bumbaBurn = msg->joy_data[rover_msgs::msg::Joy::X];
-        _bumbaDrift = msg->joy_data[rover_msgs::msg::Joy::B];
-
         message.enable[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = true;
         message.enable[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = true;
         message.enable[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = true;
@@ -82,10 +74,6 @@ private:
             if (_modeTurboEnable > 0.5 && _modeNormalEnable)
             {
                 speedFactor = _speedFactorTurbo;
-            }
-            if (_bumbaFast)
-            {
-                speedFactor = 1.0;
             }
 
             float speedLeftMotor = _linearInput * speedFactor;
@@ -118,25 +106,6 @@ private:
             message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = speedRightMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = speedLeftMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = speedRightMotor;
-            
-            if (_bumbaBurn > 0.5 || _bumbaDrift >  0.5) //BUMBAAACLOAT
-            {
-                if(_bumbaBurn > 0.5)
-                {
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = 1.0f;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = 1.0f;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = -1.0f;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = -1.0f;
-
-                }
-                else if(_bumbaDrift > 0.5)
-                {
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = -0.4f;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = -0.8f;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = 1.0f;
-                    message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = 1.0f;
-                }
-            }
         }
         
         _pub_teleop_in->publish(message);

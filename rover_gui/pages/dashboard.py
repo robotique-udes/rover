@@ -1,6 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 
-from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox
+from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox, QPushButton
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
@@ -229,5 +229,3 @@ class Dashboard(QWidget):
             self.rb_joy_antenna_sec.setChecked(True)
         elif msg.controller_secondary_topic == JoyDemuxStatus.DEST_NONE:
             self.rb_joy_none_sec.setChecked(True)
-            
-
