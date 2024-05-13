@@ -7,7 +7,7 @@ class Home(QWidget):
         super(Home,self).__init__()
         resources_directory = ui_node.get_resources_directory('rover_gui')
         uic.loadUi(resources_directory+ "home.ui", self)
-        pixmap = QPixmap(resources_directory + 'logo.png')
+        pixmap = QPixmap(resources_directory + 'alex.png')
 
         self.lb_logo : QLabel
         self.lb_logo = self.findChild(QLabel, "lb_logo")

@@ -1,6 +1,8 @@
 from ament_index_python.packages import get_package_share_directory
 
-from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox
+from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox, QPushButton
+from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
+from PyQt5.QtCore import QUrl
 from PyQt5 import uic
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
 from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
@@ -23,8 +25,6 @@ class Dashboard(QWidget):
         resources_directory = self.ui_node.get_resources_directory('rover_gui')
         uic.loadUi(resources_directory+ "dashboard.ui", self)
 
-        self.rtsp_player = RTSPPlayer()
-        self.horizontalLayout_2.addWidget(self.rtsp_player)
 
         # Lights
         self.rb_normal_light : QPushButton
@@ -68,6 +68,30 @@ class Dashboard(QWidget):
         self.rb_dt_autonomus.clicked.connect(self.drivetrain_arbitration_clicked)
         self.rb_normal_light.clicked.connect(self.light_mode_clicked)
         self.rb_infrared_light.clicked.connect(self.light_mode_clicked)
+
+        self.media_player_main = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        self.media_player_science = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        self.media_player_main.setVideoOutput(self.camera_main_widget) 
+        self.media_player_science.setVideoOutput(self.camera_science_widget) 
+        
+        self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://192.168.144.25:8554/main.264")))
+        self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://192.168.144.26:8554/main.264")))
+        self.media_player_main.play()
+        self.media_player_science.play()
+
+        #self.media_player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        #self.media_player.setVideoOutput(self.camera_main_widget)
+
+        #media_content = QMediaContent(QUrl("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"))
+        #self.media_player.setMedia(media_content)
+        #self.media_player.play()
+
+        #self.media_player_2 = QMediaPlayer(None, QMediaPlayer.VideoSurface)
+        #self.media_player_2.setVideoOutput(self.camera_science_widget)
+
+        #media_content = QMediaContent(QUrl("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"))
+        #self.media_player_2.setMedia(media_content)
+        #self.media_player_2.play()
         
 
     def handle_service_unavailability(self, sender_rb, service_name):
@@ -205,5 +229,3 @@ class Dashboard(QWidget):
             self.rb_joy_antenna_sec.setChecked(True)
         elif msg.controller_secondary_topic == JoyDemuxStatus.DEST_NONE:
             self.rb_joy_none_sec.setChecked(True)
-            
-

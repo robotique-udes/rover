@@ -31,9 +31,9 @@ private:
     // Private methods
     void getParams()
     {
-        this->declare_parameter("speedFactorCrawler", 0.01);
-        this->declare_parameter("_speedFactorNormal", 0.26);
-        this->declare_parameter("_speedFactorTurbo", 1.0);
+        this->declare_parameter("speedFactorCrawler", 0.03);
+        this->declare_parameter("_speedFactorNormal", 0.25);
+        this->declare_parameter("_speedFactorTurbo", 0.5);
         this->declare_parameter("_smallestRadius", 0.30);
 
         this->get_parameter("speedFactorCrawler", _speedFactorCrawler);
@@ -53,7 +53,6 @@ private:
         _modeTankAngularInput = msg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
         _modeNormalEnable = msg->joy_data[rover_msgs::msg::Joy::R1];
         _modeTurboEnable = msg->joy_data[rover_msgs::msg::Joy::R2];
-
         message.enable[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = true;
         message.enable[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = true;
         message.enable[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = true;
@@ -85,6 +84,7 @@ private:
                 speedLeftMotor += -1.0f * _modeTankAngularInput * speedFactor;
                 speedRightMotor -= -1.0f * _modeTankAngularInput * speedFactor;
             }
+
             else
             {
                 float adjusted_factor;
@@ -99,14 +99,15 @@ private:
                     adjusted_factor = 1.0f + _angularInput * _controlMapFactor;
                     speedRightMotor *= adjusted_factor < 0.01f ? 0.01f : adjusted_factor;
                 }
+                
             }
-
+            
             message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = speedLeftMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = speedRightMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = speedLeftMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = speedRightMotor;
         }
-
+        
         _pub_teleop_in->publish(message);
     }
 
