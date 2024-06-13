@@ -7,6 +7,6 @@ uint8 GRIPPERLR = 5
 uint8 GRIPPEROC = 6
 
 bool[6] enable
-float32[6] target_speed
-float32[6] current_speed
+float32[6] target_position
+float32[6] current_position
 bool[6] close_loop

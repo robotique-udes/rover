@@ -9,9 +9,10 @@ class Teleop : public rclcpp::Node
 {
     public:
         Teleop();
-        ~Teleop();
 
     private:
+        Teleop* teleop_test;
+        
         //Private members
         // =========================================================================
         float _speedFactorCrawler;
@@ -22,23 +23,22 @@ class Teleop : public rclcpp::Node
         float _linkj1ToJ2 = 608.45785;
         float _endEffectorLength = 210.1945;
 
-        float _j0Angle;
-        float _j1Angle;
-        float _j2Angle;
-
         float _linearControl;
         float _j0Control;
         float _j1Control;
         float _j2Control;
         float _gripperUD;
-        float _gripperRL;
+        float _gripperLR;
         float _gripperOC;
 
         float _deadmanSwitch;
+        float _gripperMode;
 
-        float _modeTankAngularInput;
+        float _forwardKinematic;
+        float _inverseKinematic;
+
         float _modeNormalEnable;
-        float _modeTurboEnable;
+        float _modeTurboEnable;        
 
         //Private methods
         // =========================================================================
@@ -53,10 +53,48 @@ class Teleop : public rclcpp::Node
             this->get_parameter("speedFactorTurbo", _speedFactorTurbo);
         }
 
-        void joyCallback(const rover_msgs::msg::Joy::SharedPtr msg)
+        void joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
         {
-            rover_msgs::msg::ArmCmd message;
+            rover_msgs::msg::ArmCmd armMsg;
 
+            //Mode selectiion
+            // =========================================================================            
+            _deadmanSwitch = joyMsg->joy_data[rover_msgs::msg::Joy::L1];
+            _gripperMode = joyMsg->joy_data[rover_msgs::msg::Joy::R1];
+
+            //Arm controls
+            // =========================================================================            
+            _linearControl = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE];
+            _j0Control = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
+            _j1Control = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT];
+            _j2Control = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT];
+            
+            //Gripper controls
+            // =========================================================================            
+            _gripperUD = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE];
+            _gripperLR = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_PUSH];
+            _gripperMode = joyMsg->joy_data[rover_msgs::msg::Joy::R2];
+
+            //Msg control
+            // =========================================================================            
+            armMsg.enable[rover_msgs::msg::ArmCmd::LINEAR] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::J0] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::J1] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::J2] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPERLR] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPERUD] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPEROC] = true;
+
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::LINEAR] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::J0] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::J1] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::J2] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPERLR] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPERUD] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPEROC] = false;
+
+            //Control logic
+            // =========================================================================
             if(_deadmanSwitch)
             {
                 float speedFactor = _speedFactorCrawler;
@@ -70,47 +108,36 @@ class Teleop : public rclcpp::Node
                     speedFactor = _speedFactorTurbo;
                 }
 
-                forwardKinematics(msg);
-
-                inverseKinematics(msg);             
+                if(_forwardKinematic)
+                {
+                    armMsg.target_position[rover_msgs::msg::ArmCmd::LINEAR] += _linearControl * speedFactor;
+                    armMsg.target_position[rover_msgs::msg::ArmCmd::J0] += _j0Control * speedFactor;
+                    armMsg.target_position[rover_msgs::msg::ArmCmd::J1] += _j1Control * speedFactor;
+                    armMsg.target_position[rover_msgs::msg::ArmCmd::J2] += _j2Control * speedFactor;
+                    armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERLR] += _gripperLR * speedFactor;
+                    armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERUD] += _gripperUD * speedFactor;
+                    armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPEROC] += _gripperOC * speedFactor;
+                }
+                else if(_inverseKinematic)
+                {
+                    RCLCPP_INFO(this->get_logger(), "Inverse kinematics mode NOT YET AVAILABLE");
+                }             
             }
-        }
+            else
+            {
+                armMsg.target_position[rover_msgs::msg::ArmCmd::LINEAR] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::J0] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::J1] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::J2] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERLR] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERUD] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPEROC] = 0.0f;
+            }
 
-        void forwardKinematics(const rover_msgs::msg::Joy::SharedPtr msg)
-        {
-            float matRotBase[3][3] = {
-                {0, cos(_j0Angle), sin(_j0Angle)},
-                {0, sin(_j0Angle), cos(_j0Angle)},
-                {1, 0, 0}
-            };
-
-            float matRotJ1[3][3] = {
-                {cos(_j1Angle), sin(_j1Angle), 0},
-                {-sin(_j1Angle), cos(_j1Angle), 0},
-                {0, 0, 1}
-            };
-
-            float matRotJ2[3][3] = {
-                {cos(_j2Angle), sin(_j2Angle), 0},
-                {-sin(_j2Angle), cos(_j2Angle), 0},
-                {0, 0, 1}  
-            };
-
-            
-
-
-
-            
+            _pub_arm_teleop_in->publish(armMsg);
 
         }
 
-        void inverseKinematics(const rover_msgs::msg::Joy::SharedPtr msg)
-        {
-
-        }
-
-
-        
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_arm;
     rclcpp::Publisher<rover_msgs::msg::ArmCmd>::SharedPtr _pub_arm_teleop_in;
 };
@@ -121,7 +148,7 @@ Teleop::Teleop() : Node("teleop")
 {
     this->getParams();
 
-    _sub_joy_arm = this->create_subscription<rover_msgs::msg::Joy>("rover/arm/joy",
+    _sub_joy_arm = this->create_subscription<rover_msgs::msg::Joy>("/rover/drive_train/joy",
                                                                     1,
                                                                     std::bind(&Teleop::joyCallback, this, std::placeholders::_1));
     _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("rover/arm/cmd/in/teleop", 1);
