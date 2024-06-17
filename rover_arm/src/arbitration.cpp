@@ -60,13 +60,6 @@ Arbitration::Arbitration() : Node("arbitration")
     _subRoverHr = this->create_subscription<std_msgs::msg::Empty>("/rover/heartbeat",
                                                                   1,
                                                                   std::bind(&Arbitration::cbRoverHr, this, std::placeholders::_1));
-    _subMotorCmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
-                                                                               1,
-                                                                               std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
-
-    _pubAbtr = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1);
-
-    _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
     _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&Arbitration::cbBaseWatchdog, this));
     _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&Arbitration::cbRoverWatchdog, this));
@@ -74,7 +67,6 @@ Arbitration::Arbitration() : Node("arbitration")
 
     // Starting by default at drive_train for CRQRC, should be set when GUI
     // opens instead
-    _arbitrationRequest.target_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::TELEOP;
 }
 
 void Arbitration::cbTimerSendCmd()

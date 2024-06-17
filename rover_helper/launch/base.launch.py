@@ -16,4 +16,5 @@ def generate_launch_description():
         
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_gui'), 'launch', 'gui.launch.py'])]))
+        
     ])
