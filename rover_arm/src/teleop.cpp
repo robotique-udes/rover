@@ -172,3 +172,5 @@ int main(int argc, char *argv[])
     rclcpp::spin(std::make_shared<Teleop>());
     rclcpp::shutdown();
 }
+
+// The API key's access key is LOM4ok2YlIVzcUZJ0P5LMUFD and the secret key is wxHF2NI9aah8W3jph6MktmVbZJh9qLl06i4wN76XfST8GyRD Please transfer this securely to your application now as you will not be able to display this secret key string again. 
