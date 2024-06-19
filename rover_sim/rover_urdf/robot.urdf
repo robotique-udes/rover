@@ -1,0 +1,233 @@
+<robot name="rover">
+<link name="poignet_rot_urdf">
+<visual>
+<origin xyz="-0.78000609755862848615 -0.22093530111639561597 1.7763570358652658321" rpy="2.7510702591549653917 -0.65618023247987666835 0.76015540746668530669" />
+<geometry>
+<mesh filename="package://rover_sim/poignet_rot_urdf.stl"/>
+</geometry>
+<material name="poignet_rot_urdf_material">
+<color rgba="0.76862745098039220171 0.88627450980392152857 0.95294117647058818044 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="-0.78000609755862848615 -0.22093530111639561597 1.7763570358652658321" rpy="2.7510702591549653917 -0.65618023247987666835 0.76015540746668530669" />
+<geometry>
+<mesh filename="package://rover_sim/poignet_rot_urdf.stl"/>
+</geometry>
+</collision>
+<inertial>
+<origin xyz="0.18568151878455618764 -0.058573638033918379309 0.72215971467293815778" rpy="0 0 0"/>
+<mass value="0.48250317769047762484" />
+<inertia ixx="0.0014419242204060920588" ixy="-0.00049193200999420711415"  ixz="-0.00010234399249165544894" iyy="0.0018254648587159153818" iyz="-0.00039602771039032666359" izz="0.0013161944082022366837" />
+</inertial>
+</link>
+
+<link name="poignet_ud_urdf">
+<visual>
+<origin xyz="-4.1633363423443370266e-17 -1.1102230246251565404e-16 -1.3666500000000003645" rpy="-5.5511151231257827021e-17 -1.2046485339505775772e-17 3.1911543562161941557e-17" />
+<geometry>
+<mesh filename="package://rover_sim/poignet_ud_urdf.stl"/>
+</geometry>
+<material name="poignet_ud_urdf_material">
+<color rgba="0.91764705882352937127 0.91764705882352937127 0.91764705882352937127 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="-4.1633363423443370266e-17 -1.1102230246251565404e-16 -1.3666500000000003645" rpy="-5.5511151231257827021e-17 -1.2046485339505775772e-17 3.1911543562161941557e-17" />
+<geometry>
+<mesh filename="package://rover_sim/poignet_ud_urdf.stl"/>
+</geometry>
+</collision>
+<inertial>
+<origin xyz="-4.3555518886215181252e-17 -1.09391407585606588e-16 -0.028463754227230131377" rpy="0 0 0"/>
+<mass value="0.25422798910091382041" />
+<inertia ixx="0.00015018464899557086405" ixy="5.709005846885429683e-21"  ixz="1.604683817828446692e-21" iyy="0.0001141877223563912111" iyz="-6.3386919244785128792e-21" izz="0.0001195825672440762222" />
+</inertial>
+</link>
+
+<link name="j2_urdf">
+<visual>
+<origin xyz="-5.5511151231257827021e-17 1.335650000000000226 0.021999999999999964029" rpy="1.570796326794896558 1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/j2_urdf.stl"/>
+</geometry>
+<material name="j2_urdf_material">
+<color rgba="0.2313725490196078538 0.38039215686274507888 0.7058823529411765163 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="-5.5511151231257827021e-17 1.335650000000000226 0.021999999999999964029" rpy="1.570796326794896558 1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/j2_urdf.stl"/>
+</geometry>
+</collision>
+<inertial>
+<origin xyz="-1.9946375013304741282e-16 0.26792712138606145089 0.021999999999999981376" rpy="0 0 0"/>
+<mass value="1.903643385227656637" />
+<inertia ixx="0.084156005789429458308" ixy="9.7160459189110620382e-18"  ixz="7.2458912446870535169e-20" iyy="0.0033583557704155351208" iyz="-1.8139057619188812342e-18" izz="0.081582320035469363395" />
+</inertial>
+</link>
+
+<link name="j1_urdf">
+<visual>
+<origin xyz="5.5511151231257827021e-17 0.71065000000000000391 -0.021999999999999991784" rpy="1.570796326794896558 1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/j1_urdf.stl"/>
+</geometry>
+<material name="j1_urdf_material">
+<color rgba="0.64705882352941179736 0.64705882352941179736 0.64705882352941179736 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="5.5511151231257827021e-17 0.71065000000000000391 -0.021999999999999991784" rpy="1.570796326794896558 1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/j1_urdf.stl"/>
+</geometry>
+</collision>
+<inertial>
+<origin xyz="-0.0032239444370048002571 0.27551528650398610099 -0.021999999999999991784" rpy="0 0 0"/>
+<mass value="3.5446627968758868121" />
+<inertia ixx="0.1786877198611700468" ixy="-0.0018243125395202973871"  ixz="5.078484019190950173e-23" iyy="0.014501353769987028811" iyz="-4.5934108025700569437e-18" izz="0.16547747611338786689" />
+</inertial>
+</link>
+
+<link name="j0_urdf">
+<visual>
+<origin xyz="0 -0.060650000000000009459 -0.055250000000000007438" rpy="-1.570796326794896558 -1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/j0_urdf.stl"/>
+</geometry>
+<material name="j0_urdf_material">
+<color rgba="0.98039215686274505668 0.71372549019607844922 0.0039215686274509803377 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="0 -0.060650000000000009459 -0.055250000000000007438" rpy="-1.570796326794896558 -1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/j0_urdf.stl"/>
+</geometry>
+</collision>
+<inertial>
+<origin xyz="0.02195778785631362709 0.0088785262004007908798 -0.055250000000000007438" rpy="0 0 0"/>
+<mass value="3.9360055793372801247" />
+<inertia ixx="0.015757672092816053799" ixy="-0.0018060990321288417169"  ixz="-4.8427639073108541176e-19" iyy="0.0037724496376596579165" iyz="2.1810272983649002935e-33" izz="0.017447895782726697417" />
+</inertial>
+</link>
+
+<link name="jlin_urdf">
+<visual>
+<origin xyz="0 0 0.020850000000000007416" rpy="0 -0 -3.490051078304070176e-47" />
+<geometry>
+<mesh filename="package://rover_sim/jlin_urdf.stl"/>
+</geometry>
+<material name="jlin_urdf_material">
+<color rgba="0.97254901960784312376 0.52941176470588235947 0.0039215686274509803377 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="0 0 0.020850000000000007416" rpy="0 -0 -3.490051078304070176e-47" />
+<geometry>
+<mesh filename="package://rover_sim/jlin_urdf.stl"/>
+</geometry>
+</collision>
+<inertial>
+<origin xyz="5.7057666194802135425e-18 0.016762797536052958386 -0.012676765453219683566" rpy="0 0 0"/>
+<mass value="0.57976963990118524084" />
+<inertia ixx="0.00045328181703953513478" ixy="-9.7300324602490434375e-36"  ixz="7.6463116774713003804e-38" iyy="0.000432021455082067993" iyz="-3.3950253613312340218e-06" izz="0.00071404810579741673053" />
+</inertial>
+</link>
+
+<link name="base_urdf">
+<visual>
+<origin xyz="-0.016000000000000014211 -0.052850000000000008082 0" rpy="1.570796326794896558 1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/base_urdf.stl"/>
+</geometry>
+<material name="base_urdf_material">
+<color rgba="0.49803921568627451677 0.49803921568627451677 0.49803921568627451677 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="-0.016000000000000014211 -0.052850000000000008082 0" rpy="1.570796326794896558 1.570796326794896558 0" />
+<geometry>
+<mesh filename="package://rover_sim/base_urdf.stl"/>
+</geometry>
+</collision>
+<visual>
+<origin xyz="-0.071283110000000149409 0.27533012000000034458 -0.45644999999999985585" rpy="-1.570796326794896558 6.6560138878025349628e-31 -3.1415926535897922278" />
+<geometry>
+<mesh filename="package://rover_sim/base.stl"/>
+</geometry>
+<material name="base_material">
+<color rgba="0.64705882352941179736 0.64705882352941179736 0.64705882352941179736 1.0"/>
+</material>
+</visual>
+<collision>
+<origin xyz="-0.071283110000000149409 0.27533012000000034458 -0.45644999999999985585" rpy="-1.570796326794896558 6.6560138878025349628e-31 -3.1415926535897922278" />
+<geometry>
+<mesh filename="package://rover_sim/base.stl"/>
+</geometry>
+</collision>
+<inertial>
+<origin xyz="0.3039892424066643617 0.16201320073831901314 -8.673639417747707868e-20" rpy="0 0 0"/>
+<mass value="703.12321350783201979" />
+<inertia ixx="61.444137261695992436" ixy="-0.061802865570381899929"  ixz="5.1404617002102610157e-15" iyy="111.09797045647874825" iyz="6.3498444462204189407e-15" izz="63.968571228990157351" />
+</inertial>
+</link>
+
+<joint name="base_lin" type="prismatic">
+<origin xyz="-0.030475478866928244759 0.015999999999999459099 -0.031999999999999889644" rpy="-1.5707963267948972241 -7.4246164771810213122e-16 1.5707963267948958919" />
+<parent link="jlin_urdf" />
+<child link="base_urdf" />
+<axis xyz="0 0 1"/>
+<limit effort="1" velocity="20" lower="-0.23250000000000001221" upper="0.23250000000000001221"/>
+<joint_properties friction="0.0"/>
+</joint>
+
+<joint name="J0" type="revolute">
+<origin xyz="0 -0.081500000000000016875 -0.055250000000000007438" rpy="-1.570796326794896558 1.4042235959233375642 -6.1196811644548272158e-17" />
+<parent link="j0_urdf" />
+<child link="jlin_urdf" />
+<axis xyz="0 0 1"/>
+<limit effort="1" velocity="20" lower="-3.141592653589793116" upper="3.141592653589793116"/>
+<joint_properties friction="0.0"/>
+</joint>
+
+<joint name="J1" type="revolute">
+<origin xyz="5.5511151231257827021e-17 0.6500000000000000222 -0.077249999999999985345" rpy="3.1415926535897913396 4.5796699765788054391e-15 1.5708019391319063551" />
+<parent link="j1_urdf" />
+<child link="j0_urdf" />
+<axis xyz="0 0 1"/>
+<limit effort="1" velocity="20" lower="-3.141592653589793116" upper="3.141592653589793116"/>
+<joint_properties friction="0.0"/>
+</joint>
+
+<joint name="J2" type="revolute">
+<origin xyz="-5.5511151231257827021e-17 0.625 0.043999999999999969691" rpy="9.2703677178582533106e-15 2.9033507699963287332e-16 -2.1679974831754251774" />
+<parent link="j2_urdf" />
+<child link="j1_urdf" />
+<axis xyz="0 0 1"/>
+<limit effort="1" velocity="20" lower="-3.141592653589793116" upper="3.141592653589793116"/>
+<joint_properties friction="0.0"/>
+</joint>
+
+<joint name="poignet_ud" type="revolute">
+<origin xyz="0.021999999999999991784 0 -0.031000000000000138556" rpy="1.5707963267948950037 -1.3457487744925549222 -1.5707963267948812369" />
+<parent link="poignet_ud_urdf" />
+<child link="j2_urdf" />
+<axis xyz="0 0 1"/>
+<limit effort="1" velocity="20" lower="-3.141592653589793116" upper="3.141592653589793116"/>
+<joint_properties friction="0.0"/>
+</joint>
+
+<joint name="poignet_gd" type="revolute">
+<origin xyz="0.13723394118771259365 -0.066719159564708613308 0.77504773524655989902" rpy="-2.3930394231407654537 -3.8132505453947008231e-16 -1.404223595923336898" />
+<parent link="poignet_rot_urdf" />
+<child link="poignet_ud_urdf" />
+<axis xyz="0 0 1"/>
+<limit effort="1" velocity="20" lower="-3.141592653589793116" upper="3.141592653589793116"/>
+<joint_properties friction="0.0"/>
+</joint>
+
+
+</robot>

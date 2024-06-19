@@ -1,0 +1,7 @@
+{
+    "documentId": "a3364e098555b3e37a4ea895",
+    "outputFormat": "urdf",
+    "packageName": "rover_sim",
+    "robotName": "rover",
+    "assemblyName": "R2-ARM"
+}
