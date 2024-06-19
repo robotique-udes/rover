@@ -3,9 +3,11 @@ Panels:
     Help Height: 70
     Name: Displays
     Property Tree Widget:
-      Expanded: ~
+      Expanded:
+        - /Global Options1
+        - /Status1
       Splitter Ratio: 0.5
-    Tree Height: 296
+    Tree Height: 443
   - Class: rviz_common/Views
     Expanded:
       - /Current View1
@@ -45,8 +47,7 @@ Visualization Manager:
         Value: /robot_description
       Enabled: true
       Links:
-        All Links Enabled:
-          {}
+        All Links Enabled: true
         Expand Joint Details: false
         Expand Link Details: false
         Expand Tree: false
@@ -55,30 +56,37 @@ Visualization Manager:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         j0_urdf:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         j1_urdf:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         j2_urdf:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         jlin_urdf:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         poignet_rot_urdf:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
         poignet_ud_urdf:
           Alpha: 1
           Show Axes: false
           Show Trail: false
+          Value: true
       Mass Properties:
         Inertia: false
         Mass: false
@@ -112,13 +120,20 @@ Visualization Manager:
       Show Axes: true
       Show Names: false
       Tree:
-        {}
+        poignet_rot_urdf:
+          poignet_ud_urdf:
+            j2_urdf:
+              j1_urdf:
+                j0_urdf:
+                  jlin_urdf:
+                    base_urdf:
+                      {}
       Update Interval: 0
       Value: true
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
-    Fixed Frame: base_link
+    Fixed Frame: base_urdf
     Frame Rate: 30
   Name: root
   Tools:
@@ -130,7 +145,7 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 1.7000000476837158
+      Distance: 2.3123648166656494
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
@@ -145,20 +160,20 @@ Visualization Manager:
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.33000001311302185
+      Pitch: 0.12500011920928955
       Target Frame: <Fixed Frame>
       Value: Orbit (rviz)
-      Yaw: 5.5
+      Yaw: 3.9499969482421875
     Saved: ~
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 800
+  Height: 1043
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000001cb000002c6fc0200000002fb000000100044006900730070006c006100790073010000003d000001ab000000c900fffffffb0000000a0056006900650077007301000001ee00000115000000a400ffffff000002df000002c600000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000001cb000003b9fc0200000002fb000000100044006900730070006c006100790073010000003d0000023e000000c900fffffffb0000000a00560069006500770073010000028100000175000000a400ffffff000005af000003b900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 1200
-  X: 3960
-  Y: 360
+  Width: 1920
+  X: 0
+  Y: 0
