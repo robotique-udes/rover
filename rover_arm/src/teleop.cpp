@@ -83,16 +83,16 @@ class Teleop : public rclcpp::Node
             armMsg.enable[rover_msgs::msg::ArmCmd::J0] = true;
             armMsg.enable[rover_msgs::msg::ArmCmd::J1] = true;
             armMsg.enable[rover_msgs::msg::ArmCmd::J2] = true;
-            armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_L] = true;
-            armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_R] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPERLR] = true;
+            armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPERUD] = true;
             armMsg.enable[rover_msgs::msg::ArmCmd::GRIPPEROC] = true;
 
             armMsg.close_loop[rover_msgs::msg::ArmCmd::LINEAR] = false;
             armMsg.close_loop[rover_msgs::msg::ArmCmd::J0] = false;
             armMsg.close_loop[rover_msgs::msg::ArmCmd::J1] = false;
             armMsg.close_loop[rover_msgs::msg::ArmCmd::J2] = false;
-            armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_L] = false;
-            armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_R] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPERLR] = false;
+            armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPERUD] = false;
             armMsg.close_loop[rover_msgs::msg::ArmCmd::GRIPPEROC] = false;
 
             //Control logic
@@ -114,10 +114,8 @@ class Teleop : public rclcpp::Node
                 {
                     if(_gripperMode)
                     {
-                        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_R] += _gripperLR * speedFactor;
-                        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_L] += _gripperLR * speedFactor * -1;
-                        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_R] += _gripperUD * speedFactor;
-                        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_L] += _gripperUD *speedFactor;
+                        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERLR] += _gripperLR * speedFactor;
+                        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERUD] += _gripperUD *speedFactor;
                         armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPEROC] += _gripperO * speedFactor;
                         armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPEROC] += _gripperC * speedFactor * -1;
                     }
@@ -140,8 +138,8 @@ class Teleop : public rclcpp::Node
                 armMsg.target_position[rover_msgs::msg::ArmCmd::J0] = 0.0f;
                 armMsg.target_position[rover_msgs::msg::ArmCmd::J1] = 0.0f;
                 armMsg.target_position[rover_msgs::msg::ArmCmd::J2] = 0.0f;
-                armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_L] = 0.0f;
-                armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPER_MOTOR_R] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERLR] = 0.0f;
+                armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERUD] = 0.0f;
                 armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPEROC] = 0.0f;
             }
 
@@ -159,10 +157,10 @@ Teleop::Teleop() : Node("teleop")
 {
     this->getParams();
 
-    _sub_joy_arm = this->create_subscription<rover_msgs::msg::Joy>("/rover/drive_train/joy",
+    _sub_joy_arm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                     1,
                                                                     std::bind(&Teleop::joyCallback, this, std::placeholders::_1));
-    _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("rover/arm/cmd/in/teleop", 1);
+    _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("/rover/arm/cmd/in/teleop", 1);
 }
 
 int main(int argc, char *argv[])
