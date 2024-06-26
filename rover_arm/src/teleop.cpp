@@ -4,6 +4,8 @@
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/msg/arm_cmd.hpp"
+#include "sensor_msgs/msg/joint_state.hpp"
+#include "tf2_ros/transform_broadcaster.h"
 
 class Teleop : public rclcpp::Node
 {
@@ -107,6 +109,12 @@ private:
             }
         }
 
+        sensor_msgs::msg::JointState joint_state;
+        joint_state.header.stamp = this->now();
+        joint_state.name = {"base_lin", "J0", "J1", "J2", "poignet_ud", "poignet_gd", };
+        joint_state.position = {_currentLinear, _currentJ0, _currentJ1, _currentJ2, _currentGripperUD, _currentGripperLR};
+        
+        _joint_state_pub->publish(joint_state);
         _pub_arm_teleop_in->publish(armMsg);
 
         armMsg.current_position[rover_msgs::msg::ArmCmd::LINEAR] = _currentLinear;
@@ -120,6 +128,9 @@ private:
 
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_arm;
     rclcpp::Publisher<rover_msgs::msg::ArmCmd>::SharedPtr _pub_arm_teleop_in;
+
+    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr _joint_state_pub;
+    std::shared_ptr<tf2_ros::TransformBroadcaster> _tf_broadcast;
 };
 
 // Teleop class constructor
@@ -130,6 +141,9 @@ Teleop::Teleop() : Node("teleop")
                                                                    1,
                                                                    std::bind(&Teleop::joyCallback, this, std::placeholders::_1));
     _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("/rover/arm/cmd/in/teleop", 1);
+    _joint_state_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 1);
+
+    _tf_broadcast = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 }
 
 int main(int argc, char *argv[])

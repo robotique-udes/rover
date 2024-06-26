@@ -15,6 +15,9 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(tf2_ros REQUIRED)
+
 
 include_directories(
   ${rover_msgs_INCLUDE_DIRS}
@@ -26,7 +29,9 @@ add_executable(arbitration src/arbitration.cpp)
 ament_target_dependencies(teleop
                           rclcpp
                           std_msgs
-                          rover_msgs)
+                          rover_msgs
+                          sensor_msgs
+                          tf2_ros)
 
 ament_target_dependencies(arbitration
                           rclcpp
