@@ -15,6 +15,9 @@ def generate_launch_description():
     with open(robot_desc_path, 'r') as file:
         robot_desc_path = file.read()
 
+    pkg_desc = "rover_sim"
+    rviz_config_dir = os.path.join(get_package_share_directory(pkg_desc), 'rover_rviz', 'rover.rviz')
+
     robot_state_publisher_node = Node(
         package='robot_state_publisher',
         executable='robot_state_publisher',
@@ -24,8 +27,26 @@ def generate_launch_description():
         output="screen"
     )
 
+
+    rviz_node = Node(
+        package='rviz2',
+        executable='rviz2',
+        output='screen',
+        name='rviz_node',
+        parameters=[{'use_sim_time': True}],
+        arguments=['-d', rviz_config_dir]
+    )
+
+    Node(
+        package='joint_state_publisher',
+        executable='joint_state_publisher',
+        name='joint_state_publisher',
+        output='screen'
+        )       
+
     return LaunchDescription(
         [
             robot_state_publisher_node,
+            rviz_node
         ]
     )

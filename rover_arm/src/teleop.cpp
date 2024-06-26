@@ -98,7 +98,7 @@ private:
                 else
                 {
                     _currentLinear += _linearControl * _speedControl;
-                    _currentJ0 += _j0Control * _speedControl;
+                    _currentJ0 += _j0Control * _speedControl * -1;
                     _currentJ1 += _j1Control * _speedControl;
                     _currentJ2 += _j2Control * _speedControl;
                 }
