@@ -17,9 +17,9 @@ private:
 
     // Private members
     //  =========================================================================
-    float _linkj0Toj1 = 529.5715f;
-    float _linkj1ToJ2 = 608.45785f;
-    float _endEffectorLength = 210.1945f;
+    // float _linkj0Toj1 = 529.5715f;
+    // float _linkj1ToJ2 = 608.45785f;
+    // float _endEffectorLength = 210.1945f;
 
     float _linearControl;
     float _j0Control;
@@ -40,13 +40,13 @@ private:
 
     // Initial joint values (ONLY TO BE USED IN SIMULATION CONTEXT - SHOULD BE SET TO ENCODER VALUES)
     //  =========================================================================
-    float _currentLinear = 0.0f;
-    float _currentJ0 = 0.0f;
-    float _currentJ1 = 0.0f;
-    float _currentJ2 = 0.0f;
-    float _currentGripperLR = 0.0f;
-    float _currentGripperUD = 0.0f;
-    float _currentGripperOC = 0.0f;
+    float _currentLinear;
+    float _currentJ0;
+    float _currentJ1;
+    float _currentJ2;
+    float _currentGripperLR;
+    float _currentGripperUD;
+    float _currentGripperOC;
 
     // Private methods
     //  =========================================================================
@@ -75,13 +75,13 @@ private:
 
         // Initialize controls to previous values
         // =========================================================================
-        armMsg.target_position[rover_msgs::msg::ArmCmd::LINEAR] = _currentLinear;
-        armMsg.target_position[rover_msgs::msg::ArmCmd::J0] = _currentJ0;
-        armMsg.target_position[rover_msgs::msg::ArmCmd::J1] = _currentJ1;
-        armMsg.target_position[rover_msgs::msg::ArmCmd::J2] = _currentJ2;
-        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERLR] = _currentGripperLR;
-        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPERUD] = _currentGripperUD;
-        armMsg.target_position[rover_msgs::msg::ArmCmd::GRIPPEROC] = _currentGripperOC;
+        armMsg.position[rover_msgs::msg::ArmCmd::LINEAR] = _currentLinear;
+        armMsg.position[rover_msgs::msg::ArmCmd::J0] = _currentJ0;
+        armMsg.position[rover_msgs::msg::ArmCmd::J1] = _currentJ1;
+        armMsg.position[rover_msgs::msg::ArmCmd::J2] = _currentJ2;
+        armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERLR] = _currentGripperLR;
+        armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERUD] = _currentGripperUD;
+        armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROC] = _currentGripperOC;
 
         // Control logic
         // =========================================================================
@@ -114,23 +114,23 @@ private:
         joint_state.name = {"base_lin", "J0", "J1", "J2", "poignet_ud", "poignet_gd", };
         joint_state.position = {_currentLinear, _currentJ0, _currentJ1, _currentJ2, _currentGripperUD, _currentGripperLR};
         
-        _joint_state_pub->publish(joint_state);
+        // _joint_state_pub->publish(joint_state);
         _pub_arm_teleop_in->publish(armMsg);
 
-        armMsg.current_position[rover_msgs::msg::ArmCmd::LINEAR] = _currentLinear;
-        armMsg.current_position[rover_msgs::msg::ArmCmd::J0] = _currentJ0;
-        armMsg.current_position[rover_msgs::msg::ArmCmd::J1] = _currentJ1;
-        armMsg.current_position[rover_msgs::msg::ArmCmd::J2] = _currentJ2;
-        armMsg.current_position[rover_msgs::msg::ArmCmd::GRIPPERLR] = _currentGripperLR;
-        armMsg.current_position[rover_msgs::msg::ArmCmd::GRIPPERUD] = _currentGripperUD;
-        armMsg.current_position[rover_msgs::msg::ArmCmd::GRIPPEROC] = _currentGripperOC;
+        // armMsg.position[rover_msgs::msg::ArmCmd::LINEAR] = _currentLinear;
+        // armMsg.position[rover_msgs::msg::ArmCmd::J0] = _currentJ0;
+        // armMsg.position[rover_msgs::msg::ArmCmd::J1] = _currentJ1;
+        // armMsg.position[rover_msgs::msg::ArmCmd::J2] = _currentJ2;
+        // armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERLR] = _currentGripperLR;
+        // armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERUD] = _currentGripperUD;
+        // armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROC] = _currentGripperOC;
     }
 
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_arm;
     rclcpp::Publisher<rover_msgs::msg::ArmCmd>::SharedPtr _pub_arm_teleop_in;
 
-    rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr _joint_state_pub;
-    std::shared_ptr<tf2_ros::TransformBroadcaster> _tf_broadcast;
+    // rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr _joint_state_pub;
+    // std::shared_ptr<tf2_ros::TransformBroadcaster> _tf_broadcast;
 };
 
 // Teleop class constructor
@@ -141,9 +141,9 @@ Teleop::Teleop() : Node("teleop")
                                                                    1,
                                                                    std::bind(&Teleop::joyCallback, this, std::placeholders::_1));
     _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("/rover/arm/cmd/in/teleop", 1);
-    _joint_state_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 1);
+    // _joint_state_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 1);
 
-    _tf_broadcast = std::make_shared<tf2_ros::TransformBroadcaster>(this);
+    // _tf_broadcast = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 }
 
 int main(int argc, char *argv[])

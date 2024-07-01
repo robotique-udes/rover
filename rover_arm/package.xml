@@ -4,7 +4,7 @@
   <name>rover_arm</name>
   <version>0.0.0</version>
   <description>
-    rover_drive_train pkg contains teleop node
+    roveR_arm pkg contains teleop node for arm controls
   </description>
   <maintainer email="save1403@usherbrooke.ca">emile</maintainer>
   <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
@@ -20,6 +20,8 @@
   <depend>std_msgs</depend>
   <depend>joy</depend>
   <depend>rover_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_ros</depend>
 
   <exec_depend>ros2launch</exec_depend>
 

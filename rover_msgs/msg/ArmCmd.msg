@@ -6,7 +6,5 @@ uint8 GRIPPERUD = 4
 uint8 GRIPPERLR= 5
 uint8 GRIPPEROC = 6
 
-bool[7] enable
-float32[7] target_position
-float32[7] current_position
-bool[7] close_loop
+float32[7] position
+

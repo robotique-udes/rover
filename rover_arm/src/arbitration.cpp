@@ -64,9 +64,6 @@ Arbitration::Arbitration() : Node("arbitration")
     _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&Arbitration::cbBaseWatchdog, this));
     _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&Arbitration::cbRoverWatchdog, this));
     _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&Arbitration::cbTimerSendCmd, this));
-
-    // Starting by default at drive_train for CRQRC, should be set when GUI
-    // opens instead
 }
 
 void Arbitration::cbTimerSendCmd()
