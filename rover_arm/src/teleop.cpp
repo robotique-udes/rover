@@ -6,6 +6,7 @@
 #include "rover_msgs/msg/arm_cmd.hpp"
 #include "sensor_msgs/msg/joint_state.hpp"
 #include "tf2_ros/transform_broadcaster.h"
+#include "rovus_lib/macros.h"
 
 class Teleop : public rclcpp::Node
 {
@@ -13,7 +14,6 @@ public:
     Teleop();
 
 private:
-    Teleop *teleop;
 
     // Private members
     //  =========================================================================
@@ -38,7 +38,7 @@ private:
 
     float _speedControl = 0.0017453f; // 10 deg/s - (0.1745 rad/s)
 
-    // Initial joint values (ONLY TO BE USED IN SIMULATION CONTEXT - SHOULD BE SET TO ENCODER VALUES)
+    // Set Constrain values
     //  =========================================================================
     float _currentLinear;
     float _currentJ0;
@@ -98,39 +98,22 @@ private:
                 else
                 {
                     _currentLinear += _linearControl * _speedControl;
-                    _currentJ0 += _j0Control * _speedControl * -1;
+                    _currentJ0 += _j0Control * _speedControl * -1.0f;
                     _currentJ1 += _j1Control * _speedControl;
                     _currentJ2 += _j2Control * _speedControl;
                 }
             }
             else if (_inverseKinematic)
             {
-                RCLCPP_INFO(this->get_logger(), "Inverse kinematics mode NOT YET AVAILABLE");
+                RCLCPP_ERROR(this->get_logger(), "Inverse kinematics mode NOT YET AVAILABLE");
             }
         }
 
-        sensor_msgs::msg::JointState joint_state;
-        joint_state.header.stamp = this->now();
-        joint_state.name = {"base_lin", "J0", "J1", "J2", "poignet_ud", "poignet_gd", };
-        joint_state.position = {_currentLinear, _currentJ0, _currentJ1, _currentJ2, _currentGripperUD, _currentGripperLR};
-        
-        // _joint_state_pub->publish(joint_state);
         _pub_arm_teleop_in->publish(armMsg);
-
-        // armMsg.position[rover_msgs::msg::ArmCmd::LINEAR] = _currentLinear;
-        // armMsg.position[rover_msgs::msg::ArmCmd::J0] = _currentJ0;
-        // armMsg.position[rover_msgs::msg::ArmCmd::J1] = _currentJ1;
-        // armMsg.position[rover_msgs::msg::ArmCmd::J2] = _currentJ2;
-        // armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERLR] = _currentGripperLR;
-        // armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERUD] = _currentGripperUD;
-        // armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROC] = _currentGripperOC;
     }
 
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_arm;
     rclcpp::Publisher<rover_msgs::msg::ArmCmd>::SharedPtr _pub_arm_teleop_in;
-
-    // rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr _joint_state_pub;
-    // std::shared_ptr<tf2_ros::TransformBroadcaster> _tf_broadcast;
 };
 
 // Teleop class constructor
@@ -141,9 +124,6 @@ Teleop::Teleop() : Node("teleop")
                                                                    1,
                                                                    std::bind(&Teleop::joyCallback, this, std::placeholders::_1));
     _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("/rover/arm/cmd/in/teleop", 1);
-    // _joint_state_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 1);
-
-    // _tf_broadcast = std::make_shared<tf2_ros::TransformBroadcaster>(this);
 }
 
 int main(int argc, char *argv[])

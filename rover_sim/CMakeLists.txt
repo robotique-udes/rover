@@ -23,8 +23,16 @@ include_directories(
 )
 
 add_executable(simulation src/simulation_status.cpp)
+add_executable(encoder_simulation src/encoder_status.cpp)
 
 ament_target_dependencies(simulation
+                          rclcpp
+                          std_msgs
+                          rover_msgs
+                          sensor_msgs
+                          tf2_ros)
+
+ament_target_dependencies(encoder_simulation
                           rclcpp
                           std_msgs
                           rover_msgs
@@ -42,6 +50,7 @@ install(
 
 install(TARGETS
           simulation
+          encoder_simulation
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

@@ -46,7 +46,8 @@ private:
         _joint_state_pub->publish(joint_state);
     }
 
-    rclcpp::Subscription<rover_msgs::msg::ArmCmd>::SharedPtr _sub_arm_cmd;
+    rclcpp::Subscription<rover_msgs::msg::ArmCmd>::SharedPtr _sub_arm_cmd;    
+    rclcpp::Subscription<rover_msgs::msg::ArmCmd>::SharedPtr _sub_encoder;
 
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr _joint_state_pub;
     std::shared_ptr<tf2_ros::TransformBroadcaster> _tf_broadcast;
@@ -55,6 +56,9 @@ private:
 Rover_sim_feedback::Rover_sim_feedback() : Node("rover_sim")
 {
     _sub_arm_cmd = this->create_subscription<rover_msgs::msg::ArmCmd>("/rover/arm/cmd/in/teleop",
+                                                                      1,
+                                                                      std::bind(&Rover_sim_feedback::simCallback, this, std::placeholders::_1));
+    _sub_encoder = this->create_subscription<rover_msgs::msg::ArmCmd>("/rover/arm/status/position",
                                                                       1,
                                                                       std::bind(&Rover_sim_feedback::simCallback, this, std::placeholders::_1));
     _joint_state_pub = this->create_publisher<sensor_msgs::msg::JointState>("/joint_states", 1);

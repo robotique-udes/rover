@@ -48,13 +48,20 @@ def generate_launch_description():
                 namespace="/rover/arm",
                 executable="simulation",
                 name="simulation"
-                    )       
+                    )
+    encoder_sim_node = Node(
+            package="rover_sim",
+            namespace="/rover/arm",
+            executable="encoder_simulation",
+            name="encoder_simulation"
+                )            
 
     return LaunchDescription(
         [
             robot_state_publisher_node,
             rviz_node,
             joint_state_publisher,
-            sim_node  
+            sim_node,
+            encoder_sim_node
         ]
     )

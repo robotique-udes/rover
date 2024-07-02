@@ -19,6 +19,8 @@
   <depend>std_msgs</depend>
   <depend>rcl_interfaces</depend>
   <depend>rover_msgs</depend>
+  <depend>sensor_msgs</depend>
+  <depend>tf2_ros</depend>
 
   <exec_depend>ros2launch</exec_depend>
 
