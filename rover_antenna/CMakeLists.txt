@@ -39,7 +39,8 @@ ament_target_dependencies(arbitration
                           rover_msgs)
 
 ament_target_dependencies(udp_client1
-                          rclcpp)
+                          rclcpp
+                          rover_msgs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
