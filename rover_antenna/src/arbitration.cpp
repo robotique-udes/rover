@@ -5,11 +5,11 @@
 #include "std_msgs/msg/string.hpp"
 #include "rovus_lib/macros.h"
 
-class Arbitration : public rclcpp::Node
+class ClientUDPAntenna : public rclcpp::Node
 {
 public:
-    Arbitration();
-    ~Arbitration() {}
+    ClientUDPAntenna();
+    ~ClientUDPAntenna() {}
 
 private:
     void cbTimerSendCmd();
@@ -38,12 +38,12 @@ private:
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<Arbitration>());
+    rclcpp::spin(std::make_shared<ClientUDPAntenna>());
     rclcpp::shutdown();
     return 0;
 }
 
-Arbitration::Arbitration() : Node("arbitration")
+ClientUDPAntenna::ClientUDPAntenna() : Node("arbitration")
 {
     _sub_jog = this->create_subscription<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop",
                                                                      1,
@@ -59,27 +59,27 @@ Arbitration::Arbitration() : Node("arbitration")
 
     _pub_abtrStatus = this->create_publisher<rover_msgs::msg::AntennaArbitrationStatus>("/base/antenna/arbitration/status", 1);
 
-    _service_ArbitrationMode = this->create_service<rover_msgs::srv::AntennaArbitration>("/base/antenna/set_arbitration", std::bind(&Arbitration::cbSetAbtr, this, std::placeholders::_1, std::placeholders::_2));
+    _service_ArbitrationMode = this->create_service<rover_msgs::srv::AntennaArbitration>("/base/antenna/set_arbitration", std::bind(&ClientUDPAntenna::cbSetAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
-    _timer_SendCmd = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&Arbitration::cbTimerSendCmd, this));
+    _timer_SendCmd = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&ClientUDPAntenna::cbTimerSendCmd, this));
 }
 
-void Arbitration::cbTimerSendCmd()
+void ClientUDPAntenna::cbTimerSendCmd()
 {
     sendCmd();
 }
 
-void Arbitration::callbackJog(const rover_msgs::msg::AntennaCmd msg_)
+void ClientUDPAntenna::callbackJog(const rover_msgs::msg::AntennaCmd msg_)
 {
     _cmdJog = msg_;
 }
 
-void Arbitration::callbackAuto(const rover_msgs::msg::AntennaCmd msg_)
+void ClientUDPAntenna::callbackAuto(const rover_msgs::msg::AntennaCmd msg_)
 {
     _cmdAuto = msg_;
 }
 
-void Arbitration::sendCmd()
+void ClientUDPAntenna::sendCmd()
 {
     rover_msgs::msg::AntennaCmd cmdAbtr;
     if (_arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::TELEOP)
@@ -123,7 +123,7 @@ void Arbitration::sendCmd()
     }
 }
 
-void Arbitration::cbSetAbtr(const std::shared_ptr<rover_msgs::srv::AntennaArbitration::Request> request_, 
+void ClientUDPAntenna::cbSetAbtr(const std::shared_ptr<rover_msgs::srv::AntennaArbitration::Request> request_, 
                     std::shared_ptr<rover_msgs::srv::AntennaArbitration::Response> response_)
 {
     _arbitrationRequest = *request_;

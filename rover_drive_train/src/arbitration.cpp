@@ -7,11 +7,11 @@
 #include "rover_msgs/srv/drive_train_arbitration.hpp"
 
 // Class definition
-class Arbitration : public rclcpp::Node
+class ClientUDPAntenna : public rclcpp::Node
 {
 public:
-    Arbitration();
-    ~Arbitration() {}
+    ClientUDPAntenna();
+    ~ClientUDPAntenna() {}
 
 private:
     void cbTimerSendCmd();
@@ -52,66 +52,66 @@ private:
     bool _roverHrLost = false;
 };
 
-Arbitration::Arbitration() : Node("arbitration")
+ClientUDPAntenna::ClientUDPAntenna() : Node("arbitration")
 {
     _subBaseHr = this->create_subscription<std_msgs::msg::Empty>("/base/heartbeat",
                                                                  1,
-                                                                 std::bind(&Arbitration::cbBaseHr, this, std::placeholders::_1));
+                                                                 std::bind(&ClientUDPAntenna::cbBaseHr, this, std::placeholders::_1));
     _subRoverHr = this->create_subscription<std_msgs::msg::Empty>("/rover/heartbeat",
                                                                   1,
-                                                                  std::bind(&Arbitration::cbRoverHr, this, std::placeholders::_1));
+                                                                  std::bind(&ClientUDPAntenna::cbRoverHr, this, std::placeholders::_1));
     _subMotorCmd = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
                                                                                1,
-                                                                               std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
+                                                                               std::bind(&ClientUDPAntenna::cbPropulsionCmd, this, std::placeholders::_1));
 
     _pubAbtr = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1);
 
-    _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
+    _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("demux_control_cmd", std::bind(&ClientUDPAntenna::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
-    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&Arbitration::cbBaseWatchdog, this));
-    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&Arbitration::cbRoverWatchdog, this));
-    _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&Arbitration::cbTimerSendCmd, this));
+    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&ClientUDPAntenna::cbBaseWatchdog, this));
+    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&ClientUDPAntenna::cbRoverWatchdog, this));
+    _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&ClientUDPAntenna::cbTimerSendCmd, this));
 
     // Starting by default at drive_train for CRQRC, should be set when GUI
     // opens instead
     _arbitrationRequest.target_arbitration = rover_msgs::srv::DriveTrainArbitration_Request::TELEOP;
 }
 
-void Arbitration::cbTimerSendCmd()
+void ClientUDPAntenna::cbTimerSendCmd()
 {
     sendCmd();
 }
 
-void Arbitration::cbBaseHr(const std_msgs::msg::Empty msg_)
+void ClientUDPAntenna::cbBaseHr(const std_msgs::msg::Empty msg_)
 {
     _hrBase = msg_;
     _baseHrLost = false;
     _watchdogBase->reset();
 }
 
-void Arbitration::cbRoverHr(const std_msgs::msg::Empty msg_)
+void ClientUDPAntenna::cbRoverHr(const std_msgs::msg::Empty msg_)
 {
     _hrRover = msg_;
     _roverHrLost = false;
     _watchdogRover->reset();
 }
 
-void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_)
+void ClientUDPAntenna::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_)
 {
     _cmdTeleop = msg_;
 }
 
-void Arbitration::cbBaseWatchdog()
+void ClientUDPAntenna::cbBaseWatchdog()
 {
     _baseHrLost = true;
 }
 
-void Arbitration::cbRoverWatchdog()
+void ClientUDPAntenna::cbRoverWatchdog()
 {
     _roverHrLost = true;
 }
 
-void Arbitration::sendCmd()
+void ClientUDPAntenna::sendCmd()
 {
     if (_baseHrLost || _roverHrLost)
     {
@@ -148,7 +148,7 @@ void Arbitration::sendCmd()
     }
 }
 
-void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request_,
+void ClientUDPAntenna::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request_,
                          std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
 {
     _arbitrationRequest = *request_;
@@ -158,7 +158,7 @@ void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitr
 int main(int argc, char *argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<Arbitration>());
+    rclcpp::spin(std::make_shared<ClientUDPAntenna>());
     rclcpp::shutdown();
 
     return 0;
