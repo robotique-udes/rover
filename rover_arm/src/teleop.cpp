@@ -201,28 +201,29 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
                                              _J4y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt);
 
             _currentEndEffectorPos(Y_AXIS) = _J1y +
-                                             _J2x * sin(_currentJ1Pos) +
-                                             _J2y * cos(_currentJ1Pos) +
-                                             _J3x * sin(_currentJ1Pos + _currentJ2Pos) +
-                                             _J3y * cos(_currentJ1Pos + _currentJ2Pos) +
-                                             _J4x * sin(_currentJ1Pos + _currentGripperTilt) +
-                                             _J4y * cos(_currentJ1Pos + _currentGripperTilt);
-
-            _currentEndEffectorPos(Z_AXIS) = cos(_currentJ0Pos) * (_J1z + _J2z) +
-                                             cos(_currentJ0Pos) * (_J3z + _J4z) +
+                                             _J2x * sin(_currentJ0Pos) * cos(_currentJ1Pos) +
+                                             _J3x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) +
+                                             _J4x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt) +
                                              _J2y * sin(_currentJ0Pos) * sin(_currentJ1Pos) +
                                              _J3y * sin(_currentJ0Pos) * sin(_currentJ1Pos + _currentJ2Pos) +
                                              _J4y * sin(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt) -
-                                             _J1x * sin(_currentJ0Pos) -
-                                             _J2x * sin(_currentJ0Pos) * cos(_currentJ1Pos) -
-                                             _J3x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) -
-                                             _J4x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+                                             _J2z * sin(_currentJ0Pos) -
+                                             _J3z * sin(_currentJ0Pos) -
+                                             _J4z * sin(_currentJ0Pos);
+
+            _currentEndEffectorPos(Z_AXIS) = _J1z + _J2z + _J3z + _J4z +
+                                             _J2x * sin(_currentJ1Pos) +
+                                             _J3x * sin(_currentJ1Pos + _currentJ2Pos) +
+                                             _J4x * sin(_currentJ1Pos + _currentGripperTilt) +
+                                             _J2y * cos(_currentJ1Pos) +
+                                             _J3y * cos(_currentJ1Pos + _currentJ2Pos) +
+                                             _J4y * cos(_currentJ1Pos + _currentGripperTilt);
 
             // Desired positions (JOINTS)
             // =========================================================================
-            _desiredEndEffectorPos(X_AXIS) = _currentEndEffectorPos(X_AXIS) + _posCmdX * _speedControl;
-            _desiredEndEffectorPos(Y_AXIS) = _currentEndEffectorPos(Y_AXIS) + _posCmdY * _speedControl;
-            _desiredEndEffectorPos(Z_AXIS) = _currentEndEffectorPos(Z_AXIS) + _posCmdZ * _speedControl;
+            _desiredEndEffectorPos(X_AXIS) = _currentEndEffectorPos(X_AXIS) + _posCmdX;
+            _desiredEndEffectorPos(Y_AXIS) = _currentEndEffectorPos(Y_AXIS) + _posCmdY;
+            _desiredEndEffectorPos(Z_AXIS) = _currentEndEffectorPos(Z_AXIS) + _posCmdZ;
 
             // _desiredJLPos = _currentJLPos + (_posCmdJL * _speedControl);
             // _desiredJ0Pos = _currentJ0Pos + (_posCmdJ0 * _speedControl * -1.0f);
@@ -246,35 +247,76 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
 
             // Update the Jacobian matrix using the new kinematic representation
 
-            _jacobian(X_AXIS, 0) = 0;
-            _jacobian(X_AXIS, 1) = -_J1x * sin(_currentJ0Pos) + cos(_currentJ0Pos) * (_J1z + _J2z) + cos(_currentJ0Pos) * (_J3z + _J4z) +
-                                   _J2x * cos(_currentJ0Pos) * cos(_currentJ1Pos) - _J2y * sin(_currentJ1Pos) * sin(_currentJ0Pos) +
-                                   _J3x * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) - _J3y * sin(_currentJ1Pos + _currentJ2Pos) * sin(_currentJ0Pos) +
-                                   _J4x * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt) - _J4y * sin(_currentJ1Pos + _currentGripperTilt) * sin(_currentJ0Pos);
-            _jacobian(X_AXIS, 2) = -_J2x * sin(_currentJ0Pos) * sin(_currentJ1Pos) + _J2y * cos(_currentJ1Pos) * cos(_currentJ0Pos) +
-                                   -_J3x * sin(_currentJ0Pos) * sin(_currentJ1Pos + _currentJ2Pos) + _J3y * cos(_currentJ1Pos + _currentJ2Pos) * cos(_currentJ0Pos) +
-                                   -_J4x * sin(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt) + _J4y * cos(_currentJ1Pos + _currentGripperTilt) * cos(_currentJ0Pos);
-            _jacobian(X_AXIS, 3) = -_J3x * sin(_currentJ0Pos) * sin(_currentJ1Pos + _currentJ2Pos) + _J3y * cos(_currentJ1Pos + _currentJ2Pos) * cos(_currentJ0Pos) +
-                                   -_J4x * sin(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt) + _J4y * cos(_currentJ1Pos + _currentGripperTilt) * cos(_currentJ0Pos);
-            _jacobian(X_AXIS, 4) = -_J4x * sin(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt) + _J4y * cos(_currentJ1Pos + _currentGripperTilt) * cos(_currentJ0Pos);
+            _jacobian(X_AXIS, 0) = -_J1x * sin(_currentJ0Pos) + cos(_currentJ0Pos) * (_J1z + _J2z + _J3z + _J4z) +
+                                   _J2x * (-sin(_currentJ0Pos)) * cos(_currentJ1Pos) +
+                                   _J3x * (-sin(_currentJ0Pos)) * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4x * (-sin(_currentJ0Pos)) * cos(_currentJ1Pos + _currentGripperTilt) -
+                                   _J2y * cos(_currentJ1Pos) * cos(_currentJ0Pos) -
+                                   _J3y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentJ2Pos) -
+                                   _J4y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt);
 
-            _jacobian(Y_AXIS, 0) = 0;
-            _jacobian(Y_AXIS, 1) = 0;
-            _jacobian(Y_AXIS, 2) = _J2x * cos(_currentJ1Pos) - _J2y * sin(_currentJ1Pos) +
-                                   _J3x * cos(_currentJ1Pos + _currentJ2Pos) - _J3y * sin(_currentJ1Pos + _currentJ2Pos) +
-                                   _J4x * cos(_currentJ1Pos + _currentGripperTilt) - _J4y * sin(_currentJ1Pos + _currentGripperTilt);
-            _jacobian(Y_AXIS, 3) = _J3x * cos(_currentJ1Pos + _currentJ2Pos) - _J3y * sin(_currentJ1Pos + _currentJ2Pos) +
-                                   _J4x * cos(_currentJ1Pos + _currentGripperTilt) - _J4y * sin(_currentJ1Pos + _currentGripperTilt);
-            _jacobian(Y_AXIS, 4) = _J4x * cos(_currentJ1Pos + _currentGripperTilt) - _J4y * sin(_currentJ1Pos + _currentGripperTilt);
+            _jacobian(X_AXIS, 1) = _J2x * cos(_currentJ0Pos) * (-sin(_currentJ1Pos)) +
+                                   _J3x * cos(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentJ2Pos)) +
+                                   _J4x * cos(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentGripperTilt)) +
+                                   _J2y * cos(_currentJ0Pos) * cos(_currentJ1Pos) +
+                                   _J3y * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4y * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(X_AXIS, 2) = _J3x * cos(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentJ2Pos)) +
+                                   _J4x * cos(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentGripperTilt)) +
+                                   _J3y * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4y * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(X_AXIS, 3) = _J4x * cos(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentGripperTilt)) +
+                                   _J4y * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(X_AXIS, 4) = 0;
+
+            _jacobian(Y_AXIS, 0) = _J1x * cos(_currentJ0Pos) + sin(_currentJ0Pos) * (_J1z + _J2z + _J3z + _J4z) +
+                                   _J2x * cos(_currentJ0Pos) * cos(_currentJ1Pos) +
+                                   _J3x * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4x * cos(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt) -
+                                   _J2y * sin(_currentJ1Pos) * cos(_currentJ0Pos) -
+                                   _J3y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentJ2Pos) -
+                                   _J4y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(Y_AXIS, 1) = _J2x * sin(_currentJ0Pos) * (-sin(_currentJ1Pos)) +
+                                   _J3x * sin(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentJ2Pos)) +
+                                   _J4x * sin(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentGripperTilt)) +
+                                   _J2y * sin(_currentJ0Pos) * cos(_currentJ1Pos) +
+                                   _J3y * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4y * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(Y_AXIS, 2) = _J3x * sin(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentJ2Pos)) +
+                                   _J4x * sin(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentGripperTilt)) +
+                                   _J3y * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4y * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(Y_AXIS, 3) = _J4x * sin(_currentJ0Pos) * (-sin(_currentJ1Pos + _currentGripperTilt)) +
+                                   _J4y * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(Y_AXIS, 4) = 0;
 
             _jacobian(Z_AXIS, 0) = 0;
-            _jacobian(Z_AXIS, 1) = 0;
-            _jacobian(Z_AXIS, 2) = _J2y * cos(_currentJ0Pos) * sin(_currentJ1Pos) - _J2x * sin(_currentJ0Pos) * cos(_currentJ1Pos) -
-                                   _J3x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) + _J3y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentJ2Pos) -
-                                   _J4x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt) + _J4y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt);
-            _jacobian(Z_AXIS, 3) = _J3y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentJ2Pos) - _J3x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentJ2Pos) -
-                                   _J4x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt) + _J4y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt);
-            _jacobian(Z_AXIS, 4) = _J4y * cos(_currentJ0Pos) * sin(_currentJ1Pos + _currentGripperTilt) - _J4x * sin(_currentJ0Pos) * cos(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(Z_AXIS, 1) = _J2x * cos(_currentJ1Pos) +
+                                   _J3x * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4x * cos(_currentJ1Pos + _currentGripperTilt) -
+                                   _J2y * sin(_currentJ1Pos) -
+                                   _J3y * sin(_currentJ1Pos + _currentJ2Pos) -
+                                   _J4y * sin(_currentJ1Pos + _currentGripperTilt);
+            ;
+
+            _jacobian(Z_AXIS, 2) = _J3x * cos(_currentJ1Pos + _currentJ2Pos) +
+                                   _J4x * cos(_currentJ1Pos + _currentGripperTilt) -
+                                   _J3y * sin(_currentJ1Pos + _currentJ2Pos) -
+                                   _J4y * sin(_currentJ1Pos + _currentGripperTilt);
+            ;
+
+            _jacobian(Z_AXIS, 3) = _J4x * cos(_currentJ1Pos + _currentGripperTilt) -
+                                   _J4y * sin(_currentJ1Pos + _currentGripperTilt);
+
+            _jacobian(Z_AXIS, 4) = 0;
 
             _jacobian(ALPHA, 0) = 0;
             _jacobian(ALPHA, 1) = 1;
