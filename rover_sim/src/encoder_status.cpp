@@ -11,24 +11,23 @@ public:
     Rover_sim_feedback();
 
 private:
-
-    float _currentLinearPos = 0.0f;
+    float _currentJLPos = 0.0f;
     float _currentJ0Pos = 0.0f;
     float _currentJ1Pos = 0.0f;
     float _currentJ2Pos = 0.0f;
-    float _currentGripperLRPos = 0.0f;
-    float _currentGripperUDPos = 0.0f;
-    float _currentGripperOCPos = 0.0f;
+    float _currentGripperRot = 0.0f;
+    float _currentGripperTilt = 0.0f;
+    float _currentGripperOpenClose = 0.0f;
 
     void simCallback(const rover_msgs::msg::ArmCmd::SharedPtr armCmdMsg)
     {
-        _currentLinearPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::JL];
+        _currentJLPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::JL];
         _currentJ0Pos = armCmdMsg->position[rover_msgs::msg::ArmCmd::J0];
         _currentJ1Pos = armCmdMsg->position[rover_msgs::msg::ArmCmd::J1];
         _currentJ2Pos = armCmdMsg->position[rover_msgs::msg::ArmCmd::J2];
-        _currentGripperLRPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERROT];
-        _currentGripperUDPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERTILT];
-        _currentGripperOCPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE];
+        _currentGripperRot = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERROT];
+        _currentGripperTilt = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERTILT];
+        _currentGripperOpenClose = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE];
 
         sensor_msgs::msg::JointState joint_state;
         joint_state.header.stamp = this->now();
@@ -40,13 +39,13 @@ private:
             "poignet_ud",
             "poignet_gd",
         };
-        
-        joint_state.position = {_currentLinearPos, _currentJ0Pos, _currentJ1Pos, _currentJ2Pos, _currentGripperUDPos, _currentGripperLRPos};
+
+        joint_state.position = {_currentJLPos, _currentJ0Pos, _currentJ1Pos, _currentJ2Pos, _currentGripperTilt, _currentGripperRot};
 
         _joint_state_pub->publish(joint_state);
     }
 
-    rclcpp::Subscription<rover_msgs::msg::ArmCmd>::SharedPtr _sub_arm_cmd;    
+    rclcpp::Subscription<rover_msgs::msg::ArmCmd>::SharedPtr _sub_arm_cmd;
     rclcpp::Subscription<rover_msgs::msg::ArmCmd>::SharedPtr _sub_encoder;
 
     rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr _joint_state_pub;
