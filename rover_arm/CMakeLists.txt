@@ -15,9 +15,7 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(rover_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
-
+find_package(Armadillo REQUIRED)
 
 include_directories(
   ${rover_msgs_INCLUDE_DIRS}
@@ -26,18 +24,22 @@ include_directories(
 add_executable(teleop src/teleop.cpp)
 add_executable(arbitration src/arbitration.cpp)
 
+if (Armadillo_FOUND)
+  message(STATUS "Armadillo found!")
+  target_link_libraries(teleop armadillo)
+else()
+  message(FATAL_ERROR "Armadillo not found!")
+endif()
+
 ament_target_dependencies(teleop
                           rclcpp
                           std_msgs
-                          rover_msgs
-                          sensor_msgs
-                          tf2_ros)
+                          rover_msgs)
 
 ament_target_dependencies(arbitration
                           rclcpp
                           std_msgs
                           rover_msgs)
-
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})

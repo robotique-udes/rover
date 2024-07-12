@@ -22,13 +22,13 @@ private:
 
     void simCallback(const rover_msgs::msg::ArmCmd::SharedPtr armCmdMsg)
     {
-        _currentLinearPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::LINEAR];
+        _currentLinearPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::JL];
         _currentJ0Pos = armCmdMsg->position[rover_msgs::msg::ArmCmd::J0];
         _currentJ1Pos = armCmdMsg->position[rover_msgs::msg::ArmCmd::J1];
         _currentJ2Pos = armCmdMsg->position[rover_msgs::msg::ArmCmd::J2];
-        _currentGripperLRPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERLR];
-        _currentGripperUDPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERUD];
-        _currentGripperOCPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPEROC];
+        _currentGripperLRPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERROT];
+        _currentGripperUDPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPERTILT];
+        _currentGripperOCPos = armCmdMsg->position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE];
 
         sensor_msgs::msg::JointState joint_state;
         joint_state.header.stamp = this->now();

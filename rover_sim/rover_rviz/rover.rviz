@@ -9,7 +9,7 @@ Panels:
         - /TF1
         - /TF1/Frames1
       Splitter Ratio: 0.5
-    Tree Height: 444
+    Tree Height: 428
   - Class: rviz_common/Views
     Expanded:
       - /Current View1
@@ -98,40 +98,19 @@ Visualization Manager:
       Value: true
       Visual Enabled: true
     - Class: rviz_default_plugins/TF
-      Enabled: true
+      Enabled: false
       Frame Timeout: 15
       Frames:
         All Enabled: true
-        base_urdf:
-          Value: true
-        j0_urdf:
-          Value: true
-        j1_urdf:
-          Value: true
-        j2_urdf:
-          Value: true
-        jlin_urdf:
-          Value: true
-        poignet_rot_urdf:
-          Value: true
-        poignet_ud_urdf:
-          Value: true
       Marker Scale: 1
       Name: TF
       Show Arrows: true
       Show Axes: true
       Show Names: false
       Tree:
-        poignet_rot_urdf:
-          poignet_ud_urdf:
-            j2_urdf:
-              j1_urdf:
-                j0_urdf:
-                  jlin_urdf:
-                    base_urdf:
-                      {}
+        {}
       Update Interval: 0
-      Value: true
+      Value: false
   Enabled: true
   Global Options:
     Background Color: 48; 48; 48
@@ -147,25 +126,25 @@ Visualization Manager:
   Views:
     Current:
       Class: rviz_default_plugins/Orbit
-      Distance: 3.6385507583618164
+      Distance: 1.6897577047348022
       Enable Stereo Rendering:
         Stereo Eye Separation: 0.05999999865889549
         Stereo Focal Distance: 1
         Swap Stereo Eyes: false
         Value: false
       Focal Point:
-        X: 0.009512451477348804
-        Y: -0.1531878560781479
-        Z: 0.1778533160686493
+        X: -0.09486198425292969
+        Y: -0.22689378261566162
+        Z: 0.23364195227622986
       Focal Shape Fixed Size: true
       Focal Shape Size: 0.05000000074505806
       Invert Z Axis: false
       Name: Current View
       Near Clip Distance: 0.009999999776482582
-      Pitch: 0.17499993741512299
+      Pitch: 0.5799998044967651
       Target Frame: base_urdf
       Value: Orbit (rviz)
-      Yaw: 2.1049928665161133
+      Yaw: 2.9349958896636963
     Saved:
       - Class: rviz_default_plugins/Orbit
         Distance: 3.6385507583618164
@@ -210,12 +189,12 @@ Visualization Manager:
 Window Geometry:
   Displays:
     collapsed: false
-  Height: 1043
+  Height: 1016
   Hide Left Dock: false
   Hide Right Dock: false
-  QMainWindow State: 000000ff00000000fd0000000100000000000001cb000003b9fc0200000002fb000000100044006900730070006c006100790073010000003d0000023f000000c900fffffffb0000000a00560069006500770073010000028200000174000000a400ffffff000005af000003b900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  QMainWindow State: 000000ff00000000fd0000000100000000000001cb0000039efc0200000002fb000000100044006900730070006c006100790073010000003d0000022f000000c900fffffffb0000000a00560069006500770073010000027200000169000000a400ffffff000005690000039e00000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
   Views:
     collapsed: false
-  Width: 1920
-  X: 1920
-  Y: 0
+  Width: 1850
+  X: 70
+  Y: 27

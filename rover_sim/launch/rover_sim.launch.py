@@ -30,6 +30,7 @@ def generate_launch_description():
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
+        namespace='rover/arm/sim',
         output='screen',
         name='rviz_node',
         parameters=[{'use_sim_time': True}],
@@ -38,20 +39,22 @@ def generate_launch_description():
 
     joint_state_publisher = Node(
         package='joint_state_publisher',
+        namespace='/rover/arm/sim',
         executable='joint_state_publisher',
-        name='joint_state_publisher',
+        name='arm_sim_joint_state_publisher',
         output='screen'
         )
     
     sim_node = Node(
                 package="rover_sim",
-                namespace="/rover/arm",
+                namespace="/rover/arm/sim",
                 executable="simulation",
                 name="simulation"
                     )
+    
     encoder_sim_node = Node(
             package="rover_sim",
-            namespace="/rover/arm",
+            namespace="/rover/arm/sim",
             executable="encoder_simulation",
             name="encoder_simulation"
                 )            
