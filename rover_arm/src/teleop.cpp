@@ -6,7 +6,6 @@
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/msg/arm_cmd.hpp"
-// #include "rovus_lib/macros.h"
 
 #define MAX_JOINT_SPEED 0.0017453f // 10 deg/s - (0.1745 rad/s)
 
