@@ -22,6 +22,7 @@ def generate_launch_description():
         package='robot_state_publisher',
         executable='robot_state_publisher',
         name='robot_state_publiser_node',
+        # namespace='/rover/arm/sim',
         emulate_tty=True,
         parameters=[{'use_time_sim': True, 'robot_description': robot_desc_path}],
         output="screen"
@@ -30,7 +31,7 @@ def generate_launch_description():
     rviz_node = Node(
         package='rviz2',
         executable='rviz2',
-        namespace='rover/arm/sim',
+        namespace='/rover/arm/sim',
         output='screen',
         name='rviz_node',
         parameters=[{'use_sim_time': True}],
