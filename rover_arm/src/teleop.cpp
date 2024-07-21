@@ -18,21 +18,17 @@ private:
     // Private members
     //  =========================================================================
     float _posCmdJL;
-    // float _posCmdJLRight;
-    // float _posCmdJLLeft;
     float _posCmdJ0;
     float _posCmdJ1;
     float _posCmdJ2;
     float _gripperTilt;
     float _gripperRot;
-    // float _gripperOpen;
-    // float _gripperClose;
     float _gripperState;
 
-    float _deadmanSwitch;
-    float _gripperMode;
+    bool _deadmanSwitch;
+    bool _gripperMode;
 
-    float _speedControl = MAX_JOINT_SPEED; // 10 deg/s - (0.1745 rad/s)
+    // float MAX_JOINT_SPEED = MAX_JOINT_SPEED; // 10 deg/s - (0.1745 rad/s)
 
     // Set Constrain values
     //  =========================================================================
@@ -97,17 +93,19 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     {
         if (_gripperMode)
         {
-            _currentGripperTilt += _gripperTilt * _speedControl;
-            _currentGripperRot += _gripperRot * _speedControl;
-            armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE] = _gripperState * _speedControl;
+            _currentGripperTilt += _gripperTilt * MAX_JOINT_SPEED;
+            _currentGripperRot += _gripperRot * MAX_JOINT_SPEED;
+            armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE] = _gripperState * MAX_JOINT_SPEED;
         }
         else
         {
-            _currentJLPos += _posCmdJL * _speedControl;
-            _currentJ0Pos += _posCmdJ0 * _speedControl * -1.0f;
-            _currentJ1Pos += _posCmdJ1 * _speedControl;
-            _currentJ2Pos += _posCmdJ2 * _speedControl;
+            _currentJLPos += _posCmdJL * MAX_JOINT_SPEED;
+            _currentJ0Pos += _posCmdJ0 * MAX_JOINT_SPEED * -1.0f;
+            _currentJ1Pos += _posCmdJ1 * MAX_JOINT_SPEED;
+            _currentJ2Pos += _posCmdJ2 * MAX_JOINT_SPEED;
         }
+
+        //Compute jacobian matrix of error vecotr to facilitate multiplication and compute of desired joint velocity vector
     }
 
     _pub_arm_teleop_in->publish(armMsg);

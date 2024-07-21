@@ -60,11 +60,6 @@ If gui is down or you do not have access, call the following arbitrations in rqt
    ```
 *The DEST_ARM destination currently controls the science module
 
-## Controls
-Refer to the following image for controls
-
-![PS4 controller mappings](https://www.google.com/url?sa=i&url=https%3A%2F%2Fwww.juridiconline.com%2F%3Fk%3Dgroup-7-one-handed-playstation-controller-%25E2%2580%2593-tek-bb-5MND8ltq&psig=AOvVaw0m21j40vn6dBbM2G3yluEe&ust=1715376189459000&source=images&cd=vfe&opi=89978449&ved=0CBIQjRxqFwoTCKjMlbXAgYYDFQAAAAAdAAAAABBL)
-
 ### Drive Train
 Controls
  - Deadman Switch -> L1
