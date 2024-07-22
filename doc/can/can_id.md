@@ -64,12 +64,18 @@ Devices are organized into a specific order in relation to arbitration.
 | 0x216     | - J6 Controller                   |
 |           |                                   |
 | **0x300** | Science                           |
+| 0x402     | - Science                         |
 |           |                                   |
 | **0x400** | Accessory (lights, speakers, etc) |
 | 0x401     | - GPS                             |
 | 0x402     | - Lights                          |
 | 0x402     | - Infrared lights                 |
-| 0x410     | - Speakers                        |
+| 0x404     | - Compass                         |
+| 0x411     | - Camera A2                       |
+| 0x412     | - Camera R1M 1                    |
+| 0x413     | - Camera R1M 2                    |
+| 0x414     | - Camera R1M 3                    |
+| 0x421     | - Speakers                        |
 |           |                                   |
 | **0x500** | Free Space                        |
 |           |                                   |
@@ -86,6 +92,11 @@ Msgs Ids aren't organised as their order don't matter in the arbitration, just a
 | 0x10 | GPS (msg)               |
 | 0x11 | PROPULSION_MOTOR_CMD    |
 | 0x12 | PROPULSION_MOTOR_STATUS |
+| 0x13 | CAM_CONTROL             |
+| 0x14 | CAM_CONTROL_A2          |
+| 0x15 | LIGHT_CONTROL           |
+| 0x16 | SCIENCE                 |
+| 0x17 | COMPASS                 |
 
 ## Message Content Id List
 
@@ -105,14 +116,15 @@ In the following section are defined all the message content internal IDs, remem
 |------|-------------------|------|
 | 0x00 | NOT_USED          |      |
 | 0x01 | DONT_USE          | bool |
-| TODO | TODO              |      |
 
 ### GPS
 
-| ID   | Device or Message | TYPE |
-|------|-------------------|------|
-| 0x00 | NOT_USED          |      |
-| TODO | TODO              |      |
+| ID   | Device or Message | TYPE   |
+|------|-------------------|--------|
+| 0x00 | NOT_USED          |        |
+| 0x01 | LATITUDE          |float32 |
+| 0x02 | LONGITUDE         |float32 | 
+| 0x03 | FIX               | uint8  |
 
 ### PROPULSION_MOTOR_CMD
 
@@ -129,3 +141,41 @@ In the following section are defined all the message content internal IDs, remem
 |------|-------------------|---------|
 | 0x00 | NOT_USED          |         |
 | 0x01 | CURRENT_SPEED     | float32 |
+
+### CAM_CONTROL
+
+| ID   | Device or Message | TYPE |
+|------|-------------------|------|
+| 0x00 | NOT_USED          |      |
+| 0x01 | ENABLE            | bool |
+
+### CAM_CONTROL_A2
+
+| ID   | Device or Message | TYPE   |
+|------|-------------------|------  |
+| 0x00 | NOT_USED          |        |
+| 0x01 | ENABLE            | bool   |
+| 0x02 | POS_YAW           |float32 |
+| 0x03 | POS_TILT          |float32 |
+
+### LIGHT_CONTROL
+
+| ID   | Device or Message | TYPE |
+|------|-------------------|------|
+| 0x00 | NOT_USED          |      |
+| 0x01 | ENABLE            | bool |
+
+### SCIENCE
+
+| ID   | Device or Message | TYPE |
+|------|-------------------|------|
+| 0x00 | NOT_USED          |      |
+| TODO | TODO              |      |
+
+### COMPASS
+
+| ID   | Device or Message | TYPE   |
+|------|-------------------|--------|
+| 0x00 | NOT_USED          |        |
+| 0x01 | HEADING           |float32 |
+| 0x02 | PITCH             |float32 |
