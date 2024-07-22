@@ -127,7 +127,7 @@ class MainWindow(QMainWindow):
         QApplication.quit()
 
 def get_package_share_directory_parent(package_name):
-    package_share_directory = get_package_share_directory(package_name)
+    package_share_directory = rclpy.get_package_share_directory(package_name)
     parent_directory = '/'.join(package_share_directory.split('/')[:-1]) + '/'
     return parent_directory
 
