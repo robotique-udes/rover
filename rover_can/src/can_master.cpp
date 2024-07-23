@@ -204,7 +204,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR] = &msg_CAN_RearLeft;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR] = &msg_CAN_RearRight;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::GPS] = &msg_CAN_gps;
-    _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::GPS] = &msg_CAN_compass;
+    _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::COMPASS] = &msg_CAN_compass;
 
     // =========================================================================
     //  Devices objects constructors
