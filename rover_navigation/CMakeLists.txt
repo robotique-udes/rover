@@ -43,8 +43,8 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          light_control
-          goal_manager
-        DESTINATION lib/${PROJECT_NAME})
+  light_control
+  compass_calibrator
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
