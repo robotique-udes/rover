@@ -1,9 +1,7 @@
-
-
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/compass_calibrated.hpp"
 
-class CompassCalibrator: public rclcpp::Node
+class CompassCalibrator : public rclcpp::Node
 {
 public:
     CompassCalibrator();
@@ -18,20 +16,18 @@ private:
     void sendCmd(void);
 };
 
-
-int main(int argc, char * argv[])
+int main(int argc, char *argv[])
 {
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<CompassCalibrator>());
-  rclcpp::shutdown();
-  return 0;
+    rclcpp::init(argc, argv);
+    rclcpp::spin(std::make_shared<CompassCalibrator>());
+    rclcpp::shutdown();
+    return 0;
 }
 
 CompassCalibrator::CompassCalibrator() : Node("compass_calibrator")
 {
-    _pubCompassCalibrated = this->create_publisher<rover_msgs::msg::CompassCalibrated>("/rover/auxiliary/orientation", 1);
+    _pubCompassCalibrated = this->create_publisher<rover_msgs::msg::CompassCalibrated>("/rover/auxiliary/compass/orientation", 1);
     _timerPub = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&CompassCalibrator::CB_timer, this));
-
 }
 
 void CompassCalibrator::CB_timer()
