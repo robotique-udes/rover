@@ -38,6 +38,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/LightControl.msg"
   "msg/ScienceControl.msg"
   "msg/ArmCmd.msg"
+  "msg/CompassCalibrated.msg"
   "msg/Compass.msg"
 
   "srv/JoyDemuxSetState.srv"
