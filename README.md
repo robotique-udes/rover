@@ -14,6 +14,9 @@ sudo apt install python3-pyqt5.qtwebengine
 sudo apt install python3-pyqt5.qtmultimedia
 sudo apt install gstreamer1.0-rtsp
 sudo apt purge gstreamer1.0-vaapi 
+sudo apt install ros-humble-rviz2
+sudo apt install ros-humble-joint-state-publisher
+sudo apt install ros-humble-robot-state-publisher
 rm -r ~/.cache/gstreamer-1.0/
 ```
 
