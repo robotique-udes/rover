@@ -19,18 +19,25 @@ include_directories(
 )
 
 add_executable(light_control src/light_control.cpp)
+add_executable(compass_calibrator src/compass_calibrator.cpp)
 
 ament_target_dependencies(light_control
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
+  rclcpp
+  rover_msgs
+  rcl_interfaces)
+
+ament_target_dependencies(compass_calibrator
+  rclcpp
+  rover_msgs
+  rcl_interfaces)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          light_control
-        DESTINATION lib/${PROJECT_NAME})
+  light_control
+  compass_calibrator
+  DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
