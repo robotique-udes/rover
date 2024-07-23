@@ -10,6 +10,8 @@
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_msgs/msg/light_control.hpp"
 #include "rover_msgs/msg/gps.hpp"
+#include "rover_msgs/msg/compass.hpp"
+
 
 // RoverCanLib
 #include "rover_can_lib/config.hpp"
@@ -21,6 +23,7 @@
 #include "rover_can_lib/msgs/cam_control_a2.hpp"
 #include "rover_can_lib/msgs/light_control.hpp"
 #include "rover_can_lib/msgs/gps.hpp"
+#include "rover_can_lib/msgs/compass.hpp"
 
 #define LOGGER_NAME "CanMasterNode"
 
@@ -48,12 +51,14 @@ RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_RearRight;
 
 // Aux
 RoverCanLib::Msgs::GPS msg_CAN_gps;
+RoverCanLib::Msgs::Compass msg_CAN_compass;
 // =============================================================================
 
 // =============================================================================
 //  Global ROS msg object
 rover_msgs::msg::PropulsionMotor msg_ROS_propMotor;
 rover_msgs::msg::Gps msg_ROS_gps;
+rover_msgs::msg::Compass msg_ROS_compass;
 // =============================================================================
 
 class CanMaster : public rclcpp::Node
@@ -88,6 +93,7 @@ private:
     rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_canStatus;
     rclcpp::Publisher<rover_msgs::msg::PropulsionMotor>::SharedPtr _pub_propulsionMotor;
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr _pub_gps;
+    rclcpp::Publisher<rover_msgs::msg::Compass>::SharedPtr _pub_compass;
 
     // =========================================================================
 
@@ -103,6 +109,7 @@ private:
     void CB_Can_None(uint16_t dontUse0_, const can_frame *dontUse1_);
     void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg);
     void CB_Can_GPS(uint16_t id_, const can_frame *frameMsg);
+    void CB_Can_Compass(uint16_t id_, const can_frame *frameMsg);
     // =========================================================================
 
     // =========================================================================
@@ -184,6 +191,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _pub_canStatus = this->create_publisher<rover_msgs::msg::CanDeviceStatus>("/rover/can/device_status", 1);
     _pub_propulsionMotor = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/status/prop_motor", 1);
     _pub_gps = this->create_publisher<rover_msgs::msg::Gps>("/rover/gps/position", 1);
+    _pub_compass = this->create_publisher<rover_msgs::msg::Compass>("/rover/compass/orientation", 1);
     // =========================================================================
 
     // Add messages type to msgsMap
@@ -196,6 +204,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR] = &msg_CAN_RearLeft;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR] = &msg_CAN_RearRight;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::GPS] = &msg_CAN_gps;
+    _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::COMPASS] = &msg_CAN_compass;
 
     // =========================================================================
     //  Devices objects constructors
@@ -219,6 +228,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
 
     // Aux
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GPS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GPS, this, &CanMaster::CB_Can_GPS, _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::COMPASS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::COMPASS, this, &CanMaster::CB_Can_Compass, _pub_canStatus));
     // =========================================================================
 
     this->askStateCanDevices();
@@ -416,6 +426,37 @@ void CanMaster::CB_Can_GPS(uint16_t id_, const can_frame *frameMsg_)
             msg_ROS_gps.latitude = msg->data.latitude;
             msg_ROS_gps.longitude = msg->data.longitude;
             _pub_gps->publish(msg_ROS_gps);
+        }
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
+                     "Received unexpected msg id: 0x%.2x Possible mismatch in library version between nodes",
+                     frameMsg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID]);
+    }
+}
+
+void CanMaster::CB_Can_Compass(uint16_t id_, const can_frame *frameMsg_)
+{
+    if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::COMPASS)
+    {
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
+                     "Provided device ID: 0x%.3x isn't a compass",
+                     id_);
+        return;
+    }
+
+    if (frameMsg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID] == (size_t)RoverCanLib::Constant::eMsgId::COMPASS)
+    {
+        // Cast back msg from it's parent type to it's actual type (child) to be able to access the data member later on
+        RoverCanLib::Msgs::Compass *msg = dynamic_cast<RoverCanLib::Msgs::Compass *>(_msgsMap.find(id_)->second);
+        msg->parseMsg(frameMsg_, rclcpp::get_logger(LOGGER_NAME));
+
+        if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::Compass>(frameMsg_))
+        {
+            msg_ROS_compass.heading = msg->data.yaw;
+            msg_ROS_compass.pitch = msg->data.pitch;
+            _pub_compass->publish(msg_ROS_compass);
         }
     }
     else
