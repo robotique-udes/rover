@@ -1,84 +1,45 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/compass.hpp"
-#include "rover_msgs/srv/compass_calibration.hpp"
-#include "rovus_lib/macros.h"
 
-class CompassCalibrator : public rclcpp::Node
+
+#include "rclcpp/rclcpp.hpp"
+#include "rover_msgs/msg/compass_calibrated.hpp"
+
+class CompassCalibrator: public rclcpp::Node
 {
 public:
     CompassCalibrator();
     ~CompassCalibrator() {}
 
 private:
-    rclcpp::Publisher<rover_msgs::msg::Compass>::SharedPtr _pub_compass;
-    rclcpp::Subscription<rover_msgs::msg::Compass>::SharedPtr _sub_compass_raw;
-    rclcpp::Service<rover_msgs::srv::CompassCalibration>::SharedPtr _srv_compass_calib;
+    rclcpp::Publisher<rover_msgs::msg::CompassCalibrated>::SharedPtr _pubCompassCalibrated;
     rclcpp::TimerBase::SharedPtr _timerPub;
-    rover_msgs::msg::Compass _msgCompass;
 
-    float _newZero = 0.0f;
-    float _rawHeading = 0.0f;
-    float _calibratedHeading = 0.0f;
-    void compassCallback(const rover_msgs::msg::Compass::SharedPtr msgCompass_);
-    void CB_srv(const std::shared_ptr<rover_msgs::srv::CompassCalibration::Request> request, 
-                std::shared_ptr<rover_msgs::srv::CompassCalibration::Response> response);
-    void changeHeadingZero();
+    rover_msgs::msg::CompassCalibrated _msgCompassCalibrated;
+    void CB_timer(void);
+    void sendCmd(void);
 };
 
-int main(int argc, char *argv[])
+
+int main(int argc, char * argv[])
 {
-    rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<CompassCalibrator>());
-    rclcpp::shutdown();
-    return 0;
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<CompassCalibrator>());
+  rclcpp::shutdown();
+  return 0;
 }
 
 CompassCalibrator::CompassCalibrator() : Node("compass_calibrator")
 {
-    _pub_compass = this->create_publisher<rover_msgs::msg::Compass>("/rover/auxiliary/compass", 1);
-    _sub_compass_raw = this->create_subscription<rover_msgs::msg::Compass>("/rover/auxiliary/compass/raw",
-                                                                            1,
-                                                                            std::bind(&CompassCalibrator::compassCallback, this, std::placeholders::_1));
+    _pubCompassCalibrated = this->create_publisher<rover_msgs::msg::CompassCalibrated>("/rover/auxiliary/orientation", 1);
+    _timerPub = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&CompassCalibrator::CB_timer, this));
 
-    _srv_compass_calib = this->create_service<rover_msgs::srv::CompassCalibration>("/rover/auxiliary/compass/calibrate",
-                                                                                    std::bind(&CompassCalibrator::CB_srv,
-                                                                                    this,
-                                                                                    std::placeholders::_1,
-                                                                                    std::placeholders::_2));
 }
 
-void CompassCalibrator::compassCallback(const rover_msgs::msg::Compass::SharedPtr msgCompass_)
+void CompassCalibrator::CB_timer()
 {
-    // Change zero
-    _rawHeading = msgCompass_->heading;
-    changeHeadingZero();
-
-    _msgCompass.heading = _calibratedHeading;
-    _msgCompass.pitch = msgCompass_->pitch;
-    RCLCPP_INFO(LOGGER, "Publishing: heading : '%f' , pitch : '%f'", _msgCompass.heading, _msgCompass.pitch);
-    _pub_compass->publish(_msgCompass);
+    sendCmd();
 }
 
-void CompassCalibrator::CB_srv(const std::shared_ptr<rover_msgs::srv::CompassCalibration::Request> request, 
-            std::shared_ptr<rover_msgs::srv::CompassCalibration::Response> response)
+void CompassCalibrator::sendCmd(void)
 {
-    response->success = false;
-    _newZero = _rawHeading;
-    response->success = true;
-}
-
-void CompassCalibrator::changeHeadingZero()
-{
-    float newHeading = _rawHeading;
-
-    if (_rawHeading < _newZero)
-    {
-        newHeading = 360.0f + _rawHeading - _newZero;
-    }
-    else if (_rawHeading >= _newZero)
-    {
-        newHeading = _rawHeading - _newZero;
-    }
-
-    _calibratedHeading = newHeading;
+    _pubCompassCalibrated->publish(_msgCompassCalibrated);
 }
