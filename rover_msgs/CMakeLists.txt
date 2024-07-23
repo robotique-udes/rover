@@ -33,6 +33,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   "msg/Gps.msg"
+  "msg/GpsPosition.msg"
   "msg/CameraControl.msg"
   "msg/LightControl.msg"
   "msg/ScienceControl.msg"
@@ -42,6 +43,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/AntennaArbitration.srv"
   "srv/DriveTrainArbitration.srv"
   "srv/LightControl.srv"
+  "srv/NewGpsGoal.srv"
 )
 
 ament_package()
