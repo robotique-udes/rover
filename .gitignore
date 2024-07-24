@@ -5,3 +5,5 @@ saved_elements/
 *.pyc
 .idea
 *~
+
+rover_gui/saved_files/navigation/route_dump.log

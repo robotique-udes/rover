@@ -29,7 +29,8 @@ ament_target_dependencies(light_control
 ament_target_dependencies(goal_manager
                           rclcpp
                           rover_msgs
-                          rcl_interfaces)
+                          rcl_interfaces
+                          ament_index_cpp)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
