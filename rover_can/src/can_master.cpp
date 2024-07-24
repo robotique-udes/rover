@@ -454,7 +454,7 @@ void CanMaster::CB_Can_Compass(uint16_t id_, const can_frame *frameMsg_)
 
         if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::Compass>(frameMsg_))
         {
-            msg_ROS_compass.heading = msg->data.yaw;
+            msg_ROS_compass.heading = msg->data.heading;
             msg_ROS_compass.pitch = msg->data.pitch;
             _pub_compass->publish(msg_ROS_compass);
         }
