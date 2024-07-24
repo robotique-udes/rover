@@ -18,6 +18,7 @@
   <depend>std_msgs</depend>
   <depend>rover_msgs</depend>
   <depend>rcl_interfaces</depend>
+  <depend>ament_index_cpp</depend>
 
   <exec_depend>ros2launch</exec_depend>
 
