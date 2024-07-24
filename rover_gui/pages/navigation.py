@@ -1,8 +1,9 @@
 from ament_index_python.packages import get_package_share_directory
 from threading import Lock
-from PyQt5.QtWidgets import QWidget, QPushButton, QCheckBox, QListWidget, QListWidgetItem, QLabel, QSlider
+from PyQt5.QtWidgets import QWidget, QPushButton, QMessageBox, QListWidget, QListWidgetItem, QLabel, QSlider
 from PyQt5.QtGui import QPixmap
 from PyQt5 import uic
+from rover_msgs.srv._compass_calibration import CompassCalibration
 from rover_msgs.msg import Gps
 from pages.add_location_popup import AddLocationPopup
 from pages.folium_map import FoliumMapWidget
@@ -28,6 +29,7 @@ class Navigation(QWidget):
         self.pb_delete_location = self.findChild(QPushButton, 'pb_delete_location')
         self.pb_update_location = self.findChild(QPushButton, 'pb_update_location')
         self.pb_record_location = self.findChild(QPushButton, 'pb_record_location')
+        self.pb_calib_compass = self.findChild(QPushButton, 'pb_calib_compass')
         self.location_list = self.findChild(QListWidget, 'location_list')
 
         self.slider_lat_offset : QSlider
@@ -38,7 +40,7 @@ class Navigation(QWidget):
 
         self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
 
-        self.current_latitude = self.current_longitude = self.current_height = self.current_heading = -690.0
+        self.current_latitude = self.current_longitude = self.current_height = self.current_heading = -50.0
 
         self.folium_map_widget = FoliumMapWidget(self)
         self.verticalLayout.addWidget(self.folium_map_widget)
@@ -51,6 +53,7 @@ class Navigation(QWidget):
         self.pb_update_location.clicked.connect(self.folium_map_widget.update_locations)
         self.pb_record_location.clicked.connect(lambda: self.open_add_location_popup(True))
         self.pb_save_offset.clicked.connect(self.save_offset)
+        self.pb_calib_compass.clicked.connect(self.calibrate_heading)
         self.slider_lat_offset.valueChanged.connect(self.offset_rover)
         self.slider_lon_offset.valueChanged.connect(self.offset_rover)
 
@@ -58,6 +61,13 @@ class Navigation(QWidget):
         
         self.load_gps_offset()
         self.load_locations()
+
+    def handle_service_unavailability(self, sender_rb, service_name):
+        sender_rb.setAutoExclusive(False)
+        sender_rb.setChecked(False)
+        sender_rb.setAutoExclusive(True)
+        self.ui_node.get_logger().warn('%s service not available.' % service_name)
+        QMessageBox.warning(self, "Service Not Available", "The %s service is not available." % service_name)
         
     def update_current_position(self): 
         with self.lock_position:
@@ -152,13 +162,24 @@ class Navigation(QWidget):
             self.lon_offset = sender.value() / 100000
 
         self.folium_map_widget.update_locations()
+
+    def calibrate_heading(self):
+        sender_rb = self.sender()
+        if sender_rb is None:
+            return
         
+        calibration_client = self.ui_node.create_client(CompassCalibration, '/rover/auxiliary/compass/calibrate')
+        compass_empty_request = CompassCalibration.Request()
+
+        if not calibration_client.wait_for_service(timeout_sec=1.0):
+            self.handle_service_unavailability(sender_rb, "compass_calibrator")
+            return
+        
+        calibration_client.call(compass_empty_request)
 
     def save_offset(self):
         with open(self.gps_offset_path, "w") as f:
             f.write(f"{self.lat_offset};{self.lon_offset}")
-
-
 
     def close_location_popup(self):
         self.add_location_popup.quit
