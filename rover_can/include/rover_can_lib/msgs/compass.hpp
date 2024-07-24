@@ -20,24 +20,21 @@ namespace RoverCanLib::Msgs
         enum class eMsgID : uint8_t
         {
             NOT_USED = 0x00,
-            ROLL = 0x01,
+            HEADING = 0x01,
             PITCH = 0x02,
-            YAW = 0x03,
             eLAST
         };
 
         struct sMsgData
         {
-            float roll;
+            float heading;
             float pitch;
-            float yaw;
         };
 
         Compass() 
         {
-            data.roll = 0.0f;
+            data.heading = 0.0f;
             data.pitch = 0.0f;
-            data.yaw = 0.0f;
         }
         ~Compass() {}
 
@@ -52,16 +49,12 @@ namespace RoverCanLib::Msgs
 
             switch ((Msgs::Compass::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case eMsgID::ROLL:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.roll);
+            case eMsgID::HEADING:
+                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.heading);
                 break;
 
             case eMsgID::PITCH:
                 RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.pitch);
-                break;
-
-            case eMsgID::YAW:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.yaw);
                 break;
 
             default:
@@ -79,16 +72,12 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::Compass::eMsgID)msgId_)
             {
-            case eMsgID::ROLL:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.roll, msg_);
+            case eMsgID::HEADING:
+                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.heading, msg_);
                 break;
 
             case eMsgID::PITCH:
                 Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.pitch, msg_);
-                break;
-
-            case eMsgID::YAW:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.yaw, msg_);
                 break;
 
             default:
@@ -110,16 +99,12 @@ namespace RoverCanLib::Msgs
 
             switch ((Msgs::Compass::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case eMsgID::ROLL:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.roll, logger_);
+            case eMsgID::HEADING:
+                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.heading, logger_);
                 break;
 
             case eMsgID::PITCH:
                 RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.pitch, logger_);
-                break;
-
-            case eMsgID::YAW:
-                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.yaw, logger_);
                 break;
 
             default:
@@ -137,16 +122,12 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::Compass::eMsgID)msgId_)
             {
-            case eMsgID::ROLL:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.roll, msg_);
+            case eMsgID::HEADING:
+                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.heading, msg_);
                 break;
 
             case eMsgID::PITCH:
                 Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.pitch, msg_);
-                break;
-
-            case eMsgID::YAW:
-                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.yaw, msg_);
                 break;
 
             default:
