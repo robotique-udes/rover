@@ -13,7 +13,7 @@
 #include "rovus_lib/timer.hpp"
 
 #define PORT 1234
-#define MAXLINE 255
+#define MAXLEN 255
 
 void signal_handler(int signo_);
 volatile sig_atomic_t g_shutdownFlag = 0;
@@ -36,6 +36,18 @@ private:
     rclcpp::TimerBase::SharedPtr _timer_recv;
     rclcpp::TimerBase::SharedPtr _timer_send;
 
+    struct MsgAbtrCmd
+    {
+        float speed;
+        bool enable;
+    };
+
+    struct MsgGPS
+    {
+        float lattitude;
+        float longitude;
+    };
+
     struct sockUDP
     {
         int socketUDP;
@@ -43,76 +55,25 @@ private:
         socklen_t sLen = sizeof(servAddr);
     };
 
-    // sockUDP sock;
-
     int _socket;
     struct sockaddr_in _servAddr;
     socklen_t _sLen = sizeof(_servAddr);
 
-    Timer<uint64_t, millis> timerSend = Timer<uint64_t, millis>(500u);
+    Timer<uint64_t, millis> timerSend = Timer<uint64_t, millis>(200u);
 
-    rover_msgs::msg::AntennaCmd _msgCbAbtr;
-    char _bufferSend[MAXLINE] = {'\0'};
-    char _bufferRecv[MAXLINE] = {'\0'};
+    MsgAbtrCmd _msgCbAbtr;
+    MsgAbtrCmd _bufferSend;
+    char _bufferRecv[MAXLEN] = {'\0'};
 };
 
 int main(int argc, char *argv[])
 {
-    // rclcpp::init(argc, argv);
-    // rclcpp::spin(std::make_shared<ClientUDPAntenna>());
-    // rclcpp::shutdown();
-    // return 0;
-    // int sockfd;
-    // char bufferSend[] = "ping";
-    // char bufferRecv[MAXLINE] = {'\0'};
-
-    // // Creating socket file descriptor
-    // if ((sockfd = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
-    // {
-    //     perror("socket creation failed");
-    //     exit(EXIT_FAILURE);
-    // }
-    // struct sockaddr_in servAddr;
-    // socklen_t sLen = sizeof(servAddr);
-
-    // servAddr.sin_family = AF_INET;
-    // servAddr.sin_port = htons(PORT);
-    // servAddr.sin_addr.s_addr = inet_addr("192.168.144.50");
-
-    // if (bind(sockfd, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
-    // {
-    //     perror("Connection error");
-    // }
-
-    // Timer<uint64_t, millis> timerSend(500u);
-
-    // for (EVER)
-    // {
-    //     if (timerSend.isDone())
-    //     {
-    //         // Sending a message to the server
-    //         ssize_t sByte = sendto(sockfd, bufferSend, sizeof(bufferSend), 0, (sockaddr *)&servAddr, sLen);
-    //         if (sByte < 0)
-    //         {
-    //             printf("sendto failed\n");
-    //             close(sockfd);
-    //             exit(EXIT_FAILURE);
-    //         }
-    //         std::cout << "[" << sByte << "] Bytes Sent: " << bufferSend << std::endl;
-    //     }
-
-    //     RCLCPP_INFO(rclcpp::get_logger(""), "Before receive");
-    //     int64_t byteRecv = (int64_t)recv(sockfd, bufferRecv, sizeof(bufferRecv), 0);
-    //     RCLCPP_INFO(rclcpp::get_logger(""), "Bytes : %s", bufferRecv);
-    // }
     signal(SIGINT, signal_handler); // Makes CTRL+C work
 
     rclcpp::init(argc, argv);
     while (!g_shutdownFlag)
     {
         int sock;
-        char bufferSend[] = "ping";
-        char bufferRecv[MAXLINE] = {'\0'};
 
         // Creating socket file descriptor
         if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
@@ -123,7 +84,7 @@ int main(int argc, char *argv[])
         struct timeval tv;
         tv.tv_sec = 0;
         tv.tv_usec = 0;
-        RCLCPP_INFO(rclcpp::get_logger(""), "%i", setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof tv));
+        RCLCPP_INFO(rclcpp::get_logger(""), "socketopt : %i", setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof tv));
 
         struct sockaddr_in servAddr;
         socklen_t sLen = sizeof(servAddr);
@@ -132,7 +93,7 @@ int main(int argc, char *argv[])
         servAddr.sin_port = htons(PORT);
         servAddr.sin_addr.s_addr = inet_addr("192.168.144.50");
 
-        if (bind(sock, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
+        while (bind(sock, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
         {
             perror("Connection error");
         }
@@ -160,8 +121,7 @@ ClientUDPAntenna::ClientUDPAntenna(int sock, struct sockaddr_in servAddr, sockle
                                                                        1,
                                                                        [this](const rover_msgs::msg::AntennaCmd msg)
                                                                        { callbackAbtr(msg); });
-    // _timer_send = this->create_wall_timer(std::chrono::milliseconds(500), std::bind(&ClientUDPAntenna::cbTimerSend, this));
-    _timer_send = this->create_wall_timer(std::chrono::microseconds(1), std::bind(&ClientUDPAntenna::cbTimerSend, this));
+    _timer_send = this->create_wall_timer(std::chrono::microseconds(10), std::bind(&ClientUDPAntenna::cbTimerSend, this));
 
     _socket = sock;
     _servAddr = servAddr;
@@ -170,35 +130,35 @@ ClientUDPAntenna::ClientUDPAntenna(int sock, struct sockaddr_in servAddr, sockle
 
 void ClientUDPAntenna::callbackAbtr(const rover_msgs::msg::AntennaCmd msg_)
 {
-    _msgCbAbtr = msg_;
-    // _bufferSend = std::to_chars(msg_.speed);
-    std::sprintf(_bufferSend, "%.2f", _msgCbAbtr.speed);
+    _msgCbAbtr.enable = msg_.enable;
+    _msgCbAbtr.speed = msg_.speed;
+    RCLCPP_INFO(rclcpp::get_logger(""), "Callback Abtr : %f", _msgCbAbtr.speed);
 }
 
 void ClientUDPAntenna::cbTimerSend()
 {
+
     // Sending a message to the server
     if (timerSend.isDone())
     {
-        ssize_t sByte = sendto(_socket, _bufferSend, sizeof(_bufferSend), 0, (struct sockaddr *)&_servAddr, _sLen);
+        ssize_t sByte = sendto(_socket, &_msgCbAbtr, sizeof(MsgAbtrCmd), 0, (struct sockaddr *)&_servAddr, _sLen);
         if (sByte < 0)
         {
             printf("sendto failed\n");
         }
-        std::cout << "[" << sByte << "] Bytes Sent: " << _bufferSend << std::endl;
+        RCLCPP_INFO(rclcpp::get_logger(""), "Bytes send : %f", _msgCbAbtr.speed);
     }
 
-    // while (true)
-    // {
-        int64_t rByte = (int64_t)recv(_socket, _bufferRecv, sizeof(_bufferRecv), 0);
-        if (rByte == 0)
-        {
-            // break;
-        }
-        else if (rByte < 0)
-        {
-            printf("sendto failed\n");
-        }
-        RCLCPP_INFO(rclcpp::get_logger(""), "Bytes : %s", _bufferRecv);
-    // }
+    // RCLCPP_INFO(rclcpp::get_logger(""), "Before receiving");
+    int64_t recvByte = (int64_t)recv(_socket, _bufferRecv, sizeof(_bufferRecv), 0);
+    if (recvByte == 0)
+    {
+        // break;
+    }
+    else if (recvByte < 0)
+    {
+        printf("sendto failed\n");
+    }
+    MsgGPS *receivedData = (MsgGPS *)_bufferRecv;
+    // RCLCPP_INFO(rclcpp::get_logger(""), "Bytes : %f", receivedData->lattitude);
 }
