@@ -19,11 +19,18 @@ include_directories(
 )
 
 add_executable(light_control src/light_control.cpp)
+add_executable(goal_manager src/goal_manager.cpp)
 
 ament_target_dependencies(light_control
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+
+ament_target_dependencies(goal_manager
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces
+                          ament_index_cpp)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
@@ -31,6 +38,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
           light_control
+          goal_manager
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
