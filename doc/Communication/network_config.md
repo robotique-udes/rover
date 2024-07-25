@@ -17,6 +17,7 @@ This is a table of all IP addresses used.
 | 192.168.144.26 | Caméra R1M 2             |
 | 192.168.144.50 | Rover M2.4               |
 | 192.168.144.55 | Base station M2.4        |
+| 192.168.144.60 | ESP32 antenna            |
 
 The ROS_DOMAIN_ID must be 69 on all computers :
 
@@ -49,9 +50,10 @@ Interface de configuration:
 
 * Brancher l'antenne 2.4GHz dans l'ordinateur
 * S'assurer que la configuration réseau de l'ordinateur est bien faite:
-  * IP entre ]192.168.144.100 ; 192.168.144.255]
+  * IP entre [192.168.144.100 ; 192.168.144.255]
   * Netmask: 255.255.255.0
   * Pas d'adresse de base
+  * Si un adapteur ethernet-USB est utilisé, il faut refaire la configuration pour chaque adapteur
 * Ping l'antenne de la base station pour s'assurer qu'elle est bien connectée
 * Ping l'antenne du rover pour s'assurer que la communication se fait bien
 
