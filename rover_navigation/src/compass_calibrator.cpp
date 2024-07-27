@@ -16,9 +16,10 @@ private:
     rclcpp::TimerBase::SharedPtr _timerPub;
     rover_msgs::msg::Compass _msgCompass;
 
-    float _newZero = 0.0f;
+    float _offset = 0.0f;
     float _rawHeading = 0.0f;
     float _calibratedHeading = 0.0f;
+
     void compassCallback(const rover_msgs::msg::Compass::SharedPtr msgCompass_);
     void CB_srv(const std::shared_ptr<rover_msgs::srv::CompassCalibration::Request> request, 
                 std::shared_ptr<rover_msgs::srv::CompassCalibration::Response> response);
@@ -63,22 +64,18 @@ void CompassCalibrator::CB_srv(const std::shared_ptr<rover_msgs::srv::CompassCal
             std::shared_ptr<rover_msgs::srv::CompassCalibration::Response> response)
 {
     response->success = false;
-    _newZero = _rawHeading;
+
+    _offset = request->angle_offset - _rawHeading;
+
+    while (_offset > 180.0f) _offset -= 360.0f;
+    while (_offset < -180.0f) _offset += 360.0f;
+
     response->success = true;
 }
 
 void CompassCalibrator::changeHeadingZero()
 {
-    float newHeading = _rawHeading;
-
-    if (_rawHeading < _newZero)
-    {
-        newHeading = 360.0f + _rawHeading - _newZero;
-    }
-    else if (_rawHeading >= _newZero)
-    {
-        newHeading = _rawHeading - _newZero;
-    }
-
-    _calibratedHeading = newHeading;
+    _calibratedHeading = _rawHeading + _offset;
+    while (_calibratedHeading >= 360.0f) _calibratedHeading -= 360.0f;
+    while (_calibratedHeading < 0.0f) _calibratedHeading += 360.0f;
 }
