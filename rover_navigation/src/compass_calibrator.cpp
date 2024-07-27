@@ -1,5 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/compass_calibrated.hpp"
+#include "rover_msgs/msg/compass.hpp"
+#include "rover_msgs/srv/compass_calibration.hpp"
+#include "rovus_lib/macros.h"
 
 class CompassCalibrator : public rclcpp::Node
 {
@@ -33,11 +35,19 @@ int main(int argc, char *argv[])
 
 CompassCalibrator::CompassCalibrator() : Node("compass_calibrator")
 {
-    _pubCompassCalibrated = this->create_publisher<rover_msgs::msg::CompassCalibrated>("/rover/auxiliary/compass/orientation", 1);
-    _timerPub = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&CompassCalibrator::CB_timer, this));
+    _pub_compass = this->create_publisher<rover_msgs::msg::Compass>("/rover/auxiliary/compass", 1);
+    _sub_compass_raw = this->create_subscription<rover_msgs::msg::Compass>("/rover/auxiliary/compass/raw",
+                                                                            1,
+                                                                            std::bind(&CompassCalibrator::compassCallback, this, std::placeholders::_1));
+
+    _srv_compass_calib = this->create_service<rover_msgs::srv::CompassCalibration>("/rover/auxiliary/compass/calibrate",
+                                                                                    std::bind(&CompassCalibrator::CB_srv,
+                                                                                    this,
+                                                                                    std::placeholders::_1,
+                                                                                    std::placeholders::_2));
 }
 
-void CompassCalibrator::CB_timer()
+void CompassCalibrator::compassCallback(const rover_msgs::msg::Compass::SharedPtr msgCompass_)
 {
     // Change zero
     _rawHeading = msgCompass_->heading;
@@ -48,7 +58,8 @@ void CompassCalibrator::CB_timer()
     _pub_compass->publish(_msgCompass);
 }
 
-void CompassCalibrator::sendCmd(void)
+void CompassCalibrator::CB_srv(const std::shared_ptr<rover_msgs::srv::CompassCalibration::Request> request, 
+            std::shared_ptr<rover_msgs::srv::CompassCalibration::Response> response)
 {
     response->success = false;
 
