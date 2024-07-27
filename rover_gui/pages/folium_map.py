@@ -102,3 +102,6 @@ class FoliumMapWidget(QWidget):
             time.sleep(3)
             if not self.is_update_disabled:
                 self.update_locations()
+
+    def __del__(self):
+        self.map_update_thread.join()

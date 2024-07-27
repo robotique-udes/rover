@@ -197,7 +197,6 @@ class Navigation(QWidget):
         self.ui_node.destroy_subscription(self.gps_sub)
         self.ui_node.destroy_subscription(self.compass_sub)
         self.alive = False
-        self.map_update_thread.join()
 
 class ReferencePoint:
     def __init__(self, scrX, scrY, lat, lng):

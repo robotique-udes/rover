@@ -8,8 +8,10 @@ public:
     ~CompassCalibrator() {}
 
 private:
-    rclcpp::Publisher<rover_msgs::msg::CompassCalibrated>::SharedPtr _pubCompassCalibrated;
-    rclcpp::TimerBase::SharedPtr _timerPub;
+    rclcpp::Publisher<rover_msgs::msg::Compass>::SharedPtr _pub_compass;
+    rclcpp::Subscription<rover_msgs::msg::Compass>::SharedPtr _sub_compass_raw;
+    rclcpp::Service<rover_msgs::srv::CompassCalibration>::SharedPtr _srv_compass_calib;
+    rover_msgs::msg::Compass _msgCompass;
 
     float _offset = 0.0f;
     float _rawHeading = 0.0f;
@@ -37,7 +39,13 @@ CompassCalibrator::CompassCalibrator() : Node("compass_calibrator")
 
 void CompassCalibrator::CB_timer()
 {
-    sendCmd();
+    // Change zero
+    _rawHeading = msgCompass_->heading;
+    changeHeadingZero();
+
+    _msgCompass.heading = _calibratedHeading;
+    _msgCompass.pitch = msgCompass_->pitch;
+    _pub_compass->publish(_msgCompass);
 }
 
 void CompassCalibrator::sendCmd(void)
