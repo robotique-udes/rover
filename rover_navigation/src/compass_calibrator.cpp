@@ -13,7 +13,6 @@ private:
     rclcpp::Publisher<rover_msgs::msg::Compass>::SharedPtr _pub_compass;
     rclcpp::Subscription<rover_msgs::msg::Compass>::SharedPtr _sub_compass_raw;
     rclcpp::Service<rover_msgs::srv::CompassCalibration>::SharedPtr _srv_compass_calib;
-    rclcpp::TimerBase::SharedPtr _timerPub;
     rover_msgs::msg::Compass _msgCompass;
 
     float _offset = 0.0f;
@@ -56,7 +55,6 @@ void CompassCalibrator::compassCallback(const rover_msgs::msg::Compass::SharedPt
 
     _msgCompass.heading = _calibratedHeading;
     _msgCompass.pitch = msgCompass_->pitch;
-    RCLCPP_INFO(LOGGER, "Publishing: heading : '%f' , pitch : '%f'", _msgCompass.heading, _msgCompass.pitch);
     _pub_compass->publish(_msgCompass);
 }
 
