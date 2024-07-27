@@ -12,6 +12,7 @@ sudo apt install python-is-python3
 sudo apt install can-utils
 sudo apt install python3-pyqt5.qtwebengine
 sudo apt install python3-pyqt5.qtmultimedia
+sudo apt install libqt5multimedia5-plugins
 sudo apt install gstreamer1.0-rtsp
 sudo apt purge gstreamer1.0-vaapi 
 sudo apt install ros-humble-rviz2
