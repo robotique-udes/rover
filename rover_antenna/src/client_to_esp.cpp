@@ -132,7 +132,6 @@ void ClientUDPAntenna::callbackAbtr(const rover_msgs::msg::AntennaCmd msg_)
 {
     _msgCbAbtr.enable = msg_.enable;
     _msgCbAbtr.speed = msg_.speed;
-    RCLCPP_INFO(rclcpp::get_logger(""), "Callback Abtr : %f", _msgCbAbtr.speed);
 }
 
 void ClientUDPAntenna::cbTimerSend()
@@ -159,6 +158,6 @@ void ClientUDPAntenna::cbTimerSend()
     {
         printf("sendto failed\n");
     }
-    MsgGPS *receivedData = (MsgGPS *)_bufferRecv;
+    // MsgGPS *receivedData = (MsgGPS *)_bufferRecv;
     // RCLCPP_INFO(rclcpp::get_logger(""), "Bytes : %f", receivedData->lattitude);
 }

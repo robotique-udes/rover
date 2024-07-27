@@ -30,7 +30,6 @@ private:
     MovingAverage<float, COEFF_NB> _jogAverage_r1 = MovingAverage<float, COEFF_NB>(0.0f);
     MovingAverage<float, COEFF_NB> _jogAverage_l1 = MovingAverage<float, COEFF_NB>(0.0f);
     Timer<uint64_t, millis> _timer_joyMsg = Timer<uint64_t, millis>(250);
-    
 };
 
 int main(int argc, char *argv[])
@@ -52,40 +51,39 @@ JogAntenna::JogAntenna() : Node("jog_antenna")
 
     _timer_JogCmd = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&JogAntenna::cbTimerJogCmd, this));
 
-    this->declare_parameter<float>("max_speed", PI/2.0f);
+    this->declare_parameter<float>("max_speed", PI / 2.0f);
     _paramMaxSpeed = this->get_parameter("max_speed");
-    
 }
 
 void JogAntenna::cbTimerJogCmd()
-{   
+{
     rover_msgs::msg::AntennaCmd jogCmd;
 
     _jogAverage_l1.addValue(_l1);
-    
+
     _jogAverage_r1.addValue(_r1);
 
     jogCmd.enable = true;
 
-    if(_joyMsgReceived)
+    if (_joyMsgReceived)
     {
-        
+
         _jogAverage_l1.addValue(_l1);
-        
+
         _jogAverage_r1.addValue(_r1);
 
         jogCmd.enable = true;
 
-        if(_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() == 0.0f)
+        if (_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() == 0.0f)
         {
             jogCmd.speed = 0.0f;
             jogCmd.enable = false;
         }
-        else if(_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
+        else if (_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
         {
             jogCmd.speed = -_jogAverage_l1.getAverage() * _paramMaxSpeed.as_double();
         }
-        else if(_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() != 0.0f)
+        else if (_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() != 0.0f)
         {
             jogCmd.speed = _jogAverage_r1.getAverage() * _paramMaxSpeed.as_double();
         }
@@ -109,7 +107,8 @@ void JogAntenna::cbTimerJogCmd()
 void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg_)
 {
     _l1 = msg_.joy_data[rover_msgs::msg::Joy::L1];
-    _r1 = msg_.joy_data[rover_msgs::msg::Joy::R1];;
+    _r1 = msg_.joy_data[rover_msgs::msg::Joy::R1];
+    ;
 
     _joyMsgReceived = true;
     _timer_joyMsg.init(250);

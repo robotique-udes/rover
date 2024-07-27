@@ -86,6 +86,7 @@ void ClientUDPAntenna::sendCmd()
     {
         _pub_abtr->publish(_cmdJog);
         _arbitrationStatus.arbitration_status = rover_msgs::msg::AntennaArbitrationStatus::TELEOP;
+        RCLCPP_INFO(LOGGER, "TELEOP : %f", _cmdJog.speed);
     }
     else if (_arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::AUTONOMUS)
     {
