@@ -22,8 +22,7 @@ include_directories(
 add_executable(jog_antenna src/jog_antenna.cpp)
 add_executable(autonomus src/autonomus.cpp)
 add_executable(arbitration src/arbitration.cpp)
-add_executable(udp_client1 src/client_to_esp.cpp)
-add_executable(udp_client2 src/client_to_esp2.cpp)
+add_executable(udp_client src/client_to_esp.cpp)
 
 ament_target_dependencies(jog_antenna
                           rclcpp
@@ -38,7 +37,7 @@ ament_target_dependencies(arbitration
                           std_msgs
                           rover_msgs)
 
-ament_target_dependencies(udp_client1
+ament_target_dependencies(udp_client
                           rclcpp
                           rover_msgs)
 
@@ -48,8 +47,7 @@ install(TARGETS
         jog_antenna
         autonomus
         arbitration
-        udp_client1
-        udp_client2
+        udp_client
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
