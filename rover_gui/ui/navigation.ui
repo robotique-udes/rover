@@ -303,7 +303,7 @@
       <item>
        <widget class="QPushButton" name="pb_calib_compass">
         <property name="text">
-         <string>Calibrate compass to 0°</string>
+         <string>Calibrate heading</string>
         </property>
        </widget>
       </item>
