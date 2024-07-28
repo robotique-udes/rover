@@ -31,7 +31,8 @@ class Cameras(QWidget):
 
             mediaPlayer.setVideoOutput(video_output) 
             #rtsp_url = "rtmp://192.168.0.49/live/test"
-            rtsp_url = f"rtsp://{ip.strip()}:8554/main.264"
+            # rtsp_url = f"rtsp://{ip.strip()}:8554/main.264"
+            rtsp_url = "rtsp://admin:admin@192.168.144.61:69/live"
             mediaPlayer.setMedia(QMediaContent(QUrl(rtsp_url)))
 
             refresh_button.clicked.connect(lambda checked, player=mediaPlayer: self.try_reconnect(player))
