@@ -81,11 +81,11 @@ void JogAntenna::cbTimerJogCmd()
         }
         else if (_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
         {
-            jogCmd.speed = -_jogAverage_l1.getAverage() * _paramMaxSpeed.as_double();
+            jogCmd.speed = _jogAverage_l1.getAverage() * _paramMaxSpeed.as_double();
         }
         else if (_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() != 0.0f)
         {
-            jogCmd.speed = _jogAverage_r1.getAverage() * _paramMaxSpeed.as_double();
+            jogCmd.speed = -_jogAverage_r1.getAverage() * _paramMaxSpeed.as_double();
         }
         else
         {

@@ -26,20 +26,20 @@ def generate_launch_description():
                               parameters=[{"max_speed": 3.14159/8}],
                               )
     
-    # node_udp = Node(package="rover_antenna",
-    #                           namespace="/base/antenna",
-    #                           executable="client_to_esp",
-    #                           name="client_to_esp",
-    #                           )
+    node_udp = Node(package="rover_antenna",
+                              namespace="/base/antenna",
+                              executable="udp_client",
+                              name="client_to_esp",
+                              )
 
     ld.add_action(node_antenna_abtr)
     ld.add_action(node_antenna_jog)
     ld.add_action(node_antenna_auto)
-    # ld.add_action(node_udp)
+    ld.add_action(node_udp)
 
     return LaunchDescription([
                               node_antenna_abtr,
                               node_antenna_jog,
                               node_antenna_auto,
-                            #   node_udp,
+                              node_udp,
                              ])
