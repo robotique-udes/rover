@@ -33,7 +33,6 @@ private:
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_gps_antenna;
     rclcpp::Subscription<rover_msgs::msg::AntennaCmd>::SharedPtr _sub_abtr;
 
-    rclcpp::TimerBase::SharedPtr _timer_recv;
     rclcpp::TimerBase::SharedPtr _timer_send;
 
     struct MsgAbtrCmd
@@ -48,18 +47,11 @@ private:
         float longitude;
     };
 
-    struct sockUDP
-    {
-        int socketUDP;
-        struct sockaddr_in servAddr;
-        socklen_t sLen = sizeof(servAddr);
-    };
-
     int _socket;
     struct sockaddr_in _servAddr;
     socklen_t _sLen = sizeof(_servAddr);
 
-    Timer<uint64_t, millis> timerSend = Timer<uint64_t, millis>(200u);
+    Timer<uint64_t, millis> _timerSend = Timer<uint64_t, millis>(200u);
 
     MsgAbtrCmd _msgCbAbtr;
     MsgAbtrCmd _bufferSend;
@@ -136,9 +128,8 @@ void ClientUDPAntenna::callbackAbtr(const rover_msgs::msg::AntennaCmd msg_)
 
 void ClientUDPAntenna::cbTimerSend()
 {
-
     // Sending a message to the server
-    if (timerSend.isDone())
+    if (_timerSend.isDone())
     {
         ssize_t sByte = sendto(_socket, &_msgCbAbtr, sizeof(MsgAbtrCmd), 0, (struct sockaddr *)&_servAddr, _sLen);
         if (sByte < 0)
@@ -148,16 +139,9 @@ void ClientUDPAntenna::cbTimerSend()
         RCLCPP_INFO(rclcpp::get_logger(""), "Bytes send : %f", _msgCbAbtr.speed);
     }
 
-    // RCLCPP_INFO(rclcpp::get_logger(""), "Before receiving");
     int64_t recvByte = (int64_t)recv(_socket, _bufferRecv, sizeof(_bufferRecv), 0);
-    if (recvByte == 0)
+    if (recvByte < 0)
     {
-        // break;
+        printf("recv failed\n");
     }
-    else if (recvByte < 0)
-    {
-        printf("sendto failed\n");
-    }
-    // MsgGPS *receivedData = (MsgGPS *)_bufferRecv;
-    // RCLCPP_INFO(rclcpp::get_logger(""), "Bytes : %f", receivedData->lattitude);
 }

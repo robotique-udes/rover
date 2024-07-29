@@ -67,7 +67,6 @@ void JogAntenna::cbTimerJogCmd()
 
     if (_joyMsgReceived)
     {
-
         _jogAverage_l1.addValue(_l1);
 
         _jogAverage_r1.addValue(_r1);
@@ -108,7 +107,6 @@ void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg_)
 {
     _l1 = msg_.joy_data[rover_msgs::msg::Joy::L1];
     _r1 = msg_.joy_data[rover_msgs::msg::Joy::R1];
-    ;
 
     _joyMsgReceived = true;
     _timer_joyMsg.init(250);

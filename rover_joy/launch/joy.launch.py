@@ -33,8 +33,8 @@ def generate_launch_description():
                               executable="joy_node",
                               name="joy_node",
                               parameters=[{"autorepeat_rate": 20.0,
-                                        #    "device_name": "Logitech RumblePad 2 USB"}],
-                                           "device_name": "Sony Interactive Entertainment Wireless Controller"}],
+                                           "device_name": "Logitech RumblePad 2 USB"}],
+                                        #    "device_name": "Sony Interactive Entertainment Wireless Controller"}],
                               remappings=[("joy", "raw")])
 
     node_joy_secondary_formator = Node(package="rover_joy",
