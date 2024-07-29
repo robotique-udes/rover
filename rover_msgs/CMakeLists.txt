@@ -41,6 +41,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DrivetrainArbitration.msg"
   "msg/Compass.msg"
   "msg/CameraAngle.msg"
+  "msg/AntennaArbitrationStatus.msg"
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
