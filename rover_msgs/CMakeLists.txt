@@ -39,6 +39,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ScienceControl.msg"
   "msg/ArmCmd.msg"
   "msg/Compass.msg"
+  "msg/AntennaArbitrationStatus.msg"
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"

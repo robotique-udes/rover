@@ -112,7 +112,6 @@ void Arbitration::sendCmd()
         || (_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::AUTONOMUS && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::AUTONOMUS)
         || (_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::NOT_MOVING && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::NOT_MOVING))
     {
-        // RCLCPP_ERROR(LOGGER, "Good arbitration status");
         _arbitrationResponse.success = true;
     }
     else
