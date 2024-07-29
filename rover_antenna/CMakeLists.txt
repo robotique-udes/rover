@@ -13,41 +13,39 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
-find_package(std_msgs REQUIRED)
 
 include_directories(
   ${rover_msgs_INCLUDE_DIRS}
 )
 
-add_executable(antennaJoy src/antennaJoy.cpp)
-add_executable(antennaAuto src/antennaAuto.cpp)
-add_executable(antennaAbtr src/antennaAbtr.cpp)
-add_executable(antennaUDP src/antennaUDP.cpp)
+add_executable(antenna_joy src/antenna_joy.cpp)
+add_executable(antenna_auto src/antenna_auto.cpp)
+add_executable(antenna_abtr src/antenna_abtr.cpp)
+add_executable(antenna_udp src/antenna_udp.cpp)
 
-ament_target_dependencies(antennaJoy
+ament_target_dependencies(antenna_joy
                           rclcpp
                           rover_msgs)
 
-ament_target_dependencies(antennaAuto
+ament_target_dependencies(antenna_auto
                           rclcpp
                           rover_msgs)
 
-ament_target_dependencies(antennaAbtr
+ament_target_dependencies(antenna_abtr
                           rclcpp
-                          std_msgs
                           rover_msgs)
 
-ament_target_dependencies(antennaUDP
+ament_target_dependencies(antenna_udp
                           rclcpp
                           rover_msgs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
-        antennaJoy
-        antennaAuto
-        antennaAbtr
-        antennaUDP
+        antenna_joy
+        antenna_auto
+        antenna_abtr
+        antenna_udp
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

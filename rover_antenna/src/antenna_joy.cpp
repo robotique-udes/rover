@@ -59,18 +59,10 @@ void JogAntenna::cbTimerJogCmd()
 {
     rover_msgs::msg::AntennaCmd jogCmd;
 
-    _jogAverage_l1.addValue(_l1);
-
-    _jogAverage_r1.addValue(_r1);
-
-    jogCmd.enable = true;
-
     if (_joyMsgReceived)
     {
         _jogAverage_l1.addValue(_l1);
-
         _jogAverage_r1.addValue(_r1);
-
         jogCmd.enable = true;
 
         if (_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() == 0.0f)
