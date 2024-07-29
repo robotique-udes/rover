@@ -8,12 +8,19 @@ def generate_launch_description():
     ld: LaunchDescription = LaunchDescription()
 
     node_lights_main = Node(package="rover_navigation",
-                         namespace="/rover/auxiliarty",
+                         namespace="/rover/auxiliary",
                          executable="light_control",
                          name="light_controller")
+    
+    node_compass_main = Node(package="rover_navigation",
+                        namespace="/rover/auxiliary",
+                        executable="compass_calibrator",
+                        name="compass_calibrator")
 
     ld.add_action(node_lights_main)
+    ld.add_action(node_compass_main)
 
     return LaunchDescription([
-                              node_lights_main
+                              node_lights_main,
+                              node_compass_main
                              ])

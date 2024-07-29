@@ -1,8 +1,8 @@
 from threading import Thread
 import time
 import io
-from PyQt5.QtWidgets import QVBoxLayout, QWidget, QCheckBox
-from PyQt5.QtCore import QTimer, QObject, pyqtSignal
+from PyQt5.QtWidgets import QVBoxLayout, QWidget
+from PyQt5.QtCore import QObject, pyqtSignal
 from PyQt5.QtWebEngineWidgets import QWebEngineView
 import folium
 
@@ -99,6 +99,9 @@ class FoliumMapWidget(QWidget):
 
     def task_update_thread(self):
         while self.alive:
-            time.sleep(5)
+            time.sleep(3)
             if not self.is_update_disabled:
                 self.update_locations()
+
+    def __del__(self):
+        self.map_update_thread.join()

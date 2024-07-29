@@ -44,6 +44,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/AntennaArbitration.srv"
   "srv/DriveTrainArbitration.srv"
   "srv/LightControl.srv"
+  "srv/CompassCalibration.srv"
   "srv/NewGpsGoal.srv"
 )
 

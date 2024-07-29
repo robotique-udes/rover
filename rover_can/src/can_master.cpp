@@ -191,7 +191,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _pub_canStatus = this->create_publisher<rover_msgs::msg::CanDeviceStatus>("/rover/can/device_status", 1);
     _pub_propulsionMotor = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/status/prop_motor", 1);
     _pub_gps = this->create_publisher<rover_msgs::msg::Gps>("/rover/gps/position", 1);
-    _pub_compass = this->create_publisher<rover_msgs::msg::Compass>("/rover/compass/orientation", 1);
+    _pub_compass = this->create_publisher<rover_msgs::msg::Compass>("/rover/auxiliary/compass/raw", 1);
     // =========================================================================
 
     // Add messages type to msgsMap
@@ -454,7 +454,7 @@ void CanMaster::CB_Can_Compass(uint16_t id_, const can_frame *frameMsg_)
 
         if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::Compass>(frameMsg_))
         {
-            msg_ROS_compass.heading = msg->data.yaw;
+            msg_ROS_compass.heading = msg->data.heading;
             msg_ROS_compass.pitch = msg->data.pitch;
             _pub_compass->publish(msg_ROS_compass);
         }
