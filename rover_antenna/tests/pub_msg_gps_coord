@@ -27,3 +27,5 @@ ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '51.4530
 ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '51.452625432161454', longitude: '-112.71564615204288'}"
 ros2 topic pub -r 10 /rover/gps/position rover_msgs/msg/Gps "{latitude: '51.45261752871133', longitude: '-112.715970470036'}"
 
+ros2 topic pub -r 10 /base/antenna/cmd/out/goal rover_msgs/msg/AntennaCmd "{speed: '0.0'}"
+
