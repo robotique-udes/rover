@@ -3,6 +3,8 @@ from ament_index_python.packages import get_package_share_directory
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QComboBox
 from PyQt5 import uic
 
+from navigation.location_manager import Location
+
 class AddLocationPopup(QWidget):
     def __init__(self, nav_widget,ui_node, is_record):
         super(AddLocationPopup, self).__init__()

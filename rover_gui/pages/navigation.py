@@ -1,6 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 from threading import Lock
-from PyQt5.QtWidgets import QWidget, QPushButton, QMessageBox, QListWidgetItem, QSlider
+from PyQt5.QtWidgets import QWidget, QPushButton, QCheckBox, QListWidget, QListWidgetItem, QLabel, QSlider
 from PyQt5 import uic
 from rover_msgs.srv._compass_calibration import CompassCalibration
 from rover_msgs.msg import Gps
@@ -8,6 +8,8 @@ from rover_msgs.msg import Compass
 from pages.add_location_popup import AddLocationPopup
 from pages.calibrate_heading_popup import CalibrateHeadingPopup
 from pages.folium_map import FoliumMapWidget
+from navigation.location_manager import Location, LocationManager
+from navigation.route_manager import RouteManager
 import pandas
 
 class Navigation(QWidget):
@@ -24,13 +26,23 @@ class Navigation(QWidget):
         self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/saved_locations.txt"
         self.gps_offset_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/gps_offset.txt"
 
+        self.lb_curr_position : QLabel
+        self.lb_curr_heading : QLabel
+        self.pb_add_location : QPushButton
+        self.pb_delete_location : QPushButton
+        self.pb_update_location : QPushButton
+        self.pb_record_location : QPushButton
+        self.location_list : QListWidget
+
         self.slider_lat_offset : QSlider
         self.slider_lon_offset : QSlider
         self.pb_save_offset : QPushButton
         self.lat_offset = 0
         self.lon_offset = 0
 
-        self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
+        #self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
+        self.locations = LocationManager()
+        self.route_list = RouteManager()
 
         self.current_latitude = self.current_longitude = self.current_heading = -50.0
 
@@ -86,20 +98,22 @@ class Navigation(QWidget):
 
     def load_locations(self):
         try:
-            self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
+            self.locations = LocationManager()
             self.location_list.clear()
             with open(self.saved_locations_path, "r") as f:
                 for line in f:
                     parts = line.strip().split(";")
                     if len(parts) == 5: 
                         index, name, latitude, longitude, color = parts
-                        location = {
-                            "index": int(index),
-                            "name": name,
-                            "lat": float(latitude),
-                            "lon": float(longitude),
-                            "color": color
-                        }
+                        # location = {
+                        #     "index": int(index),
+                        #     "name": name,
+                        #     "lat": float(latitude),
+                        #     "lon": float(longitude),
+                        #     "color": color
+                        # }
+                        location = Location(float(latitude), float(longitude), name)
+                        self.location_list.add_location(location)
                         self.locations = self.locations._append(location, ignore_index=True)
                         item = QListWidgetItem(f" {location['index']} - {location['name']}: ({location['lat']}, {location['lon']})")
                         self.location_list.addItem(item)
@@ -197,10 +211,3 @@ class Navigation(QWidget):
         self.ui_node.destroy_subscription(self.gps_sub)
         self.ui_node.destroy_subscription(self.compass_sub)
         self.alive = False
-
-class ReferencePoint:
-    def __init__(self, scrX, scrY, lat, lng):
-        self.scrX = scrX
-        self.scrY = scrY
-        self.lat = lat
-        self.lng = lng
