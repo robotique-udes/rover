@@ -74,8 +74,8 @@ class Dashboard(QWidget):
         self.media_player_main.setVideoOutput(self.camera_main_widget) 
         self.media_player_science.setVideoOutput(self.camera_science_widget) 
         
-        self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://192.168.144.25:8554/main.264")))
-        self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://192.168.144.26:8554/main.264")))
+        self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://admin:admin@192.168.144.61:69/")))
+        # self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://admin:admin@192.168.144.61:69/")))
         self.media_player_main.play()
         self.media_player_science.play()
 

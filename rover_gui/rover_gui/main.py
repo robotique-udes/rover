@@ -3,6 +3,7 @@ from threading import Thread
 import sys
 import signal
 
+import PyQt5
 from PyQt5.QtWidgets import QApplication, QMainWindow, QPushButton, QTabWidget, QToolBox, QShortcut
 from PyQt5.QtGui import QKeySequence, QIcon
 from PyQt5 import QtGui
@@ -126,7 +127,7 @@ class MainWindow(QMainWindow):
         QApplication.quit()
 
 def get_package_share_directory_parent(package_name):
-    package_share_directory = get_package_share_directory(package_name)
+    package_share_directory = rclpy.get_package_share_directory(package_name)
     parent_directory = '/'.join(package_share_directory.split('/')[:-1]) + '/'
     return parent_directory
 
@@ -134,6 +135,12 @@ def main(args=None):
     rclpy.init(args=args)
 
     signal.signal(signal.SIGINT, signal.SIG_DFL)
+
+    # Adds support for 4K screens
+    if hasattr(PyQt5.QtCore.Qt, 'AA_EnableHighDpiScaling'):
+        PyQt5.QtWidgets.QApplication.setAttribute(PyQt5.QtCore.Qt.AA_EnableHighDpiScaling, True)
+    if hasattr(PyQt5.QtCore.Qt, 'AA_UseHighDpiPixmaps'):
+        PyQt5.QtWidgets.QApplication.setAttribute(PyQt5.QtCore.Qt.AA_UseHighDpiPixmaps, True)
 
     ui_node = UINode()
     executor = MultiThreadedExecutor()
