@@ -13,7 +13,8 @@ setup(
         (os.path.join('resource'), glob('ui/*')),
         (os.path.join('resource'), glob('images/*')),
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
-        (os.path.join('resource'), glob('resource/*'))
+        (os.path.join('resource'), glob('resource/*')),
+        (os.path.join('share/ament_index/resource_index/packages'), glob('resource/' + package_name))
     ],
     name=package_name,
     version='0.0.0',
