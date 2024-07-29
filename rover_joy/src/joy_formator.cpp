@@ -109,7 +109,6 @@ private:
     bool connected();
     void executeCustomSteps(rover_msgs::msg::Joy *formatted_joy);
     void customStepsLogitech(rover_msgs::msg::Joy *formatted_joy);
-    // float accCurv(float _value);
 
 public:
     JoyFormator();
@@ -392,10 +391,3 @@ void JoyFormator::customStepsLogitech(rover_msgs::msg::Joy *formatted_joy)
         *formatted_joy = rover_msgs::msg::Joy();
     }
 }
-
-// float JoyFormator::accCurv(float value_)
-// {
-//     //input 0.8\arctan\left(3x\right) at https://www.desmos.com/calculator to view curve
-//     // float output = 0.8f*atan(3.0f*value_);
-//     // return output;
-// }
