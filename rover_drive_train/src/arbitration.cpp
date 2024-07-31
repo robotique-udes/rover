@@ -146,7 +146,7 @@ void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitr
     }
     else
     {
-        RCLCPP_ERROR(this->get_logger(), "Can't see requested arbitration: %u, not implemented yet", request_->target_arbitration);
+        RCLCPP_ERROR(this->get_logger(), "Can't see requested arbitration: %u, not implemented yet", request_->target_arbitration.arbitration);
     }
 
     response_->current_arbitration = _arbitration;
