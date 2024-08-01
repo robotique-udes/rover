@@ -20,7 +20,7 @@ volatile sig_atomic_t g_shutdownFlag = 0;
 class ClientUDPAntenna : public rclcpp::Node
 {
 public:
-    ClientUDPAntenna(int sock, struct sockaddr_in servAddr, socklen_t sLen);
+    ClientUDPAntenna(int sock_, struct sockaddr_in servAddr_, socklen_t sLen_);
     ~ClientUDPAntenna() {}
 
 private:
@@ -105,18 +105,18 @@ void signal_handler(int signo_)
     g_shutdownFlag = 1;
 }
 
-ClientUDPAntenna::ClientUDPAntenna(int sock, struct sockaddr_in servAddr, socklen_t sLen) : Node("clientUDPAntenna")
+ClientUDPAntenna::ClientUDPAntenna(int sock_, struct sockaddr_in servAddr_, socklen_t sLen_) : Node("clientUDPAntenna")
 {
+    _socket = sock_;
+    _servAddr = servAddr_;
+    _sLen = sLen_;
+
     _pub_gps_antenna = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto", 1);
     _sub_abtr = this->create_subscription<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/out/goal",
                                                                        1,
                                                                        [this](const rover_msgs::msg::AntennaCmd msg)
                                                                        { callbackAbtr(msg); });
     _timer_send = this->create_wall_timer(std::chrono::microseconds(10), std::bind(&ClientUDPAntenna::cbTimerSend, this));
-
-    _socket = sock;
-    _servAddr = servAddr;
-    _sLen = sLen;
 }
 
 void ClientUDPAntenna::callbackAbtr(const rover_msgs::msg::AntennaCmd msg_)
@@ -133,14 +133,13 @@ void ClientUDPAntenna::cbTimerSend()
         ssize_t sByte = sendto(_socket, &_msgCbAbtr, sizeof(MsgAbtrCmd), 0, (struct sockaddr *)&_servAddr, _sLen);
         if (sByte < 0)
         {
-            printf("sendto failed\n");
+            RCLCPP_WARN(rclcpp::get_logger(""), "sendto failed");
         }
-        RCLCPP_INFO(rclcpp::get_logger(""), "Bytes send : %f", _msgCbAbtr.speed);
     }
 
     int64_t recvByte = (int64_t)recv(_socket, _bufferRecv, sizeof(_bufferRecv), 0);
     if (recvByte < 0)
     {
-        printf("recv failed\n");
+        RCLCPP_WARN(rclcpp::get_logger(""), "received failed");
     }
 }

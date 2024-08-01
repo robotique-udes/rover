@@ -4,4 +4,4 @@ uint8 AUTONOMUS = 2
 
 uint8 target_arbitration
 ---
-uint8 success
+bool success
