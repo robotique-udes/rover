@@ -6,8 +6,30 @@
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/msg/arm_cmd.hpp"
+#include "rovus_lib/macros.h"
+
+#include <armadillo>
 
 #define MAX_JOINT_SPEED 0.0017453f // 10 deg/s - (0.1745 rad/s)
+
+struct RobotState
+{
+    float q0, q1, q2, q3, q4;
+    float J0x = 0.0f, J0y = 0.0f, J0z = 0.0f;
+    float J1x = 0.0f, J1y = 0.0f, J1z = 0.0f;
+    float J2x = 0.65f, J2y = 0.0f, J2z = 0.0f;
+    float J3x = 0.61f, J3y = 0.0f, J3z = 0.0f;
+    float J4x = 0.217f, J4y = 0.0f, J4z = 0.0f;
+
+    RobotState(float q0_, float q1_, float q2_, float q3_, float q4_)
+    {
+        q0 = q0_;
+        q1 = q1_;
+        q2 = q2_;
+        q3 = q3_;
+        q4 = q4_;
+    }
+};
 
 class Teleop : public rclcpp::Node
 {
@@ -15,7 +37,7 @@ public:
     Teleop();
 
 private:
-    // Private members
+    // JOINT CONTROL COMMANDS
     //  =========================================================================
     float _posCmdJL;
     float _posCmdJ0;
@@ -25,10 +47,32 @@ private:
     float _gripperRot;
     float _gripperState;
 
+    // CARTESIAN CONTROL COMMANDS
+    //  =========================================================================
+    float _xVelocity;
+    float _yVelocity;
+    float _zVelocity;
+    float _alphaVelocity; // Gripper rotation around Y axis with constant XYS pos
+    float _psiVelocity;   // Gripper rotation around Z axis with constant XYS pos
+
+    // CARTESIAN VECTORS AND MATRICES
+    //  =========================================================================
+    arma::vec5 _desiredCartesianVelocity;
+    arma::mat55 _jacobian;
+    arma::mat55 _inverseJacobian;
+    arma::vec5 _computedJointVelocity;
+
+    // COMMAND MODES
+    //  =========================================================================
     bool _deadmanSwitch;
     bool _gripperMode;
+    bool _controlMode;
 
-    // float MAX_JOINT_SPEED = MAX_JOINT_SPEED; // 10 deg/s - (0.1745 rad/s)
+    enum eControlMode
+    {
+        CARTESIAN = 0,
+        JOINT = 1
+    };
 
     // Set Constrain values
     //  =========================================================================
@@ -42,6 +86,8 @@ private:
     // Private methods
     //  =========================================================================
     void joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg);
+
+    arma::mat55 computeJacobian(const RobotState &state);
 
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_arm;
     rclcpp::Publisher<rover_msgs::msg::ArmCmd>::SharedPtr _pub_arm_teleop_in;
@@ -64,6 +110,7 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     // =========================================================================
     _deadmanSwitch = joyMsg->joy_data[rover_msgs::msg::Joy::L1];
     _gripperMode = joyMsg->joy_data[rover_msgs::msg::Joy::R1];
+    _controlMode = joyMsg->joy_data[rover_msgs::msg::Joy::A];
 
     // JOINT controls
     // =========================================================================
@@ -78,6 +125,14 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     _gripperRot = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
     _gripperState = joyMsg->joy_data[rover_msgs::msg::Joy::L2] - joyMsg->joy_data[rover_msgs::msg::Joy::R2];
 
+    // CARTESIAN controls
+    // =========================================================================
+    _xVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT];
+    _yVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::L2] - joyMsg->joy_data[rover_msgs::msg::Joy::R2];
+    _zVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT];
+    _alphaVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT];
+    _psiVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::L2] - joyMsg->joy_data[rover_msgs::msg::Joy::R2];
+
     // Initialize controls to previous values
     // =========================================================================
     armMsg.position[rover_msgs::msg::ArmCmd::JL] = _currentJLPos;
@@ -87,28 +142,120 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERTILT] = _currentGripperTilt;
     armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERROT] = _currentGripperRot;
 
+    if (_controlMode)
+    {
+        _controlMode = !_controlMode;
+    }
+
     // Control logic
     // =========================================================================
     if (_deadmanSwitch)
     {
-        if (_gripperMode)
+        if (_controlMode == CARTESIAN)
         {
-            _currentGripperTilt += _gripperTilt * MAX_JOINT_SPEED;
-            _currentGripperRot += _gripperRot * MAX_JOINT_SPEED;
-            armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE] = _gripperState * MAX_JOINT_SPEED;
-        }
-        else
-        {
-            _currentJLPos += _posCmdJL * MAX_JOINT_SPEED;
-            _currentJ0Pos += _posCmdJ0 * MAX_JOINT_SPEED * -1.0f;
-            _currentJ1Pos += _posCmdJ1 * MAX_JOINT_SPEED;
-            _currentJ2Pos += _posCmdJ2 * MAX_JOINT_SPEED;
+            _desiredCartesianVelocity = {_xVelocity, _yVelocity, _zVelocity, _alphaVelocity, _psiVelocity};
+
+            _jacobian = computeJacobian(RobotState(_currentJLPos, _currentJ0Pos, _currentJ1Pos, _currentJ2Pos, _currentGripperTilt));
+            _inverseJacobian = arma::inv(_jacobian);
+
+            _computedJointVelocity = _inverseJacobian * _desiredCartesianVelocity;
+
+            _computedJointVelocity(0) * 0.001f;
+            _computedJointVelocity(1) * 0.001f;
+            _computedJointVelocity(2) * 0.001f;
+            _computedJointVelocity(3) * 0.001f;
+            _computedJointVelocity(4) * 0.001f;
+
+            _currentJLPos += _computedJointVelocity(0) * 0.01f;
+            _currentJ0Pos += _computedJointVelocity(1) * 0.01f;
+            _currentJ1Pos += _computedJointVelocity(2) * 0.01f;
+            _currentJ2Pos += _computedJointVelocity(3) * 0.01f;
+            _currentGripperTilt += _computedJointVelocity(4) * 0.01f;
         }
 
-        //Compute jacobian matrix of error vecotr to facilitate multiplication and compute of desired joint velocity vector
+        if (_controlMode == JOINT)
+        {
+            if (_gripperMode)
+            {
+                _currentGripperTilt += _gripperTilt * MAX_JOINT_SPEED;
+                _currentGripperRot += _gripperRot * MAX_JOINT_SPEED;
+                armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE] = _gripperState * MAX_JOINT_SPEED;
+            }
+            else
+            {
+                _currentJLPos += _posCmdJL * MAX_JOINT_SPEED;
+                _currentJ0Pos += _posCmdJ0 * MAX_JOINT_SPEED * -1.0f;
+                _currentJ1Pos += _posCmdJ1 * MAX_JOINT_SPEED;
+                _currentJ2Pos += _posCmdJ2 * MAX_JOINT_SPEED;
+            }
+        }
     }
 
     _pub_arm_teleop_in->publish(armMsg);
+}
+
+arma::mat55 Teleop::computeJacobian(const RobotState &state)
+{
+    arma::mat55 J(arma::fill::zeros);
+
+    float q0 = state.q0;
+    float q1 = state.q1;
+    float q2 = state.q2;
+    float q3 = state.q3;
+    float q4 = state.q4;
+
+    float J0x = state.J0x;
+    float J0y = state.J0y;
+    float J0z = state.J0z;
+
+    float J1x = state.J1x;
+    float J1y = state.J1y;
+    float J1z = state.J1z;
+
+    float J2x = state.J2x;
+    float J2y = state.J2y;
+    float J2z = state.J2z;
+
+    float J3x = state.J3x;
+    float J3y = state.J3y;
+    float J3z = state.J3z;
+
+    float J4x = state.J4x;
+    float J4y = state.J4y;
+    float J4z = state.J4z;
+
+    // dot(Po.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*PI-q2) + J2z*cos(q1)*sin(0.5*PI-q2) + J3x*cos(q1)*cos(0.5*PI-q2-q3) + J3z*cos(q1)*sin(0.5*PI-q2-q3) - sin(q1)*(J1y+J2y) + J4x*sin(q1)*cos(0.5*PI-q2-q3-q4) + J4z*sin(q1)*sin(0.5*PI-q2-q3-q4)
+    J(0, 0) = 0.0f;
+    J(0, 1) = J1x * -sin(q1) + J2x * -sin(q1) * cos(0.5 * PI - q2) + J2z * -sin(q1) * sin(0.5 * PI - q2) + J3x * -sin(q1) * cos(0.5 * PI - q2 - q3) + J3z * -sin(q1) * sin(0.5 * PI - q2 - q3) - cos(q1) * (J1y + J2y) + J4x * cos(q1) * cos(0.5 * PI - q2 - q3 - q4) + J4z * cos(q1) * sin(0.5 * PI - q2 - q3 - q4);
+    J(0, 2) = J2x * cos(q1) * -sin(0.5 * PI - q2) + J2z * cos(q1) * cos(0.5 * PI - q2) + J3x * cos(q1) * -sin(0.5 * PI - q2 - q3) + J3z * cos(q1) * cos(0.5 * PI - q2 - q3) + J4x * sin(q1) * -sin(0.5 * PI - q2 - q3 - q4) + J4z * sin(q1) * cos(0.5 * PI - q2 - q3 - q4);
+    J(0, 3) = J3x * cos(q1) * -sin(0.5 * PI - q2 - q3) + J3z * cos(q1) * cos(0.5 * PI - q2 - q3) + J4x * sin(q1) * -sin(0.5 * PI - q2 - q3 - q4) + J4z * sin(q1) * cos(0.5 * PI - q2 - q3 - q4);
+    J(0, 4) = J4x * sin(q1) * -sin(0.5 * PI - q2 - q3 - q4) + J4z * sin(q1) * cos(0.5 * PI - q2 - q3 - q4);
+
+    // dot(Po.GetPosition(No), ny >) Result = J0y + q0 + J1x * sin(q1) + cos(q1) * (J1y + J2y) + J2x * sin(q1) * cos(0.5 * PI - q2) + J2z * sin(q1) * sin(0.5 * PI - q2) + J3x * sin(q1) * cos(0.5 * PI - q2 - q3) + J3z * sin(q1) * sin(0.5 * PI - q2 - q3) + J4x * sin(q1) * cos(0.5 * PI - q2 - q3 - q4) + J4z * sin(q1) * sin(0.5 * PI - q2 - q3 - q4);
+    J(1, 0) = 1.0f;
+    J(1, 1) = J1x * cos(q1) + -sin(q1) * (J1y + J2y) + J2x * cos(q1) * cos(0.5 * PI - q2) + J2z * cos(q1) * sin(0.5 * PI - q2) + J3x * cos(q1) * cos(0.5 * PI - q2 - q3) + J3z * cos(q1) * sin(0.5 * PI - q2 - q3) + J4x * cos(q1) * cos(0.5 * PI - q2 - q3 - q4) + J4z * cos(q1) * sin(0.5 * PI - q2 - q3 - q4);
+    J(1, 2) = J2x * sin(q1) * -sin(0.5 * PI - q2) + J2z * sin(q1) * cos(0.5 * PI - q2) + J3x * sin(q1) * -sin(0.5 * PI - q2 - q3) + J3z * sin(q1) * cos(0.5 * PI - q2 - q3) + J4x * sin(q1) * -sin(0.5 * PI - q2 - q3 - q4) + J4z * sin(q1) * cos(0.5 * PI - q2 - q3 - q4);
+    J(1, 3) = J3x * sin(q1) * -sin(0.5 * PI - q2 - q3) + J3z * sin(q1) * cos(0.5 * PI - q2 - q3) + J4x * sin(q1) * -sin(0.5 * PI - q2 - q3 - q4) + J4z * sin(q1) * cos(0.5 * PI - q2 - q3 - q4);
+    J(1, 4) = J4x * sin(q1) * -sin(0.5 * PI - q2 - q3 - q4) + J4z * sin(q1) * cos(0.5 * PI - q2 - q3 - q4);
+
+    // dot(Po.GetPosition(No), nz >) Result = J0z + J1z + J2z * cos(0.5 * PI - q2) + J3z * cos(0.5 * PI - q2 - q3) + J4z * cos(0.5 * PI - q2 - q3 - q4) - J2x * sin(0.5 * PI - q2) - J3x * sin(0.5 * PI - q2 - q3) - J4x * sin(0.5 * PI - q2 - q3 - q4);
+    J(2, 0) = 0.0f;
+    J(2, 1) = 0.0f;
+    J(2, 2) = J2z * -sin(0.5 * PI - q2) + J3z * -sin(0.5 * PI - q2 - q3) + J4z * -sin(0.5 * PI - q2 - q3 - q4) - J2x * cos(0.5 * PI - q2) - J3x * cos(0.5 * PI - q2 - q3) - J4x * cos(0.5 * PI - q2 - q3 - q4);
+    J(2, 3) = J3z * -sin(0.5 * PI - q2 - q3) + J4z * -sin(0.5 * PI - q2 - q3 - q4) - J3x * cos(0.5 * PI - q2 - q3) - J4x * cos(0.5 * PI - q2 - q3 - q4);
+    J(2, 4) = J4z * -sin(0.5 * PI - q2 - q3 - q4) - J4x * cos(0.5 * PI - q2 - q3 - q4);
+
+    J(3, 0) = 0.0f;
+    J(3, 1) = 0.0f;
+    J(3, 2) = 1.0f;
+    J(3, 3) = 1.0f;
+    J(3, 4) = -1.0f;
+
+    J(4, 0) = 0.0f;
+    J(4, 1) = 1.0f;
+    J(4, 2) = 0.0f;
+    J(4, 3) = 0.0f;
+    J(4, 4) = 0.0f;
 }
 
 int main(int argc, char *argv[])
