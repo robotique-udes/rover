@@ -66,15 +66,15 @@ class FoliumMapWidget(QWidget):
         self.tile.add_to(self.m)
 
         # Add markers from the nav_widget
-        for i in range(len(self.nav_widget.locations)):
-            marker = folium.Marker(
-                location=[self.nav_widget.locations.iloc[i]['lat'], self.nav_widget.locations.iloc[i]['lon']],
-                popup=self.nav_widget.locations.iloc[i]['name'],
-                icon=folium.Icon(icon=str(self.nav_widget.locations.iloc[i]['index']), prefix='fa', color=self.nav_widget.locations.iloc[i]['color'], shadow_size=(0,0)),
-            )
-            marker.add_to(self.m)
-            self.markers.append(marker)
-            self.update_rover_location(self.nav_widget.current_latitude, self.nav_widget.current_longitude, self.nav_widget.current_heading)
+        # for i in range(len(self.nav_widget.locations)):
+        #     marker = folium.Marker(
+        #         location=[self.nav_widget.locations.iloc[i]['lat'], self.nav_widget.locations.iloc[i]['lon']],
+        #         popup=self.nav_widget.locations.iloc[i]['name'],
+        #         icon=folium.Icon(icon=str(self.nav_widget.locations.iloc[i]['index']), prefix='fa', color=self.nav_widget.locations.iloc[i]['color'], shadow_size=(0,0)),
+        #     )
+        #     marker.add_to(self.m)
+        #     self.markers.append(marker)
+        #     self.update_rover_location(self.nav_widget.current_latitude, self.nav_widget.current_longitude, self.nav_widget.current_heading)
 
         self.data = io.BytesIO()
         self.m.save(self.data, close_file=False)

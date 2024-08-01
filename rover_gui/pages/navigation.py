@@ -28,8 +28,8 @@ class Navigation(QWidget):
 
         self.lb_curr_position : QLabel
         self.lb_curr_heading : QLabel
-        self.pb_add_location : QPushButton
-        self.pb_delete_location : QPushButton
+        self.pb_add_waypoint : QPushButton
+        self.pb_delete_waypoint : QPushButton
         self.pb_update_location : QPushButton
         self.pb_record_location : QPushButton
         self.location_list : QListWidget
@@ -41,8 +41,9 @@ class Navigation(QWidget):
         self.lon_offset = 0
 
         #self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
-        self.locations = LocationManager()
-        self.route_list = RouteManager()
+        self.location_manager = LocationManager()
+        self.location_manager.load_locations()
+        self.route_manager = RouteManager()
 
         self.current_latitude = self.current_longitude = self.current_heading = -50.0
 
@@ -54,8 +55,8 @@ class Navigation(QWidget):
         self.update_position()
         self.update_orientation()
 
-        self.pb_add_location.clicked.connect(lambda: self.open_add_location_popup(False))
-        self.pb_delete_location.clicked.connect(self.delete_location)
+        self.pb_add_waypoint.clicked.connect(lambda: self.open_add_location_popup(False))
+        self.pb_delete_waypoint.clicked.connect(self.delete_location)
         self.pb_update_location.clicked.connect(self.folium_map_widget.update_locations)
         self.pb_record_location.clicked.connect(lambda: self.open_add_location_popup(True))
         self.pb_save_offset.clicked.connect(lambda: self.save_offset)
@@ -67,14 +68,7 @@ class Navigation(QWidget):
         self.compass_sub = ui_node.create_subscription(Compass, '/rover/auxiliary/compass', self.heading_callback, 1)
         
         self.load_gps_offset()
-        self.load_locations()
-
-    def handle_service_unavailability(self, sender_rb, service_name):
-        sender_rb.setAutoExclusive(False)
-        sender_rb.setChecked(False)
-        sender_rb.setAutoExclusive(True)
-        self.ui_node.get_logger().warn('%s service not available.' % service_name)
-        QMessageBox.warning(self, "Service Not Available", "The %s service is not available." % service_name)
+        self.update_location_list()
         
     def update_position(self): 
         with self.lock_position:
@@ -96,32 +90,12 @@ class Navigation(QWidget):
             self.current_heading = data.heading
         self.update_orientation()
 
-    def load_locations(self):
-        try:
-            self.locations = LocationManager()
-            self.location_list.clear()
-            with open(self.saved_locations_path, "r") as f:
-                for line in f:
-                    parts = line.strip().split(";")
-                    if len(parts) == 5: 
-                        index, name, latitude, longitude, color = parts
-                        # location = {
-                        #     "index": int(index),
-                        #     "name": name,
-                        #     "lat": float(latitude),
-                        #     "lon": float(longitude),
-                        #     "color": color
-                        # }
-                        location = Location(float(latitude), float(longitude), name)
-                        self.location_list.add_location(location)
-                        self.locations = self.locations._append(location, ignore_index=True)
-                        item = QListWidgetItem(f" {location['index']} - {location['name']}: ({location['lat']}, {location['lon']})")
-                        self.location_list.addItem(item)
-                self.folium_map_widget.update_locations()
-
-        except FileNotFoundError:
-            with open(self.saved_locations_path, "w") as f:
-                pass
+    def update_location_list(self):
+        self.location_list.clear()
+        for index, location in enumerate(self.location_manager.locations):
+            item = QListWidgetItem(f"({index}) {location.name}: ({location.latitude:.6f}, {location.longitude:.6f})")
+            self.location_list.addItem(item)
+            #self.folium_map_widget.update_locations()
 
     def delete_location(self):
         selected_items = self.location_list.selectedItems()
@@ -140,7 +114,7 @@ class Navigation(QWidget):
             for _, location in self.locations.iterrows():
                 f.write(f"{location['index']};{location['name']};{location['lat']};{location['lon']};{location['color']}\n")  
 
-        self.load_locations()
+        self.update_location_list()
 
     def record_location(self):
         try:

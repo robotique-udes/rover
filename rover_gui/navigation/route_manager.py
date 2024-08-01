@@ -1,6 +1,6 @@
 from navigation.location_manager import Location
 
-class Route(Location):
+class Route():
     def __init__(self):
         self.waypoints = []
 
