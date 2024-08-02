@@ -14,8 +14,8 @@ def generate_launch_description():
 
     return LaunchDescription([
         simulate_arm_arg,
-        IncludeLaunchDescription(
-            PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_can'), 'launch', 'can.launch.py'])])),
+        # IncludeLaunchDescription(
+        #     PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_can'), 'launch', 'can.launch.py'])])),
         
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_security'), 'launch', 'security_rover.launch.py'])])),
