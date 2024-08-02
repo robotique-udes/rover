@@ -10,17 +10,17 @@ dot(J2o.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) - J1y*sin(q1)
 dot(J2o.GetPosition(No), ny>) Result = J0y + q0 + J1x*sin(q1) + J1y*cos(q1)
 dot(J2o.GetPosition(No), nz>) Result = J0z + J1z
 
-dot(J3o.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*pi-q2) + J2z*cos(q1)*sin(0.5*pi-q2) - sin(q1)*(J1y+J2y)
-dot(J3o.GetPosition(No), ny>) Result = J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*pi-q2) + J2z*sin(q1)*sin(0.5*pi-q2)
-dot(J3o.GetPosition(No), nz>) Result = J0z + J1z + J2z*cos(0.5*pi-q2) - J2x*sin(0.5*pi-q2)
+dot(J3o.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*PI-q2) + J2z*cos(q1)*sin(0.5*PI-q2) - sin(q1)*(J1y+J2y)
+dot(J3o.GetPosition(No), ny>) Result = J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*PI-q2) + J2z*sin(q1)*sin(0.5*PI-q2)
+dot(J3o.GetPosition(No), nz>) Result = J0z + J1z + J2z*cos(0.5*PI-q2) - J2x*sin(0.5*PI-q2)
 
-dot(J4o.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*pi-q2) + J2z*cos(q1)*sin(0.5*pi-q2) + J3x*cos(q1)*cos(0.5*pi-q2-q3) + J3z*cos(q1)*sin(0.5*pi-q2-q3) - J3y*sin(q1) - sin(q1)*(J1y+J2y)
-dot(J4o.GetPosition(No), ny>) Result = J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*pi-q2) + J2z*sin(q1)*sin(0.5*pi-q2) + J3x*sin(q1)*cos(0.5*pi-q2-q3) + J3z*sin(q1)*sin(0.5*pi-q2-q3)
-dot(J4o.GetPosition(No), nz>) Result = J0z + J1z + J2z*cos(0.5*pi-q2) + J3z*cos(0.5*pi-q2-q3) - J2x*sin(0.5*pi-q2) - J3x*sin(0.5*pi-q2-q3)
+dot(J4o.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*PI-q2) + J2z*cos(q1)*sin(0.5*PI-q2) + J3x*cos(q1)*cos(0.5*PI-q2-q3) + J3z*cos(q1)*sin(0.5*PI-q2-q3) - J3y*sin(q1) - sin(q1)*(J1y+J2y)
+dot(J4o.GetPosition(No), ny>) Result = J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*PI-q2) + J2z*sin(q1)*sin(0.5*PI-q2) + J3x*sin(q1)*cos(0.5*PI-q2-q3) + J3z*sin(q1)*sin(0.5*PI-q2-q3)
+dot(J4o.GetPosition(No), nz>) Result = J0z + J1z + J2z*cos(0.5*PI-q2) + J3z*cos(0.5*PI-q2-q3) - J2x*sin(0.5*PI-q2) - J3x*sin(0.5*PI-q2-q3)
 
-dot(Po.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*pi-q2) + J2z*cos(q1)*sin(0.5*pi-q2) + J3x*cos(q1)*cos(0.5*pi-q2-q3) + J3z*cos(q1)*sin(0.5*pi-q2-q3) - sin(q1)*(J1y+J2y) + J4x*sin(q1)*cos(0.5*pi-q2-q3-q4) + J4z*sin(q1)*sin(0.5*pi-q2-q3-q4)
-dot(Po.GetPosition(No), ny>) Result = J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*pi-q2) + J2z*sin(q1)*sin(0.5*pi-q2) + J3x*sin(q1)*cos(0.5*pi-q2-q3) + J3z*sin(q1)*sin(0.5*pi-q2-q3) + J4x*sin(q1)*cos(0.5*pi-q2-q3-q4) + J4z*sin(q1)*sin(0.5*pi-q2-q3-q4)
-dot(Po.GetPosition(No), nz>) Result = J0z + J1z + J2z*cos(0.5*pi-q2) + J3z*cos(0.5*pi-q2-q3) + J4z*cos(0.5*pi-q2-q3-q4) - J2x*sin(0.5*pi-q2) - J3x*sin(0.5*pi-q2-q3) - J4x*sin(0.5*pi-q2-q3-q4)
+dot(Po.GetPosition(No), nx>) Result = J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*PI-q2) + J2z*cos(q1)*sin(0.5*PI-q2) + J3x*cos(q1)*cos(0.5*PI-q2-q3) + J3z*cos(q1)*sin(0.5*PI-q2-q3) - sin(q1)*(J1y+J2y) + J4x*sin(q1)*cos(0.5*PI-q2-q3-q4) + J4z*sin(q1)*sin(0.5*PI-q2-q3-q4)
+dot(Po.GetPosition(No), ny>) Result = J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*PI-q2) + J2z*sin(q1)*sin(0.5*PI-q2) + J3x*sin(q1)*cos(0.5*PI-q2-q3) + J3z*sin(q1)*sin(0.5*PI-q2-q3) + J4x*sin(q1)*cos(0.5*PI-q2-q3-q4) + J4z*sin(q1)*sin(0.5*PI-q2-q3-q4)
+dot(Po.GetPosition(No), nz>) Result = J0z + J1z + J2z*cos(0.5*PI-q2) + J3z*cos(0.5*PI-q2-q3) + J4z*cos(0.5*PI-q2-q3-q4) - J2x*sin(0.5*PI-q2) - J3x*sin(0.5*PI-q2-q3) - J4x*sin(0.5*PI-q2-q3-q4)
 
-GetAngleBetweenVectors(Pz>, nz>) %Alpha Result = acos(cos(0.5*pi-q2-q3-q4))
+GetAngleBetweenVectors(Pz>, nz>) %Alpha Result = acos(cos(0.5*PI-q2-q3-q4))
 GetAngleBetweenVectors(Py>, ny>) %Psi Result = acos(cos(q1))
