@@ -15,9 +15,13 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package(Armadillo REQUIRED)
+find_package(LAPACK REQUIRED)
+find_package(BLAS REQUIRED)
 
 include_directories(
   ${rover_msgs_INCLUDE_DIRS}
+  ${ARMADILLO_INCLUDE_DIRS}
 )
 
 add_executable(teleop src/teleop.cpp)
@@ -25,7 +29,13 @@ add_executable(teleop src/teleop.cpp)
 ament_target_dependencies(teleop
                           rclcpp
                           std_msgs
-                          rover_msgs)
+                          rover_msgs
+                          Armadillo)
+
+target_link_libraries(teleop
+                      ${ARMADILLO_LIBRARIES}
+                      ${LAPACK_LIBRARIES}
+                      ${BLAS_LIBRARIES})
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
