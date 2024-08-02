@@ -11,46 +11,17 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
-find_package(urdf REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(std_msgs REQUIRED)
-find_package(rover_msgs REQUIRED)
-find_package(sensor_msgs REQUIRED)
-find_package(tf2_ros REQUIRED)
+find_package(ament_cmake_python REQUIRED)
+find_package(rclpy REQUIRED)
 
-include_directories(
-  ${rover_msgs_INCLUDE_DIRS}
-)
+ament_target_dependencies(rclpy
+                          )
 
-add_executable(simulation src/simulation_status.cpp)
-add_executable(encoder_simulation src/encoder_status.cpp)
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+# install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
-ament_target_dependencies(simulation
-                          rclcpp
-                          std_msgs
-                          rover_msgs
-                          sensor_msgs
-                          tf2_ros)
-
-ament_target_dependencies(encoder_simulation
-                          rclcpp
-                          std_msgs
-                          rover_msgs
-                          sensor_msgs
-                          tf2_ros)
-
-install(
-  DIRECTORY 
-    launch
-    rover_rviz
-    rover_urdf
-  DESTINATION 
-    share/${PROJECT_NAME}/
-)
-
-install(TARGETS
-          simulation
-          encoder_simulation
-        DESTINATION lib/${PROJECT_NAME})
+install(PROGRAMS
+    rover_sim/main.py
+    DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
