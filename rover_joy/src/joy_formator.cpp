@@ -252,7 +252,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
         _controller_config.trigger_range_min = 1.0f;
         _controller_config.trigger_range_max = -1.0f;
 
-        _controller_config.joystick_dead_zone = 0.1f;
+        _controller_config.joystick_dead_zone = 0.0f;
     }
     else if (controller_type_name == std::string("Logitech") || controller_type_name == std::string("Logitech Generic"))
     {
