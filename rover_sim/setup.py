@@ -13,7 +13,7 @@ setup(
         ('share/' + package_name, ['package.xml']),
         ('share/' + package_name + '/launch', glob('launch/*.py')),
     ],
-    install_requires=['setuptools', 'numpy'],
+    install_requires=['setuptools'],
     zip_safe=True,
     maintainer='emile',
     maintainer_email='emilesavoie39@gmail.com',
