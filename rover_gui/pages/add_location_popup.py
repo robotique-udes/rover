@@ -3,7 +3,7 @@ from ament_index_python.packages import get_package_share_directory
 from PyQt5.QtWidgets import QWidget, QPushButton, QLineEdit, QComboBox
 from PyQt5 import uic
 
-from navigation.location_manager import Location
+from navigation.route_manager import Location
 
 class AddLocationPopup(QWidget):
     def __init__(self, nav_widget,ui_node, is_record):
@@ -33,19 +33,12 @@ class AddLocationPopup(QWidget):
             self.le_longitude.setEnabled(False)
 
     def add_location(self, button: QPushButton):
-        try:
-            with open(self.nav_widget.saved_locations_path, "r") as f:
-                lines = f.readlines()
-        except FileNotFoundError:
-            with open(self.saved_locations_path, "w") as f:
-                lines = []
-        with open(self.nav_widget.saved_locations_path, "a") as f:
-            index = len(lines) + 1 
-            f.write(f"{self.le_name.text()};{self.le_latitude.text()};{self.le_longitude.text()}\n")
 
-        self.nav_widget.location_list.clear()
-        self.nav_widget.load_locations()
+        self.nav_widget.route_manager.add_location_to_route(Location(self.le_name.text(),
+                                                                    float(self.le_latitude.text()),
+                                                                    float(self.le_longitude.text())))
 
+        self.nav_widget.update_waypoint_list()
         self.deleteLater()
     
     def cancel(self):

@@ -1,6 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 from threading import Lock
-from PyQt5.QtWidgets import QWidget, QPushButton, QCheckBox, QListWidget, QListWidgetItem, QLabel, QSlider
+from PyQt5.QtWidgets import QWidget, QPushButton, QComboBox, QListWidget, QListWidgetItem, QLabel, QSlider
 from PyQt5 import uic
 from rover_msgs.srv._compass_calibration import CompassCalibration
 from rover_msgs.msg import Gps
@@ -8,9 +8,7 @@ from rover_msgs.msg import Compass
 from pages.add_location_popup import AddLocationPopup
 from pages.calibrate_heading_popup import CalibrateHeadingPopup
 from pages.folium_map import FoliumMapWidget
-from navigation.location_manager import Location, LocationManager
-from navigation.route_manager import RouteManager
-import pandas
+from navigation.route_manager import Route, Location, RouteManager
 
 class Navigation(QWidget):
     EARTH_RADIUS = 6371
@@ -32,7 +30,9 @@ class Navigation(QWidget):
         self.pb_delete_waypoint : QPushButton
         self.pb_update_location : QPushButton
         self.pb_record_location : QPushButton
-        self.location_list : QListWidget
+        self.waypoint_list : QListWidget
+        self.cbox_routes : QComboBox
+        self.pb_load_route : QPushButton
 
         self.slider_lat_offset : QSlider
         self.slider_lon_offset : QSlider
@@ -41,11 +41,13 @@ class Navigation(QWidget):
         self.lon_offset = 0
 
         #self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
-        self.location_manager = LocationManager()
-        self.location_manager.load_locations()
-        self.route_manager = RouteManager()
+        self.route_manager = RouteManager(self.ui_node)
+        self.route_manager.load_routes()
+        self.loaded_route : Route
 
-        self.current_latitude = self.current_longitude = self.current_heading = -50.0
+        self.current_latitude = 51.453979297112134
+        self.current_longitude = -112.7136912987049
+        self.current_heading = 45
 
         self.folium_map_widget = FoliumMapWidget(self)
         self.verticalLayout.addWidget(self.folium_map_widget)
@@ -59,6 +61,8 @@ class Navigation(QWidget):
         self.pb_delete_waypoint.clicked.connect(self.delete_location)
         self.pb_update_location.clicked.connect(self.folium_map_widget.update_locations)
         self.pb_record_location.clicked.connect(lambda: self.open_add_location_popup(True))
+        self.pb_save_offset.clicked.connect(self.save_offset)
+        self.pb_load_route.clicked.connect(self.load_route)
         self.pb_save_offset.clicked.connect(lambda: self.save_offset)
         self.pb_calib_compass.clicked.connect(self.open_calibrate_heading_popup)
         self.slider_lat_offset.valueChanged.connect(self.offset_rover)
@@ -68,7 +72,8 @@ class Navigation(QWidget):
         self.compass_sub = ui_node.create_subscription(Compass, '/rover/auxiliary/compass', self.heading_callback, 1)
         
         self.load_gps_offset()
-        self.update_location_list()
+        self.update_waypoint_list()
+        self.update_routes_combobox()
         
     def update_position(self): 
         with self.lock_position:
@@ -90,22 +95,35 @@ class Navigation(QWidget):
             self.current_heading = data.heading
         self.update_orientation()
 
-    def update_location_list(self):
-        self.location_list.clear()
-        for index, location in enumerate(self.location_manager.locations):
-            item = QListWidgetItem(f"({index}) {location.name}: ({location.latitude:.6f}, {location.longitude:.6f})")
-            self.location_list.addItem(item)
-            #self.folium_map_widget.update_locations()
+    def update_waypoint_list(self):
+        self.waypoint_list.clear()
+        
+        if self.route_manager.current_route:
+            for index, waypoint in enumerate(self.route_manager.current_route.waypoints):
+                item = QListWidgetItem(f"({index}) {waypoint.name}: ({waypoint.latitude:.6f}, {waypoint.longitude:.6f})")
+                self.waypoint_list.addItem(item)
+                self.folium_map_widget.update_locations()
+
+    def update_routes_combobox(self):
+        if len(self.route_manager.routes) != 0:
+            self.ui_node.get_logger().info("Update CB")
+            self.cbox_routes.clear()
+            for route in self.route_manager.routes:
+                self.cbox_routes.addItem(route.name)
+                
+    def load_route(self):
+        self.route_manager.set_current_route(self.cbox_routes.currentText())
+        self.update_waypoint_list()
 
     def delete_location(self):
-        selected_items = self.location_list.selectedItems()
+        selected_items = self.waypoint_list.selectedItems()
         if not selected_items:
             return  
 
         for item in selected_items:
-            index = self.location_list.row(item)
+            index = self.waypoint_list.row(item)
             self.locations = self.locations.drop(index)
-            self.location_list.takeItem(index)
+            self.waypoint_list.takeItem(index)
 
         self.locations.reset_index(drop=True, inplace=True)
 
@@ -114,7 +132,7 @@ class Navigation(QWidget):
             for _, location in self.locations.iterrows():
                 f.write(f"{location['index']};{location['name']};{location['lat']};{location['lon']};{location['color']}\n")  
 
-        self.update_location_list()
+        self.update_waypoint_list()
 
     def record_location(self):
         try:
@@ -182,6 +200,7 @@ class Navigation(QWidget):
         self.hide()
 
     def __del__(self):
+        self.route_manager.__del__()
         self.ui_node.destroy_subscription(self.gps_sub)
         self.ui_node.destroy_subscription(self.compass_sub)
         self.alive = False
