@@ -144,6 +144,3 @@ def main(args=None):
     node = SimulationStatus()
     rclpy.spin(node)
     rclpy.shutdown()
-
-if __name__ == '__main__':
-    main()
