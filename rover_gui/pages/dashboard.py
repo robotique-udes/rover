@@ -114,11 +114,11 @@ class Dashboard(QWidget):
             return
 
         if sender_rb == self.rb_dt_none:
-            drivetrain_req.target_arbitration = DriveTrainArbitration.Request.NONE
+            drivetrain_req.target_arbitration.arbitration = DriveTrainArbitration.Constant.NONE
         elif sender_rb == self.rb_dt_teleop:
-            drivetrain_req.target_arbitration = DriveTrainArbitration.Request.TELEOP
+            drivetrain_req.target_arbitration.arbitration = DriveTrainArbitration.Constant.TELEOP
         elif sender_rb == self.rb_dt_autonomus:
-            drivetrain_req.target_arbitration = DriveTrainArbitration.Request.AUTONOMUS
+            drivetrain_req.target_arbitration.arbitration = DriveTrainArbitration.Constant.AUTONOMUS
 
         response = dt_arbitration_client.call(drivetrain_req)
         self.ui_node.get_logger().info("Response : " + str(response.current_arbitration))
@@ -151,7 +151,6 @@ class Dashboard(QWidget):
         response = lights_client.call(lights_req)
         self.ui_node.get_logger().info("Response : " + str(response.success))
         
-
     def antenna_arbitration_clicked(self):
         sender_rb = self.sender()
         if sender_rb is None:
