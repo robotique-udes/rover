@@ -149,7 +149,9 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     armMsg.position[rover_msgs::msg::ArmCmd::J2] = _currentJ2Pos;
     armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERTILT] = _currentGripperTilt;
     armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERROT] = _currentGripperRot;
-
+    
+    // Control mode toggle
+    // =========================================================================
     if (_controlModeToggle)
     {
         _controlMode = not _controlMode; // TO BE FIXED NOT PERFECT
@@ -174,11 +176,11 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
             _computedJointVelocity(3) * 0.001f;
             _computedJointVelocity(4) * 0.001f;
 
-            _currentJLPos += _computedJointVelocity(0) * 0.001f;
-            _currentJ0Pos += _computedJointVelocity(1) * 0.001f;
-            _currentJ1Pos += _computedJointVelocity(2) * 0.001f;
-            _currentJ2Pos += _computedJointVelocity(3) * 0.001f;
-            _currentGripperTilt += _computedJointVelocity(4) * 0.001f;
+            _currentJLPos += _computedJointVelocity(0) * 0.001f;       // Seems to be to fast with only one 0.001f
+            _currentJ0Pos += _computedJointVelocity(1) * 0.001f;       // Seems to be to fast with only one 0.001f
+            _currentJ1Pos += _computedJointVelocity(2) * 0.001f;       // Seems to be to fast with only one 0.001f
+            _currentJ2Pos += _computedJointVelocity(3) * 0.001f;       // Seems to be to fast with only one 0.001f
+            _currentGripperTilt += _computedJointVelocity(4) * 0.001f; // Seems to be to fast with only one 0.001f
 
             _pointPositions = computeDirectKinematic(RobotState(_currentJLPos, _currentJ0Pos, _currentJ1Pos, _currentJ2Pos, _currentGripperTilt));
 
@@ -187,8 +189,6 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
 
         if (_controlMode == JOINT)
         {
-            RCLCPP_INFO(rclcpp::get_logger("MODE"), "JOINT");
-
             if (_gripperMode)
             {
                 _currentGripperTilt += _gripperTilt * MAX_JOINT_SPEED;
