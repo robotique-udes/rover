@@ -136,6 +136,9 @@ class MainWindow(QMainWindow):
             self.close_application()
 
     def close_application(self):
+        for obj in self.pages_created:
+            obj.__del__()
+
         self.ui_node.destroy_node()
         self.executor.shutdown()
         QApplication.quit()

@@ -2,10 +2,9 @@ from ament_index_python.packages import get_package_share_directory
 import json
 
 class Location:
-    def __init__(self, name: str, latitude: float, longitude: float):
+    def __init__(self, latitude: float, longitude: float):
         self.latitude = latitude
         self.longitude = longitude
-        self.name = name
 
 class Route():
     def __init__(self):
@@ -30,7 +29,7 @@ class RouteManager():
         self.current_route.add_waypoint(location)
     
     def delete_location(self, index):
-        self.locations.pop(index)
+        self.current_route.waypoints.pop(index)
 
     def set_current_route(self, route_name: str):
         for route in self.routes:
@@ -49,7 +48,6 @@ class RouteManager():
                     route.name = route_data["name"]
                     for waypoint_data in route_data["waypoints"]:
                         location = Location(
-                            name = waypoint_data["name"],
                             latitude = float(waypoint_data["latitude"]),
                             longitude = float(waypoint_data["longitude"])
                         )
@@ -69,7 +67,6 @@ class RouteManager():
                 "name": route.name,
                 "waypoints": [
                     {
-                        "name": waypoint.name,
                         "latitude": waypoint.latitude,
                         "longitude": waypoint.longitude
                     } for waypoint in route.waypoints

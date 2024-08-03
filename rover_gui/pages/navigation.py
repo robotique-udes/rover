@@ -8,7 +8,7 @@ from rover_msgs.msg import Compass
 from pages.add_location_popup import AddLocationPopup
 from pages.calibrate_heading_popup import CalibrateHeadingPopup
 from pages.folium_map import FoliumMapWidget
-from navigation.route_manager import Route, Location, RouteManager
+from navigation.route_manager import Route, RouteManager
 
 class Navigation(QWidget):
     EARTH_RADIUS = 6371
@@ -40,14 +40,13 @@ class Navigation(QWidget):
         self.lat_offset = 0
         self.lon_offset = 0
 
-        #self.locations = pandas.DataFrame(columns=['index', 'name', 'lat', 'lon', 'color'])
         self.route_manager = RouteManager(self.ui_node)
         self.route_manager.load_routes()
         self.loaded_route : Route
 
         self.current_latitude = 51.453979297112134
         self.current_longitude = -112.7136912987049
-        self.current_heading = 45
+        self.current_heading = 0
 
         self.folium_map_widget = FoliumMapWidget(self)
         self.verticalLayout.addWidget(self.folium_map_widget)
@@ -100,7 +99,7 @@ class Navigation(QWidget):
         
         if self.route_manager.current_route:
             for index, waypoint in enumerate(self.route_manager.current_route.waypoints):
-                item = QListWidgetItem(f"({index}) {waypoint.name}: ({waypoint.latitude:.6f}, {waypoint.longitude:.6f})")
+                item = QListWidgetItem(f"({index}) : ({waypoint.latitude:.6f}, {waypoint.longitude:.6f})")
                 self.waypoint_list.addItem(item)
                 self.folium_map_widget.update_locations()
 
@@ -122,17 +121,10 @@ class Navigation(QWidget):
 
         for item in selected_items:
             index = self.waypoint_list.row(item)
-            self.locations = self.locations.drop(index)
-            self.waypoint_list.takeItem(index)
-
-        self.locations.reset_index(drop=True, inplace=True)
-
-        with open(self.saved_locations_path, "w") as f:
-            f.truncate(0)
-            for _, location in self.locations.iterrows():
-                f.write(f"{location['index']};{location['name']};{location['lat']};{location['lon']};{location['color']}\n")  
+            self.route_manager.delete_location(index)
 
         self.update_waypoint_list()
+        self.folium_map_widget.update_locations()
 
     def record_location(self):
         try:

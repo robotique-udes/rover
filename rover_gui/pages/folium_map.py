@@ -73,8 +73,8 @@ class FoliumMapWidget(QWidget):
                 if waypoint == self.nav_widget.route_manager.current_route.waypoints[-1]:
                     goal_marker = folium.Marker(
                         location = [waypoint.latitude, waypoint.longitude],
-                        popup = waypoint.name,
-                        icon=folium.Icon(icon="bullseye", prefix='fa', color='green', shadow_size=(0,0)),
+                        popup = "Goal",
+                        icon=folium.Icon(icon="bullseye", prefix='fa', color='green', shadow_size=(0,0))
                     ).add_to(self.m)
                     self.markers.append(goal_marker)
 
@@ -87,16 +87,15 @@ class FoliumMapWidget(QWidget):
                                 text_color="#000000",
                                 number=index,
                                 inner_icon_style="margin-top:0;",
-                            ),
-                        popup=waypoint.name,
+                            )
                     ).add_to(self.m)
 
                 self.markers.append(checkpoint_marker)
-                self.update_rover_location(self.nav_widget.current_latitude, self.nav_widget.current_longitude, self.nav_widget.current_heading)
-
-            self.data = io.BytesIO()
-            self.m.save(self.data, close_file=False)
-            self.update_signal.update_signal.emit()
+                
+        self.update_rover_location(self.nav_widget.current_latitude, self.nav_widget.current_longitude, self.nav_widget.current_heading)
+        self.data = io.BytesIO()
+        self.m.save(self.data, close_file=False)
+        self.update_signal.update_signal.emit()
         
 
     def update_rover_location(self, new_lat, new_lon, new_heading):

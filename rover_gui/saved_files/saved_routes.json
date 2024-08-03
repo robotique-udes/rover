@@ -1,144 +1,96 @@
 {
-    "routes": [
+  "routes": [
+    {
+      "name": "Route 1",
+      "waypoints": [
         {
-            "name": "Route 1",
-            "waypoints": [
-                {
-                    "name": "Start",
-                    "latitude": 40.7128,
-                    "longitude": -74.006
-                },
-                {
-                    "name": "Checkpoint 1",
-                    "latitude": 40.7589,
-                    "longitude": -73.9851
-                },
-                {
-                    "name": "End",
-                    "latitude": 40.7831,
-                    "longitude": -73.9712
-                },
-                {
-                    "name": "test",
-                    "latitude": 1.0,
-                    "longitude": 1.0
-                },
-                {
-                    "name": "test333",
-                    "latitude": 23.0,
-                    "longitude": 23.0
-                }
-            ]
+          "latitude": 40.7589,
+          "longitude": -73.9851
         },
         {
-            "name": "Route 2",
-            "waypoints": [
-                {
-                    "name": "Start",
-                    "latitude": 34.0522,
-                    "longitude": -118.2437
-                },
-                {
-                    "name": "Checkpoint 1",
-                    "latitude": 34.0689,
-                    "longitude": -118.4452
-                },
-                {
-                    "name": "Checkpoint 2",
-                    "latitude": 34.1478,
-                    "longitude": -118.1445
-                },
-                {
-                    "name": "End",
-                    "latitude": 34.0522,
-                    "longitude": -118.2437
-                }
-            ]
+          "latitude": 40.7831,
+          "longitude": -73.9712
         },
         {
-            "name": "Route 3",
-            "waypoints": [
-                {
-                    "name": "Start",
-                    "latitude": 51.45404213365335,
-                    "longitude": -112.71371731604133
-                },
-                {
-                    "name": "Checkpoint 1",
-                    "latitude": 51.4550,
-                    "longitude": -112.7135
-                },
-                {
-                    "name": "Checkpoint 2",
-                    "latitude": 51.4555,
-                    "longitude": -112.7140
-                },
-                {
-                    "name": "Checkpoint 3",
-                    "latitude": 51.4550,
-                    "longitude": -112.7145
-                },
-                {
-                    "name": "Checkpoint 4",
-                    "latitude": 51.4540,
-                    "longitude": -112.7140
-                },
-                {
-                    "name": "Checkpoint 5",
-                    "latitude": 51.4530,
-                    "longitude": -112.7135
-                },
-                {
-                    "name": "Checkpoint 6",
-                    "latitude": 51.4535,
-                    "longitude": -112.7130
-                },
-                {
-                    "name": "End",
-                    "latitude": 51.45404213365335,
-                    "longitude": -112.71371731604133
-                }
-            ]
-        },
-        {
-            "name": "Route 4",
-            "waypoints": [
-                {
-                    "name": "Start",
-                    "latitude": 51.4539087537815,
-                    "longitude": -112.71401787774725
-                },
-                {
-                    "name": "Checkpoint 1",
-                    "latitude": 51.45367141402079,
-                    "longitude": -112.71437192931471
-                },
-                {
-                    "name": "Checkpoint 2",
-                    "latitude": 51.453601214700186,
-                    "longitude": -112.71471256983791
-                },
-                {
-                    "name": "Checkpoint 3",
-                    "latitude": 51.45372657055412,
-                    "longitude": -112.71490032445702
-                },
-                {
-                    "name": "Checkpoint 4",
-                    "latitude": 51.45378339842783,
-                    "longitude": -112.71514708767067
-                },
-                {
-                    "name": "Checkpoint 5",
-                    "latitude": 51.453945524619954,
-                    "longitude": -112.71530802020133
-                },
-                {
-                    "name": "End",
-                    "latitude": 51.454161134849386,
-                    "longitude": -112.71558160550343
-                }
-            ]
+          "latitude": 23.0,
+          "longitude": 23.0
         }
-    ]
+      ]
+    },
+    {
+      "name": "Route 2",
+      "waypoints": [
+        {
+          "latitude": 34.0522,
+          "longitude": -118.2437
+        },
+        {
+          "latitude": 34.0689,
+          "longitude": -118.4452
+        },
+        {
+          "latitude": 34.1478,
+          "longitude": -118.1445
+        },
+        {
+          "latitude": 34.0522,
+          "longitude": -118.2437
+        }
+      ]
+    },
+    {
+      "name": "Route 3",
+      "waypoints": [
+        {
+          "latitude": 51.455,
+          "longitude": -112.7135
+        },
+        {
+          "latitude": 51.455,
+          "longitude": -112.7145
+        },
+        {
+          "latitude": 51.454,
+          "longitude": -112.714
+        },
+        {
+          "latitude": 51.4535,
+          "longitude": -112.713
+        }
+      ]
+    },
+    {
+      "name": "Route 4",
+      "waypoints": [
+        {
+          "latitude": 51.4539087537815,
+          "longitude": -112.71401787774725
+        },
+        {
+          "latitude": 51.45367141402079,
+          "longitude": -112.71437192931471
+        },
+        {
+          "latitude": 51.453601214700186,
+          "longitude": -112.71471256983791
+        },
+        {
+          "latitude": 51.45372657055412,
+          "longitude": -112.71490032445702
+        },
+        {
+          "latitude": 51.45378339842783,
+          "longitude": -112.71514708767067
+        },
+        {
+          "latitude": 51.453945524619954,
+          "longitude": -112.71530802020133
+        },
+        {
+          "latitude": 51.454161134849386,
+          "longitude": -112.71558160550343
+        }
+      ]
+    }
+  ]
 }
