@@ -26,7 +26,6 @@ private:
     bool _joyMsgReceived = false;
 
     rclcpp::Parameter _paramMaxSpeed;
-    rclcpp::Parameter _paramCoeffNb;
     MovingAverage<float, COEFF_NB> _jogAverage_r1 = MovingAverage<float, COEFF_NB>(0.0f);
     MovingAverage<float, COEFF_NB> _jogAverage_l1 = MovingAverage<float, COEFF_NB>(0.0f);
     Timer<uint64_t, millis> _timer_joyMsg = Timer<uint64_t, millis>(250);
@@ -88,7 +87,8 @@ void JogAntenna::cbTimerJogCmd()
     }
     else
     {
-        RCLCPP_WARN(LOGGER, "No joy message is received");
+        RCLCPP_WARN_THROTTLE(LOGGER, CLOCK, 1000, "No joy message is received");
+        // (LOGGERLOGGER, "No joy message is received");
         jogCmd.enable = false;
         jogCmd.speed = 0.0;
         _pub_jog->publish(jogCmd);
