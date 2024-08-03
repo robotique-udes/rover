@@ -62,7 +62,7 @@ public:
         float trigger_range_min = -1.0f;
         float trigger_range_max = 1.0f;
 
-        float joystick_dead_zone = 0.2f;
+        float joystick_dead_zone = 0.0f;
 
         // Point this pointer to a function for a controller which needs
         // specific custom execution each publish loop. This can be used to
