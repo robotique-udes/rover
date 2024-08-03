@@ -9,27 +9,27 @@ def generate_launch_description():
 
     node_antenna_abtr = Node(package="rover_antenna",
                          namespace="/base/antenna",
-                         executable="antenna_abtr",
+                         executable="arbitration",
                          name="arbitration")
 
     node_antenna_jog = Node(package="rover_antenna",
                                   namespace="/base/antenna",
-                                  executable="antenna_joy",
+                                  executable="joy_mode",
                                   name="teleop",
                                   parameters=[{"max_speed": 3.14159/8}],
                                   )
 
     node_antenna_auto = Node(package="rover_antenna",
                               namespace="/base/antenna",
-                              executable="antenna_auto",
+                              executable="auto_mode",
                               name="autonomus",
                               parameters=[{"max_speed": 3.14159/8}],
                               )
     
     node_udp = Node(package="rover_antenna",
                               namespace="/base/antenna",
-                              executable="antenna_udp",
-                              name="client_to_esp",
+                              executable="udp",
+                              name="udp",
                               )
 
     ld.add_action(node_antenna_abtr)
