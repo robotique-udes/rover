@@ -62,7 +62,7 @@ public:
         float trigger_range_min = -1.0f;
         float trigger_range_max = 1.0f;
 
-        float joystick_dead_zone = 0.2f;
+        float joystick_dead_zone = 0.0f;
 
         // Point this pointer to a function for a controller which needs
         // specific custom execution each publish loop. This can be used to
@@ -203,10 +203,10 @@ void JoyFormator::callbackPubJoy()
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT1] = getJoyValue<bool>(Keybinding::ext1);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT2] = getJoyValue<bool>(Keybinding::ext2);
 
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] = CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_front), -1.0f, 1.0f);
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] = CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_side), -1.0f, 1.0f);
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] = CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_front), -1.0f, 1.0f);
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] = CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_side), -1.0f, 1.0);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_front), -1.0f, 1.0f)));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE] = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_side), -1.0f, 1.0f)));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT] = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_front), -1.0f, 1.0f)));
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE] = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_side), -1.0f, 1.0)));
 
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(float, CONSTRAIN(getJoyValue<float>(Keybinding::l2), -1.0f, 1.0f), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(float, CONSTRAIN(getJoyValue<float>(Keybinding::r2), -1.0f, 1.0f), _controller_config.trigger_range_min, _controller_config.trigger_range_max, 0.0f, 1.0f);
@@ -287,7 +287,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
         _controller_config.trigger_range_min = 0.0f;
         _controller_config.trigger_range_max = 1.0f;
 
-        _controller_config.joystick_dead_zone = 0.05f;
+        _controller_config.joystick_dead_zone = 0.0f;
 
         _controller_config.custom_steps = &JoyFormator::customStepsLogitech;
     }
