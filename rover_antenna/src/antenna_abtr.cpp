@@ -14,17 +14,17 @@ private:
     void cbTimerSendCmd();
     void callbackJog(const rover_msgs::msg::AntennaCmd msg_);
     void callbackAuto(const rover_msgs::msg::AntennaCmd msg_);
-    void cbSetAbtr(const std::shared_ptr<rover_msgs::srv::AntennaArbitration::Request> request_, 
-                    std::shared_ptr<rover_msgs::srv::AntennaArbitration::Response> response_);
+    void cbSetAbtr(const std::shared_ptr<rover_msgs::srv::AntennaArbitration::Request> request_,
+                   std::shared_ptr<rover_msgs::srv::AntennaArbitration::Response> response_);
     void sendCmd();
-  
+
     rclcpp::TimerBase::SharedPtr _timer_SendCmd;
     rclcpp::Subscription<rover_msgs::msg::AntennaCmd>::SharedPtr _sub_jog;
     rclcpp::Subscription<rover_msgs::msg::AntennaCmd>::SharedPtr _sub_auto;
     rclcpp::Publisher<rover_msgs::msg::AntennaCmd>::SharedPtr _pub_abtr;
     rclcpp::Publisher<rover_msgs::msg::AntennaArbitrationStatus>::SharedPtr _pub_abtrStatus;
     rclcpp::Service<rover_msgs::srv::AntennaArbitration>::SharedPtr _service_ArbitrationMode;
-    
+
     rover_msgs::msg::AntennaCmd _cmdJog;
     rover_msgs::msg::AntennaCmd _cmdAuto;
 
@@ -45,15 +45,15 @@ int main(int argc, char *argv[])
 Arbitration::Arbitration() : Node("arbitration")
 {
     _sub_jog = this->create_subscription<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop",
-                                                                     1,
-                                                                     [this](const rover_msgs::msg::AntennaCmd msg)
-                                                                     { callbackJog(msg); });
-                                                                     
+                                                                      1,
+                                                                      [this](const rover_msgs::msg::AntennaCmd msg)
+                                                                      { callbackJog(msg); });
+
     _sub_auto = this->create_subscription<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto",
-                                                                     1,
-                                                                     [this](const rover_msgs::msg::AntennaCmd msg)
-                                                                     { callbackAuto(msg); });
-    
+                                                                       1,
+                                                                       [this](const rover_msgs::msg::AntennaCmd msg)
+                                                                       { callbackAuto(msg); });
+
     _pub_abtr = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/out/goal", 1);
 
     _pub_abtrStatus = this->create_publisher<rover_msgs::msg::AntennaArbitrationStatus>("/base/antenna/arbitration/status", 1);
@@ -105,12 +105,10 @@ void Arbitration::sendCmd()
         _pub_abtr->publish(cmdAbtr);
         RCLCPP_ERROR(LOGGER, "Wrong service message!!! Message sent : %d. Expected 0, 1 or 2", _arbitrationRequest.target_arbitration);
     }
-    
+
     _pub_abtrStatus->publish(_arbitrationStatus);
 
-    if ((_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::TELEOP && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::TELEOP)
-        || (_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::AUTONOMUS && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::AUTONOMUS)
-        || (_arbitrationStatus.arbitration_status == rover_msgs::msg::AntennaArbitrationStatus::NOT_MOVING && _arbitrationRequest.target_arbitration == rover_msgs::srv::AntennaArbitration_Request::NOT_MOVING))
+    if (_arbitrationStatus.arbitration_status == _arbitrationRequest.target_arbitration)
     {
         _arbitrationResponse.success = true;
     }
@@ -118,11 +116,12 @@ void Arbitration::sendCmd()
     {
         RCLCPP_ERROR(LOGGER, "Bad arbitration status");
         _arbitrationResponse.success = false;
+        _arbitrationStatus.arbitration_status = rover_msgs::srv::AntennaArbitration_Request::NOT_MOVING;
     }
 }
 
-void Arbitration::cbSetAbtr(const std::shared_ptr<rover_msgs::srv::AntennaArbitration::Request> request_, 
-                    std::shared_ptr<rover_msgs::srv::AntennaArbitration::Response> response_)
+void Arbitration::cbSetAbtr(const std::shared_ptr<rover_msgs::srv::AntennaArbitration::Request> request_,
+                            std::shared_ptr<rover_msgs::srv::AntennaArbitration::Response> response_)
 {
     _arbitrationRequest = *request_;
     *response_ = _arbitrationResponse;
