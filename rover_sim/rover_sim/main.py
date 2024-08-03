@@ -37,7 +37,7 @@ class SimulationStatus(Node):
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
         
-        self.get_logger().info(str(pointPos[5, 2]))
+        # self.get_logger().info(str(pointPos[5, 2]))
 
     def computeDirectKin(self, qPosition):
         pointPos = np.zeros((6, 3))
@@ -90,7 +90,7 @@ class SimulationStatus(Node):
         
         pointPos[5, 0] = J0x + J1x * m.cos(q1) + J2x * m.cos(q1) * m.cos(0.5 * PI - q2) + J2z * m.cos(q1) * m.sin(0.5 * PI - q2) + J3x * m.cos(q1) * m.cos(0.5 * PI - q2 - q3) + J3z * m.cos(q1) * m.sin(0.5 * PI - q2 - q3) - m.sin(q1) * (J1y + J2y) + J4x * m.cos(q1) * m.cos(0.5 * PI - q2 - q3 - q4) + J4z * m.cos(q1) * m.sin(0.5 * PI - q2 - q3 - q4)
         pointPos[5, 1] = J0y + q0 + J1x * m.sin(q1) + m.cos(q1) * (J1y + J2y) + J2x * m.sin(q1) * m.cos(0.5 * PI - q2) + J2z * m.sin(q1) * m.sin(0.5 * PI - q2) + J3x * m.sin(q1) * m.cos(0.5 * PI - q2 - q3) + J3z * m.sin(q1) * m.sin(0.5 * PI - q2 - q3) + J4x * m.sin(q1) * m.cos(0.5 * PI - q2 - q3 - q4) + J4z * m.sin(q1) * m.sin(0.5 * PI - q2 - q3 - q4)
-        pointPos[5, 2] = J0z + J1z + J2z * m.cos(0.5 * PI - q2) + J3z * m.cos(0.5 * PI - q2 - q3) + J4z * m.cos(0.5 * PI - q2 - q3 - q4) + J2x * m.sin(0.5 * PI - q2) + J3x * m.sin(0.5 * PI - q2 - q3) + J4x * m.cos(0.5 * PI - q2 - q3 - q4)  
+        pointPos[5, 2] = J0z + J1z + J2z * m.cos(0.5 * PI - q2) + J3z * m.cos(0.5 * PI - q2 - q3) + J4z * m.cos(0.5 * PI - q2 - q3 - q4) + J2x * m.sin(0.5 * PI - q2) + J3x * m.sin(0.5 * PI - q2 - q3) + J4x * m.sin(0.5 * PI - q2 - q3 - q4)  
 
         return pointPos
         
