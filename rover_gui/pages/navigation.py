@@ -62,7 +62,6 @@ class Navigation(QWidget):
         self.pb_record_location.clicked.connect(lambda: self.open_add_location_popup(True))
         self.pb_save_offset.clicked.connect(self.save_offset)
         self.pb_load_route.clicked.connect(self.load_route)
-        self.pb_save_offset.clicked.connect(lambda: self.save_offset)
         self.pb_calib_compass.clicked.connect(self.open_calibrate_heading_popup)
         self.slider_lat_offset.valueChanged.connect(self.offset_rover)
         self.slider_lon_offset.valueChanged.connect(self.offset_rover)
