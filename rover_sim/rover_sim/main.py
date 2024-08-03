@@ -7,6 +7,7 @@ import math as m
 from math import pi as PI
 import numpy as np
 import matplotlib.pyplot as plt
+from mpl_toolkits.mplot3d import Axes3D
 
 class SimulationStatus(Node):
     
@@ -144,3 +145,6 @@ def main(args=None):
     node = SimulationStatus()
     rclpy.spin(node)
     rclpy.shutdown()
+
+if __name__ == '__main__':
+    main()
