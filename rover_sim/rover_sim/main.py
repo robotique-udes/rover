@@ -7,7 +7,6 @@ import math as m
 from math import pi as PI
 import numpy as np
 import matplotlib.pyplot as plt
-from mpl_toolkits.mplot3d import Axes3D
 
 class SimulationStatus(Node):
     
@@ -25,7 +24,6 @@ class SimulationStatus(Node):
         plt.show()
         
     def simulationCallback(self, ArmMsg: ArmCmd):
-        # self.get_logger().info(str(ArmMsg))
         
         self.JL_pos = ArmMsg.position[ArmCmd.JL]
         self.J0_pos = ArmMsg.position[ArmCmd.J0]
@@ -37,8 +35,6 @@ class SimulationStatus(Node):
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
         
-        # self.get_logger().info(str(pointPos[5, 2]))
-
     def computeDirectKin(self, qPosition):
         pointPos = np.zeros((6, 3))
         
