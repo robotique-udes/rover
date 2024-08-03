@@ -11,6 +11,7 @@
 #include <armadillo>
 
 #define MAX_JOINT_SPEED 0.0017453f // 10 deg/s - (0.1745 rad/s)
+#define MAX_CART_JOINT_SPEED 0.17453f
 
 struct RobotState
 {
@@ -113,7 +114,7 @@ Teleop::Teleop() : Node("teleop")
     _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("/rover/arm/cmd/in/teleop", 1);
 
     _controlMode = JOINT;
-    _maxJointVelocity = {MAX_JOINT_SPEED * 0.001f, MAX_JOINT_SPEED * 0.001f, MAX_JOINT_SPEED * 0.001f, MAX_JOINT_SPEED * 0.001f, MAX_JOINT_SPEED * 0.001f};
+    _maxJointVelocity = {MAX_JOINT_SPEED, MAX_JOINT_SPEED, MAX_JOINT_SPEED, MAX_JOINT_SPEED, MAX_JOINT_SPEED};
 }
 
 void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
@@ -184,11 +185,11 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
 
             _constrainedJointVelocity = constrainJointVelocity(_computedJointVelocity, _maxJointVelocity);
 
-            _currentJLPos += _computedJointVelocity(0) * MAX_JOINT_SPEED;
-            _currentJ0Pos += _computedJointVelocity(1) * MAX_JOINT_SPEED;
-            _currentJ1Pos += _computedJointVelocity(2) * MAX_JOINT_SPEED;
-            _currentJ2Pos += _computedJointVelocity(3) * MAX_JOINT_SPEED;
-            _currentGripperTilt += _computedJointVelocity(4) * MAX_JOINT_SPEED;
+            _currentJLPos += _constrainedJointVelocity(0);
+            _currentJ0Pos += _constrainedJointVelocity(1);
+            _currentJ1Pos += _constrainedJointVelocity(2);
+            _currentJ2Pos += _constrainedJointVelocity(3);
+            _currentGripperTilt += _constrainedJointVelocity(4);
         }
 
         if (_controlMode == JOINT)
@@ -280,27 +281,26 @@ arma::mat55 Teleop::computeJacobian(const RobotState &state)
 
 arma::vec5 Teleop::constrainJointVelocity(arma::vec5 jointVelocity, arma::vec5 maxJointVelocity)
 {
-    //NEEDS FIXING
-    float highestVelocityRatio = jointVelocity[1] / maxJointVelocity[1];
-    float currentVelocityRatio;
-    arma::vec5 constrainedVelocity;
-
-    for (uint8_t i = 0; i < (uint8_t)jointVelocity.n_elem; i++)
+    arma::vec5 constrainedVelocity = jointVelocity;
+    float highestVelocityRatio = 0.0f;
+    
+    for (uint8_t i = 0; i < jointVelocity.n_elem; i++)
     {
-        currentVelocityRatio = jointVelocity[i] / maxJointVelocity[i];
+        float currentVelocityRatio = std::abs(jointVelocity[i]) / maxJointVelocity[i];
         if (currentVelocityRatio > highestVelocityRatio)
         {
             highestVelocityRatio = currentVelocityRatio;
         }
     }
 
-    for (uint8_t i = 0; i < (uint8_t)jointVelocity.n_elem; i++)
+    if (highestVelocityRatio > 1.0f)
     {
-        constrainedVelocity[i] = jointVelocity[i] / highestVelocityRatio;
+        constrainedVelocity /= highestVelocityRatio;
     }
 
     return constrainedVelocity;
 }
+
 
 int main(int argc, char *argv[])
 {
