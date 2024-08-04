@@ -106,6 +106,7 @@ private:
     arma::vec5 _computedJointVelocity;
     arma::vec5 _constrainedJointVelocity;
     arma::vec _maxJointVelocity;
+    arma::vec5 _cartesianMaxJointVelocity;
     arma::mat _pointPositions;
 
     sCurrentJointVelocity _currentState = sCurrentJointVelocity(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -141,7 +142,7 @@ private:
 
     arma::mat55 computeJacobian(const sCurrentJointVelocity &state);
     arma::mat computeDirectKinematic(const sCurrentJointVelocity &state);
-    arma::vec5 constrainJointVelocity(arma::vec5 jointVelocity, arma::vec5 maxJointVelocity);
+    arma::vec5 constrainJointVelocity(arma::vec5 jointVelocity, arma::vec maxJointVelocity);
 
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_arm;
     rclcpp::Publisher<rover_msgs::msg::ArmCmd>::SharedPtr _pub_arm_teleop_in;
@@ -162,6 +163,7 @@ Teleop::Teleop() : Node("teleop")
     _updatedJoint = false;
     _currentJointPos = {_currentJLPos, _currentJ0Pos, _currentJ1Pos, _currentJ2Pos, _currentGripperTilt, _currentGripperRot, _currentGripperState};
     _maxJointVelocity = {maxJLVelocity, maxJ0Velocity, maxJ1Velocity, maxJ2Velocity, maxGripperTiltVelocity, maxGripperRotVelocity, maxGripperCloseVelocity}; // THIS IS TO BE UPDATED WITH TRUE INDIVIDUAL MAX SPEED - REPLACE WITH CONST EXPRESSIONS
+    _cartesianMaxJointVelocity = {maxJLVelocity, maxJ0Velocity, maxJ1Velocity, maxJ2Velocity, maxGripperTiltVelocity};                                        // THIS IS TO BE UPDATED WITH TRUE INDIVIDUAL MAX SPEED - REPLACE WITH CONST EXPRESSIONS
 }
 
 void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
@@ -184,8 +186,8 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     _xVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] * -1.0f;
     _yVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_LEFT] - joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_RIGHT];
     _zVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT];
-    _alphaVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT];
-    _psiVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
+    _alphaVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_UP] - joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_DOWN];
+    _psiVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::B] - joyMsg->joy_data[rover_msgs::msg::Joy::X];
 
     // Initialize controls to previous values
     // =========================================================================
@@ -210,33 +212,26 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     {
         if (_controlMode == CARTESIAN)
         {
-            if (_fixedCartesianMode)
-            {
-                _desiredCartesianVelocity = {_xVelocity * 0.0f, _yVelocity * 0.0f, _zVelocity * 0.0f, _alphaVelocity, _psiVelocity};
-            }
-            else
-            {
-                _desiredCartesianVelocity = {_xVelocity, _yVelocity, _zVelocity, _alphaVelocity * 0.0f, _psiVelocity * 0.0f};
-            }
+            _desiredCartesianVelocity = {_xVelocity, _yVelocity, _zVelocity, _alphaVelocity, _psiVelocity};
 
-            _jacobian = computeJacobian(sCurrentJointVelocity(_currentJLPos, _currentJ0Pos, _currentJ1Pos, _currentJ2Pos, _currentGripperTilt));
+            _jacobian = computeJacobian(sCurrentJointVelocity(_currentJointPos[JL], _currentJointPos[J0], _currentJointPos[J1], _currentJointPos[J2], _currentJointPos[GRIPPER_TILT]));
             _inverseJacobian = arma::inv(_jacobian);
 
             _computedJointVelocity = _inverseJacobian * _desiredCartesianVelocity;
 
-            _constrainedJointVelocity = constrainJointVelocity(_computedJointVelocity, _maxJointVelocity);
+            _constrainedJointVelocity = constrainJointVelocity(_computedJointVelocity, _cartesianMaxJointVelocity);
 
-            _currentJLPos += _constrainedJointVelocity(0);
-            _currentJ0Pos += _constrainedJointVelocity(1);
-            _currentJ1Pos += _constrainedJointVelocity(2);
-            _currentJ2Pos += _constrainedJointVelocity(3);
-            _currentGripperTilt += _constrainedJointVelocity(4);
-            
+            _currentJointPos[JL] += _constrainedJointVelocity(0);
+            _currentJointPos[J0] += _constrainedJointVelocity(1);
+            _currentJointPos[J1] += _constrainedJointVelocity(2);
+            _currentJointPos[J2] += _constrainedJointVelocity(3);
+            _currentJointPos[GRIPPER_TILT] += _constrainedJointVelocity(4);
+
             if (_gripperState)
             {
                 _currentJointPos[GRIPPER_CLOSE] += _gripperState * _maxJointVelocity[GRIPPER_CLOSE];
             }
-            else if(_currentJointPos[GRIPPER_CLOSE] > 0.0f)
+            else if (_currentJointPos[GRIPPER_CLOSE] > 0.0f)
             {
                 _currentJointPos[GRIPPER_CLOSE] -= 1.0f * _maxJointVelocity[GRIPPER_CLOSE];
             }
@@ -284,7 +279,7 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
             {
                 _currentJointPos[GRIPPER_CLOSE] += _gripperState * _maxJointVelocity[GRIPPER_CLOSE];
             }
-            else if(_currentJointPos[GRIPPER_CLOSE] > 0.0f)
+            else if (_currentJointPos[GRIPPER_CLOSE] > 0.0f)
             {
                 _currentJointPos[GRIPPER_CLOSE] -= 1.0f * _maxJointVelocity[GRIPPER_CLOSE];
             }
@@ -340,7 +335,7 @@ arma::mat55 Teleop::computeJacobian(const sCurrentJointVelocity &state)
     return J;
 }
 
-arma::vec5 Teleop::constrainJointVelocity(arma::vec5 jointVelocity, arma::vec5 maxJointVelocity)
+arma::vec5 Teleop::constrainJointVelocity(arma::vec5 jointVelocity, arma::vec maxJointVelocity)
 {
     arma::vec5 constrainedVelocity = jointVelocity;
     float highestVelocityRatio = 0.0f;
