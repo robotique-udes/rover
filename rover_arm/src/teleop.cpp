@@ -13,14 +13,14 @@
 // =============================================================================
 // This node has for goal to control the robotic arm of the rover.
 //
-// For broader information about the mathematics behind the calculations, please 
+// For broader information about the mathematics behind the calculations, please
 // consult the readme for more information
 //
 // This node sends its calculated messages to the motors and to the simulation
 // =============================================================================
 
-#define MAX_JOINT_SPEED 0.0017453f 
-#define MAX_LIN_SPEED 0.00017453f  
+#define MAX_JOINT_SPEED 0.0017453f
+#define MAX_LIN_SPEED 0.00017453f
 
 const float J0x = 0.0f;
 const float J0y = 0.0f;
@@ -79,13 +79,24 @@ private:
     float _gripperRot;
     float _gripperState;
 
+    enum eJoints
+    {
+        JL = 0,
+        J0 = 1,
+        J1 = 2,
+        J2 = 3,
+        GRIPPER_TILT = 4,
+        GRIPPER_ROT = 5,
+        GRIPPER_CLOSE = 6
+    };
+
     // CARTESIAN CONTROL COMMANDS
     //  =========================================================================
     float _xVelocity;
     float _yVelocity;
     float _zVelocity;
-    float _alphaVelocity; 
-    float _psiVelocity;   
+    float _alphaVelocity;
+    float _psiVelocity;
 
     // CARTESIAN VECTORS AND MATRICES
     //  =========================================================================
@@ -94,7 +105,7 @@ private:
     arma::mat55 _inverseJacobian;
     arma::vec5 _computedJointVelocity;
     arma::vec5 _constrainedJointVelocity;
-    arma::vec5 _maxJointVelocity;
+    arma::vec _maxJointVelocity;
     arma::mat _pointPositions;
 
     sCurrentJointVelocity _currentState = sCurrentJointVelocity(0.0f, 0.0f, 0.0f, 0.0f, 0.0f);
@@ -102,7 +113,6 @@ private:
     // COMMAND MODES
     //  =========================================================================
     bool _deadmanSwitch;
-    bool _gripperMode;
     bool _controlMode;
     bool _controlModeToggle;
     bool _fixedCartesianMode;
@@ -148,7 +158,10 @@ Teleop::Teleop() : Node("teleop")
     _pub_arm_teleop_in = this->create_publisher<rover_msgs::msg::ArmCmd>("/rover/arm/cmd/in/teleop", 1);
 
     _controlMode = JOINT;
-    _maxJointVelocity = {maxJLVelocity, maxJ0Velocity, maxJ1Velocity, maxJ2Velocity, maxGripperTiltVelocity}; // THIS IS TO BE UPDATED WITH TRUE INDIVIDUAL MAX SPEED - REPLACE WITH CONST EXPRESSIONS
+    _selectedJoint = 0;
+    _updatedJoint = false;
+    _currentJointPos = {_currentJLPos, _currentJ0Pos, _currentJ1Pos, _currentJ2Pos, _currentGripperTilt, _currentGripperRot, _currentGripperState};
+    _maxJointVelocity = {maxJLVelocity, maxJ0Velocity, maxJ1Velocity, maxJ2Velocity, maxGripperTiltVelocity, maxGripperRotVelocity, maxGripperCloseVelocity}; // THIS IS TO BE UPDATED WITH TRUE INDIVIDUAL MAX SPEED - REPLACE WITH CONST EXPRESSIONS
 }
 
 void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
@@ -156,9 +169,8 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     // Mode selection
     // =========================================================================
     _deadmanSwitch = joyMsg->joy_data[rover_msgs::msg::Joy::L1];
-    _gripperMode = joyMsg->joy_data[rover_msgs::msg::Joy::R1];
     _fixedCartesianMode = joyMsg->joy_data[rover_msgs::msg::Joy::R1];
-    _controlModeToggle = joyMsg->joy_data[rover_msgs::msg::Joy::A];
+    _controlModeToggle = joyMsg->joy_data[rover_msgs::msg::Joy::Y];
 
     // JOINT controls
     // =========================================================================
@@ -172,26 +184,18 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     _xVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] * -1.0f;
     _yVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_LEFT] - joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_RIGHT];
     _zVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT];
-    _alphaVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_UP] - joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_DOWN];
-    _psiVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::B] - joyMsg->joy_data[rover_msgs::msg::Joy::X];
-
-    // CARTESIAN controls
-    // =========================================================================
-    _xVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] * -1.0f;
-    _yVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_LEFT] - joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_RIGHT];
-    _zVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT];
     _alphaVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT];
     _psiVelocity = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
 
     // Initialize controls to previous values
     // =========================================================================
-    armMsg.position[rover_msgs::msg::ArmCmd::JL] = _currentJLPos;
-    armMsg.position[rover_msgs::msg::ArmCmd::J0] = _currentJ0Pos;
-    armMsg.position[rover_msgs::msg::ArmCmd::J1] = _currentJ1Pos;
-    armMsg.position[rover_msgs::msg::ArmCmd::J2] = _currentJ2Pos;
-    armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERTILT] = _currentGripperTilt;
-    armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERROT] = _currentGripperRot;
-    armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE] = _currentGripperState;
+    armMsg.position[rover_msgs::msg::ArmCmd::JL] = _currentJointPos[JL];
+    armMsg.position[rover_msgs::msg::ArmCmd::J0] = _currentJointPos[J0];
+    armMsg.position[rover_msgs::msg::ArmCmd::J1] = _currentJointPos[J1];
+    armMsg.position[rover_msgs::msg::ArmCmd::J2] = _currentJointPos[J2];
+    armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERTILT] = _currentJointPos[GRIPPER_TILT];
+    armMsg.position[rover_msgs::msg::ArmCmd::GRIPPERROT] = _currentJointPos[GRIPPER_ROT];
+    armMsg.position[rover_msgs::msg::ArmCmd::GRIPPEROPENCLOSE] = _currentJointPos[GRIPPER_CLOSE];
 
     // Control mode toggle
     // =========================================================================
@@ -227,23 +231,62 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg)
             _currentJ1Pos += _constrainedJointVelocity(2);
             _currentJ2Pos += _constrainedJointVelocity(3);
             _currentGripperTilt += _constrainedJointVelocity(4);
-            _currentGripperState += _gripperState * maxGripperCloseVelocity;
+            
+            if (_gripperState)
+            {
+                _currentJointPos[GRIPPER_CLOSE] += _gripperState * _maxJointVelocity[GRIPPER_CLOSE];
+            }
+            else if(_currentJointPos[GRIPPER_CLOSE] > 0.0f)
+            {
+                _currentJointPos[GRIPPER_CLOSE] -= 1.0f * _maxJointVelocity[GRIPPER_CLOSE];
+            }
         }
 
         if (_controlMode == JOINT)
         {
-            if (_gripperMode)
+            if (_changeSelectedJoint == 0)
             {
-                _currentGripperTilt += _gripperTilt * maxGripperTiltVelocity;
-                _currentGripperRot += _gripperRot * maxGripperRotVelocity;
-                _currentGripperState = _gripperState * maxGripperCloseVelocity;
+                _updatedJoint = false;
             }
-            else
+
+            if (_changeSelectedJoint != 0 && !_updatedJoint)
             {
-                _currentJLPos += _posCmdJL * maxJLVelocity;
-                _currentJ0Pos += _posCmdJ0 * maxJ0Velocity * -1.0f;
-                _currentJ1Pos += _posCmdJ1 * maxJ1Velocity;
-                _currentJ2Pos += _posCmdJ2 * maxJ2Velocity;
+                if (_changeSelectedJoint > 0)
+                {
+                    if (_selectedJoint == GRIPPER_TILT)
+                    {
+                        RCLCPP_WARN(LOGGER, "YOU HAVE REACHED THE LAST JOINT AND CAN NO LONGER INCREMENT");
+                    }
+                    else
+                    {
+                        _selectedJoint++;
+                        _updatedJoint = true;
+                    }
+                }
+                else if (_changeSelectedJoint < 0)
+                {
+                    if (_selectedJoint == JL)
+                    {
+                        RCLCPP_WARN(LOGGER, "YOU HAVE REACHED THE BASE JOINT AND CAN NO LONGER DECREMENT");
+                    }
+                    else
+                    {
+                        _selectedJoint--;
+                        _updatedJoint = true;
+                    }
+                }
+            }
+
+            _currentJointPos[_selectedJoint] += _jointPosCmd * _maxJointVelocity[_selectedJoint];
+            _currentJointPos[GRIPPER_ROT] += _gripperRot * _maxJointVelocity[GRIPPER_ROT];
+
+            if (_gripperState)
+            {
+                _currentJointPos[GRIPPER_CLOSE] += _gripperState * _maxJointVelocity[GRIPPER_CLOSE];
+            }
+            else if(_currentJointPos[GRIPPER_CLOSE] > 0.0f)
+            {
+                _currentJointPos[GRIPPER_CLOSE] -= 1.0f * _maxJointVelocity[GRIPPER_CLOSE];
             }
         }
     }
