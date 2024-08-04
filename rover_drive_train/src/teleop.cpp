@@ -31,9 +31,9 @@ private:
     // Private methods
     void getParams()
     {
-        this->declare_parameter("speedFactorCrawler", 0.03);
-        this->declare_parameter("_speedFactorNormal", 0.25);
-        this->declare_parameter("_speedFactorTurbo", 0.5);
+        this->declare_parameter("speedFactorCrawler", 0.25);
+        this->declare_parameter("_speedFactorNormal", 0.5f);
+        this->declare_parameter("_speedFactorTurbo", 1.0f);
         this->declare_parameter("_smallestRadius", 0.30);
 
         this->get_parameter("speedFactorCrawler", _speedFactorCrawler);
