@@ -45,7 +45,7 @@ class Cameras(QWidget):
 
             mediaPlayer.setVideoOutput(video_output)
             #rtsp_url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
-            mediaPlayer.setMedia(QMediaContent(QUrl('rtsp://admin:admin@192.168.144.61:69/')))
+            mediaPlayer.setMedia(QMediaContent(QUrl(ip)))
 
             # Ensure video widget size is fixed
             video_output.setMinimumSize(720, 410)
