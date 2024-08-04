@@ -58,8 +58,8 @@
       <widget class="QVideoWidget" name="cam1" native="true">
        <property name="minimumSize">
         <size>
-         <width>720</width>
-         <height>410</height>
+         <width>760</width>
+         <height>450</height>
         </size>
        </property>
       </widget>
@@ -110,8 +110,8 @@
       <widget class="QVideoWidget" name="cam2" native="true">
        <property name="minimumSize">
         <size>
-         <width>720</width>
-         <height>410</height>
+         <width>760</width>
+         <height>450</height>
         </size>
        </property>
       </widget>
@@ -162,8 +162,8 @@
       <widget class="QVideoWidget" name="cam3" native="true">
        <property name="minimumSize">
         <size>
-         <width>720</width>
-         <height>410</height>
+         <width>760</width>
+         <height>450</height>
         </size>
        </property>
       </widget>
@@ -214,8 +214,8 @@
       <widget class="QVideoWidget" name="cam4" native="true">
        <property name="minimumSize">
         <size>
-         <width>720</width>
-         <height>410</height>
+         <width>760</width>
+         <height>740</height>
         </size>
        </property>
       </widget>

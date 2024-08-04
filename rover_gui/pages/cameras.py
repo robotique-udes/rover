@@ -48,7 +48,7 @@ class Cameras(QWidget):
             mediaPlayer.setMedia(QMediaContent(QUrl(ip)))
 
             # Ensure video widget size is fixed
-            video_output.setMinimumSize(720, 410)
+            video_output.setMinimumSize(860, 450)
 
             refresh_button.clicked.connect(lambda checked, player=mediaPlayer: self.try_reconnect(player))
 
