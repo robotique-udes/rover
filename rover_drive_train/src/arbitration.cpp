@@ -79,10 +79,10 @@ Arbitration::Arbitration() : Node("arbitration")
 
     _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("/rover/drive_train/set_arbitration", std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
-    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(750),
+    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500),
                                              [this]()
                                              { this->watchdog(&_roverHBLost); });
-    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(750),
+    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500),
                                             [this]()
                                             { this->watchdog(&_baseHBLost); });
 
