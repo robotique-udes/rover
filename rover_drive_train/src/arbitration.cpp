@@ -115,7 +115,7 @@ void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_)
 
 void Arbitration::watchdog(bool *lostHB_)
 {
-    *lostHB_ = false;
+    *lostHB_ = true;
 }
 
 void Arbitration::sendCmd()
