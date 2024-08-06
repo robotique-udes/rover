@@ -4,6 +4,7 @@ from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox, QPushButton
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5.QtCore import QUrl
 from PyQt5 import uic
+import rover_msgs.msg._drivetrain_arbitration
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
 from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
@@ -74,10 +75,10 @@ class Dashboard(QWidget):
         self.media_player_main.setVideoOutput(self.camera_main_widget) 
         self.media_player_science.setVideoOutput(self.camera_science_widget) 
         
-        self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://admin:admin@192.168.144.61:69/")))
+        #self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://admin:admin@192.168.144.61:69/")))
         # self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://admin:admin@192.168.144.61:69/")))
-        self.media_player_main.play()
-        self.media_player_science.play()
+        #self.media_player_main.play()
+        #self.media_player_science.play()
 
         #self.media_player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
         #self.media_player.setVideoOutput(self.camera_main_widget)
@@ -114,11 +115,11 @@ class Dashboard(QWidget):
             return
 
         if sender_rb == self.rb_dt_none:
-            drivetrain_req.target_arbitration.arbitration = DriveTrainArbitration.Constant.NONE
+            drivetrain_req.target_arbitration.arbitration = rover_msgs.msg._drivetrain_arbitration.DrivetrainArbitration.NONE
         elif sender_rb == self.rb_dt_teleop:
-            drivetrain_req.target_arbitration.arbitration = DriveTrainArbitration.Constant.TELEOP
+            drivetrain_req.target_arbitration.arbitration = rover_msgs.msg._drivetrain_arbitration.DrivetrainArbitration.TELEOP
         elif sender_rb == self.rb_dt_autonomus:
-            drivetrain_req.target_arbitration.arbitration = DriveTrainArbitration.Constant.AUTONOMUS
+            drivetrain_req.target_arbitration.arbitration = rover_msgs.msg._drivetrain_arbitration.DrivetrainArbitration.AUTONOMUS
 
         response = dt_arbitration_client.call(drivetrain_req)
         self.ui_node.get_logger().info("Response : " + str(response.current_arbitration))

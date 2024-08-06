@@ -18,7 +18,7 @@ setup(
     ],
     name=package_name,
     version='0.0.0',
-    packages=[package_name, 'pages', 'static'],
+    packages=[package_name, 'pages', 'static', 'navigation'],
     
     install_requires=['setuptools'],
     zip_safe=True,

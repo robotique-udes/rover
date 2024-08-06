@@ -65,7 +65,7 @@ Arbitration::Arbitration() : Node("arbitration")
     _subRoverHr = this->create_subscription<std_msgs::msg::Empty>("/rover/heartbeat",
                                                                   1,
                                                                   [this](const std_msgs::msg::Empty msg_)
-                                                                  { this->cbHB(msg_, &_roverHBLost, _watchdogBase); });
+                                                                  { this->cbHB(msg_, &_roverHBLost, _watchdogRover); });
 
     _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
                                                                                      1,

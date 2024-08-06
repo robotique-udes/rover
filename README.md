@@ -28,7 +28,6 @@ install setuptools version 58.2.0 for compatibility reasons ([further details](h
 ```bash
 pip install setuptools==58.2.0
 pip install folium
-pip install pandas
 pip install PyQtWebEngine
 ```
 
