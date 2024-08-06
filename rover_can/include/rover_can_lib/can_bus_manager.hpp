@@ -134,8 +134,8 @@ namespace RoverCanLib
                                  gpio_num_t pinStatusLED_,
                                  twai_mode_t nodeMode_,
                                  twai_timing_config_t configSpeed_)
-        : _statusLed(pinStatusLED_),
-          _timerHeartbeat(static_cast<unsigned long>(1000.0f / static_cast<float>(RoverCanLib::Constant::HEARTBEAT_FREQ)))
+        : _timerHeartbeat(static_cast<unsigned long>(1000.0f / static_cast<float>(RoverCanLib::Constant::HEARTBEAT_FREQ))),
+          _statusLed(pinStatusLED_)
     {
         _id = deviceId_;
 
@@ -390,7 +390,6 @@ namespace RoverCanLib
                     RoverCanLib::Helpers::msgContentIsLastElement<Msgs::ErrorState>(&msg))
                 {
                     LOG(INFO, "Asked by master to send error code, sending...");
-                    Constant::eInternalErrorCode errorState;
                     if (_canBusState > eCanBusStatus::ERROR_DELIMITER)
                     {
                         this->sendErrorCode(Constant::eInternalErrorCode::ERROR);
