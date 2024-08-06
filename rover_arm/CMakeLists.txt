@@ -20,6 +20,7 @@ find_package(LAPACK REQUIRED)
 find_package(BLAS REQUIRED)
 
 include_directories(
+  include
   ${rover_msgs_INCLUDE_DIRS}
   ${ARMADILLO_INCLUDE_DIRS}
 )

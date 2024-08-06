@@ -215,7 +215,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     //  Device publishers actual creation
     _pub_canStatus = this->create_publisher<rover_msgs::msg::CanDeviceStatus>("/rover/can/device_status", 1);
     _pub_propulsionMotor = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/status/prop_motor", 1);
-    _pub_arm = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/status/goal_pos", 1);
+    _pub_arm = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions", 1);
     _pub_gps = this->create_publisher<rover_msgs::msg::Gps>("/rover/gps/position", 1);
     _pub_compass = this->create_publisher<rover_msgs::msg::Compass>("/rover/auxiliary/compass/raw", 1);
     // =========================================================================

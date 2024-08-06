@@ -1,4 +1,4 @@
-#include <iostream>
+#include <armadillo>
 
 #include "rclcpp/rclcpp.hpp"
 #include "std_msgs/msg/empty.hpp"
@@ -7,8 +7,11 @@
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/msg/arm_msg.hpp"
 #include "rovus_lib/macros.h"
+#include "rovus_lib/timer.hpp"
 
-#include <armadillo>
+#include "keybinding.hpp"
+#include "robot_configuration.hpp"
+
 // =============================================================================
 // This node has for goal to control the robotic arm of the rover.
 //
@@ -18,37 +21,8 @@
 // This node sends its calculated messages to the motors and to the simulation
 // =============================================================================
 
+constexpr uint64_t DEBOUNCE_TIME_MS = 100ul;
 constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5; // Factor of max speed
-constexpr float MAX_JOINT_SPEED = 0.0017453f;
-constexpr float MAX_LIN_SPEED = 0.00017453f;
-
-constexpr float J0x = 0.0f;
-constexpr float J0y = 0.0f;
-constexpr float J0z = 0.0f;
-
-constexpr float J1x = 0.0f;
-constexpr float J1y = 0.0f;
-constexpr float J1z = 0.0f;
-
-constexpr float J2x = 0.65f;
-constexpr float J2y = 0.0f;
-constexpr float J2z = 0.0f;
-
-constexpr float J3x = 0.62f;
-constexpr float J3y = 0.0f;
-constexpr float J3z = 0.0f;
-
-constexpr float J4x = 0.217f;
-constexpr float J4y = 0.0f;
-constexpr float J4z = 0.0f;
-
-constexpr float MAX_VELOCITY_JL = MAX_LIN_SPEED;
-constexpr float MAX_VELOCITY_J0 = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_J1 = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_J2 = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_GRIPPER_TILT = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_GRIPPER_ROT = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_GRIPPER_CLOSE = MAX_LIN_SPEED;
 
 bool isPressed(float buttonValue_);
 
@@ -97,8 +71,8 @@ private:
 #warning TODO: Timer to make sure it s "alive"
     bool _currentPosInvalid = true;
     float _currentJointsPos[(uint8_t)eJointIndex::eLAST] = {0};
-
     Teleop::eControlMode _controlMode = Teleop::eControlMode::JOINT;
+    Timer<uint64_t, millis> timerDebounce = Timer<uint64_t, millis>(DEBOUNCE_TIME_MS);
 
     // Private methods
     //  =========================================================================
@@ -127,7 +101,7 @@ Teleop::Teleop() : Node("teleop")
                                                                   1,
                                                                   std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
 
-    _sub_armPosition = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/currentPositions",
+    _sub_armPosition = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions",
                                                                           1,
                                                                           [this](const rover_msgs::msg::ArmMsg::SharedPtr msg)
                                                                           { this->CB_currentPos(msg); });
@@ -149,10 +123,10 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
         return;
     }
 
-    if (!IN_ERROR(joyMsg->joy_data[rover_msgs::msg::Joy::Y], 0.01, 0.0))
-    {
-        _controlMode = _controlMode == eControlMode::JOINT ? eControlMode::CARTESIAN : eControlMode::JOINT;
-    }
+    // if (!IN_ERROR(joyMsg->joy_data[rover_msgs::msg::Joy::Y], 0.01, 0.0))
+    // {
+    //     _controlMode = _controlMode == eControlMode::JOINT ? eControlMode::CARTESIAN : eControlMode::JOINT;
+    // }
 
     float _goalJointsPos[(uint8_t)eJointIndex::eLAST] = {0};
 
@@ -163,7 +137,7 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
             _goalJointsPos[i] = _currentJointsPos[i];
         }
 
-        if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_UP])) // selected joint++
+        if (isPressed(joyMsg->joy_data[KEYBINDING::JOINT_SELECT_INC])) // selected joint++
         {
             _selectedJoint = (eJointIndex)((uint8_t)_selectedJoint + 1);
             if (_selectedJoint == eJointIndex::eLAST)
@@ -171,7 +145,7 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
                 _selectedJoint = (eJointIndex)0;
             }
         }
-        else if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_DOWN])) // selected joint--
+        else if (isPressed(joyMsg->joy_data[KEYBINDING::JOINT_SELECT_DEC])) // selected joint--
         {
             if (_selectedJoint == eJointIndex(0))
             {
@@ -184,24 +158,24 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
         }
 
         // CMD JL
-        if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_LEFT]))
+        if (isPressed(joyMsg->joy_data[KEYBINDING::JL_FWD]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::JL] =
                 _currentJointsPos[(uint8_t)eJointIndex::JL] + MAX_VELOCITY_JL;
         }
-        else if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_RIGHT]))
+        else if (isPressed(joyMsg->joy_data[KEYBINDING::JL_REV]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::JL] =
                 _currentJointsPos[(uint8_t)eJointIndex::JL] - MAX_VELOCITY_JL;
         }
 
         // CMD J0
-        if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::X]))
+        if (isPressed(joyMsg->joy_data[KEYBINDING::J0_FWD]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::J0] =
                 _currentJointsPos[(uint8_t)eJointIndex::J0] + MAX_VELOCITY_J0;
         }
-        else if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::B]))
+        else if (isPressed(joyMsg->joy_data[KEYBINDING::J0_REV]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::J0] =
                 _currentJointsPos[(uint8_t)eJointIndex::J0] - MAX_VELOCITY_J0;
@@ -209,39 +183,33 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
 
         // CMD J1
         _goalJointsPos[(uint8_t)eJointIndex::J1] =
-            _currentJointsPos[(uint8_t)eJointIndex::J1] + joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT];
+            _currentJointsPos[(uint8_t)eJointIndex::J1] + (joyMsg->joy_data[KEYBINDING::J1] * MAX_VELOCITY_J1);
         // CMD J2
         _goalJointsPos[(uint8_t)eJointIndex::J2] =
-            _currentJointsPos[(uint8_t)eJointIndex::J2] + joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT];
+            _currentJointsPos[(uint8_t)eJointIndex::J2] + (joyMsg->joy_data[KEYBINDING::J2] * MAX_VELOCITY_J1);
 
         // CMD GRIP_TILT
-        if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::Y]))
+        if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_TILT_FWD]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] =
                 _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] + MAX_VELOCITY_GRIPPER_TILT;
         }
-        else if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::A]))
+        else if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_TILT_REV]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] =
                 _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] - MAX_VELOCITY_GRIPPER_TILT;
         }
 
         // CMD GRIP_ROT
-        if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::L2]))
+        if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] =
                 _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] - MAX_VELOCITY_GRIPPER_ROT;
         }
-        else if (isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::R2]))
+        else if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
         {
             _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] =
                 _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] + MAX_VELOCITY_GRIPPER_ROT;
-        }
-
-        // CMD GRIP
-        if (joyMsg->joy_data[rover_msgs::msg::Joy::CROSS_DOWN])
-        {
-            _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] * -1.0f;
         }
     }
     if (_controlMode == eControlMode::CARTESIAN)
@@ -282,12 +250,17 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
         // _gripperRot = joyMsg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
     }
 
+    // CMD GRIP
+    if (timerDebounce.isDone() && joyMsg->joy_data[KEYBINDING::GRIPPER_CLOSE])
+    {
+        _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] * -1.0f;
+    }
+
     rover_msgs::msg::ArmMsg msg;
     for (uint8_t i = 0; i < (uint8_t)eJointIndex::eLAST; i++)
     {
         msg.data[i] = _goalJointsPos[i];
     }
-
     _pub_armCmd->publish(msg);
 }
 
