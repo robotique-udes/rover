@@ -1,7 +1,7 @@
 #ifndef __ROBOT_CONFIGURATION__
 #define __ROBOT_CONFIGURATION__
 
-constexpr float MAX_JOINT_SPEED = 0.125;
+constexpr float MAX_JOINT_SPEED = 0.0125;
 constexpr float MAX_LIN_SPEED = 0.0125f;
 
 constexpr float MAX_VELOCITY_JL = MAX_LIN_SPEED;

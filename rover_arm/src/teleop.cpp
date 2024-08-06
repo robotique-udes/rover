@@ -21,8 +21,8 @@
 // This node sends its calculated messages to the motors and to the simulation
 // =============================================================================
 
-constexpr uint64_t DEBOUNCE_TIME_MS = 100ul;
-constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5; // Factor of max speed
+constexpr uint64_t DEBOUNCE_TIME_MS = 500ul;
+constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f; // Factor of max speed
 
 bool isPressed(float buttonValue_);
 
@@ -56,7 +56,7 @@ private:
     rclcpp::TimerBase::SharedPtr _timer_armHeartbeat;
 
     eJointIndex _selectedJoint = eJointIndex::J0;
-
+    float _gripperPos = -1.0f;
     // // CARTESIAN VECTORS AND MATRICES
     // //  =========================================================================
     // arma::vec5 _desiredCartesianVelocity;
@@ -107,6 +107,8 @@ Teleop::Teleop() : Node("teleop")
                                                                           { this->CB_currentPos(msg); });
 
     _pub_armCmd = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_pos", 1);
+
+    _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = 1.0f;
 }
 
 void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
@@ -253,7 +255,8 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     // CMD GRIP
     if (timerDebounce.isDone() && joyMsg->joy_data[KEYBINDING::GRIPPER_CLOSE])
     {
-        _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] * -1.0f;
+        _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperPos == -1.0f ? 1.0f : -1.0f;
+        _gripperPos = _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE];
     }
 
     rover_msgs::msg::ArmMsg msg;
@@ -273,6 +276,7 @@ void Teleop::CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPo
     {
         _currentJointsPos[i] = armCurrentPos->data[i];
     }
+    _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperPos;
 }
 
 void Teleop::CB_watchdog(bool *lostHB_)
@@ -356,6 +360,8 @@ rover_msgs::msg::ArmMsg Teleop::getZeroMsg(void)
     {
         msg.data[i] = _currentJointsPos[i];
     }
+
+    _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperPos;
 
     return msg;
 }
