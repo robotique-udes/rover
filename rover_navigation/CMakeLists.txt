@@ -12,6 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package(ament_cmake_python REQUIRED)
 
 include_directories(
   include
@@ -21,6 +22,8 @@ include_directories(
 add_executable(light_control src/light_control.cpp)
 add_executable(compass_calibrator src/compass_calibrator.cpp)
 add_executable(goal_manager src/goal_manager.cpp)
+
+ament_python_install_package(${PROJECT_NAME})
 
 ament_target_dependencies(light_control
   rclcpp
@@ -41,6 +44,11 @@ ament_target_dependencies(compass_calibrator
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
+
+install(PROGRAMS
+  rover_navigation/panorama.py
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 install(TARGETS
   light_control
