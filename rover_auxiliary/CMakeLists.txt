@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(rover_navigation)
+project(rover_auxiliary)
 
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 20)
@@ -43,9 +43,13 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-  light_control
-  compass_calibrator
-  goal_manager
+    light_control
+    compass_calibrator
+    goal_manager
   DESTINATION lib/${PROJECT_NAME})
 
+install(PROGRAMS
+    scripts/redistribute_stream.py
+  DESTINATION lib/${PROJECT_NAME})
+  
 ament_package()
