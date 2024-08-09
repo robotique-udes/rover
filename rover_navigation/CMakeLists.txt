@@ -11,6 +11,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 
@@ -42,11 +43,13 @@ ament_target_dependencies(compass_calibrator
   rcl_interfaces)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY resource DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(PROGRAMS
-  rover_navigation/panorama.py
+  scripts/panorama.py
+  scripts/stitch.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
