@@ -7,7 +7,7 @@
     <x>0</x>
     <y>0</y>
     <width>1567</width>
-    <height>1066</height>
+    <height>1290</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -20,8 +20,39 @@
       <layout class="QHBoxLayout" name="horizontalLayout">
        <item>
         <widget class="QPushButton" name="cam1_refresh">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cam1_screenshot">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Screenshot</string>
          </property>
         </widget>
        </item>
@@ -37,6 +68,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="cb_aruco1">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Detect aruco</string>
          </property>
@@ -72,8 +106,39 @@
       <layout class="QHBoxLayout" name="horizontalLayout_2">
        <item>
         <widget class="QPushButton" name="cam2_refresh">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cam2_screenshot">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Screenshot</string>
          </property>
         </widget>
        </item>
@@ -89,6 +154,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="cb_aruco2">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Detect aruco</string>
          </property>
@@ -124,8 +192,39 @@
       <layout class="QHBoxLayout" name="horizontalLayout_3">
        <item>
         <widget class="QPushButton" name="cam3_refresh">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cam3_screenshot">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Screenshot</string>
          </property>
         </widget>
        </item>
@@ -141,6 +240,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="cb_aruco3">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Detect aruco</string>
          </property>
@@ -176,8 +278,39 @@
       <layout class="QHBoxLayout" name="horizontalLayout_4">
        <item>
         <widget class="QPushButton" name="cam4_refresh">
+         <property name="minimumSize">
+          <size>
+           <width>100</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>100</width>
+           <height>16777215</height>
+          </size>
+         </property>
          <property name="text">
           <string>Refresh</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="cam4_screenshot">
+         <property name="minimumSize">
+          <size>
+           <width>200</width>
+           <height>0</height>
+          </size>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>200</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string>Screenshot</string>
          </property>
         </widget>
        </item>
@@ -193,6 +326,9 @@
        </item>
        <item>
         <widget class="QCheckBox" name="cb_aruco4">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
          <property name="text">
           <string>Detect aruco</string>
          </property>
