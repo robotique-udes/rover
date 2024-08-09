@@ -1,15 +1,15 @@
 #ifndef __ROBOT_CONFIGURATION__
 #define __ROBOT_CONFIGURATION__
 
-constexpr float MAX_JOINT_SPEED = 0.0125;
+constexpr float MAX_JOINT_SPEED = 0.05;
 constexpr float MAX_LIN_SPEED = 0.0125f;
 
 constexpr float MAX_VELOCITY_JL = MAX_LIN_SPEED;
 constexpr float MAX_VELOCITY_J0 = MAX_JOINT_SPEED;
 constexpr float MAX_VELOCITY_J1 = MAX_JOINT_SPEED;
 constexpr float MAX_VELOCITY_J2 = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_GRIPPER_TILT = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_GRIPPER_ROT = MAX_JOINT_SPEED;
+constexpr float MAX_VELOCITY_GRIPPER_TILT = 0.1309f*2.0f;
+constexpr float MAX_VELOCITY_GRIPPER_ROT = 0.1309f*4.0f;
 constexpr float MAX_VELOCITY_GRIPPER_CLOSE = MAX_LIN_SPEED;
 
 // Joints length, see doc or motion genesis code for bases reference
