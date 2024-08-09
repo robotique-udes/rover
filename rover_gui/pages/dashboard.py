@@ -1,8 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 
-from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox, QPushButton
-from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
-from PyQt5.QtCore import QUrl
+from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox, QPushButton, QLabel, QSlider
 from PyQt5 import uic
 import rover_msgs.msg._drivetrain_arbitration
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
@@ -10,7 +8,6 @@ from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
 from rover_msgs.srv._light_control import LightControl
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
-from pages.rtsp_player import RTSPPlayer
 
 class Dashboard(QWidget):
     def __init__(self, ui_node):
@@ -25,7 +22,6 @@ class Dashboard(QWidget):
 
         resources_directory = self.ui_node.get_resources_directory('rover_gui')
         uic.loadUi(resources_directory+ "dashboard.ui", self)
-
 
         # Lights
         self.rb_normal_light : QPushButton
@@ -52,6 +48,23 @@ class Dashboard(QWidget):
         self.rb_joy_antenna_sec : QRadioButton
         self.rb_joy_none_sec : QRadioButton
 
+        # Science ui elements
+        self.rb_science_E1 : QRadioButton
+        self.rb_science_E2 : QRadioButton
+        self.rb_science_E3 : QRadioButton
+        self.rb_science_run : QRadioButton
+        self.pb_science_up : QPushButton
+        self.pb_science_down : QPushButton
+        self.lb_science_switch_up : QLabel
+        self.lb_science_switch_down : QLabel
+
+        # Camera 360 ui elements
+        self.sb_cam_angle : QSlider
+        self.pb_angle_min : QPushButton
+        self.pb_angle_max : QPushButton
+        self.pb_start_panorama : QPushButton
+        self.pb_stop_panorama : QPushButton
+        self.pb_move_camera : QPushButton
 
         self.rb_ant_none.clicked.connect(self.antenna_arbitration_clicked)
         self.rb_ant_teleop.clicked.connect(self.antenna_arbitration_clicked)
@@ -69,31 +82,6 @@ class Dashboard(QWidget):
         self.rb_dt_autonomus.clicked.connect(self.drivetrain_arbitration_clicked)
         self.rb_normal_light.clicked.connect(self.light_mode_clicked)
         self.rb_infrared_light.clicked.connect(self.light_mode_clicked)
-
-        self.media_player_main = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        self.media_player_science = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        self.media_player_main.setVideoOutput(self.camera_main_widget) 
-        self.media_player_science.setVideoOutput(self.camera_science_widget) 
-        
-        #self.media_player_main.setMedia(QMediaContent(QUrl("rtsp://admin:admin@192.168.144.61:69/")))
-        # self.media_player_science.setMedia(QMediaContent(QUrl("rtsp://admin:admin@192.168.144.61:69/")))
-        #self.media_player_main.play()
-        #self.media_player_science.play()
-
-        #self.media_player = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        #self.media_player.setVideoOutput(self.camera_main_widget)
-
-        #media_content = QMediaContent(QUrl("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"))
-        #self.media_player.setMedia(media_content)
-        #self.media_player.play()
-
-        #self.media_player_2 = QMediaPlayer(None, QMediaPlayer.VideoSurface)
-        #self.media_player_2.setVideoOutput(self.camera_science_widget)
-
-        #media_content = QMediaContent(QUrl("http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/TearsOfSteel.mp4"))
-        #self.media_player_2.setMedia(media_content)
-        #self.media_player_2.play()
-        
 
     def handle_service_unavailability(self, sender_rb, service_name):
         sender_rb.setAutoExclusive(False)
