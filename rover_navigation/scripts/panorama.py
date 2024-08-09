@@ -27,7 +27,7 @@ class PanoramaNode(Node):
 
     def get_resources_directory(self, package_name):
         package_share_directory = get_package_share_directory(package_name)
-        resource_directory = package_share_directory + "/../../resource/"
+        resource_directory = package_share_directory + "/resource/"
         return resource_directory
     
     def button_pressed_callback(self, msg):

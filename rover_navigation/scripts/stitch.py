@@ -1,6 +1,12 @@
 import cv2
 import os
 from concurrent.futures import ThreadPoolExecutor
+from ament_index_python.packages import get_package_share_directory
+
+def get_resources_directory(package_name):
+        package_share_directory = get_package_share_directory(package_name)
+        resource_directory = package_share_directory + "/resource/"
+        return resource_directory
 
 def resize_image(img_path, scale_percent):
     img = cv2.imread(img_path)
@@ -22,24 +28,27 @@ def stitch_frames(frames, max_attempts=3):
 
 if __name__ == '__main__':
     scale_percent = 50
-    frames_dir = os.path.expanduser("~/panorama_frames")
+    frames_dir = get_resources_directory('rover_navigation')
     
-    # Get the latest session directory
     sessions = [os.path.join(frames_dir, d) for d in os.listdir(frames_dir) if os.path.isdir(os.path.join(frames_dir, d))]
+
+    if sessions == []:
+        print("No sessions found")
+        exit()
+
+    print(f"Found {len(sessions)} sessions")
+    
     latest_session = max(sessions, key=os.path.getmtime)
     
-    # Get all image files from the latest session
     image_files = [os.path.join(latest_session, f) for f in os.listdir(latest_session) if f.endswith('.jpg')]
-    image_files.sort()  # Ensure files are in order
+    image_files.sort()  
 
-    print(f"Found {len(image_files)} images in {latest_session}")
+    if len(image_files) == 0:
+        print("No images found")
+        exit()
 
-    # Resize images
     with ThreadPoolExecutor() as executor:
         frames = list(executor.map(lambda img_path: resize_image(img_path, scale_percent), image_files))
-    
-    # Remove any None values (failed loads)
-    #frames = [frame for frame in frames if frame is not None]
 
     print(f"Resized {len(frames)} images. Stitching...")
     panorama = stitch_frames(frames)
