@@ -1,4 +1,4 @@
-rtsp://admin:admin@192.168.144.61:69/
-rtsp://admin:admin@192.168.144.62:69/
+rtsp://127.0.0.1:8500/test
+rtsp://127.0.0.2:8554/test
 rtsp://admin:admin@192.168.144.63:69/
 rtsp://admin:admin@192.168.144.64:69/
