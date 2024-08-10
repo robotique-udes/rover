@@ -15,6 +15,7 @@ from rover_gui.ui_node import UINode
 from pages.home import Home
 from pages.dashboard import Dashboard
 from pages.navigation import Navigation
+from pages.cameras import Cameras
 
 from static.resource_rc import qt_resource_data
 
@@ -23,6 +24,7 @@ class MainWindow(QMainWindow):
         super(MainWindow, self).__init__()
         self.ui_node = ui_node
         self.executor = executor
+        self.camera_window = None
 
         shortcut = QShortcut(QKeySequence("Ctrl+W"), self)
         shortcut.activated.connect(self.close_application)
@@ -44,7 +46,7 @@ class MainWindow(QMainWindow):
             self.pb_home: lambda: self.create_page(Home),
             self.pb_dashboard: lambda: self.create_page(Dashboard),
             self.pb_navigation: lambda: self.create_page(Navigation),
-            #self.pb_cameras: lambda: self.create_page(Cameras)
+            self.pb_cameras: self.show_camera_window
         }
 
         self.show_home_window()
@@ -54,7 +56,7 @@ class MainWindow(QMainWindow):
         self.pb_home.clicked.connect(self.show_selected_window)
         self.pb_dashboard.clicked.connect(self.show_selected_window)
         self.pb_navigation.clicked.connect(self.show_selected_window)
-        #self.pb_cameras.clicked.connect(self.show_selected_window)
+        self.pb_cameras.clicked.connect(self.show_selected_window)
 
     def create_page(self, class_name):
         obj = class_name(self.ui_node)  # Create an instance of the class
@@ -76,16 +78,26 @@ class MainWindow(QMainWindow):
     def show_selected_window(self):
         button = self.sender()
 
-        result = self.open_tab_flag(button.text())
-        self.set_btn_checked(button)
+        if button == self.pb_cameras:
+            self.show_camera_window()
+        else:
+            result = self.open_tab_flag(button.text())
+            self.set_btn_checked(button)
 
-        if(result[0]):
-            self.tab_widget.setCurrentIndex(result[1])
-        else: 
-            tab_title = button.text()
-            curIndex = self.tab_widget.addTab(self.menu_btns_dict[button](), tab_title)
-            self.tab_widget.setCurrentIndex(curIndex)
-            self.tab_widget.setVisible(True)
+            if(result[0]):
+                self.tab_widget.setCurrentIndex(result[1])
+            else: 
+                tab_title = button.text()
+                curIndex = self.tab_widget.addTab(self.menu_btns_dict[button](), tab_title)
+                self.tab_widget.setCurrentIndex(curIndex)
+                self.tab_widget.setVisible(True)
+
+    def show_camera_window(self):
+        if self.camera_window is None:
+            self.camera_window = Cameras(self.ui_node)
+        self.camera_window.show()
+        self.camera_window.activateWindow()
+        self.set_btn_checked(self.pb_cameras)
 
     def close_tab(self, index):
         obj = self.tab_widget.widget(index)
@@ -119,9 +131,14 @@ class MainWindow(QMainWindow):
         return False,
 
     def closeEvent(self, event):
+            if self.camera_window:
+                self.camera_window.close()
             self.close_application()
 
     def close_application(self):
+        for obj in self.pages_created:
+            obj.__del__()
+
         self.ui_node.destroy_node()
         self.executor.shutdown()
         QApplication.quit()

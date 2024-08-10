@@ -10,7 +10,6 @@ setup(
         ('share/ament_index/resource_index/packages',
             ['resource/' + package_name]),
         (os.path.join('resource'), glob('ui/*')),
-        (os.path.join('resource'), glob('ui/*')),
         (os.path.join('resource'), glob('images/*')),
         (os.path.join('share', package_name, 'launch'), glob(os.path.join('launch', '*launch.[pxy][yma]*'))),
         (os.path.join('resource'), glob('resource/*')),
@@ -18,7 +17,7 @@ setup(
     ],
     name=package_name,
     version='0.0.0',
-    packages=[package_name, 'pages', 'static'],
+    packages=[package_name, 'pages', 'static', 'navigation'],
     
     install_requires=['setuptools'],
     zip_safe=True,
