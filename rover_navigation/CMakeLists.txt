@@ -57,7 +57,7 @@ install(DIRECTORY resource DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(PROGRAMS
-  rover_navigation/panoramaService.py
+  rover_navigation/panorama_service.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
