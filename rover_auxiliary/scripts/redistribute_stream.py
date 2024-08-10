@@ -16,6 +16,8 @@ class RTSPServerNode(Node):
         self.server1 = None
         self.server2 = None
         self.loop = None
+        self.declare_parameter('flip_video', True)
+        self.flip_video = self.get_parameter('flip_video').value
 
         self.declare_parameter('streamIP', '192.168.144.62')  
         self.declare_parameter('streamPort', 69)  
@@ -56,11 +58,15 @@ class RTSPServerNode(Node):
             self.server1 = GstRtspServer.RTSPServer()
             self.server1.set_service(str(self.streamPort1))
             factory1 = GstRtspServer.RTSPMediaFactory()
+            
+            flip_element = "videoflip method=horizontal-flip ! " if self.flip_video else ""
 
             pipeline = (
                 f'rtspsrc location=rtsp://admin:admin@{self.streamIP}:{self.streamPort} latency=0 ! '
-                f'rtph264depay ! h264parse ! rtph264pay name=pay0 pt=96'
+                f'rtph264depay ! h264parse ! decodebin ! {flip_element}'
+                f'x264enc tune=zerolatency ! rtph264pay name=pay0 pt=96'
             )
+            
             self.get_logger().info(f"GStreamer pipeline for first stream: {pipeline}")
             factory1.set_launch(pipeline)
             factory1.set_shared(True)
