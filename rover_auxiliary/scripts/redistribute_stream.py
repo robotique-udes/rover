@@ -17,8 +17,8 @@ class RTSPServerNode(Node):
         self.loop = None
 
         # Declare ROS2 parameters
-        self.declare_parameter('stream_ip', '192.168.144.103')  # IP of the source stream
-        self.declare_parameter('stream_port', 5884)  # Port of the source stream
+        self.declare_parameter('stream_ip', '192.168.144.62')  # IP of the source stream
+        self.declare_parameter('stream_port', 69)  # Port of the source stream
         self.declare_parameter('server_port', 5884)  # Port for serving the redistributed stream
         self.declare_parameter('output_ip', '192.168.144.102')  # IP for redistribution
 
@@ -55,7 +55,7 @@ class RTSPServerNode(Node):
 
             # Constructing the GStreamer pipeline
             pipeline = (
-                f'rtspsrc location=rtsp://{self.stream_ip}:{self.stream_port}/test latency=0 ! '
+                f'rtspsrc location=rtsp://admin:admin@{self.stream_ip}:{self.stream_port}/test latency=0 ! '
                 f'rtph264depay ! h264parse ! rtph264pay name=pay0 pt=96'
             )
             self.get_logger().info(f"GStreamer pipeline: {pipeline}")
