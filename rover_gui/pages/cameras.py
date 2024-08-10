@@ -37,7 +37,7 @@ class Cameras(QWidget):
         
     def start_feeds(self):
         ip_list = self.load_file_into_list(self.resources_directory + "r1m_ips.txt")
-        ip_list = ["rtsp://127.0.0.1:8554/stream1", "rtsp://127.0.0.1:8554/stream2"]
+
         for i, ip in enumerate(ip_list):
             mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
             video_output = getattr(self, f'cam{i+1}')
