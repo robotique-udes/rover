@@ -8,6 +8,7 @@
 #include "rover_msgs/msg/can_device_status.hpp"
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/camera_angle.hpp"
 #include "rover_msgs/msg/light_control.hpp"
 #include "rover_msgs/msg/gps.hpp"
 #include "rover_msgs/msg/compass.hpp"
@@ -21,6 +22,7 @@
 #include "rover_can_lib/msgs/propulsion_motor_status.hpp"
 #include "rover_can_lib/msgs/cam_control.hpp"
 #include "rover_can_lib/msgs/cam_control_a2.hpp"
+#include "rover_can_lib/msgs/cam_control_360.hpp"
 #include "rover_can_lib/msgs/light_control.hpp"
 #include "rover_can_lib/msgs/gps.hpp"
 #include "rover_can_lib/msgs/compass.hpp"
@@ -42,6 +44,7 @@ RoverCanLib::Msgs::camControl msg_CAN_CAMERA_A2;
 RoverCanLib::Msgs::camControl msg_CAN_CAMERA_R1M_1;
 RoverCanLib::Msgs::camControl msg_CAN_CAMERA_R1M_2;
 RoverCanLib::Msgs::camControl msg_CAN_CAMERA_R1M_3;
+RoverCanLib::Msgs::CamControl360 msg_CAN_CAMERA_360;
 
 // Motors
 RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_FrontLeft;
