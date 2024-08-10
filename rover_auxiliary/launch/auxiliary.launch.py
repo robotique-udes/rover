@@ -30,8 +30,8 @@ def generate_launch_description():
         name="redistribute_stream",
         parameters=[
             {"stream_ip": "127.0.0.2"},
-            {"stream_port": 8554},
-            {"server_port": 8500}
+            {"stream_port": 69},
+            {"server_port": 72}
             ]
     )
 
