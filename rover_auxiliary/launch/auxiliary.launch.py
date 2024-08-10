@@ -20,6 +20,13 @@ def generate_launch_description():
         executable="compass_calibrator",
         name="compass_calibrator"
     )
+    
+    node_panorama = Node(
+        package="rover_auxiliary",
+        namespace="/rover/auxiliary",
+        executable="panorama_service.py",
+        name="panorama_service"
+    )
 
     node_redistribute_stream = Node(
             package="rover_auxiliary",
@@ -39,5 +46,6 @@ def generate_launch_description():
     ld.add_action(node_lights_main)
     ld.add_action(node_compass_main)
     ld.add_action(node_redistribute_stream)
+    ld.add_action(node_panorama)
 
     return ld

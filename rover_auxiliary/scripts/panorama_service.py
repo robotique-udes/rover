@@ -20,7 +20,7 @@ class PanoramaService(Node):
         self.capture_event = threading.Event()
         self.frame_count = 0
         self.frame_count_lock = threading.Lock()
-        self.save_directory = self.get_resources_directory('rover_navigation')
+        self.save_directory = self.get_resources_directory('rover_auxiliary')
         os.makedirs(self.save_directory, exist_ok=True)
         self.capture_thread = None
         self.timeout_duration = timedelta(seconds=30)

@@ -9,31 +9,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclpy REQUIRED)
 find_package(rover_msgs REQUIRED)
-find_package(ament_cmake_python REQUIRED)
-find_package(rosidl_default_generators REQUIRED)
 
 include_directories(
   include
   ${rover_msgs_INCLUDE_DIRS}
 )
 
-
 add_executable(light_control src/light_control.cpp)
 add_executable(compass_calibrator src/compass_calibrator.cpp)
 add_executable(goal_manager src/goal_manager.cpp)
-
-#rosidl_generate_interfaces(${PROJECT_NAME}
-  #"srv/Panorama.srv"
-  #LIBRARY_NAME ${PROJECT_NAME}
-#)
-
-#ament_python_install_package(${PROJECT_NAME})
-ament_export_dependencies(rosidl_default_runtime)
 
 ament_target_dependencies(light_control
   rclcpp
@@ -52,14 +39,8 @@ ament_target_dependencies(compass_calibrator
   rcl_interfaces)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-install(DIRECTORY resource DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
-
-install(PROGRAMS
-  rover_navigation/panorama_service.py
-  DESTINATION lib/${PROJECT_NAME}
-)
 
 install(TARGETS
     light_control
@@ -69,6 +50,7 @@ install(TARGETS
 
 install(PROGRAMS
     scripts/redistribute_stream.py
+    scripts/panorama_service.py
     # scripts/aruco_main.py
     # scripts/parsing_node.py
   DESTINATION lib/${PROJECT_NAME})
