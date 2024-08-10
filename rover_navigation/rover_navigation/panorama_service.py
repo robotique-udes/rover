@@ -2,7 +2,8 @@
 
 import rclpy
 from rclpy.node import Node
-from rclpy.task import Future
+from rclpy.callback_groups import ReentrantCallbackGroup
+from rclpy.executors import MultiThreadedExecutor
 from rover_msgs.srv import PanoControl
 from rover_msgs.msg import GpsPosition
 import cv2
@@ -14,7 +15,8 @@ from ament_index_python.packages import get_package_share_directory
 class PanoramaService(Node):
     def __init__(self):
         super().__init__('panorama_node')
-        self.srv = self.create_service(PanoControl, 'control_panorama', self.handle_service)
+        self.cb_group = ReentrantCallbackGroup()
+        self.srv = self.create_service(PanoControl, 'control_panorama', self.handle_service, callback_group=self.cb_group)
         self.capture_event = threading.Event()
         self.frame_count = 0
         self.frame_count_lock = threading.Lock()
@@ -22,6 +24,8 @@ class PanoramaService(Node):
         os.makedirs(self.save_directory, exist_ok=True)
         self.capture_thread = None
         self.timeout_duration = timedelta(seconds=30)
+        self.cap = None
+        self.ip = None
 
     def get_resources_directory(self, package_name):
         package_share_directory = get_package_share_directory(package_name)
@@ -44,24 +48,33 @@ class PanoramaService(Node):
             self.get_logger().info('Panorama capture started')
         elif request.stop and self.capture_event.is_set():
             self.get_logger().info('Stopping panorama capture...')
-            self.capture_event.clear()
-            if self.capture_thread:
-                self.capture_thread.join(timeout=5)  
-                if self.capture_thread.is_alive():
-                    self.get_logger().warn('Capture thread did not terminate gracefully')
+            self.stop_capture()
             response.success = True
             response.status_message = 'Panorama capture stopped.'
             self.get_logger().info('Panorama capture stopped')
         else:
             response.success = False
-            response.status_message = 'Panorama capture is already in the requested state.'
+            response.status_message = 'Invalid request or panorama capture is already in the requested state.'
         return response
 
+    def stop_capture(self):
+        self.capture_event.clear()
+        if self.capture_thread and self.capture_thread != threading.current_thread():
+            self.capture_thread.join(timeout=5)
+            if self.capture_thread.is_alive():
+                self.get_logger().warn('Capture thread did not terminate gracefully')
+        self.capture_thread = None
+        self.release_camera()
+
+    def release_camera(self):
+        if self.cap is not None:
+            self.cap.release()
+            self.cap = None
+
     def capture_frames(self):
-        cap = None
         try:
-            cap = cv2.VideoCapture(self.ip)
-            if not cap.isOpened():
+            self.cap = cv2.VideoCapture(self.ip)
+            if not self.cap.isOpened():
                 self.get_logger().error('Failed to open video stream')
                 return
 
@@ -72,7 +85,7 @@ class PanoramaService(Node):
 
             start_time = datetime.now()
             while self.capture_event.is_set():
-                ret, frame = cap.read()
+                ret, frame = self.cap.read()
                 if ret:
                     with self.frame_count_lock:
                         self.frame_count += 1
@@ -91,71 +104,65 @@ class PanoramaService(Node):
         except Exception as e:
             self.get_logger().error(f"An error occurred during frame capture: {str(e)}")
         finally:
-            if cap is not None and cap.isOpened():
-                cap.release()
+            self.release_camera()
             self.capture_event.clear()
             self.get_logger().info(f"Capture session ended. Total frames captured: {self.frame_count}")
 
     def take_photo(self):
         try:
-            cap = cv2.VideoCapture(self.ip)
-            if not cap.isOpened():
+            self.cap = cv2.VideoCapture(self.ip)
+            if not self.cap.isOpened():
                 self.get_logger().error('Failed to open video stream')
                 return False
 
             gps_data = self.get_gps_data()
-            ret, frame = cap.read()
+            ret, frame = self.cap.read()
             if ret:
                 timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
                 photo_filename = os.path.join(self.save_directory, f"photo_{timestamp}_{gps_data}.jpg")
                 cv2.imwrite(photo_filename, frame)
                 self.get_logger().info(f'Took photo and saved to {photo_filename}')
-                cap.release()
                 return True
             else:
                 self.get_logger().warn("Failed to capture photo")
-                cap.release()
                 return False
         except Exception as e:
             self.get_logger().error(f"An error occurred while taking a photo: {str(e)}")
             return False
-    
-    from sensor_msgs.msg import NavSatFix
+        finally:
+            self.release_camera()
 
     def get_gps_data(self):
-       
         self.gps_data = None
-        self.gps_data_received = False
+        self.gps_data_received = threading.Event()
 
-       
         def callback(msg):
             self.gps_data = msg
-            self.gps_data_received = True
+            self.gps_data_received.set()
 
-       
-        self.create_subscription(GpsPosition, '/rover/gps/position', callback, 10)
+        subscription = self.create_subscription(GpsPosition, '/rover/gps/position', callback, 10)
 
-      
-        timeout = rclpy.duration.Duration(seconds=5)  
-        start_time = self.get_clock().now()
-
-        while not self.gps_data_received and (self.get_clock().now() - start_time) < timeout:
-            rclpy.spin_once(self, timeout_sec=0.1)
-
-        if self.gps_data:
+        if self.gps_data_received.wait(timeout=5.0):
+            self.destroy_subscription(subscription)
             return self.gps_data
         else:
             self.get_logger().warn("No GPS data received within the timeout period or topic does not exist.")
+            self.destroy_subscription(subscription)
             return None
 
-
-
-def main():
-    rclpy.init()
+def main(args=None):
+    rclpy.init(args=args)
     panorama_node = PanoramaService()
-    rclpy.spin(panorama_node)
-    panorama_node.destroy_node()
-    rclpy.shutdown()
+    executor = MultiThreadedExecutor()
+    executor.add_node(panorama_node)
+    try:
+        executor.spin()
+    except KeyboardInterrupt:
+        pass
+    finally:
+        executor.shutdown()
+        panorama_node.destroy_node()
+        rclpy.shutdown()
 
 if __name__ == '__main__':
     main()

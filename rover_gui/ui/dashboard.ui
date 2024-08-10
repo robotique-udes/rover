@@ -706,6 +706,43 @@ QRadioButton::indicator::checked {
              </widget>
             </item>
             <item>
+             <layout class="QHBoxLayout" name="horizontalLayout_7">
+              <property name="spacing">
+               <number>60</number>
+              </property>
+              <item>
+               <widget class="QPushButton" name="pb_angle_min">
+                <property name="text">
+                 <string>min</string>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QSpinBox" name="sb_cam_angle">
+                <property name="maximum">
+                 <number>360</number>
+                </property>
+                <property name="value">
+                 <number>164</number>
+                </property>
+               </widget>
+              </item>
+              <item>
+               <widget class="QPushButton" name="pb_angle_max">
+                <property name="minimumSize">
+                 <size>
+                  <width>50</width>
+                  <height>0</height>
+                 </size>
+                </property>
+                <property name="text">
+                 <string>max</string>
+                </property>
+               </widget>
+              </item>
+             </layout>
+            </item>
+            <item>
              <widget class="QFrame" name="frame_21">
               <property name="frameShape">
                <enum>QFrame::NoFrame</enum>
@@ -714,43 +751,6 @@ QRadioButton::indicator::checked {
                <enum>QFrame::Raised</enum>
               </property>
               <layout class="QVBoxLayout" name="verticalLayout">
-               <item>
-                <layout class="QHBoxLayout" name="horizontalLayout_7">
-                 <property name="spacing">
-                  <number>60</number>
-                 </property>
-                 <item>
-                  <widget class="QPushButton" name="pb_angle_min">
-                   <property name="text">
-                    <string>min</string>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QSpinBox" name="sb_cam_angle">
-                   <property name="maximum">
-                    <number>360</number>
-                   </property>
-                   <property name="value">
-                    <number>164</number>
-                   </property>
-                  </widget>
-                 </item>
-                 <item>
-                  <widget class="QPushButton" name="pb_angle_max">
-                   <property name="minimumSize">
-                    <size>
-                     <width>50</width>
-                     <height>0</height>
-                    </size>
-                   </property>
-                   <property name="text">
-                    <string>max</string>
-                   </property>
-                  </widget>
-                 </item>
-                </layout>
-               </item>
                <item>
                 <layout class="QHBoxLayout" name="horizontalLayout_8">
                  <property name="spacing">
@@ -784,6 +784,16 @@ QRadioButton::indicator::checked {
                </item>
               </layout>
              </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="pb_take_photo">
+              <property name="text">
+               <string>Take photo</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="ip_adress"/>
             </item>
            </layout>
           </widget>
