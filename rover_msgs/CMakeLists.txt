@@ -46,7 +46,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/LightControl.srv"
   "srv/CompassCalibration.srv"
   "srv/NewGpsGoal.srv"
-  "srv/Panorama.srv"
+  "srv/PanoControl.srv"
 )
 
 ament_package()
