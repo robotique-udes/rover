@@ -16,13 +16,14 @@ class RTSPServerNode(Node):
         self.server1 = None
         self.server2 = None
         self.loop = None
+# rtsp://127.0.0.1:8554/test
 
-        self.declare_parameter('streamIP', '192.168.144.62')  
-        self.declare_parameter('streamPort', 69)  
-        self.declare_parameter('serverPort1', 8554)  
-        self.declare_parameter('serverPort2', 8555)  
-        self.declare_parameter('outputIP1', '192.168.144.198')  
-        self.declare_parameter('outputIP2', '192.168.144.198')  
+        self.declare_parameter('streamIP', '127.0.0.1')  
+        self.declare_parameter('streamPort', 8554)  
+        self.declare_parameter('serverPort1', 8555)  
+        self.declare_parameter('serverPort2', 8556)  
+        self.declare_parameter('outputIP1', '127.0.0.1')  
+        self.declare_parameter('outputIP2', '127.0.0.2')  
 
         self.streamIP = self.get_parameter('streamIP').value
         self.streamPort = self.get_parameter('streamPort').value
