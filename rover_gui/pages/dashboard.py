@@ -85,7 +85,7 @@ class Dashboard(QWidget):
         self.pb_angle_min.clicked.connect(self.angle_min_clicked)
         self.pb_angle_max.clicked.connect(self.angle_max_clicked)
 
-        self.camera_angle_pub = self.ui_node.create_publisher(CameraAngle, '/base/camera_angle', 1)
+        self.camera_angle_pub = self.ui_node.create_publisher(CameraAngle, '/rover/auxiliary/camera_pano', 1)
         self.camera_angle_timer = self.ui_node.create_timer(0.5, self.cb_camera_angle)
 
     def handle_service_unavailability(self, sender_rb, service_name):

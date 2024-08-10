@@ -40,6 +40,7 @@ namespace RoverCanLib::Constant
         CAMERA_R1M_1 = 0x412,
         CAMERA_R1M_2 = 0x413,
         CAMERA_R1M_3 = 0x414,
+        CAMERA_PAN = 0x415,
         SPEAKERS = 0x421,
 
         // Free Spaces
