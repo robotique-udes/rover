@@ -12,6 +12,7 @@
 #include "rover_msgs/msg/light_control.hpp"
 #include "rover_msgs/msg/gps.hpp"
 #include "rover_msgs/msg/compass.hpp"
+#include "rover_msgs/msg/science_control.hpp"
 
 // RoverCanLib
 #include "rover_can_lib/config.hpp"
@@ -25,6 +26,7 @@
 #include "rover_can_lib/msgs/light_control.hpp"
 #include "rover_can_lib/msgs/gps.hpp"
 #include "rover_can_lib/msgs/compass.hpp"
+#include "rover_can_lib/msgs/science.hpp"
 
 #define LOGGER_NAME "CanMasterNode"
 
@@ -50,6 +52,9 @@ RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_FrontRight;
 RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_RearLeft;
 RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_RearRight;
 
+// Science
+RoverCanLib::Msgs::Science msg_CAN_science;
+
 // Aux
 RoverCanLib::Msgs::GPS msg_CAN_gps;
 RoverCanLib::Msgs::Compass msg_CAN_compass;
@@ -60,6 +65,7 @@ RoverCanLib::Msgs::Compass msg_CAN_compass;
 rover_msgs::msg::PropulsionMotor msg_ROS_propMotor;
 rover_msgs::msg::Gps msg_ROS_gps;
 rover_msgs::msg::Compass msg_ROS_compass;
+rover_msgs::msg::ScienceControl msg_ROS_science; 
 // =============================================================================
 
 class CanMaster : public rclcpp::Node
@@ -103,7 +109,7 @@ private:
     rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_propulsionMotor;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_cameras;
     rclcpp::Subscription<rover_msgs::msg::LightControl>::SharedPtr _sub_lights;
-    rclcpp::Subscription<rover_msgs::msg::CameraAngle>::SharedPtr _sub_cameraPano;
+    rclcpp::Subscription<rover_msgs::msg::ScienceControl>::SharedPtr _sub_science;
     // =========================================================================
 
     // =========================================================================
@@ -119,7 +125,7 @@ private:
     void CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr msg);
     void CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg);
     void CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg);
-    void CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg);
+    void CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg);
     // =========================================================================
 };
 
@@ -208,6 +214,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR] = &msg_CAN_RearRight;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::GPS] = &msg_CAN_gps;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::COMPASS] = &msg_CAN_compass;
+    _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::SCIENCE] = &msg_CAN_science;
 
     // =========================================================================
     //  Devices objects constructors
@@ -569,9 +576,12 @@ void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedP
     msg.sendMsg(RoverCanLib::Constant::eDeviceId::INFRARED_LIGHTS, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }
 
-void CanMaster::CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg)
+void CanMaster::CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg_)
 {
-    RoverCanLib::Msgs::CamPan msg;
-    msg.data.servoPosition = rosMsg->angle;
-    msg.sendMsg(RoverCanLib::Constant::eDeviceId::CAMERA_PAN, _canSocket, rclcpp::get_logger(LOGGER_NAME));
+    RoverCanLib::Msgs::Science msg;
+    msg.data.cmd = rosMsg_->cmd;
+    msg.data.current_sample = rosMsg_->current_sample;
+    msg.data.dig = rosMsg_->dig;
+
+    msg.sendMsg(RoverCanLib::Constant::eDeviceId::SCIENCE, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }

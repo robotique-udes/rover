@@ -8,6 +8,7 @@ from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
 from rover_msgs.srv._light_control import LightControl
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
+from rover_msgs.msg._science_control import ScienceControl
 from rover_msgs.msg._camera_angle import CameraAngle
 
 class Dashboard(QWidget):
@@ -54,8 +55,8 @@ class Dashboard(QWidget):
         self.rb_science_E2 : QRadioButton
         self.rb_science_E3 : QRadioButton
         self.rb_science_run : QRadioButton
-        self.pb_science_up : QPushButton
-        self.pb_science_down : QPushButton
+        self.rb_science_up : QRadioButton
+        self.rb_science_down : QRadioButton
         self.lb_science_switch_up : QLabel
         self.lb_science_switch_down : QLabel
 
@@ -85,6 +86,9 @@ class Dashboard(QWidget):
         self.pb_angle_min.clicked.connect(self.angle_min_clicked)
         self.pb_angle_max.clicked.connect(self.angle_max_clicked)
 
+        self.science_pub = self.ui_node.create_publisher(ScienceControl, 'base/science/teleop', 1)
+        self.science_timer = self.ui_node.create_timer(0.5, self.cb_science)
+
         self.camera_angle_pub = self.ui_node.create_publisher(CameraAngle, '/rover/auxiliary/camera_pano', 1)
         self.camera_angle_timer = self.ui_node.create_timer(0.5, self.cb_camera_angle)
 
@@ -94,6 +98,28 @@ class Dashboard(QWidget):
         sender_rb.setAutoExclusive(True)
         self.ui_node.get_logger().warn('%s service not available.' % service_name)
         QMessageBox.warning(self, "Service Not Available", "The %s service is not available." % service_name)
+
+    def cb_science(self):
+        msg = ScienceControl()
+        
+        if self.rb_science_E1.isChecked():
+            msg.current_sample = rover_msgs.msg.ScienceControl.E1
+        elif self.rb_science_E2.isChecked():
+            msg.current_sample = rover_msgs.msg.ScienceControl.E2
+        elif self.rb_science_E3.isChecked():
+            msg.current_sample = rover_msgs.msg.ScienceControl.E3
+
+        if self.rb_science_run.isChecked():
+            msg.dig = True
+        else:
+            msg.dig = False
+
+        if self.rb_science_up.isChecked():
+            msg.cmd = rover_msgs.msg.ScienceControl.UP
+        elif self.rb_science_down.isChecked():
+            msg.cmd = rover_msgs.msg.ScienceControl.DOWN
+        
+        self.science_pub.publish(msg)
     
     def cb_camera_angle(self):
         msg = CameraAngle()
