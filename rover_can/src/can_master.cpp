@@ -65,7 +65,7 @@ RoverCanLib::Msgs::Compass msg_CAN_compass;
 rover_msgs::msg::PropulsionMotor msg_ROS_propMotor;
 rover_msgs::msg::Gps msg_ROS_gps;
 rover_msgs::msg::Compass msg_ROS_compass;
-rover_msgs::msg::ScienceControl msg_ROS_science; 
+rover_msgs::msg::ScienceControl msg_ROS_science;
 // =============================================================================
 
 class CanMaster : public rclcpp::Node
@@ -250,6 +250,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
     _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1, std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
     _sub_cameraPano = this->create_subscription<rover_msgs::msg::CameraAngle>("/rover/auxiliary/camera_pano", 1, std::bind(&CanMaster::CB_ROS_cameraPano, this, std::placeholders::_1));
+    _sub_science = this->create_subscription<rover_msgs::msg::ScienceControl>("/base/science/teleop", 1, std::bind(&CanMaster::CB_ROS_scienceControl, this, std::placeholders::_1));
     // =========================================================================
 
     // Created last to make sure everything is init before it gets called

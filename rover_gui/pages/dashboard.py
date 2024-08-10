@@ -86,7 +86,7 @@ class Dashboard(QWidget):
         self.pb_angle_min.clicked.connect(self.angle_min_clicked)
         self.pb_angle_max.clicked.connect(self.angle_max_clicked)
 
-        self.science_pub = self.ui_node.create_publisher(ScienceControl, 'base/science/teleop', 1)
+        self.science_pub = self.ui_node.create_publisher(ScienceControl, '/base/science/teleop', 1)
         self.science_timer = self.ui_node.create_timer(0.5, self.cb_science)
 
         self.camera_angle_pub = self.ui_node.create_publisher(CameraAngle, '/rover/auxiliary/camera_pano', 1)
