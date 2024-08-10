@@ -21,20 +21,23 @@ namespace RoverCanLib::Msgs
         {
             NOT_USED = 0x00,
             CMD = 0x01,
-            DRILL = 0x02,
+            CURRENT_SAMPLE = 0x02,
+            DIG = 0x03,
             eLAST
         };
 
         struct sMsgData
         {
-            int8_t cmd;
-            bool drill;
+            uint8_t cmd;
+            uint8_t current_sample;
+            bool dig;
         };
 
         Science() 
         {
-            data.cmd = 0;
-            data.drill = false;
+            data.cmd = 0u;
+            data.current_sample = 0u;
+            data.dig = false;
         }
         ~Science() {}
 
@@ -50,11 +53,15 @@ namespace RoverCanLib::Msgs
             switch ((Msgs::Science::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
             case eMsgID::CMD:
-                RoverCanLib::Helpers::canMsgToStruct<int8_t, UnionDefinition::Int8_tUnion>(msg_, &this->data.cmd);
+                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.cmd);
                 break;
 
-            case eMsgID::DRILL:
-                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.drill);
+            case eMsgID::CURRENT_SAMPLE:
+                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.current_sample);
+                break;
+
+            case eMsgID::DIG:
+                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.dig);
                 break;
 
             default:
@@ -73,11 +80,15 @@ namespace RoverCanLib::Msgs
             switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
             {
             case eMsgID::CMD:
-                Helpers::structToCanMsg<int8_t, UnionDefinition::Int8_tUnion>(&data.cmd, msg_);
+                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_);
                 break;
 
-            case eMsgID::DRILL:
-                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.drill, msg_);
+            case eMsgID::CURRENT_SAMPLE:
+                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.current_sample, msg_);
+                break;
+
+            case eMsgID::DIG:
+                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_);
                 break;
 
             default:
@@ -100,11 +111,15 @@ namespace RoverCanLib::Msgs
             switch ((Msgs::Science::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
             case eMsgID::CMD:
-                RoverCanLib::Helpers::canMsgToStruct<int8_t, UnionDefinition::Int8_tUnion>(msg_, &this->data.cmd, logger_);
+                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.cmd, logger_);
                 break;
 
-            case eMsgID::DRILL:
-                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.drill, logger_);
+            case eMsgID::CURRENT_SAMPLE:
+                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.current_sample, logger_);
+                break;
+
+            case eMsgID::DIG:
+                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.dig, logger_);
                 break;
 
             default:
@@ -123,11 +138,15 @@ namespace RoverCanLib::Msgs
             switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
             {
             case eMsgID::CMD:
-                Helpers::structToCanMsg<int8_t, UnionDefinition::Int8_tUnion>(&data.cmd, msg_);
+                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_);
                 break;
 
-            case eMsgID::DRILL:
-                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.drill, msg_);
+            case eMsgID::CURRENT_SAMPLE:
+                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.current_sample, msg_);
+                break;
+
+            case eMsgID::DIG:
+                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_);
                 break;
 
             default:
