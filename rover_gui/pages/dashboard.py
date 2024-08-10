@@ -1,6 +1,6 @@
 from ament_index_python.packages import get_package_share_directory
 
-from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox, QPushButton, QLabel, QSlider
+from PyQt5.QtWidgets import QWidget, QRadioButton, QMessageBox, QPushButton, QLabel, QSpinBox
 from PyQt5 import uic
 import rover_msgs.msg._drivetrain_arbitration
 from rover_msgs.srv._antenna_arbitration import AntennaArbitration
@@ -8,6 +8,7 @@ from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration
 from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState
 from rover_msgs.srv._light_control import LightControl
 from rover_msgs.msg._joy_demux_status import JoyDemuxStatus
+from rover_msgs.msg._camera_angle import CameraAngle
 
 class Dashboard(QWidget):
     def __init__(self, ui_node):
@@ -59,12 +60,11 @@ class Dashboard(QWidget):
         self.lb_science_switch_down : QLabel
 
         # Camera 360 ui elements
-        self.sb_cam_angle : QSlider
+        self.sb_cam_angle : QSpinBox
         self.pb_angle_min : QPushButton
         self.pb_angle_max : QPushButton
         self.pb_start_panorama : QPushButton
         self.pb_stop_panorama : QPushButton
-        self.pb_move_camera : QPushButton
 
         self.rb_ant_none.clicked.connect(self.antenna_arbitration_clicked)
         self.rb_ant_teleop.clicked.connect(self.antenna_arbitration_clicked)
@@ -82,6 +82,11 @@ class Dashboard(QWidget):
         self.rb_dt_autonomus.clicked.connect(self.drivetrain_arbitration_clicked)
         self.rb_normal_light.clicked.connect(self.light_mode_clicked)
         self.rb_infrared_light.clicked.connect(self.light_mode_clicked)
+        self.pb_angle_min.clicked.connect(self.angle_min_clicked)
+        self.pb_angle_max.clicked.connect(self.angle_max_clicked)
+
+        self.camera_angle_pub = self.ui_node.create_publisher(CameraAngle, '/rover/auxiliary/camera_pano', 1)
+        self.camera_angle_timer = self.ui_node.create_timer(0.5, self.cb_camera_angle)
 
     def handle_service_unavailability(self, sender_rb, service_name):
         sender_rb.setAutoExclusive(False)
@@ -90,6 +95,17 @@ class Dashboard(QWidget):
         self.ui_node.get_logger().warn('%s service not available.' % service_name)
         QMessageBox.warning(self, "Service Not Available", "The %s service is not available." % service_name)
     
+    def cb_camera_angle(self):
+        msg = CameraAngle()
+        msg.angle = float(self.sb_cam_angle.value())
+        self.camera_angle_pub.publish(msg)
+
+    def angle_min_clicked(self):
+        self.sb_cam_angle.setValue(self.sb_cam_angle.minimum())
+        
+    def angle_max_clicked(self):
+        self.sb_cam_angle.setValue(self.sb_cam_angle.maximum())
+
     def drivetrain_arbitration_clicked(self):
         sender_rb = self.sender()
         if sender_rb is None:

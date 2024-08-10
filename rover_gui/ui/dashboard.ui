@@ -640,7 +640,7 @@ QRadioButton::indicator::checked {
          <item>
           <widget class="QFrame" name="frame_19">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="minimumSize">
             <size>
@@ -731,6 +731,9 @@ QRadioButton::indicator::checked {
                    <property name="maximum">
                     <number>360</number>
                    </property>
+                   <property name="value">
+                    <number>164</number>
+                   </property>
                   </widget>
                  </item>
                  <item>
@@ -778,18 +781,6 @@ QRadioButton::indicator::checked {
                   </widget>
                  </item>
                 </layout>
-               </item>
-               <item>
-                <widget class="QPushButton" name="pb_move_camera">
-                 <property name="font">
-                  <font>
-                   <pointsize>16</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Move camera to angle</string>
-                 </property>
-                </widget>
                </item>
               </layout>
              </widget>

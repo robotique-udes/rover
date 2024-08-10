@@ -8,10 +8,10 @@
 #include "rover_msgs/msg/can_device_status.hpp"
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/camera_angle.hpp"
 #include "rover_msgs/msg/light_control.hpp"
 #include "rover_msgs/msg/gps.hpp"
 #include "rover_msgs/msg/compass.hpp"
-
 
 // RoverCanLib
 #include "rover_can_lib/config.hpp"
@@ -21,6 +21,7 @@
 #include "rover_can_lib/msgs/propulsion_motor_status.hpp"
 #include "rover_can_lib/msgs/cam_control.hpp"
 #include "rover_can_lib/msgs/cam_control_a2.hpp"
+#include "rover_can_lib/msgs/cam_pan.hpp"
 #include "rover_can_lib/msgs/light_control.hpp"
 #include "rover_can_lib/msgs/gps.hpp"
 #include "rover_can_lib/msgs/compass.hpp"
@@ -102,6 +103,7 @@ private:
     rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _sub_propulsionMotor;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_cameras;
     rclcpp::Subscription<rover_msgs::msg::LightControl>::SharedPtr _sub_lights;
+    rclcpp::Subscription<rover_msgs::msg::CameraAngle>::SharedPtr _sub_cameraPano;
     // =========================================================================
 
     // =========================================================================
@@ -117,6 +119,7 @@ private:
     void CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr msg);
     void CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg);
     void CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg);
+    void CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg);
     // =========================================================================
 };
 
@@ -239,6 +242,7 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     // _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1, std::bind(&CanMaster::CB_ROS_propulsionMotor, this, std::placeholders::_1));
     _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
     _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1, std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
+    _sub_cameraPano = this->create_subscription<rover_msgs::msg::CameraAngle>("/rover/auxiliary/camera_pano", 1, std::bind(&CanMaster::CB_ROS_cameraPano, this, std::placeholders::_1));
     // =========================================================================
 
     // Created last to make sure everything is init before it gets called
@@ -563,4 +567,11 @@ void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedP
 
     msg.data.enable = rosMsg_->enable[rover_msgs::msg::LightControl::LIGHT_INFRARED];
     msg.sendMsg(RoverCanLib::Constant::eDeviceId::INFRARED_LIGHTS, _canSocket, rclcpp::get_logger(LOGGER_NAME));
+}
+
+void CanMaster::CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg)
+{
+    RoverCanLib::Msgs::CamPan msg;
+    msg.data.servoPosition = rosMsg->angle;
+    msg.sendMsg(RoverCanLib::Constant::eDeviceId::CAMERA_PAN, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }
