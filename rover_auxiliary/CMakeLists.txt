@@ -51,7 +51,6 @@ install(TARGETS
 install(PROGRAMS
     scripts/redistribute_stream.py
     scripts/aruco_main.py
-    scripts/parsing_node.py
   DESTINATION lib/${PROJECT_NAME})
   
 ament_package()
