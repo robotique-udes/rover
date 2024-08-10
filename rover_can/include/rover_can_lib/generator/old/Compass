@@ -1,3 +1,2 @@
-float roll;
+float heading;
 float pitch;
-float yaw;

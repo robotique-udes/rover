@@ -1,5 +1,5 @@
-#ifndef __CAM_CONTROL_360_HPP__
-#define __CAM_CONTROL_360_HPP__
+#ifndef __SCIENCE_HPP__
+#define __SCIENCE_HPP__
 
 #include <cstdint>
 #include "rover_can_lib/msgs/msg.hpp"
@@ -14,40 +14,47 @@
 
 namespace RoverCanLib::Msgs
 {
-    class CamControl360 : public Msg
+    class Science : public Msg
     {
     public:
         enum class eMsgID : uint8_t
         {
             NOT_USED = 0x00,
-            ANGLE = 0x01,
+            CMD = 0x01,
+            DRILL = 0x02,
             eLAST
         };
 
         struct sMsgData
         {
-            uint16_t angle
+            int8_t cmd;
+            bool drill;
         };
 
-        CamControl360() 
+        Science() 
         {
-            data.angle = 0u;
+            data.cmd = 0;
+            data.drill = false;
         }
-        ~CamControl360() {}
+        ~Science() {}
 
 #if defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const twai_message_t *msg_)
         {
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::CAM_CONTROL_360)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::SCIENCE)
             {
                 LOG(ERROR, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
             }
 
-            switch ((Msgs::CamControl360::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
+            switch ((Msgs::Science::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case eMsgID::ANGLE:
-                RoverCanLib::Helpers::canMsgToStruct<uint16_t, UnionDefinition::Uint16_tUnion>(msg_, &this->data.angle);
+            case eMsgID::CMD:
+                RoverCanLib::Helpers::canMsgToStruct<int8_t, UnionDefinition::Int8_tUnion>(msg_, &this->data.cmd);
+                break;
+
+            case eMsgID::DRILL:
+                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.drill);
                 break;
 
             default:
@@ -60,13 +67,17 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT twai_message_t *msg_)
         {
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::CAM_CONTROL_360;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::SCIENCE;
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
-            switch ((RoverCanLib::Msgs::CamControl360::eMsgID)msgId_)
+            switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
             {
-            case eMsgID::ANGLE:
-                Helpers::structToCanMsg<uint16_t, UnionDefinition::Uint16_tUnion>(&data.angle, msg_);
+            case eMsgID::CMD:
+                Helpers::structToCanMsg<int8_t, UnionDefinition::Int8_tUnion>(&data.cmd, msg_);
+                break;
+
+            case eMsgID::DRILL:
+                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.drill, msg_);
                 break;
 
             default:
@@ -80,16 +91,20 @@ namespace RoverCanLib::Msgs
 #elif defined(__linux__) // defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const can_frame *msg_, rclcpp::Logger logger_)
         {
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::CAM_CONTROL_360)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::SCIENCE)
             {
                 RCLCPP_ERROR(logger_, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
             }
 
-            switch ((Msgs::CamControl360::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
+            switch ((Msgs::Science::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case eMsgID::ANGLE:
-                RoverCanLib::Helpers::canMsgToStruct<uint16_t, UnionDefinition::Uint16_tUnion>(msg_, &this->data.angle, logger_);
+            case eMsgID::CMD:
+                RoverCanLib::Helpers::canMsgToStruct<int8_t, UnionDefinition::Int8_tUnion>(msg_, &this->data.cmd, logger_);
+                break;
+
+            case eMsgID::DRILL:
+                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.drill, logger_);
                 break;
 
             default:
@@ -102,13 +117,17 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT can_frame *msg_, rclcpp::Logger logger_)
         {
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::CAM_CONTROL_360;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::SCIENCE;
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
-            switch ((RoverCanLib::Msgs::CamControl360::eMsgID)msgId_)
+            switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
             {
-            case eMsgID::ANGLE:
-                Helpers::structToCanMsg<uint16_t, UnionDefinition::Uint16_tUnion>(&data.angle, msg_);
+            case eMsgID::CMD:
+                Helpers::structToCanMsg<int8_t, UnionDefinition::Int8_tUnion>(&data.cmd, msg_);
+                break;
+
+            case eMsgID::DRILL:
+                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.drill, msg_);
                 break;
 
             default:
@@ -149,4 +168,4 @@ namespace RoverCanLib::Msgs
     };
 }
 
-#endif // __CAM_CONTROL_360_HPP__
+#endif // __SCIENCE_HPP__
