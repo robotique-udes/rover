@@ -13,31 +13,34 @@ class RTSPServerNode(Node):
     def __init__(self):
         super().__init__('rtsp_server_node')
         Gst.init(None)
-        self.server = None
+        self.server1 = None
+        self.server2 = None
         self.loop = None
 
-        # Declare ROS2 parameters
-        self.declare_parameter('stream_ip', '192.168.144.62')  # IP of the source stream
-        self.declare_parameter('stream_port', 69)  # Port of the source stream
-        self.declare_parameter('server_port', 5884)  # Port for serving the redistributed stream
-        self.declare_parameter('output_ip', '192.168.144.102')  # IP for redistribution
+        self.declare_parameter('streamIP', '192.168.144.62')  
+        self.declare_parameter('streamPort', 69)  
+        self.declare_parameter('serverPort1', 8554)  
+        self.declare_parameter('serverPort2', 8555)  
+        self.declare_parameter('outputIP1', '192.168.144.198')  
+        self.declare_parameter('outputIP2', '192.168.144.198')  
 
-        # Get parameters
-        self.stream_ip = self.get_parameter('stream_ip').value
-        self.stream_port = self.get_parameter('stream_port').value
-        self.server_port = self.get_parameter('server_port').value
-        self.output_ip = self.get_parameter('output_ip').value
+        self.streamIP = self.get_parameter('streamIP').value
+        self.streamPort = self.get_parameter('streamPort').value
+        self.streamPort1 = self.get_parameter('serverPort1').value
+        self.streamPort2 = self.get_parameter('serverPort2').value
+        self.outputIP1 = self.get_parameter('outputIP1').value
+        self.outputIP2 = self.get_parameter('outputIP2').value
 
-        self.get_logger().info(f"Initialized with stream IP: {self.stream_ip}, stream port: {self.stream_port}, "
-                               f"server port: {self.server_port}, output IP: {self.output_ip}")
+        self.get_logger().info(f"Initialized with stream IP: {self.streamIP}, stream port: {self.streamPort}, "
+                               f"server ports: {self.streamPort1} and {self.streamPort2}, "
+                               f"output IPs: {self.outputIP1} and {self.outputIP2}")
 
-        # Validate IP address and start server if valid
-        if self.is_valid_ip(self.stream_ip) and self.is_valid_ip(self.output_ip):
-            self.start_server()
+        if self.IPisValid(self.streamIP) and self.IPisValid(self.outputIP1) and self.IPisValid(self.outputIP2):
+            self.startServers()
         else:
-            self.get_logger().error(f"Invalid IP address detected: {self.stream_ip} or {self.output_ip}")
+            self.get_logger().error(f"Invalid IP address detected: {self.streamIP}, {self.outputIP1}, or {self.outputIP2}")
 
-    def is_valid_ip(self, ip):
+    def IPisValid(self, ip):
         try:
             socket.inet_aton(ip)
             self.get_logger().info(f"IP address {ip} is valid")
@@ -46,56 +49,75 @@ class RTSPServerNode(Node):
             self.get_logger().error(f"IP address {ip} is invalid")
             return False
 
-    def start_server(self):
+    def startServers(self):
         self.get_logger().info("Starting RTSP server setup...")
-        if self.server is None:
-            self.server = GstRtspServer.RTSPServer()
-            self.server.set_service(str(self.server_port))
-            self.factory = GstRtspServer.RTSPMediaFactory()
 
-            # Constructing the GStreamer pipeline
+        if self.server1 is None:
+            self.server1 = GstRtspServer.RTSPServer()
+            self.server1.set_service(str(self.streamPort1))
+            factory1 = GstRtspServer.RTSPMediaFactory()
+
             pipeline = (
-                f'rtspsrc location=rtsp://admin:admin@{self.stream_ip}:{self.stream_port}/test latency=0 ! '
+                f'rtspsrc location=rtsp://admin:admin@{self.streamIP}:{self.streamPort} latency=0 ! '
                 f'rtph264depay ! h264parse ! rtph264pay name=pay0 pt=96'
             )
-            self.get_logger().info(f"GStreamer pipeline: {pipeline}")
-            self.factory.set_launch(pipeline)
-            self.factory.set_shared(True)
+            self.get_logger().info(f"GStreamer pipeline for first stream: {pipeline}")
+            factory1.set_launch(pipeline)
+            factory1.set_shared(True)
 
-            mount_points = self.server.get_mount_points()
-            mount_points.add_factory("/test", self.factory)
-            self.get_logger().info("Factory added to mount points")
+            mountPoints1 = self.server1.get_mount_points()
+            mountPoints1.add_factory("/test1", factory1)
+            self.get_logger().info("First factory added to mount points")
 
-            attach_result = self.server.attach(None)
-            if attach_result:
-                self.get_logger().info("Server attached successfully")
+            attach_result1 = self.server1.attach(None)
+            if attach_result1:
+                self.get_logger().info("First server attached successfully")
             else:
-                self.get_logger().error("Failed to attach the server")
+                self.get_logger().error("Failed to attach the first server")
 
-            # Construct the full RTSP URL using the output IP
-            rtsp_url = f"rtsp://{self.output_ip}:{self.server_port}/test"
-            self.get_logger().info(f"RTSP server is running. Full address: {rtsp_url}")
+            rtsp_url1 = f"rtsp://{self.outputIP1}:{self.streamPort1}/test1"
+            self.get_logger().info(f"First RTSP server is running. Full address: {rtsp_url1}")
+        
+        if self.server2 is None:
+            self.server2 = GstRtspServer.RTSPServer()
+            self.server2.set_service(str(self.streamPort2))
+            factory2 = GstRtspServer.RTSPMediaFactory()
 
-            # Start GLib MainLoop in a separate thread
+            self.get_logger().info(f"GStreamer pipeline for second stream: {pipeline}")
+            factory2.set_launch(pipeline)
+            factory2.set_shared(True)
+
+            mountPoints2 = self.server2.get_mount_points()
+            mountPoints2.add_factory("/test2", factory2)
+            self.get_logger().info("Second factory added to mount points")
+
+            attach_result2 = self.server2.attach(None)
+            if attach_result2:
+                self.get_logger().info("Second server attached successfully")
+            else:
+                self.get_logger().error("Failed to attach the second server")
+
+            rtsp_url2 = f"rtsp://{self.outputIP2}:{self.streamPort2}/test2"
+            self.get_logger().info(f"Second RTSP server is running. Full address: {rtsp_url2}")
+
+        if self.loop is None:
             self.loop = GLib.MainLoop()
             self.get_logger().info("Starting GLib MainLoop in a separate thread")
             self.loop_thread = threading.Thread(target=self.loop.run)
             self.loop_thread.start()
-        else:
-            self.get_logger().info("RTSP server is already running")
 
     def shutdown(self):
-        self.get_logger().info("Shutting down RTSP server and GLib MainLoop")
+        self.get_logger().info("Shutting down RTSP servers and GLib MainLoop")
         if self.loop:
             self.loop.quit()
-        if self.server:
-            self.server.detach()
-        self.get_logger().info("Server detached and loop stopped")
+        if self.server1:
+            self.server1.detach()
+        if self.server2:
+            self.server2.detach()
+        self.get_logger().info("Servers detached and loop stopped")
 
 if __name__ == '__main__':
     rclpy.init(args=None)
-    # Gst.init(None)
-    time.sleep(1)
     node = RTSPServerNode()
     try:
         rclpy.spin(node)
