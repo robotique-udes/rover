@@ -1,2 +1,3 @@
-int8_t cmd;
-int8_t drill;
+uint8_t cmd;
+uint8_t current_sample;
+bool dig;

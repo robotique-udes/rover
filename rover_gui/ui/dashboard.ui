@@ -640,7 +640,7 @@ QRadioButton::indicator::checked {
          <item>
           <widget class="QFrame" name="frame_19">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="minimumSize">
             <size>
@@ -779,18 +779,6 @@ QRadioButton::indicator::checked {
                  </item>
                 </layout>
                </item>
-               <item>
-                <widget class="QPushButton" name="pb_move_camera">
-                 <property name="font">
-                  <font>
-                   <pointsize>16</pointsize>
-                  </font>
-                 </property>
-                 <property name="text">
-                  <string>Move camera to angle</string>
-                 </property>
-                </widget>
-               </item>
               </layout>
              </widget>
             </item>
@@ -827,7 +815,7 @@ QRadioButton::indicator::checked {
          <item>
           <widget class="QFrame" name="science_2">
            <property name="enabled">
-            <bool>false</bool>
+            <bool>true</bool>
            </property>
            <property name="minimumSize">
             <size>
@@ -1019,14 +1007,14 @@ QRadioButton::indicator::checked {
                </property>
                <layout class="QGridLayout" name="gridLayout_3">
                 <item row="0" column="0">
-                 <widget class="QRadioButton" name="rb_science_E3_2">
+                 <widget class="QRadioButton" name="rb_science_up">
                   <property name="text">
                    <string>Up</string>
                   </property>
                  </widget>
                 </item>
                 <item row="1" column="0">
-                 <widget class="QRadioButton" name="rb_science_E2_2">
+                 <widget class="QRadioButton" name="rb_science_down">
                   <property name="text">
                    <string>Down</string>
                   </property>
