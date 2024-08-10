@@ -6,7 +6,7 @@ constexpr float MAX_LIN_SPEED = 1.25f;
 
 constexpr float MAX_VELOCITY_JL = MAX_LIN_SPEED;
 constexpr float MAX_VELOCITY_J0 = MAX_JOINT_SPEED;
-constexpr float MAX_VELOCITY_J1 = MAX_JOINT_SPEED;
+constexpr float MAX_VELOCITY_J1 = 100.0f;
 constexpr float MAX_VELOCITY_J2 = MAX_JOINT_SPEED;
 constexpr float MAX_VELOCITY_GRIPPER_TILT = 0.1309f*2.0f;
 constexpr float MAX_VELOCITY_GRIPPER_ROT = 0.1309f*4.0f;
