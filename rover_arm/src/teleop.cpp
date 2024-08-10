@@ -185,10 +185,10 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
 
         // CMD J1
         _goalJointsPos[(uint8_t)eJointIndex::J1] =
-            _currentJointsPos[(uint8_t)eJointIndex::J1] + (joyMsg->joy_data[KEYBINDING::J1] * MAX_VELOCITY_J1);
+            (joyMsg->joy_data[KEYBINDING::J1] * MAX_VELOCITY_J1);
         // CMD J2
         _goalJointsPos[(uint8_t)eJointIndex::J2] =
-            _currentJointsPos[(uint8_t)eJointIndex::J2] + (joyMsg->joy_data[KEYBINDING::J2] * MAX_VELOCITY_J1);
+            (joyMsg->joy_data[KEYBINDING::J2] * MAX_VELOCITY_J1);
 
         // CMD GRIP_TILT
         if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_TILT_FWD]))
