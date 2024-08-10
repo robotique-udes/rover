@@ -1,9 +1,14 @@
 import time
 from ament_index_python.packages import get_package_share_directory
+from threading import Lock
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5 import uic
-from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QMessageBox
 from PyQt5.QtCore import QUrl, QTimer, QThread, pyqtSignal
+from rover_msgs.srv._rtsp_stream import RtspStream
+from rover_msgs.msg._aruco import Aruco
+
+
 
 class Cameras(QWidget):
     def __init__(self, ui_node):
@@ -16,6 +21,7 @@ class Cameras(QWidget):
         uic.loadUi(self.resources_directory + "cameras.ui", self)
 
         self.media_players = []
+        self.ips = []
         self.labels = []
 
         # Initialize UI components
@@ -34,6 +40,56 @@ class Cameras(QWidget):
         self.lb_aruco4.hide()
 
         self.start_feeds()
+
+        self.cb_aruco1.stateChanged.connect(self.aruco_clicked)
+        self.cb_aruco2.stateChanged.connect(self.aruco_clicked)
+        self.cb_aruco3.stateChanged.connect(self.aruco_clicked)
+        self.cb_aruco4.stateChanged.connect(self.aruco_clicked)
+
+        self.lock_aruco = Lock()
+        self.update_aruco()
+
+        self.aruco_sub = ui_node.create_subscription(Aruco, '/rover/auxiliary/aruco', self.aruco_data_callback, 1)
+    
+    def handle_service_unavailability(self, sender_rb, service_name):
+        sender_rb.setAutoExclusive(False)
+        sender_rb.setChecked(False)
+        sender_rb.setAutoExclusive(True)
+        self.ui_node.get_logger().warn('%s service not available.' % service_name)
+        QMessageBox.warning(self, "Service Not Available", "The %s service is not available." % service_name)
+
+    def aruco_clicked(self):
+        sender_rb = self.sender()
+        if sender_rb is None:
+            return
+
+        rtsp_client = self.ui_node.create_client(RtspStream, '/base/auxiliary/set_aruco_rtsp')
+        rstp_req = RtspStream.Request()
+
+        if not rtsp_client.wait_for_service(timeout_sec=1.0):
+            self.handle_service_unavailability(sender_rb, "rtsp_stream")
+            return
+
+        if sender_rb == self.cb_aruco1:
+            rstp_req.target_arbitration = self.ips[0]
+        elif sender_rb == self.cb_aruco2:
+            rstp_req.target_arbitration = self.ips[1]
+        elif sender_rb == self.cb_aruco3:
+            rstp_req.target_arbitration = self.ips[2]
+        elif sender_rb == self.cb_aruco4:
+            rstp_req.target_arbitration = self.ips[3]
+
+        response = rtsp_client.call(rstp_req)
+
+    def aruco_data_callback(self):
+        with self.lock_position:
+            self.current_latitude = round(data.latitude, 6) + self.lat_offset
+            self.current_longitude = round(data.longitude, 6) + self.lon_offset
+        self.update_position()
+
+    def update_aruco_label(self):
+        with self.lock_aruco:
+            self.lb_curr_position.setText(f"lat : {self.current_latitude:.6f}, lon : {self.current_longitude:.6f}")
         
     def start_feeds(self):
         ip_list = self.load_file_into_list(self.resources_directory + "r1m_ips.txt")
@@ -53,6 +109,7 @@ class Cameras(QWidget):
             refresh_button.clicked.connect(lambda checked, player=mediaPlayer: self.try_reconnect(player))
 
             self.media_players.append(mediaPlayer)
+            self.ips.append(ip)
             self.labels.append(getattr(self, f'cam{i+1}_label'))
             
             mediaPlayer.play()

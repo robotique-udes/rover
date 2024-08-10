@@ -69,7 +69,7 @@
        <item>
         <widget class="QCheckBox" name="cb_aruco1">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>Detect aruco</string>
@@ -155,7 +155,7 @@
        <item>
         <widget class="QCheckBox" name="cb_aruco2">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>Detect aruco</string>
@@ -241,7 +241,7 @@
        <item>
         <widget class="QCheckBox" name="cb_aruco3">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>Detect aruco</string>
@@ -327,7 +327,7 @@
        <item>
         <widget class="QCheckBox" name="cb_aruco4">
          <property name="enabled">
-          <bool>false</bool>
+          <bool>true</bool>
          </property>
          <property name="text">
           <string>Detect aruco</string>
