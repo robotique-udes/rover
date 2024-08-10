@@ -40,6 +40,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ArmCmd.msg"
   "msg/DrivetrainArbitration.msg"
   "msg/Compass.msg"
+  "msg/Aruco.msg"
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
