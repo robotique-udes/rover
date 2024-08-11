@@ -128,6 +128,7 @@ private:
     void CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg);
     void CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg);
     void CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg);
+    void CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg);
     // =========================================================================
 };
 
@@ -587,4 +588,12 @@ void CanMaster::CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::Sha
     msg.data.dig = rosMsg_->dig;
 
     msg.sendMsg(RoverCanLib::Constant::eDeviceId::SCIENCE, _canSocket, rclcpp::get_logger(LOGGER_NAME));
+}
+
+void CanMaster::CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg_)
+{
+    RoverCanLib::Msgs::CamPan msg;
+    msg.data.servoPosition = rosMsg_-> angle;
+
+    msg.sendMsg(RoverCanLib::Constant::eDeviceId::CAMERA_PAN, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }

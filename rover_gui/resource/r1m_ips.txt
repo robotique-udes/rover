@@ -1,4 +1,4 @@
-rtsp://192.168.144.198:8554/test
+rtsp://192.168.144.198:8555/test1
+rtsp://admin:admin@192.168.144.63
+rtsp://admin:admin@192.168.144.27:8554/main.264
 rtsp://192.168.144.198:8555/test2
-rtsp://admin:admin@192.168.144.63:69
-rtsp://admin:admin@192.169.144.64:69/

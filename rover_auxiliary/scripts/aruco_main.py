@@ -11,7 +11,7 @@ import time
 class ArucoDetectorNode(Node):
     def __init__(self):
         super().__init__('aruco_detector_node')
-        self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_6X6_100)
+        self.aruco_dict = cv2.aruco.getPredefinedDictionary(cv2.aruco.DICT_4X4_100)
         self.aruco_params = cv2.aruco.DetectorParameters()
         self.samplesize = 4
         self.ids_in_last_frames = []
@@ -20,12 +20,18 @@ class ArucoDetectorNode(Node):
         self.frame = None
         self.cap = None
         self.rtsp_stream = None 
+        
+        self.last_processed_time = time.time()
 
-        self.create_timer(0.1, self.timer_callback)
+        self.create_timer(1.0, self.timer_callback)
         self.streamID = self.create_service(RtspStream, 'stream_id', self.stream_CB)
         self.arucoPub = self.create_publisher(Aruco, '/rover/auxiliary/aruco', 10)
 
     def timer_callback(self):
+        current_time = time.time()
+        if current_time - self.last_processed_time < 1.0:
+            return  
+
         if self.cap is None or not self.cap.isOpened():
             return
 
@@ -93,20 +99,24 @@ class ArucoDetectorNode(Node):
             return None
         else:
             return grey_frame
+    
     def add_frame(self):
         if self.cap is None or not self.cap.isOpened():
             self.get_logger().warn('No valid RTSP stream available')
             return False
     
-        ret, frame = self.cap.read()
+        # Skip frames to get to the most recent one
+        frames_to_skip = int(self.cap.get(cv2.CAP_PROP_FPS))
+        for _ in range(frames_to_skip):
+            self.cap.grab()
+    
+        ret, frame = self.cap.retrieve()
         if not ret or frame is None:
             self.get_logger().warn('Failed to read frame from RTSP stream')
             return False
     
         self.frame = frame
         self.list_frames.insert(0, frame)
-        cv2.imshow("Camera feed", frame)
-        cv2.waitKey(1)
         return True
 
     def delete_oldest_frame(self):
@@ -126,7 +136,9 @@ class ArucoDetectorNode(Node):
                     self.validated_ids.append(i)
 
     def scan_frame(self, frame):
-        corners, ids, rejected = cv2.aruco.detectMarkers(frame, self.aruco_dict, parameters=self.aruco_params)
+        # Mirror the frame before scanning
+        mirrored_frame = cv2.flip(frame, 1)
+        corners, ids, rejected = cv2.aruco.detectMarkers(mirrored_frame, self.aruco_dict, parameters=self.aruco_params)
         return ids
     
 def main(args=None):
