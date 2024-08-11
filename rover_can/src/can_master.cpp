@@ -110,6 +110,8 @@ private:
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_cameras;
     rclcpp::Subscription<rover_msgs::msg::LightControl>::SharedPtr _sub_lights;
     rclcpp::Subscription<rover_msgs::msg::ScienceControl>::SharedPtr _sub_science;
+    rclcpp::Subscription<rover_msgs::msg::CameraAngle>::SharedPtr _sub_cameraPano;
+    // rclcpp::Subscription<rover_msgs::msg:: ::SharedPtr _sub_science;
     // =========================================================================
 
     // =========================================================================
