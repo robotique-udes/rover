@@ -102,15 +102,12 @@ class Cameras(QWidget):
             if 1 <= camera_number <= len(ip_list):
                 self.ui_node.get_logger().info("Ip to send")
                 screenshot_req.ip_address = ip_list[camera_number - 1]
-                screenshot_req.name = screenshot_name  # Add the name to the request
+                screenshot_req.name = screenshot_name
             else:
                 self.ui_node.get_logger().error(f"Invalid camera number: {camera_number}")
                 return
             
-            future = screenshot_client.call_async(screenshot_req)
-            future.add_done_callback(self.screenshot_callback)
-        else:
-            self.ui_node.get_logger().info("Screenshot cancelled or no name provided")
+            response = screenshot_client.call(screenshot_req)
 
     def screenshot_callback(self, future):
         try:
