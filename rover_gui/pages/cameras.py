@@ -2,10 +2,10 @@ import time
 from ament_index_python.packages import get_package_share_directory
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5 import uic
-from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QPushButton, QMessageBox
+from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QPushButton, QMessageBox, QInputDialog, QLineEdit
 from PyQt5.QtCore import QUrl, QTimer, QThread, pyqtSignal
 from rover_msgs.srv import ScreenshotControl
-from navigation.handlers import ScreenshotClient
+from rover_msgs.srv._screenshot_control import ScreenshotControl
 
 class Cameras(QWidget):
     def __init__(self, ui_node):
@@ -30,9 +30,6 @@ class Cameras(QWidget):
         self.lb_aruco3: QLabel
         self.lb_aruco4: QLabel
 
-        # Initialize PanoControl client
-        self.screenshot_client = ScreenshotClient(self.ui_node)
-
         self.lb_aruco1.hide()
         self.lb_aruco2.hide()
         self.lb_aruco3.hide()
@@ -53,7 +50,6 @@ class Cameras(QWidget):
             refresh_button = getattr(self, f'cam{i+1}_refresh')
 
             mediaPlayer.setVideoOutput(video_output)
-            #rtsp_url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
             mediaPlayer.setMedia(QMediaContent(QUrl(ip)))
 
             # Ensure video widget size is fixed
@@ -85,26 +81,48 @@ class Cameras(QWidget):
         return lines
 
     def cb_screenshot(self, camera_number):
-        if not self.screenshot_client.screenshot_control_client.wait_for_service(timeout_sec=1.0):
-            self.handle_service_unavailability(lambda: self.cb_screenshot(camera_number), "pano_control")
+        screenshot_client = self.ui_node.create_client(ScreenshotControl, '/rover/auxiliary/control_screenshot')
+        
+        # Wait for the service to become available with a timeout
+        if not screenshot_client.wait_for_service(timeout_sec=1.0):
+            QMessageBox.warning(self, "Service Unavailable", 
+                                "The screenshot service is currently unavailable. Please try again later.")
             return
-        
-        request = ScreenshotControl.Request()
-        request.start = True
-        
-        ip_list = self.ip_list
-        if 1 <= camera_number <= len(ip_list):
-            request.ip_address = ip_list[camera_number - 1]
-        else:
-            self.ui_node.get_logger().error(f"Invalid camera number: {camera_number}")
-            return
-        
-        self.screenshot_client.send_request(request, self.handle_screenshot_response)
 
-    def handle_screenshot_response(self, success, message):
-        if not success:
-            self.ui_node.get_logger().error(message)
-            QMessageBox.warning(self, "Service Call Failed", message)
+        # Prompt user for screenshot name
+        screenshot_name, ok = QInputDialog.getText(self, "Screenshot Name", 
+                                                   "Enter the name for your screenshot:",
+                                                   QLineEdit.Normal, "")
+        
+        if ok and screenshot_name:
+            screenshot_req = ScreenshotControl.Request()
+            screenshot_req.start = True
+            
+            ip_list = self.ip_list
+            if 1 <= camera_number <= len(ip_list):
+                self.ui_node.get_logger().info("Ip to send")
+                screenshot_req.ip_address = ip_list[camera_number - 1]
+                screenshot_req.name = screenshot_name  # Add the name to the request
+            else:
+                self.ui_node.get_logger().error(f"Invalid camera number: {camera_number}")
+                return
+            
+            future = screenshot_client.call_async(screenshot_req)
+            future.add_done_callback(self.screenshot_callback)
+        else:
+            self.ui_node.get_logger().info("Screenshot cancelled or no name provided")
+
+    def screenshot_callback(self, future):
+        try:
+            response = future.result()
+            if response.success:
+                QMessageBox.information(self, "Screenshot Saved", 
+                                        f"Screenshot has been saved successfully as {response.name}")
+            else:
+                QMessageBox.warning(self, "Screenshot Error", 
+                                    "Failed to save the screenshot. Please try again.")
+        except Exception as e:
+            QMessageBox.warning(self, "Screenshot Error", f"An error occurred: {str(e)}")
 
     def __del__(self):
         for mediaPlayer in self.media_players:
@@ -117,7 +135,7 @@ class Cameras(QWidget):
             self.status_thread.wait()
 
         self.media_players.clear()
-        self.screenshot_client_client.shutdown()
+        # Note: Removed the line with screenshot_client_client as it's not defined in the scope
         super().__del__()
 
     class StatusThread(QThread):
