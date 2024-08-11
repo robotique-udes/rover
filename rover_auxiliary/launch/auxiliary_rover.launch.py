@@ -34,12 +34,12 @@ def generate_launch_description():
             executable="redistribute_stream.py",
             name="redistribute_stream",
             parameters=[
-                {"streamIP": "127.0.0.2"},
+                {"streamIP": "192.168.144.62"},
                 {"streamPort": 69},
-                {"serverPort1": 8554},  
-                {"outputIP1": "192.168.144.198"},  
-                {"serverPort2": 8555},  
-                {"outputIP2": "192.168.144.199"},  
+                {"serverPort1": 10001},  
+                {"outputIP1": "192.168.144.21"},  
+                {"serverPort2": 10002},  
+                {"outputIP2": "192.168.144.22"},  
             ]
     )
     
