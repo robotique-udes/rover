@@ -13,6 +13,7 @@ def generate_launch_description():
         executable="aruco_main.py",
         name="aruco"
     )
+    
     ld.add_action(node_aruco)
 
     return ld
