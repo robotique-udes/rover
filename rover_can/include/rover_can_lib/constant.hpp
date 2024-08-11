@@ -20,13 +20,13 @@ namespace RoverCanLib::Constant
         REARRIGHT_MOTOR = 0x106,
 
         // ARM
-        J0_CONTROLLER = 0x210,
-        J1_CONTROLLER = 0x211,
-        J2_CONTROLLER = 0x212,
-        J3_CONTROLLER = 0x213,
-        J4_CONTROLLER = 0x214,
-        J5_CONTROLLER = 0x215,
-        J6_CONTROLLER = 0x216,
+        JL_CONTROLLER = 0x201,
+        J0_CONTROLLER = 0x202,
+        J1_CONTROLLER = 0x203,
+        J2_CONTROLLER = 0x204,
+        GRIPPER_TILT_CONTROLLER = 0x205,
+        GRIPPER_ROT_CONTROLLER = 0x206,
+        GRIPPER_CLOSE_CONTROLLER = 0x207,
 
         // Science
         SCIENCE = 0x301,
@@ -59,6 +59,8 @@ namespace RoverCanLib::Constant
         LIGHT_CONTROL = 0x15,
         SCIENCE = 0x16,
         COMPASS = 0x17,
+        ARM_CMD = 0x18,
+        ARM_STATUS = 0x19,
         CAM_PAN = 0x20
     };
 
