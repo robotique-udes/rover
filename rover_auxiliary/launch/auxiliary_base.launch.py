@@ -7,14 +7,6 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
 
-<<<<<<< Updated upstream
-    node_aruco = Node(
-        package="rover_auxiliary",
-        namespace="/rover/auxiliary",
-        executable="aruco_main.py",
-        name="aruco"
-    )
-=======
     node_lights_main = Node(
         package="rover_auxiliary",
         namespace="/rover/auxiliary",
@@ -44,7 +36,8 @@ def generate_launch_description():
             ]
         )
 
->>>>>>> Stashed changes
-    ld.add_action(node_aruco)
+    ld.add_action(node_lights_main)
+    ld.add_action(node_compass_main)
+    ld.add_action(node_redistribute_stream)
 
     return ld
