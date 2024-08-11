@@ -52,7 +52,7 @@ class ScreenshotService(Node):
 
             ret, frame = self.cap.read()
             if ret:
-                timestamp = datetime.now().strftime("%Y%m%d_%H%M%S")
+                timestamp = datetime.now().strftime("%Y%m%d_%Hh%Mmin%Ss")
                 if self.name is None: self.name = ""
                 if self.gps_data is None: self.gps_data = "GPS_OFFLINE"
                 photo_filename = os.path.join(self.save_directory, f"{timestamp} {self.gps_data} {self.name}.jpg")

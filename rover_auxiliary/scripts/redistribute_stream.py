@@ -9,6 +9,8 @@ import socket
 import time
 import threading
 
+URL_NAME:str = "cam"
+
 class RTSPServerNode(Node):
     def __init__(self):
         super().__init__('rtsp_server_node')
@@ -23,24 +25,19 @@ class RTSPServerNode(Node):
         self.declare_parameter('streamPort', 69)  
         self.declare_parameter('serverPort1', 8554)  
         self.declare_parameter('serverPort2', 8555)  
-        self.declare_parameter('outputIP1', '192.168.144.198')  
-        self.declare_parameter('outputIP2', '192.168.144.198')  
 
         self.streamIP = self.get_parameter('streamIP').value
         self.streamPort = self.get_parameter('streamPort').value
         self.streamPort1 = self.get_parameter('serverPort1').value
         self.streamPort2 = self.get_parameter('serverPort2').value
-        self.outputIP1 = self.get_parameter('outputIP1').value
-        self.outputIP2 = self.get_parameter('outputIP2').value
 
         self.get_logger().debug(f"Initialized with stream IP: {self.streamIP}, stream port: {self.streamPort}, "
-                               f"server ports: {self.streamPort1} and {self.streamPort2}, "
-                               f"output IPs: {self.outputIP1} and {self.outputIP2}")
+                               f"server ports: {self.streamPort1} and {self.streamPort2}")
 
-        if self.IPisValid(self.streamIP) and self.IPisValid(self.outputIP1) and self.IPisValid(self.outputIP2):
+        if self.IPisValid(self.streamIP):
             self.startServers()
         else:
-            self.get_logger().error(f"Invalid IP address detected: {self.streamIP}, {self.outputIP1}, or {self.outputIP2}")
+            self.get_logger().error(f"Invalid IP address detected: {self.streamIP}")
 
     def IPisValid(self, ip):
         try:
@@ -72,7 +69,7 @@ class RTSPServerNode(Node):
             factory1.set_shared(True)
 
             mountPoints1 = self.server1.get_mount_points()
-            mountPoints1.add_factory("/test1", factory1)
+            mountPoints1.add_factory("/cam", factory1)
             self.get_logger().debug("First factory added to mount points")
 
             attach_result1 = self.server1.attach(None)
@@ -81,7 +78,7 @@ class RTSPServerNode(Node):
             else:
                 self.get_logger().error("Failed to attach the first server")
 
-            rtsp_url1 = f"rtsp://{self.outputIP1}:{self.streamPort1}/test1"
+            rtsp_url1 = f"rtsp://THIS_PC_IP:{self.streamPort1}/cam"
             self.get_logger().info(f"First RTSP server is running. Full address: {rtsp_url1}")
         
         if self.server2 is None:
@@ -94,7 +91,7 @@ class RTSPServerNode(Node):
             factory2.set_shared(True)
 
             mountPoints2 = self.server2.get_mount_points()
-            mountPoints2.add_factory("/test2", factory2)
+            mountPoints2.add_factory("/cam", factory2)
             self.get_logger().debug("Second factory added to mount points")
 
             attach_result2 = self.server2.attach(None)
@@ -103,7 +100,7 @@ class RTSPServerNode(Node):
             else:
                 self.get_logger().error("Failed to attach the second server")
 
-            rtsp_url2 = f"rtsp://{self.outputIP2}:{self.streamPort2}/test2"
+            rtsp_url2 = f"rtsp://THIS_PC_IP:{self.streamPort2}/cam"
             self.get_logger().info(f"Second RTSP server is running. Full address: {rtsp_url2}")
 
         if self.loop is None:

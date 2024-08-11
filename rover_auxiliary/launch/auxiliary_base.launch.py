@@ -23,9 +23,7 @@ def generate_launch_description():
                 {"streamIP": "192.168.144.62"},
                 {"streamPort": 69},
                 {"serverPort1": 8554},  
-                {"outputIP1": "192.168.144.103"},  
-                {"serverPort2": 8555},  
-                {"outputIP2": "192.168.144.103"},  
+                {"serverPort2": 8555}  
             ]
     )
 
