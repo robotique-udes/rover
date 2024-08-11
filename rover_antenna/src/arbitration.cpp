@@ -103,7 +103,7 @@ void Arbitration::sendCmd()
         cmdAbtr.speed = 0.0f;
         cmdAbtr.enable = false;
         _pub_abtr->publish(cmdAbtr);
-        RCLCPP_ERROR(LOGGER, "Wrong service message!!! Message sent : %d. Expected 0, 1 or 2", _arbitrationRequest.target_arbitration);
+        RCLCPP_ERROR_THROTTLE(LOGGER, CLOCK, 1000, "Wrong service message!!! Message sent : %d. Expected 0, 1 or 2. Arbitration set to NOT_MOVING", _arbitrationRequest.target_arbitration);
     }
 
     _pub_abtrStatus->publish(_arbitrationStatus);

@@ -13,21 +13,32 @@
 #include "rovus_lib/timer.hpp"
 
 #define PORT 1234
-#define MSGLEN 48
-#define IP_SERVER "192.168.140.100"
+#define IP_LOCAL "192.168.140.100"
+#define IP_SERVER "192.168.140.60"
 
-void signal_handler(int signo_);
+void signalHandler(int signo_);
 volatile sig_atomic_t g_shutdownFlag = 0;
 
 class ClientUDPAntenna : public rclcpp::Node
 {
+    struct sMsgAbtrCmd
+    {
+        float speed = 0.0f;
+        bool enable = 0.0f;
+    };
+
+    struct sMsgGPS
+    {
+        float latitude = 0.0f;
+        float longitude = 0.0f;
+    };
+
 public:
     ClientUDPAntenna(int sock_, struct sockaddr_in servAddr_, socklen_t sLen_);
     ~ClientUDPAntenna() {}
 
 private:
     void callbackAbtr(const rover_msgs::msg::AntennaCmd msg_);
-    void sendGpsAntenna();
     void cbTimerMsg();
 
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr _pub_gpsAntenna;
@@ -35,33 +46,21 @@ private:
 
     rclcpp::TimerBase::SharedPtr _timerMsg;
 
-    struct MsgAbtrCmd
-    {
-        float speed = 0.0;
-        bool enable = 0.0;
-    };
-
-    struct MsgGPS
-    {
-        float latitude = 0.0;
-        float longitude = 0.0;
-    };
-
     int _socket;
     struct sockaddr_in _servAddr;
     socklen_t _sLen = sizeof(_servAddr);
 
     Timer<uint64_t, millis> _timerSend = Timer<uint64_t, millis>(200u);
 
-    MsgAbtrCmd _msgCbAbtr;
-    MsgAbtrCmd _bufferSend;
-    char _bufferRecv[MSGLEN] = {'\0'};
+    sMsgAbtrCmd _msgCbAbtr;
+    sMsgAbtrCmd _bufferSend;
+    uint8_t _bufferRecv[sizeof(sMsgAbtrCmd)] = {0};
     rover_msgs::msg::Gps _gpsAntenna;
 };
 
 int main(int argc, char *argv[])
 {
-    signal(SIGINT, signal_handler); // Makes CTRL+C work
+    signal(SIGINT, signalHandler); // Makes CTRL+C work
 
     rclcpp::init(argc, argv);
     while (!g_shutdownFlag)
@@ -71,7 +70,8 @@ int main(int argc, char *argv[])
         // Creating socket file descriptors
         if ((sock = socket(AF_INET, SOCK_DGRAM, 0)) < 0)
         {
-            RCLCPP_ERROR(rclcpp::get_logger("udp_client(not init)"), "Sockect creation failed");
+            RCLCPP_ERROR(rclcpp::get_logger("udp_client(not init)"), "Sockect creation failed, retrying to connect");
+            close(sock);
             continue;
         }
 
@@ -81,7 +81,8 @@ int main(int argc, char *argv[])
         tv.tv_usec = 0;
         if (setsockopt(sock, SOL_SOCKET, SO_RCVTIMEO, (const char *)&tv, sizeof tv) < 0)
         {
-            RCLCPP_ERROR(rclcpp::get_logger("udp_client(not init)"), "Socket option failed");
+            RCLCPP_ERROR(rclcpp::get_logger("udp_client(not init)"), "Socket option failed, retying to connect");
+            close(sock);
             continue;
         }
 
@@ -90,13 +91,16 @@ int main(int argc, char *argv[])
 
         servAddr.sin_family = AF_INET;
         servAddr.sin_port = htons(PORT);
-        servAddr.sin_addr.s_addr = inet_addr(IP_SERVER);
+        servAddr.sin_addr.s_addr = inet_addr(IP_LOCAL);
 
         if (bind(sock, (struct sockaddr *)&servAddr, sizeof(servAddr)) < 0)
         {
             RCLCPP_ERROR(rclcpp::get_logger("udp_client(not init)"), "Connection to server failed, try connecting to roverAntenna network");
+            close(sock);
             continue;
         }
+
+        servAddr.sin_addr.s_addr = inet_addr(IP_SERVER);
 
         rclcpp::spin(std::make_shared<ClientUDPAntenna>(sock, servAddr, sLen));
 
@@ -105,7 +109,7 @@ int main(int argc, char *argv[])
     }
 }
 
-void signal_handler(int signo_)
+void signalHandler(int signo_)
 {
     RCLCPP_INFO(rclcpp::get_logger("[SHUTDOWN]"), "Shutdown asked by user, exiting...");
     (void)signo_;
@@ -137,22 +141,25 @@ void ClientUDPAntenna::cbTimerMsg()
     // Sending a message to the server
     if (_timerSend.isDone())
     {
-        ssize_t sByte = sendto(_socket, &_msgCbAbtr, sizeof(MsgAbtrCmd), 0, (struct sockaddr *)&_servAddr, _sLen);
+        ssize_t sByte = sendto(_socket, &_msgCbAbtr, sizeof(sMsgAbtrCmd), 0, (struct sockaddr *)&_servAddr, _sLen);
         if (sByte < 0)
         {
             RCLCPP_WARN(rclcpp::get_logger(""), "sendto failed");
         }
+        RCLCPP_INFO(rclcpp::get_logger(""), "Message sent : %f", _msgCbAbtr.speed);
     }
 
-    int64_t recvByte = (int64_t)recv(_socket, _bufferRecv, sizeof(_bufferRecv), 0);
-    if (recvByte < 0)
-    {
-        RCLCPP_WARN(rclcpp::get_logger(""), "received failed");
-    }
-    else
-    {
-        _gpsAntenna.latitude = ((MsgGPS *)_bufferRecv)->latitude;
-        _gpsAntenna.longitude = ((MsgGPS *)_bufferRecv)->longitude;
-        _pub_gpsAntenna->publish(_gpsAntenna);
-    }
+    // int64_t recvByte = (int64_t)recv(_socket, _bufferRecv, sizeof(_bufferRecv), 0);
+    // if (recvByte < 0)
+    // {
+    //     RCLCPP_WARN(rclcpp::get_logger(""), "received failed");
+    // }
+    // else
+    // {
+    //     _gpsAntenna.latitude = ((sMsgGPS *)_bufferRecv)->latitude;
+    //     _gpsAntenna.longitude = ((sMsgGPS *)_bufferRecv)->longitude;
+    //     _pub_gpsAntenna->publish(_gpsAntenna);
+
+    //     // RCLCPP_INFO(rclcpp::get_logger(""), "Message received : %f", _gpsAntenna.latitude);
+    // }
 }
