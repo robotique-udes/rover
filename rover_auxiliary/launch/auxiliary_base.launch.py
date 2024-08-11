@@ -7,13 +7,13 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
 
-    node_aruco = Node(
+    node_goal_manager = Node(
         package="rover_auxiliary",
         namespace="/rover/auxiliary",
-        executable="aruco_main.py",
-        name="aruco"
+        executable="goal_manager",
+        name="goal_manager"
     )
     
-    ld.add_action(node_aruco)
+    ld.add_action(node_goal_manager)
 
     return ld
