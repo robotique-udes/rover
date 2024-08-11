@@ -128,8 +128,6 @@ if __name__ == '__main__':
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        pass
-    finally:
         node.shutdown()
         node.get_logger().info("Shutting down node")
         node.destroy_node()

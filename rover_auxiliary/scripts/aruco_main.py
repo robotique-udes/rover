@@ -32,33 +32,47 @@ class ArucoDetectorNode(Node):
         if current_time - self.last_processed_time < 1.0:
             return  
 
+        aruco_msg = Aruco()
+        aruco_msg.id = []  # Initialize with an empty list
+
         if self.cap is None or not self.cap.isOpened():
+            self.get_logger().warn('No valid RTSP stream available')
+            self.arucoPub.publish(aruco_msg)
             return
 
-        if self.add_frame():
-            self.frame = self.convert_to_gray(self.frame)
-            if self.frame is not None:
-                ids = self.scan_frame(self.frame)
-                if ids is None:
-                    self.get_logger().info('No ArUCo markers in field of view')
-                else:
-                    for i in range(len(ids)):
-                        id = np.squeeze(ids[i])
-                        if id >= len(self.ids_in_last_frames):
-                            self.ids_in_last_frames.extend([0] * (id - len(self.ids_in_last_frames) + 1))
-                        self.ids_in_last_frames[id] += 1
+        if not self.add_frame():
+            self.get_logger().warn('Failed to read frame from RTSP stream')
+            self.arucoPub.publish(aruco_msg)
+            return
 
-                    self.count_valid_ids()
-                    self.get_logger().info(f'ArUCo markers found: {self.validated_ids}')
-                    aruco_msg = Aruco()
-                    aruco_msg.id = self.validated_ids
-                    self.arucoPub.publish(aruco_msg)
+        self.frame = self.convert_to_gray(self.frame)
+        if self.frame is None:
+            self.get_logger().error('Error converting frame to grayscale')
+            self.arucoPub.publish(aruco_msg)
+            return
 
-                    self.validated_ids = self.empty_list(self.validated_ids)
+        ids = self.scan_frame(self.frame)
+        if ids is None:
+            self.get_logger().info('No ArUCo markers in field of view')
+        else:
+            for i in range(len(ids)):
+                id = np.squeeze(ids[i])
+                if id >= len(self.ids_in_last_frames):
+                    self.ids_in_last_frames.extend([0] * (id - len(self.ids_in_last_frames) + 1))
+                self.ids_in_last_frames[id] += 1
 
-            if len(self.list_frames) > self.samplesize:
-                self.delete_oldest_frame()
-                
+            self.count_valid_ids()
+            self.get_logger().info(f'ArUCo markers found: {self.validated_ids}')
+            aruco_msg.id = self.validated_ids
+
+        self.arucoPub.publish(aruco_msg)
+        self.validated_ids = self.empty_list(self.validated_ids)
+
+        if len(self.list_frames) > self.samplesize:
+            self.delete_oldest_frame()
+
+        self.last_processed_time = current_time
+        
     def stream_CB(self, request, response):
         self.rtsp_stream = request.stream_id
 
@@ -137,8 +151,8 @@ class ArucoDetectorNode(Node):
 
     def scan_frame(self, frame):
         # Mirror the frame before scanning
-        mirrored_frame = cv2.flip(frame, 1)
-        corners, ids, rejected = cv2.aruco.detectMarkers(mirrored_frame, self.aruco_dict, parameters=self.aruco_params)
+        # mirrored_frame = cv2.flip(frame, 1)
+        corners, ids, rejected = cv2.aruco.detectMarkers(frame, self.aruco_dict, parameters=self.aruco_params)
         return ids
     
 def main(args=None):

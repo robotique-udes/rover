@@ -50,7 +50,6 @@ install(TARGETS
 
 install(PROGRAMS
     scripts/redistribute_stream.py
-    scripts/panorama_service.py
     scripts/aruco_main.py
   DESTINATION lib/${PROJECT_NAME})
   
