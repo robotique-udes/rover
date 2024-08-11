@@ -1,10 +1,10 @@
 #!/usr/bin/env python3
-import rclpy
-from rclpy.node import Node
 import gi
 gi.require_version('Gst', '1.0')
 gi.require_version('GstRtspServer', '1.0')
 from gi.repository import Gst, GstRtspServer, GLib
+import rclpy
+from rclpy.node import Node
 import socket
 import time
 import threading
@@ -112,23 +112,13 @@ class RTSPServerNode(Node):
             self.loop_thread = threading.Thread(target=self.loop.run)
             self.loop_thread.start()
 
-    def shutdown(self):
-        self.get_logger().info("Shutting down RTSP servers and GLib MainLoop")
-        if self.loop:
-            self.loop.quit()
-        if self.server1:
-            self.server1.detach()
-        if self.server2:
-            self.server2.detach()
-        self.get_logger().info("Servers detached and loop stopped")
-
 if __name__ == '__main__':
     rclpy.init(args=None)
     node = RTSPServerNode()
     try:
         rclpy.spin(node)
     except KeyboardInterrupt:
-        node.shutdown()
+        # node.shutdown()
         node.get_logger().info("Shutting down node")
         node.destroy_node()
         rclpy.shutdown()
