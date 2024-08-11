@@ -14,6 +14,13 @@ def generate_launch_description():
         name="goal_manager"
     )
     
+    node_screenshot = Node(
+        package="rover_auxiliary",
+        namespace="/rover/auxiliary",
+        executable="screenshot_service.py",
+        name="screenshot_service"
+    )
+    
     ld.add_action(node_goal_manager)
 
     return ld
