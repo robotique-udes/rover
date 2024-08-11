@@ -113,7 +113,7 @@ void Autonomus::autonomusCommand()
         cmd.speed = 0.0f;
 
     }
-    RCLCPP_INFO(rclcpp::get_logger("angle"), "angle %f", relativeHeading);
+    // RCLCPP_INFO(rclcpp::get_logger("angle"), "angle %f", relativeHeading);
     _pub_cmd->publish(cmd);
 }
 
