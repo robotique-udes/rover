@@ -786,13 +786,6 @@ QRadioButton::indicator::checked {
              </widget>
             </item>
             <item>
-             <widget class="QPushButton" name="pb_take_photo">
-              <property name="text">
-               <string>Take photo</string>
-              </property>
-             </widget>
-            </item>
-            <item>
              <widget class="QLineEdit" name="ip_adress"/>
             </item>
            </layout>

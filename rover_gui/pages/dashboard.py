@@ -12,7 +12,7 @@ from rover_msgs.msg._science_control import ScienceControl
 from rover_msgs.msg._camera_angle import CameraAngle
 from rover_msgs.srv import PanoControl
 import rclpy
-from navigation.panorama_handler import PanoramaClient
+from navigation.handlers import PanoramaClient
 
 class Dashboard(QWidget):
     def __init__(self, ui_node):
@@ -69,7 +69,6 @@ class Dashboard(QWidget):
         self.pb_angle_max : QPushButton
         self.pb_start_panorama : QPushButton
         self.pb_stop_panorama : QPushButton
-        self.pb_take_photo : QPushButton
         self.ip_adress : QLineEdit
 
         # Initialize PanoControl client
@@ -93,7 +92,6 @@ class Dashboard(QWidget):
         self.rb_infrared_light.clicked.connect(self.light_mode_clicked)
         self.pb_angle_min.clicked.connect(self.angle_min_clicked)
         self.pb_angle_max.clicked.connect(self.angle_max_clicked)
-        self.pb_take_photo.clicked.connect(self.cb_photo)
         self.pb_start_panorama.clicked.connect(self.cb_start_panorama)
         self.pb_stop_panorama.clicked.connect(self.cb_close_panorama)
 
@@ -142,19 +140,6 @@ class Dashboard(QWidget):
         
     def angle_max_clicked(self):
         self.sb_cam_angle.setValue(self.sb_cam_angle.maximum())
-
-    def cb_photo(self):
-        if not self.panorama_client.pano_control_client.wait_for_service(timeout_sec=1.0):
-            self.handle_service_unavailability(self.pb_take_photo, "pano_control")
-            return
-        
-        request = PanoControl.Request()
-        request.photo = True
-        request.stop = False
-        request.start = False
-        request.ip_address = self.ip_adress.text()
-        
-        self.panorama_client.send_request(request, self.handle_pano_response)
 
     def cb_start_panorama(self):
         if not self.panorama_client.pano_control_client.wait_for_service(timeout_sec=1.0):

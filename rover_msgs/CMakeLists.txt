@@ -51,6 +51,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/NewGpsGoal.srv"
   "srv/PanoControl.srv"
   "srv/RtspStream.srv"
+  "srv/ScreenshotControl.srv"
 )
 
 ament_package()

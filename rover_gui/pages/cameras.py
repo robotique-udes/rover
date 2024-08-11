@@ -2,8 +2,10 @@ import time
 from ament_index_python.packages import get_package_share_directory
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5 import uic
-from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QPushButton, QMessageBox
 from PyQt5.QtCore import QUrl, QTimer, QThread, pyqtSignal
+from rover_msgs.srv import ScreenshotControl
+from navigation.handlers import ScreenshotClient
 
 class Cameras(QWidget):
     def __init__(self, ui_node):
@@ -28,17 +30,24 @@ class Cameras(QWidget):
         self.lb_aruco3: QLabel
         self.lb_aruco4: QLabel
 
+        # Initialize PanoControl client
+        self.screenshot_client = ScreenshotClient(self.ui_node)
+
         self.lb_aruco1.hide()
         self.lb_aruco2.hide()
         self.lb_aruco3.hide()
         self.lb_aruco4.hide()
+        self.cam1_screenshot.clicked.connect(lambda: self.cb_screenshot(1))
+        self.cam2_screenshot.clicked.connect(lambda: self.cb_screenshot(2))
+        self.cam3_screenshot.clicked.connect(lambda: self.cb_screenshot(3))
+        self.cam4_screenshot.clicked.connect(lambda: self.cb_screenshot(4))
 
         self.start_feeds()
         
     def start_feeds(self):
-        ip_list = self.load_file_into_list(self.resources_directory + "r1m_ips.txt")
+        self.ip_list = self.load_file_into_list(self.resources_directory + "r1m_ips.txt")
 
-        for i, ip in enumerate(ip_list):
+        for i, ip in enumerate(self.ip_list):
             mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
             video_output = getattr(self, f'cam{i+1}')
             refresh_button = getattr(self, f'cam{i+1}_refresh')
@@ -75,6 +84,28 @@ class Cameras(QWidget):
             lines = [line.strip() for line in file.readlines() if line.strip()]
         return lines
 
+    def cb_screenshot(self, camera_number):
+        if not self.screenshot_client.screenshot_control_client.wait_for_service(timeout_sec=1.0):
+            self.handle_service_unavailability(lambda: self.cb_screenshot(camera_number), "pano_control")
+            return
+        
+        request = ScreenshotControl.Request()
+        request.start = True
+        
+        ip_list = self.ip_list
+        if 1 <= camera_number <= len(ip_list):
+            request.ip_address = ip_list[camera_number - 1]
+        else:
+            self.ui_node.get_logger().error(f"Invalid camera number: {camera_number}")
+            return
+        
+        self.screenshot_client.send_request(request, self.handle_screenshot_response)
+
+    def handle_screenshot_response(self, success, message):
+        if not success:
+            self.ui_node.get_logger().error(message)
+            QMessageBox.warning(self, "Service Call Failed", message)
+
     def __del__(self):
         for mediaPlayer in self.media_players:
             mediaPlayer.stop()
@@ -86,6 +117,7 @@ class Cameras(QWidget):
             self.status_thread.wait()
 
         self.media_players.clear()
+        self.screenshot_client_client.shutdown()
         super().__del__()
 
     class StatusThread(QThread):
