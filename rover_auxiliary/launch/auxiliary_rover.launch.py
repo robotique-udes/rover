@@ -28,6 +28,21 @@ def generate_launch_description():
         name="light_control"
     )
     
+    node_redistribute_stream = Node(
+            package="rover_auxiliary",
+            namespace="/rover/auxiliary",
+            executable="redistribute_stream.py",
+            name="redistribute_stream",
+            parameters=[
+                {"streamIP": "192.168.144.62"},
+                {"streamPort": 69},
+                {"serverPort1": 8554},  
+                {"outputIP1": "192.168.144.101"},  
+                {"serverPort2": 8555},  
+                {"outputIP2": "192.168.144.101"},  
+            ]
+    )
+    
     # ld.add_action(node_aruco)
     ld.add_action(node_compass_calibrator)
     ld.add_action(node_light_control)
