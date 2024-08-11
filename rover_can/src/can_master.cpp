@@ -73,7 +73,6 @@ rover_msgs::msg::PropulsionMotor msg_ROS_propMotor;
 rover_msgs::msg::ArmMsg msg_ROS_arm;
 rover_msgs::msg::Gps msg_ROS_gps;
 rover_msgs::msg::Compass msg_ROS_compass;
-rover_msgs::msg::ScienceControl msg_ROS_science;
 // =============================================================================
 
 class CanMaster : public rclcpp::Node
@@ -120,9 +119,7 @@ private:
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _sub_arm;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_cameras;
     rclcpp::Subscription<rover_msgs::msg::LightControl>::SharedPtr _sub_lights;
-    rclcpp::Subscription<rover_msgs::msg::ScienceControl>::SharedPtr _sub_science;
     rclcpp::Subscription<rover_msgs::msg::CameraAngle>::SharedPtr _sub_cameraPano;
-    // rclcpp::Subscription<rover_msgs::msg:: ::SharedPtr _sub_science;
     // =========================================================================
 
     // =========================================================================
@@ -140,7 +137,6 @@ private:
     void CB_ROS_Arm(const rover_msgs::msg::ArmMsg::SharedPtr msg);
     void CB_ROS_cameraControl(const rover_msgs::msg::CameraControl::SharedPtr rosMsg);
     void CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedPtr rosMsg);
-    void CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg);
     void CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg);
     // =========================================================================
 };
@@ -238,7 +234,6 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER] = &msg_CAN_ArmGripperClose;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::GPS] = &msg_CAN_gps;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::COMPASS] = &msg_CAN_compass;
-    _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::SCIENCE] = &msg_CAN_science;
 
     // =========================================================================
     //  Devices objects constructors
@@ -266,9 +261,6 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
 
-    // Science
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::SCIENCE, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::SCIENCE, this, &CanMaster::CB_Can_None, _pub_canStatus));
-
     // Aux
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GPS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GPS, this, &CanMaster::CB_Can_GPS, _pub_canStatus));
     _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::COMPASS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::COMPASS, this, &CanMaster::CB_Can_Compass, _pub_canStatus));
@@ -283,7 +275,6 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     // _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
     _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1, std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
     _sub_cameraPano = this->create_subscription<rover_msgs::msg::CameraAngle>("/rover/auxiliary/camera_pano", 1, std::bind(&CanMaster::CB_ROS_cameraPano, this, std::placeholders::_1));
-    _sub_science = this->create_subscription<rover_msgs::msg::ScienceControl>("/base/science/teleop", 1, std::bind(&CanMaster::CB_ROS_scienceControl, this, std::placeholders::_1));
     // =========================================================================
 
     // Created last to make sure everything is init before it gets called
@@ -696,16 +687,6 @@ void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedP
 
     msg.data.enable = rosMsg_->enable[rover_msgs::msg::LightControl::LIGHT_INFRARED];
     msg.sendMsg(RoverCanLib::Constant::eDeviceId::INFRARED_LIGHTS, _canSocket, rclcpp::get_logger(LOGGER_NAME));
-}
-
-void CanMaster::CB_ROS_scienceControl(const rover_msgs::msg::ScienceControl::SharedPtr rosMsg_)
-{
-    RoverCanLib::Msgs::Science msg;
-    msg.data.cmd = rosMsg_->cmd;
-    msg.data.current_sample = rosMsg_->current_sample;
-    msg.data.dig = rosMsg_->dig;
-
-    msg.sendMsg(RoverCanLib::Constant::eDeviceId::SCIENCE, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }
 
 void CanMaster::CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg_)
