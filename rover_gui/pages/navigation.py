@@ -5,6 +5,7 @@ from PyQt5 import uic
 from rover_msgs.srv._compass_calibration import CompassCalibration
 from rover_msgs.msg import Gps
 from rover_msgs.msg import Compass
+from rover_msgs.msg import Aruco
 from pages.add_location_popup import AddLocationPopup
 from pages.calibrate_heading_popup import CalibrateHeadingPopup
 from pages.folium_map import FoliumMapWidget
@@ -24,6 +25,7 @@ class Navigation(QWidget):
         self.saved_locations_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/saved_locations.txt"
         self.gps_offset_path = package_share_directory + "/../../../../src/rover/rover_gui/saved_files/gps_offset.txt"
 
+        self.lb_aruco : QLabel
         self.lb_curr_position : QLabel
         self.lb_curr_heading : QLabel
         self.pb_add_waypoint : QPushButton
@@ -53,6 +55,7 @@ class Navigation(QWidget):
 
         self.lock_position = Lock()
         self.lock_orientation = Lock()
+        self.lock_aruco = Lock()
         self.update_position()
         self.update_orientation()
 
@@ -68,6 +71,7 @@ class Navigation(QWidget):
 
         self.gps_sub = ui_node.create_subscription(Gps, '/rover/gps/position', self.gps_data_callback, 1)
         self.compass_sub = ui_node.create_subscription(Compass, '/rover/auxiliary/compass', self.heading_callback, 1)
+        self.aruco_sub = ui_node.create_subscription(Compass, '/rover/auxiliary/aruco', self.aruco_callback, 1)
         
         self.load_gps_offset()
         self.update_waypoint_list()
@@ -80,12 +84,24 @@ class Navigation(QWidget):
     def update_orientation(self): 
         with self.lock_orientation:
             self.lb_curr_heading.setText(f"heading : {self.current_heading:.1f}°")
+
+    def update_aruco_label(self, aruco_id): 
+        with self.lock_aruco:
+            self.lb_aruco.setText(f"Aruco detected : {aruco_id}")
             
     def gps_data_callback(self, data: Gps):
         with self.lock_position:
             self.current_latitude = round(data.latitude, 6) + self.lat_offset
             self.current_longitude = round(data.longitude, 6) + self.lon_offset
         self.update_position()
+
+    def aruco_callback(self, data: Gps):
+        with self.lock_aruco:
+            if data.valid:
+                self.aruco_detected = data.id[0]
+                self.update_aruco_label(data.id[0])
+            else:
+                self.update_aruco_label("NONE")
 
     def heading_callback(self, data: Compass):
         with self.lock_orientation:
