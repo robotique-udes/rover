@@ -42,53 +42,12 @@
       "name": "Route 3",
       "waypoints": [
         {
-          "latitude": 51.455,
-          "longitude": -112.7135
+          "latitude": 51.470972,
+          "longitude": -112.753083
         },
         {
-          "latitude": 51.455,
-          "longitude": -112.7145
-        },
-        {
-          "latitude": 51.454,
-          "longitude": -112.714
-        },
-        {
-          "latitude": 51.4535,
-          "longitude": -112.713
-        }
-      ]
-    },
-    {
-      "name": "Route 4",
-      "waypoints": [
-        {
-          "latitude": 51.4539087537815,
-          "longitude": -112.71401787774725
-        },
-        {
-          "latitude": 51.45367141402079,
-          "longitude": -112.71437192931471
-        },
-        {
-          "latitude": 51.453601214700186,
-          "longitude": -112.71471256983791
-        },
-        {
-          "latitude": 51.45372657055412,
-          "longitude": -112.71490032445702
-        },
-        {
-          "latitude": 51.45378339842783,
-          "longitude": -112.71514708767067
-        },
-        {
-          "latitude": 51.453945524619954,
-          "longitude": -112.71530802020133
-        },
-        {
-          "latitude": 51.454161134849386,
-          "longitude": -112.71558160550343
+          "latitude": 51.470444,
+          "longitude": -112.753139
         }
       ]
     }

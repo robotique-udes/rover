@@ -95,7 +95,7 @@ class Navigation(QWidget):
             self.current_longitude = round(data.longitude, 6) + self.lon_offset
         self.update_position()
 
-    def aruco_callback(self, data: Gps):
+    def aruco_callback(self, data: Aruco):
         with self.lock_aruco:
             if data.valid:
                 self.aruco_detected = data.id[0]
