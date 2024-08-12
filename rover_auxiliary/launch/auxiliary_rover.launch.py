@@ -6,13 +6,6 @@ from launch_ros.actions import Node
 
 def generate_launch_description():
     ld = LaunchDescription()
-
-    # node_aruco = Node(
-    #     package="rover_auxiliary",
-    #     namespace="/rover/auxiliary",
-    #     executable="aruco_main.py",
-    #     name="aruco"
-    # )
     
     node_compass_calibrator = Node(
         package="rover_auxiliary",
@@ -28,7 +21,6 @@ def generate_launch_description():
         name="light_control"
     )
     
-    # ld.add_action(node_aruco)
     ld.add_action(node_compass_calibrator)
     ld.add_action(node_light_control)
 

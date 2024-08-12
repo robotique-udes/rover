@@ -23,7 +23,7 @@ def generate_launch_description():
                 {"streamIP": "192.168.144.62"},
                 {"streamPort": 69},
                 {"serverPort1": 8554},  
-                {"serverPort2": 8555}  
+                {"serverPort2": 8565}  
             ]
     )
 
@@ -34,9 +34,17 @@ def generate_launch_description():
         name="screenshot_service"
     )
     
+    node_aruco = Node(
+        package="rover_auxiliary",
+        namespace="/rover/auxiliary",
+        executable="aruco.py",
+        name="aruco"
+    )
+    
     
     ld.add_action(node_goal_manager)
     ld.add_action(node_redistribute_stream)
     ld.add_action(node_screenshot)
+    ld.add_action(node_aruco)
 
     return ld
