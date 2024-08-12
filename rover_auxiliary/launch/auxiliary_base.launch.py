@@ -34,17 +34,9 @@ def generate_launch_description():
         name="screenshot_service"
     )
     
-    node_aruco = Node(
-        package="rover_auxiliary",
-        namespace="/rover/auxiliary",
-        executable="aruco.py",
-        name="aruco"
-    )
-    
     
     ld.add_action(node_goal_manager)
     ld.add_action(node_redistribute_stream)
     ld.add_action(node_screenshot)
-    ld.add_action(node_aruco)
 
     return ld

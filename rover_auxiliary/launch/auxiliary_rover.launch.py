@@ -21,7 +21,15 @@ def generate_launch_description():
         name="light_control"
     )
     
+    node_aruco = Node(
+        package="rover_auxiliary",
+        namespace="/rover/auxiliary",
+        executable="aruco.py",
+        name="aruco"
+    )
+    
     ld.add_action(node_compass_calibrator)
     ld.add_action(node_light_control)
+    ld.add_action(node_aruco)
 
     return ld
