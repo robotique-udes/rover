@@ -100,6 +100,8 @@ class Navigation(QWidget):
             if data.valid:
                 self.aruco_detected = data.id[0]
                 self.update_aruco_label(data.id[0])
+            else:
+                self.update_aruco_label("NONE")
 
     def heading_callback(self, data: Compass):
         with self.lock_orientation:
