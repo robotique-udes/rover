@@ -4,27 +4,17 @@
   <name>rover_sim</name>
   <version>0.0.0</version>
   <description>
-    rover_sim pkg contains simulation nodes and robot_description 
+    rover_sim pkg contains the nodes to simulate the rover arm
   </description>
-  <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
-  <maintainer email="save1403@usherbrooke.ca">emile</maintainer>
+  <maintainer email="emile.savoie3@usherbrooke.ca">emile</maintainer>
   <license>MIT</license>
 
-  <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
 
-  <test_depend>ament_lint_auto</test_depend>
-  <test_depend>ament_lint_common</test_depend>
-
-  <depend>rclcpp</depend>
-  <depend>std_msgs</depend>
-  <depend>rcl_interfaces</depend>
+  <depend>rclpy</depend>
   <depend>rover_msgs</depend>
-  <depend>sensor_msgs</depend>
-  <depend>tf2_ros</depend>
-
-  <exec_depend>ros2launch</exec_depend>
 
   <export>
-    <build_type>ament_cmake</build_type>
+    <build_type>ament_python</build_type>
   </export>
 </package>

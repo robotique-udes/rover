@@ -1,0 +1,7 @@
+bool start
+string name
+string ip_address
+string metadata
+---
+bool success
+string status_message

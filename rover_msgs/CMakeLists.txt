@@ -37,10 +37,11 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/CameraControl.msg"
   "msg/LightControl.msg"
   "msg/ScienceControl.msg"
-  "msg/ArmCmd.msg"
+  "msg/ArmMsg.msg"
   "msg/DrivetrainArbitration.msg"
   "msg/Compass.msg"
   "msg/CameraAngle.msg"
+  "msg/Aruco.msg"
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
@@ -48,6 +49,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/LightControl.srv"
   "srv/CompassCalibration.srv"
   "srv/NewGpsGoal.srv"
+  "srv/PanoControl.srv"
+  "srv/RtspStream.srv"
+  "srv/ScreenshotControl.srv"
 )
 
 ament_package()

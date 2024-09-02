@@ -1,5 +1,5 @@
-#ifndef __SCIENCE_HPP__
-#define __SCIENCE_HPP__
+#ifndef __ARM_STATUS_HPP__
+#define __ARM_STATUS_HPP__
 
 #include <cstdint>
 #include "rover_can_lib/msgs/msg.hpp"
@@ -14,54 +14,40 @@
 
 namespace RoverCanLib::Msgs
 {
-    class Science : public Msg
+    class armStatus : public Msg
     {
     public:
         enum class eMsgID : uint8_t
         {
             NOT_USED = 0x00,
-            CMD = 0x01,
-            CURRENT_SAMPLE = 0x02,
-            DIG = 0x03,
+            CURRENT_SPEED = 0x01,
             eLAST
         };
 
         struct sMsgData
         {
-            uint8_t cmd;
-            uint8_t current_sample;
-            bool dig;
+            float currentSpeed;
         };
 
-        Science() 
+        armStatus() 
         {
-            data.cmd = 0u;
-            data.current_sample = 0u;
-            data.dig = false;
+            data.currentSpeed = 0.0f;
         }
-        ~Science() {}
+        ~armStatus() {}
 
 #if defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const twai_message_t *msg_)
         {
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::SCIENCE)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::ARM_STATUS)
             {
                 LOG(ERROR, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
             }
 
-            switch ((Msgs::Science::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
+            switch ((Msgs::armStatus::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case eMsgID::CMD:
-                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.cmd);
-                break;
-
-            case eMsgID::CURRENT_SAMPLE:
-                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.current_sample);
-                break;
-
-            case eMsgID::DIG:
-                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.dig);
+            case eMsgID::CURRENT_SPEED:
+                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.currentSpeed);
                 break;
 
             default:
@@ -74,21 +60,13 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT twai_message_t *msg_)
         {
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::SCIENCE;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::ARM_STATUS;
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
-            switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
+            switch ((RoverCanLib::Msgs::armStatus::eMsgID)msgId_)
             {
-            case eMsgID::CMD:
-                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_);
-                break;
-
-            case eMsgID::CURRENT_SAMPLE:
-                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.current_sample, msg_);
-                break;
-
-            case eMsgID::DIG:
-                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_);
+            case eMsgID::CURRENT_SPEED:
+                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.currentSpeed, msg_);
                 break;
 
             default:
@@ -102,24 +80,16 @@ namespace RoverCanLib::Msgs
 #elif defined(__linux__) // defined(ESP32)
         Constant::eInternalErrorCode parseMsg(const can_frame *msg_, rclcpp::Logger logger_)
         {
-            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::SCIENCE)
+            if (msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] != (uint8_t)Constant::eMsgId::ARM_STATUS)
             {
                 RCLCPP_ERROR(logger_, "Mismatch in message types, maybe the lib version isn't the same between all nodes... Dropping msg");
                 return Constant::eInternalErrorCode::WARNING;
             }
 
-            switch ((Msgs::Science::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
+            switch ((Msgs::armStatus::eMsgID)(msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID]))
             {
-            case eMsgID::CMD:
-                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.cmd, logger_);
-                break;
-
-            case eMsgID::CURRENT_SAMPLE:
-                RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.current_sample, logger_);
-                break;
-
-            case eMsgID::DIG:
-                RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.dig, logger_);
+            case eMsgID::CURRENT_SPEED:
+                RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.currentSpeed, logger_);
                 break;
 
             default:
@@ -132,21 +102,13 @@ namespace RoverCanLib::Msgs
 
         Constant::eInternalErrorCode getMsg(IN uint8_t msgId_, OUT can_frame *msg_, rclcpp::Logger logger_)
         {
-            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::SCIENCE;
+            msg_->data[(uint8_t)Constant::eDataIndex::MSG_ID] = (uint8_t)Constant::eMsgId::ARM_STATUS;
             msg_->data[(uint8_t)Constant::eDataIndex::MSG_CONTENT_ID] = msgId_;
 
-            switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
+            switch ((RoverCanLib::Msgs::armStatus::eMsgID)msgId_)
             {
-            case eMsgID::CMD:
-                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_);
-                break;
-
-            case eMsgID::CURRENT_SAMPLE:
-                Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.current_sample, msg_);
-                break;
-
-            case eMsgID::DIG:
-                Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_);
+            case eMsgID::CURRENT_SPEED:
+                Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.currentSpeed, msg_);
                 break;
 
             default:
@@ -187,4 +149,4 @@ namespace RoverCanLib::Msgs
     };
 }
 
-#endif // __SCIENCE_HPP__
+#endif // __ARM_STATUS_HPP__

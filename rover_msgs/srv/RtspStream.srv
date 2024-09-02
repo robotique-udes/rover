@@ -1,0 +1,4 @@
+string stream_id
+bool demand
+---
+bool success

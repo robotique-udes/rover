@@ -42,7 +42,7 @@ private:
         this->get_parameter("_smallestRadius", _smallestRadius);
     }
 
-    void joyCallback(const rover_msgs::msg::Joy::SharedPtr msg)
+    void CB_joy(const rover_msgs::msg::Joy::SharedPtr msg)
     {
         rover_msgs::msg::PropulsionMotor message;
 
@@ -122,7 +122,7 @@ Teleop::Teleop() : Node("teleop")
 
     _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>("/rover/drive_train/joy",
                                                                         1,
-                                                                        std::bind(&Teleop::joyCallback, this, std::placeholders::_1));
+                                                                        std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
 
     _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1);
 }

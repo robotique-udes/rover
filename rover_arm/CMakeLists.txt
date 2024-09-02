@@ -17,6 +17,7 @@ find_package(joy REQUIRED)
 find_package(rover_msgs REQUIRED)
 
 include_directories(
+  include
   ${rover_msgs_INCLUDE_DIRS}
 )
 

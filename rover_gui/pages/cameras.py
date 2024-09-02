@@ -2,8 +2,10 @@ import time
 from ament_index_python.packages import get_package_share_directory
 from PyQt5.QtMultimedia import QMediaPlayer, QMediaContent
 from PyQt5 import uic
-from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QPushButton
+from PyQt5.QtWidgets import QWidget, QLabel, QCheckBox, QPushButton, QMessageBox, QInputDialog, QLineEdit
 from PyQt5.QtCore import QUrl, QTimer, QThread, pyqtSignal
+from rover_msgs.srv import ScreenshotControl
+from rover_msgs.srv._screenshot_control import ScreenshotControl
 
 class Cameras(QWidget):
     def __init__(self, ui_node):
@@ -32,19 +34,22 @@ class Cameras(QWidget):
         self.lb_aruco2.hide()
         self.lb_aruco3.hide()
         self.lb_aruco4.hide()
+        self.cam1_screenshot.clicked.connect(lambda: self.cb_screenshot(1))
+        self.cam2_screenshot.clicked.connect(lambda: self.cb_screenshot(2))
+        self.cam3_screenshot.clicked.connect(lambda: self.cb_screenshot(3))
+        self.cam4_screenshot.clicked.connect(lambda: self.cb_screenshot(4))
 
         self.start_feeds()
         
     def start_feeds(self):
-        ip_list = self.load_file_into_list(self.resources_directory + "r1m_ips.txt")
+        self.ip_list = self.load_file_into_list(self.resources_directory + "r1m_ips.txt")
 
-        for i, ip in enumerate(ip_list):
+        for i, ip in enumerate(self.ip_list):
             mediaPlayer = QMediaPlayer(None, QMediaPlayer.VideoSurface)
             video_output = getattr(self, f'cam{i+1}')
             refresh_button = getattr(self, f'cam{i+1}_refresh')
 
             mediaPlayer.setVideoOutput(video_output)
-            #rtsp_url = "http://commondatastorage.googleapis.com/gtv-videos-bucket/sample/ElephantsDream.mp4"
             mediaPlayer.setMedia(QMediaContent(QUrl(ip)))
 
             # Ensure video widget size is fixed
@@ -75,6 +80,47 @@ class Cameras(QWidget):
             lines = [line.strip() for line in file.readlines() if line.strip()]
         return lines
 
+    def cb_screenshot(self, camera_number):
+        screenshot_client = self.ui_node.create_client(ScreenshotControl, '/rover/auxiliary/control_screenshot')
+        
+        # Wait for the service to become available with a timeout
+        if not screenshot_client.wait_for_service(timeout_sec=1.0):
+            QMessageBox.warning(self, "Service Unavailable", 
+                                "The screenshot service is currently unavailable. Please try again later.")
+            return
+
+        # Prompt user for screenshot name
+        screenshot_name, ok = QInputDialog.getText(self, "Screenshot Name", 
+                                                   "Enter the name for your screenshot:",
+                                                   QLineEdit.Normal, "")
+        
+        if ok and screenshot_name:
+            screenshot_req = ScreenshotControl.Request()
+            screenshot_req.start = True
+            
+            ip_list = self.ip_list
+            if 1 <= camera_number <= len(ip_list):
+                self.ui_node.get_logger().info("Ip to send")
+                screenshot_req.ip_address = ip_list[camera_number - 1]
+                screenshot_req.name = screenshot_name
+            else:
+                self.ui_node.get_logger().error(f"Invalid camera number: {camera_number}")
+                return
+            
+            response = screenshot_client.call(screenshot_req)
+
+    def screenshot_callback(self, future):
+        try:
+            response = future.result()
+            if response.success:
+                QMessageBox.information(self, "Screenshot Saved", 
+                                        f"Screenshot has been saved successfully as {response.name}")
+            else:
+                QMessageBox.warning(self, "Screenshot Error", 
+                                    "Failed to save the screenshot. Please try again.")
+        except Exception as e:
+            QMessageBox.warning(self, "Screenshot Error", f"An error occurred: {str(e)}")
+
     def __del__(self):
         for mediaPlayer in self.media_players:
             mediaPlayer.stop()
@@ -86,6 +132,7 @@ class Cameras(QWidget):
             self.status_thread.wait()
 
         self.media_players.clear()
+        # Note: Removed the line with screenshot_client_client as it's not defined in the scope
         super().__del__()
 
     class StatusThread(QThread):
