@@ -8,7 +8,7 @@
       - [Ubuntu installation](#ubuntu-installation)
       - [ROS installation and first steps](#ros-installation-and-first-steps)
       - [bashrc](#bashrc)
-  - [ESP32 and micro controller ROS developpement](#esp32-and-micro-controller-ros-developpement)
+  - [ESP32 and micro controller ROS development](#esp32-and-micro-controller-ros-development)
 
 ## Dependencies
 
@@ -34,6 +34,7 @@ rm -r ~/.cache/gstreamer-1.0/
 ```
 
 ### Run the following commands to download and install dependencies from pip
+
 install setuptools version 58.2.0 for compatibility reasons ([further details](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/))
 
 ```bash
@@ -52,7 +53,7 @@ The rover team run ros2 "Humble" which runs on "Ubuntu Desktop 22.04.3 LTS" on d
 
 If you've never setup a dualboot before you can follow this installation [tutorial](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73).
 
-- At step: "Installing updates and third-party software": We suggest selecting "Install thrid-party software for graphics and ..."
+- At step: "Installing updates and third-party software": We suggest selecting "Install third-party software for graphics and ..."
 - At step "Ubuntu dual boot setup": Click on "something else" and only create the [following partition](https://miro.medium.com/v2/resize:fit:720/format:webp/1*NHz494_x-btfTl4tnm0Muw.png), you don't need a swap partition or another partition for your /home folder. Then for the "Device for bootloader installation" select the device with the "Windows bootloader".
 
 #### ROS installation and first steps
@@ -64,7 +65,7 @@ To install ROS2 on your ubuntu follow the following tutorials:
 All the following tutorials are necessary steps to learning ROS
 
 - [ROS CLI tools tutorials](https://docs.ros.org/en/humble/Tutorials/Beginner-CLI-Tools.html)
-- [ROS Client librairies](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
+- [ROS Client libraries](https://docs.ros.org/en/humble/Tutorials/Beginner-Client-Libraries.html)
 
 #### bashrc
 
@@ -101,6 +102,6 @@ alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build --symlink-install &
 
 You need to delete the "build, install and log" folder from your workspaces before being able use the alias command
 
-## ESP32 and micro controller ROS developpement
+## ESP32 and micro controller ROS development
 
 See corresponding [repository](https://github.com/robotique-udes/rover_micro)
