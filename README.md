@@ -1,6 +1,16 @@
 # Rover
 
-## Setup
+- [Rover](#rover)
+  - [Dependencies](#dependencies)
+    - [Run the following commands to download and install dependencies from apt](#run-the-following-commands-to-download-and-install-dependencies-from-apt)
+    - [Run the following commands to download and install dependencies from pip](#run-the-following-commands-to-download-and-install-dependencies-from-pip)
+    - [ROS Setup](#ros-setup)
+      - [Ubuntu installation](#ubuntu-installation)
+      - [ROS installation and first steps](#ros-installation-and-first-steps)
+      - [bashrc](#bashrc)
+  - [ESP32 and micro controller ROS developpement](#esp32-and-micro-controller-ros-developpement)
+
+## Dependencies
 
 ### Run the following commands to download and install dependencies from apt
 
@@ -24,7 +34,6 @@ rm -r ~/.cache/gstreamer-1.0/
 ```
 
 ### Run the following commands to download and install dependencies from pip
-
 install setuptools version 58.2.0 for compatibility reasons ([further details](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/))
 
 ```bash
@@ -43,8 +52,7 @@ The rover team run ros2 "Humble" which runs on "Ubuntu Desktop 22.04.3 LTS" on d
 
 If you've never setup a dualboot before you can follow this installation [tutorial](https://medium.com/linuxforeveryone/how-to-install-ubuntu-20-04-and-dual-boot-alongside-windows-10-323a85271a73).
 
-- At step: "Installing updates and third-party software":
-We suggest selecting "Install thrid-party software for graphics and ..."
+- At step: "Installing updates and third-party software": We suggest selecting "Install thrid-party software for graphics and ..."
 - At step "Ubuntu dual boot setup": Click on "something else" and only create the [following partition](https://miro.medium.com/v2/resize:fit:720/format:webp/1*NHz494_x-btfTl4tnm0Muw.png), you don't need a swap partition or another partition for your /home folder. Then for the "Device for bootloader installation" select the device with the "Windows bootloader".
 
 #### ROS installation and first steps
@@ -75,9 +83,9 @@ To add them follow theses steps:
 sudo nano ~/.bashrc
 ```
 
-- Navigate to the end with *shift-down_arrow*
+- Navigate to the end with _shift-down_arrow_
 
-- Paste these lines (*ctrl+shift+v*):
+- Paste these lines (_ctrl+shift+v_):
 
 ```bash
 # Additions
@@ -85,8 +93,7 @@ source /opt/ros/humble/setup.bash
 source ~/ros2_ws/install/local_setup.bash
 ```
 
-The following cmd create a cmd to always compile in the ros2_ws no matter where your terminal is. Add this line to the end of your bashrc and you'll be able to compile by entering "b" in any bash terminal anywhere.
-You can change the "b" to whatever you like and you'll be able to compile by entering the cmd you set.
+The following cmd create a cmd to always compile in the ros2_ws no matter where your terminal is. Add this line to the end of your bashrc and you'll be able to compile by entering "b" in any bash terminal anywhere. You can change the "b" to whatever you like and you'll be able to compile by entering the cmd you set.
 
 ```bash
 alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build --symlink-install && popd > /dev/null'
