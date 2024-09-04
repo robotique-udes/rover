@@ -35,8 +35,11 @@ We now use _github project_ to manage tasks, all members of the github rovus tea
 
 ### Architecture
 
-- **TODO: Make small high level diagram to help new members better understand the rover**.
-- **TODO: Bring the architecture to github**
+<center>
+    <img src="doc/diagrams/VeryHighLevelSoftwareStructure.drawio.svg" alt="Very high level structure diagram" class="center" style="width:700px;"/>
+</center>
+
+- **TODO: Bring the ROS architecture to github**
 
 The current ROS architecture is located on the _RobotiqueUdeS MSTeams_ -> _Rovus-General_ channel -> _architecture_ tab. Refer to it when naming topics/services/nodes/namespaces/etc. and update the diagram if you see mismatch.
 
