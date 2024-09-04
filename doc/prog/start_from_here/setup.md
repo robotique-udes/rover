@@ -8,7 +8,7 @@
 - [bashrc](#bashrc)
       - [Compile from everywhere](#compile-from-everywhere)
       - [Enable ros logging colors](#enable-ros-logging-colors)
-- [Cloning the repos](#cloning-the-repos)
+- [Git setup and how to use](#git-setup-and-how-to-use)
 - [General advices](#general-advices)
 
 # Introduction
@@ -79,10 +79,13 @@ alias b='pushd . > /dev/null && cd ~/ros2_ws && colcon build --symlink-install &
 export RCUTILS_COLORIZED_OUTPUT=1
 ```
 
-# Cloning the repos
+# Git setup and how to use
 
 Once you've got you ROS set up correctly and working, that you've done most of the tutorial, you're ready to start exploring the code. To do so you'll need to clone 
 
+Once everything is setup you're ready to clone the repository and actually start coding: [This video*](https://usherbrooke.sharepoint.com/:v:/r/sites/Robotique-UdeS/Documents%20partages/Rover%20-%20G%C3%A9n%C3%A9ral/Tutoriel%20nouveaux/Comment%20utiliser%20git%20ish.mkv?csf=1&web=1&e=d0ssRe) explains how you can make a local copy of the code, make modification safely (without breaking anything) and finally merge it to the "release branch".
+
+  *you need to have access to the RobotiqueUdeS MS-Teams to listen to the video, ps: sorry the sound is quite low.
 
 # General advices
 
