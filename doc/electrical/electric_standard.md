@@ -5,19 +5,20 @@
     - [Conventions](#conventions)
       - [Color Code](#color-code)
   - [High Current connectors and wire (\> 1A)](#high-current-connectors-and-wire--1a)
+      - [Color Code](#color-code-1)
     - [Connectors](#connectors)
     - [Wires](#wires)
 
 ## Low Current connectors and wire (<1A)
 
-RJ45 connectors and ethernet cables are prefered for every low current application. Low current application basically refers to every logic data circuit. For example, signal from microcontrollers GPIOs or low current alimentation circuit.
+RJ45 connectors and ethernet cables are preferred for every low current application. Low current application basically refers to every logic data circuit. For example, signal from microcontrollers GPIOs or low current alimentation circuit.
 
 ### Conventions
 
 We'll always use the T-568B wire convention but it isn't necessary for our use. The following picture shows the pinout with the clip facing away from you (see picture).
 
 <center>
-    <img src="img/RJ45_pinout.png" alt="T-568B" class="center" style="width:500px;"/>
+    <img src="../img/RJ45_pinout.png" alt="T-568B" class="center" style="width:500px;"/>
 </center>
 
 Below is the rovus custom PINOUT that should be respected as much as possible*:
@@ -65,7 +66,7 @@ Follow this table to choose the correct connector
 | 90-120      | EC5            |
 | Don't       | QS8-S          |
 
-For voltages exceeding about 18V please try to use spark proof connectors. They are often identifed by a green mark on XT-* or a red mark on QS8-S.
+For voltages exceeding about 18V please try to use spark proof connectors. They are often identified by a green mark on XT-* or a red mark on QS8-S.
 
 ### Wires
 
