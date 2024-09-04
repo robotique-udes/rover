@@ -39,7 +39,7 @@ We now use _github project_ to manage tasks, all members of the github rovus tea
     <img src="doc/diagrams/VeryHighLevelSoftwareStructure.drawio.svg" alt="Very high level structure diagram" class="center" style="width:700px;"/>
 </center>
 
-- **TODO: Bring the ROS architecture to github**
+- **TODO: Bring the ROS architecture from Teams to github**
 
 The current ROS architecture is located on the _RobotiqueUdeS MSTeams_ -> _Rovus-General_ channel -> _architecture_ tab. Refer to it when naming topics/services/nodes/namespaces/etc. and update the diagram if you see mismatch.
 
@@ -54,6 +54,8 @@ All the codebase is regrouped into two distinct repositories:
 A folder structure example is in [the setup documentation](doc/prog/master%20computing%20unit/setup.md).
 
 The use of [gitkraken](https://www.gitkraken.com/) offers a GUI for github (similar to github desktop for windows) which is very convenient for new git users. It's used by most of the team, ask any software team member for a quick tutorial if needed.
+
+For more info about development see the in [detail readme](TODO)
 
 ### Electrical development
 
