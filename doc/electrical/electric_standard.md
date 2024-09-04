@@ -1,5 +1,4 @@
 # Electric Standard
-
 - [Electric Standard](#electric-standard)
   - [Low Current connectors and wire (\<1A)](#low-current-connectors-and-wire-1a)
     - [Conventions](#conventions)
