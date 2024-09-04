@@ -6,11 +6,16 @@
   - [Table of content](#table-of-content)
   - [PC Specs](#pc-specs)
   - [Config](#config)
+  - [Bashrc](#bashrc)
+  - [Connecting to eduroam wifi network](#connecting-to-eduroam-wifi-network)
   - [Automatic start of ROS nodes and watcher (systemd)](#automatic-start-of-ros-nodes-and-watcher-systemd)
+    - [Setup](#setup)
     - [Disable auto start](#disable-auto-start)
     - [Enable auto start](#enable-auto-start)
 
 ## PC Specs
+
+TODO
 
 ## Config
 
