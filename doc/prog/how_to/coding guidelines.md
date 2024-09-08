@@ -40,6 +40,9 @@
   - [Code shouldn't overshoot the 120 character line](#code-shouldnt-overshoot-the-120-character-line)
     - [do:](#do-10)
     - [avoid:](#avoid-10)
+  - [Prefer lambda function over std::bind](#prefer-lambda-function-over-stdbind)
+    - [do:](#do-11)
+    - [avoid:](#avoid-11)
 
 # CPP Coding Guidelines
 
@@ -370,3 +373,22 @@ To add the line in your vscode do the following:
     ],
 ```
 80 for comments and 120 for code
+
+## Prefer lambda function over std::bind
+
+Lambda function are often simpler and use less overhead.
+
+### do:
+```cpp
+_sub_joyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
+                                                              1,
+                                                              [this](const rover_msgs::msg::Joy::SharedPtr joyMsg_)
+                                                              { this->CB_joy(joyMsg_); });
+```
+
+### avoid:
+```cpp
+_sub_joyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
+                                                              1,
+                                                              std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+```
