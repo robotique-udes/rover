@@ -66,6 +66,15 @@ All the electrical projects (mostly PCBs) are located into the shared [PCB](http
 
 Right now, it's still your responsibility to update your dependencies often (needs to be automated). If you get compilation or execution errors while running the most recent release branch it's probably because your dependencies are not installed. We'll try to always use the latest version of dependencies when possible, otherwise specify the version and add an explanation as to why the codebase wasn't updated to support the dependencies latest version.
 
+### Upgrade already installed package:
+After upgrading all packages, you'll want to reinstall all depedencies with a specified version (just run all commands below and it'll be done automatically)
+
+```bash
+sudo apt update
+sudo apt upgrade
+pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U 
+```
+
 ### From apt
 
 ```bash
@@ -92,21 +101,15 @@ rm -r ~/.cache/gstreamer-1.0/
 
 ```bash
 pip install setuptools==58.2.0 #*
+pip install empy==3.3.4 #**
 pip install folium
 pip install PyQtWebEngine
 pip install opencv-python
 pip install opencv-contrib-python
 ```
 
-To upgrade already installed package:
-
-```bash
-sudo apt update
-sudo apt upgrade
-pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n1 pip3 install -U 
-```
-
-*install setuptools version 58.2.0 for compatibility reasons ([further details](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/))
+- *Install setuptools version 58.2.0 for compatibility reasons ([further details](https://answers.ros.org/question/396439/setuptoolsdeprecationwarning-setuppy-install-is-deprecated-use-build-and-pip-and-other-standards-based-tools/))
+- **Install empy version 3.3.4 because version 4.0 cause problems ([further details](https://robotics.stackexchange.com/questions/105842/what-causes-build-error-cannot-import-name-override-opt-from-em))
 
 ## ESP32 and micro controller ROS development
 
