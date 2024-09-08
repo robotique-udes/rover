@@ -55,7 +55,7 @@ private:
     uint16_t _id;
     rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
     rover_msgs::msg::CanDeviceStatus _msg_canStatus;
-    Chrono<uint64_t, millis> _timerWatchdog;
+    RoverLib::Chrono<uint64_t, RoverLib::millis> _timerWatchdog;
     CanMaster* _canMasterPtr;
     void (CanMaster::*_callback)(uint16_t id_, const can_frame *frameMsg_);
 

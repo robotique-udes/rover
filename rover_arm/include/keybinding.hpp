@@ -9,6 +9,8 @@
 namespace KEYBINDING
 {
 #if defined (PHIL)
+    constexpr uint8_t DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
+
     constexpr uint8_t JOINT_SELECT_INC = rover_msgs::msg::Joy::CROSS_UP;
     constexpr uint8_t JOINT_SELECT_DEC = rover_msgs::msg::Joy::CROSS_DOWN;
 

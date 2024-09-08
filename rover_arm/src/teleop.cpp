@@ -8,11 +8,14 @@
 #include "rovus_lib/timer.hpp"
 
 #include "keybinding.hpp"
-#include "robot_configuration.hpp"
+#include "arm_configuration.hpp"
 
-constexpr uint64_t DEBOUNCE_TIME_MS = 500ul;
+constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 100ul;
 constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f; // Factor of max speed
 
+/// @brief Takes a float from a joy msg and transform it's value into a bool
+/// @param buttonValue_ 
+/// @return If interpreted as a click or not 
 bool isPressed(float buttonValue_);
 
 class Teleop : public rclcpp::Node
@@ -44,18 +47,16 @@ private:
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pub_armCmd;
     rclcpp::TimerBase::SharedPtr _timer_armHeartbeat;
 
-    eJointIndex _selectedJoint = eJointIndex::J0;
-    float _gripperPos = -1.0f;
+    bool _gripperClose = true;
 
-#warning TODO: Timer to make sure it's "alive"
     bool _currentPosInvalid = true;
     float _currentJointsPos[(uint8_t)eJointIndex::eLAST] = {0};
-    Teleop::eControlMode _controlMode = Teleop::eControlMode::JOINT;
-    Timer<uint64_t, millis> timerDebounce = Timer<uint64_t, millis>(DEBOUNCE_TIME_MS);
+    eControlMode _controlMode = eControlMode::JOINT;
+    RoverLib::Timer<uint64_t, RoverLib::millis> timerDebounce = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
 
     void CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg);
     void CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPos);
-    void CB_watchdog(bool *lostHB_);
+    void CB_watchdog(bool &lostHB_r);
     rover_msgs::msg::ArmMsg getZeroMsg(void);
 };
 
@@ -68,12 +69,14 @@ int main(int argc, char *argv[])
 
 Teleop::Teleop() : Node("teleop")
 {
-    _timer_armHeartbeat = this->create_wall_timer(std::chrono::milliseconds(500), [this]()
-                                                  { this->CB_watchdog(&_currentPosInvalid); });
+    _timer_armHeartbeat = this->create_wall_timer(std::chrono::milliseconds(500),
+                                                  [this]()
+                                                  { this->CB_watchdog(_currentPosInvalid); });
 
     _sub_joyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                   1,
-                                                                  std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+                                                                  [this](const rover_msgs::msg::Joy::SharedPtr joyMsg_)
+                                                                  { this->CB_joy(joyMsg_); });
 
     _sub_armPosition = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions",
                                                                           1,
@@ -81,124 +84,89 @@ Teleop::Teleop() : Node("teleop")
                                                                           { this->CB_currentPos(msg); });
 
     _pub_armCmd = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_pos", 1);
-
-    _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = 1.0f;
 }
 
 void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
 {
-    if (!isPressed(joyMsg->joy_data[rover_msgs::msg::Joy::L1])) // deadman switch
+    if (!isPressed(joyMsg->joy_data[KEYBINDING::DEADMAN_SWITCH])) // deadman switch
     {
         _pub_armCmd->publish(this->getZeroMsg());
         return;
     }
 
-    if (_currentPosInvalid)
-    {
-        _pub_armCmd->publish(this->getZeroMsg());
-        return;
-    }
-
-    float _goalJointsPos[(uint8_t)eJointIndex::eLAST] = {0};
+    float _goalJointsSpeed[(uint8_t)eJointIndex::eLAST] = {0};
 
     if (_controlMode == eControlMode::JOINT)
     {
-        for (uint8_t i = 0; i < (uint8_t)eJointIndex::eLAST; i++)
-        {
-            _goalJointsPos[i] = _currentJointsPos[i];
-        }
-
-        if (isPressed(joyMsg->joy_data[KEYBINDING::JOINT_SELECT_INC])) // selected joint++
-        {
-            _selectedJoint = (eJointIndex)((uint8_t)_selectedJoint + 1);
-            if (_selectedJoint == eJointIndex::eLAST)
-            {
-                _selectedJoint = (eJointIndex)0;
-            }
-        }
-        else if (isPressed(joyMsg->joy_data[KEYBINDING::JOINT_SELECT_DEC])) // selected joint--
-        {
-            if (_selectedJoint == eJointIndex(0))
-            {
-                _selectedJoint = (eJointIndex)((uint8_t)eJointIndex::eLAST - 1);
-            }
-            else
-            {
-                _selectedJoint = (eJointIndex)((uint8_t)_selectedJoint - 1);
-            }
-        }
-
         // CMD JL
         if (isPressed(joyMsg->joy_data[KEYBINDING::JL_FWD]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::JL] =
-                _currentJointsPos[(uint8_t)eJointIndex::JL] + MAX_VELOCITY_JL;
+            _goalJointsSpeed[(uint8_t)eJointIndex::JL] = ARM_CONFIGURATION::JL::MAX_VELOCITY;
         }
         else if (isPressed(joyMsg->joy_data[KEYBINDING::JL_REV]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::JL] =
-                _currentJointsPos[(uint8_t)eJointIndex::JL] - MAX_VELOCITY_JL;
+            _goalJointsSpeed[(uint8_t)eJointIndex::JL] = -ARM_CONFIGURATION::JL::MAX_VELOCITY;
         }
 
         // CMD J0
         if (isPressed(joyMsg->joy_data[KEYBINDING::J0_FWD]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::J0] =
-                _currentJointsPos[(uint8_t)eJointIndex::J0] + MAX_VELOCITY_J0;
+            _goalJointsSpeed[(uint8_t)eJointIndex::J0] = ARM_CONFIGURATION::J0::MAX_VELOCITY;
         }
         else if (isPressed(joyMsg->joy_data[KEYBINDING::J0_REV]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::J0] =
-                _currentJointsPos[(uint8_t)eJointIndex::J0] - MAX_VELOCITY_J0;
+            _goalJointsSpeed[(uint8_t)eJointIndex::J0] = -ARM_CONFIGURATION::J0::MAX_VELOCITY;
         }
 
         // CMD J1
-        _goalJointsPos[(uint8_t)eJointIndex::J1] =
-            (joyMsg->joy_data[KEYBINDING::J1] * MAX_VELOCITY_J1);
+        _goalJointsSpeed[(uint8_t)eJointIndex::J1] =
+            joyMsg->joy_data[KEYBINDING::J1] * ARM_CONFIGURATION::J1::MAX_VELOCITY;
         // CMD J2
-        _goalJointsPos[(uint8_t)eJointIndex::J2] =
-            _currentJointsPos[(uint8_t)eJointIndex::J2] + (joyMsg->joy_data[KEYBINDING::J2] * MAX_VELOCITY_J2);
+        _goalJointsSpeed[(uint8_t)eJointIndex::J2] =
+            joyMsg->joy_data[KEYBINDING::J2] * ARM_CONFIGURATION::J2::MAX_VELOCITY;
 
         // CMD GRIP_TILT
         if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_TILT_FWD]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] =
-                _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] + MAX_VELOCITY_GRIPPER_TILT;
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_TILT] = ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
         }
         else if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_TILT_REV]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] =
-                _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_TILT] - MAX_VELOCITY_GRIPPER_TILT;
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_TILT] = -ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
         }
 
         // CMD GRIP_ROT
         if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] =
-                _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] - MAX_VELOCITY_GRIPPER_ROT;
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_ROT] = ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
         }
         else if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
         {
-            _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] =
-                _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_ROT] + MAX_VELOCITY_GRIPPER_ROT;
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_ROT] = -ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
         }
     }
     if (_controlMode == eControlMode::CARTESIAN)
     {
-        RCLCPP_ERROR(this->get_logger(), "Shouldn't fall here!");
+        RCLCPP_ERROR(this->get_logger(), "Shouldn't fall here! Not Implemented");
     }
 
     // CMD GRIP
-    if (timerDebounce.isDone() && joyMsg->joy_data[KEYBINDING::GRIPPER_CLOSE])
+    if (joyMsg->joy_data[KEYBINDING::GRIPPER_CLOSE])
     {
-        _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperPos == -1.0f ? 1.0f : -1.0f;
-        _gripperPos = _goalJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE];
+        // Nesting this condition make it more reactive because the timer won't 
+        // reset until the value is actually switched 
+        if (timerDebounce.isDone())
+        {
+            _gripperClose = !_gripperClose;
+        }
     }
+
+    _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperClose;
 
     rover_msgs::msg::ArmMsg msg;
     for (uint8_t i = 0; i < (uint8_t)eJointIndex::eLAST; i++)
     {
-        msg.data[i] = _goalJointsPos[i];
+        msg.data[i] = _goalJointsSpeed[i];
     }
     _pub_armCmd->publish(msg);
 }
@@ -212,24 +180,18 @@ void Teleop::CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPo
     {
         _currentJointsPos[i] = armCurrentPos->data[i];
     }
-    _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperPos;
 }
 
-void Teleop::CB_watchdog(bool *lostHB_)
+void Teleop::CB_watchdog(bool &lostHB_r)
 {
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 5'000, "Arm watchdog has been triggered!");
-    *lostHB_ = true;
+    lostHB_r = true;
 }
 
 rover_msgs::msg::ArmMsg Teleop::getZeroMsg(void)
 {
     rover_msgs::msg::ArmMsg msg;
-    for (uint8_t i = 0; i < (uint8_t)eJointIndex::eLAST; i++)
-    {
-        msg.data[i] = _currentJointsPos[i];
-    }
-
-    _currentJointsPos[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperPos;
+    msg.data[(uint8_t)eJointIndex::GRIPPER_CLOSE] = false;
 
     return msg;
 }
