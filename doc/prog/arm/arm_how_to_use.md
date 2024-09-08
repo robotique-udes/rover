@@ -1,10 +1,12 @@
-# Arm control and simulation setup
+# WARNING
+
+This file needs a big overhaul. Outdate information was removed and this is why there's a lot of holes but don't expect all remaining information to be accurate 
 
 ## Run simulation with rover_helper
 
 ### Run the following command to start rviz with rover_helper nodes
 
-   **As of right now**, arm simulation is in an unstable state, needs to be reworked.
+   **As of right now**, arm simulation is in an unstable state and needs to be reworked.
 
    ```Bash
    ros2 launch rover_helper rover.launch.py simulate_arm:=true
@@ -42,51 +44,58 @@ This sections explains the different variables used in the kinematic equations b
 
 ### Joints
 
-For all variables names Jnx, Jny and Jnz, where n represents the joint in quesion. These constants represent the shift in the specified axis from one joint to the next. From the previous joints base.
+For all variables names Jnx, Jny and Jnz, where n represents the joint in question. These constants represent the shift in the specified axis from one joint to the next. From the previous joints base.
 
 ## Direct kinematic equations
 
 The following equations were built with the help of MotionGenesis.
 
-### Joint Position
+### Joint Position from center of the arm linear actuator (Bases)
 
-#### J0 (Base)
-
+#### J0
+```yaml
 - x: 0
 - y: q0
 - z: 0
+```
 
 #### J1
-
+```yaml
 - x: J0x
 - y: J0y + q0
 - z: J0z
+```
 
 #### J2
-
+```yaml
 - x: J0x + J1x*cos(q1) - J1y*sin(q1)
 - y: J0y + q0 + J1x*sin(q1) + J1y*cos(q1)
 - z: J0z + J1z
+```
 
 #### J3
-
+```yaml
 - x: J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*PI-q2) + J2z*cos(q1)*sin(0.5*PI-q2) - sin(q1)*(J1y+J2y)
 - y: J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*PI-q2) + J2z*sin(q1)*sin(0.5*PI-q2)
 - z: J0z + J1z + J2z*cos(0.5*PI-q2) - J2x*sin(0.5*PI-q2)
+```
 
 #### J4
-
+```yaml
 - x: J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*PI-q2) + J2z*cos(q1)*sin(0.5*PI-q2) + J3x*cos(q1)*cos(0.5*PI-q2-q3) + J3z*cos(q1)*sin(0.5*PI-q2-q3) - J3y*sin(q1) - sin(q1)*(J1y+J2y)
 - y: J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*PI-q2) + J2z*sin(q1)*sin(0.5*PI-q2) + J3x*sin(q1)*cos(0.5*PI-q2-q3) + J3z*sin(q1)*sin(0.5*PI-q2-q3)
 - z: J0z + J1z + J2z*cos(0.5*PI-q2) + J3z*cos(0.5*PI-q2-q3) - J2x*sin(0.5*PI-q2) - J3x*sin(0.5*PI-q2-q3)
+```
 
 #### End Effector Position (Po)
-
+```yaml
 - x: J0x + J1x*cos(q1) + J2x*cos(q1)*cos(0.5*PI-q2) + J2z*cos(q1)*sin(0.5*PI-q2) + J3x*cos(q1)*cos(0.5*PI-q2-q3) + J3z*cos(q1)*sin(0.5*PI-q2-q3) - sin(q1)*(J1y+J2y) + J4x*sin(q1)*cos(0.5*PI-q2-q3-q4) + J4z*sin(q1)*sin(0.5*PI-q2-q3-q4)
 - y: J0y + q0 + J1x*sin(q1) + cos(q1)*(J1y+J2y) + J2x*sin(q1)*cos(0.5*PI-q2) + J2z*sin(q1)*sin(0.5*PI-q2) + J3x*sin(q1)*cos(0.5*PI-q2-q3) + J3z*sin(q1)*sin(0.5*PI-q2-q3) + J4x*sin(q1)*cos(0.5*PI-q2-q3-q4) + J4z*sin(q1)*sin(0.5*PI-q2-q3-q4)
 - z: J0z + J1z + J2z*cos(0.5*PI-q2) + J3z*cos(0.5*PI-q2-q3) + J4z*cos(0.5*PI-q2-q3-q4) - J2x*sin(0.5*PI-q2) - J3x*sin(0.5*PI-q2-q3) - J4x*sin(0.5*PI-q2-q3-q4)
+```
 
 ### Orientation Angles
-
-- Alpha (angle between Pz and nz): acos(cos(0.5*PI-q2-q3-q4))
-- Psi (angle between Py and ny): acos(cos(q1))
+```yaml
+- Alpha: acos(cos(0.5*PI-q2-q3-q4)) # (angle between Pz and nz)
+- Psi: acos(cos(q1)) # (angle between Py and ny)
+```

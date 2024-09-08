@@ -60,30 +60,6 @@ int add(int a, int b)
     return a + b; 
 }
 ```
----
-# <!--fit--> Retour sur les connaissances de base:
-<style scoped>section { font-size: 28px; }</style>
-
-## Variables
-```cpp
-int counter = 1;
-float angle = 45.92f
-int tableau[3] = {0, 1, 2};
-```
-
-## Functions
-
-```cpp
-int add(int a, int b);
-
-[...]
-
-int add(int a, int b)
-{ 
-    return a + b; 
-}
-```
-
 
 ---
 # <!--fit--> Retour sur les connaissances de base:

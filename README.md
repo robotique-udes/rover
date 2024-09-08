@@ -14,7 +14,7 @@
 
 # Getting started
 
-To setup your computer for development, [read this page](doc/prog/master%20computing%20unit/setup.md). The rest of the documentation takes for granted that you are all set up.
+To setup your computer for development, [read this page](doc/prog/how_to/intial_setup.md). The rest of the documentation takes for granted that you are all set up.
 
 ### Useful links
 
@@ -22,12 +22,13 @@ To setup your computer for development, [read this page](doc/prog/master%20compu
 - [Coding Guidelines](doc/prog/coding%20guidelines.md): Good practices and styling guide
 - [Electrical Standard](doc/electrical/electric_standard.md): Like coding guidelines but for electrical elements
 - [Testing for the first time guide TODO](TODO): Guide to start, test and stop the rover safely
-- [Documentation](doc/): Folder with all the readme
+- [Documentation](doc/): Folder with all the documentation
 - [*rover* repo](https://github.com/robotique-udes/rover): Rover main repo, ROS code/packages and all documentation
 - [*rover_micro* repo](https://github.com/robotique-udes/rover_micro): Rover's Micro controller project (platformio) repo
 - [*PCB* repo](https://github.com/robotique-udes/PCB): All PCBs projects
 - [MS Teams](https://teams.microsoft.com/l/channel/19%3Ae38473dc00d9495599b19b8342af0a4c%40thread.skype/Rovus%20-%20G%C3%A9n%C3%A9ral?groupId=91136b22-e319-4e01-a080-e57a35690eee): Larger files storage and robotiqueUdeS team management
-- [PLEASE ADD MORE!]()
+- [How to request new feature on the GUI](doc/prog/gui/feature_request.md): Procedure to make request for GUI element necessary for your tasks
+- [ADD MORE!]()
 
 ### Task tracking and team organisation
 
@@ -53,17 +54,17 @@ All the codebase is regrouped into two distinct repositories:
 
 A folder structure example is in [the setup documentation](doc/prog/master%20computing%20unit/setup.md).
 
-The use of [gitkraken](https://www.gitkraken.com/) offers a GUI for github (similar to github desktop for windows) which is very convenient for new git users. It's used by most of the team, ask any software team member for a quick tutorial if needed.
+The use of [gitsource](https://sourcegit-scm.github.io/) offers a GUI for git (for windows and linux) which is very convenient for new users. It's used by most of the team members, ask any software team member for a quick tutorial if needed.
 
 For more info about development see the in [detail readme](TODO)
 
 ### Electrical development
 
-All the electrical projects (mostly PCBs) are located into the shared [PCB](https://github.com/robotique-udes/PCB) repo. Its a shared repo with the other RobotiqueUdeS group and doesn't have any branch protection, as of now, it's only used as a storage and sharing space. 
+All the electrical projects (mostly PCBs) are located into the shared [PCB](https://github.com/robotique-udes/PCB) repo. Its a shared repo with the other RobotiqueUdeS group and doesn't have any branch protection. As of now, it's only used as a storage and sharing space. 
 
 # Dependencies
 
-As of now it's your responsibility to update your dependencies often. If you get compilation or execution errors while running the most recent release branch it's probably because your dependencies are not installed. We'll try to always use the last version of dependencies when possible, otherwise specify the necessary version and add an explanation as to why the codebase wasn't updated to support the dependencies latest version. 
+Right now, it's still your responsibility to update your dependencies often (needs to be automated). If you get compilation or execution errors while running the most recent release branch it's probably because your dependencies are not installed. We'll try to always use the latest version of dependencies when possible, otherwise specify the version and add an explanation as to why the codebase wasn't updated to support the dependencies latest version.
 
 ### From apt
 

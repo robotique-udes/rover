@@ -1,38 +1,30 @@
 # How to use the rover GUI
 
-The GUI is a PyQt5 application connected with ROS2 via a single node. This `ui_node` contains every subscription and publisher.
+The GUI is a PyQt5 application connected with ROS2 via a single node. This `ui_node` contains every subscription and publisher needed for the GUI.
 
 ## Launching the app
 
-To launch the app, run the following command (don't forget to build):
+To launch the app only, run the following command (don't forget to build):
 
 ```bash
 ros2 run rover_gui main_gui
 ```
 
-If you encounter this error when building:
-
-
-```bash
-stderr: rover_gui
-/usr/lib/python3/dist-packages/setuptools/command/easy_install.py:158: 
-EasyInstallDeprecationWarning: easy_install command is deprecated. 
-Use build and pip and other standards-based tools.
-warnings.warn(
-```
-
-You can fix it by running:
-```bash
-pip install setuptools==58.2.0
-```
-
-The error should be resolved upon rebuilding:
+To run the GUI and the rest of the rover run:
 
 ```bash
-colcon build
+ros2 launch rover_helper base.launch.py
 ```
 
-## Software developpement on the roverGUI
+In another terminal (only necessary if not connected with the rover (standalone))
+
+```bash
+ros2 launch rover_helper rover.launch.py
+```
+
+If you encounter errors when building make sure to update your [dependencies](../../../README.md#dependencies).
+
+## Software development on the roverGUI
 
 ### How to add a widget
 

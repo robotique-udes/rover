@@ -1,13 +1,22 @@
 # Feature request
 
-## Button for antenna arbitration
+If you want to request new features on the GUI, create a new task into the github project and set at least these flag:
 
-Demandé par: Aude
+- type of work: Prog GUI FR
+- Priority: same as the task your working on
+- Size: According to your knowledge 
+- Description:
+  - Follow this markdown template
+    ```md
+    ### Name:
+    *name of requester*
+    ### Development branch:
+    *repo name*
+    *full branch name*
 
-Button that toggles between teleop and autonomus modes and publish on this service : /base/antenna/set_arbitration
+    ## Explanation:
+    Add as much detail as possible to help implementation
+    ```
 
-## GUI pour le service joy_demux
-
-Demandé par: Phil
-
-Bouton pour rediriger les entrés: (manette main et manette secondary) vers les sorties (DriveTrain, Arm, Antenna ou None) Tu peux checker le service /joy/demux/control et sa définition /rover/rover_msgs/srv/JoyDemuxSetState.srv pour t'aider
+Example:
+![FR example](../../img/feature_request.png)
