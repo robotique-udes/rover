@@ -2,53 +2,99 @@
 
 - [Table of content](#table-of-content)
 - [CPP Coding Guidelines](#cpp-coding-guidelines)
-  - [Use brackets](#use-brackets)
-  - [Do not use dynamic allocation on microcontrollers](#do-not-use-dynamic-allocation-on-microcontrollers)
-    - [Do:](#do)
-    - [Avoid:](#avoid)
   - [CPP Naming Style](#cpp-naming-style)
-  - [Use full namespace](#use-full-namespace)
+    - [Prefix and suffix](#prefix-and-suffix)
+  - [Use Allman brackets style](#use-allman-brackets-style)
+    - [do:](#do)
+    - [avoid:](#avoid)
+  - [Do not use dynamic allocation on microcontrollers](#do-not-use-dynamic-allocation-on-microcontrollers)
     - [Do:](#do-1)
     - [Avoid:](#avoid-1)
-  - [Use the *this-\>* pointer when calling a method from inside it's own class](#use-the-this--pointer-when-calling-a-method-from-inside-its-own-class)
-    - [do:](#do-2)
+  - [Use full namespace](#use-full-namespace)
+    - [Do:](#do-2)
     - [Avoid:](#avoid-2)
-  - [Always specified the void argument in function with "no arguments"](#always-specified-the-void-argument-in-function-with-no-arguments)
+  - [Use the *this-\>* pointer when calling a method from inside it's own class](#use-the-this--pointer-when-calling-a-method-from-inside-its-own-class)
     - [do:](#do-3)
-    - [avoid:](#avoid-3)
-  - [Use .hpp and .cpp file extension if using cpp feature](#use-hpp-and-cpp-file-extension-if-using-cpp-feature)
-  - [Enum should always be of type *enum class*](#enum-should-always-be-of-type-enum-class)
+    - [Avoid:](#avoid-3)
+  - [Always specified the void argument in function with "no arguments"](#always-specified-the-void-argument-in-function-with-no-arguments)
     - [do:](#do-4)
     - [avoid:](#avoid-4)
-  - [Enum class should only be casted into their underlying *int* type](#enum-class-should-only-be-casted-into-their-underlying-int-type)
+  - [Use .hpp and .cpp file extension if using cpp feature](#use-hpp-and-cpp-file-extension-if-using-cpp-feature)
+  - [Enum should always be of type *enum class*](#enum-should-always-be-of-type-enum-class)
     - [do:](#do-5)
     - [avoid:](#avoid-5)
+  - [Enum class should only be casted into their underlying *int* type](#enum-class-should-only-be-casted-into-their-underlying-int-type)
+    - [do:](#do-6)
+    - [avoid:](#avoid-6)
   - [Macros](#macros)
     - [example:](#example)
   - [Instead of using the const keyword, either use define or constexpr](#instead-of-using-the-const-keyword-either-use-define-or-constexpr)
-    - [do:](#do-6)
-    - [avoid:](#avoid-6)
-  - [Use available logger instead of normal printf/Serial.print](#use-available-logger-instead-of-normal-printfserialprint)
     - [do:](#do-7)
     - [avoid:](#avoid-7)
-  - [Use curly brackets for one line nested block](#use-curly-brackets-for-one-line-nested-block)
+  - [Use available logger instead of normal printf/Serial.print](#use-available-logger-instead-of-normal-printfserialprint)
     - [do:](#do-8)
     - [avoid:](#avoid-8)
-  - [Comments shouldn't overshoot the 80 character line](#comments-shouldnt-overshoot-the-80-character-line)
+  - [Use curly brackets for one line nested block](#use-curly-brackets-for-one-line-nested-block)
     - [do:](#do-9)
     - [avoid:](#avoid-9)
-  - [Code shouldn't overshoot the 120 character line](#code-shouldnt-overshoot-the-120-character-line)
+  - [Comments shouldn't overshoot the 80 character line](#comments-shouldnt-overshoot-the-80-character-line)
     - [do:](#do-10)
     - [avoid:](#avoid-10)
-  - [Prefer lambda function over std::bind](#prefer-lambda-function-over-stdbind)
+  - [Code shouldn't overshoot the 120 character line](#code-shouldnt-overshoot-the-120-character-line)
     - [do:](#do-11)
     - [avoid:](#avoid-11)
+  - [Prefer lambda function over std::bind](#prefer-lambda-function-over-stdbind)
+    - [do:](#do-12)
+    - [avoid:](#avoid-12)
+  - [Prefer passing by reference when pointer can't be null](#prefer-passing-by-reference-when-pointer-cant-be-null)
+    - [do:](#do-13)
+    - [avoid:](#avoid-13)
 
 # CPP Coding Guidelines
 
-Guidelines are there to help organise and increase readability and maintainability. The following are guidelines, not strict rules, you should always try to conform to them but they can always be broken if it increase readability or maintainability. It's a constant work in progress it's opened to suggestions
+Guidelines are there to help organise and increase readability and maintainability. The following are guidelines, not strict rules, you should always try to conform to them but they can always be broken if it increase readability or maintainability. It's a constant work in progress and it's opened to suggestions
 
-## Use brackets
+## CPP Naming Style
+
+| Type of data         | Styling               | Example          |
+|----------------------|-----------------------|------------------|
+| variable             | camelCase             | ```myInt```      |
+| function name        | camelCase             | ```myFunc()```   |
+| class and namespaces | PascalCase            | ```MyClass```    |
+| Macro                | UPPER_CASE_SNAKE_CASE | ```MY_MACRO()``` |
+| Constant and define  | UPPER_CASE_SNAKE_CASE | ```PI```         |
+| Enum elements        | UPPER_CASE_SNAKE_CASE | ```FIRST_ELEM``` |
+
+### Prefix and suffix 
+| Type of data            | Styling         | Example                |
+|-------------------------|-----------------|------------------------|
+| Argument name           | camelCase_      | ```myArg_ ```          |                 
+| Reference               | rPascalCase_    | ```rMyRef```           |
+| Pointers                | pPascalCase_    | ```pMyPointer```       |
+| private member variable | _camelCase      | ```_myPrivateMember``` |
+| global variable         | g_camelCase     | ```g_myInt```          |
+| Struct                  | sPascalCase     | ```sMyStruct```        |
+| Enum                    | ePascalCase     | ```eMyEnum```          |
+| ROS Subscriber          | sub_camelCase   | ```sub_mySrg```        |
+| ROS Publisher           | pub_camelCase   | ```pub_mySrg```        |
+| ROS Timer               | timer_camelCase | ```timer_mySrg```      |
+
+## Use Allman brackets style
+
+### do:
+```cpp
+if (something)
+{
+  doSomethingElse();
+}
+```
+
+### avoid:
+```cpp
+if (something) {
+  doSomethingElse();
+}
+```
 
 ## Do not use dynamic allocation on microcontrollers
 Using dynamic allocation can fragment the heap memory ([more info](https://stackoverflow.com/questions/3770457/what-is-memory-fragmentation)), it's generally always a bad idea on systems which requires a high level of reliability for long periods of time with low memory footprint. For this reason, the use of the *new*, *delete*, *std::share_ptr*, *std::unique_ptr*, etc. is discouraged on the rover. The std library uses a lot of dynamic allocation so it's generally a bad idea to use it.
@@ -80,23 +126,7 @@ myVector.append(1);
 myVector.append(2);
 myVector.append(3);
 ```
-On ROS code it's tolerated when it make the code easier to maintain and to read as ROS is full of dynamic allocation and the rover computer has 16gb of RAM.
-
-## CPP Naming Style
-
-| Type of data            | Styling               | Example                |
-|-------------------------|-----------------------|------------------------|
-| variable                | camelCase             | ```myInt```            |
-| global variable         | g_camelCase           | ```g_myInt```          |
-| function name           | camelCase             | ```myFunc()```         |
-| class and namespaces    | PascalCase            | ```MyClass```          |
-| private member variable | _camelCase            | ```_myPrivateMember``` |
-| public member variable  | camelCase             | ```myPublicMember```   |
-| Macro                   | UPPER_CASE_SNAKE_CASE | ```MY_MACRO()```       |
-| Constant and define     | UPPER_CASE_SNAKE_CASE | ```PI```               |
-| Struct                  | sPascalCase           | ```sMyStruct```        |
-| Enum                    | ePascalCase           | ```eMyEnum```          |
-| Enum elements           | UPPER_CASE_SNAKE_CASE | ```FIRST_ELEM```       |
+On ROS code it's tolerated when it make the code easier to maintain and easier to read. ROS is also full of dynamic allocation and the rover computer has 16gb of RAM.
 
 ## Use full namespace
 
@@ -391,4 +421,28 @@ _sub_joyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
 _sub_joyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                               1,
                                                               std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+```
+
+## Prefer passing by reference when pointer can't be null
+Makes it simpler and safer
+
+### do:
+```cpp
+void myFunc(float &rValue)
+{
+  rValue += 2;
+  return;
+}
+```
+
+### avoid:
+```cpp
+void myFunc(float *pValue)
+{
+  if (pValue)
+  {
+    *pValue += 2;
+  }
+  return;
+}
 ```
