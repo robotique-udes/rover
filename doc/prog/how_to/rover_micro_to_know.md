@@ -143,7 +143,7 @@ build_flags =
 
 ### Development
 
-At this time there are no available starting templates for non MicroRos project but they are simpler to work with, so we advice to just copy and paste another project and start from there (The "propulsion_motor" project is suggested). All code that can be reused is located inside the "lib_rover library".
+At this time there are no available starting templates for non MicroRos project but they are simpler to work with, so we advise to just copy and paste another project and start from there (The "propulsion_motor" project is suggested). All code that can be reused is located inside the "lib_rover library".
 
 #### lib_rover
 

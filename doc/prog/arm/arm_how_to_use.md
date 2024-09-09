@@ -1,6 +1,6 @@
 # WARNING
 
-This file needs a big overhaul. Outdate information was removed and this is why there's a lot of holes but don't expect all remaining information to be accurate 
+This file needs a big overhaul. Outdated information was removed and this is why there's a lot of holes but don't expect all remaining information to be accurate 
 
 ## Run simulation with rover_helper
 
