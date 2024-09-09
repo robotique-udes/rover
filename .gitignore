@@ -6,3 +6,5 @@ saved_elements/
 .idea
 rover_gui/saved_files/navigation/route_dump.log
 *~
+
+*.bkp
