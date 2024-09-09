@@ -56,7 +56,7 @@ private:
 
     void CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg);
     void CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPos);
-    void CB_watchdog(bool &lostHB_r);
+    void CB_watchdog(bool &rLostHB);
     rover_msgs::msg::ArmMsg getZeroMsg(void);
 };
 
@@ -182,10 +182,10 @@ void Teleop::CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPo
     }
 }
 
-void Teleop::CB_watchdog(bool &lostHB_r)
+void Teleop::CB_watchdog(bool &rLostHB)
 {
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 5'000, "Arm watchdog has been triggered!");
-    lostHB_r = true;
+    rLostHB = true;
 }
 
 rover_msgs::msg::ArmMsg Teleop::getZeroMsg(void)
