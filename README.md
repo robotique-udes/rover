@@ -19,7 +19,7 @@ To setup your computer for development, [read this page](doc/prog/how_to/intial_
 ### Useful links
 
 - [Rovus Github Project](https://github.com/orgs/robotique-udes/projects/1/views/1): Task management, backlog and test planning
-- [Coding Guidelines](doc/prog/coding%20guidelines.md): Good practices and styling guide
+- [Coding Guidelines](doc/prog/how_to/coding%20guidelines.md): Good practices and styling guide
 - [Electrical Standard](doc/electrical/electric_standard.md): Like coding guidelines but for electrical elements
 - [Testing for the first time guide TODO](TODO): Guide to start, test and stop the rover safely
 - [Documentation](doc/): Folder with all the documentation
