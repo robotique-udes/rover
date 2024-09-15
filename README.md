@@ -91,6 +91,7 @@ sudo apt install can-utils
 sudo apt install python3-pyqt5.qtwebengine
 sudo apt install python3-pyqt5.qtmultimedia
 sudo apt install libqt5multimedia5-plugins
+sudo apt install qt6-base-dev
 sudo apt install gstreamer1.0-rtsp
 sudo apt install gir1.2-gst-rtsp-server-1.0
 sudo apt install python3-gi
