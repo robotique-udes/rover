@@ -6,18 +6,47 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>1054</width>
-    <height>714</height>
+    <width>1403</width>
+    <height>1000</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <layout class="QGridLayout" name="gridLayout_2">
+  <layout class="QGridLayout" name="gridLayout">
    <item row="0" column="0">
-    <layout class="QHBoxLayout" name="horizontalLayout">
+    <layout class="QVBoxLayout" name="verticalLayout">
      <item>
-      <widget class="QTreeView" name="tw_localFileExplorer"/>
+      <layout class="QHBoxLayout" name="horizontalLayout">
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_2">
+         <item>
+          <widget class="QLineEdit" name="lineEdit">
+           <property name="text">
+            <string>Local</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTreeView" name="tv_local"/>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <layout class="QVBoxLayout" name="verticalLayout_3">
+         <item>
+          <widget class="QLineEdit" name="le_roverIp">
+           <property name="text">
+            <string>192.168.0.11</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QTreeView" name="tv_rover"/>
+         </item>
+        </layout>
+       </item>
+      </layout>
      </item>
     </layout>
    </item>
