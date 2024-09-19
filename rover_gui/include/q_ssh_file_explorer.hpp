@@ -5,6 +5,8 @@
 #include <QTreeView>
 #include <QHeaderView>
 
+#include "q_file_item.hpp"
+
 class QSshFileExplorer
 {
 private:
@@ -16,47 +18,60 @@ private:
     };
 
 public:
-    QSshFileExplorer(QWidget *parent_, QTreeView *treeView_) : roverFileExplorer(new QStandardItemModel(parent_))
+    QSshFileExplorer(QTreeView &rTreeView_) : _rTreeView(rTreeView_)
     {
-        assert(treeView_ != NULL);
-        _treeView = treeView_;
+        _rTreeView.setModel(&fileExplorerModel);
+        fileExplorerModel.setHorizontalHeaderLabels({"Name", "Type", "Last modified"});
 
-        _treeView->setModel(roverFileExplorer);
-        roverFileExplorer->setHorizontalHeaderLabels({"Name", "Type", "Last modified"});
+        _rTreeView.header()->setStretchLastSection(false);
+        _rTreeView.header()->setSectionResizeMode((uint8_t)eColumnIndex::NAME, QHeaderView::Stretch);
 
-        _treeView->header()->setStretchLastSection(false);
-        _treeView->header()->setSectionResizeMode((uint8_t)eColumnIndex::NAME, QHeaderView::Stretch);
+        _rTreeView.setColumnWidth((uint8_t)eColumnIndex::TYPE, 50);
+        _rTreeView.header()->setSectionResizeMode((uint8_t)eColumnIndex::TYPE, QHeaderView::Fixed);
 
-        _treeView->setColumnWidth((uint8_t)eColumnIndex::TYPE, 50);
-        _treeView->header()->setSectionResizeMode((uint8_t)eColumnIndex::TYPE, QHeaderView::Fixed);
+        _rTreeView.setColumnWidth((uint8_t)eColumnIndex::LAST_MODIFIED, 120);
+        _rTreeView.header()->setSectionResizeMode((uint8_t)eColumnIndex::LAST_MODIFIED, QHeaderView::Fixed);
 
-        _treeView->setColumnWidth((uint8_t)eColumnIndex::LAST_MODIFIED, 120);
-        _treeView->header()->setSectionResizeMode((uint8_t)eColumnIndex::LAST_MODIFIED, QHeaderView::Fixed);
+        IconManager::initializeIcons();
+        this->refreshItems();
+    }
 
-        for (uint8_t i = 0; i < 4; i++)
+    bool refreshItems(void)
+    {
+        std::list<QFileItem> items;
+        this->insertGoBackItem(items);
+        // for (uint8_t i = 0; i < 4; i++)
+        // {
+        //     items.push_back(QFileItem(std::string("Folder " + std::to_string(i)), "", "2024-13-17"));
+        // }
+
+        for (const auto &[extension, icon] : IconManager::getIconMap())
         {
-            QStandardItem *itemName = new QStandardItem();
-            itemName->setCheckable(false);
-            itemName->setEditable(false);
-            itemName->setIcon(_treeView->style()->standardIcon(QStyle::SP_DirIcon));
-            itemName->setText(QString(("Item number " + std::to_string(i)).c_str()));
+            // Generate a name for each item (you might want to customize this)
+            std::string name = extension.empty() ? "Folder" : "File " + extension;
 
-            QStandardItem *itemType = new QStandardItem();
-            itemType->setCheckable(false);
-            itemType->setEditable(false);
-            itemType->setText("Folder");
-
-            QStandardItem *itemModified = new QStandardItem();
-            itemModified->setCheckable(false);
-            itemModified->setEditable(false);
-            itemModified->setText("2024-09-17");
-            itemModified->setTextAlignment(Qt::AlignRight);
-
-            roverFileExplorer->appendRow({itemName, itemType, itemModified});
+            // Create a QFileItem instance and add it to the list
+            items.push_back(QFileItem(name, extension, "2024-13-17"));
         }
+
+        for (auto &it : items)
+        {
+            it.addItemToModel(fileExplorerModel);
+        }
+
+        return true;
+    }
+
+    void insertGoBackItem(std::list<QFileItem> &items)
+    {
+        if (items.size() != 0 && items.front().getName() == QFileItemGoBack().getName())
+        {
+            return;
+        }
+        items.emplace_front(QFileItemGoBack());
     }
 
 private:
-    QTreeView *_treeView;
-    QStandardItemModel *roverFileExplorer;
+    QTreeView &_rTreeView;
+    QStandardItemModel fileExplorerModel;
 };
