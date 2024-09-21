@@ -5,7 +5,12 @@
 #include <cstdlib>
 
 #include <QMainWindow>
+#include <QApplication>
 
+// All .ui file must be included here to be generated as .h files
+#include "ui_file_transfer_widget.h"
+
+#include "style_sheet.hpp"
 #include "q_file_transfer_widget.hpp"
 
 // #define DEFAULT_ROOT_PATH ament_index_cpp::get_package_share_directory("rover_gui") + "/../../../../src/rover"
@@ -27,6 +32,9 @@ public:
 int main(int argc, char *argv[])
 {
     QApplication app(argc, argv);
+    // Windows decoration in darkmode when using wayland 
+    QApplication::setStyle("Fusion");
+    app.setStyleSheet(darkMode);
 
     MainWindow page;
     page.setGeometry(0, 0, 1200, 600);

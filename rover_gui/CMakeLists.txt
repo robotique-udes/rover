@@ -24,7 +24,7 @@ include_directories(
   ${rover_msgs_INCLUDE_DIRS}
 )
 
-add_executable(application src/application.cpp)
+add_executable(application src/application.cpp )
 
 target_link_libraries(application Qt6::Widgets Qt6::Gui)
 
@@ -39,6 +39,6 @@ install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
           application
-        DESTINATION lib/${PROJECT_NAME})
+          DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

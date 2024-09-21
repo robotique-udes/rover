@@ -21,6 +21,10 @@ public:
     QSshFileExplorer(QTreeView &rTreeView_) : _rTreeView(rTreeView_)
     {
         _rTreeView.setModel(&fileExplorerModel);
+        QFont fountSize;
+        fountSize.setPointSize(12);
+        _rTreeView.setFont(fountSize);
+
         fileExplorerModel.setHorizontalHeaderLabels({"Name", "Type", "Last modified"});
 
         _rTreeView.header()->setStretchLastSection(false);
