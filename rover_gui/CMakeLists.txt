@@ -14,6 +14,9 @@ find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
 
+set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
+set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
+
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTOUIC ON)
@@ -22,11 +25,15 @@ set(CMAKE_AUTORCC ON)
 include_directories(
   include
   ${rover_msgs_INCLUDE_DIRS}
+  ${LIBSSH_INCLUDE_DIR}
 )
 
 add_executable(application src/application.cpp )
 
-target_link_libraries(application Qt6::Widgets Qt6::Gui)
+target_link_libraries(application 
+                      Qt6::Widgets
+                      Qt6::Gui
+                      ${LIBSSH_LIBRARY})
 
 ament_target_dependencies(application
                           rclcpp

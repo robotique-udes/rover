@@ -1,58 +1,10 @@
 #pragma once
 
-#include <QApplication>
 #include <QStandardItem>
 #include <QStandardItemModel>
-#include "rclcpp/rclcpp.hpp"
+#include <rclcpp/rclcpp.hpp>
 
-class IconManager
-{
-public:
-    static std::map<std::string, QIcon> &getIconMap()
-    {
-        static std::map<std::string, QIcon> iconMap;
-        return iconMap;
-    }
-
-    static void initializeIcons()
-    {
-        auto &iconMap = getIconMap();
-        iconMap[""] = QIcon::fromTheme("folder");
-        iconMap[".goBack"] = QIcon::fromTheme("go-back");
-        iconMap[".txt"] = QIcon::fromTheme("text-x-generic");
-        iconMap[".md"] = QIcon::fromTheme("text-x-generic");
-        iconMap[".rtf"] = QIcon::fromTheme("text-x-generic");
-        iconMap[".png"] = QIcon::fromTheme("image-x-generic");
-        iconMap[".jpg"] = QIcon::fromTheme("image-x-generic");
-        iconMap[".jpeg"] = QIcon::fromTheme("image-x-generic");
-        iconMap[".bmp"] = QIcon::fromTheme("image-x-generic");
-        iconMap[".gif"] = QIcon::fromTheme("image-x-generic");
-        iconMap[".pdf"] = QIcon::fromTheme("application-pdf");
-        iconMap[".doc"] = QIcon::fromTheme("application-vnd.openxmlformats-officedocument.wordprocessingml.document");
-        iconMap[".docx"] = QIcon::fromTheme("application-vnd.openxmlformats-officedocument.wordprocessingml.document");
-        iconMap[".odt"] = QIcon::fromTheme("application-vnd.oasis.opendocument.text");
-        iconMap[".cpp"] = QIcon::fromTheme("text-x-c++src");
-        iconMap[".hpp"] = QIcon::fromTheme("text-x-c++src");
-        iconMap[".h"] = QIcon::fromTheme("text-x-c++src");
-        iconMap[".py"] = QIcon::fromTheme("text-x-python");
-        iconMap[".java"] = QIcon::fromTheme("text-x-java");
-        iconMap[".js"] = QIcon::fromTheme("text-x-script");
-        iconMap[".html"] = QIcon::fromTheme("text-html");
-        iconMap[".css"] = QIcon::fromTheme("text-css");
-        iconMap[".zip"] = QIcon::fromTheme("application-zip");
-        iconMap[".rar"] = QIcon::fromTheme("application-x-rar");
-        iconMap[".7z"] = QIcon::fromTheme("application-x-7z-compressed");
-        iconMap[".tar"] = QIcon::fromTheme("application-x-tar");
-        iconMap[".gz"] = QIcon::fromTheme("application-x-gzip");
-        iconMap[".mp3"] = QIcon::fromTheme("audio-x-mp3");
-        iconMap[".wav"] = QIcon::fromTheme("audio-x-wav");
-        iconMap[".flac"] = QIcon::fromTheme("audio-x-flac");
-        iconMap[".mp4"] = QIcon::fromTheme("video-x-mp4");
-        iconMap[".avi"] = QIcon::fromTheme("video-x-msvideo");
-        iconMap[".mkv"] = QIcon::fromTheme("video-x-matroska");
-        iconMap[".mov"] = QIcon::fromTheme("video-x-quicktime");
-    }
-};
+#include "icon_manager.hpp"
 
 class QFileItem
 {
@@ -117,7 +69,7 @@ protected:
 class QFileItemGoBack : public QFileItem
 {
 public:
-    QFileItemGoBack() : QFileItem(". . .", ".goBack", "")
+    QFileItemGoBack() : QFileItem("...", ".goBack", "")
     {
         _type->setText("");
     }

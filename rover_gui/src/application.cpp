@@ -34,7 +34,7 @@ int main(int argc, char *argv[])
     QApplication app(argc, argv);
     // Windows decoration in darkmode when using wayland 
     QApplication::setStyle("Fusion");
-    app.setStyleSheet(darkMode);
+    app.setStyleSheet(STYLE_DARK_MODE);
 
     MainWindow page;
     page.setGeometry(0, 0, 1200, 600);
