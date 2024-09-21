@@ -42,7 +42,17 @@
           </widget>
          </item>
          <item>
-          <widget class="QTreeView" name="tv_rover"/>
+          <widget class="QTreeView" name="tv_rover">
+           <property name="tabKeyNavigation">
+            <bool>true</bool>
+           </property>
+           <property name="indentation">
+            <number>0</number>
+           </property>
+           <attribute name="headerVisible">
+            <bool>true</bool>
+           </attribute>
+          </widget>
          </item>
         </layout>
        </item>
