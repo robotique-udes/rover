@@ -19,6 +19,7 @@
   <depend>std_msgs</depend>
   <depend>rover_msgs</depend>
   <depend>rcl_interfaces</depend>
+  <depend>libssh2</depend>
 
   <exec_depend>ros2launch</exec_depend>
 

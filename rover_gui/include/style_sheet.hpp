@@ -4,7 +4,7 @@
 
 // Here some style presets can be added for different app theme
 
-static QString darkMode = R"(
+static const QString STYLE_DARK_MODE = R"(
     QWidget {
         background-color: #2e2e2e;
         color: #ffffff;
@@ -125,10 +125,6 @@ static QString darkMode = R"(
     QStatusBar {
         background-color: #3c3f41;
         color: #ffffff;
-    }
-
-    QTreeView::item {
-        padding: 5px;
     }
 )";
 

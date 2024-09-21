@@ -88,18 +88,16 @@ sudo apt install ros-humble-ros-base
 sudo apt install ros-dev-tools
 sudo apt install ros-humble-joy
 sudo apt install can-utils
-sudo apt install python3-pyqt5.qtwebengine
-sudo apt install python3-pyqt5.qtmultimedia
-sudo apt install libqt5multimedia5-plugins
 sudo apt install qt6-base-dev
 sudo apt install gstreamer1.0-rtsp
+rm -r ~/.cache/gstreamer-1.0/
+sudo apt purge gstreamer1.0-vaapi 
 sudo apt install gir1.2-gst-rtsp-server-1.0
 sudo apt install python3-gi
 sudo apt install ros-humble-rviz2
 sudo apt install ros-humble-joint-state-publisher
 sudo apt install ros-humble-robot-state-publisher
-sudo apt purge gstreamer1.0-vaapi 
-rm -r ~/.cache/gstreamer-1.0/
+sudo apt install libssh-dev
 ```
 
 ### From pip
@@ -107,8 +105,6 @@ rm -r ~/.cache/gstreamer-1.0/
 ```bash
 pip install setuptools==58.2.0 #*
 pip install empy==3.3.4 #**
-pip install folium
-pip install PyQtWebEngine
 pip install opencv-python
 pip install opencv-contrib-python
 ```
