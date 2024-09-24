@@ -1,0 +1,1 @@
+controller_joint_names: ['', 'ROCKER_L', 'WHEEL_FL', 'WHEEL_RL', 'ROCKER_R', 'WHEEL_FR', 'WHEEL_RR', 'J0', 'J1', 'J2', 'J3', 'J4', 'J5', ]
