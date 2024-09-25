@@ -2,52 +2,94 @@
 
 #include <QHeaderView>
 #include <QInputDialog>
+#include <QMessageBox>
 #include <libssh/libssh.h>
 #include <libssh/sftp.h>
 #include <rclcpp/rclcpp.hpp>
-// #include <mutex>
+
+#include "rovus_lib/macros.h"
 
 #include "q_file_item.hpp"
 
-class SshClient
+namespace SshClient
 {
-    // static std::mutex mutexLibSsh = ;
-public:
-    SshClient() {}
-    ~SshClient() {}
+    void sshSetupDialog(const std::string &rUsername_, const std::string &rHostname_)
+    {
+        std::string message(std::string("For security reasons, to setup your ssh key,") +
+                            "please paste this command in a terminal and press \"ok\"\n\n" +
+                            "ssh-copy-id " +
+                            rUsername_ +
+                            "@" +
+                            rHostname_);
 
-    void retrieveFolderStructure(const QString &host, const QString &user)
+        QMessageBox::question(nullptr,
+                              "Ssh Setup",
+                              message.c_str(),
+                              QMessageBox::StandardButton::Ok);
+    }
+
+    bool askSshSetup(void)
+    {
+        QMessageBox::StandardButton reply;
+        reply = QMessageBox::question(nullptr,
+                                      "SSH Key setup",
+                                      "Logging with SSH key failed, do you want to setup one?",
+                                      QMessageBox::Yes | QMessageBox::No);
+
+        return reply == QMessageBox::Yes;
+    }
+
+    void retrieveFolderStructure(IN const std::string &rHostname_,
+                                 IN const std::string &rUsername_,
+                                 OUT std::vector<QFileItem> &rFileItems_)
     {
         ssh_session pSession = ssh_new();
         if (pSession == nullptr)
+        {
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error creating a ssh session");
             return;
+        }
 
-        ssh_options_set(pSession, SSH_OPTIONS_HOST, host.toUtf8().constData());
-        ssh_options_set(pSession, SSH_OPTIONS_USER, user.toUtf8().constData());
+        ssh_options_set(pSession, SSH_OPTIONS_HOST, rHostname_.c_str());
+        ssh_options_set(pSession, SSH_OPTIONS_USER, rUsername_.c_str());
 
         int rc = ssh_connect(pSession);
         if (rc != SSH_OK)
         {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error connecting to host:" << ssh_get_error(pSession));
+            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Error connecting to host: %s", ssh_get_error(pSession));
             ssh_free(pSession);
             return;
         }
 
-        QString password = QInputDialog::getText(nullptr, "Password", "Enter your password:", QLineEdit::Password);
-        rc = ssh_userauth_password(pSession, nullptr, password.toUtf8().constData());
+        // Attempt to authenticate with an SSH key
+        rc = ssh_userauth_publickey_auto(pSession, nullptr, nullptr);
         if (rc != SSH_AUTH_SUCCESS)
         {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Authentication failed:" << ssh_get_error(pSession));
-            ssh_disconnect(pSession);
-            ssh_free(pSession);
-            return;
+            RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "SSH key authentication failed with: %s", ssh_get_error(pSession));
+
+            if (SshClient::askSshSetup())
+            {
+                RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Setuping SSH Key...");
+                SshClient::sshSetupDialog(rUsername_, rHostname_);
+            }
+
+#error Jsuis rendu là dans le pipeline
+
+            rc = ssh_userauth_password(pSession, nullptr, "");
+            if (rc != SSH_AUTH_SUCCESS)
+            {
+                RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Password authentication failed: " << ssh_get_error(pSession));
+                ssh_disconnect(pSession);
+                ssh_free(pSession);
+                return;
+            }
         }
 
         // Initialize SFTP session
         sftp_session sftp = sftp_new(pSession);
         if (sftp == nullptr)
         {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session:" << ssh_get_error(pSession));
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session: " << ssh_get_error(pSession));
             ssh_disconnect(pSession);
             ssh_free(pSession);
             return;
@@ -56,7 +98,7 @@ public:
         rc = sftp_init(sftp);
         if (rc != SSH_OK)
         {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error initializing SFTP session:" << ssh_get_error(sftp));
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error initializing SFTP session: " << ssh_get_error(sftp));
             sftp_free(sftp);
             ssh_disconnect(pSession);
             ssh_free(pSession);
@@ -67,7 +109,7 @@ public:
         sftp_dir dir = sftp_opendir(sftp, ".");
         if (dir == nullptr)
         {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error opening directory:" << ssh_get_error(sftp));
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error opening directory: " << ssh_get_error(sftp));
             sftp_free(sftp);
             ssh_disconnect(pSession);
             ssh_free(pSession);
@@ -77,7 +119,7 @@ public:
         sftp_attributes attrs;
         while ((attrs = sftp_readdir(sftp, dir)) != nullptr)
         {
-            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "File:" << attrs->name);
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "File: " << attrs->name);
             sftp_attributes_free(attrs);
         }
 
@@ -124,8 +166,8 @@ public:
 
         this->refreshItems();
 
-        SshClient sshHandler;
-        sshHandler.retrieveFolderStructure("localhost", "phil");
+        std::vector<QFileItem> files;
+        SshClient::retrieveFolderStructure("localhost", "phil", files);
     }
 
     bool refreshItems(void)
