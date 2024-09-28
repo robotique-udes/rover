@@ -79,25 +79,26 @@ pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n
 ### From apt
 
 ```bash
-sudo apt update
-sudo apt install pip
-sudo apt install python3-venv
-sudo apt install python-is-python3
-sudo apt install ros-humble-desktop
-sudo apt install ros-humble-ros-base
-sudo apt install ros-dev-tools
-sudo apt install ros-humble-joy
-sudo apt install can-utils
-sudo apt install qt6-base-dev
-sudo apt install gstreamer1.0-rtsp
+sudo apt -y update
+sudo apt -y install pip
+sudo apt -y install python3-venv
+sudo apt -y install python-is-python3
+sudo apt -y install ros-humble-desktop
+sudo apt -y install ros-humble-ros-base
+sudo apt -y install ros-dev-tools
+sudo apt -y install ros-humble-joy
+sudo apt -y install can-utils
+sudo apt -y install qt6-base-dev
+sudo apt -y install gstreamer1.0-rtsp
 rm -r ~/.cache/gstreamer-1.0/
 sudo apt purge gstreamer1.0-vaapi 
-sudo apt install gir1.2-gst-rtsp-server-1.0
-sudo apt install python3-gi
-sudo apt install ros-humble-rviz2
-sudo apt install ros-humble-joint-state-publisher
-sudo apt install ros-humble-robot-state-publisher
-sudo apt install libssh-dev
+sudo apt -y install gir1.2-gst-rtsp-server-1.0
+sudo apt -y install python3-gi
+sudo apt -y install ros-humble-rviz2
+sudo apt -y install ros-humble-joint-state-publisher
+sudo apt -y install ros-humble-robot-state-publisher
+sudo apt -y install libssh-dev
+sudo apt -y install sl
 ```
 
 ### From pip

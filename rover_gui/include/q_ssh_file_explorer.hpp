@@ -13,19 +13,16 @@
 
 namespace SshClient
 {
-    void sshSetupDialog(const std::string &rUsername_, const std::string &rHostname_)
-    {
-        std::string message(std::string("For security reasons, to setup your ssh key,") +
-                            "please paste this command in a terminal and press \"ok\"\n\n" +
-                            "ssh-copy-id " +
-                            rUsername_ +
-                            "@" +
-                            rHostname_);
+    constexpr uint8_t MAX_LOGIN_ATTEMPT = 3u;
 
-        QMessageBox::question(nullptr,
-                              "Ssh Setup",
-                              message.c_str(),
-                              QMessageBox::StandardButton::Ok);
+    void sshSetupDialog(const std::string& rUsername_, const std::string& rHostname_)
+    {
+        std::string message(std::string("For security reasons, we won't store password into memory.")
+                            + " To setup a safe no password login (ssh key), "
+                            + " please paste this command in a terminal and press \"ok\"\n\n" + "ssh-copy-id " + rUsername_ + "@"
+                            + rHostname_);
+
+        QMessageBox::question(nullptr, "Ssh Setup", message.c_str(), QMessageBox::Ok | QMessageBox::Cancel);
     }
 
     bool askSshSetup(void)
@@ -39,50 +36,72 @@ namespace SshClient
         return reply == QMessageBox::Yes;
     }
 
-    void retrieveFolderStructure(IN const std::string &rHostname_,
-                                 IN const std::string &rUsername_,
-                                 OUT std::vector<QFileItem> &rFileItems_)
+    bool handleAuth(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_)
     {
-        ssh_session pSession = ssh_new();
-        if (pSession == nullptr)
+        int sshStatusCode = SSH_ERROR;
+        for (uint8_t i = 0; sshStatusCode != SSH_AUTH_SUCCESS && i < MAX_LOGIN_ATTEMPT; i++)
         {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error creating a ssh session");
-            return;
+            pSession_ = ssh_new();
+            if (pSession_ == nullptr)
+            {
+                RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error creating a ssh session");
+                return false;
+            }
+
+            ssh_options_set(pSession_, SSH_OPTIONS_HOST, rHostname_.c_str());
+            ssh_options_set(pSession_, SSH_OPTIONS_USER, rUsername_.c_str());
+
+            sshStatusCode = ssh_connect(pSession_);
+            if (sshStatusCode != SSH_OK)
+            {
+                RCLCPP_INFO(rclcpp::get_logger("GUI"), "Error connecting to host: %s", ssh_get_error(pSession_));
+                ssh_free(pSession_);
+                return false;
+            }
+
+            sshStatusCode = SSH_AUTH_ERROR;
+            // Attempt to authenticate with an SSH key
+
+            sshStatusCode = ssh_userauth_publickey_auto(pSession_, nullptr, nullptr);
+            if (sshStatusCode == SSH_AUTH_SUCCESS)
+            {
+                break;
+            }
+
+            RCLCPP_INFO(rclcpp::get_logger("GUI"), "SSH key authentication failed with: %s", ssh_get_error(pSession_));
+
+            if (!SshClient::askSshSetup())
+            {
+                ssh_free(pSession_);
+                return false;
+            }
+
+            SshClient::sshSetupDialog(rUsername_, rHostname_);
+            RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Setuping SSH Key...");
+            continue;
         }
 
-        ssh_options_set(pSession, SSH_OPTIONS_HOST, rHostname_.c_str());
-        ssh_options_set(pSession, SSH_OPTIONS_USER, rUsername_.c_str());
-
-        int rc = ssh_connect(pSession);
-        if (rc != SSH_OK)
+        if (sshStatusCode != SSH_AUTH_SUCCESS)
         {
-            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Error connecting to host: %s", ssh_get_error(pSession));
+            ssh_disconnect(pSession_);
+            ssh_free(pSession_);
+            return false;
+        }
+
+        return true;
+    }
+
+    bool retrieveFolderStructure(IN const std::string& rUsername_,
+                                 IN const std::string& rHostname_,
+                                 OUT std::vector<QFileItem>& rFileItems_)
+    {
+        ssh_session pSession = nullptr;
+
+        if (!handleAuth(rUsername_, rHostname_, pSession) || !pSession)
+        {
+            ssh_disconnect(pSession);
             ssh_free(pSession);
-            return;
-        }
-
-        // Attempt to authenticate with an SSH key
-        rc = ssh_userauth_publickey_auto(pSession, nullptr, nullptr);
-        if (rc != SSH_AUTH_SUCCESS)
-        {
-            RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "SSH key authentication failed with: %s", ssh_get_error(pSession));
-
-            if (SshClient::askSshSetup())
-            {
-                RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Setuping SSH Key...");
-                SshClient::sshSetupDialog(rUsername_, rHostname_);
-            }
-
-#error Jsuis rendu là dans le pipeline
-
-            rc = ssh_userauth_password(pSession, nullptr, "");
-            if (rc != SSH_AUTH_SUCCESS)
-            {
-                RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Password authentication failed: " << ssh_get_error(pSession));
-                ssh_disconnect(pSession);
-                ssh_free(pSession);
-                return;
-            }
+            return false;
         }
 
         // Initialize SFTP session
@@ -92,28 +111,28 @@ namespace SshClient
             RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session: " << ssh_get_error(pSession));
             ssh_disconnect(pSession);
             ssh_free(pSession);
-            return;
+            return false;
         }
 
-        rc = sftp_init(sftp);
-        if (rc != SSH_OK)
+        int sshStatusCode = sftp_init(sftp);
+        if (sshStatusCode != SSH_OK)
         {
             RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error initializing SFTP session: " << ssh_get_error(sftp));
             sftp_free(sftp);
             ssh_disconnect(pSession);
             ssh_free(pSession);
-            return;
+            return false;
         }
 
         // Retrieve the folder structure
-        sftp_dir dir = sftp_opendir(sftp, ".");
+        sftp_dir dir = sftp_opendir(sftp, "/");
         if (dir == nullptr)
         {
             RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error opening directory: " << ssh_get_error(sftp));
             sftp_free(sftp);
             ssh_disconnect(pSession);
             ssh_free(pSession);
-            return;
+            return false;
         }
 
         sftp_attributes attrs;
@@ -127,12 +146,14 @@ namespace SshClient
         sftp_free(sftp);
         ssh_disconnect(pSession);
         ssh_free(pSession);
+
+        return true;
     }
-};
+};  // namespace SshClient
 
 class QSshFileExplorer
 {
-private:
+  private:
     enum class eColumnIndex : uint8_t
     {
         NAME,
@@ -142,8 +163,8 @@ private:
 
     static const QString STYLE_TREE_VIEW;
 
-public:
-    QSshFileExplorer(QTreeView &rTreeView_) : _rTreeView(rTreeView_)
+  public:
+    QSshFileExplorer(QTreeView& rTreeView_): _rTreeView(rTreeView_)
     {
         _rTreeView.setModel(&_itemModel);
         QFont fountSize;
@@ -167,7 +188,7 @@ public:
         this->refreshItems();
 
         std::vector<QFileItem> files;
-        SshClient::retrieveFolderStructure("localhost", "phil", files);
+        SshClient::retrieveFolderStructure("phil", "localhost", files);
     }
 
     bool refreshItems(void)
@@ -188,7 +209,7 @@ public:
         //     items.push_back(QFileItem(name, extension, "2024-13-17"));
         // }
 
-        for (auto &it : items)
+        for (auto& it : items)
         {
             it.addItemToModel(_itemModel);
         }
@@ -196,7 +217,7 @@ public:
         return true;
     }
 
-    void insertGoBackItem(std::list<QFileItem> &items)
+    void insertGoBackItem(std::list<QFileItem>& items)
     {
         if (items.size() != 0 && items.front().getName() == QFileItemGoBack().getName())
         {
@@ -205,8 +226,8 @@ public:
         items.emplace_front(QFileItemGoBack());
     }
 
-private:
-    QTreeView &_rTreeView;
+  private:
+    QTreeView& _rTreeView;
     QStandardItemModel _itemModel;
 };
 

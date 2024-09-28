@@ -1,12 +1,12 @@
 #pragma once
 
-#include <rclcpp/rclcpp.hpp>
 #include <QIcon>
+#include <rclcpp/rclcpp.hpp>
 
 class IconManager
 {
-public:
-    static std::map<std::string, QIcon> &getIconMap()
+  public:
+    static std::map<std::string, QIcon>& getIconMap()
     {
         if (!_isInit)
         {
@@ -16,7 +16,7 @@ public:
         return _iconMap;
     }
 
-private:
+  private:
     void static initializeIcons();
 
     static bool _isInit;

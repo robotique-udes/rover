@@ -8,13 +8,16 @@
 
 class QFileItem
 {
-private:
+  private:
     enum class eFileType : uint8_t
     {
     };
 
-public:
-    QFileItem(std::string name_, std::string extension_, std::string lastModified_) : _name(new QStandardItem), _type(new QStandardItem), _lastModified(new QStandardItem)
+  public:
+    QFileItem(std::string name_, std::string extension_, std::string lastModified_):
+        _name(new QStandardItem),
+        _type(new QStandardItem),
+        _lastModified(new QStandardItem)
     {
         _name->setText(QString(name_.c_str()));
         _name->setCheckable(false);
@@ -39,7 +42,7 @@ public:
         _lastModified->setText(QString(lastModified_.c_str()));
     }
 
-    void addItemToModel(QStandardItemModel &rModel_)
+    void addItemToModel(QStandardItemModel& rModel_)
     {
         rModel_.appendRow({_name.release(), _type.release(), _lastModified.release()});
     }
@@ -59,7 +62,7 @@ public:
         return _lastModified->text().toStdString();
     }
 
-protected:
+  protected:
     std::unique_ptr<QStandardItem> _name;
     std::unique_ptr<QStandardItem> _type;
     std::unique_ptr<QStandardItem> _lastModified;
@@ -68,8 +71,8 @@ protected:
 // Special items
 class QFileItemGoBack : public QFileItem
 {
-public:
-    QFileItemGoBack() : QFileItem("...", ".goBack", "")
+  public:
+    QFileItemGoBack(): QFileItem("...", ".goBack", "")
     {
         _type->setText("");
     }

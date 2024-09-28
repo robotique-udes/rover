@@ -4,14 +4,14 @@
 
 #include <cstdlib>
 
-#include <QMainWindow>
 #include <QApplication>
+#include <QMainWindow>
 
 // All .ui file must be included here to be generated as .h files
 #include "ui_file_transfer_widget.h"
 
-#include "style_sheet.hpp"
 #include "q_file_transfer_widget.hpp"
+#include "style_sheet.hpp"
 
 // #define DEFAULT_ROOT_PATH ament_index_cpp::get_package_share_directory("rover_gui") + "/../../../../src/rover"
 // #define DEFAULT_PATH DEFAULT_ROOT_PATH + "/rover_gui/"
@@ -19,20 +19,20 @@
 
 class MainWindow : public QMainWindow
 {
-public:
-    explicit MainWindow(QWidget *parent = nullptr) : QMainWindow(parent)
+  public:
+    explicit MainWindow(QWidget* parent = nullptr): QMainWindow(parent)
     {
-        QFileTransferWidget *fileTransferWidget = new QFileTransferWidget();
+        QFileTransferWidget* fileTransferWidget = new QFileTransferWidget();
         this->setCentralWidget(fileTransferWidget);
     }
 
     ~MainWindow() {}
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
-    // Windows decoration in darkmode when using wayland 
+    // Windows decoration in darkmode when using wayland
     QApplication::setStyle("Fusion");
     app.setStyleSheet(STYLE_DARK_MODE);
 
