@@ -6,7 +6,7 @@
 
 class QFileTransferWidget : public QWidget
 {
-public:
+  public:
     QFileTransferWidget()
     {
         ui.setupUi(this);
@@ -15,7 +15,7 @@ public:
 
     ~QFileTransferWidget() {}
 
-private:
+  private:
     Ui::FileTransfer ui;
-    QSshFileExplorer *pRoverFileSystem;
+    QSshFileExplorer* pRoverFileSystem;
 };
