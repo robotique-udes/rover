@@ -1,26 +1,26 @@
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/empty.hpp"
-#include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/msg/arm_msg.hpp"
+#include "rover_msgs/msg/joy.hpp"
+#include "rover_msgs/msg/joy_demux_status.hpp"
+#include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rovus_lib/macros.h"
 #include "rovus_lib/timer.hpp"
+#include "std_msgs/msg/empty.hpp"
 
-#include "keybinding.hpp"
 #include "arm_configuration.hpp"
+#include "keybinding.hpp"
 
-constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 100ul;
-constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f; // Factor of max speed
+constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 150ul;
+constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f;  // Factor of max speed
 
 /// @brief Takes a float from a joy msg and transform it's value into a bool
-/// @param buttonValue_ 
-/// @return If interpreted as a click or not 
+/// @param buttonValue_
+/// @return If interpreted as a click or not
 bool isPressed(float buttonValue_);
 
 class Teleop : public rclcpp::Node
 {
-public:
+  public:
     enum class eJointIndex : uint8_t
     {
         JL = rover_msgs::msg::ArmMsg::JL,
@@ -41,37 +41,38 @@ public:
 
     Teleop();
 
-private:
+  private:
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joyArm;
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _sub_armPosition;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pub_armCmd;
     rclcpp::TimerBase::SharedPtr _timer_armHeartbeat;
 
-    bool _gripperClose = true;
+    bool _gripperClose = false;
+    bool _gripperCloseLatchFlag = false;
 
     bool _currentPosInvalid = true;
     float _currentJointsPos[(uint8_t)eJointIndex::eLAST] = {0};
     eControlMode _controlMode = eControlMode::JOINT;
-    RoverLib::Timer<uint64_t, RoverLib::millis> timerDebounce = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
+    RoverLib::Timer<uint64_t, RoverLib::millis> timerDebounce
+        = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
 
     void CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg);
     void CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPos);
-    void CB_watchdog(bool &rLostHB);
+    void CB_watchdog(bool& rLostHB);
     rover_msgs::msg::ArmMsg getZeroMsg(void);
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<Teleop>());
     rclcpp::shutdown();
 }
 
-Teleop::Teleop() : Node("teleop")
+Teleop::Teleop(): Node("teleop")
 {
-    _timer_armHeartbeat = this->create_wall_timer(std::chrono::milliseconds(500),
-                                                  [this]()
-                                                  { this->CB_watchdog(_currentPosInvalid); });
+    _timer_armHeartbeat
+        = this->create_wall_timer(std::chrono::milliseconds(500), [this]() { this->CB_watchdog(_currentPosInvalid); });
 
     _sub_joyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                   1,
@@ -88,7 +89,7 @@ Teleop::Teleop() : Node("teleop")
 
 void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
 {
-    if (!isPressed(joyMsg->joy_data[KEYBINDING::DEADMAN_SWITCH])) // deadman switch
+    if (!isPressed(joyMsg->joy_data[KEYBINDING::DEADMAN_SWITCH]))  // deadman switch
     {
         _pub_armCmd->publish(this->getZeroMsg());
         return;
@@ -119,11 +120,9 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
         }
 
         // CMD J1
-        _goalJointsSpeed[(uint8_t)eJointIndex::J1] =
-            joyMsg->joy_data[KEYBINDING::J1] * ARM_CONFIGURATION::J1::MAX_VELOCITY;
+        _goalJointsSpeed[(uint8_t)eJointIndex::J1] = joyMsg->joy_data[KEYBINDING::J1] * ARM_CONFIGURATION::J1::MAX_VELOCITY;
         // CMD J2
-        _goalJointsSpeed[(uint8_t)eJointIndex::J2] =
-            joyMsg->joy_data[KEYBINDING::J2] * ARM_CONFIGURATION::J2::MAX_VELOCITY;
+        _goalJointsSpeed[(uint8_t)eJointIndex::J2] = joyMsg->joy_data[KEYBINDING::J2] * ARM_CONFIGURATION::J2::MAX_VELOCITY;
 
         // CMD GRIP_TILT
         if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_TILT_FWD]))
@@ -136,11 +135,11 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
         }
 
         // CMD GRIP_ROT
-        if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
+        if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
         {
             _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_ROT] = ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
         }
-        else if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
+        else if (isPressed(joyMsg->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
         {
             _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_ROT] = -ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
         }
@@ -153,12 +152,15 @@ void Teleop::CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg)
     // CMD GRIP
     if (joyMsg->joy_data[KEYBINDING::GRIPPER_CLOSE])
     {
-        // Nesting this condition make it more reactive because the timer won't 
-        // reset until the value is actually switched 
-        if (timerDebounce.isDone())
+        if (timerDebounce.isDone() && !_gripperCloseLatchFlag)
         {
             _gripperClose = !_gripperClose;
+            _gripperCloseLatchFlag = true;
         }
+    }
+    else
+    {
+        _gripperCloseLatchFlag = false;
     }
 
     _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperClose;
@@ -182,7 +184,7 @@ void Teleop::CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPo
     }
 }
 
-void Teleop::CB_watchdog(bool &rLostHB)
+void Teleop::CB_watchdog(bool& rLostHB)
 {
     RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 5'000, "Arm watchdog has been triggered!");
     rLostHB = true;
