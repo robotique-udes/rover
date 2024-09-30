@@ -1,11 +1,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/arm_msg.hpp"
 #include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
+
 #include "rovus_lib/macros.h"
 #include "rovus_lib/timer.hpp"
-#include "std_msgs/msg/empty.hpp"
 
 #include "arm_configuration.hpp"
 #include "keybinding.hpp"
