@@ -91,16 +91,16 @@ private:
     RoverCanLib::Constant::eInternalErrorCode askStateCanDevices();
 
     int _canSocket;
-    Timer<uint64_t, millis> _timerHeartbeat = Timer<uint64_t, millis>((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
-    Chrono<uint64_t, millis> _chonoCanWatchdog;
+    RoverLib::Timer<uint64_t, RoverLib::millis> _timerHeartbeat = RoverLib::Timer<uint64_t, RoverLib::millis>((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
+    RoverLib::Chrono<uint64_t, RoverLib::millis> _chonoCanWatchdog;
     rclcpp::TimerBase::SharedPtr _timerLoop;
     std::unordered_map<size_t, CanDevice> _deviceMap;
     std::unordered_map<size_t, RoverCanLib::Msgs::Msg *> _msgsMap;
 
     // =========================================================================
     //  Device loop timers
-    Timer<unsigned long, millis> _timer_motorCmdSend = Timer<unsigned long, millis>(50);
-    Timer<unsigned long, millis> _timer_armCmdSend = Timer<unsigned long, millis>(50);
+    RoverLib::Timer<unsigned long, RoverLib::millis> _timer_motorCmdSend = RoverLib::Timer<unsigned long, RoverLib::millis>(50);
+    RoverLib::Timer<unsigned long, RoverLib::millis> _timer_armCmdSend = RoverLib::Timer<unsigned long, RoverLib::millis>(50);
     // =========================================================================
 
     // =========================================================================
