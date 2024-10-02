@@ -2,7 +2,7 @@
 #include "ui_file_transfer_widget.h"
 
 // Custom objects
-#include "q_ssh_file_explorer.hpp"
+#include "QSshFileExplorer.hpp"
 
 class QFileTransferWidget : public QWidget
 {
