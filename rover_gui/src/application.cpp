@@ -10,8 +10,8 @@
 // All .ui file must be included here to be generated as .h files
 #include "ui_file_transfer_widget.h"
 
-#include "q_file_transfer_widget.hpp"
-#include "style_sheet.hpp"
+#include "QFileTransferWidget.hpp"
+#include "StyleSheet.hpp"
 
 // #define DEFAULT_ROOT_PATH ament_index_cpp::get_package_share_directory("rover_gui") + "/../../../../src/rover"
 // #define DEFAULT_PATH DEFAULT_ROOT_PATH + "/rover_gui/"
