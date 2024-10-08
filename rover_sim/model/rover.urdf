@@ -1,0 +1,422 @@
+<?xml version="1.0" encoding="utf-8"?>
+<!-- This URDF was automatically created by SolidWorks to URDF Exporter! Originally created by Stephen Brawner (brawner@gmail.com) 
+     Commit Version: 1.6.0-4-g7f85cfe  Build Version: 1.6.7995.38578
+     For more information, please see http://wiki.ros.org/sw_urdf_exporter -->
+
+
+<robot name="rover">
+  <link name="base_link">
+    <inertial>
+      <origin xyz="0.112849924193879 -0.232793382157193 0.183076177862911" rpy="0 0 0" />
+      <mass value="45.6227535447207" />
+      <inertia ixx="1.84588066123249" ixy="1.04398822934646E-09" ixz="-2.19695722124988E-08" iyy="1.12675188376899" iyz="-5.73876173682645E-05" izz="2.83493149680154" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/base_link.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/base_link.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <link name="ROCKER_L">
+    <inertial>
+      <origin xyz="0.0576803895536336 0.0340847304368007 0.031349999159246" rpy="0 0 0" />
+      <mass value="6.7188177795508" />
+      <inertia ixx="0.0336800630880808" ixy="-0.0365712848373038" ixz="1.472561846937E-09" iyy="0.459728619591422" iyz="7.0337085870288E-10" izz="0.489006412488076" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_L.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_L.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="ROCKER_L_JOINT" type="revolute">
+    <origin xyz="0.3766 -0.20681 0.078821" rpy="1.5708 0 1.5708" />
+    <parent link="base_link" />
+    <child link="ROCKER_L" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.35" upper="0.35" effort="0" velocity="0" />
+  </joint>
+
+  <link name="WHEEL_FL">
+    <inertial>
+      <origin xyz="9.42478317611517E-11 2.81360871927372E-09 -0.0649999999999999" rpy="0 0 0" />
+      <mass value="7.55389670370359" />
+      <inertia ixx="0.045567622882308" ixy="1.52458161818203E-18" ixz="-3.52208858329878E-11" iyy="0.045567622882308" iyz="-1.05145916727233E-09" izz="0.0698584367158508" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FL.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="WHEEL_FL_JOINT" type="revolute">
+    <origin xyz="-0.37995 -0.082166 0.1927" rpy="0 0 3.1416" />
+    <parent link="ROCKER_L" />
+    <child link="WHEEL_FL" />
+    <axis xyz="0 0 -1" />
+    <limit lower="-9999" upper="9999" effort="0" velocity="20" />
+  </joint>
+
+  <link name="WHEEL_RL">
+    <inertial>
+      <origin xyz="9.42478872723029E-11 2.8136087197074E-09 -0.0650000000000001" rpy="0 0 0" />
+      <mass value="7.55389670370359" />
+      <inertia ixx="0.045567622882308" ixy="1.52458158197648E-18" ixz="-3.52208867726297E-11" iyy="0.045567622882308" iyz="-1.05145916727233E-09" izz="0.0698584367158508" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RL.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RL.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="WHEEL_RL_JOINT" type="revolute">
+    <origin xyz="0.375460091610939 -0.0821661046351226 0.192700001280739" rpy="0 0 3.14159265358979" />
+    <parent link="ROCKER_L" />
+    <child link="WHEEL_RL" />
+    <axis xyz="0 0 -0.999999999999999" />
+    <limit lower="0" upper="0" effort="0" velocity="20" />
+  </joint>
+
+  <link name="ROCKER_R">
+    <inertial>
+      <origin xyz="0.0576803900595149 0.0340847288843424 0.0313499999163654" rpy="0 0 0" />
+      <mass value="6.71881777955079" />
+      <inertia ixx="0.0336800620025095" ixy="-0.0365712785139467" ixz="6.60208857696379E-10" iyy="0.459728620676994" iyz="5.30271193571037E-11" izz="0.489006412488076" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_R.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_R.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="ROCKER_R_JOINT" type="revolute">
+    <origin xyz="-0.213600073527999 -0.206807226568189 0.0788212705195118" rpy="1.57079630458203 0 1.5707963267949" />
+    <parent link="base_link" />
+    <child link="ROCKER_R" />
+    <axis xyz="0 0 1" />
+    <limit lower="-0.35" upper="0.35" effort="0" velocity="0" />
+  </joint>
+
+  <link name="WHEEL_FR">
+    <inertial>
+      <origin xyz="9.42478317611517E-11 2.81360889231239E-09 -0.0649999999999999" rpy="0 0 0" />
+      <mass value="7.55389670370359" />
+      <inertia ixx="0.045567622882308" ixy="1.52458164381907E-18" ixz="-3.52208928881465E-11" iyy="0.045567622882308" iyz="-1.05145923201004E-09" izz="0.0698584367158508" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FR.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="WHEEL_FR_JOINT" type="revolute">
+    <origin xyz="-0.379949909887969 -0.0821661155180505 0" rpy="0 0 3.14159263874792" />
+    <parent link="ROCKER_R" />
+    <child link="WHEEL_FR" />
+    <axis xyz="0 0 -0.999999999999999" />
+    <limit lower="999" upper="100" effort="0" velocity="20" />
+  </joint>
+
+  <link name="WHEEL_RR">
+    <inertial>
+      <origin xyz="9.42479150278785E-11 2.8136088918787E-09 -0.0649999999999999" rpy="0 0 0" />
+      <mass value="7.55389670370359" />
+      <inertia ixx="0.045567622882308" ixy="1.52458164726758E-18" ixz="-3.52208937162165E-11" iyy="0.045567622882308" iyz="-1.05145923201005E-09" izz="0.0698584367158508" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RR.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RR.STL" />
+      </geometry>
+    </collision>
+  </link>
+
+  <joint name="WHEEL_RR_JOINT" type="revolute">
+    <origin xyz="0.375460090112031 -0.082166114488072 0" rpy="0 0 3.14159263874792" />
+    <parent link="ROCKER_R" />
+    <child link="WHEEL_RR" />
+    <axis xyz="0 0 -0.999999999999999" />
+    <limit lower="100" upper="100" effort="0" velocity="20" />
+  </joint>
+
+  <!-- <link name="ARM_BASE">
+    <inertial>
+      <origin xyz="1.0227916291683E-09 -0.047089419372485 -0.0160000007631" rpy="0 0 0" />
+      <mass value="0.512622788118868" />
+      <inertia ixx="0.000613229200662848" ixy="-4.02085115480361E-10" ixz="2.55936278825549E-11" iyy="0.0187146793041696" iyz="7.29712112038013E-12" izz="0.0182643881537346" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ARM_BASE.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ARM_BASE.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="ARM_BASE_JOINT" type="fixed">
+    <origin xyz="0.11285 -0.53465 0.32484" rpy="1.5708 0 0" />
+    <parent link="base_link" />
+    <child link="ARM_BASE" />
+    <axis xyz="0 0 0" />
+  </joint>
+  <link name="J0">
+    <inertial>
+      <origin xyz="7.20420056943283E-10 -0.0335267651815728 -0.0167627980793654" rpy="0 0 0" />
+      <mass value="0.14826651920567" />
+      <inertia ixx="0.00011591934555788" ixy="-1.48004342718293E-12" ixz="-2.71691293611722E-14" iyy="0.000182606021235804" iyz="8.68222887030361E-07" izz="0.00011048235881137" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J0.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J0.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="J0_JOINT" type="prismatic">
+    <origin xyz="-0.28085 0 0" rpy="0 0 0" />
+    <parent link="ARM_BASE" />
+    <child link="J0" />
+    <axis xyz="1 0 0" />
+    <limit lower="-3.14" upper="3.14" effort="300" velocity="3" />
+  </joint>
+  <link name="J1">
+    <inertial>
+      <origin xyz="1.54442730826432E-09 0.0695285258445674 -0.0219577889830469" rpy="0 0 0" />
+      <mass value="0.874667906519395" />
+      <inertia ixx="0.00387731017393926" ixy="-6.75046270873239E-11" ixz="8.91524305511174E-12" iyy="0.000838322154710345" iyz="0.000401355383634096" izz="0.00350170489650648" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J1.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J1.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="J1_JOINT" type="revolute">
+    <origin xyz="0 0 0" rpy="3.1416 0 3.1416" />
+    <parent link="J0" />
+    <child link="J1" />
+    <axis xyz="0 1 0" />
+    <limit lower="-3.14" upper="3.14" effort="300" velocity="3" />
+  </joint>
+  <link name="J2">
+    <inertial>
+      <origin xyz="8.29484528286351E-09 0.373425225011446 0.00316370877405714" rpy="0 0 0" />
+      <mass value="1.96312360277631" />
+      <inertia ixx="0.0939243898226502" ixy="-1.91026906419288E-09" ixz="-2.216942039714E-11" iyy="0.00792608230900789" iyz="-0.000998053508320814" izz="0.10114520957233" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J2.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J2.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="J2_JOINT" type="revolute">
+    <origin xyz="0 0.06065 0" rpy="0 0 0" />
+    <parent link="J1" />
+    <child link="J2" />
+    <axis xyz="1 0 0" />
+    <limit lower="-3.14" upper="3.14" effort="300" velocity="3" />
+  </joint>
+  <link name="J3">
+    <inertial>
+      <origin xyz="7.95736385117429E-09 0.358232170644333 -3.55622009617917E-09" rpy="0 0 0" />
+      <mass value="1.8167140049107" />
+      <inertia ixx="0.0780464097697694" ixy="-1.66300818957583E-09" ixz="8.77220086069735E-17" iyy="0.00317952641638863" iyz="7.67361051270791E-10" izz="0.0804788537753683" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J3.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J3.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="J3_JOINT" type="revolute">
+    <origin xyz="0 0.65 0" rpy="0 0 0" />
+    <parent link="J2" />
+    <child link="J3" />
+    <axis xyz="1 0 0" />
+    <limit lower="-3.14" upper="3.14" effort="300" velocity="3" />
+  </joint>
+  <link name="J4">
+    <inertial>
+      <origin xyz="-5.95085092314207E-11 0.00267901156669015 2.65949484656858E-11" rpy="0 0 0" />
+      <mass value="0.132606093266041" />
+      <inertia ixx="8.20742317595174E-05" ixy="3.9324518254009E-13" ixz="-5.93902901324665E-19" iyy="6.43707448964586E-05" iyz="3.00104503713024E-14" izz="6.13476605537803E-05" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J4.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J4.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="J4_JOINT" type="revolute">
+    <origin xyz="0 0.625 0" rpy="3.1416 0 3.1416" />
+    <parent link="J3" />
+    <child link="J4" />
+    <axis xyz="1 0 0" />
+    <limit lower="-3.14" upper="3.14" effort="300" velocity="3" />
+  </joint>
+  <link name="J5">
+    <inertial>
+      <origin xyz="-1.2813470839923E-09 0.0576849015806391 5.72645930674298E-10" rpy="0 0 0" />
+      <mass value="0.458653210732393" />
+      <inertia ixx="0.000822703247771272" ixy="-1.27841341164444E-11" ixz="1.15225086065982E-17" iyy="0.0013982316285299" iyz="-7.32475878104359E-12" izz="0.00213608364777127" />
+    </inertial>
+    <visual>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J5.STL" />
+      </geometry>
+      <material name="">
+        <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
+      </material>
+    </visual>
+    <collision>
+      <origin xyz="0 0 0" rpy="0 0 0" />
+      <geometry>
+        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J5.STL" />
+      </geometry>
+    </collision>
+  </link>
+  <joint name="J5_JOINT" type="revolute">
+    <origin xyz="0 0.0455 0" rpy="0 0 0" />
+    <parent link="J4" />
+    <child link="J5" />
+    <axis xyz="0 1 0" />
+    <limit lower="-3.14" upper="3.14" effort="300" velocity="3" />
+  </joint> -->
+
+  <plugin name="JointStatePublisher" filename="libJointStatePublisher.so"/>
+
+</robot>

@@ -9,7 +9,7 @@ install(DIRECTORY
   config
   launch
   meshes
-  urdf
+  model
   DESTINATION share/${PROJECT_NAME}
 )
 
