@@ -8,6 +8,7 @@
     - [Software development](#software-development)
     - [Electrical development](#electrical-development)
 - [Dependencies](#dependencies)
+    - [Upgrade already installed package:](#upgrade-already-installed-package)
     - [From apt](#from-apt)
     - [From pip](#from-pip)
   - [ESP32 and micro controller ROS development](#esp32-and-micro-controller-ros-development)
@@ -79,10 +80,13 @@ pip3 list --outdated --format=freeze | grep -v '^\-e' | cut -d = -f 1 | xargs -n
 
 ```bash
 sudo apt update
-sudo apt install ros-humble-joy
 sudo apt install pip
 sudo apt install python3-venv
 sudo apt install python-is-python3
+sudo apt install ros-humble-desktop
+sudo apt install ros-humble-ros-base
+sudo apt install ros-dev-tools
+sudo apt install ros-humble-joy
 sudo apt install can-utils
 sudo apt install python3-pyqt5.qtwebengine
 sudo apt install python3-pyqt5.qtmultimedia
