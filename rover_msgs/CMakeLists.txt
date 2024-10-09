@@ -6,11 +6,13 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 find_package(ament_cmake REQUIRED)
+find_package(rclcpp REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 
 include_directories(include)
 add_library(lib_exec src/lib.cpp)
 ament_export_targets(lib_exec HAS_LIBRARY_TARGET)
+ament_target_dependencies(lib_exec rclcpp)  
 
 install(
   DIRECTORY include/rovus_lib
