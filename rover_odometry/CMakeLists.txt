@@ -23,10 +23,11 @@ target_compile_features(test_camera PUBLIC c_std_99 cxx_std_17)  # Require C99 a
 TARGET_LINK_LIBRARIES (test_camera ${OpenCV_LIBS})
 ament_target_dependencies(test_camera rclcpp)  
 
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
 install(TARGETS test_camera
   DESTINATION lib/${PROJECT_NAME})
 
-    
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
