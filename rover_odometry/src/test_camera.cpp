@@ -95,7 +95,7 @@ void VideoTest::sparseDetection()
 
 void VideoTest::denseDetection()
 {
-    std::string filename = "/home/ubuntu/ros2_ws/src/test_open_cv/src/output.mp4";
+    std::string filename = "~/ros2_ws/src/rover/odometry/src/output.mp4";
     cv::VideoCapture capture(filename);
     if (!capture.isOpened())
     {
