@@ -6,8 +6,9 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core.hpp>
-#include <ament_index_cpp/get_package_share_directory.hpp>
+#include <ament_index_cpp/get_package_prefix.hpp>
 #include "rclcpp/rclcpp.hpp"
+#include "rovus_lib/macros.h"
 
 
 class VideoTest : public rclcpp::Node
@@ -23,13 +24,14 @@ class VideoTest : public rclcpp::Node
 
 VideoTest::VideoTest() : Node("video_test")
 {
-    //sparseDetection();
-    denseDetection();
+    sparseDetection();
+    //denseDetection();
 }
 
 void VideoTest::sparseDetection()
 {
-    std::string filename = "src/test_open_cv/src/video.mp4";
+    RCLCPP_INFO(this->get_logger(), "%s", GET_PACKAGE_SOURCE_DIR("rover_odometry").c_str());
+    std::string filename = GET_PACKAGE_SOURCE_DIR("rover_odometry") + "/src/output.mp4";
     cv::VideoCapture capture(filename);
     if (!capture.isOpened())
     {
@@ -96,7 +98,7 @@ void VideoTest::sparseDetection()
 
 void VideoTest::denseDetection()
 {
-    std::string filename = "src/rover/rover_odometry/src/output.mp4";
+    std::string filename = GET_PACKAGE_SOURCE_DIR("rover_odometry") + "/src/output.mp4";
     cv::VideoCapture capture(filename);
     if (!capture.isOpened())
     {
@@ -125,23 +127,23 @@ void VideoTest::denseDetection()
 
         rclcpp::spin_some(this->get_node_base_interface());
 
-        // // visualization
-        // cv::Mat flow_parts[2];
-        // cv::split(flow, flow_parts);
-        // cv::Mat magnitude, angle, magn_norm;
-        // cv::cartToPolar(flow_parts[0], flow_parts[1], magnitude, angle, true);
-        // cv::normalize(magnitude, magn_norm, 0.0f, 1.0f, cv::NORM_MINMAX);
-        // angle *= ((1.f / 360.0f) * (180.f / 255.f));
+        // visualization
+        cv::Mat flow_parts[2];
+        cv::split(flow, flow_parts);
+        cv::Mat magnitude, angle, magn_norm;
+        cv::cartToPolar(flow_parts[0], flow_parts[1], magnitude, angle, true);
+        cv::normalize(magnitude, magn_norm, 0.0f, 1.0f, cv::NORM_MINMAX);
+        angle *= ((1.f / 360.0f) * (180.f / 255.f));
 
-        // //build hsv image
-        // cv::Mat _hsv[3], hsv, hsv8, bgr;
-        // _hsv[0] = angle;
-        // _hsv[1] = cv::Mat::ones(angle.size(), CV_32F);
-        // _hsv[2] = magn_norm;
-        // cv::merge(_hsv, 3, hsv);
-        // hsv.convertTo(hsv8, CV_8U, 255.0);
-        // cv::cvtColor(hsv8, bgr, cv::COLOR_HSV2BGR);
-        // cv::imshow("frame2", bgr);
+        //build hsv image
+        cv::Mat _hsv[3], hsv, hsv8, bgr;
+        _hsv[0] = angle;
+        _hsv[1] = cv::Mat::ones(angle.size(), CV_32F);
+        _hsv[2] = magn_norm;
+        cv::merge(_hsv, 3, hsv);
+        hsv.convertTo(hsv8, CV_8U, 255.0);
+        cv::cvtColor(hsv8, bgr, cv::COLOR_HSV2BGR);
+        cv::imshow("frame2", bgr);
         
         int keyboard = cv::waitKey(30);
         if (keyboard == 'q' || keyboard == 27)

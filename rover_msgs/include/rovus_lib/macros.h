@@ -1,6 +1,7 @@
 #ifndef __MACROS_H__
 #define __MACROS_H__
 
+#include <rclcpp/rclcpp.hpp>
 #include <ament_index_cpp/get_package_prefix.hpp>
 
 #define LOGGER this->get_logger()

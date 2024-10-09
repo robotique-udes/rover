@@ -9,9 +9,14 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(rover_msgs REQUIRED)
 # uncomment the following section in order to fill in
 # further dependencies manually.
 # find_package(<dependency> REQUIRED)
+
+include_directories(
+  ${rover_msgs_INCLUDE_DIRS}
+)
 
 add_executable(test_camera src/test_camera.cpp)
 target_include_directories(test_camera PUBLIC
@@ -21,7 +26,7 @@ target_compile_features(test_camera PUBLIC c_std_99 cxx_std_17)  # Require C99 a
 
 
 TARGET_LINK_LIBRARIES (test_camera ${OpenCV_LIBS})
-ament_target_dependencies(test_camera rclcpp)  
+ament_target_dependencies(test_camera rclcpp rover_msgs)  
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
