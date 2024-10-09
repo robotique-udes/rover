@@ -6,6 +6,7 @@
 #include <opencv2/highgui.hpp>
 #include <opencv2/imgproc.hpp>
 #include <opencv2/core.hpp>
+#include <ament_index_cpp/get_package_share_directory.hpp>
 #include "rclcpp/rclcpp.hpp"
 
 
@@ -28,7 +29,7 @@ VideoTest::VideoTest() : Node("video_test")
 
 void VideoTest::sparseDetection()
 {
-    std::string filename = "/home/ubuntu/ros2_ws/src/test_open_cv/src/video.mp4";
+    std::string filename = "src/test_open_cv/src/video.mp4";
     cv::VideoCapture capture(filename);
     if (!capture.isOpened())
     {
@@ -95,7 +96,7 @@ void VideoTest::sparseDetection()
 
 void VideoTest::denseDetection()
 {
-    std::string filename = "/home/ubuntu/ros2_ws/src/rover/rover_odometry/src/output.mp4";
+    std::string filename = "src/rover/rover_odometry/src/output.mp4";
     cv::VideoCapture capture(filename);
     if (!capture.isOpened())
     {
