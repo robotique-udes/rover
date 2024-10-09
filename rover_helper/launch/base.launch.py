@@ -17,7 +17,11 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_gui'), 'launch', 'gui.launch.py'])])),
         
-                IncludeLaunchDescription(
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_odometry'), 'launch', 'odometry.launch.py'])])),
+
+        
+        IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_auxiliary'), 'launch', 'auxiliary_base.launch.py'])]))
         
         
