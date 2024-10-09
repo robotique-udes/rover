@@ -119,7 +119,8 @@ void VideoTest::denseDetection()
 
         cv::Scalar flowMean;
         flowMean = cv::mean(flow);
-        std::cout << flowMean << std::endl;
+        //std::cout << flowMean << std::endl;
+        RCLCPP_INFO(this->get_logger(), "Flow mean: %f %f", flowMean[0], flowMean[1]);
 
         // // visualization
         // cv::Mat flow_parts[2];
