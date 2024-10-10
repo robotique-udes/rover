@@ -30,7 +30,6 @@ VideoTest::VideoTest() : Node("video_test")
 
 void VideoTest::sparseDetection()
 {
-    RCLCPP_INFO(this->get_logger(), "%s", GET_PACKAGE_SOURCE_DIR("rover_odometry").c_str());
     std::string filename = GET_PACKAGE_SOURCE_DIR("rover_odometry") + "/src/output.mp4";
     cv::VideoCapture capture(filename);
     if (!capture.isOpened())
@@ -92,7 +91,15 @@ void VideoTest::sparseDetection()
             break;
         // Now update the previous frame and previous points
         old_gray = frame_gray.clone();
+        if (good_new.size() == 0)
+        {
+            //RCLCPP_INFO(LOGGER, "No points detected\n");
+            cv::goodFeaturesToTrack(old_gray, good_new, 100, 0.3, 7, cv::Mat(), 7, false, 0.04);
+            mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
+        }
         p0 = good_new;
+        
+        
     }
 }
 
