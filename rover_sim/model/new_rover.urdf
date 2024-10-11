@@ -1,6 +1,5 @@
 <?xml version="1.0"?>
-
-    <link name="world"></link>
+<robot name="rover">
 
     <link name="base_link">
         <inertial>
@@ -11,7 +10,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/base_link.STL" />
+                <mesh filename="package://rover_sim/meshes/base_link.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -20,7 +19,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/base_link.STL" />
+                <mesh filename="package://rover_sim/meshes/base_link.STL" />
             </geometry>
         </collision>
     </link>
@@ -34,7 +33,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_L.STL" />
+                <mesh filename="package://rover_sim/meshes/ROCKER_L.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -43,10 +42,18 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_L.STL" />
+                <mesh filename="package://rover_sim/meshes/ROCKER_L.STL" />
             </geometry>
         </collision>
     </link>
+
+    <joint name="ROCKER_L_JOINT" type="revolute">
+        <origin xyz="0.3766 -0.20681 0.078821" rpy="1.5708 0 1.5708" />
+        <parent link="base_link" />
+        <child link="ROCKER_L" />
+        <axis xyz="0 0 1" />
+        <limit lower="-0.35" upper="0.35" effort="0" velocity="0" />
+    </joint>
 
     <link name="ROCKER_R">
         <inertial>
@@ -57,7 +64,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_R.STL" />
+                <mesh filename="package://rover_sim/meshes/ROCKER_R.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -66,7 +73,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_R.STL" />
+                <mesh filename="package://rover_sim/meshes/ROCKER_R.STL" />
             </geometry>
         </collision>
     </link>
@@ -80,7 +87,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FL.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_FL.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -89,7 +96,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FL.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_FL.STL" />
             </geometry>
         </collision>
     </link>
@@ -103,7 +110,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RL.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_RL.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -112,7 +119,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RL.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_RL.STL" />
             </geometry>
         </collision>
     </link>
@@ -126,7 +133,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FR.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_FR.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -135,7 +142,7 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FR.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_FR.STL" />
             </geometry>
         </collision>
     </link>
@@ -149,7 +156,7 @@
         <visual>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RR.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_RR.STL" />
             </geometry>
             <material name="">
                 <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -158,18 +165,11 @@
         <collision>
             <origin xyz="0 0 0" rpy="0 0 0" />
             <geometry>
-                <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RR.STL" />
+                <mesh filename="package://rover_sim/meshes/WHEEL_RR.STL" />
             </geometry>
         </collision>
     </link>
 
-    <joint name="ROCKER_L_JOINT" type="revolute">
-        <origin xyz="0.3766 -0.20681 0.078821" rpy="1.5708 0 1.5708" />
-        <parent link="base_link" />
-        <child link="ROCKER_L" />
-        <axis xyz="0 0 1" />
-        <limit lower="-0.35" upper="0.35" effort="0" velocity="0" />
-    </joint>
 
     <joint name="ROCKER_R_JOINT" type="revolute">
         <origin xyz="-0.213600073527999 -0.206807226568189 0.0788212705195118" rpy="1.57079630458203 0 1.5707963267949" />

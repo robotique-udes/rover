@@ -14,7 +14,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/base_link.STL" />
+        <mesh filename="package://rover_sim/meshes/base_link.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -23,7 +23,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/base_link.STL" />
+        <mesh filename="package://rover_sim/meshes/base_link.STL" />
       </geometry>
     </collision>
   </link>
@@ -37,7 +37,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_L.STL" />
+        <mesh filename="package://rover_sim/meshes/ROCKER_L.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -46,7 +46,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_L.STL" />
+        <mesh filename="package://rover_sim/meshes/ROCKER_L.STL" />
       </geometry>
     </collision>
   </link>
@@ -68,7 +68,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FL.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_FL.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -77,7 +77,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FL.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_FL.STL" />
       </geometry>
     </collision>
   </link>
@@ -99,7 +99,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RL.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_RL.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -108,7 +108,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RL.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_RL.STL" />
       </geometry>
     </collision>
   </link>
@@ -130,7 +130,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_R.STL" />
+        <mesh filename="package://rover_sim/meshes/ROCKER_R.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -139,7 +139,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ROCKER_R.STL" />
+        <mesh filename="package://rover_sim/meshes/ROCKER_R.STL" />
       </geometry>
     </collision>
   </link>
@@ -161,7 +161,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FR.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_FR.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -170,7 +170,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_FR.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_FR.STL" />
       </geometry>
     </collision>
   </link>
@@ -192,7 +192,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RR.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_RR.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -201,7 +201,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/WHEEL_RR.STL" />
+        <mesh filename="package://rover_sim/meshes/WHEEL_RR.STL" />
       </geometry>
     </collision>
   </link>
@@ -214,7 +214,7 @@
     <limit lower="100" upper="100" effort="0" velocity="20" />
   </joint>
 
-  <!-- <link name="ARM_BASE">
+  <link name="ARM_BASE">
     <inertial>
       <origin xyz="1.0227916291683E-09 -0.047089419372485 -0.0160000007631" rpy="0 0 0" />
       <mass value="0.512622788118868" />
@@ -223,7 +223,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ARM_BASE.STL" />
+        <mesh filename="package://rover_sim/meshes/ARM_BASE.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -232,7 +232,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/ARM_BASE.STL" />
+        <mesh filename="package://rover_sim/meshes/ARM_BASE.STL" />
       </geometry>
     </collision>
   </link>
@@ -251,7 +251,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J0.STL" />
+        <mesh filename="package://rover_sim/meshes/J0.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -260,7 +260,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J0.STL" />
+        <mesh filename="package://rover_sim/meshes/J0.STL" />
       </geometry>
     </collision>
   </link>
@@ -280,7 +280,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J1.STL" />
+        <mesh filename="package://rover_sim/meshes/J1.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -289,7 +289,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J1.STL" />
+        <mesh filename="package://rover_sim/meshes/J1.STL" />
       </geometry>
     </collision>
   </link>
@@ -309,7 +309,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J2.STL" />
+        <mesh filename="package://rover_sim/meshes/J2.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -318,7 +318,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J2.STL" />
+        <mesh filename="package://rover_sim/meshes/J2.STL" />
       </geometry>
     </collision>
   </link>
@@ -338,7 +338,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J3.STL" />
+        <mesh filename="package://rover_sim/meshes/J3.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -347,7 +347,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J3.STL" />
+        <mesh filename="package://rover_sim/meshes/J3.STL" />
       </geometry>
     </collision>
   </link>
@@ -367,7 +367,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J4.STL" />
+        <mesh filename="package://rover_sim/meshes/J4.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -376,7 +376,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J4.STL" />
+        <mesh filename="package://rover_sim/meshes/J4.STL" />
       </geometry>
     </collision>
   </link>
@@ -396,7 +396,7 @@
     <visual>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J5.STL" />
+        <mesh filename="package://rover_sim/meshes/J5.STL" />
       </geometry>
       <material name="">
         <color rgba="0.792156862745098 0.819607843137255 0.933333333333333 1" />
@@ -405,7 +405,7 @@
     <collision>
       <origin xyz="0 0 0" rpy="0 0 0" />
       <geometry>
-        <mesh filename="/home/emile/ros2_ws/src/rover_sim/meshes/J5.STL" />
+        <mesh filename="package://rover_sim/meshes/J5.STL" />
       </geometry>
     </collision>
   </link>
@@ -415,7 +415,7 @@
     <child link="J5" />
     <axis xyz="0 1 0" />
     <limit lower="-3.14" upper="3.14" effort="300" velocity="3" />
-  </joint> -->
+  </joint>
 
   <plugin name="JointStatePublisher" filename="libJointStatePublisher.so"/>
 
