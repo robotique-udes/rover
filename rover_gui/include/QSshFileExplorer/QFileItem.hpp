@@ -4,7 +4,7 @@
 #include <QStandardItemModel>
 #include <rclcpp/rclcpp.hpp>
 
-#include "IconManager.hpp"
+#include "QSshFileExplorer/IconManager.hpp"
 
 class QFileItem
 {

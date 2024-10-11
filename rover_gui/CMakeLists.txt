@@ -19,33 +19,33 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTOUIC ON)
 set(CMAKE_AUTORCC ON) 
 
 include_directories(
   include
+  ui/include
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
 )
 
-add_executable(application src/application.cpp )
+add_executable(main_gui src/main_gui.cpp )
 
-target_link_libraries(application 
+target_link_libraries(main_gui 
                       Qt6::Widgets
                       Qt6::Gui
                       ${LIBSSH_LIBRARY})
 
-ament_target_dependencies(application
+ament_target_dependencies(main_gui
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
 
-# install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          application
+main_gui
           DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

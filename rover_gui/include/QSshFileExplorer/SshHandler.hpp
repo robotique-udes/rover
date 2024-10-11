@@ -9,7 +9,7 @@
 #include <libssh/libssh.h>
 #include <libssh/sftp.h>
 
-#include "QFileItem.hpp"
+#include "QSshFileExplorer/QFileItem.hpp"
 #include "rovus_lib/macros.h"
 
 namespace SshHandler

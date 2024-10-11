@@ -1,21 +1,18 @@
-// Ui files
-#include "ui_file_transfer_widget.h"
+#include <QGridLayout>
 
-// Custom objects
-#include "QSshFileExplorer.hpp"
+#include "QSshFileExplorer/QSshFileExplorerWidget.hpp"
 
 class QFileTransferWidget : public QWidget
 {
   public:
-    QFileTransferWidget()
+    QFileTransferWidget(QWidget* parent_): _mainLayout(this), _roverFileSystem(parent_)
     {
-        ui.setupUi(this);
-        pRoverFileSystem = new QSshFileExplorer(*ui.tv_rover);
+        _mainLayout.addWidget(&_roverFileSystem, 0, 0, 1, 1);
     }
 
     ~QFileTransferWidget() {}
 
   private:
-    Ui::FileTransfer ui;
-    QSshFileExplorer* pRoverFileSystem;
+    QGridLayout _mainLayout;
+    QSshFileExplorerWidget _roverFileSystem;
 };
