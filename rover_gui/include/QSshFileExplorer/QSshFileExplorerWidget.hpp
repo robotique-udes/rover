@@ -7,7 +7,7 @@
 #include <QTreeView>
 
 #include "QSshFileExplorer/QFileItem.hpp"
-#include "QSshFileExplorer/SshHandler.hpp"
+#include "QSshFileExplorer/SshWorker.hpp"
 
 #include "UI_FileExplorer.h"
 
@@ -16,9 +16,10 @@ class QSshFileExplorerWidget : public QWidget
   private:
     enum class eColumnIndex : uint8_t
     {
-        NAME,
+        NAME = 0,
         TYPE,
-        LAST_MODIFIED
+        LAST_MODIFIED,
+        eLAST
     };
 
     static const QString STYLE_TREE_VIEW;
@@ -46,25 +47,34 @@ class QSshFileExplorerWidget : public QWidget
         ui.tv_fileExplorer->header()->setSectionResizeMode((uint8_t)eColumnIndex::LAST_MODIFIED, QHeaderView::Fixed);
 
         this->refreshItems();
+
+        connect(ui.cb_showHiddenFile, &QCheckBox::stateChanged, this, &QSshFileExplorerWidget::refreshItems);
+        connect(ui.pb_refresh, &QPushButton::clicked, this, &QSshFileExplorerWidget::refreshItems);
+        _sshWorkerThread.start();
     }
 
     ~QSshFileExplorerWidget() {}
 
     bool refreshItems(void)
     {
-        _itemModel.removeRows(1, _itemModel.rowCount());
-        _itemModel.removeRows(1, _itemModel.rowCount());
+        _itemModel.removeRows(0, _itemModel.rowCount());
 
         std::list<QFileItem> items;
         this->insertGoBackItem(items);
 
         std::vector<QFileItem> files;
-        SshHandler::retrieveFolderStructure("phil", "localhost", "/", files);
+        
+        // RCLCPP_INFO(rclcpp::get_logger("GUI"), "Calling from %lu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
+        emit _sshWorkerThread.updateStructure("phil", "localhost", "$HOME");
 
+        bool showHiddenFiles = ui.cb_showHiddenFile->isChecked();
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Start");
         for (auto& it : files)
         {
-            it.addItemToModel(_itemModel);
+            RCLCPP_INFO(rclcpp::get_logger("GUI"), it.getName().c_str());
+            it.addItemToModel(_itemModel, showHiddenFiles);
         }
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Stop");
 
         return true;
     }
@@ -78,14 +88,25 @@ class QSshFileExplorerWidget : public QWidget
         items.emplace_front(QFileItemGoBack());
     }
 
+    const Ui::FileExplorer& getUI(void)
+    {
+        return ui;
+    }
+
   private:
+    static const std::map<eColumnIndex, std::string> _columnNameMap;
     Ui::FileExplorer ui;
     QStandardItemModel _itemModel;
-    std::string _currentPath = "/";
+    SshWorker _sshWorkerThread;
 };
 
 const QString QSshFileExplorerWidget::STYLE_TREE_VIEW =
     R"(
-        QTreeView::item {
-            padding: 5px;
-    })";
+QTreeView::item {
+    padding: 5px;
+})";
+
+const std::map<QSshFileExplorerWidget::eColumnIndex, std::string> QSshFileExplorerWidget::_columnNameMap = {
+    {eColumnIndex::NAME, "Name"},
+    {eColumnIndex::TYPE, "Type"},
+    {eColumnIndex::LAST_MODIFIED, "Last modified"}};

@@ -42,8 +42,16 @@ class QFileItem
         _lastModified->setText(QString(lastModified_.c_str()));
     }
 
-    void addItemToModel(QStandardItemModel& rModel_)
+    void addItemToModel(QStandardItemModel& rModel_, bool showHidden_ = false)
     {
+        if (!showHidden_ && _name.get()->text().size() > 0)
+        {
+            if (_name.get()->text()[0] == '.')
+            {
+                return;
+            }
+        }
+
         rModel_.appendRow({_name.release(), _type.release(), _lastModified.release()});
     }
 

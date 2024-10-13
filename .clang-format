@@ -21,7 +21,7 @@ AlwaysBreakBeforeMultilineStrings: 'false'
 AlwaysBreakTemplateDeclarations: 'Yes'
 BinPackArguments: 'false'
 BinPackParameters: 'false'
-BreakBeforeBinaryOperators: All
+BreakBeforeBinaryOperators: None
 BreakBeforeTernaryOperators: 'true'
 BreakConstructorInitializers: AfterColon
 BreakInheritanceList: AfterColon
@@ -65,6 +65,7 @@ UseTab: Never
 
 BreakBeforeBraces: Custom
 BraceWrapping:
+  AfterCaseLabel: 'true'
   BeforeLambdaBody: 'true'
 
 ...

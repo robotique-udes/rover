@@ -10,8 +10,8 @@ def generate_launch_description():
 
     gui_node = Node(package="rover_gui",
                     namespace="base/gui",
-                    executable="application",
-                    name="application")
+                    executable="main_gui",
+                    name="main_gui")
 
     ld.add_action(gui_node)
 
