@@ -2,8 +2,7 @@
 
 #include <QString>
 
-// Here some style presets can be added for different app theme
-
+// Here some style presets can be added for different app themes
 static const QString STYLE_DARK_MODE = R"(
 QWidget {
     background-color: #2e2e2e;

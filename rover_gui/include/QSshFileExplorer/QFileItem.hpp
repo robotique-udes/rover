@@ -1,4 +1,5 @@
-#pragma once
+#ifndef __Q_FILE_ITEM__
+#define __Q_FILE_ITEM__
 
 #include <QStandardItem>
 #include <QStandardItemModel>
@@ -8,16 +9,8 @@
 
 class QFileItem
 {
-  private:
-    enum class eFileType : uint8_t
-    {
-    };
-
   public:
-    QFileItem(std::string name_, std::string extension_, std::string lastModified_):
-        _name(new QStandardItem),
-        _type(new QStandardItem),
-        _lastModified(new QStandardItem)
+    QFileItem(std::string name_, std::string extension_, std::string lastModified_)
     {
         _name->setText(QString(name_.c_str()));
         _name->setCheckable(false);
@@ -44,15 +37,15 @@ class QFileItem
 
     void addItemToModel(QStandardItemModel& rModel_, bool showHidden_ = false)
     {
-        if (!showHidden_ && _name.get()->text().size() > 0)
+        if (!showHidden_ && _name->text().size() > 0)
         {
-            if (_name.get()->text()[0] == '.')
+            if (_name->text()[0] == '.')
             {
                 return;
             }
         }
 
-        rModel_.appendRow({_name.release(), _type.release(), _lastModified.release()});
+        rModel_.appendRow({_name.get(), _type.get(), _lastModified.get()});
     }
 
     std::string getName(void)
@@ -71,17 +64,16 @@ class QFileItem
     }
 
   protected:
-    std::unique_ptr<QStandardItem> _name;
-    std::unique_ptr<QStandardItem> _type;
-    std::unique_ptr<QStandardItem> _lastModified;
+    std::shared_ptr<QStandardItem> _name;
+    std::shared_ptr<QStandardItem> _type;
+    std::shared_ptr<QStandardItem> _lastModified;
 };
 
 // Special items
 class QFileItemGoBack : public QFileItem
 {
   public:
-    QFileItemGoBack(): QFileItem("...", ".goBack", "")
-    {
-        _type->setText("");
-    }
+    QFileItemGoBack(): QFileItem("...", "", "") {}
 };
+
+#endif // __Q_FILE_ITEM__

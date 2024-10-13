@@ -28,7 +28,11 @@ include_directories(
   ${LIBSSH_INCLUDE_DIR}
 )
 
-add_executable(main_gui src/main_gui.cpp )
+add_executable(main_gui src/main_gui.cpp
+                        include/QSshFileExplorer/SshWorker.hpp
+                        src/SshWorker.cpp
+                        include/QSshFileExplorer/IconManager.hpp
+                        src/IconManager.cpp)
 
 target_link_libraries(main_gui 
                       Qt6::Widgets

@@ -59,16 +59,14 @@ class QSshFileExplorerWidget : public QWidget
     {
         _itemModel.removeRows(0, _itemModel.rowCount());
 
-        std::list<QFileItem> items;
-        this->insertGoBackItem(items);
-
         std::vector<QFileItem> files;
         
         // RCLCPP_INFO(rclcpp::get_logger("GUI"), "Calling from %lu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
-        emit _sshWorkerThread.updateStructure("phil", "localhost", "$HOME");
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Updating from %lu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
+        emit _sshWorkerThread.updateStructure("phil", "localhost", "/");
 
-        bool showHiddenFiles = ui.cb_showHiddenFile->isChecked();
         RCLCPP_INFO(rclcpp::get_logger("GUI"), "Start");
+        bool showHiddenFiles = ui.cb_showHiddenFile->isChecked();
         for (auto& it : files)
         {
             RCLCPP_INFO(rclcpp::get_logger("GUI"), it.getName().c_str());
