@@ -1,4 +1,4 @@
-#include "QSshFileExplorer/IconManager.hpp"
+#include "IconManager.hpp"
 
 bool IconManager::_isInit = false;
 std::map<std::string, QIcon> IconManager::_iconMap;

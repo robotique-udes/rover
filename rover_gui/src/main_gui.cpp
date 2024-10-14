@@ -7,7 +7,7 @@
 #include <QApplication>
 #include <QMainWindow>
 
-#include "QFileTransferWidget.hpp"
+#include "QSshFileExplorer/QFileTransferWidget.hpp"
 #include "StyleSheet.hpp"
 
 class MainWindow : public QMainWindow

@@ -22,17 +22,17 @@ set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
 
 include_directories(
-  include
   ui/include
+  src/QSshFileExplorer
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
 )
 
 add_executable(main_gui src/main_gui.cpp
-                        include/QSshFileExplorer/SshWorker.hpp
-                        src/SshWorker.cpp
-                        include/QSshFileExplorer/IconManager.hpp
-                        src/IconManager.cpp)
+                        src/QSshFileExplorer/SshWorker.hpp
+                        src/QSshFileExplorer/SshWorker.cpp
+                        src/QSshFileExplorer/IconManager.hpp
+                        src/QSshFileExplorer/IconManager.cpp)
 
 target_link_libraries(main_gui 
                       Qt6::Widgets

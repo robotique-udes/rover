@@ -1,4 +1,4 @@
-#include "QSshFileExplorer/SshWorker.hpp"
+#include "SshWorker.hpp"
 
 SshWorker::SshWorker(QObject* parent_): QThread(parent_)
 {
@@ -15,11 +15,6 @@ std::vector<QFileItem> SshWorker::getStructure(void)
 {
     std::lock_guard<std::mutex> lock(_filesMutex);
     return _files;
-}
-
-void SshWorker::run(void)
-{
-    this->exec();
 }
 
 bool SshWorker::handleAuth(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_)
@@ -127,14 +122,12 @@ std::string SshWorker::unixTimeToString(uint32_t unixTime_)
     return QDateTime::fromSecsSinceEpoch(unixTime_).toString("yyyy/MM/dd HH:mm").toStdString();
 }
 
-void SshWorker::internalUpdateStructure(IN QString rUsername_,
-                                        IN QString rHostname_,
-                                        IN QString rPath)
+void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QString path_)
 {
     RCLCPP_INFO(rclcpp::get_logger("GUI"), "Updating from %lu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
     ssh_session pSession = nullptr;
 
-    if (!handleAuth(rUsername_.toStdString(), rHostname_.toStdString(), pSession) || !pSession)
+    if (!handleAuth(username_.toStdString(), hostname_.toStdString(), pSession) || !pSession)
     {
         ssh_disconnect(pSession);
         ssh_free(pSession);
@@ -162,7 +155,7 @@ void SshWorker::internalUpdateStructure(IN QString rUsername_,
     }
 
     // Retrieve the folder structure
-    sftp_dir dir = sftp_opendir(sftp, rPath.toStdString().c_str());
+    sftp_dir dir = sftp_opendir(sftp, path_.toStdString().c_str());
     if (dir == nullptr)
     {
         RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error opening directory: " << ssh_get_error(sftp));

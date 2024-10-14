@@ -1,6 +1,6 @@
 #include <QGridLayout>
 
-#include "QSshFileExplorer/QSshFileExplorerWidget.hpp"
+#include "QSshFileExplorerWidget.hpp"
 
 class QFileTransferWidget : public QWidget
 {
