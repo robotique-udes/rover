@@ -237,7 +237,13 @@ public:
         pb_pathCopy->setSizePolicy(sizePolicy3);
         pb_pathCopy->setMinimumSize(QSize(0, 0));
         pb_pathCopy->setCursor(QCursor(Qt::PointingHandCursor));
-        QIcon icon(QIcon::fromTheme(QString::fromUtf8("edit-copy")));
+        QIcon icon;
+        QString iconThemeName = QString::fromUtf8("edit-copy");
+        if (QIcon::hasThemeIcon(iconThemeName)) {
+            icon = QIcon::fromTheme(iconThemeName);
+        } else {
+            icon.addFile(QString::fromUtf8("."), QSize(), QIcon::Normal, QIcon::Off);
+        }
         pb_pathCopy->setIcon(icon);
         pb_pathCopy->setIconSize(QSize(20, 20));
         pb_pathCopy->setAutoDefault(false);
@@ -252,12 +258,13 @@ public:
         tv_fileExplorer->setObjectName(QString::fromUtf8("tv_fileExplorer"));
         tv_fileExplorer->setMinimumSize(QSize(0, 300));
         tv_fileExplorer->viewport()->setProperty("cursor", QVariant(QCursor(Qt::PointingHandCursor)));
+        tv_fileExplorer->setFrameShadow(QFrame::Sunken);
         tv_fileExplorer->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
         tv_fileExplorer->setTabKeyNavigation(true);
         tv_fileExplorer->setDragDropMode(QAbstractItemView::DragDrop);
         tv_fileExplorer->setAlternatingRowColors(false);
-        tv_fileExplorer->setSelectionMode(QAbstractItemView::SingleSelection);
-        tv_fileExplorer->setSelectionBehavior(QAbstractItemView::SelectItems);
+        tv_fileExplorer->setSelectionMode(QAbstractItemView::NoSelection);
+        tv_fileExplorer->setSelectionBehavior(QAbstractItemView::SelectRows);
         tv_fileExplorer->setIndentation(0);
         tv_fileExplorer->setExpandsOnDoubleClick(false);
         tv_fileExplorer->header()->setVisible(true);
@@ -285,7 +292,7 @@ public:
         le_hostIP->setPlaceholderText(QCoreApplication::translate("FileExplorer", "Host IP", nullptr));
         cb_showHiddenFile->setText(QCoreApplication::translate("FileExplorer", "Show hidden files", nullptr));
         pb_refresh->setText(QCoreApplication::translate("FileExplorer", "Refresh", nullptr));
-        le_path->setText(QCoreApplication::translate("FileExplorer", "test123", nullptr));
+        le_path->setText(QString());
         le_path->setPlaceholderText(QCoreApplication::translate("FileExplorer", "/home/user", nullptr));
         pb_pathCopy->setText(QString());
 #if QT_CONFIG(shortcut)

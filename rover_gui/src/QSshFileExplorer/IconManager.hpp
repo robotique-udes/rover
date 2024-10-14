@@ -2,7 +2,6 @@
 #define __ICON_MANAGER_HPP__
 
 #include <QIcon>
-#include <rclcpp/rclcpp.hpp>
 
 class IconManager
 {

@@ -7,15 +7,48 @@
 #include <queue>
 #include <thread>
 
-#include <rclcpp/rclcpp.hpp>
-
 #include <QObject>
 
 /**
- * @brief Worker class which handles a async task queue
+ * @brief Worker class which handles an async task queue.
  *
+ * Designed to be used as a parent class for other classes that need
+ * asynchronous task handling.
+ *
+ * @example
+ *     #include "worker.hpp"
+ *     #include <iostream>
+ *     
+ *     class MyWorker : public Worker
+ *     {
+ *       public:
+ *         MyWorker(): Worker(true) {}
+ *     
+ *         void addPrintTask(const std::string& message)
+ *         {
+ *             addTask([message]() { std::cout << "Task says: " << message << std::endl; });
+ *         }
+ *     };
+ *     
+ *     int main()
+ *     {
+ *         MyWorker worker;
+ *     
+ *         // Add some tasks
+ *         worker.addPrintTask("Hello from task 1");
+ *         worker.addPrintTask("Hello from task 2");
+ *     
+ *         // Give time for tasks to be processed
+ *         std::this_thread::sleep_for(std::chrono::seconds(1));
+ *     
+ *         // Finish the worker
+ *         worker.finish();
+ *     
+ *         return 0;
+ *     }
  */
-class Worker: public QObject
+
+class Worker : public QObject
 {
     Q_OBJECT
 
@@ -37,7 +70,6 @@ class Worker: public QObject
     /**
      * @brief Finish the thread execution
      *
-     * @param join_ Optional join of the thread at user discretion
      */
     void finish();
 

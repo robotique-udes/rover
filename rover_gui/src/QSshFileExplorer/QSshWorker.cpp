@@ -1,25 +1,25 @@
-#include "SshWorker.hpp"
+#include "QSshWorker.hpp"
 
-SshWorker::SshWorker(bool start_, QObject* parent_): Worker(start_, parent_) {}
+QSshWorker::QSshWorker(bool start_, QObject* parent_): Worker(start_, parent_) {}
 
-SshWorker::~SshWorker()
+QSshWorker::~QSshWorker()
 {
     this->finish();
 }
 
-void SshWorker::refreshStructure(std::string username_, std::string hostname_, std::string path_)
+void QSshWorker::refreshStructure(std::string username_, std::string hostname_, std::string path_)
 {
     this->addTask([username = std::move(username_), hostname = std::move(hostname_), path = std::move(path_), this](void)
                   { this->refreshStructureInternal(username, hostname, path); });
 }
 
-std::vector<QFileItem> SshWorker::getStructure(void)
+std::vector<QFileItem> QSshWorker::getStructure(void)
 {
     std::lock_guard<std::mutex> lock(_filesMutex);
     return _files;
 }
 
-bool SshWorker::handleAuth(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_)
+bool QSshWorker::handleAuth(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_)
 {
     int sshStatusCode = SSH_ERROR;
     for (uint8_t i = 0; sshStatusCode != SSH_AUTH_SUCCESS && i < MAX_LOGIN_ATTEMPT; i++)
@@ -31,6 +31,7 @@ bool SshWorker::handleAuth(IN const std::string& rUsername_, IN const std::strin
             return false;
         }
 
+        ssh_options_set(pSession_, SSH_OPTIONS_TIMEOUT_USEC, &LOGIN_TIMEOUT);
         ssh_options_set(pSession_, SSH_OPTIONS_HOST, rHostname_.c_str());
         ssh_options_set(pSession_, SSH_OPTIONS_USER, rUsername_.c_str());
 
@@ -72,7 +73,7 @@ bool SshWorker::handleAuth(IN const std::string& rUsername_, IN const std::strin
     return true;
 }
 
-bool SshWorker::askSshSetup(void)
+bool QSshWorker::askSshSetup(void)
 {
     QEventLoop waitForAnswer;
     QMessageBox::StandardButton reply;
@@ -90,7 +91,7 @@ bool SshWorker::askSshSetup(void)
     return reply == QMessageBox::Yes;
 }
 
-void SshWorker::sshSetupDialog(const std::string& rUsername_, const std::string& rHostname_)
+void QSshWorker::sshSetupDialog(const std::string& rUsername_, const std::string& rHostname_)
 {
     QEventLoop waitForAnswer;
     std::string message(std::string("For security reasons, we won't store password into memory.") +
@@ -109,14 +110,14 @@ void SshWorker::sshSetupDialog(const std::string& rUsername_, const std::string&
     waitForAnswer.exec();
 }
 
-void SshWorker::sortAttributeVector(INOUT std::vector<sftp_attributes>& vector)
+void QSshWorker::sortAttributeVector(INOUT std::vector<sftp_attributes>& vector)
 {
     std::sort(vector.begin(),
               vector.end(),
               [](const sftp_attributes& a, const sftp_attributes& b) { return std::string(a->name) < std::string(b->name); });
 }
 
-std::string SshWorker::getFileExtension(const std::string& filename_)
+std::string QSshWorker::getFileExtension(const std::string& filename_)
 {
     size_t lastDotPos = filename_.find_last_of('.');
 
@@ -129,12 +130,12 @@ std::string SshWorker::getFileExtension(const std::string& filename_)
     return "";
 }
 
-std::string SshWorker::unixTimeToString(uint32_t unixTime_)
+std::string QSshWorker::unixTimeToString(uint32_t unixTime_)
 {
     return QDateTime::fromSecsSinceEpoch(unixTime_).toString("yyyy/MM/dd HH:mm").toStdString();
 }
 
-void SshWorker::refreshStructureInternal(std::string username_, std::string hostname_, std::string path_)
+void QSshWorker::refreshStructureInternal(std::string username_, std::string hostname_, std::string path_)
 {
     ssh_session pSession = nullptr;
 
@@ -178,40 +179,35 @@ void SshWorker::refreshStructureInternal(std::string username_, std::string host
     std::vector<sftp_attributes> otherAttribute;
     while ((attrs = sftp_readdir(sftp, dir)) && attrs->name && attrs->permissions)
     {
-        if (attrs->permissions & SSH_S_IFDIR)  // Files
+        if (attrs->permissions & SSH_S_IFDIR)
         {
             if (std::string(attrs->name) != ".")
             {
-                filesAttribute.push_back(attrs);
+                folderAttribute.push_back(attrs);
             }
         }
-        else if ((attrs->permissions & SSH_S_IFDIR))  // Dirs
+        else if (!(attrs->permissions & SSH_S_IFDIR))
         {
-            folderAttribute.push_back(attrs);
-        }
-        else
-        {
-            otherAttribute.push_back(attrs);
+            filesAttribute.push_back(attrs);
         }
     }
 
-    sortAttributeVector(filesAttribute);
     sortAttributeVector(folderAttribute);
+    sortAttributeVector(filesAttribute);
     sortAttributeVector(otherAttribute);
 
     {
         std::unique_lock<std::mutex> lock(_filesMutex);
         _files.clear();
-        for (auto& it : filesAttribute)
-        {
-            _files.push_back(QFileItem(it->name, getFileExtension(it->name), unixTimeToString(it->mtime)));
-        }
 
         for (auto& it : folderAttribute)
         {
             _files.push_back(QFileItem(it->name, "", unixTimeToString(it->mtime)));
         }
-
+        for (auto& it : filesAttribute)
+        {
+            _files.push_back(QFileItem(it->name, getFileExtension(it->name), unixTimeToString(it->mtime)));
+        }
         for (auto& it : otherAttribute)
         {
             _files.push_back(QFileItem(it->name, "*", unixTimeToString(it->mtime)));

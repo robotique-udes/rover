@@ -10,12 +10,17 @@
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
 #include "Global/StyleSheet.hpp"
 
+#include "Global/QNotification.hpp"
+
 class MainWindow : public QMainWindow
 {
   public:
     explicit MainWindow(QWidget* parent_ = nullptr): QMainWindow(parent_), _fileTransferWidget(parent_)
     {
         this->setCentralWidget(&_fileTransferWidget);
+
+        NotificationPopup* test = new NotificationPopup("Testing", this);
+        test->showAtCorner(this);
     }
 
     ~MainWindow() {}

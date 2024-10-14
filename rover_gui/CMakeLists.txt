@@ -29,12 +29,21 @@ include_directories(
 )
 
 add_executable(main_gui src/main_gui.cpp
+                        
                         src/Global/Worker.hpp
                         src/Global/Worker.cpp
-                        src/QSshFileExplorer/SshWorker.hpp
-                        src/QSshFileExplorer/SshWorker.cpp
+                        src/Global/QNotification.hpp
+
                         src/QSshFileExplorer/IconManager.hpp
-                        src/QSshFileExplorer/IconManager.cpp)
+                        src/QSshFileExplorer/IconManager.cpp
+                        src/QSshFileExplorer/QFileItem.hpp
+                        src/QSshFileExplorer/QFileItem.cpp
+                        src/QSshFileExplorer/QFileTransferWidget.hpp
+                        # src/QSshFileExplorer/QFileTransferWidget.cpp
+                        src/QSshFileExplorer/QSshFileExplorerWidget.hpp
+                        src/QSshFileExplorer/QSshFileExplorerWidget.cpp
+                        src/QSshFileExplorer/QSshWorker.hpp
+                        src/QSshFileExplorer/QSshWorker.cpp)
 
 target_link_libraries(main_gui 
                       Qt6::Widgets

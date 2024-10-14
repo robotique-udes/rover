@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>996</width>
-    <height>629</height>
+    <width>736</width>
+    <height>419</height>
    </rect>
   </property>
   <property name="cursor">
@@ -246,7 +246,7 @@ QStatusBar {
           </sizepolicy>
          </property>
          <property name="text">
-          <string>test123</string>
+          <string/>
          </property>
          <property name="readOnly">
           <bool>false</bool>
@@ -280,7 +280,8 @@ QStatusBar {
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="edit-copy"/>
+          <iconset theme="edit-copy">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -315,8 +316,11 @@ QStatusBar {
        <property name="cursor" stdset="0">
         <cursorShape>PointingHandCursor</cursorShape>
        </property>
+       <property name="frameShadow">
+        <enum>QFrame::Sunken</enum>
+       </property>
        <property name="editTriggers">
-        <set>QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed</set>
+        <set>QAbstractItemView::DoubleClicked</set>
        </property>
        <property name="tabKeyNavigation">
         <bool>true</bool>
@@ -324,14 +328,17 @@ QStatusBar {
        <property name="dragDropMode">
         <enum>QAbstractItemView::DragDrop</enum>
        </property>
+       <property name="defaultDropAction">
+        <enum>Qt::CopyAction</enum>
+       </property>
        <property name="alternatingRowColors">
         <bool>false</bool>
        </property>
        <property name="selectionMode">
-        <enum>QAbstractItemView::SingleSelection</enum>
+        <enum>QAbstractItemView::NoSelection</enum>
        </property>
        <property name="selectionBehavior">
-        <enum>QAbstractItemView::SelectItems</enum>
+        <enum>QAbstractItemView::SelectRows</enum>
        </property>
        <property name="indentation">
         <number>0</number>

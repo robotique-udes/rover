@@ -1,5 +1,7 @@
 #include "Worker.hpp"
 
+#include <rclcpp/rclcpp.hpp>
+
 Worker::Worker(bool start_, QObject* parent_): QObject(parent_)
 {
     if (start_)
@@ -25,6 +27,7 @@ void Worker::start(void)
 void Worker::finish()
 {
     _alive = false;
+    _newTaskCv.notify_one();
     if (_thread.joinable())
     {
         _thread.join();

@@ -1,5 +1,5 @@
-#ifndef __SSH_WORKER_HPP__
-#define __SSH_WORKER_HPP__
+#ifndef __QSSH_WORKER_HPP__
+#define __QSSH_WORKER_HPP__
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -15,20 +15,33 @@
 #include "QFileItem.hpp"
 #include "rovus_lib/macros.h"
 
-class SshWorker : public Worker
+class QSshWorker : public Worker
 {
     Q_OBJECT
 
     static constexpr uint8_t MAX_LOGIN_ATTEMPT = 3u;
+    static constexpr uint32_t LOGIN_TIMEOUT = 500'000u;
 
   public:
-    SshWorker(bool start_ = false, QObject* parent_ = nullptr);
-    ~SshWorker();
+    QSshWorker(bool start_ = false, QObject* parent_ = nullptr);
+    ~QSshWorker();
 
+    /**
+     * @brief Retrieves the folder structure at the specified user@host:path and emits newStructureReady() when the new data is
+     * ready
+     *
+     * @param username_
+     * @param hostname_
+     * @param path_
+     */
     void refreshStructure(IN std::string username_, IN std::string hostname_, IN std::string path_);
     std::vector<QFileItem> getStructure(void);
 
   signals:
+    /**
+     * @brief This signal is used to notify when a structure is ready to be updated by the UI thread
+     *
+     */
     void newStructureReady(void);
 
   private:
@@ -44,4 +57,4 @@ class SshWorker : public Worker
     std::vector<QFileItem> _files;
 };
 
-#endif  // __SSH_WORKER_HPP__
+#endif  // __QSSH_WORKER_HPP__
