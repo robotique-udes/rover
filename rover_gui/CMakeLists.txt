@@ -20,7 +20,7 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
-
+  
 include_directories(
   ui/include
   src/QSshFileExplorer
@@ -29,6 +29,8 @@ include_directories(
 )
 
 add_executable(main_gui src/main_gui.cpp
+                        src/Global/Worker.hpp
+                        src/Global/Worker.cpp
                         src/QSshFileExplorer/SshWorker.hpp
                         src/QSshFileExplorer/SshWorker.cpp
                         src/QSshFileExplorer/IconManager.hpp
@@ -45,7 +47,7 @@ ament_target_dependencies(main_gui
                           rcl_interfaces)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
+# install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS

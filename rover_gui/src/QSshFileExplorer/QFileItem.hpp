@@ -37,9 +37,9 @@ class QFileItem
 
     void addItemToModel(QStandardItemModel& rModel_, bool showHidden_ = false)
     {
-        if (!showHidden_ && _name->text().size() > 0)
+        if (!showHidden_ && _name->text().size() > 1)
         {
-            if (_name->text()[0] == '.')
+            if (_name->text()[0] == '.' && _name->text()[1] != '.' )
             {
                 return;
             }
@@ -64,16 +64,9 @@ class QFileItem
     }
 
   protected:
-    std::shared_ptr<QStandardItem> _name;
-    std::shared_ptr<QStandardItem> _type;
-    std::shared_ptr<QStandardItem> _lastModified;
-};
-
-// Special items
-class QFileItemGoBack : public QFileItem
-{
-  public:
-    QFileItemGoBack(): QFileItem("...", "", "") {}
+    std::shared_ptr<QStandardItem> _name = std::make_shared<QStandardItem>();
+    std::shared_ptr<QStandardItem> _type = std::make_shared<QStandardItem>();
+    std::shared_ptr<QStandardItem> _lastModified = std::make_shared<QStandardItem>();
 };
 
 #endif // __Q_FILE_ITEM__

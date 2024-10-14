@@ -1,14 +1,16 @@
 #include "SshWorker.hpp"
 
-SshWorker::SshWorker(QObject* parent_): QThread(parent_)
-{
-    connect(this, &SshWorker::updateStructure, this, &SshWorker::internalUpdateStructure, Qt::QueuedConnection);
-}
+SshWorker::SshWorker(bool start_, QObject* parent_): Worker(start_, parent_) {}
 
 SshWorker::~SshWorker()
 {
-    this->quit();
-    this->wait();
+    this->finish();
+}
+
+void SshWorker::refreshStructure(std::string username_, std::string hostname_, std::string path_)
+{
+    this->addTask([username = std::move(username_), hostname = std::move(hostname_), path = std::move(path_), this](void)
+                  { this->refreshStructureInternal(username, hostname, path); });
 }
 
 std::vector<QFileItem> SshWorker::getStructure(void)
@@ -35,7 +37,7 @@ bool SshWorker::handleAuth(IN const std::string& rUsername_, IN const std::strin
         sshStatusCode = ssh_connect(pSession_);
         if (sshStatusCode != SSH_OK)
         {
-            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Error connecting to host: %s", ssh_get_error(pSession_));
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error connecting to host: %s", ssh_get_error(pSession_));
             ssh_free(pSession_);
             return false;
         }
@@ -47,7 +49,7 @@ bool SshWorker::handleAuth(IN const std::string& rUsername_, IN const std::strin
             break;
         }
 
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "SSH key authentication failed with: %s", ssh_get_error(pSession_));
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "SSH key authentication failed with: %s", ssh_get_error(pSession_));
 
         if (!askSshSetup())
         {
@@ -72,6 +74,7 @@ bool SshWorker::handleAuth(IN const std::string& rUsername_, IN const std::strin
 
 bool SshWorker::askSshSetup(void)
 {
+    QEventLoop waitForAnswer;
     QMessageBox::StandardButton reply;
     QMetaObject::invokeMethod(QApplication::instance(),
                               [&]()
@@ -80,13 +83,16 @@ bool SshWorker::askSshSetup(void)
                                                                 "SSH Key setup",
                                                                 "Logging with SSH key failed, do you want to setup one?",
                                                                 QMessageBox::Yes | QMessageBox::No);
+                                  waitForAnswer.quit();
                               });
 
+    waitForAnswer.exec();
     return reply == QMessageBox::Yes;
 }
 
 void SshWorker::sshSetupDialog(const std::string& rUsername_, const std::string& rHostname_)
 {
+    QEventLoop waitForAnswer;
     std::string message(std::string("For security reasons, we won't store password into memory.") +
                         " To setup a safe no password login (ssh key), " +
                         " please paste this command in a terminal and press \"ok\"\n\n" + "ssh-copy-id " + rUsername_ + "@" +
@@ -94,7 +100,13 @@ void SshWorker::sshSetupDialog(const std::string& rUsername_, const std::string&
 
     QMetaObject::invokeMethod(
         QApplication::instance(),
-        [&]() { QMessageBox::question(nullptr, "Ssh Setup", message.c_str(), QMessageBox::Ok | QMessageBox::Cancel); });
+        [&]()
+        {
+            QMessageBox::question(nullptr, "Ssh Setup", message.c_str(), QMessageBox::Ok | QMessageBox::Cancel);
+            waitForAnswer.quit();
+        });
+
+    waitForAnswer.exec();
 }
 
 void SshWorker::sortAttributeVector(INOUT std::vector<sftp_attributes>& vector)
@@ -122,15 +134,13 @@ std::string SshWorker::unixTimeToString(uint32_t unixTime_)
     return QDateTime::fromSecsSinceEpoch(unixTime_).toString("yyyy/MM/dd HH:mm").toStdString();
 }
 
-void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QString path_)
+void SshWorker::refreshStructureInternal(std::string username_, std::string hostname_, std::string path_)
 {
-    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Updating from %lu", std::hash<std::thread::id>{}(std::this_thread::get_id()));
     ssh_session pSession = nullptr;
 
-    if (!handleAuth(username_.toStdString(), hostname_.toStdString(), pSession) || !pSession)
+    if (!handleAuth(username_, hostname_, pSession) || !pSession)
     {
         ssh_disconnect(pSession);
-        ssh_free(pSession);
         return;
     }
 
@@ -140,7 +150,6 @@ void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QS
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session: " << ssh_get_error(pSession));
         ssh_disconnect(pSession);
-        ssh_free(pSession);
         return;
     }
 
@@ -150,18 +159,16 @@ void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QS
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error initializing SFTP session: " << ssh_get_error(sftp));
         sftp_free(sftp);
         ssh_disconnect(pSession);
-        ssh_free(pSession);
         return;
     }
 
     // Retrieve the folder structure
-    sftp_dir dir = sftp_opendir(sftp, path_.toStdString().c_str());
+    sftp_dir dir = sftp_opendir(sftp, path_.c_str());
     if (dir == nullptr)
     {
-        RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Error opening directory: " << ssh_get_error(sftp));
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Error opening directory: " << ssh_get_error(sftp));
         sftp_free(sftp);
         ssh_disconnect(pSession);
-        ssh_free(pSession);
         return;
     }
 
@@ -169,11 +176,11 @@ void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QS
     std::vector<sftp_attributes> filesAttribute;
     std::vector<sftp_attributes> folderAttribute;
     std::vector<sftp_attributes> otherAttribute;
-    while ((attrs = sftp_readdir(sftp, dir)) != nullptr)
+    while ((attrs = sftp_readdir(sftp, dir)) && attrs->name && attrs->permissions)
     {
         if (attrs->permissions & SSH_S_IFDIR)  // Files
         {
-            if (std::string(attrs->name) != "." && std::string(attrs->name) != "..")
+            if (std::string(attrs->name) != ".")
             {
                 filesAttribute.push_back(attrs);
             }
@@ -186,8 +193,6 @@ void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QS
         {
             otherAttribute.push_back(attrs);
         }
-
-        sftp_attributes_free(attrs);
     }
 
     sortAttributeVector(filesAttribute);
@@ -195,7 +200,7 @@ void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QS
     sortAttributeVector(otherAttribute);
 
     {
-        std::lock_guard<std::mutex> lock(_filesMutex);
+        std::unique_lock<std::mutex> lock(_filesMutex);
         _files.clear();
         for (auto& it : filesAttribute)
         {
@@ -218,5 +223,5 @@ void SshWorker::internalUpdateStructure(QString username_, QString hostname_, QS
     ssh_disconnect(pSession);
     ssh_free(pSession);
 
-    emit this->newDataReady();
+    emit this->newStructureReady();
 }
