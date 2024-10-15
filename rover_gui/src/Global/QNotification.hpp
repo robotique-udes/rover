@@ -1,30 +1,19 @@
 #include <QDialog>
-#include <QLabel>
-#include <QTimer>
 #include <QVBoxLayout>
 
-class NotificationPopup : public QDialog
+#include "UI_Notification.h"
+
+class NotificationPopup : public QWidget
 {
     Q_OBJECT
 
   public:
-    explicit NotificationPopup(const QString& message, QWidget* parent = nullptr): QDialog(parent)
+    explicit NotificationPopup(const QString& message, QWidget* parent = nullptr): QWidget(parent)
     {
         setWindowFlags(Qt::FramelessWindowHint);
-
-        setAttribute(Qt::WA_TranslucentBackground);  // Transparent background
         setAttribute(Qt::WA_ShowWithoutActivating);  // Don't grab focus
 
-        QVBoxLayout* layout = new QVBoxLayout(this);
-        layout->setContentsMargins(0, 0, 0, 0);
-
-        QLabel* label = new QLabel(message, this);
-        label->setStyleSheet("color: white; background-color: rgba(0, 0, 0, 160); "
-                             "padding: 10px; border-radius: 5px;");
-
-        layout->addWidget(label);
-
-        setLayout(layout);
+        _notificationWidget.setupUi(this);
     }
 
     void showAtCorner(QWidget* parent)
@@ -43,4 +32,7 @@ class NotificationPopup : public QDialog
         move(x, y);
         show();
     }
+
+  private:
+    Ui::Notification _notificationWidget;
 };

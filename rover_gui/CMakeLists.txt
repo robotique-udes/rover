@@ -23,7 +23,6 @@ set(CMAKE_AUTORCC ON)
   
 include_directories(
   ui/include
-  src/QSshFileExplorer
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
 )

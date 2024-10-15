@@ -45,7 +45,7 @@ public:
     {
         if (FileExplorer->objectName().isEmpty())
             FileExplorer->setObjectName(QString::fromUtf8("FileExplorer"));
-        FileExplorer->resize(996, 629);
+        FileExplorer->resize(736, 419);
         FileExplorer->setCursor(QCursor(Qt::ArrowCursor));
         FileExplorer->setStyleSheet(QString::fromUtf8("QWidget {\n"
 "    background-color: #2e2e2e;\n"
@@ -259,9 +259,10 @@ public:
         tv_fileExplorer->setMinimumSize(QSize(0, 300));
         tv_fileExplorer->viewport()->setProperty("cursor", QVariant(QCursor(Qt::PointingHandCursor)));
         tv_fileExplorer->setFrameShadow(QFrame::Sunken);
-        tv_fileExplorer->setEditTriggers(QAbstractItemView::DoubleClicked|QAbstractItemView::EditKeyPressed);
+        tv_fileExplorer->setEditTriggers(QAbstractItemView::DoubleClicked);
         tv_fileExplorer->setTabKeyNavigation(true);
         tv_fileExplorer->setDragDropMode(QAbstractItemView::DragDrop);
+        tv_fileExplorer->setDefaultDropAction(Qt::CopyAction);
         tv_fileExplorer->setAlternatingRowColors(false);
         tv_fileExplorer->setSelectionMode(QAbstractItemView::NoSelection);
         tv_fileExplorer->setSelectionBehavior(QAbstractItemView::SelectRows);
