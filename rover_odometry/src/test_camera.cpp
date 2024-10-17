@@ -9,6 +9,7 @@
 #include <ament_index_cpp/get_package_prefix.hpp>
 #include "rclcpp/rclcpp.hpp"
 #include "rovus_lib/macros.h"
+#include "rovus_lib/timer.hpp"
 
 
 class VideoTest : public rclcpp::Node
@@ -59,6 +60,11 @@ void VideoTest::sparseDetection()
 
     // Create a mask image for drawing purposes
     cv::Mat mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
+
+    int new_points_interval = 1000;
+
+    RoverLib::Timer<uint64_t, RoverLib::millis> _point_timer(new_points_interval);
+
     while(true)
     {
         cv::Mat frame, frame_gray;
@@ -91,9 +97,14 @@ void VideoTest::sparseDetection()
             break;
         // Now update the previous frame and previous points
         old_gray = frame_gray.clone();
-        if (good_new.size() == 0)
+
+        if (_point_timer.isDone())
         {
-            //RCLCPP_INFO(LOGGER, "No points detected\n");
+            cv::goodFeaturesToTrack(old_gray, good_new, 100, 0.3, 7, cv::Mat(), 7, false, 0.04);
+            mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
+        }
+        else if (good_new.size() == 0)
+        {
             cv::goodFeaturesToTrack(old_gray, good_new, 100, 0.3, 7, cv::Mat(), 7, false, 0.04);
             mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
         }
