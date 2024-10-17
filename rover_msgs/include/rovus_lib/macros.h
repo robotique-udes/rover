@@ -49,5 +49,8 @@
 
 // Removes unused argument warning 
 #define REMOVE_UNUSED(x) (void)(x)
+
+#define GET_PACKAGE_SOURCE_DIR(package_name) \
+    (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
     
 #endif //__MACROS_H__
