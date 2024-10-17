@@ -26,7 +26,6 @@ QT_BEGIN_NAMESPACE
 class Ui_Notification
 {
 public:
-    QGridLayout *gridLayout_3;
     QGridLayout *gridLayout;
     QVBoxLayout *verticalLayout;
     QHBoxLayout *horizontalLayout;
@@ -49,12 +48,9 @@ public:
         sizePolicy.setHeightForWidth(Notification->sizePolicy().hasHeightForWidth());
         Notification->setSizePolicy(sizePolicy);
         Notification->setMinimumSize(QSize(400, 150));
-        Notification->setMaximumSize(QSize(473, 273));
+        Notification->setMaximumSize(QSize(471, 271));
         Notification->setStyleSheet(QString::fromUtf8(""));
-        gridLayout_3 = new QGridLayout(Notification);
-        gridLayout_3->setObjectName(QString::fromUtf8("gridLayout_3"));
-        gridLayout = new QGridLayout();
-        gridLayout->setSpacing(0);
+        gridLayout = new QGridLayout(Notification);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         verticalLayout = new QVBoxLayout();
         verticalLayout->setSpacing(0);
@@ -109,7 +105,7 @@ public:
         scrollArea->setWidgetResizable(true);
         scrollAreaWidgetContents = new QWidget();
         scrollAreaWidgetContents->setObjectName(QString::fromUtf8("scrollAreaWidgetContents"));
-        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 378, 96));
+        scrollAreaWidgetContents->setGeometry(QRect(0, 0, 380, 98));
         sizePolicy1.setHeightForWidth(scrollAreaWidgetContents->sizePolicy().hasHeightForWidth());
         scrollAreaWidgetContents->setSizePolicy(sizePolicy1);
         gridLayout_2 = new QGridLayout(scrollAreaWidgetContents);
@@ -138,9 +134,6 @@ public:
 
 
         gridLayout->addLayout(verticalLayout, 0, 0, 1, 1);
-
-
-        gridLayout_3->addLayout(gridLayout, 0, 0, 1, 1);
 
 
         retranslateUi(Notification);
