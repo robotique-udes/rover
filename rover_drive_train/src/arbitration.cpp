@@ -1,25 +1,25 @@
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/empty.hpp"
-#include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/msg/drivetrain_arbitration.hpp"
+#include "rover_msgs/msg/joy.hpp"
+#include "rover_msgs/msg/joy_demux_status.hpp"
+#include "rover_msgs/msg/propulsion_motor.hpp"
+#include "std_msgs/msg/empty.hpp"
 
 #include "rover_msgs/srv/drive_train_arbitration.hpp"
 #include "rovus_lib/macros.h"
 
 class Arbitration : public rclcpp::Node
 {
-public:
+  public:
     Arbitration();
     ~Arbitration() {}
 
-private:
+  private:
     void cbTimerSendCmd();
     void cbTimerSendStatus();
-    void watchdog(bool *LostHB);
+    void watchdog(bool* LostHB);
     void cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_);
-    void cbHB(const std_msgs::msg::Empty msg_, bool *_HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer);
+    void cbHB(const std_msgs::msg::Empty msg_, bool* _HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer);
     void cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
                 std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response);
     void sendCmd();
@@ -48,7 +48,7 @@ private:
     bool _roverHBLost = false;
 };
 
-Arbitration::Arbitration() : Node("arbitration")
+Arbitration::Arbitration(): Node("arbitration")
 {
     for (size_t i = 0; i < _zeroCmd.enable.size(); ++i)
     {
@@ -67,24 +67,25 @@ Arbitration::Arbitration() : Node("arbitration")
                                                                   [this](const std_msgs::msg::Empty msg_)
                                                                   { this->cbHB(msg_, &_roverHBLost, _watchdogRover); });
 
-    _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
-                                                                                     1,
-                                                                                     std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
-    _subMotorCmdAuto = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop",
-                                                                                   1,
-                                                                                   std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
+    _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
+        "/rover/drive_train/cmd/in/teleop",
+        1,
+        std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
+    _subMotorCmdAuto = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
+        "/rover/drive_train/cmd/in/teleop",
+        1,
+        std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
 
     _pubCmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1);
-    _pubArbitrationStatus = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>("/rover/drive_train/arbitration/status", 1);
+    _pubArbitrationStatus
+        = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>("/rover/drive_train/arbitration/status", 1);
 
-    _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>("/rover/drive_train/set_arbitration", std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
+    _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>(
+        "/rover/drive_train/set_arbitration",
+        std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
-    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500),
-                                             [this]()
-                                             { this->watchdog(&_roverHBLost); });
-    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500),
-                                            [this]()
-                                            { this->watchdog(&_baseHBLost); });
+    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500), [this]() { this->watchdog(&_roverHBLost); });
+    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500), [this]() { this->watchdog(&_baseHBLost); });
 
     _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&Arbitration::cbTimerSendCmd, this));
     _timerSendStatus = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&Arbitration::cbTimerSendStatus, this));
@@ -100,7 +101,7 @@ void Arbitration::cbTimerSendStatus()
     _pubArbitrationStatus->publish(_arbitration);
 }
 
-void Arbitration::cbHB(const std_msgs::msg::Empty msg_, bool *_HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer)
+void Arbitration::cbHB(const std_msgs::msg::Empty msg_, bool* _HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer)
 {
     REMOVE_UNUSED(msg_);
 
@@ -113,7 +114,7 @@ void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_)
     _cmdTeleop = msg_;
 }
 
-void Arbitration::watchdog(bool *lostHB_)
+void Arbitration::watchdog(bool* lostHB_)
 {
     *lostHB_ = true;
 }
@@ -139,20 +140,22 @@ void Arbitration::sendCmd()
 void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request_,
                          std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
 {
-    if (request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::NONE ||
-        request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
+    if (request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::NONE
+        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
     {
         _arbitration = request_->target_arbitration;
     }
     else
     {
-        RCLCPP_ERROR(this->get_logger(), "Can't see requested arbitration: %u, not implemented yet", request_->target_arbitration.arbitration);
+        RCLCPP_ERROR(this->get_logger(),
+                     "Can't see requested arbitration: %u, not implemented yet",
+                     request_->target_arbitration.arbitration);
     }
 
     response_->current_arbitration = _arbitration;
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<Arbitration>());

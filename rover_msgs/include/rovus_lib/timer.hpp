@@ -7,12 +7,12 @@ namespace RoverLib
 #if defined(__linux__)
 #include <cstdint>
 #include <time.h>
-#endif // defined(__linux__)
+#endif  // defined(__linux__)
 
-    template <typename TYPE, TYPE (*clockFunc)(void)>
+    template<typename TYPE, TYPE (*clockFunc)(void)>
     class Timer
     {
-    private:
+      private:
         TYPE _prevClock;
         TYPE _interval;
 
@@ -21,7 +21,7 @@ namespace RoverLib
             _interval = interval;
         }
 
-    public:
+      public:
         Timer()
         {
             _interval = 0;
@@ -69,15 +69,15 @@ namespace RoverLib
         }
     };
 
-    template <typename TYPE, TYPE (*clockFunc)(void)>
+    template<typename TYPE, TYPE (*clockFunc)(void)>
     class Chrono
     {
-    private:
+      private:
         TYPE _startClock;
         TYPE _accumulatedTime;
         bool _paused;
 
-    public:
+      public:
         Chrono()
         {
             _paused = false;
@@ -130,16 +130,16 @@ namespace RoverLib
     };
 
 #if defined(__linux__)
-#include <cstdint>
-#include <time.h>
 #include <chrono>
+#include <cstdint>
 #include <thread>
+#include <time.h>
 
     // TIME_TYPE ex: std::chrono::microseconds
-    template <typename TIME_TYPE>
+    template<typename TIME_TYPE>
     class TimerFixedLoop
     {
-    public:
+      public:
         TimerFixedLoop(TIME_TYPE interval_us_)
         {
             _interval = interval_us_;
@@ -153,7 +153,7 @@ namespace RoverLib
             _nextLoopTime += _interval;
         }
 
-    private:
+      private:
         TIME_TYPE _interval;
         std::chrono::_V2::steady_clock::time_point _nextLoopTime;
     };
@@ -179,8 +179,8 @@ namespace RoverLib
         return (ts.tv_sec * 1'000'000'000) + ts.tv_nsec;
     }
 
-#endif // defined(__linux__)
+#endif  // defined(__linux__)
 
-}
+}  // namespace RoverLib
 
-#endif //__TIMER_H__
+#endif  //__TIMER_H__

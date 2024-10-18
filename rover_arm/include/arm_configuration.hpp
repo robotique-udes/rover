@@ -14,75 +14,75 @@ namespace ARM_CONFIGURATION
     //         constexpr float z = <VALUE>
     //     }
     // }
-    
+
     namespace JL
     {
-        constexpr float MAX_VELOCITY = 0.05f; // mm/s
+        constexpr float MAX_VELOCITY = 0.05f;  // mm/s
         namespace LEN
         {
             constexpr float x = 0.0f;
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
-        }
-    }
+        }  // namespace LEN
+    }      // namespace JL
 
     namespace J0
     {
-        constexpr float MAX_VELOCITY = 1.0f; // rad/s
+        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0f;
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
-        }
-    }
+        }  // namespace LEN
+    }      // namespace J0
 
     namespace J1
     {
-        constexpr float MAX_VELOCITY = 1.0f; // rad/s
+        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0f;
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
-        }
-    }
+        }  // namespace LEN
+    }      // namespace J1
 
     namespace J2
     {
-        constexpr float MAX_VELOCITY = 1.0f; // rad/s
+        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.65f;
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
-        }
-    }
+        }  // namespace LEN
+    }      // namespace J2
 
     namespace GRIPPER_TILT
     {
-        constexpr float MAX_VELOCITY = 1.0f; // rad/s
+        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.62f;
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
-        }
-    }
+        }  // namespace LEN
+    }      // namespace GRIPPER_TILT
 
     namespace GRIPPER_ROT
     {
-        constexpr float MAX_VELOCITY = 1.0f; // rad/s
+        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.217f;
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
-        }
-    }
+        }  // namespace LEN
+    }      // namespace GRIPPER_ROT
 
-// GRIPPER_CLOSE not defined because no speed control available in current arm configuration  
-}
+    // GRIPPER_CLOSE not defined because no speed control available in current arm configuration
+}  // namespace ARM_CONFIGURATION
 
 // Length for MotionGenesis kinematics, defined for quicker back and forth,
 // see doc or motion genesis code for bases reference
@@ -106,4 +106,4 @@ constexpr float J4x = ARM_CONFIGURATION::GRIPPER_ROT::LEN::x;
 constexpr float J4y = ARM_CONFIGURATION::GRIPPER_ROT::LEN::y;
 constexpr float J4z = ARM_CONFIGURATION::GRIPPER_ROT::LEN::z;
 
-#endif // __ARM_CONFIGURATION__
+#endif  // __ARM_CONFIGURATION__

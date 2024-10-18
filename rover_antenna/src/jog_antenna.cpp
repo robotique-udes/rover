@@ -1,18 +1,18 @@
 #include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/joy.hpp"
 #include "rover_msgs/msg/antenna_cmd.hpp"
-#include "rovus_lib/moving_average.hpp"
+#include "rover_msgs/msg/joy.hpp"
 #include "rovus_lib/macros.h"
+#include "rovus_lib/moving_average.hpp"
 
 #define COEFF_NB 10
 
 class JogAntenna : public rclcpp::Node
 {
-public:
+  public:
     JogAntenna();
     ~JogAntenna() {}
 
-private:
+  private:
     void callbackJoy(const rover_msgs::msg::Joy msg_);
 
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy;
@@ -22,10 +22,9 @@ private:
     rclcpp::Parameter _paramCoeffNb;
     MovingAverage<float, COEFF_NB> _jogAverage_r1 = MovingAverage<float, COEFF_NB>(0.0f);
     MovingAverage<float, COEFF_NB> _jogAverage_l1 = MovingAverage<float, COEFF_NB>(0.0f);
-    
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<JogAntenna>());
@@ -33,18 +32,16 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-JogAntenna::JogAntenna() : Node("jog_antenna")
+JogAntenna::JogAntenna(): Node("jog_antenna")
 {
     _sub_joy = this->create_subscription<rover_msgs::msg::Joy>("/joy/main/formated",
                                                                1,
-                                                               [this](const rover_msgs::msg::Joy msg_)
-                                                               { callbackJoy(msg_); });
+                                                               [this](const rover_msgs::msg::Joy msg_) { callbackJoy(msg_); });
 
     _pub_jog = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop", 1);
 
-    this->declare_parameter<float>("max_speed", PI/2.0f);
+    this->declare_parameter<float>("max_speed", PI / 2.0f);
     _paramMaxSpeed = this->get_parameter("max_speed");
-    
 }
 
 void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg_)
@@ -52,16 +49,16 @@ void JogAntenna::callbackJoy(const rover_msgs::msg::Joy msg_)
     rover_msgs::msg::AntennaCmd jogCmd;
 
     _jogAverage_l1.addValue(msg_.L1);
-    
+
     _jogAverage_r1.addValue(msg_.R1);
 
     jogCmd.enable = true;
 
-    if(_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
+    if (_jogAverage_l1.getAverage() != 0.0f && _jogAverage_r1.getAverage() == 0.0f)
     {
         jogCmd.speed = -_jogAverage_l1.getAverage() * _paramMaxSpeed.as_double();
     }
-    else if(_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() != 0.0f)
+    else if (_jogAverage_l1.getAverage() == 0.0f && _jogAverage_r1.getAverage() != 0.0f)
     {
         jogCmd.speed = _jogAverage_r1.getAverage() * _paramMaxSpeed.as_double();
     }

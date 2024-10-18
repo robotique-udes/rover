@@ -1,38 +1,38 @@
 // Network socket stuff
-#include <net/if.h>
 #include <fcntl.h>
+#include <net/if.h>
 
 // ROS
-#include <chrono>
 #include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/can_device_status.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
-#include "rover_msgs/msg/camera_control.hpp"
-#include "rover_msgs/msg/camera_angle.hpp"
-#include "rover_msgs/msg/light_control.hpp"
-#include "rover_msgs/msg/gps.hpp"
-#include "rover_msgs/msg/compass.hpp"
 #include "rover_msgs/msg/arm_msg.hpp"
+#include "rover_msgs/msg/camera_angle.hpp"
+#include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/can_device_status.hpp"
+#include "rover_msgs/msg/compass.hpp"
+#include "rover_msgs/msg/gps.hpp"
+#include "rover_msgs/msg/light_control.hpp"
+#include "rover_msgs/msg/propulsion_motor.hpp"
+#include <chrono>
 
 // RoverCanLib
-#include "rover_can_lib/config.hpp"
 #include "rover_can_lib/can_device.hpp"
-#include "rover_can_lib/msgs/heartbeat.hpp"
-#include "rover_can_lib/msgs/propulsion_motor_cmd.hpp"
-#include "rover_can_lib/msgs/propulsion_motor_status.hpp"
+#include "rover_can_lib/config.hpp"
+#include "rover_can_lib/msgs/arm_cmd.hpp"
+#include "rover_can_lib/msgs/arm_status.hpp"
 #include "rover_can_lib/msgs/cam_control.hpp"
 #include "rover_can_lib/msgs/cam_control_a2.hpp"
 #include "rover_can_lib/msgs/cam_pan.hpp"
-#include "rover_can_lib/msgs/light_control.hpp"
-#include "rover_can_lib/msgs/gps.hpp"
 #include "rover_can_lib/msgs/compass.hpp"
-#include "rover_can_lib/msgs/arm_cmd.hpp"
-#include "rover_can_lib/msgs/arm_status.hpp"
+#include "rover_can_lib/msgs/gps.hpp"
+#include "rover_can_lib/msgs/heartbeat.hpp"
+#include "rover_can_lib/msgs/light_control.hpp"
+#include "rover_can_lib/msgs/propulsion_motor_cmd.hpp"
+#include "rover_can_lib/msgs/propulsion_motor_status.hpp"
 
 #define LOGGER_NAME "CanMasterNode"
 
 // Forward declarations
-int createSocket(const char *canNetworkName_);
+int createSocket(const char* canNetworkName_);
 void signal_handler(int signo_);
 
 // =============================================================================
@@ -77,10 +77,10 @@ rover_msgs::msg::Compass msg_ROS_compass;
 
 class CanMaster : public rclcpp::Node
 {
-public:
+  public:
     CanMaster(int canSocket_);
 
-private:
+  private:
     void mainLoop();
     // Sends heartbeat on the can network at specific rate
     RoverCanLib::Constant::eInternalErrorCode updateHeartbeat();
@@ -91,11 +91,12 @@ private:
     RoverCanLib::Constant::eInternalErrorCode askStateCanDevices();
 
     int _canSocket;
-    RoverLib::Timer<uint64_t, RoverLib::millis> _timerHeartbeat = RoverLib::Timer<uint64_t, RoverLib::millis>((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
+    RoverLib::Timer<uint64_t, RoverLib::millis> _timerHeartbeat
+        = RoverLib::Timer<uint64_t, RoverLib::millis>((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
     RoverLib::Chrono<uint64_t, RoverLib::millis> _chonoCanWatchdog;
     rclcpp::TimerBase::SharedPtr _timerLoop;
     std::unordered_map<size_t, CanDevice> _deviceMap;
-    std::unordered_map<size_t, RoverCanLib::Msgs::Msg *> _msgsMap;
+    std::unordered_map<size_t, RoverCanLib::Msgs::Msg*> _msgsMap;
 
     // =========================================================================
     //  Device loop timers
@@ -124,11 +125,11 @@ private:
 
     // =========================================================================
     //  Devices callbacks
-    void CB_Can_None(uint16_t dontUse0_, const can_frame *dontUse1_);
-    void CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg);
-    void CB_Can_Arm(uint16_t id_, const can_frame *frameMsg);
-    void CB_Can_GPS(uint16_t id_, const can_frame *frameMsg);
-    void CB_Can_Compass(uint16_t id_, const can_frame *frameMsg);
+    void CB_Can_None(uint16_t dontUse0_, const can_frame* dontUse1_);
+    void CB_Can_PropulsionMotor(uint16_t id_, const can_frame* frameMsg);
+    void CB_Can_Arm(uint16_t id_, const can_frame* frameMsg);
+    void CB_Can_GPS(uint16_t id_, const can_frame* frameMsg);
+    void CB_Can_Compass(uint16_t id_, const can_frame* frameMsg);
     // =========================================================================
 
     // =========================================================================
@@ -141,9 +142,9 @@ private:
     // =========================================================================
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
-    signal(SIGINT, signal_handler); // Makes CTRL+C work
+    signal(SIGINT, signal_handler);  // Makes CTRL+C work
 
     while (!g_shutdownFlag)
     {
@@ -170,7 +171,7 @@ void signal_handler(int signo_)
 }
 
 // Returns a socket on success or < 0 on error
-int createSocket(const char *canNetworkName_)
+int createSocket(const char* canNetworkName_)
 {
     int canSocket;
     if ((canSocket = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
@@ -182,7 +183,7 @@ int createSocket(const char *canNetworkName_)
     struct sockaddr_can addr;
     addr.can_family = AF_CAN;
     addr.can_ifindex = if_nametoindex(canNetworkName_);
-    if (bind(canSocket, (struct sockaddr *)&addr, sizeof(addr)) < 0)
+    if (bind(canSocket, (struct sockaddr*)&addr, sizeof(addr)) < 0)
     {
         RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error bind to socket");
         close(canSocket);
@@ -203,7 +204,7 @@ int createSocket(const char *canNetworkName_)
 // =============================================================================
 //  Class method definitions
 // =============================================================================
-CanMaster::CanMaster(int canSocket_) : Node("can_master")
+CanMaster::CanMaster(int canSocket_): Node("can_master")
 {
     _canSocket = canSocket_;
 
@@ -239,42 +240,105 @@ CanMaster::CanMaster(int canSocket_) : Node("can_master")
     //  Devices objects constructors
 
     // PDB
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::PDB_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::PDB_CONTROLLER, this, &CanMaster::CB_Can_None, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::CAMERA_A2, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_A2, this, &CanMaster::CB_Can_None, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_1, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_1, this, &CanMaster::CB_Can_None, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_2, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_2, this, &CanMaster::CB_Can_None, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3, this, &CanMaster::CB_Can_None, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::LIGHTS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::LIGHTS, this, &CanMaster::CB_Can_None, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::PDB_CONTROLLER,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::PDB_CONTROLLER, this, &CanMaster::CB_Can_None, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::CAMERA_A2,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_A2, this, &CanMaster::CB_Can_None, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_1,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_1, this, &CanMaster::CB_Can_None, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_2,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_2, this, &CanMaster::CB_Can_None, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::CAMERA_R1M_3, this, &CanMaster::CB_Can_None, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::LIGHTS,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::LIGHTS, this, &CanMaster::CB_Can_None, _pub_canStatus));
 
     // Motor Drive
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR, this, &CanMaster::CB_Can_PropulsionMotor, _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR,
+                                 this,
+                                 &CanMaster::CB_Can_PropulsionMotor,
+                                 _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR,
+                                 this,
+                                 &CanMaster::CB_Can_PropulsionMotor,
+                                 _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR,
+                                 this,
+                                 &CanMaster::CB_Can_PropulsionMotor,
+                                 _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR,
+                                 this,
+                                 &CanMaster::CB_Can_PropulsionMotor,
+                                 _pub_canStatus));
 
     // Arm
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER,
+                                 this,
+                                 &CanMaster::CB_Can_Arm,
+                                 _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER,
+                                 this,
+                                 &CanMaster::CB_Can_Arm,
+                                 _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER,
+                                 this,
+                                 &CanMaster::CB_Can_Arm,
+                                 _pub_canStatus));
 
     // Aux
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GPS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GPS, this, &CanMaster::CB_Can_GPS, _pub_canStatus));
-    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::COMPASS, CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::COMPASS, this, &CanMaster::CB_Can_Compass, _pub_canStatus));
+    _deviceMap.emplace((size_t)RoverCanLib::Constant::eDeviceId::GPS,
+                       CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::GPS, this, &CanMaster::CB_Can_GPS, _pub_canStatus));
+    _deviceMap.emplace(
+        (size_t)RoverCanLib::Constant::eDeviceId::COMPASS,
+        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::COMPASS, this, &CanMaster::CB_Can_Compass, _pub_canStatus));
     // =========================================================================
 
     this->askStateCanDevices();
 
     // =========================================================================
     //  Topic subscriber actual creation
-    _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1, std::bind(&CanMaster::CB_ROS_propulsionMotor, this, std::placeholders::_1));
-    _sub_arm = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_pos", 1, std::bind(&CanMaster::CB_ROS_Arm, this, std::placeholders::_1));
-    // _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1, std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
-    _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1, std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
-    _sub_cameraPano = this->create_subscription<rover_msgs::msg::CameraAngle>("/rover/auxiliary/camera_pano", 1, std::bind(&CanMaster::CB_ROS_cameraPano, this, std::placeholders::_1));
+    _sub_propulsionMotor = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
+        "/rover/drive_train/cmd/out/motors",
+        1,
+        std::bind(&CanMaster::CB_ROS_propulsionMotor, this, std::placeholders::_1));
+    _sub_arm = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_pos",
+                                                                  1,
+                                                                  std::bind(&CanMaster::CB_ROS_Arm, this, std::placeholders::_1));
+    // _sub_cameras = this->create_subscription<rover_msgs::msg::CameraControl>("/TODO/CAM_TOPIC", 1,
+    // std::bind(&CanMaster::CB_ROS_cameraControl, this, std::placeholders::_1));
+    _sub_lights = this->create_subscription<rover_msgs::msg::LightControl>(
+        "/rover/auxiliary/lights/status",
+        1,
+        std::bind(&CanMaster::CB_ROS_lightControl, this, std::placeholders::_1));
+    _sub_cameraPano = this->create_subscription<rover_msgs::msg::CameraAngle>(
+        "/rover/auxiliary/camera_pano",
+        1,
+        std::bind(&CanMaster::CB_ROS_cameraPano, this, std::placeholders::_1));
     // =========================================================================
 
     // Created last to make sure everything is init before it gets called
@@ -371,29 +435,31 @@ RoverCanLib::Constant::eInternalErrorCode CanMaster::askStateCanDevices()
     msgErrorState.data.error = 0;
     msgErrorState.data.warning = 0;
 
-    return msgErrorState.sendMsg(RoverCanLib::Constant::eDeviceId::MASTER_COMPUTER_UNIT, _canSocket, rclcpp::get_logger(LOGGER_NAME));
+    return msgErrorState.sendMsg(RoverCanLib::Constant::eDeviceId::MASTER_COMPUTER_UNIT,
+                                 _canSocket,
+                                 rclcpp::get_logger(LOGGER_NAME));
 }
 
 // =============================================================================
 //  Devices callbacks
-void CanMaster::CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg_)
+void CanMaster::CB_Can_PropulsionMotor(uint16_t id_, const can_frame* frameMsg_)
 {
-    if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR)
+    if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR)
     {
-        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                     "Provided device ID: 0x%.3x isn't a propulsion motor",
-                     id_);
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Provided device ID: 0x%.3x isn't a propulsion motor", id_);
 
         return;
     }
 
-    if (frameMsg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID] == (size_t)RoverCanLib::Constant::eMsgId::PROPULSION_MOTOR_STATUS)
+    if (frameMsg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID]
+        == (size_t)RoverCanLib::Constant::eMsgId::PROPULSION_MOTOR_STATUS)
     {
         // Cast back msg from it's parent type to it's actual type (child) to be able to access the data member later on
-        RoverCanLib::Msgs::PropulsionMotorStatus *msg = dynamic_cast<RoverCanLib::Msgs::PropulsionMotorStatus *>(_msgsMap.find(id_)->second);
+        RoverCanLib::Msgs::PropulsionMotorStatus* msg
+            = dynamic_cast<RoverCanLib::Msgs::PropulsionMotorStatus*>(_msgsMap.find(id_)->second);
         msg->parseMsg(frameMsg_, rclcpp::get_logger(LOGGER_NAME));
 
         if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::PropulsionMotorStatus>(frameMsg_))
@@ -402,25 +468,23 @@ void CanMaster::CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg_)
 
             switch (id_)
             {
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR:
-                arrayIndex = rover_msgs::msg::PropulsionMotor::FRONT_LEFT;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR:
+                    arrayIndex = rover_msgs::msg::PropulsionMotor::FRONT_LEFT;
+                    break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR:
-                arrayIndex = rover_msgs::msg::PropulsionMotor::FRONT_RIGHT;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR:
+                    arrayIndex = rover_msgs::msg::PropulsionMotor::FRONT_RIGHT;
+                    break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR:
-                arrayIndex = rover_msgs::msg::PropulsionMotor::REAR_LEFT;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR:
+                    arrayIndex = rover_msgs::msg::PropulsionMotor::REAR_LEFT;
+                    break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR:
-                arrayIndex = rover_msgs::msg::PropulsionMotor::REAR_RIGHT;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR:
+                    arrayIndex = rover_msgs::msg::PropulsionMotor::REAR_RIGHT;
+                    break;
 
-            default:
-                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
-                break;
+                default: RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error"); break;
             }
             msg_ROS_propMotor.current_speed[arrayIndex] = msg->data.currentSpeed;
             _pub_propulsionMotor->publish(msg_ROS_propMotor);
@@ -434,15 +498,15 @@ void CanMaster::CB_Can_PropulsionMotor(uint16_t id_, const can_frame *frameMsg_)
     }
 }
 
-void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame *frameMsg_)
+void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame* frameMsg_)
 {
-    if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER &&
-        id_ != (size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER)
+    if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER
+        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER)
     {
         RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Provided device ID: 0x%.3x isn't a arm controller", id_);
         return;
@@ -451,7 +515,7 @@ void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame *frameMsg_)
     if (frameMsg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID] == (size_t)RoverCanLib::Constant::eMsgId::ARM_STATUS)
     {
         // Cast back msg from it's parent type to it's actual type (child) to be able to access the data member later on
-        RoverCanLib::Msgs::armStatus *msg = dynamic_cast<RoverCanLib::Msgs::armStatus *>(_msgsMap.find(id_)->second);
+        RoverCanLib::Msgs::armStatus* msg = dynamic_cast<RoverCanLib::Msgs::armStatus*>(_msgsMap.find(id_)->second);
         msg->parseMsg(frameMsg_, rclcpp::get_logger(LOGGER_NAME));
 
         if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::armStatus>(frameMsg_))
@@ -460,37 +524,27 @@ void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame *frameMsg_)
 
             switch (id_)
             {
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER:
-                arrayIndex = rover_msgs::msg::ArmMsg::JL;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::JL; break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER:
-                arrayIndex = rover_msgs::msg::ArmMsg::J0;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J0; break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER:
-                arrayIndex = rover_msgs::msg::ArmMsg::J1;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J1; break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER:
-                arrayIndex = rover_msgs::msg::ArmMsg::J2;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J2; break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER:
-                arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_TILT;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_TILT;
+                    break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER:
-                arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_ROT;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_ROT;
+                    break;
 
-            case (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER:
-                arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE;
-                break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE;
+                    break;
 
-            default:
-                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
-                break;
+                default: RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error"); break;
             }
 
             msg_ROS_arm.data[arrayIndex] = msg->data.currentSpeed;
@@ -505,27 +559,25 @@ void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame *frameMsg_)
     }
 }
 
-void CanMaster::CB_Can_None(uint16_t dontUse0_, const can_frame *dontUse1_)
+void CanMaster::CB_Can_None(uint16_t dontUse0_, const can_frame* dontUse1_)
 {
     REMOVE_UNUSED(dontUse0_);
     REMOVE_UNUSED(dontUse1_);
     return;
 }
 
-void CanMaster::CB_Can_GPS(uint16_t id_, const can_frame *frameMsg_)
+void CanMaster::CB_Can_GPS(uint16_t id_, const can_frame* frameMsg_)
 {
     if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::GPS)
     {
-        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                     "Provided device ID: 0x%.3x isn't a GPS",
-                     id_);
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Provided device ID: 0x%.3x isn't a GPS", id_);
         return;
     }
 
     if (frameMsg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID] == (size_t)RoverCanLib::Constant::eMsgId::GPS)
     {
         // Cast back msg from it's parent type to it's actual type (child) to be able to access the data member later on
-        RoverCanLib::Msgs::GPS *msg = dynamic_cast<RoverCanLib::Msgs::GPS *>(_msgsMap.find(id_)->second);
+        RoverCanLib::Msgs::GPS* msg = dynamic_cast<RoverCanLib::Msgs::GPS*>(_msgsMap.find(id_)->second);
         msg->parseMsg(frameMsg_, rclcpp::get_logger(LOGGER_NAME));
 
         if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::GPS>(frameMsg_))
@@ -543,20 +595,18 @@ void CanMaster::CB_Can_GPS(uint16_t id_, const can_frame *frameMsg_)
     }
 }
 
-void CanMaster::CB_Can_Compass(uint16_t id_, const can_frame *frameMsg_)
+void CanMaster::CB_Can_Compass(uint16_t id_, const can_frame* frameMsg_)
 {
     if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::COMPASS)
     {
-        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME),
-                     "Provided device ID: 0x%.3x isn't a compass",
-                     id_);
+        RCLCPP_ERROR(rclcpp::get_logger(LOGGER_NAME), "Provided device ID: 0x%.3x isn't a compass", id_);
         return;
     }
 
     if (frameMsg_->data[(size_t)RoverCanLib::Constant::eDataIndex::MSG_ID] == (size_t)RoverCanLib::Constant::eMsgId::COMPASS)
     {
         // Cast back msg from it's parent type to it's actual type (child) to be able to access the data member later on
-        RoverCanLib::Msgs::Compass *msg = dynamic_cast<RoverCanLib::Msgs::Compass *>(_msgsMap.find(id_)->second);
+        RoverCanLib::Msgs::Compass* msg = dynamic_cast<RoverCanLib::Msgs::Compass*>(_msgsMap.find(id_)->second);
         msg->parseMsg(frameMsg_, rclcpp::get_logger(LOGGER_NAME));
 
         if (RoverCanLib::Helpers::msgContentIsLastElement<RoverCanLib::Msgs::Compass>(frameMsg_))
@@ -591,25 +641,23 @@ void CanMaster::CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::S
 
         switch (arrayIndex)
         {
-        case rover_msgs::msg::PropulsionMotor::FRONT_LEFT:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR;
-            break;
+            case rover_msgs::msg::PropulsionMotor::FRONT_LEFT:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTLEFT_MOTOR;
+                break;
 
-        case rover_msgs::msg::PropulsionMotor::FRONT_RIGHT:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR;
-            break;
+            case rover_msgs::msg::PropulsionMotor::FRONT_RIGHT:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::FRONTRIGHT_MOTOR;
+                break;
 
-        case rover_msgs::msg::PropulsionMotor::REAR_LEFT:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR;
-            break;
+            case rover_msgs::msg::PropulsionMotor::REAR_LEFT:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR;
+                break;
 
-        case rover_msgs::msg::PropulsionMotor::REAR_RIGHT:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR;
-            break;
+            case rover_msgs::msg::PropulsionMotor::REAR_RIGHT:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR;
+                break;
 
-        default:
-            RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
-            break;
+            default: RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error"); break;
         }
 
         canMsg.data.enable = rosMsg_->enable[arrayIndex];
@@ -635,37 +683,27 @@ void CanMaster::CB_ROS_Arm(const rover_msgs::msg::ArmMsg::SharedPtr rosMsg_)
 
         switch (arrayIndex)
         {
-        case rover_msgs::msg::ArmMsg::JL:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER;
-            break;
+            case rover_msgs::msg::ArmMsg::JL: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER; break;
 
-        case rover_msgs::msg::ArmMsg::J0:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER;
-            break;
+            case rover_msgs::msg::ArmMsg::J0: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER; break;
 
-        case rover_msgs::msg::ArmMsg::J1:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER;
-            break;
+            case rover_msgs::msg::ArmMsg::J1: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER; break;
 
-        case rover_msgs::msg::ArmMsg::J2:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER;
-            break;
+            case rover_msgs::msg::ArmMsg::J2: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER; break;
 
-        case rover_msgs::msg::ArmMsg::GRIPPER_TILT:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER;
-            break;
+            case rover_msgs::msg::ArmMsg::GRIPPER_TILT:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER;
+                break;
 
-        case rover_msgs::msg::ArmMsg::GRIPPER_ROT:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER;
-            break;
+            case rover_msgs::msg::ArmMsg::GRIPPER_ROT:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER;
+                break;
 
-        case rover_msgs::msg::ArmMsg::GRIPPER_CLOSE:
-            deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER;
-            break;
+            case rover_msgs::msg::ArmMsg::GRIPPER_CLOSE:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER;
+                break;
 
-        default:
-            RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
-            break;
+            default: RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error"); break;
         }
 
         canMsg.data.targetSpeed = rosMsg_->data[arrayIndex];
@@ -692,7 +730,7 @@ void CanMaster::CB_ROS_lightControl(const rover_msgs::msg::LightControl::SharedP
 void CanMaster::CB_ROS_cameraPano(const rover_msgs::msg::CameraAngle::SharedPtr rosMsg_)
 {
     RoverCanLib::Msgs::CamPan msg;
-    msg.data.servoPosition = rosMsg_-> angle;
+    msg.data.servoPosition = rosMsg_->angle;
 
     msg.sendMsg(RoverCanLib::Constant::eDeviceId::CAMERA_PAN, _canSocket, rclcpp::get_logger(LOGGER_NAME));
 }
