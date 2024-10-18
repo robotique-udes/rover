@@ -50,7 +50,6 @@ jobs:
             echo ""
             echo ""
             echo -e "\e[0;31m[=== [ERROR] Run ./lint-apply.sh to fix formatting ===]\e[0m"
-            exit 0
           fi
 
           exit 1
