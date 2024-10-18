@@ -41,15 +41,15 @@ void VideoTest::sparseDetection()
     }
 
     // Create some random colors
-    std::vector<cv::Scalar> colors;
-    cv::RNG rng;
-    for(int i = 0; i < 100; i++)
-    {
-        int r = rng.uniform(0, 256);
-        int g = rng.uniform(0, 256);
-        int b = rng.uniform(0, 256);
-        colors.push_back(cv::Scalar(r,g,b));
-    }
+    // std::vector<cv::Scalar> colors;
+    // cv::RNG rng;
+    // for(int i = 0; i < 100; i++)
+    // {
+    //     int r = rng.uniform(0, 256);
+    //     int g = rng.uniform(0, 256);
+    //     int b = rng.uniform(0, 256);
+    //     colors.push_back(cv::Scalar(r,g,b));
+    // }
     cv::Mat old_frame, old_gray;
     std::vector<cv::Point2f> p0, p1;
 
@@ -59,7 +59,7 @@ void VideoTest::sparseDetection()
     cv::goodFeaturesToTrack(old_gray, p0, 100, 0.3, 7, cv::Mat(), 7, false, 0.04);
 
     // Create a mask image for drawing purposes
-    cv::Mat mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
+    // cv::Mat mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
 
     int new_points_interval = 1000;
 
@@ -78,35 +78,45 @@ void VideoTest::sparseDetection()
         std::vector<float> err;
         cv::TermCriteria criteria = cv::TermCriteria((cv::TermCriteria::COUNT) + (cv::TermCriteria::EPS), 10, 0.03);
         calcOpticalFlowPyrLK(old_gray, frame_gray, p0, p1, status, err, cv::Size(15,15), 2, criteria);
-        std::vector<cv::Point2f> good_new;
+
+        std::vector<cv::Point2f> good_new, point_vector;
+
         for(uint i = 0; i < p0.size(); i++)
         {
             // Select good points
             if(status[i] == 1) {
                 good_new.push_back(p1[i]);
+                point_vector.push_back(p1[i] - p0[i]);
                 // draw the tracks
-                cv::line(mask,p1[i], p0[i], colors[i], 2);
-                cv::circle(frame, p1[i], 5, colors[i], -1);
+                // cv::line(mask,p1[i], p0[i], colors[i], 2);
+                // cv::circle(frame, p1[i], 5, colors[i], -1);
             }
         }
-        cv::Mat img;
-        cv::add(frame, mask, img);
-        cv::imshow("Frame", img);
-        int keyboard = cv::waitKey(30);
-        if (keyboard == 'q' || keyboard == 27)
-            break;
+
+        cv::Scalar mean = cv::mean(point_vector);
+        
+        RCLCPP_INFO(this->get_logger(), "Mean: %f %f", mean[0], mean[1]);
+
+        // cv::Mat img;
+        // cv::add(frame, mask, img);
+        // cv::imshow("Frame", img);
+        // int keyboard = cv::waitKey(30);
+        // if (keyboard == 'q' || keyboard == 27)
+        //     break;
+        
+
         // Now update the previous frame and previous points
         old_gray = frame_gray.clone();
 
         if (_point_timer.isDone())
         {
             cv::goodFeaturesToTrack(old_gray, good_new, 100, 0.3, 7, cv::Mat(), 7, false, 0.04);
-            mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
+            // mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
         }
         else if (good_new.size() == 0)
         {
             cv::goodFeaturesToTrack(old_gray, good_new, 100, 0.3, 7, cv::Mat(), 7, false, 0.04);
-            mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
+            // mask = cv::Mat::zeros(old_frame.size(), old_frame.type());
         }
         p0 = good_new;
         
