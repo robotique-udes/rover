@@ -28,7 +28,7 @@ jobs:
 
           echo "[=== Finding .clang-format file... ===]"
           if [ -z "$(find . -name '.clang-format' -print -quit)" ]; then
-            echo "[ERROR] .clang-format file not found in the repository!"
+            echo "[FAILED] .clang-format file not found in the repository!"
             exit 1
           else
             echo -e "\e[0;32m[OK]\e[0m .clang-format file found"
@@ -43,13 +43,13 @@ jobs:
             echo "Code is properly formatted."
             exit 0
           else
-            echo -e "[=== \e[0;31m[ERROR]\e[0m Formatting is not conform ===]"
+            echo -e "[=== \e[0;31m[FAILED]\e[0m Formatting is not conform ===]"
             echo ""
             echo ""
             git diff
             echo ""
             echo ""
-            echo -e "\e[0;31m[=== [ERROR] Run ./lint-apply.sh to fix formatting ===]\e[0m"
+            echo -e "\e[0;31m[=== [FAILED] Run ./lint-apply.sh to fix formatting ===]\e[0m"
           fi
 
           exit 1
