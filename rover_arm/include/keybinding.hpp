@@ -17,7 +17,7 @@ namespace KEYBINDING
     constexpr uint8_t JL_FWD = rover_msgs::msg::Joy::CROSS_RIGHT;
     constexpr uint8_t JL_REV = rover_msgs::msg::Joy::CROSS_LEFT;
 
-    constexpr uint8_t J0_FWD = rover_msgs::msg::Joy::B; 
+    constexpr uint8_t J0_FWD = rover_msgs::msg::Joy::B;
     constexpr uint8_t J0_REV = rover_msgs::msg::Joy::X;
 
     constexpr uint8_t J1 = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;

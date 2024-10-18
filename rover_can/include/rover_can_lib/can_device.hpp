@@ -1,18 +1,21 @@
 #ifndef __CAN_DEVICE_HPP__
 #define __CAN_DEVICE_HPP__
 
-#include "rover_can_lib/config.hpp"
-#include "rovus_lib/timer.hpp"
-#include "rover_can_lib/msgs/error_state.hpp"
 #include "rclcpp/rclcpp.hpp"
+#include "rover_can_lib/config.hpp"
+#include "rover_can_lib/msgs/error_state.hpp"
 #include "rover_msgs/msg/can_device_status.hpp"
+#include "rovus_lib/timer.hpp"
 
 class CanMaster;
 
 class CanDevice
 {
-public:
-    CanDevice(uint16_t id_, CanMaster* canMasterPtr_, void (CanMaster::*callback_)(uint16_t id_, const can_frame *frameMsg_), rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanBusState_)
+  public:
+    CanDevice(uint16_t id_,
+              CanMaster* canMasterPtr_,
+              void (CanMaster::*callback_)(uint16_t id_, const can_frame* frameMsg_),
+              rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr pub_CanBusState_)
     {
         _id = id_;
 
@@ -23,26 +26,21 @@ public:
         _canMasterPtr = canMasterPtr_;
 
         assert(pub_CanBusState_);
-        _pub_CanBusState = pub_CanBusState_; 
+        _pub_CanBusState = pub_CanBusState_;
 
         RCLCPP_INFO(this->getLogger(), "Device registered with ID: 0x%.3x", _id);
     }
     ~CanDevice() {}
 
-    void parseMsg(can_frame *frameMsg)
+    void parseMsg(can_frame* frameMsg)
     {
         switch (frameMsg->data[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
         {
-        case (uint8_t)RoverCanLib::Constant::eMsgId::HEARTBEAT:
-            this->resetWatchdog();
-            break;
+            case (uint8_t)RoverCanLib::Constant::eMsgId::HEARTBEAT: this->resetWatchdog(); break;
 
-        case (uint8_t)RoverCanLib::Constant::eMsgId::ERROR_STATE:
-            this->setErrorState(frameMsg);
-            break;
+            case (uint8_t)RoverCanLib::Constant::eMsgId::ERROR_STATE: this->setErrorState(frameMsg); break;
 
-        default:
-            (_canMasterPtr->*_callback)(this->getId(), frameMsg);
+            default: (_canMasterPtr->*_callback)(this->getId(), frameMsg);
         }
     }
 
@@ -51,13 +49,13 @@ public:
         return _id;
     }
 
-private:
+  private:
     uint16_t _id;
     rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
     rover_msgs::msg::CanDeviceStatus _msg_canStatus;
     RoverLib::Chrono<uint64_t, RoverLib::millis> _timerWatchdog;
     CanMaster* _canMasterPtr;
-    void (CanMaster::*_callback)(uint16_t id_, const can_frame *frameMsg_);
+    void (CanMaster::*_callback)(uint16_t id_, const can_frame* frameMsg_);
 
     void resetWatchdog()
     {
@@ -72,14 +70,15 @@ private:
         _timerWatchdog.restart();
     }
 
-    void setErrorState(can_frame *frameMsg)
+    void setErrorState(can_frame* frameMsg)
     {
         RoverCanLib::Msgs::ErrorState msg;
         if (msg.parseMsg(frameMsg, this->getLogger()) != RoverCanLib::Constant::eInternalErrorCode::OK)
         {
             RCLCPP_ERROR(this->getLogger(), "Error parsing ErrorCode message, dropping");
         }
-        _msg_canStatus.error_state = msg.data.warning ? rover_msgs::msg::CanDeviceStatus::STATUS_WARNING : rover_msgs::msg::CanDeviceStatus::STATUS_OK;
+        _msg_canStatus.error_state
+            = msg.data.warning ? rover_msgs::msg::CanDeviceStatus::STATUS_WARNING : rover_msgs::msg::CanDeviceStatus::STATUS_OK;
         _msg_canStatus.error_state = msg.data.error ? rover_msgs::msg::CanDeviceStatus::STATUS_ERROR : _msg_canStatus.error_state;
         _msg_canStatus.id = this->_id;
 
@@ -99,9 +98,9 @@ private:
     rclcpp::Logger getLogger()
     {
         std::stringstream ss;
-        ss << std::hex << _id; // Set the stream to output in hexadecimal
+        ss << std::hex << _id;  // Set the stream to output in hexadecimal
         return rclcpp::get_logger("0x" + ss.str());
     }
 };
 
-#endif // __CAN_DEVICE_HPP__
+#endif  // __CAN_DEVICE_HPP__
