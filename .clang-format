@@ -34,7 +34,7 @@ DerivePointerAlignment: 'false'
 FixNamespaceComments: 'true'
 IncludeBlocks: Preserve
 IndentCaseLabels: 'true'
-IndentPPDirectives: AfterHash
+IndentPPDirectives: None
 IndentWidth: '4'
 IndentWrappedFunctionNames: 'true'
 KeepEmptyLinesAtTheStartOfBlocks: 'false'
@@ -66,5 +66,15 @@ UseTab: Never
 BreakBeforeBraces: Custom
 BraceWrapping:
   BeforeLambdaBody: 'true'
-
+  AfterCaseLabel: 'true'
+  AfterEnum: 'true'
+  AfterFunction: 'true'
+  AfterNamespace: 'true'
+  AfterObjCDeclaration: 'true'
+  AfterUnion: 'true'
+  AfterExternBlock: 'true'
+  BeforeCatch: 'true'
+  BeforeElse: 'true'
+  BeforeLambdaBody: 'true'
+  BeforeWhile: 'true'
 ...

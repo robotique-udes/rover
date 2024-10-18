@@ -1,8 +1,8 @@
 #ifndef __ROVUS_EXCEPTIONS_H__
 #define __ROVUS_EXCEPTIONS_H__
 
-#include <stdexcept>
 #include "macros.h"
+#include <stdexcept>
 
 // =============================================================================
 // This header file is there to act as a library to define custom exception used
@@ -11,17 +11,16 @@
 
 class ExeptBadLaunchParameters : public std::exception
 {
-public:
-    ExeptBadLaunchParameters(const char *message)
-        : errorMessage(std::string("Bad Launch Parameters: " + std::string(message))) {}
+  public:
+    ExeptBadLaunchParameters(const char* message): errorMessage(std::string("Bad Launch Parameters: " + std::string(message))) {}
 
-    const char *what() const noexcept override
+    const char* what() const noexcept override
     {
         return errorMessage.c_str();
     }
 
-private:
+  private:
     std::string errorMessage;
 };
 
-#endif //__ROVUS_EXCEPTION_H__
+#endif  //__ROVUS_EXCEPTION_H__

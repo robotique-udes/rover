@@ -78,6 +78,6 @@ namespace RoverCanLib::Constant
         ERROR
     };
 
-}
+}  // namespace RoverCanLib::Constant
 
-#endif // __CONSTANT_HPP__
+#endif  // __CONSTANT_HPP__
