@@ -1,7 +1,7 @@
-#include <ament_index_cpp/get_package_prefix.hpp>
-
 #ifndef __MACROS_H__
 #define __MACROS_H__
+
+#include <ament_index_cpp/get_package_prefix.hpp>
 
 #define LOGGER this->get_logger()
 #define CLOCK *this->get_clock()
