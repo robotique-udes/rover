@@ -41,6 +41,7 @@ jobs:
           echo "[=== Checking for formatting changes... ===]"
           if git diff --quiet; then
             echo "Code is properly formatted."
+            exit 0
           else
             echo -e "[=== \e[0;31m[ERROR]\e[0m Formatting is not conform ===]"
             echo ""
@@ -49,5 +50,7 @@ jobs:
             echo ""
             echo ""
             echo -e "\e[0;31m[=== [ERROR] Run ./lint-apply.sh to fix formatting ===]\e[0m"
-            exit 1
+            exit 0
           fi
+
+          exit 1
