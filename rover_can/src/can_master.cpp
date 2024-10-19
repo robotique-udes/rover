@@ -197,8 +197,6 @@ int createSocket(const char *canNetworkName_)
         return -1;
     }
 
-#warning Testing warning!
-
     return canSocket;
 }
 
