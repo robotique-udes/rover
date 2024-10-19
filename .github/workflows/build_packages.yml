@@ -20,6 +20,7 @@ jobs:
         uses: actions/checkout@v2
 
       - name: Setup environment
+        shell: bash
         run: |
           echo "\e[0;34m=== Downloading and installing packages dependencies ... ===\e[0m"
           chmod +x scripts/provision.sh
