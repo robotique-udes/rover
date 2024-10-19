@@ -25,21 +25,15 @@ jobs:
       - name: Setup environment
         run: |
           set -e
-          
-          echo "=== Creating ROS workspace ... ==="
-          mkdir -p ~/ros2_ws/src
-          mv ./* ~/ros2_ws/src/  # Move all contents to the target directory
-          echo -e "\e[0;32m[OK]\e[0m"
 
           echo "=== Downloading and installing dependencies ... ==="
-          chmod +x ~/ros2_ws/src/rover/scripts/provision.sh
-          ~/ros2_ws/src/rover/scripts/provision.sh
+          chmod +x rover/scripts/provision.sh
+          rover/scripts/provision.sh
           echo -e "\e[0;32m[OK] Dependencies installed successfully\e[0m"
         
       - name: Building rover packages
         run: |
           echo "=== Sourcing for build ... ==="
-          cd ~/ros2_ws
           source /opt/ros/${{ matrix.ros_version }}/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
           
