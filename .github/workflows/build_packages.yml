@@ -26,8 +26,6 @@ jobs:
         run: |
         
           echo "=== DEBUG ... ==="
-          apt-get install tree
-          tree /
           find / -name "*setup.bash"
 
           echo "=== Downloading and installing dependencies ... ==="
