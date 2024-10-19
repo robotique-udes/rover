@@ -192,7 +192,7 @@ int createSocket(const char *canNetworkName_)
     // Set socket to non-blocking mode
     if (fcntl(canSocket, F_SETFL, O_NONBLOCK) < 0)
     {
-        RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Error updating socket parameters");
+        RCLCPP_ FATAL(rclcpp::get_logger(LOGGER_NAME), "Error updating socket parameters");
         close(canSocket);
         return -1;
     }
