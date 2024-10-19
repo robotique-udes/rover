@@ -28,6 +28,7 @@ jobs:
           echo -e "\e[0;32m[OK] Dependencies installed successfully\e[0m"
         
       - name: Building rover packages
+        shell: bash  
         run: |
           echo "\e[0;34m=== Sourcing for build ... ===\e[0m"
           source /opt/ros/humble/setup.bash
