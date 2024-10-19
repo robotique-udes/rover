@@ -9,11 +9,11 @@ on:
       - release/**
 
 jobs:
-  Build-ROS2-Rover-Packages:
+  humble-build:
     runs-on: ubuntu-22.04
 
     container:
-      image: osrf/ros:humnle-desktop
+      image: osrf/ros:humble-desktop
 
     steps:
       - name: Checkout code
