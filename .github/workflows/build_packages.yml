@@ -9,14 +9,11 @@ on:
       - release/**
 
 jobs:
-  build-ros2:
+  Build-ROS2-Rover-Packages:
     runs-on: ubuntu-22.04
-    strategy:
-      matrix:
-        ros_version: [humble]
 
     container:
-      image: osrf/ros:${{ matrix.ros_version }}-desktop
+      image: osrf/ros:humnle-desktop
 
     steps:
       - name: Checkout code
@@ -24,22 +21,18 @@ jobs:
 
       - name: Setup environment
         run: |
-        
-          echo "=== DEBUG ... ==="
-          find / -name "*setup.bash"
-
-          echo "=== Downloading and installing dependencies ... ==="
+          echo "\e[0;34m=== Downloading and installing packages dependencies ... ===\e[0m"
           chmod +x scripts/provision.sh
           scripts/provision.sh
           echo -e "\e[0;32m[OK] Dependencies installed successfully\e[0m"
         
       - name: Building rover packages
         run: |
-          echo "=== Sourcing for build ... ==="
-          source /opt/ros/${{ matrix.ros_version }}/setup.bash
+          echo "\e[0;34m=== Sourcing for build ... ===\e[0m"
+          source /opt/ros/humble/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
           
-          echo "=== Building ROS2 Packages ... ==="
+          echo "\e[0;34m=== Building ROS2 Packages ... ===\e[0m"
           if colcon build --event-handlers console_cohesion+; then
             echo "Build succeeded!"
             echo -e "\e[0;32m[SUCCESS]\e[0m"
