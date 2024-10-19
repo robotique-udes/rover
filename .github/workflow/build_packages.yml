@@ -1,0 +1,60 @@
+name: Build ROS2 Workspace
+
+on:
+  pull_request:
+    branches:
+      - release/**
+  push:
+    branches:
+      - release/**
+
+jobs:
+  build-ros2:
+    runs-on: ubuntu-22.04
+    strategy:
+      matrix:
+        ros_version: [humble]
+
+    container:
+      image: osrf/ros:${{ matrix.ros_version }}-desktop
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v2
+
+      - name: Setup environnement
+        run: |
+          set -e
+          
+          echo "=== Creating ROS workspace ... ==="
+          mkdir -p ~/ros2_ws/src
+          echo -e "\e[0;32m[OK]\e[0m"
+
+          echo "=== Clone repo ... ==="
+          cd ~/ros2_ws/src
+          git clone https://github.com/${{ github.repository }}.git
+          cd
+          echo -e "\e[0;32m[OK]\e[0m"
+
+          echo "=== Downloading and installing dependencies ... ==="
+          chmod + x ~/ros2_ws/src/rover/scripts/provision.sh
+          ~/ros2_ws/src/rover/scripts/provision.sh
+          echo -e "\e[0;32m[OK] Dependencies installed successfully\e[0m"
+
+      - name: Building rover packages
+        run: |
+          echo "=== Sourcing for build ... ==="
+          cd ~/ros2_ws
+          source /opt/ros/${{ matrix.ros_version }}/setup.bash
+          echo -e "\e[0;32m[OK]\e[0m"
+          
+          echo "=== Building ROS2 Packages ... ==="
+          if colcon build --event-handlers console_cohesion+; then
+            echo "Build succeeded!"
+            echo -e "\e[0;32m[SUCCESS]\e[0m"
+            exit 0
+          else
+            echo -e "\e[0;31m[FAILED] Building step triggered warnings or errors\e[0m"
+          fi
+
+          exit 1
