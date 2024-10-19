@@ -37,8 +37,7 @@ jobs:
           echo -e "\e[0;32m[OK]\e[0m"
 
           echo "=== Downloading and installing dependencies ... ==="
-          PWD
-          find . -name "provision.sh"
+          ls -R ~/ros2_ws/src
           chmod +x ~/ros2_ws/src/rover/scripts/provision.sh
           ~/ros2_ws/src/rover/scripts/provision.sh
           echo -e "\e[0;32m[OK] Dependencies installed successfully\e[0m"
