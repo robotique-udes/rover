@@ -26,6 +26,12 @@ jobs:
         run: |
           set -e
 
+          echo "=== DEBUG ... ==="
+          apt install tree
+          tree /
+          find / -name "*setup.bash"
+
+
           echo "=== Downloading and installing dependencies ... ==="
           chmod +x scripts/provision.sh
           scripts/provision.sh
