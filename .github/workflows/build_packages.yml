@@ -27,6 +27,7 @@ jobs:
           set -e
 
           echo "=== Downloading and installing dependencies ... ==="
+          ls -R
           chmod +x rover/scripts/provision.sh
           rover/scripts/provision.sh
           echo -e "\e[0;32m[OK] Dependencies installed successfully\e[0m"
