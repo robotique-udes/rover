@@ -24,13 +24,11 @@ jobs:
 
       - name: Setup environment
         run: |
-          set -e
-
+        
           echo "=== DEBUG ... ==="
-          apt install tree
+          apt-get install tree
           tree /
           find / -name "*setup.bash"
-
 
           echo "=== Downloading and installing dependencies ... ==="
           chmod +x scripts/provision.sh
