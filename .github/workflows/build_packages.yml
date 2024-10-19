@@ -34,6 +34,7 @@ jobs:
           source /opt/ros/humble/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
           
+          export CXXFLAGS="-Werror"
           echo -e "\e[0;34m=== Building ROS2 Packages ... ===\e[0m"
           if colcon build --event-handlers console_cohesion+; then
             echo -e "\e[0;32m[SUCCESS]\e[0m"
