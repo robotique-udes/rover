@@ -9,7 +9,8 @@ install(DIRECTORY
   config
   launch
   meshes
-  model
+  description
+  worlds
   DESTINATION share/${PROJECT_NAME}
 )
 

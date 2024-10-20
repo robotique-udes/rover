@@ -1,0 +1,40 @@
+<?xml version="1.0"?>
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+    <gazebo>
+        <plugin filename="libignition-gazebo-diff-drive-system.so" name="ignition::gazebo::systems::DiffDrive">
+            <left_joint>WHEEL_FL_JOINT</left_joint>
+            <right_joint>WHEEL_FR_JOINT</right_joint>
+            <wheel_separation>0.65290</wheel_separation>
+            <wheel_radius>0.27200</wheel_radius>
+            <odom_publish_frequency>30</odom_publish_frequency>\
+                                                            <!-- ADAPT TO REAL SPEED -->
+            <max_linear_acceleration>0.33</max_linear_acceleration>
+
+            <!-- Input -->
+            <topic>cmd_vel</topic>
+
+            <!-- Output -->
+            <frame_id>odom</frame_id>
+            <child_frame_id>base_link</child_frame_id>
+            <odom_topic>odom</odom_topic>
+            <odom_publisher_frequency>30</odom_publisher_frequency>
+
+            <tf_topic>/tf</tf_topic>
+        </plugin>
+
+        <plugin filename="gz-sim-joint-state-publisher-system" name="gz::sim::systems::JointStatePublisher">
+            <topic>joint_states</topic>
+            <joint_name>WHEEL_FL_JOINT</joint_name>
+            <joint_name>WHEEL_FR_JOINT</joint_name>
+        </plugin>
+
+        <!-- <plugin filename="libignition-gazebo-triggered-publisher-system.so" name="ignition::gazebo::systems::TriggeredPublisher">
+            <input type="ignition.msgs.Int32" topic="/keyboard/keypress">
+                <match field="data">16777237</match>
+            </input>
+            <output type="ignition.msgs.Twist" topic="/cmd_vel">
+          linear: {x: -0.5}, angular: {z: 0.0}
+            </output>
+        </plugin> -->
+    </gazebo>
+</robot>
