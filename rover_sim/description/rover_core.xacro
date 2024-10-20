@@ -1,5 +1,17 @@
 <?xml version="1.0"?>
-<robot name="rover">
+<robot xmlns:xacro="http://www.ros.org/wiki/xacro">
+
+    <material name="forest_green">
+        <color rgba="0.13 0.55 0.13 1"/>
+    </material>
+
+    <material name="grey">
+        <color rgba="0.5 0.5 0.5 1"/>
+    </material>
+
+    <material name="black">
+        <color rgba="0 0 0 1"/>
+    </material>
 
     <link name="base_link">
         <inertial>
@@ -24,6 +36,10 @@
         </collision>
     </link>
 
+    <gazebo reference="base_link">
+        <material>Gazebo/forest_green</material>
+    </gazebo>
+
     <link name="ROCKER_L">
         <inertial>
             <origin xyz="0.0576803895536336 0.0340847304368007 0.031349999159246" rpy="0 0 0" />
@@ -46,6 +62,10 @@
             </geometry>
         </collision>
     </link>
+
+    <gazebo reference="ROCKER_L">
+        <material>Gazebo/grey</material>
+    </gazebo>
 
     <link name="ROCKER_R">
         <inertial>
@@ -70,6 +90,10 @@
         </collision>
     </link>
 
+    <gazebo reference="ROCKER_R">
+        <material>Gazebo/grey</material>
+    </gazebo>
+
     <link name="WHEEL_FL">
         <inertial>
             <origin xyz="9.42478317611517E-11 2.81360871927372E-09 -0.0649999999999999" rpy="0 0 0" />
@@ -92,6 +116,10 @@
             </geometry>
         </collision>
     </link>
+
+    <gazebo reference="WHEEL_FL">
+        <material>Gazebo/black</material>
+    </gazebo>
 
     <link name="WHEEL_RL">
         <inertial>
@@ -116,6 +144,10 @@
         </collision>
     </link>
 
+    <gazebo reference="WHEEL_RL">
+        <material>Gazebo/black</material>
+    </gazebo>
+
     <link name="WHEEL_FR">
         <inertial>
             <origin xyz="9.42478317611517E-11 2.81360889231239E-09 -0.0649999999999999" rpy="0 0 0" />
@@ -137,7 +169,11 @@
                 <mesh filename="package://rover_sim/meshes/WHEEL_FR.STL" />
             </geometry>
         </collision>
-    </link>
+    </link>]
+
+    <gazebo reference="WHEEL_FR">
+        <material>Gazebo/black</material>
+    </gazebo>
 
     <link name="WHEEL_RR">
         <inertial>
@@ -161,6 +197,10 @@
             </geometry>
         </collision>
     </link>
+
+    <gazebo reference="WHEEL_RR">
+        <material>Gazebo/black</material>
+    </gazebo>
 
     <joint name="ROCKER_L_JOINT" type="revolute">
         <origin xyz="0.3766 -0.20681 0.078821" rpy="1.5708 0 1.5708" />
@@ -209,30 +249,5 @@
         <axis xyz="0 0 -0.999999999999999" />
         <limit lower="100" upper="100" effort="0" velocity="20" />
     </joint>
-
-    <gazebo>
-        <plugin filename="libignition-gazebo-diff-drive-system.so" name="ignition::gazebo::systems::DiffDrive">
-            <left_joint>WHEEL_FL_JOINT</left_joint>
-            <!-- <left_joint>WHEEL_RL_JOINT</left_joint> -->
-            <right_joint>WHEEL_FR_JOINT</right_joint>
-            <!-- <right_joint>WHEEL_RR_JOINT</right_joint> -->
-            <wheel_separation>0.65290</wheel_separation>
-            <wheel_radius>0.27200</wheel_radius>
-            <!-- Limits -->
-            <!-- <max_wheel_torque>200</max_wheel_torque> -->
-            <max_linear_acceleration>0.33</max_linear_acceleration>
-
-            <!-- Input -->
-            <topic>cmd_vel</topic>
-
-            <!-- Output -->
-            <frame_id>odom</frame_id>
-            <child_frame_id>base_link</child_frame_id>
-            <odom_topic>odom</odom_topic>
-            <odom_publisher_frequency>30</odom_publisher_frequency>
-
-            <tf_topic>/tf</tf_topic>
-        </plugin>
-    </gazebo>
 
 </robot>
