@@ -7,6 +7,6 @@ namespace RoverCanLib::Constant
 {
     constexpr uint8_t HEARTBEAT_FREQ = 4;
     constexpr uint16_t WATCHDOG_TIMEOUT_MS = 500;
-}
+}  // namespace RoverCanLib::Constant
 
-#endif // __CONFIG_HPP__
+#endif  // __CONFIG_HPP__

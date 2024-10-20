@@ -53,6 +53,6 @@ namespace RoverCanLib::UnionDefinition
         uint8_t dataBytes[sizeof(data)];
     };
 
-}
+}  // namespace RoverCanLib::UnionDefinition
 
-#endif // __UNION_TYPE_DEFINITION__
+#endif  // __UNION_TYPE_DEFINITION__

@@ -1,16 +1,16 @@
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/empty.hpp"
 #include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
+#include "rover_msgs/msg/propulsion_motor.hpp"
+#include "std_msgs/msg/empty.hpp"
 
 // Class definition
 class Teleop : public rclcpp::Node
 {
-public:
+  public:
     Teleop();
 
-private:
+  private:
     // Private members
     float _speedFactorCrawler;
     float _speedFactorNormal;
@@ -99,15 +99,14 @@ private:
                     adjusted_factor = 1.0f + _angularInput * _controlMapFactor;
                     speedRightMotor *= adjusted_factor < 0.01f ? 0.01f : adjusted_factor;
                 }
-                
             }
-            
+
             message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = speedLeftMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = speedRightMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = speedLeftMotor;
             message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = speedRightMotor;
         }
-        
+
         _pub_teleop_in->publish(message);
     }
 
@@ -116,7 +115,7 @@ private:
 };
 
 // Constructor
-Teleop::Teleop() : Node("teleop")
+Teleop::Teleop(): Node("teleop")
 {
     this->getParams();
 
@@ -127,7 +126,7 @@ Teleop::Teleop() : Node("teleop")
     _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1);
 }
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
     rclcpp::spin(std::make_shared<Teleop>());

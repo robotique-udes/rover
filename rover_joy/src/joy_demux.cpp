@@ -1,9 +1,9 @@
 #include "rclcpp/rclcpp.hpp"
-#include "rovus_lib/rovus_exceptions.h"
-#include "rovus_lib/macros.h"
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/srv/joy_demux_set_state.hpp"
+#include "rovus_lib/macros.h"
+#include "rovus_lib/rovus_exceptions.h"
 
 using namespace std::chrono_literals;
 
@@ -23,7 +23,7 @@ class JoyDemux : public rclcpp::Node
         none = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
 
-private:
+  private:
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_main;
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_secondary;
 
@@ -33,26 +33,26 @@ private:
     rclcpp::Publisher<rover_msgs::msg::JoyDemuxStatus>::SharedPtr _pub_status;
 
     rclcpp::Service<rover_msgs::srv::JoyDemuxSetState>::SharedPtr _srv_demux;
-    
+
     rclcpp::TimerBase::SharedPtr _timer_status;
 
     eDemuxDestination _dest_main = eDemuxDestination::none;
     eDemuxDestination _dest_secondary = eDemuxDestination::none;
 
-    void callbackJoy(const rover_msgs::msg::Joy &msg, int8_t controller_type);
+    void callbackJoy(const rover_msgs::msg::Joy& msg, int8_t controller_type);
     void callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
                        std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response);
     void callbackStatus();
-    
+
     void redirectMsg(eDemuxDestination dest, rover_msgs::msg::Joy msg);
     bool isIdle(eDemuxDestination dest);
 
-public:
+  public:
     JoyDemux();
     ~JoyDemux() {}
 };
 
-int main(int argc, char *argv[])
+int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
 
@@ -60,7 +60,7 @@ int main(int argc, char *argv[])
     {
         rclcpp::spin(std::make_shared<JoyDemux>());
     }
-    catch (const std::exception &e)
+    catch (const std::exception& e)
     {
         RCLCPP_FATAL(rclcpp::get_logger("Dead Node"), "Killing node on exception: %s", e.what());
     }
@@ -69,7 +69,7 @@ int main(int argc, char *argv[])
     return 0;
 }
 
-JoyDemux::JoyDemux() : Node("joy_demux")
+JoyDemux::JoyDemux(): Node("joy_demux")
 {
     _sub_main = this->create_subscription<rover_msgs::msg::Joy>("main_joy",
                                                                 1,
@@ -86,12 +86,14 @@ JoyDemux::JoyDemux() : Node("joy_demux")
     _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("/base/antenna/joy", 1);
     _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("/joy/demux/status", 1);
 
-    _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>("demux_control", std::bind(&JoyDemux::callbackDemux, this, std::placeholders::_1, std::placeholders::_2));
+    _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
+        "demux_control",
+        std::bind(&JoyDemux::callbackDemux, this, std::placeholders::_1, std::placeholders::_2));
 
     _timer_status = this->create_wall_timer(250ms, std::bind(&JoyDemux::callbackStatus, this));
 }
 
-void JoyDemux::callbackJoy(const rover_msgs::msg::Joy &msg, int8_t controller_type)
+void JoyDemux::callbackJoy(const rover_msgs::msg::Joy& msg, int8_t controller_type)
 {
     eDemuxDestination dest = eDemuxDestination::none;
 
