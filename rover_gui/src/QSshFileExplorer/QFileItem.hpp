@@ -22,4 +22,4 @@ class QFileItem
     std::shared_ptr<QStandardItem> _lastModified = std::make_shared<QStandardItem>();
 };
 
-#endif // __Q_FILE_ITEM__
+#endif  // __Q_FILE_ITEM__

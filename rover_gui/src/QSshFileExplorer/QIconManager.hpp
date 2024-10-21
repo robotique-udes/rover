@@ -5,8 +5,8 @@
 
 /**
  * @brief Singleton to manage icons from certain extension
- * User should only call getInstance().getIcon(); 
- * 
+ * User should only call getInstance().getIcon();
+ *
  */
 class QIconManager
 {
@@ -16,16 +16,16 @@ class QIconManager
 
     /**
      * @brief Return the singleton object
-     * 
-     * @return IconManager& 
+     *
+     * @return IconManager&
      */
     static const QIconManager& getInstance(void);
 
     /**
      * @brief Return a QIcon& from an extension as a string
-     * 
-     * @param extension_ 
-     * @return const QIcon& 
+     *
+     * @param extension_
+     * @return const QIcon&
      */
     const QIcon& getIcon(const std::string& extension_) const;
 
