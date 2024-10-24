@@ -1,4 +1,5 @@
 #include <QGridLayout>
+#include <QSplitter>
 
 #include "QSshFileExplorerWidget.hpp"
 
@@ -10,6 +11,7 @@ class QFileTransferWidget : public QWidget
 
   private:
     QGridLayout _mainLayout;
+    QSplitter _splitter;
     QSshFileExplorerWidget _localFileSystem;
     QSshFileExplorerWidget _roverFileSystem;
 };
