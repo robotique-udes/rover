@@ -18,6 +18,8 @@ sudo apt -y install qt6-base-dev
 sudo apt -y install python3-gi
 sudo apt -y install libssh-dev
 sudo apt -y install sl
+sudo apt -y install libgstrtspserver-1.0-dev
+sudo apt -y install clang-format
 
 echo -e "\e[0;32m[OK]\e[0m"
 
