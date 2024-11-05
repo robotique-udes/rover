@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>736</width>
-    <height>419</height>
+    <width>912</width>
+    <height>630</height>
    </rect>
   </property>
   <property name="cursor">
@@ -306,7 +306,7 @@ QStatusBar {
       </layout>
      </item>
      <item>
-      <widget class="QTreeView" name="tv_fileExplorer">
+      <widget class="QTreeViewExplorer" name="tv_fileExplorer">
        <property name="minimumSize">
         <size>
          <width>0</width>
@@ -315,6 +315,9 @@ QStatusBar {
        </property>
        <property name="cursor" stdset="0">
         <cursorShape>PointingHandCursor</cursorShape>
+       </property>
+       <property name="contextMenuPolicy">
+        <enum>Qt::CustomContextMenu</enum>
        </property>
        <property name="frameShadow">
         <enum>QFrame::Sunken</enum>
@@ -355,6 +358,13 @@ QStatusBar {
    </item>
   </layout>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QTreeViewExplorer</class>
+   <extends>QTreeView</extends>
+   <header>../../src/QSshFileExplorer/QTreeViewExplorer.hpp</header>
+  </customwidget>
+ </customwidgets>
  <resources/>
  <connections/>
 </ui>

@@ -7,6 +7,8 @@
 #include <QMessageBox>
 #include <QThread>
 
+#include <fcntl.h>
+
 QSshWorker::QSshWorker(bool start_, QObject* parent_): QWorker(start_, parent_) {}
 
 QSshWorker::~QSshWorker()
@@ -30,7 +32,7 @@ void QSshWorker::refreshStructureInternal(std::string username_, std::string hos
 {
     ssh_session pSession = nullptr;
 
-    if (!handleAuth(username_, hostname_, pSession) || !pSession)
+    if (!getSession(username_, hostname_, pSession) || !pSession)
     {
         ssh_disconnect(pSession);
         return;
@@ -113,7 +115,7 @@ void QSshWorker::refreshStructureInternal(std::string username_, std::string hos
     emit this->newStructureReady();
 }
 
-bool QSshWorker::handleAuth(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_)
+bool QSshWorker::getSession(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_)
 {
     int sshStatusCode = SSH_ERROR;
     for (uint8_t i = 0; sshStatusCode != SSH_AUTH_SUCCESS && i < MAX_LOGIN_ATTEMPT; i++)
@@ -227,4 +229,60 @@ std::string QSshWorker::getFileExtension(const std::string& filename_) const
 std::string QSshWorker::unixTimeToString(const uint32_t unixTime_) const
 {
     return QDateTime::fromSecsSinceEpoch(unixTime_).toString("yyyy/MM/dd HH:mm").toStdString();
+}
+
+void QSshWorker::downloadFile(IN const std::string& rUsername_,
+                              IN const std::string& rHostname_,
+                              const std::string source_url_,
+                              const std::string destination_path_)
+{
+    // ssh_session pSSHSession = nullptr;
+    // if (!getSession(rUsername_, rHostname_, pSSHSession) || !pSSHSession)
+    // {
+    //     RCLCPP_INFO(rclcpp::get_logger("GUI"), "Error getting session, no file will be transfered");
+    //     return;
+    // }
+
+    // sftp_session sftp = sftp_new(pSSHSession);
+    // sftp_file file = sftp_open(sftp, destination_path_.c_str(), O_RDONLY, 0);
+
+    // if (file == NULL)
+    // {
+    //     std::cerr << "Error opening remote file: " << ssh_get_error(sftp_get_session(sftp)) << std::endl;
+    //     return false;
+    // }
+
+    // QFile localFile(localPath);
+    // if (!localFile.open(QIODevice::WriteOnly))
+    // {
+    //     std::cerr << "Error opening local file for writing." << std::endl;
+    //     sftp_close(file);
+    //     return false;
+    // }
+
+    // char buffer[4096];  // 4 KB buffer
+    // ssize_t nbytes;
+    // qint64 totalBytesRead = 0;
+
+    // while ((nbytes = sftp_read(file, buffer, sizeof(buffer))) > 0)
+    // {
+    //     localFile.write(buffer, nbytes);  // Write the buffer to the local file
+    //     totalBytesRead += nbytes;
+
+    //     // Optionally, print progress (every 10 MB, for example)
+    //     if (totalBytesRead % (10 * 1024 * 1024) == 0)
+    //     {
+    //         std::cout << "Downloaded: " << totalBytesRead / (1024 * 1024) << " MB" << std::endl;
+    //     }
+    // }
+
+    // if (nbytes < 0)
+    // {
+    //     std::cerr << "Error reading remote file." << std::endl;
+    // }
+
+    // sftp_close(file);
+    // localFile.close();
+
+    // return nbytes >= 0;
 }

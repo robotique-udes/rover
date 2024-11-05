@@ -51,7 +51,8 @@ add_executable(main_gui src/main_gui.cpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.hpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.cpp
                         src/QSshFileExplorer/QSshWorker.hpp
-                        src/QSshFileExplorer/QSshWorker.cpp)
+                        src/QSshFileExplorer/QSshWorker.cpp
+                        src/QSshFileExplorer/QTreeViewExplorer.hpp)
 add_dependencies(main_gui run_generate_ui)
 
 target_link_libraries(main_gui 

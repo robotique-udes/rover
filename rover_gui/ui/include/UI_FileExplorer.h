@@ -19,148 +19,148 @@
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QTreeView>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "../../src/QSshFileExplorer/QTreeViewExplorer.hpp"
 
 QT_BEGIN_NAMESPACE
 
 class Ui_FileExplorer
 {
-  public:
-    QGridLayout* gridLayout;
-    QVBoxLayout* verticalLayout_3;
-    QHBoxLayout* horizontalLayout_3;
-    QLineEdit* le_user;
-    QLineEdit* le_hostIP;
-    QSpacerItem* horizontalSpacer;
-    QCheckBox* cb_showHiddenFile;
-    QPushButton* pb_refresh;
-    QHBoxLayout* horizontalLayout;
-    QLineEdit* le_path;
-    QPushButton* pb_pathCopy;
-    QTreeView* tv_fileExplorer;
+public:
+    QGridLayout *gridLayout;
+    QVBoxLayout *verticalLayout_3;
+    QHBoxLayout *horizontalLayout_3;
+    QLineEdit *le_user;
+    QLineEdit *le_hostIP;
+    QSpacerItem *horizontalSpacer;
+    QCheckBox *cb_showHiddenFile;
+    QPushButton *pb_refresh;
+    QHBoxLayout *horizontalLayout;
+    QLineEdit *le_path;
+    QPushButton *pb_pathCopy;
+    QTreeViewExplorer *tv_fileExplorer;
 
-    void setupUi(QWidget* FileExplorer)
+    void setupUi(QWidget *FileExplorer)
     {
         if (FileExplorer->objectName().isEmpty())
             FileExplorer->setObjectName(QString::fromUtf8("FileExplorer"));
-        FileExplorer->resize(736, 419);
+        FileExplorer->resize(912, 630);
         FileExplorer->setCursor(QCursor(Qt::ArrowCursor));
         FileExplorer->setStyleSheet(QString::fromUtf8("QWidget {\n"
-                                                      "    background-color: #2e2e2e;\n"
-                                                      "    color: #ffffff;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QMenuBar {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    color: #ffffff;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QMenu {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    color: #ffffff;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QMenu::item {\n"
-                                                      "    padding: 5px 30px;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QMenu::item:selected {\n"
-                                                      "    background-color: #4a4e54;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QPushButton {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    border: 1px solid #4b4e52;\n"
-                                                      "    border-radius: 5px;\n"
-                                                      "    padding: 5px 10px;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QPushButton:hover {\n"
-                                                      "    background-color: #4d4d4d;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QLineEdit {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    color: #ffffff;\n"
-                                                      "    border: 1px solid #4b4e52;\n"
-                                                      "    border-radius: 5px;\n"
-                                                      "    padding: 5px;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QTextEdit {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    color: #ffffff;\n"
-                                                      "    border: 1px solid #4b4e52;\n"
-                                                      "    border-radius: 5px;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QLabel {\n"
-                                                      "    color: #ffffff;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QScrollBar:vertical {\n"
-                                                      "    background: #2e2e2e;\n"
-                                                      ""
-                                                      "    width: 10px;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QScrollBar::handle:vertical {\n"
-                                                      "    background: #4b4e52;\n"
-                                                      "    border-radius: 5px;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QScrollBar::add-line:vertical,\n"
-                                                      "QScrollBar::sub-line:vertical {\n"
-                                                      "    background: none;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QCheckBox {\n"
-                                                      "    color: #ffffff;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QRadioButton {\n"
-                                                      "    color: #ffffff;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QRadioButton::indicator {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    border: 1px solid #4b4e52;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QRadioButton::indicator:checked {\n"
-                                                      "    background-color: #4d4d4d;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QTabWidget::pane {\n"
-                                                      "    background-color: #2e2e2e;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QTabBar::tab {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    color: #ffffff;\n"
-                                                      "    padding: 10px;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QTabBar::tab:selected {\n"
-                                                      "    background-color: #4d4d4d;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QProgressBar {\n"
-                                                      "    background-color: #4b4e52;\n"
-                                                      "    color: #ffffff;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QProgressBar::chunk {\n"
-                                                      "    background-color: #5cb85c;\n"
-                                                      "}\n"
-                                                      "\n"
-                                                      "QStatusBar {\n"
-                                                      "    background-color: #3c3f41;\n"
-                                                      "    color: #fff"
-                                                      "fff;\n"
-                                                      "}"));
+"    background-color: #2e2e2e;\n"
+"    color: #ffffff;\n"
+"}\n"
+"\n"
+"QMenuBar {\n"
+"    background-color: #3c3f41;\n"
+"    color: #ffffff;\n"
+"}\n"
+"\n"
+"QMenu {\n"
+"    background-color: #3c3f41;\n"
+"    color: #ffffff;\n"
+"}\n"
+"\n"
+"QMenu::item {\n"
+"    padding: 5px 30px;\n"
+"}\n"
+"\n"
+"QMenu::item:selected {\n"
+"    background-color: #4a4e54;\n"
+"}\n"
+"\n"
+"QPushButton {\n"
+"    background-color: #3c3f41;\n"
+"    border: 1px solid #4b4e52;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px 10px;\n"
+"}\n"
+"\n"
+"QPushButton:hover {\n"
+"    background-color: #4d4d4d;\n"
+"}\n"
+"\n"
+"QLineEdit {\n"
+"    background-color: #3c3f41;\n"
+"    color: #ffffff;\n"
+"    border: 1px solid #4b4e52;\n"
+"    border-radius: 5px;\n"
+"    padding: 5px;\n"
+"}\n"
+"\n"
+"QTextEdit {\n"
+"    background-color: #3c3f41;\n"
+"    color: #ffffff;\n"
+"    border: 1px solid #4b4e52;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QLabel {\n"
+"    color: #ffffff;\n"
+"}\n"
+"\n"
+"QScrollBar:vertical {\n"
+"    background: #2e2e2e;\n"
+""
+                        "    width: 10px;\n"
+"}\n"
+"\n"
+"QScrollBar::handle:vertical {\n"
+"    background: #4b4e52;\n"
+"    border-radius: 5px;\n"
+"}\n"
+"\n"
+"QScrollBar::add-line:vertical,\n"
+"QScrollBar::sub-line:vertical {\n"
+"    background: none;\n"
+"}\n"
+"\n"
+"QCheckBox {\n"
+"    color: #ffffff;\n"
+"}\n"
+"\n"
+"QRadioButton {\n"
+"    color: #ffffff;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator {\n"
+"    background-color: #3c3f41;\n"
+"    border: 1px solid #4b4e52;\n"
+"}\n"
+"\n"
+"QRadioButton::indicator:checked {\n"
+"    background-color: #4d4d4d;\n"
+"}\n"
+"\n"
+"QTabWidget::pane {\n"
+"    background-color: #2e2e2e;\n"
+"}\n"
+"\n"
+"QTabBar::tab {\n"
+"    background-color: #3c3f41;\n"
+"    color: #ffffff;\n"
+"    padding: 10px;\n"
+"}\n"
+"\n"
+"QTabBar::tab:selected {\n"
+"    background-color: #4d4d4d;\n"
+"}\n"
+"\n"
+"QProgressBar {\n"
+"    background-color: #4b4e52;\n"
+"    color: #ffffff;\n"
+"}\n"
+"\n"
+"QProgressBar::chunk {\n"
+"    background-color: #5cb85c;\n"
+"}\n"
+"\n"
+"QStatusBar {\n"
+"    background-color: #3c3f41;\n"
+"    color: #fff"
+                        "fff;\n"
+"}"));
         gridLayout = new QGridLayout(FileExplorer);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
         verticalLayout_3 = new QVBoxLayout();
@@ -211,6 +211,7 @@ class Ui_FileExplorer
 
         horizontalLayout_3->addWidget(pb_refresh);
 
+
         verticalLayout_3->addLayout(horizontalLayout_3);
 
         horizontalLayout = new QHBoxLayout();
@@ -238,12 +239,9 @@ class Ui_FileExplorer
         pb_pathCopy->setCursor(QCursor(Qt::PointingHandCursor));
         QIcon icon;
         QString iconThemeName = QString::fromUtf8("edit-copy");
-        if (QIcon::hasThemeIcon(iconThemeName))
-        {
+        if (QIcon::hasThemeIcon(iconThemeName)) {
             icon = QIcon::fromTheme(iconThemeName);
-        }
-        else
-        {
+        } else {
             icon.addFile(QString::fromUtf8("."), QSize(), QIcon::Normal, QIcon::Off);
         }
         pb_pathCopy->setIcon(icon);
@@ -253,12 +251,14 @@ class Ui_FileExplorer
 
         horizontalLayout->addWidget(pb_pathCopy);
 
+
         verticalLayout_3->addLayout(horizontalLayout);
 
-        tv_fileExplorer = new QTreeView(FileExplorer);
+        tv_fileExplorer = new QTreeViewExplorer(FileExplorer);
         tv_fileExplorer->setObjectName(QString::fromUtf8("tv_fileExplorer"));
         tv_fileExplorer->setMinimumSize(QSize(0, 300));
         tv_fileExplorer->viewport()->setProperty("cursor", QVariant(QCursor(Qt::PointingHandCursor)));
+        tv_fileExplorer->setContextMenuPolicy(Qt::CustomContextMenu);
         tv_fileExplorer->setFrameShadow(QFrame::Sunken);
         tv_fileExplorer->setEditTriggers(QAbstractItemView::DoubleClicked);
         tv_fileExplorer->setTabKeyNavigation(true);
@@ -273,16 +273,19 @@ class Ui_FileExplorer
 
         verticalLayout_3->addWidget(tv_fileExplorer);
 
+
         gridLayout->addLayout(verticalLayout_3, 0, 0, 1, 1);
+
 
         retranslateUi(FileExplorer);
 
         pb_pathCopy->setDefault(false);
 
-        QMetaObject::connectSlotsByName(FileExplorer);
-    }  // setupUi
 
-    void retranslateUi(QWidget* FileExplorer)
+        QMetaObject::connectSlotsByName(FileExplorer);
+    } // setupUi
+
+    void retranslateUi(QWidget *FileExplorer)
     {
         FileExplorer->setWindowTitle(QCoreApplication::translate("FileExplorer", "Form", nullptr));
         le_user->setText(QString());
@@ -296,17 +299,15 @@ class Ui_FileExplorer
         pb_pathCopy->setText(QString());
 #if QT_CONFIG(shortcut)
         pb_pathCopy->setShortcut(QString());
-#endif  // QT_CONFIG(shortcut)
-    }   // retranslateUi
+#endif // QT_CONFIG(shortcut)
+    } // retranslateUi
+
 };
 
-namespace Ui
-{
-    class FileExplorer : public Ui_FileExplorer
-    {
-    };
-}  // namespace Ui
+namespace Ui {
+    class FileExplorer: public Ui_FileExplorer {};
+} // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif  // UI_FILEEXPLORER_H
+#endif // UI_FILEEXPLORER_H

@@ -9,6 +9,9 @@ QFileTransferWidget::QFileTransferWidget(QWidget* parent_):
     _localFileSystem.getUI().cb_showHiddenFile->setChecked(false);
     _roverFileSystem.getUI().cb_showHiddenFile->setChecked(false);
 
+    _roverFileSystem.linkFriendTreeView(_localFileSystem.getUI().tv_fileExplorer);
+    _localFileSystem.linkFriendTreeView(_roverFileSystem.getUI().tv_fileExplorer);
+
     _splitter.addWidget(&_roverFileSystem);
     _splitter.addWidget(&_localFileSystem);
 

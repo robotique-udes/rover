@@ -17,6 +17,7 @@ QMenuBar {
 QMenu {
     background-color: #3c3f41;
     color: #ffffff;
+    border-radius: 10px;
 }
 
 QMenu::item {
