@@ -147,6 +147,7 @@ JoyFormator::JoyFormator(): Node("joy_formator")
     _pub_joy_formatted = this->create_publisher<rover_msgs::msg::Joy>("formated/joy", 1);
 
     _timer = this->create_wall_timer(10ms, std::bind(&JoyFormator::callbackPubJoy, this));
+    
 }
 
 void JoyFormator::callbackJoy(const sensor_msgs::msg::Joy& msg)
@@ -193,7 +194,7 @@ void JoyFormator::callbackPubJoy()
         _pub_joy_formatted->publish(_last_formatted_joy_msg);
         return;
     }
-
+    RCLCPP_INFO(LOGGER, "ici");
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::A] = getJoyValue<bool>(Keybinding::a);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::B] = getJoyValue<bool>(Keybinding::b);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::X] = getJoyValue<bool>(Keybinding::x);
