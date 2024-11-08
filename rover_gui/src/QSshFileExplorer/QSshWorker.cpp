@@ -1,13 +1,20 @@
 #include "QSshWorker.hpp"
 
+#include <fcntl.h>
 #include <rclcpp/rclcpp.hpp>
 
 #include <QApplication>
 #include <QDateTime>
+#include <QDir>
+#include <QFile>
 #include <QMessageBox>
-#include <QThread>
+#include <QUuid>
 
-#include <fcntl.h>
+#include "../Global/QTmpFolderManager.hpp"
+#include "rovus_lib/macros.h"
+
+#warning TODO: Add helpers to get ssh session and sftp session
+#warning TODO: Link correct path with OPEN
 
 QSshWorker::QSshWorker(bool start_, QObject* parent_): QWorker(start_, parent_) {}
 
@@ -20,6 +27,14 @@ void QSshWorker::refreshStructure(std::string username_, std::string hostname_, 
 {
     this->addTask([username = std::move(username_), hostname = std::move(hostname_), path = std::move(path_), this](void)
                   { this->refreshStructureInternal(username, hostname, path); });
+}
+
+void QSshWorker::downloadFile(IN const std::string& rUsername_,
+                              IN const std::string& rHostname_,
+                              IN const std::string& rfilePath_)
+{
+    this->addTask([username = rUsername_, hostname = rHostname_, path = rfilePath_, this](void)
+                  { this->downloadFileInternal(username, hostname, path); });
 }
 
 std::vector<QFileItem> QSshWorker::getStructure(void)
@@ -231,58 +246,109 @@ std::string QSshWorker::unixTimeToString(const uint32_t unixTime_) const
     return QDateTime::fromSecsSinceEpoch(unixTime_).toString("yyyy/MM/dd HH:mm").toStdString();
 }
 
-void QSshWorker::downloadFile(IN const std::string& rUsername_,
-                              IN const std::string& rHostname_,
-                              const std::string source_url_,
-                              const std::string destination_path_)
+void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
+                                      IN const std::string& rHostname_,
+                                      IN const std::string& rRemoteFilePath_)
 {
-    // ssh_session pSSHSession = nullptr;
-    // if (!getSession(rUsername_, rHostname_, pSSHSession) || !pSSHSession)
-    // {
-    //     RCLCPP_INFO(rclcpp::get_logger("GUI"), "Error getting session, no file will be transfered");
-    //     return;
-    // }
+    bool success = true;
 
-    // sftp_session sftp = sftp_new(pSSHSession);
-    // sftp_file file = sftp_open(sftp, destination_path_.c_str(), O_RDONLY, 0);
+    ssh_session pSSHSession = nullptr;
+    sftp_session sftp = nullptr;
+    sftp_file pfile = nullptr;
 
-    // if (file == NULL)
-    // {
-    //     std::cerr << "Error opening remote file: " << ssh_get_error(sftp_get_session(sftp)) << std::endl;
-    //     return false;
-    // }
+    if (!getSession(rUsername_, rHostname_, pSSHSession) || !pSSHSession)
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error getting SSH session, no file will be transferred");
+        success = false;
+    }
 
-    // QFile localFile(localPath);
-    // if (!localFile.open(QIODevice::WriteOnly))
-    // {
-    //     std::cerr << "Error opening local file for writing." << std::endl;
-    //     sftp_close(file);
-    //     return false;
-    // }
+    if (success)
+    {
+        sftp = sftp_new(pSSHSession);
+        if (!sftp)
+        {
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session for " << rUsername_ << "@" << rHostname_);
+            success = false;
+        }
+    }
 
-    // char buffer[4096];  // 4 KB buffer
-    // ssize_t nbytes;
-    // qint64 totalBytesRead = 0;
+    if (success && sftp_init(sftp) != SSH_OK)
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error initializing SFTP session: " << ssh_get_error(sftp));
+        success = false;
+    }
 
-    // while ((nbytes = sftp_read(file, buffer, sizeof(buffer))) > 0)
-    // {
-    //     localFile.write(buffer, nbytes);  // Write the buffer to the local file
-    //     totalBytesRead += nbytes;
+    if (success)
+    {
+        pfile = sftp_open(sftp, rRemoteFilePath_.c_str(), O_RDONLY, 0);
+        if (!pfile)
+        {
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
+                               "Error opening file: " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_ << " ("
+                                                      << ssh_get_error(pSSHSession) << ")");
+            success = false;
+        }
+    }
 
-    //     // Optionally, print progress (every 10 MB, for example)
-    //     if (totalBytesRead % (10 * 1024 * 1024) == 0)
-    //     {
-    //         std::cout << "Downloaded: " << totalBytesRead / (1024 * 1024) << " MB" << std::endl;
-    //     }
-    // }
+    std::string tempFolder;
+    if (success && !QTmpFolderManager::getInstance().getTempFolderPath(tempFolder))
+    {
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"),
+                            "Couldn't create tmp folder for this gui session, expect some things to not work");
+        success = false;
+    }
 
-    // if (nbytes < 0)
-    // {
-    //     std::cerr << "Error reading remote file." << std::endl;
-    // }
+    std::string fileName = QFileInfo(QString::fromStdString(rRemoteFilePath_)).fileName().toStdString();
+    QFile localFile(QString::fromStdString(tempFolder + "/" + fileName));
+    if (success)
+    {
+        if (!localFile.open(QIODevice::WriteOnly))
+        {
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Couldn't open local file for writting");
+            success = false;
+        }
+    }
 
-    // sftp_close(file);
-    // localFile.close();
+    if (success)
+    {
+        char buffer[4096];
+        ssize_t nbytes;
+        qint64 totalBytesRead = 0;
 
-    // return nbytes >= 0;
+        while ((nbytes = sftp_read(pfile, buffer, sizeof(buffer))) > 0)
+        {
+            localFile.write(buffer, nbytes);
+            totalBytesRead += nbytes;
+
+            if (totalBytesRead % (10 * 1024 * 1024) == 0)
+            {
+                RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"),
+                                   "Downloaded: " << totalBytesRead / (1024 * 1024) << " MB" << std::endl);
+            }
+        }
+
+        if (nbytes < 0)
+        {
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error (" << nbytes << ") " << "while transfering file");
+            success = false;
+        }
+    }
+
+    if (pfile)
+    {
+        sftp_close(pfile);
+    }
+    if (sftp)
+    {
+        sftp_free(sftp);
+    }
+    if (pSSHSession)
+    {
+        ssh_free(pSSHSession);
+    }
+
+    if (!success)
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "File transfer of " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_ << " was unsuccessful.");
+    }
 }

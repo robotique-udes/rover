@@ -173,7 +173,12 @@ void QSshFileExplorerWidget::handleRightClick(const QPoint& pos_)
     }
 }
 
-void QSshFileExplorerWidget::handleActionMenuOpen(void) {}
+void QSshFileExplorerWidget::handleActionMenuOpen(void)
+{
+    _sshWorkerThread.downloadFile(_ui.le_user->text().toStdString(),
+                                  _ui.le_hostIP->text().toStdString(),
+                                  _ui.le_path->text().toStdString());
+}
 
 void QSshFileExplorerWidget::handleActionMenuRename(void) {}
 

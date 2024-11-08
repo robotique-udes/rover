@@ -21,13 +21,15 @@ class QSshWorker : public QWorker
 
     /**
      * @brief *Async* Retrieves the folder structure at the specified user@host:path and emits newStructureReady() when the new
-     * data is ready
+     * data is ready. Call QSshWorker::getStructure() to retrieve the updated data.
      *
      * @param username_
      * @param hostname_
      * @param path_
      */
     void refreshStructure(std::string username_, std::string hostname_, std::string path_);
+    void downloadFile(IN const std::string& rUsername_, IN const std::string& rHostname_, IN const std::string& rfilePath_);
+
     std::vector<QFileItem> getStructure(void);
 
   signals:
@@ -51,10 +53,9 @@ class QSshWorker : public QWorker
     std::string getFileExtension(const std::string& filename_) const;
     std::string unixTimeToString(const uint32_t unixTime_) const;
 
-    void downloadFile(IN const std::string& rUsername_,
-                      IN const std::string& rHostname_,
-                      const std::string source_file_,
-                      const std::string destination_file_);
+    void downloadFileInternal(IN const std::string& rUsername_,
+                              IN const std::string& rHostname_,
+                              IN const std::string& rRemoteFilePath_);
 
     std::mutex _filesMutex;
     std::vector<QFileItem> _files;

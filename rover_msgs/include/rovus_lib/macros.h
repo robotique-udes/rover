@@ -54,4 +54,6 @@
 #define GET_PACKAGE_SOURCE_DIR(package_name) \
     (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
 
+#define GET_WORSE_OF(A, B) (A == true && B == true)
+
 #endif  //__MACROS_H__

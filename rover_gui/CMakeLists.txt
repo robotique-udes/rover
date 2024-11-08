@@ -38,9 +38,11 @@ add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
 add_executable(main_gui src/main_gui.cpp
                         
+                        src/Global/Constant/StyleSheet.hpp
                         src/Global/QWorker.hpp
                         src/Global/QWorker.cpp
-                        src/Global/Constant/StyleSheet.hpp
+                        src/Global/QTmpFolderManager.hpp
+                        src/Global/QTmpFolderManager.cpp
 
                         src/QSshFileExplorer/QIconManager.hpp
                         src/QSshFileExplorer/QIconManager.cpp
