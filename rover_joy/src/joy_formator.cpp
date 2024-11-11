@@ -194,7 +194,7 @@ void JoyFormator::callbackPubJoy()
         _pub_joy_formatted->publish(_last_formatted_joy_msg);
         return;
     }
-    RCLCPP_INFO(LOGGER, "ici");
+    
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::A] = getJoyValue<bool>(Keybinding::a);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::B] = getJoyValue<bool>(Keybinding::b);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::X] = getJoyValue<bool>(Keybinding::x);
@@ -270,7 +270,8 @@ void JoyFormator::setControllerType(std::string controller_type_name)
         _controller_config.trigger_range_min = 1.0f;
         _controller_config.trigger_range_max = -1.0f;
 
-        _controller_config.joystick_dead_zone = 0.0f;
+        _controller_config.joystick_dead_zone = 0.05f;
+        RCLCPP_INFO_ONCE(LOGGER, "DS4 custom deadzone set to %f", _controller_config.joystick_dead_zone);
     }
     else if (controller_type_name == std::string("Logitech") || controller_type_name == std::string("Logitech Generic"))
     {
