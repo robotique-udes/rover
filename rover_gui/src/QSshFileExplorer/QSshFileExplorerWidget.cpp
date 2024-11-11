@@ -177,7 +177,7 @@ void QSshFileExplorerWidget::handleActionMenuOpen(void)
 {
     _sshWorkerThread.downloadFile(_ui.le_user->text().toStdString(),
                                   _ui.le_hostIP->text().toStdString(),
-                                  _ui.le_path->text().toStdString());
+                                  "/home/phil/Videos/2024-05-21_00-42-14.m4v");
 }
 
 void QSshFileExplorerWidget::handleActionMenuRename(void) {}

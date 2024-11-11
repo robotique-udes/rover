@@ -10,7 +10,8 @@ class QTmpFolderManager
   public:
     static QTmpFolderManager& getInstance();
 
-    bool getTempFolderPath(OUT std::string& path_) const;
+    bool getTmpFolderPath(OUT std::string& path_) const;
+    bool getUniqueTmpFolderPath(OUT std::string& path_) const;
 
   private:
     QTmpFolderManager();

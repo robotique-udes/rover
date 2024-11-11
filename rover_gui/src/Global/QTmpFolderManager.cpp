@@ -10,7 +10,7 @@ QTmpFolderManager& QTmpFolderManager::getInstance()
     return instance;
 }
 
-bool QTmpFolderManager::getTempFolderPath(OUT std::string& path_) const
+bool QTmpFolderManager::getTmpFolderPath(OUT std::string& path_) const
 {
     if (_valid)
     {
@@ -18,6 +18,19 @@ bool QTmpFolderManager::getTempFolderPath(OUT std::string& path_) const
     }
 
     return _valid;
+}
+
+bool QTmpFolderManager::getUniqueTmpFolderPath(OUT std::string& path_) const
+{
+    bool success = this->getTmpFolderPath(path_);
+
+    if (success)
+    {
+        path_ += "/" + QUuid::createUuid().toString().toStdString();
+        success = createDirectory(path_);
+    }
+
+    return success;
 }
 
 QTmpFolderManager::QTmpFolderManager()

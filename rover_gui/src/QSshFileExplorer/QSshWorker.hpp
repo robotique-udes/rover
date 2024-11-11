@@ -4,7 +4,7 @@
 #include <libssh/libssh.h>
 #include <libssh/sftp.h>
 
-#include "../Global/QWorker.hpp"
+#include "../Global/Workers/QWorker.hpp"
 #include "QFileItem.hpp"
 #include "rovus_lib/macros.h"
 
@@ -41,21 +41,24 @@ class QSshWorker : public QWorker
 
   private:
     void refreshStructureInternal(std::string username_, std::string hostname_, std::string path_);
+    void downloadFileInternal(IN const std::string& rUsername_,
+                              IN const std::string& rHostname_,
+                              IN const std::string& rRemoteFilePath_);
 
     /**
      * @brief Session needs to be freed with ssh_free after user
      *
      */
-    bool getSession(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_);
-    bool askSshSetup(void) const;
-    void sshSetupDialog(const std::string& rUsername_, const std::string& rHostname_) const;
+    bool getSshSession(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_);
+    bool getSftpSessions(INOUT ssh_session& pSession_, OUT sftp_session& pSftpSession_);
+
+    bool handleSshSetup(const std::string& rUsername_, const std::string& rHostname_) const;
+    bool sshSetupDialog(const std::string& rUsername_, const std::string& rHostname_) const;
     void sortAttributeVector(INOUT std::vector<sftp_attributes>& vector_) const;
     std::string getFileExtension(const std::string& filename_) const;
     std::string unixTimeToString(const uint32_t unixTime_) const;
-
-    void downloadFileInternal(IN const std::string& rUsername_,
-                              IN const std::string& rHostname_,
-                              IN const std::string& rRemoteFilePath_);
+    bool getFileSize(INOUT sftp_session sftp_, const std::string& rFilePath, OUT uint64_t& fileSize_);
+    std::string getFileNameFromPath(const std::string& path_);
 
     std::mutex _filesMutex;
     std::vector<QFileItem> _files;

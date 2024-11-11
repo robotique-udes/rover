@@ -12,10 +12,7 @@ class QTreeViewExplorer : public QTreeView
     Q_OBJECT
 
   public:
-    QTreeViewExplorer(QWidget* parent_): QTreeView(parent_)
-    {
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Overwrite Loaded");
-    }
+    QTreeViewExplorer(QWidget* parent_): QTreeView(parent_) {}
 
     virtual ~QTreeViewExplorer(){};
 
