@@ -270,7 +270,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
         _controller_config.trigger_range_min = 1.0f;
         _controller_config.trigger_range_max = -1.0f;
 
-        _controller_config.joystick_dead_zone = 0.05f;
+        _controller_config.joystick_dead_zone = 0.075f; //Change this value if you start getting stick drift again
         RCLCPP_INFO_ONCE(LOGGER, "DS4 custom deadzone set to %f", _controller_config.joystick_dead_zone);
     }
     else if (controller_type_name == std::string("Logitech") || controller_type_name == std::string("Logitech Generic"))
