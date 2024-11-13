@@ -147,7 +147,6 @@ JoyFormator::JoyFormator(): Node("joy_formator")
     _pub_joy_formatted = this->create_publisher<rover_msgs::msg::Joy>("formated/joy", 1);
 
     _timer = this->create_wall_timer(10ms, std::bind(&JoyFormator::callbackPubJoy, this));
-    
 }
 
 void JoyFormator::callbackJoy(const sensor_msgs::msg::Joy& msg)
@@ -194,7 +193,7 @@ void JoyFormator::callbackPubJoy()
         _pub_joy_formatted->publish(_last_formatted_joy_msg);
         return;
     }
-    
+
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::A] = getJoyValue<bool>(Keybinding::a);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::B] = getJoyValue<bool>(Keybinding::b);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::X] = getJoyValue<bool>(Keybinding::x);
@@ -270,7 +269,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
         _controller_config.trigger_range_min = 1.0f;
         _controller_config.trigger_range_max = -1.0f;
 
-        _controller_config.joystick_dead_zone = 0.075f; //Change this value if you start getting stick drift again
+        _controller_config.joystick_dead_zone = 0.075f;  // Change this value if you start getting stick drift again
         RCLCPP_INFO_ONCE(LOGGER, "DS4 custom deadzone set to %f", _controller_config.joystick_dead_zone);
     }
     else if (controller_type_name == std::string("Logitech") || controller_type_name == std::string("Logitech Generic"))
