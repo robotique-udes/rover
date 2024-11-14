@@ -3,7 +3,9 @@
 <package format="3">
   <name>rover_video</name>
   <version>0.0.0</version>
-  <description>TODO: Package description</description>
+  <description>rover_video package controls the various webcams on the rover like turning them on/off. It also allows the user to take
+    video recordings and screenshots
+  </description>
   <maintainer email="anibal.arango@usherbrooke.ca">anibal</maintainer>
   <license>MIT</license>
 
