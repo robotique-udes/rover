@@ -56,4 +56,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ScreenshotControl.srv"
 )
 
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
 ament_package()
