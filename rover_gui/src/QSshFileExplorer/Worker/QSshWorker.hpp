@@ -1,9 +1,11 @@
 #ifndef __QSSH_WORKER_HPP__
 #define __QSSH_WORKER_HPP__
 
-#include "../../Global/Workers/QWorker.hpp"
-#include "../QFileItem.hpp"
+#include "Global/Workers/QWorker.hpp"
+#include "QSshFileExplorer/QFileItem.hpp"
 #include "rovus_lib/macros.h"
+
+class QSshFileExplorerWidget;
 
 class QSshWorker : public QWorker
 {
@@ -34,6 +36,7 @@ class QSshWorker : public QWorker
      *
      */
     void newStructureReady(void);
+    void newProgressBarUpdate(std::string taskDescription_, float progressPercent_);
 
   private:
     void refreshStructureInternal(std::string username_, std::string hostname_, std::string path_);

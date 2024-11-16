@@ -37,28 +37,55 @@ class QWorker : public QObject
      */
     void finish(void);
 
+    /**
+     * @brief [THREAD_SAFE] Cancel current running task, it's the users job to add exit
+     * conditions to their tasks when _cancelCurrentTasksFlag flag is false
+     *
+     */
+    void cancelCurrentTasks(void);
+
+    /**
+     * @brief [THREAD_SAFE] Cancel current running task and followings, it's the users job to
+     * add exit conditions to their tasks when _cancelCurrentTasksFlag flag is
+     * false
+     *
+     */
+    void cancelAllTasks(void);
+
+    /**
+     * @brief [THREAD_SAFE] Return current estimate of the number of task 
+     * running and pending.
+     *
+     */
+    size_t getTaskNb(void);
+
+  signals:
+    void allTasksDone(void);
+
   protected:
     /**
-     * @brief Adds the function pointer to the task queue which is processed by
+     * @brief [THREAD_SAFE] Adds the function pointer to the task queue which is processed by
      * the thread (async)
      *
      * @param task_ function pointer to a task
      */
     void addTask(std::function<void()> task_);
 
+    std::atomic<bool> _cancelCurrentTasksFlag = false;
+
   private:
+    void execLoop(void);
+
     std::atomic<bool> _alive = std::atomic<bool>(false);
     std::thread _thread;
     std::queue<std::function<void()>> _taskQueue;
+    std::atomic<size_t> _taskQueueSize = 0u;
 
     std::mutex _pendingTaskMtx;
     std::queue<std::function<void()>> _pendingTask;
     std::condition_variable _newTaskCv;
-    bool _newTask = false;
-
-    QProgressBar* _progressBar;
-
-    void execLoop(void);
+    bool _newTaskFlag = false;
+    std::atomic<bool> _cancelAllTasksFlag = false;
 };
 
 #endif  // __WORKER_HPP__

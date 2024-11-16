@@ -63,6 +63,8 @@ QTreeView::item {
     void handleActionMenuCut(void);
     void handleActionMenuPaste(void);
     void handleActionMenuDelete(void);
+
+    void updateProgressBar(std::string taskDescription_, float progressPercent_);
 };
 
 #endif  // __QSSH_FILE_EXPLORER_WIDGET_HPP__

@@ -105,12 +105,21 @@ QTabBar::tab:selected {
 }
 
 QProgressBar {
-    background-color: #4b4e52;
-    color: #ffffff;
+    background-color: #2e2e2e; 
+    border: 2px solid #444444;
+    border-radius: 2px;
+    text-align: center;
+    color: white;
 }
 
 QProgressBar::chunk {
-    background-color: #5cb85c;
+    background-color: #4caf50;
+    border-radius: 2px;
+}
+
+QProgressBar::text {
+    color: white; 
+    font-weight: bold;
 }
 
 QStatusBar {

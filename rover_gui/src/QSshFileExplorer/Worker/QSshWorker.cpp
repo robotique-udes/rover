@@ -14,11 +14,13 @@
 #warning TODO: Documentation in global helpers and support module
 #warning TODO: No connection dialog
 #warning TODO: Dialog helper keyboard shortcuts
-#warning TODO: Music folder (simlink?)
 
 std::mutex QSshWorker::_libSshMutex;
 
-QSshWorker::QSshWorker(bool start_, QObject* parent_): QWorker(start_, parent_) {}
+QSshWorker::QSshWorker(bool start_, QObject* parent_): QWorker(start_, parent_)
+{
+    connect(this, &QWorker::allTasksDone, this, [this]() { emit this->newProgressBarUpdate("", 100.0f); });
+}
 
 QSshWorker::~QSshWorker()
 {
@@ -29,14 +31,17 @@ void QSshWorker::refreshStructure(std::string username_, std::string hostname_, 
 {
     this->addTask([username = std::move(username_), hostname = std::move(hostname_), path = std::move(path_), this](void)
                   { this->refreshStructureInternal(username, hostname, path); });
+
+    emit this->newProgressBarUpdate(std::string("Getting items for " + std::move(path_)), 0.0f);
 }
 
 void QSshWorker::openFile(IN const std::string& rUsername_, IN const std::string& rHostname_, IN const std::string& rfilePath_)
 {
     this->addTask([username = std::move(rUsername_), hostname = std::move(rHostname_), path = std::move(rfilePath_), this](void)
                   { this->downloadFileInternal(username, hostname, path); });
-
     this->addTask([path = QHelper::getFileNameFromPath(rfilePath_), this](void) { this->openLocalFile(path); });
+
+    emit this->newProgressBarUpdate("", 0.0f);
 }
 
 std::vector<QFileItem> QSshWorker::getFileStructure(void)
@@ -235,7 +240,7 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
         uint64_t totalBytesRead = 0;
 
         uint32_t progress = 0u;
-        while ((nbytes = sftp_read(pfile, buffer, sizeof(buffer))) > 0)
+        while (!_cancelCurrentTasksFlag.load() && (nbytes = sftp_read(pfile, buffer, sizeof(buffer))) > 0)
         {
             localFile.write(reinterpret_cast<const char*>(buffer), nbytes);
 
@@ -250,19 +255,18 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
                                             "[" << progress / 10'000 << " %]"
                                                 << " Download of " << rRemoteFilePath_);
             }
+
+            if (totalBytesRead != 0 && fileSize != 0 && (uint64_t)progress % 10'000 == 0)
+            {
+                #warning TODO: Refactor this
+                emit this->newProgressBarUpdate(std::string(" Downloading ") + rRemoteFilePath_ + "...", progress / 10'000);
+            }
         }
 
-        if (nbytes >= 0)
+        if (!_cancelCurrentTasksFlag.load() && nbytes >= 0)
         {
             RCLCPP_DEBUG_STREAM(rclcpp::get_logger("GUI"), "Finished download of " << rRemoteFilePath_ << " successfully");
             QDownloadedFileManager::getInstance().addFileToList(QHelper::getFileNameFromPath(rRemoteFilePath_), fileSize);
-        }
-        else
-        {
-            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
-                               "Error (" << nbytes << ") "
-                                         << "while transfering file");
-            success = false;
         }
     }
 
@@ -283,11 +287,17 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
         pSSHSession = nullptr;
     }
 
-    if (!success)
+    if (!_cancelCurrentTasksFlag.load() && !success)
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
                            "File transfer of " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_
                                                << " was unsuccessful.");
+    }
+    else if (_cancelCurrentTasksFlag.load())
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
+                           "File transfer of " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_
+                                               << " was canceled by the user.");
     }
 }
 

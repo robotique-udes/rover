@@ -38,9 +38,11 @@ QSshFileExplorerWidget::QSshFileExplorerWidget(const std::string& user_,
     connect(_ui.pb_pathCopy, &QPushButton::clicked, this, [this]() { QApplication::clipboard()->setText(_ui.le_path->text()); });
     connect(_ui.cb_showHiddenFile, &QCheckBox::stateChanged, this, &QSshFileExplorerWidget::refreshItems);
     connect(_ui.pb_refresh, &QPushButton::clicked, this, &QSshFileExplorerWidget::refreshItems);
+    connect(_ui.pb_cancelCurrentTask, &QPushButton::clicked, this, [this]() { this->_sshWorkerThread.cancelCurrentTasks(); });
+    connect(_ui.pb_cancelAllTasks, &QPushButton::clicked, this, [this]() { this->_sshWorkerThread.cancelAllTasks(); });
     connect(&_refreshKeybind, &QShortcut::activated, this, &QSshFileExplorerWidget::refreshItems);
+    connect(&_sshWorkerThread, &QSshWorker::newProgressBarUpdate, this, &QSshFileExplorerWidget::updateProgressBar);
     connect(&_sshWorkerThread, &QSshWorker::newStructureReady, this, &QSshFileExplorerWidget::handleNewStructure);
-
     connect(_ui.tv_fileExplorer, &QTreeView::doubleClicked, this, &QSshFileExplorerWidget::handleItemDoubleClick);
     connect(_ui.tv_fileExplorer, &QTreeView::customContextMenuRequested, this, &QSshFileExplorerWidget::handleRightClick);
 
@@ -148,6 +150,7 @@ void QSshFileExplorerWidget::handleRightClick(const QPoint& pos_)
 
 void QSshFileExplorerWidget::handleActionMenuOpen(void)
 {
+#warning TODO: Handle path change in retrieve callback instead
     QModelIndexList selectedItem = _ui.tv_fileExplorer->selectionModel()->selectedIndexes();
 
     std::string currentPath = _ui.le_path->text().toStdString();
@@ -157,12 +160,11 @@ void QSshFileExplorerWidget::handleActionMenuOpen(void)
             && (i + 1u < static_cast<size_t>(selectedItem.size()))
             && selectedItem[i + 1u].column() == static_cast<int>(eColumnIndex::TYPE))
         {
-            std::string selectedItemPath
-                = currentPath + "/" + selectedItem[i].data().toString().toStdString();
+            std::string selectedItemPath = currentPath + "/" + selectedItem[i].data().toString().toStdString();
             std::string cleanItemPath = QDir::cleanPath(selectedItemPath.c_str()).toStdString();
 
             // Directory
-            if (cleanItemPath != "" && selectedItem[i + 1].data().toString().toStdString() == "" && !dirOpened)
+            if (cleanItemPath != "" && selectedItem[i + 1].data().toString().toStdString() == "")
             {
                 _ui.le_path->setText(cleanItemPath.c_str());
                 this->refreshItems();
@@ -170,9 +172,7 @@ void QSshFileExplorerWidget::handleActionMenuOpen(void)
             // File element
             else if (cleanItemPath != "" && selectedItem[i + 1].data().toString().toStdString() != "")
             {
-                _sshWorkerThread.openFile(_ui.le_user->text().toStdString(),
-                                          _ui.le_hostIP->text().toStdString(),
-                                          cleanItemPath);
+                _sshWorkerThread.openFile(_ui.le_user->text().toStdString(), _ui.le_hostIP->text().toStdString(), cleanItemPath);
             }
         }
     }
@@ -185,6 +185,20 @@ void QSshFileExplorerWidget::handleActionMenuCut(void) {}
 void QSshFileExplorerWidget::handleActionMenuPaste(void) {}
 
 void QSshFileExplorerWidget::handleActionMenuDelete(void) {}
+
+void QSshFileExplorerWidget::updateProgressBar(std::string taskDescription_, float progressPercent_)
+{
+    int progressBarValue = (static_cast<int>(round(_ui.progressBar->maximum() * progressPercent_ / 100.0f)));
+    _ui.progressBar->setValue(progressBarValue);
+
+    std::string progressBarText = std::string("    ") + std::to_string(_sshWorkerThread.getTaskNb()) + " tasks remaining.";
+    if (taskDescription_ != "")
+    {
+        progressBarText += " " + taskDescription_;
+    }
+
+    _ui.progressBar->setFormat(progressBarText.c_str());
+}
 
 const Ui::FileExplorer& QSshFileExplorerWidget::getUI(void) const
 {
