@@ -12,7 +12,7 @@ class QDownloadedFileManager
     {
         NOT_DOWNLOADED,
         ALREADY_DOWNLOADED_OK,
-        ALREADY_DOWNLOADED_ERROR
+        ALREADY_DOWNLOADED_SIZE_MISSMATCH
     };
 
     struct sFileInfo

@@ -5,9 +5,11 @@
 
 #include <QApplication>
 #include <QDateTime>
+#include <QDesktopServices>
 #include <QDir>
 #include <QFile>
 #include <QMessageBox>
+#include <QUrl>
 #include <QUuid>
 
 #include "../Global/Helpers/QHelpers.hpp"
@@ -16,6 +18,8 @@
 #include "rovus_lib/macros.h"
 
 #warning TODO: Link correct path with OPEN
+
+std::mutex QSshWorker::_libSshMutex;
 
 QSshWorker::QSshWorker(bool start_, QObject* parent_): QWorker(start_, parent_) {}
 
@@ -30,15 +34,15 @@ void QSshWorker::refreshStructure(std::string username_, std::string hostname_, 
                   { this->refreshStructureInternal(username, hostname, path); });
 }
 
-void QSshWorker::downloadFile(IN const std::string& rUsername_,
-                              IN const std::string& rHostname_,
-                              IN const std::string& rfilePath_)
+void QSshWorker::openFile(IN const std::string& rUsername_, IN const std::string& rHostname_, IN const std::string& rfilePath_)
 {
-    this->addTask([username = rUsername_, hostname = rHostname_, path = rfilePath_, this](void)
+    this->addTask([username = std::move(rUsername_), hostname = std::move(rHostname_), path = std::move(rfilePath_), this](void)
                   { this->downloadFileInternal(username, hostname, path); });
+
+    this->addTask([path = getFileNameFromPath(rfilePath_), this](void) { this->openLocalFile(path); });
 }
 
-std::vector<QFileItem> QSshWorker::getStructure(void)
+std::vector<QFileItem> QSshWorker::getFileStructure(void)
 {
     std::lock_guard<std::mutex> lock(_filesMutex);
     return _files;
@@ -46,90 +50,118 @@ std::vector<QFileItem> QSshWorker::getStructure(void)
 
 void QSshWorker::refreshStructureInternal(std::string username_, std::string hostname_, std::string path_)
 {
-#warning TODO Refactor
-    ssh_session pSession = nullptr;
+    bool success = true;
+    ssh_session pSshSession = nullptr;
+    sftp_session pSftpSession = nullptr;
+    sftp_dir pSftpDir = nullptr;
 
-    if (!getSshSession(username_, hostname_, pSession) || !pSession)
+    std::unique_lock<std::mutex> lockLibSsh(_libSshMutex);
+    if (!getSshSession(username_, hostname_, pSshSession) || !pSshSession)
     {
-        ssh_disconnect(pSession);
-        return;
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error creating SSH session, device ssh service might not be running");
+        success = false;
     }
 
-    // Initialize SFTP session
-    sftp_session sftp = sftp_new(pSession);
-    if (sftp == nullptr)
+    if (success && (!pSshSession || !getSftpSessions(pSshSession, pSftpSession) || !pSftpSession))
     {
-        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session: " << ssh_get_error(pSession));
-        ssh_disconnect(pSession);
-        return;
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session: " << ssh_get_error(pSshSession));
+        success = false;
     }
 
-    int sshStatusCode = sftp_init(sftp);
-    if (sshStatusCode != SSH_OK)
+    if (success && sftp_init(pSftpSession) != SSH_OK)
     {
-        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error initializing SFTP session: " << ssh_get_error(sftp));
-        sftp_free(sftp);
-        ssh_disconnect(pSession);
-        return;
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error initializing SFTP session: " << ssh_get_error(pSftpSession));
+        success = false;
     }
 
-    // Retrieve the folder structure
-    sftp_dir dir = sftp_opendir(sftp, path_.c_str());
-    if (dir == nullptr)
+    if (success)
     {
-        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Error opening directory: " << ssh_get_error(sftp));
-        sftp_free(sftp);
-        ssh_disconnect(pSession);
-        return;
-    }
-
-    sftp_attributes attrs;
-    std::vector<sftp_attributes> filesAttribute;
-    std::vector<sftp_attributes> folderAttribute;
-    std::vector<sftp_attributes> otherAttribute;
-    while ((attrs = sftp_readdir(sftp, dir)) && attrs->name && attrs->permissions)
-    {
-        if (attrs->permissions & SSH_S_IFDIR)
+        pSftpDir = sftp_opendir(pSftpSession, path_.c_str());
+        if (!pSftpDir)
         {
-            if (std::string(attrs->name) != ".")
+            RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Error opening directory: " << ssh_get_error(pSftpSession));
+            success = false;
+        }
+    }
+
+    if (success)
+    {
+        sftp_attributes pSftpAttribute = nullptr;
+        std::vector<sftp_attributes> filesAttribute;
+        std::vector<sftp_attributes> folderAttribute;
+        std::vector<sftp_attributes> otherAttribute;
+
+        while ((pSftpAttribute = sftp_readdir(pSftpSession, pSftpDir)) && pSftpAttribute->name && pSftpAttribute->permissions)
+        {
+            if (pSftpAttribute && (pSftpAttribute->permissions & SSH_S_IFDIR))
             {
-                folderAttribute.push_back(attrs);
+                if (std::string(pSftpAttribute->name) != ".")
+                {
+                    folderAttribute.push_back(pSftpAttribute);
+                }
+                else
+                {
+                    sftp_attributes_free(pSftpAttribute);
+                }
+            }
+            else if (pSftpAttribute && !(pSftpAttribute->permissions & SSH_S_IFDIR))
+            {
+                filesAttribute.push_back(pSftpAttribute);
+            }
+            else if (pSftpAttribute)
+            {
+                sftp_attributes_free(pSftpAttribute);
+            }
+
+            pSftpAttribute = nullptr;
+        }
+
+        sortAttributeVector(folderAttribute);
+        sortAttributeVector(filesAttribute);
+        sortAttributeVector(otherAttribute);
+
+        {
+            std::unique_lock<std::mutex> lock(_filesMutex);
+            _files.clear();
+
+            for (auto& it : folderAttribute)
+            {
+                _files.push_back(QFileItem(it->name, "", unixTimeToString(it->mtime)));
+                sftp_attributes_free(it);
+            }
+            for (auto& it : filesAttribute)
+            {
+                _files.push_back(QFileItem(it->name, getFileExtension(it->name), unixTimeToString(it->mtime)));
+                sftp_attributes_free(it);
+            }
+            for (auto& it : otherAttribute)
+            {
+                _files.push_back(QFileItem(it->name, "*", unixTimeToString(it->mtime)));
+                sftp_attributes_free(it);
             }
         }
-        else if (!(attrs->permissions & SSH_S_IFDIR))
-        {
-            filesAttribute.push_back(attrs);
-        }
+
+        emit this->newStructureReady();
     }
 
-    sortAttributeVector(folderAttribute);
-    sortAttributeVector(filesAttribute);
-    sortAttributeVector(otherAttribute);
-
+    if (pSftpDir)
     {
-        std::unique_lock<std::mutex> lock(_filesMutex);
-        _files.clear();
-
-        for (auto& it : folderAttribute)
-        {
-            _files.push_back(QFileItem(it->name, "", unixTimeToString(it->mtime)));
-        }
-        for (auto& it : filesAttribute)
-        {
-            _files.push_back(QFileItem(it->name, getFileExtension(it->name), unixTimeToString(it->mtime)));
-        }
-        for (auto& it : otherAttribute)
-        {
-            _files.push_back(QFileItem(it->name, "*", unixTimeToString(it->mtime)));
-        }
+        sftp_closedir(pSftpDir);
+        pSftpDir = nullptr;
     }
 
-    sftp_closedir(dir);
-    sftp_free(sftp);
-    ssh_disconnect(pSession);
-    ssh_free(pSession);
+    if (pSftpSession)
+    {
+        sftp_free(pSftpSession);
+        pSftpSession = nullptr;
+    }
 
-    emit this->newStructureReady();
+    if (pSshSession)
+    {
+        ssh_disconnect(pSshSession);
+        ssh_free(pSshSession);
+        pSshSession = nullptr;
+    }
 }
 
 void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
@@ -142,9 +174,9 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
     sftp_session pSftpSession = nullptr;
     sftp_file pfile = nullptr;
 
+    std::unique_lock<std::mutex> lockLibSsh(_libSshMutex);
     if (!this->getSshSession(rUsername_, rHostname_, pSSHSession) || !pSSHSession)
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error getting SSH session, no file will be transferred");
         success = false;
     }
 
@@ -159,7 +191,7 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
     switch (QDownloadedFileManager::getInstance().alreadyDownloaded(this->getFileNameFromPath(rRemoteFilePath_), fileSize))
     {
         case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_OK: success = false; break;
-        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_ERROR:
+        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH:
         {
 #warning TODO: Prompt user for action
         }
@@ -199,7 +231,7 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
 
     if (success)
     {
-        uint8_t buffer[4096] = {0};
+        uint8_t buffer[FILE_DOWNLOAD_BUFFER_SIZE] = {0};
         ssize_t nbytes = 0;
         uint64_t totalBytesRead = 0;
 
@@ -238,14 +270,18 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
     if (pfile)
     {
         sftp_close(pfile);
+        pfile = nullptr;
     }
     if (pSftpSession)
     {
         sftp_free(pSftpSession);
+        pSftpSession = nullptr;
     }
     if (pSSHSession)
     {
+        ssh_disconnect(pSSHSession);
         ssh_free(pSSHSession);
+        pSSHSession = nullptr;
     }
 
     if (!success)
@@ -256,13 +292,30 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
     }
 }
 
+void QSshWorker::openLocalFile(IN const std::string& fileName_)
+{
+    if (QDownloadedFileManager::getInstance().alreadyDownloaded(fileName_, 0u)
+        != QDownloadedFileManager::eDownloadState::NOT_DOWNLOADED)
+    {
+        std::string tmpFolderPath;
+        if (QTmpFolderManager::getInstance().getTmpFolderPath(tmpFolderPath))
+        {
+            QDesktopServices::openUrl(QUrl::fromLocalFile((tmpFolderPath + "/" + fileName_).c_str()));
+        }
+    }
+    else
+    {
+        // TODO: Print fail
+    }
+}
+
 // ===============================================================================================================================
 // Helpers
 #warning TODO: Create Class/Namespace with helpers
 // ===============================================================================================================================
 bool QSshWorker::getSshSession(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSshSession_)
 {
-    if (rUsername_ == "" || rHostname_ == "")
+    if (rUsername_ == "" || rHostname_ == "" || pSshSession_)
     {
         return false;
     }
@@ -272,31 +325,41 @@ bool QSshWorker::getSshSession(IN const std::string& rUsername_, IN const std::s
     for (uint8_t i = 0; success && sshStatusCode != SSH_AUTH_SUCCESS && i < MAX_LOGIN_ATTEMPT; i++)
     {
         pSshSession_ = ssh_new();
-        if (success && !pSshSession_)
-        {
-            sshStatusCode = SSH_ERROR;
-            success = false;
-        }
-        else if (success)
+        if (pSshSession_)
         {
             ssh_options_set(pSshSession_, SSH_OPTIONS_TIMEOUT_USEC, &LOGIN_TIMEOUT);
             ssh_options_set(pSshSession_, SSH_OPTIONS_HOST, rHostname_.c_str());
             ssh_options_set(pSshSession_, SSH_OPTIONS_USER, rUsername_.c_str());
-            sshStatusCode = ssh_connect(pSshSession_);
         }
 
-        if (success && sshStatusCode != SSH_OK && !this->handleSshSetup(rUsername_, rHostname_))
+        if (pSshSession_ && ssh_connect(pSshSession_) == SSH_OK)
+        {
+            sshStatusCode = ssh_userauth_publickey_auto(pSshSession_, nullptr, nullptr);
+        }
+        else
+        {
+            this->handleSshSetup(rUsername_, rHostname_);
+            sshStatusCode = SSH_ERROR;
+            success = false;
+        }
+
+        if (success && sshStatusCode != SSH_AUTH_SUCCESS && !this->handleSshSetup(rUsername_, rHostname_))
         {
             RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error connecting to host: %s", ssh_get_error(pSshSession_));
             success = false;
         }
 
-        sshStatusCode = ssh_userauth_publickey_auto(pSshSession_, nullptr, nullptr);
+        if (success && sshStatusCode != SSH_AUTH_SUCCESS)
+        {
+            sshStatusCode = ssh_userauth_publickey_auto(pSshSession_, nullptr, nullptr);
+        }
+
         if (success && sshStatusCode != SSH_AUTH_SUCCESS && !this->sshSetupDialog(rUsername_, rHostname_))
         {
+            // Connection setup refused by user
             success = false;
         }
-        else if (success)
+        else if (success && sshStatusCode != SSH_AUTH_SUCCESS)
         {
             sshStatusCode = ssh_userauth_publickey_auto(pSshSession_, nullptr, nullptr);
         }
@@ -326,7 +389,6 @@ bool QSshWorker::getSftpSessions(INOUT ssh_session& pSshSession_, OUT sftp_sessi
         pSftpSession_ = sftp_new(pSshSession_);
         if (!pSftpSession_)
         {
-            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error creating SFTP session: " << ssh_get_error(pSshSession_));
             success = false;
         }
     }

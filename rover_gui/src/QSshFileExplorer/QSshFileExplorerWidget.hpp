@@ -25,10 +25,7 @@ QTreeView::item {
     };
 
   public:
-    QSshFileExplorerWidget(const std::string& user_,
-                           const std::string& host_,
-                           const std::string& path_,
-                           QWidget* parent_);
+    QSshFileExplorerWidget(const std::string& user_, const std::string& host_, const std::string& path_, QWidget* parent_);
     ~QSshFileExplorerWidget();
 
     const Ui::FileExplorer& getUI(void) const;
@@ -59,6 +56,7 @@ QTreeView::item {
     void handleFriendSelectionTriggered(void);
     void handleNewStructure(void);
     void handleItemDoubleClick(const QModelIndex& index_);
+    void handleLeftClick(const QModelIndex& index_);
     void handleRightClick(const QPoint& pos_);
     void handleActionMenuOpen(void);
     void handleActionMenuRename(void);

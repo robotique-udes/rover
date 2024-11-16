@@ -46,7 +46,7 @@ QDownloadedFileManager::eDownloadState QDownloadedFileManager::alreadyDownloaded
     }
     else if (match != _availableFileList.end())
     {
-        state = eDownloadState::ALREADY_DOWNLOADED_ERROR;
+        state = eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH;
     }
 
     return state;

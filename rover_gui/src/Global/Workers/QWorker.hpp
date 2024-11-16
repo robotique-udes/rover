@@ -8,6 +8,8 @@
 #include <thread>
 
 #include <QObject>
+#include <QProgressBar>
+#include <QString>
 
 class QWorker : public QObject
 {
@@ -53,6 +55,8 @@ class QWorker : public QObject
     std::queue<std::function<void()>> _pendingTask;
     std::condition_variable _newTaskCv;
     bool _newTask = false;
+
+    QProgressBar* _progressBar;
 
     void execLoop(void);
 };

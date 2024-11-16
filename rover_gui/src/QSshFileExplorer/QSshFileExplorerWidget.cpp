@@ -68,6 +68,7 @@ void QSshFileExplorerWidget::initTreeView(void)
     _ui.tv_fileExplorer->setColumnWidth((uint8_t)eColumnIndex::LAST_MODIFIED, 150);
     _ui.tv_fileExplorer->header()->setSectionResizeMode((uint8_t)eColumnIndex::LAST_MODIFIED, QHeaderView::Fixed);
     _ui.tv_fileExplorer->setContextMenuPolicy(Qt::CustomContextMenu);
+    _ui.tv_fileExplorer->setFocusPolicy(Qt::NoFocus);
 }
 
 void QSshFileExplorerWidget::initContextMenu(void)
@@ -114,7 +115,7 @@ void QSshFileExplorerWidget::handleNewStructure(void)
 {
     _itemModel.removeRows(0, _itemModel.rowCount());
 
-    std::vector<QFileItem> files = _sshWorkerThread.getStructure();
+    std::vector<QFileItem> files = _sshWorkerThread.getFileStructure();
     bool showHiddenFiles = _ui.cb_showHiddenFile->isChecked();
 
     for (auto& it : files)
@@ -123,37 +124,9 @@ void QSshFileExplorerWidget::handleNewStructure(void)
     }
 }
 
-void QSshFileExplorerWidget::handleItemDoubleClick(const QModelIndex& index_)
+void QSshFileExplorerWidget::handleItemDoubleClick(const QModelIndex& /*index_*/)
 {
-    if (!index_.isValid())
-    {
-        return;
-    }
-
-    QString currentPath = _ui.le_path->text();
-    QString newPath = currentPath.append("/").append(_itemModel.item(index_.row(), (size_t)eColumnIndex::NAME)->text());
-    newPath = QDir(newPath).canonicalPath();
-
-    if (_itemModel.item(index_.row(), (size_t)eColumnIndex::TYPE)->text() != "")
-    {
-        QFileInfo fileInfo(newPath);
-
-        if (fileInfo.exists() && fileInfo.isFile())
-        {
-            QApplication::setOverrideCursor(Qt::WaitCursor);
-            QDesktopServices::openUrl(QUrl::fromLocalFile(newPath));
-            QApplication::restoreOverrideCursor();
-        }
-        else
-        {
-            RCLCPP_WARN(rclcpp::get_logger("GUI"), "Openning file not supported yet");
-        }
-
-        return;
-    }
-
-    _ui.le_path->setText(newPath);
-    this->refreshItems();
+    this->handleActionMenuOpen();
 }
 
 void QSshFileExplorerWidget::handleFriendSelectionTriggered(void)
@@ -175,9 +148,33 @@ void QSshFileExplorerWidget::handleRightClick(const QPoint& pos_)
 
 void QSshFileExplorerWidget::handleActionMenuOpen(void)
 {
-    _sshWorkerThread.downloadFile(_ui.le_user->text().toStdString(),
-                                  _ui.le_hostIP->text().toStdString(),
-                                  "/home/phil/Videos/2024-05-21_00-42-14.m4v");
+    QModelIndexList selected_item = _ui.tv_fileExplorer->selectionModel()->selectedIndexes();
+
+    for (size_t i = 0; i < static_cast<size_t>(selected_item.size()); i++)
+    {
+        if (selected_item[i].column() == static_cast<int>(eColumnIndex::NAME)
+            && (i + 1 < static_cast<size_t>(selected_item.size()))
+            && selected_item[i + 1].column() == static_cast<int>(eColumnIndex::TYPE))
+        {
+            std::string selected_item_path
+                = _ui.le_path->text()
+                      .append((std::string("/") + selected_item[i].data().toString().toStdString()).c_str())
+                      .toStdString();
+
+            // Directory
+            if (selected_item[i + 1].data().toString().toStdString() == "")
+            {
+                _ui.le_path->setText(QDir(selected_item_path.c_str()).canonicalPath());
+                this->refreshItems();
+            }
+            else
+            {
+                _sshWorkerThread.openFile(_ui.le_user->text().toStdString(),
+                                          _ui.le_hostIP->text().toStdString(),
+                                          selected_item_path.c_str());
+            }
+        }
+    }
 }
 
 void QSshFileExplorerWidget::handleActionMenuRename(void) {}
