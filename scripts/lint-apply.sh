@@ -8,7 +8,6 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 # Finding the .clang-format file
 echo "=== Finding .clang-format file... ==="
 if [ -z "$(find $SCRIPT_DIR/.. -name '.clang-format' -print -quit)" ]; then
-    echo "$SCRIPT_DIR"
     echo "[FAILED] .clang-format file not found in the repository!"
     exit 1
 else
