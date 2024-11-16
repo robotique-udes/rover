@@ -5,7 +5,7 @@
 #include <QShortcut>
 
 #include "QFileItem.hpp"
-#include "QSshWorker.hpp"
+#include "Worker/QSshWorker.hpp"
 
 #include "UI_FileExplorer.h"
 

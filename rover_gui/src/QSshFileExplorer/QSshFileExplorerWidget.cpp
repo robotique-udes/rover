@@ -148,30 +148,31 @@ void QSshFileExplorerWidget::handleRightClick(const QPoint& pos_)
 
 void QSshFileExplorerWidget::handleActionMenuOpen(void)
 {
-    QModelIndexList selected_item = _ui.tv_fileExplorer->selectionModel()->selectedIndexes();
+    QModelIndexList selectedItem = _ui.tv_fileExplorer->selectionModel()->selectedIndexes();
 
-    for (size_t i = 0; i < static_cast<size_t>(selected_item.size()); i++)
+    std::string currentPath = _ui.le_path->text().toStdString();
+    for (size_t i = 0u; i < static_cast<size_t>(selectedItem.size()); i++)
     {
-        if (selected_item[i].column() == static_cast<int>(eColumnIndex::NAME)
-            && (i + 1 < static_cast<size_t>(selected_item.size()))
-            && selected_item[i + 1].column() == static_cast<int>(eColumnIndex::TYPE))
+        if (selectedItem[i].column() == static_cast<int>(eColumnIndex::NAME)
+            && (i + 1u < static_cast<size_t>(selectedItem.size()))
+            && selectedItem[i + 1u].column() == static_cast<int>(eColumnIndex::TYPE))
         {
-            std::string selected_item_path
-                = _ui.le_path->text()
-                      .append((std::string("/") + selected_item[i].data().toString().toStdString()).c_str())
-                      .toStdString();
+            std::string selectedItemPath
+                = currentPath + "/" + selectedItem[i].data().toString().toStdString();
+            std::string cleanItemPath = QDir::cleanPath(selectedItemPath.c_str()).toStdString();
 
             // Directory
-            if (selected_item[i + 1].data().toString().toStdString() == "")
+            if (cleanItemPath != "" && selectedItem[i + 1].data().toString().toStdString() == "" && !dirOpened)
             {
-                _ui.le_path->setText(QDir(selected_item_path.c_str()).canonicalPath());
+                _ui.le_path->setText(cleanItemPath.c_str());
                 this->refreshItems();
             }
-            else
+            // File element
+            else if (cleanItemPath != "" && selectedItem[i + 1].data().toString().toStdString() != "")
             {
                 _sshWorkerThread.openFile(_ui.le_user->text().toStdString(),
                                           _ui.le_hostIP->text().toStdString(),
-                                          selected_item_path.c_str());
+                                          cleanItemPath);
             }
         }
     }
