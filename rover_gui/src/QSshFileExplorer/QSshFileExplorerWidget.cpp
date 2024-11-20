@@ -95,9 +95,10 @@ void QSshFileExplorerWidget::linkFriendTreeView(QTreeViewExplorer* treeViewfrien
 {
     if (treeViewfriend_)
     {
-        // clang-format off
-        connect(treeViewfriend_, &QTreeViewExplorer::selectionTriggered, this, &QSshFileExplorerWidget::handleFriendSelectionTriggered);
-        // clang-format on
+        connect(treeViewfriend_,
+                &QTreeViewExplorer::selectionTriggered,
+                this,
+                &QSshFileExplorerWidget::handleFriendSelectionTriggered);
     }
     else
     {

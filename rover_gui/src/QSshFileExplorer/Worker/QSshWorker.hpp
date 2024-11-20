@@ -11,7 +11,7 @@ class QSshWorker : public QWorker
 {
     Q_OBJECT
 
-    static constexpr size_t FILE_DOWNLOAD_BUFFER_SIZE = 4096u;  // 4 kb
+    static constexpr size_t FILE_TRANSFER_BUFFER_SIZE = 16'384u;  // 16 kb
 
   public:
     QSshWorker(bool start_ = false, QObject* parent_ = nullptr);
@@ -43,6 +43,10 @@ class QSshWorker : public QWorker
     void downloadFileInternal(IN const std::string& rUsername_,
                               IN const std::string& rHostname_,
                               IN const std::string& rRemoteFilePath_);
+    void uploadFileInternal(IN const std::string& rUsername_,
+                            IN const std::string& rHostname_,
+                            IN const std::string& rRemoteFilePath_,
+                            IN const std::string& localFileName_);
     void openLocalFile(IN const std::string& fileName_);
 
     std::mutex _filesMutex;

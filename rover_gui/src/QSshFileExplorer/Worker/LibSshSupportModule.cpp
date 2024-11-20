@@ -1,7 +1,7 @@
 #include "LibSshSupportModule.hpp"
 
-#include <QMessageBox>
 #include <QDateTime>
+#include <QMessageBox>
 
 #include "Global/Helpers/QHelpers.hpp"
 
@@ -107,8 +107,8 @@ namespace LibSshSupportModule
             QMessageBox::StandardButton userSelection = QMessageBox::StandardButton::No;
             userSelection
                 = QHelper::QPopUp::sendQuestionPopUp("SSH Connection error",
-                                                     "Couldn't connect to server " + rUsername_ + "@" + rHostname_
-                                                         + ". The openssh server might not be running. Do you want to enable it?",
+                                                     "Couldn't connect to this computer. The openssh server might not be running "
+                                                     "on your computer. Do you want to enable it?",
                                                      (QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No));
 
             if (userSelection == QMessageBox::StandardButton::Yes)

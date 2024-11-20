@@ -197,7 +197,14 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
         case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_OK: success = false; break;
         case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH:
         {
-#warning TODO: Prompt user for action
+            QMessageBox::StandardButton userSelection = QMessageBox::StandardButton::No;
+            userSelection = QHelper::QPopUp::sendQuestionPopUp(
+                "File conclicts warning",
+                "A file of with this name has already been cached, are you sure you want to <b>overide</b> it?",
+                QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No);
+
+            success = userSelection == QMessageBox::StandardButton::Yes ? true : false;
+            break;
         }
         case QDownloadedFileManager::eDownloadState::NOT_DOWNLOADED: success = true; break;
     }
@@ -224,42 +231,35 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
 
     std::string fileName = QHelper::getFileNameFromPath(rRemoteFilePath_);
     QFile localFile(QString::fromStdString(tmpFolderPath + "/" + fileName));
-    if (success)
+    if (success && !localFile.open(QIODevice::WriteOnly))
     {
-        if (!localFile.open(QIODevice::WriteOnly))
-        {
-            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Couldn't open local file for writting");
-            success = false;
-        }
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Couldn't open local file for writting");
+        success = false;
     }
 
     if (success)
     {
-        uint8_t buffer[FILE_DOWNLOAD_BUFFER_SIZE] = {0};
+        uint8_t buffer[FILE_TRANSFER_BUFFER_SIZE] = {0};
         ssize_t nbytes = 0;
         uint64_t totalBytesRead = 0;
 
-        uint32_t progress = 0u;
+        float progress = 0.0f;
         while (!_cancelCurrentTasksFlag.load() && (nbytes = sftp_read(pfile, buffer, sizeof(buffer))) > 0)
         {
             localFile.write(reinterpret_cast<const char*>(buffer), nbytes);
 
             totalBytesRead += static_cast<uint64_t>(CONSTRAIN(nbytes, 0, sizeof(buffer)));
-            progress = static_cast<uint64_t>(static_cast<float>(totalBytesRead) / static_cast<float>(fileSize) * 1'000'000.0f);
-            if (totalBytesRead != 0 && fileSize != 0 && (uint64_t)progress % 100'000 == 0)
+            progress = 100.0f * static_cast<float>(totalBytesRead) / static_cast<float>(fileSize);
+            if (totalBytesRead != 0 && fileSize != 0)
             {
                 auto tmp_clock = rclcpp::Clock();
-                RCLCPP_INFO_STREAM_THROTTLE(rclcpp::get_logger("GUI"),
-                                            tmp_clock,
-                                            1000,
-                                            "[" << progress / 10'000 << " %]"
-                                                << " Download of " << rRemoteFilePath_);
-            }
-
-            if (totalBytesRead != 0 && fileSize != 0 && (uint64_t)progress % 10'000 == 0)
-            {
-                #warning TODO: Refactor this
-                emit this->newProgressBarUpdate(std::string(" Downloading ") + rRemoteFilePath_ + "...", progress / 10'000);
+                RCLCPP_INFO_THROTTLE(rclcpp::get_logger("GUI"),
+                                     tmp_clock,
+                                     1'000,
+                                     "[ %f %%] Download of %s",
+                                     progress,
+                                     rRemoteFilePath_.c_str());
+                emit this->newProgressBarUpdate(std::string(" Downloading ") + rRemoteFilePath_ + "...", progress);
             }
         }
 
@@ -298,6 +298,136 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
                            "File transfer of " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_
                                                << " was canceled by the user.");
+    }
+}
+
+void QSshWorker::uploadFileInternal(IN const std::string& rUsername_,
+                                    IN const std::string& rHostname_,
+                                    IN const std::string& rFileName_,
+                                    IN const std::string& rRemoteFilePath_)
+{
+#warning TODO Check
+    bool success = true;
+
+    ssh_session pSSHSession = nullptr;
+    sftp_session pSftpSession = nullptr;
+    sftp_file pfile = nullptr;
+
+    std::unique_lock<std::mutex> lockLibSsh(_libSshMutex);
+    if (!LibSshSupportModule::getSshSession(rUsername_, rHostname_, pSSHSession) || !pSSHSession)
+    {
+        success = false;
+    }
+
+    if (success && (!LibSshSupportModule::getSftpSessions(pSSHSession, pSftpSession) || !pSftpSession))
+    {
+        success = false;
+    }
+
+    QFile localFile;
+    switch (QDownloadedFileManager::getInstance().alreadyDownloaded(rFileName_, 0u))
+    {
+        case QDownloadedFileManager::eDownloadState::NOT_DOWNLOADED: success = false; break;
+        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_OK: [[FALLTRHOUGH]];
+        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH:
+        {
+            // localFile = QFile(QDownloadedFileManager::getInstance().getFilePath)
+            success = true;
+            break;
+        }
+    }
+
+    if (success && !localFile.open(QIODevice::ReadOnly))
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Couldn't open local file for reading");
+        success = false;
+    }
+
+    if (success)
+    {
+        pfile = sftp_open(pSftpSession, rRemoteFilePath_.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
+        if (!pfile)
+        {
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
+                               "Error opening remote file for writing: " << rUsername_ << "@" << rHostname_ << ":"
+                                                                         << rRemoteFilePath_ << " (" << ssh_get_error(pSSHSession)
+                                                                         << ")");
+            success = false;
+        }
+    }
+
+    if (success)
+    {
+        QByteArray buffer;
+        buffer.resize(FILE_TRANSFER_BUFFER_SIZE);
+
+        uint64_t totalBytesWritten = 0;
+        float progress = 0.0f;
+
+        while (!_cancelCurrentTasksFlag.load() && !localFile.atEnd())
+        {
+            qint64 bytesRead = localFile.read(buffer.data(), buffer.size());
+            if (bytesRead <= 0)
+            {
+                success = false;
+                break;
+            }
+
+            ssize_t bytesWritten = sftp_write(pfile, buffer.data(), bytesRead);
+            if (bytesWritten < 0)
+            {
+                RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error writing to remote file: " << ssh_get_error(pSSHSession));
+                success = false;
+                break;
+            }
+
+            totalBytesWritten += bytesWritten;
+            progress = 100.0f * static_cast<float>(totalBytesWritten) / static_cast<float>(localFile.size());
+
+            auto tmp_clock = rclcpp::Clock();
+            RCLCPP_INFO_THROTTLE(rclcpp::get_logger("GUI"),
+                                 tmp_clock,
+                                 1'000,
+                                 "[ %f %%] Upload of %s",
+                                 progress,
+                                 rRemoteFilePath_.c_str());
+            emit this->newProgressBarUpdate(std::string(" Uploading ") + rRemoteFilePath_ + "...", progress);
+        }
+
+        if (!_cancelCurrentTasksFlag.load() && success)
+        {
+            RCLCPP_DEBUG_STREAM(rclcpp::get_logger("GUI"), "Finished upload of " << rFileName_ << " to " << rRemoteFilePath_);
+        }
+    }
+
+    if (pfile)
+    {
+        sftp_close(pfile);
+        pfile = nullptr;
+    }
+    if (pSftpSession)
+    {
+        sftp_free(pSftpSession);
+        pSftpSession = nullptr;
+    }
+    if (pSSHSession)
+    {
+        ssh_disconnect(pSSHSession);
+        ssh_free(pSSHSession);
+        pSSHSession = nullptr;
+    }
+
+    if (!_cancelCurrentTasksFlag.load() && !success)
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
+                           "File upload to " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_
+                                             << " was unsuccessful.");
+    }
+    else if (_cancelCurrentTasksFlag.load())
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
+                           "File upload to " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_
+                                             << " was canceled by the user.");
     }
 }
 

@@ -1,6 +1,8 @@
 #include "QDownloadedFileManager.hpp"
 
-std::list<QDownloadedFileManager::sFileInfo> QDownloadedFileManager::_availableFileList = {};
+#warning Should be a map
+std::unordered_map<decltype(QDownloadedFileManager::sFileInfo::name), decltype(QDownloadedFileManager::sFileInfo::size)>
+    QDownloadedFileManager::_availableFileList = {};
 
 bool QDownloadedFileManager::sFileInfo::operator==(const sFileInfo& other) const
 {
@@ -18,11 +20,7 @@ QDownloadedFileManager& QDownloadedFileManager::getInstance()
 void QDownloadedFileManager::addFileToList(const std::string& fileName_, const uint64_t fileSize_)
 {
     sFileInfo file = {.name = fileName_, .size = fileSize_};
-
-    if (alreadyDownloaded(file) != eDownloadState::ALREADY_DOWNLOADED_OK)
-    {
-        _availableFileList.push_back(file);
-    }
+    _availableFileList.insert_or_assign(file.name, file.size);
 }
 
 QDownloadedFileManager::eDownloadState QDownloadedFileManager::alreadyDownloaded(sFileInfo file_)
@@ -36,15 +34,11 @@ QDownloadedFileManager::eDownloadState QDownloadedFileManager::alreadyDownloaded
     eDownloadState state = eDownloadState::NOT_DOWNLOADED;
     sFileInfo fileToFind = {.name = fileName_, .size = fileSize_};
 
-    auto match = std::find_if(_availableFileList.begin(),
-                              _availableFileList.end(),
-                              [&fileToFind](const sFileInfo& x) { return x.name == fileToFind.name; });
-
-    if (match != _availableFileList.end() && *match == fileToFind)
+    if (_availableFileList.contains(fileToFind.name) && _availableFileList[fileToFind.name] == fileToFind.size)
     {
         state = eDownloadState::ALREADY_DOWNLOADED_OK;
     }
-    else if (match != _availableFileList.end())
+    else if (_availableFileList.contains(fileToFind.name) && _availableFileList[fileToFind.name] != fileToFind.size)
     {
         state = eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH;
     }

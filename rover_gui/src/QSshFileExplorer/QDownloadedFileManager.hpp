@@ -4,6 +4,7 @@
 #include "../Global/QTmpFolderManager.hpp"
 
 #include "rclcpp/rclcpp.hpp"
+#include <unordered_map>
 
 class QDownloadedFileManager
 {
@@ -33,9 +34,11 @@ class QDownloadedFileManager
     void addFileToList(const std::string& fileName_, const uint64_t fileSize_);
     eDownloadState alreadyDownloaded(sFileInfo file_);
     eDownloadState alreadyDownloaded(const std::string& fileName_, const uint64_t fileSize_);
+    #warning TODO
+    // bool getFilePath(sFileInfo file_);
 
   private:
-    static std::list<sFileInfo> _availableFileList;
+    static std::unordered_map<decltype(sFileInfo::name), decltype(sFileInfo::size)> _availableFileList;
 };
 
 #endif  // __QDOWNLOADED_FILE_MANAGER_HPP__
