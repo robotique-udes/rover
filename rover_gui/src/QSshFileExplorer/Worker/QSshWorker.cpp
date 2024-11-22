@@ -27,15 +27,21 @@ QSshWorker::~QSshWorker()
     this->finish();
 }
 
-void QSshWorker::refreshStructure(std::string username_, std::string hostname_, std::string path_)
+void QSshWorker::refreshStructure(const std::string& username_,
+                                  const std::string& hostname_,
+                                  const std::string& oldPath_,
+                                  const std::string& newPath_)
 {
-    this->addTask([username = std::move(username_), hostname = std::move(hostname_), path = std::move(path_), this](void)
-                  { this->refreshStructureInternal(username, hostname, path); });
+    this->addTask([username = std::move(username_),
+                   hostname = std::move(hostname_),
+                   oldPath = std::move(oldPath_),
+                   newPath = std::move(newPath_),
+                   this](void) { this->refreshStructureInternal(username, hostname, oldPath, newPath); });
 
-    emit this->newProgressBarUpdate(std::string("Getting items for " + std::move(path_)), 0.0f);
+    emit this->newProgressBarUpdate(std::string("Getting items for " + newPath_), 0.0f);
 }
 
-void QSshWorker::openFile(IN const std::string& rUsername_, IN const std::string& rHostname_, IN const std::string& rfilePath_)
+void QSshWorker::openFile(const std::string& rUsername_, const std::string& rHostname_, const std::string& rfilePath_)
 {
     this->addTask([username = std::move(rUsername_), hostname = std::move(rHostname_), path = std::move(rfilePath_), this](void)
                   { this->downloadFileInternal(username, hostname, path); });
@@ -44,13 +50,41 @@ void QSshWorker::openFile(IN const std::string& rUsername_, IN const std::string
     emit this->newProgressBarUpdate("", 0.0f);
 }
 
+void QSshWorker::transferFile(const std::string& fileName_,
+                              const std::string& ownerUsername_,
+                              const std::string& ownerHostname_,
+                              const std::string& ownerFolderPath_,
+                              const std::string& receiverUsername_,
+                              const std::string& receiverHostname_,
+                              const std::string& receiverFolderPath_)
+{
+    this->addTask([username = std::move(ownerUsername_),
+                   hostname = std::move(ownerHostname_),
+                   filePath = std::move(ownerFolderPath_ + "/" + fileName_),
+                   this](void) { this->downloadFileInternal(username, hostname, filePath); });
+
+    this->addTask([username = std::move(receiverUsername_),
+                   hostname = std::move(receiverHostname_),
+                   fileName = std::move(fileName_),
+                   folderPath = std::move(receiverFolderPath_),
+                   this](void) { this->uploadFileInternal(username, hostname, fileName, folderPath); });
+}
+
 std::vector<QFileItem> QSshWorker::getFileStructure(void)
 {
     std::lock_guard<std::mutex> lock(_filesMutex);
     return _files;
 }
 
-void QSshWorker::refreshStructureInternal(std::string username_, std::string hostname_, std::string path_)
+const std::string& QSshWorker::getPathStructure(void)
+{
+    return _filesPath;
+}
+
+void QSshWorker::refreshStructureInternal(const std::string& username_,
+                                          const std::string& hostname_,
+                                          const std::string& oldPath_,
+                                          const std::string& newPath_)
 {
     bool success = true;
     ssh_session pSshSession = nullptr;
@@ -78,11 +112,11 @@ void QSshWorker::refreshStructureInternal(std::string username_, std::string hos
 
     if (success)
     {
-        pSftpDir = sftp_opendir(pSftpSession, path_.c_str());
+        pSftpDir = sftp_opendir(pSftpSession, newPath_.c_str());
         if (!pSftpDir)
         {
-            RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"),
-                                "Error opening directory \"" << path_.c_str() << "\" " << sftp_get_error(pSftpSession));
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
+                                "Error opening directory \"" << newPath_.c_str() << "\" " << sftp_get_error(pSftpSession));
             success = false;
         }
     }
@@ -146,6 +180,15 @@ void QSshWorker::refreshStructureInternal(std::string username_, std::string hos
         }
 
         emit this->newStructureReady();
+    }
+
+    if (success)
+    {
+        _filesPath = newPath_;
+    }
+    else
+    {
+        _filesPath = oldPath_;
     }
 
     if (pSftpDir)
@@ -304,14 +347,14 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
 void QSshWorker::uploadFileInternal(IN const std::string& rUsername_,
                                     IN const std::string& rHostname_,
                                     IN const std::string& rFileName_,
-                                    IN const std::string& rRemoteFilePath_)
+                                    IN const std::string& rRemoteFolderPath_)
 {
-#warning TODO Check
     bool success = true;
 
     ssh_session pSSHSession = nullptr;
     sftp_session pSftpSession = nullptr;
     sftp_file pfile = nullptr;
+    std::unique_ptr<QFile> localFile = nullptr;
 
     std::unique_lock<std::mutex> lockLibSsh(_libSshMutex);
     if (!LibSshSupportModule::getSshSession(rUsername_, rHostname_, pSSHSession) || !pSSHSession)
@@ -324,79 +367,74 @@ void QSshWorker::uploadFileInternal(IN const std::string& rUsername_,
         success = false;
     }
 
-    QFile localFile;
-    switch (QDownloadedFileManager::getInstance().alreadyDownloaded(rFileName_, 0u))
+    std::string localFilePath = "";
+    if (success && QDownloadedFileManager::getInstance().getFilePath(rFileName_, localFilePath))
     {
-        case QDownloadedFileManager::eDownloadState::NOT_DOWNLOADED: success = false; break;
-        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_OK: [[FALLTRHOUGH]];
-        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH:
-        {
-            // localFile = QFile(QDownloadedFileManager::getInstance().getFilePath)
-            success = true;
-            break;
-        }
+        localFile = std::make_unique<QFile>(localFilePath.c_str());
+    }
+    else
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Couldn't find local file, flow error");
+        success = false;
     }
 
-    if (success && !localFile.open(QIODevice::ReadOnly))
+    if (success && !localFile->open(QIODevice::ReadOnly))
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Couldn't open local file for reading");
         success = false;
     }
 
-    if (success)
+    std::string remoteFilePath = rRemoteFolderPath_ + "/" + rFileName_;
+    if (success && !(pfile = sftp_open(pSftpSession, remoteFilePath.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU)))
     {
-        pfile = sftp_open(pSftpSession, rRemoteFilePath_.c_str(), O_WRONLY | O_CREAT | O_TRUNC, S_IRWXU);
-        if (!pfile)
-        {
-            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
-                               "Error opening remote file for writing: " << rUsername_ << "@" << rHostname_ << ":"
-                                                                         << rRemoteFilePath_ << " (" << ssh_get_error(pSSHSession)
-                                                                         << ")");
-            success = false;
-        }
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
+                           "Error opening remote file for writing: " << rUsername_ << "@" << rHostname_ << ":" << remoteFilePath
+                                                                     << " (" << ssh_get_error(pSSHSession) << ")");
+        success = false;
     }
 
     if (success)
     {
-        QByteArray buffer;
-        buffer.resize(FILE_TRANSFER_BUFFER_SIZE);
+        char buffer[FILE_TRANSFER_BUFFER_SIZE] = {0};
 
-        uint64_t totalBytesWritten = 0;
+        uint64_t totalBytesWritten = 0u;
         float progress = 0.0f;
+        int64_t bytesRead = 0;
+        ssize_t bytesWritten = 0u;
 
-        while (!_cancelCurrentTasksFlag.load() && !localFile.atEnd())
+        while (success && !_cancelCurrentTasksFlag.load() && !localFile->atEnd())
         {
-            qint64 bytesRead = localFile.read(buffer.data(), buffer.size());
-            if (bytesRead <= 0)
+            if ((bytesRead = localFile->read(buffer, sizeof(buffer))) < 0)
             {
                 success = false;
-                break;
             }
 
-            ssize_t bytesWritten = sftp_write(pfile, buffer.data(), bytesRead);
-            if (bytesWritten < 0)
+            if (success && (bytesWritten = sftp_write(pfile, buffer, bytesRead)) < 0)
             {
                 RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error writing to remote file: " << ssh_get_error(pSSHSession));
                 success = false;
-                break;
             }
 
-            totalBytesWritten += bytesWritten;
-            progress = 100.0f * static_cast<float>(totalBytesWritten) / static_cast<float>(localFile.size());
+            if (success)
+            {
+                totalBytesWritten += bytesWritten;
+                progress = 100.0f * static_cast<float>(totalBytesWritten) / static_cast<float>(localFile->size());
 
-            auto tmp_clock = rclcpp::Clock();
-            RCLCPP_INFO_THROTTLE(rclcpp::get_logger("GUI"),
-                                 tmp_clock,
-                                 1'000,
-                                 "[ %f %%] Upload of %s",
-                                 progress,
-                                 rRemoteFilePath_.c_str());
-            emit this->newProgressBarUpdate(std::string(" Uploading ") + rRemoteFilePath_ + "...", progress);
+                auto tmp_clock = rclcpp::Clock();
+                RCLCPP_INFO_THROTTLE(rclcpp::get_logger("GUI"),
+                                     tmp_clock,
+                                     1'000,
+                                     "[ %f %%] Upload of %s",
+                                     progress,
+                                     remoteFilePath.c_str());
+                emit this->newProgressBarUpdate(std::string(" Uploading ") + remoteFilePath + "...", progress);
+            }
         }
 
-        if (!_cancelCurrentTasksFlag.load() && success)
+        if (success && static_cast<int64_t>(totalBytesWritten) != localFile->size())
         {
-            RCLCPP_DEBUG_STREAM(rclcpp::get_logger("GUI"), "Finished upload of " << rFileName_ << " to " << rRemoteFilePath_);
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error while uploading file, expect corrupt file");
+            success = false;
         }
     }
 
@@ -417,17 +455,19 @@ void QSshWorker::uploadFileInternal(IN const std::string& rUsername_,
         pSSHSession = nullptr;
     }
 
+    lockLibSsh.unlock();
+
     if (!_cancelCurrentTasksFlag.load() && !success)
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
-                           "File upload to " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_
-                                             << " was unsuccessful.");
+                           rFileName_ << " upload to " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFolderPath_
+                                      << " was unsuccessful.");
     }
     else if (_cancelCurrentTasksFlag.load())
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
-                           "File upload to " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFilePath_
-                                             << " was canceled by the user.");
+                           rFileName_ << " upload to " << rUsername_ << "@" << rHostname_ << ":" << rRemoteFolderPath_
+                                      << " was canceled by the user.");
     }
 }
 
@@ -444,6 +484,6 @@ void QSshWorker::openLocalFile(IN const std::string& fileName_)
     }
     else
     {
-#warning TODO: Print fail
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error while opening file, no action done");
     }
 }

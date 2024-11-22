@@ -25,10 +25,32 @@ class QSshWorker : public QWorker
      * @param hostname_
      * @param path_
      */
-    void refreshStructure(std::string username_, std::string hostname_, std::string path_);
+    void refreshStructure(const std::string& username_,
+                          const std::string& hostname_,
+                          const std::string& oldPath_,
+                          const std::string& newPath_);
     void openFile(IN const std::string& rUsername_, IN const std::string& rHostname_, IN const std::string& rfilePath_);
+    void transferFile(IN const std::string& fileName_,
+                      IN const std::string& ownerUsername_,
+                      IN const std::string& ownerHostname_,
+                      IN const std::string& ownerFolderPath_,
+                      IN const std::string& receiverUsername_,
+                      IN const std::string& receiverHostname_,
+                      IN const std::string& receiverFolderPath_);
 
+    /**
+     * @brief Returns the structure from the last successful retrieval
+     *
+     * @return std::vector<QFileItem>
+     */
     std::vector<QFileItem> getFileStructure(void);
+
+    /**
+     * @brief Retrieve the path from the structure returned by getFileStructure()
+     *
+     * @return std::string
+     */
+    const std::string& getPathStructure(void);
 
   signals:
     /**
@@ -39,7 +61,10 @@ class QSshWorker : public QWorker
     void newProgressBarUpdate(std::string taskDescription_, float progressPercent_);
 
   private:
-    void refreshStructureInternal(std::string username_, std::string hostname_, std::string path_);
+    void refreshStructureInternal(const std::string& username_,
+                                  const std::string& hostname_,
+                                  const std::string& oldPath_,
+                                  const std::string& newPath_);
     void downloadFileInternal(IN const std::string& rUsername_,
                               IN const std::string& rHostname_,
                               IN const std::string& rRemoteFilePath_);
@@ -51,6 +76,7 @@ class QSshWorker : public QWorker
 
     std::mutex _filesMutex;
     std::vector<QFileItem> _files;
+    std::string _filesPath;
     static std::mutex _libSshMutex;
 };
 

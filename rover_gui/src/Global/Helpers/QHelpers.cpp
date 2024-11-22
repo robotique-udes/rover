@@ -139,15 +139,15 @@ namespace QHelper
 
     std::string getFileExtension(const std::string& filename_)
     {
-#warning TODO: Missing multiple checks
+        std::string fileExtension = "";
         size_t lastDotPos = filename_.find_last_of('.');
 
         // Avoid first dot for hidden folder
         if (lastDotPos != std::string::npos && lastDotPos != 0)
         {
-            return filename_.substr(lastDotPos + 1);
+            fileExtension = filename_.substr(lastDotPos + 1);
         }
 
-        return "";
+        return fileExtension;
     }
 }  // namespace QHelper

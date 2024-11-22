@@ -30,9 +30,30 @@ QTreeView::item {
 
     const Ui::FileExplorer& getUI(void) const;
 
-    void linkFriendTreeView(QTreeViewExplorer* treeViewfriend_);
+    /**
+     * @brief [WARNING] This method contain runtime assert, for critical application only call at initialisation!
+     *
+     */
+    void linkFriend(QSshFileExplorerWidget* friend_);
+
+  public slots:
+    /**
+     * @brief Refresh the file tree window from the current informations
+     * displayed
+     *
+     */
+    void refreshItems(void);
+
+    /**
+     * @brief Refresh the file tree window from the new specified path
+     * 
+     *
+     */
+    void refreshItemsNewPath(const std::string& newPath_);
 
   private:
+    QSshFileExplorerWidget* _friend = nullptr;
+
     static const std::map<eColumnIndex, std::string> _columnNameMap;
     Ui::FileExplorer _ui;
     QStandardItemModel _itemModel;
@@ -41,17 +62,19 @@ QTreeView::item {
 
     QMenu _contextMenu = QMenu(this);
     QAction _actionMenuOpen = QAction("Open", this);
-    QAction _actionMenuRename = QAction("Rename", this);
-    QAction _actionMenuCut = QAction("Cut", this);
-    QAction _actionMenuPaste = QAction("Paste", this);
-    QAction _actionMenuDelete = QAction("Delete", this);
+    QAction _actionMenuTransfer = QAction("Transfer", this);
     QModelIndex _contextMenuIndex = QModelIndex();
 
     void initTreeView(void);
     void initContextMenu(void);
 
+    /**
+     * @brief [WARNING] This method contain runtime assert, for critical application only call at initialisation!
+     *
+     */
+    void linkFriendTreeView(QTreeViewExplorer* treeViewfriend_);
+
   private slots:
-    void refreshItems(void);
 
     void handleFriendSelectionTriggered(void);
     void handleNewStructure(void);
@@ -59,10 +82,7 @@ QTreeView::item {
     void handleLeftClick(const QModelIndex& index_);
     void handleRightClick(const QPoint& pos_);
     void handleActionMenuOpen(void);
-    void handleActionMenuRename(void);
-    void handleActionMenuCut(void);
-    void handleActionMenuPaste(void);
-    void handleActionMenuDelete(void);
+    void handleActionMenuTransfer(void);
 
     void updateProgressBar(std::string taskDescription_, float progressPercent_);
 };

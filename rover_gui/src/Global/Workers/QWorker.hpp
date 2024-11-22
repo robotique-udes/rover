@@ -53,7 +53,7 @@ class QWorker : public QObject
     void cancelAllTasks(void);
 
     /**
-     * @brief [THREAD_SAFE] Return current estimate of the number of task 
+     * @brief [THREAD_SAFE] Return current estimate of the number of task
      * running and pending.
      *
      */

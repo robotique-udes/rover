@@ -4,6 +4,7 @@
 #include "../Global/QTmpFolderManager.hpp"
 
 #include "rclcpp/rclcpp.hpp"
+#include "rovus_lib/macros.h"
 #include <unordered_map>
 
 class QDownloadedFileManager
@@ -30,12 +31,12 @@ class QDownloadedFileManager
     QDownloadedFileManager(const QDownloadedFileManager&) = delete;
     QDownloadedFileManager& operator=(const QDownloadedFileManager&) = delete;
 
-    static QDownloadedFileManager& getInstance();
+    static QDownloadedFileManager& getInstance(void);
     void addFileToList(const std::string& fileName_, const uint64_t fileSize_);
     eDownloadState alreadyDownloaded(sFileInfo file_);
     eDownloadState alreadyDownloaded(const std::string& fileName_, const uint64_t fileSize_);
-    #warning TODO
-    // bool getFilePath(sFileInfo file_);
+    bool getFilePath(IN const std::string& fileName_, OUT std::string& rfilePath_);
+    bool getFilePath(INOUT sFileInfo& file_, OUT std::string& rfilePath_);
 
   private:
     static std::unordered_map<decltype(sFileInfo::name), decltype(sFileInfo::size)> _availableFileList;

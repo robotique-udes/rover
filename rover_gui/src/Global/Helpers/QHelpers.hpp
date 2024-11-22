@@ -27,5 +27,5 @@ namespace QHelper
 
     std::string getFileNameFromPath(const std::string& path_);
     std::string getFileExtension(const std::string& filename_);
-    
+
 }  // namespace QHelper

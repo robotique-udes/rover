@@ -1,9 +1,9 @@
 #ifndef __QTMP_FOLDER_MANAGER__
 #define __QTMP_FOLDER_MANAGER__
 
+#include "rovus_lib/macros.h"
 #include <QString>
 #include <string>
-#include "rovus_lib/macros.h"
 
 class QTmpFolderManager
 {

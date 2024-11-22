@@ -77,47 +77,47 @@ void QSshFileExplorerWidget::initContextMenu(void)
 {
     _contextMenu.addAction(&_actionMenuOpen);
     _contextMenu.addSeparator();
-    _contextMenu.addAction(&_actionMenuRename);
-    _contextMenu.addSeparator();
-    _contextMenu.addAction(&_actionMenuCut);
-    _contextMenu.addAction(&_actionMenuPaste);
-    _contextMenu.addSeparator();
-    _contextMenu.addAction(&_actionMenuDelete);
+    _contextMenu.addAction(&_actionMenuTransfer);
 
     connect(&_actionMenuOpen, &QAction::triggered, this, &QSshFileExplorerWidget::handleActionMenuOpen);
-    connect(&_actionMenuCut, &QAction::triggered, this, &QSshFileExplorerWidget::handleActionMenuCut);
-    connect(&_actionMenuPaste, &QAction::triggered, this, &QSshFileExplorerWidget::handleActionMenuPaste);
-    connect(&_actionMenuDelete, &QAction::triggered, this, &QSshFileExplorerWidget::handleActionMenuDelete);
-    connect(&_actionMenuRename, &QAction::triggered, this, &QSshFileExplorerWidget::handleActionMenuRename);
+    connect(&_actionMenuTransfer, &QAction::triggered, this, &QSshFileExplorerWidget::handleActionMenuTransfer);
+}
+
+void QSshFileExplorerWidget::linkFriend(QSshFileExplorerWidget* friend_)
+{
+    assert(friend_ != nullptr);
+    _friend = friend_;
+
+    this->linkFriendTreeView(_friend->getUI().tv_fileExplorer);
 }
 
 void QSshFileExplorerWidget::linkFriendTreeView(QTreeViewExplorer* treeViewfriend_)
 {
-    if (treeViewfriend_)
-    {
-        connect(treeViewfriend_,
-                &QTreeViewExplorer::selectionTriggered,
-                this,
-                &QSshFileExplorerWidget::handleFriendSelectionTriggered);
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Specified friend is nullptr aborting");
-        abort();
-    }
+    assert(treeViewfriend_ != nullptr);
+    connect(treeViewfriend_,
+            &QTreeViewExplorer::selectionTriggered,
+            this,
+            &QSshFileExplorerWidget::handleFriendSelectionTriggered);
 }
 
 void QSshFileExplorerWidget::refreshItems(void)
 {
+    this->refreshItemsNewPath(_ui.le_path->text().toStdString());
+}
+
+void QSshFileExplorerWidget::refreshItemsNewPath(const std::string& newPath_)
+{
     _sshWorkerThread.refreshStructure(_ui.le_user->text().toStdString(),
                                       _ui.le_hostIP->text().toStdString(),
-                                      _ui.le_path->text().toStdString());
+                                      _ui.le_path->text().toStdString(),
+                                      newPath_);
 }
 
 void QSshFileExplorerWidget::handleNewStructure(void)
 {
-    _itemModel.removeRows(0, _itemModel.rowCount());
+    _ui.le_path->setText(_sshWorkerThread.getPathStructure().c_str());
 
+    _itemModel.removeRows(0, _itemModel.rowCount());
     std::vector<QFileItem> files = _sshWorkerThread.getFileStructure();
     bool showHiddenFiles = _ui.cb_showHiddenFile->isChecked();
 
@@ -151,7 +151,6 @@ void QSshFileExplorerWidget::handleRightClick(const QPoint& pos_)
 
 void QSshFileExplorerWidget::handleActionMenuOpen(void)
 {
-#warning TODO: Handle path change in retrieve callback instead
     QModelIndexList selectedItem = _ui.tv_fileExplorer->selectionModel()->selectedIndexes();
 
     std::string currentPath = _ui.le_path->text().toStdString();
@@ -167,8 +166,7 @@ void QSshFileExplorerWidget::handleActionMenuOpen(void)
             // Directory
             if (cleanItemPath != "" && selectedItem[i + 1].data().toString().toStdString() == "")
             {
-                _ui.le_path->setText(cleanItemPath.c_str());
-                this->refreshItems();
+                this->refreshItemsNewPath(cleanItemPath.c_str());
             }
             // File element
             else if (cleanItemPath != "" && selectedItem[i + 1].data().toString().toStdString() != "")
@@ -179,13 +177,44 @@ void QSshFileExplorerWidget::handleActionMenuOpen(void)
     }
 }
 
-void QSshFileExplorerWidget::handleActionMenuRename(void) {}
+void QSshFileExplorerWidget::handleActionMenuTransfer(void)
+{
+    if (!_friend)
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error transfering file, no valid friend QSshFileExplorer linked");
+    }
+    else
+    {
+        QModelIndexList selectedItem = _ui.tv_fileExplorer->selectionModel()->selectedIndexes();
 
-void QSshFileExplorerWidget::handleActionMenuCut(void) {}
+        for (size_t i = 0u; i < static_cast<size_t>(selectedItem.size()); i++)
+        {
+            if (selectedItem[i].column() == static_cast<int>(eColumnIndex::NAME))
+            {
+                std::string fileName = selectedItem[i].data().toString().toStdString();
 
-void QSshFileExplorerWidget::handleActionMenuPaste(void) {}
+                std::string ownerUser = _ui.le_user->text().toStdString();
+                std::string ownerHostname = _ui.le_hostIP->text().toStdString();
+                std::string ownerFolderPath = _ui.le_path->text().toStdString();
 
-void QSshFileExplorerWidget::handleActionMenuDelete(void) {}
+                std::string receiverUsername_ = _friend->getUI().le_user->text().toStdString();
+                std::string receiverHostname_ = _friend->getUI().le_hostIP->text().toStdString();
+                std::string receiverFolderPath_ = _friend->getUI().le_path->text().toStdString();
+
+                _sshWorkerThread.transferFile(fileName,
+                                              ownerUser,
+                                              ownerHostname,
+                                              ownerFolderPath,
+                                              receiverUsername_,
+                                              receiverHostname_,
+                                              receiverFolderPath_);
+
+                this->refreshItems();
+                _friend->refreshItems();
+            }
+        }
+    }
+}
 
 void QSshFileExplorerWidget::updateProgressBar(std::string taskDescription_, float progressPercent_)
 {
