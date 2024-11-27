@@ -25,19 +25,19 @@ QT_BEGIN_NAMESPACE
 
 class Ui_Notification
 {
-  public:
-    QGridLayout* gridLayout;
-    QVBoxLayout* verticalLayout;
-    QHBoxLayout* horizontalLayout;
-    QLabel* lb_sender;
-    QSpacerItem* horizontalSpacer;
-    QPushButton* pb_close;
-    QScrollArea* scrollArea;
-    QWidget* scrollAreaWidgetContents;
-    QGridLayout* gridLayout_2;
-    QLabel* lb_message;
+public:
+    QGridLayout *gridLayout;
+    QVBoxLayout *verticalLayout;
+    QHBoxLayout *horizontalLayout;
+    QLabel *lb_sender;
+    QSpacerItem *horizontalSpacer;
+    QPushButton *pb_close;
+    QScrollArea *scrollArea;
+    QWidget *scrollAreaWidgetContents;
+    QGridLayout *gridLayout_2;
+    QLabel *lb_message;
 
-    void setupUi(QWidget* Notification)
+    void setupUi(QWidget *Notification)
     {
         if (Notification->objectName().isEmpty())
             Notification->setObjectName(QString::fromUtf8("Notification"));
@@ -79,12 +79,9 @@ class Ui_Notification
         pb_close->setMaximumSize(QSize(30, 30));
         QIcon icon;
         QString iconThemeName = QString::fromUtf8("window-close");
-        if (QIcon::hasThemeIcon(iconThemeName))
-        {
+        if (QIcon::hasThemeIcon(iconThemeName)) {
             icon = QIcon::fromTheme(iconThemeName);
-        }
-        else
-        {
+        } else {
             icon.addFile(QString::fromUtf8("."), QSize(), QIcon::Normal, QIcon::Off);
         }
         pb_close->setIcon(icon);
@@ -93,6 +90,7 @@ class Ui_Notification
         pb_close->setFlat(true);
 
         horizontalLayout->addWidget(pb_close);
+
 
         verticalLayout->addLayout(horizontalLayout);
 
@@ -124,7 +122,7 @@ class Ui_Notification
         lb_message->setMinimumSize(QSize(0, 0));
         lb_message->setTextFormat(Qt::RichText);
         lb_message->setScaledContents(false);
-        lb_message->setAlignment(Qt::AlignLeading | Qt::AlignLeft | Qt::AlignTop);
+        lb_message->setAlignment(Qt::AlignLeading|Qt::AlignLeft|Qt::AlignTop);
         lb_message->setWordWrap(true);
         lb_message->setOpenExternalLinks(true);
 
@@ -134,33 +132,32 @@ class Ui_Notification
 
         verticalLayout->addWidget(scrollArea);
 
+
         gridLayout->addLayout(verticalLayout, 0, 0, 1, 1);
+
 
         retranslateUi(Notification);
 
         pb_close->setDefault(false);
 
-        QMetaObject::connectSlotsByName(Notification);
-    }  // setupUi
 
-    void retranslateUi(QWidget* Notification)
+        QMetaObject::connectSlotsByName(Notification);
+    } // setupUi
+
+    void retranslateUi(QWidget *Notification)
     {
         Notification->setWindowTitle(QCoreApplication::translate("Notification", "Form", nullptr));
         lb_sender->setText(QCoreApplication::translate("Notification", "QSshFileSystem.cpp (326):", nullptr));
         pb_close->setText(QString());
-        lb_message->setText(QCoreApplication::translate("Notification",
-                                                        "<html><head/><body><p>Short message</p><p><br/></p></body></html>",
-                                                        nullptr));
-    }  // retranslateUi
+        lb_message->setText(QCoreApplication::translate("Notification", "<html><head/><body><p>Short message</p><p><br/></p></body></html>", nullptr));
+    } // retranslateUi
+
 };
 
-namespace Ui
-{
-    class Notification : public Ui_Notification
-    {
-    };
-}  // namespace Ui
+namespace Ui {
+    class Notification: public Ui_Notification {};
+} // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif  // UI_NOTIFICATION_H
+#endif // UI_NOTIFICATION_H

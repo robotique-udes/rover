@@ -27,14 +27,14 @@ include_directories(
   ${LIBSSH_INCLUDE_DIR}
 )
 
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
-    COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Generating UI files..."
-)
+#add_custom_command(
+    #OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
+    #COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
+    #WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    #COMMENT "Generating UI files..."
+#)
 
-add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
+#add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
 add_executable(main_gui src/main_gui.cpp
                         
@@ -51,8 +51,11 @@ add_executable(main_gui src/main_gui.cpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.hpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.cpp
                         src/QSshFileExplorer/QSshWorker.hpp
-                        src/QSshFileExplorer/QSshWorker.cpp)
-add_dependencies(main_gui run_generate_ui)
+                        src/QSshFileExplorer/QSshWorker.cpp
+                        
+                        src/QSideBar/QSideBar.hpp
+                        src/QSideBar/QSideBar.cpp)
+#add_dependencies(main_gui run_generate_ui)
 
 target_link_libraries(main_gui 
                       Qt6::Widgets
