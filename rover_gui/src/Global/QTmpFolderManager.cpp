@@ -2,7 +2,25 @@
 #include <QDir>
 #include <QUuid>
 
+#include <QString>
+
 #include "rclcpp/rclcpp.hpp"
+
+QTmpFolderManager::QTmpFolderManager()
+{
+    std::string tempBasePath = QDir::tempPath().toStdString() + "/rover-gui-tmp-folder";
+
+    QDir dir(QString::fromStdString(tempBasePath));
+    if (dir.exists())
+    {
+        dir.removeRecursively();
+    }
+
+    std::string sessionFolderName = "/" + QUuid::createUuid().toString().toStdString();
+    _tempFolderPath = (tempBasePath + sessionFolderName);
+
+    _valid = createDirectory(_tempFolderPath);
+}
 
 QTmpFolderManager& QTmpFolderManager::getInstance()
 {
@@ -33,26 +51,10 @@ bool QTmpFolderManager::getUniqueTmpFolderPath(OUT std::string& path_) const
     return success;
 }
 
-QTmpFolderManager::QTmpFolderManager()
-{
-    std::string tempBasePath = QDir::tempPath().toStdString() + "/rover-gui-tmp-folder";
-
-    QDir dir(QString::fromStdString(tempBasePath));
-    if (dir.exists())
-    {
-        dir.removeRecursively();
-    }
-
-    std::string sessionFolderName = "/" + QUuid::createUuid().toString().toStdString();
-    _tempFolderPath = (tempBasePath + sessionFolderName);
-
-    _valid = createDirectory(_tempFolderPath);
-}
-
-bool QTmpFolderManager::createDirectory(IN const std::string& path_) const
+bool QTmpFolderManager::createDirectory(const std::string& path_) const
 {
     bool success = true;
-    if (success && !QDir().mkpath(QString::fromStdString(path_)))
+    if (!QDir().mkpath(QString::fromStdString(path_)))
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create directory: " << path_);
         success = false;

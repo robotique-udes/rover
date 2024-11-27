@@ -1,9 +1,10 @@
 #ifndef __Q_FILE_ITEM__
 #define __Q_FILE_ITEM__
 
-#include <QStandardItem>
+#include "rovus_lib/macros.h"
 
-#include "QIconManager.hpp"
+class QStandardItem;
+class QStandardItemModel;
 
 class QFileItem
 {
@@ -11,7 +12,7 @@ class QFileItem
     QFileItem(const std::string& name_, const std::string& extension_, const std::string& lastModified_);
     ~QFileItem();
 
-    void addItemToModel(QStandardItemModel& rModel_, const bool showHidden_ = false) const;
+    void addItemToModel(IN QStandardItemModel& rModel_, const bool showHidden_ = false) const;
     std::string getName(void) const;
     std::string getType(void) const;
     std::string getLastModified(void) const;

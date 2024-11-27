@@ -33,7 +33,7 @@ class QDownloadedFileManager
 
     static QDownloadedFileManager& getInstance(void);
     void addFileToList(const std::string& fileName_, const uint64_t fileSize_);
-    eDownloadState alreadyDownloaded(sFileInfo file_);
+    eDownloadState alreadyDownloaded(const sFileInfo& file_);
     eDownloadState alreadyDownloaded(const std::string& fileName_, const uint64_t fileSize_);
     bool getFilePath(IN const std::string& fileName_, OUT std::string& rfilePath_);
     bool getFilePath(INOUT sFileInfo& file_, OUT std::string& rfilePath_);

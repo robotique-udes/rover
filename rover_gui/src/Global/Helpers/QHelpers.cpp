@@ -17,9 +17,9 @@
 namespace QHelper
 {
 
-    QMessageBox::StandardButton QPopUp::sendQuestionPopUp(IN const std::string& title_,
-                                                          IN const std::string& message_,
-                                                          QFlags<QMessageBox::StandardButton> buttons_)
+    QMessageBox::StandardButton QPopUp::sendQuestionPopUp(const std::string& title_,
+                                                          const std::string& message_,
+                                                          QMessageBox::StandardButtons buttons_)
     {
         QEventLoop waitForAnswerLoop;
         QMessageBox::StandardButton userSelection = QMessageBox::StandardButton::NoButton;
@@ -30,11 +30,10 @@ namespace QHelper
             QMetaObject::invokeMethod(pApp,
                                       [&]()
                                       {
-                                          userSelection = static_cast<QMessageBox::StandardButton>(
-                                              QMessageBox::question(nullptr,
-                                                                    QString::fromStdString(title_),
-                                                                    QString::fromStdString(message_),
-                                                                    buttons_));
+                                          userSelection = QMessageBox::question(nullptr,
+                                                                                QString::fromStdString(title_),
+                                                                                QString::fromStdString(message_),
+                                                                                buttons_);
                                           waitForAnswerLoop.quit();
                                       });
             waitForAnswerLoop.exec();
@@ -47,16 +46,16 @@ namespace QHelper
         return userSelection;
     }
 
-    bool QPopUp::sendStringInputPopUp(IN const std::string& title_,
-                                      IN const std::string& message_,
+    bool QPopUp::sendStringInputPopUp(const std::string& title_,
+                                      const std::string& message_,
                                       OUT std::string& input_,
-                                      bool passwordMode_)
+                                      const bool passwordMode_)
     {
         bool success = true;
         QEventLoop waitForAnswerLoop;
 
         QCoreApplication* pApp = QApplication::instance();
-        if (success && !pApp)
+        if (!pApp)
         {
             RCLCPP_ERROR(rclcpp::get_logger("GUI"), "QApplication returned null, something is very wrong");
             success = false;
@@ -98,8 +97,8 @@ namespace QHelper
         return success;
     }
 
-    bool QTerminalCommand::blockingTerminalCommand(IN const std::string& command_,
-                                                   IN const QStringList& arguments_,
+    bool QTerminalCommand::blockingTerminalCommand(const std::string& command_,
+                                                   const QStringList& arguments_,
                                                    OUT std::string& result_,
                                                    const std::chrono::milliseconds timeout_)
     {
@@ -113,8 +112,8 @@ namespace QHelper
 
         QTimer timeoutTimer;
         timeoutTimer.setSingleShot(true);
-        timeoutTimer.start(timeout_);
         QObject::connect(&timeoutTimer, &QTimer::timeout, &eventLoop, &QEventLoop::quit);
+        timeoutTimer.start(timeout_);
 
         eventLoop.exec();
 

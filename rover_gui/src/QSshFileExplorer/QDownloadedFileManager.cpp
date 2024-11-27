@@ -1,6 +1,5 @@
 #include "QDownloadedFileManager.hpp"
 
-#warning Should be a map
 std::unordered_map<decltype(QDownloadedFileManager::sFileInfo::name), decltype(QDownloadedFileManager::sFileInfo::size)>
     QDownloadedFileManager::_availableFileList = {};
 
@@ -23,7 +22,7 @@ void QDownloadedFileManager::addFileToList(const std::string& fileName_, const u
     _availableFileList.insert_or_assign(file.name, file.size);
 }
 
-QDownloadedFileManager::eDownloadState QDownloadedFileManager::alreadyDownloaded(sFileInfo file_)
+QDownloadedFileManager::eDownloadState QDownloadedFileManager::alreadyDownloaded(const sFileInfo& file_)
 {
     eDownloadState state = eDownloadState::NOT_DOWNLOADED;
 
