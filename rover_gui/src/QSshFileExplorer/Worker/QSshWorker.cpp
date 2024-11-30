@@ -11,10 +11,6 @@
 #include "LibSshSupportModule.hpp"
 #include "QSshFileExplorer/QDownloadedFileManager.hpp"
 
-#warning TODO: Documentation in global helpers and support module
-#warning TODO: No connection dialog
-#warning TODO: Dialog helper keyboard shortcuts
-
 std::mutex QSshWorker::_libSshMutex;
 
 QSshWorker::QSshWorker(bool start_, QObject* parent_): QWorker(start_, parent_)
