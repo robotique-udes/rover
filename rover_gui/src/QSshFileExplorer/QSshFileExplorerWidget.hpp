@@ -1,13 +1,14 @@
 #ifndef __QSSH_FILE_EXPLORER_WIDGET_HPP__
 #define __QSSH_FILE_EXPLORER_WIDGET_HPP__
 
-#include <QMenu>
-#include <QShortcut>
+#include "UI_FileExplorer.h"
 
 #include "QFileItem.hpp"
 #include "Worker/QSshWorker.hpp"
 
-#include "UI_FileExplorer.h"
+#include <QMenu>
+#include <QShortcut>
+#include <QStandardItemModel>
 
 class QSshFileExplorerWidget : public QWidget
 {
@@ -46,7 +47,7 @@ QTreeView::item {
 
     /**
      * @brief Refresh the file tree window from the new specified path
-     * 
+     *
      *
      */
     void refreshItemsNewPath(const std::string& newPath_);

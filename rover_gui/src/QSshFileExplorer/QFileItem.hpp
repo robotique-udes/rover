@@ -3,8 +3,10 @@
 
 #include "rovus_lib/macros.h"
 
+#include <QStandardItemModel>
+#include <memory>
+
 class QStandardItem;
-class QStandardItemModel;
 
 class QFileItem
 {

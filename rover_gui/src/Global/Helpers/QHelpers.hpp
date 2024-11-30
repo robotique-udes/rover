@@ -15,11 +15,11 @@ namespace QHelper
          * @brief Helper to send a sync (blocking) question popup to the user
          * from any thread. The user input is then returned when the user makes
          * his choice.
-         * 
+         *
          * @param title_ Popup title
          * @param message_ Popup message
          * @param buttons_ Buttons the user will be able to click
-         * @return QMessageBox::StandardButton User selection from the passed 
+         * @return QMessageBox::StandardButton User selection from the passed
          * "buttons_"
          */
         QMessageBox::StandardButton sendQuestionPopUp(const std::string& title_,
@@ -30,15 +30,15 @@ namespace QHelper
         /**
          * @brief Helper to send a sync (blocking) text input popup to the user
          * from any thread. The user input is then returned when the user press
-         * the "ok" button 
-         * 
+         * the "ok" button
+         *
          * @param title_ Popup title
          * @param message_ Popup message
-         * @param input_ [OUT] Used to return the user input 
-         * @param passwordMode_ Hides the text input display to hide 
+         * @param input_ [OUT] Used to return the user input
+         * @param passwordMode_ Hides the text input display to hide
          * passwords. *Warning:* passwords input are still returned in plain text)
-         * @return true 
-         * @return false 
+         * @return true
+         * @return false
          */
         bool sendStringInputPopUp(const std::string& title_,
                                   const std::string& message_,
@@ -49,13 +49,13 @@ namespace QHelper
     namespace QTerminalCommand
     {
         /**
-         * @brief Sends a command into a bash terminal. Please use only in last 
+         * @brief Sends a command into a bash terminal. Please use only in last
          * resort.
-         * 
+         *
          * @param command_
-         * @param arguments_ 
-         * @param result_ [OUT] Used to return the result of the command as a 
-         * string 
+         * @param arguments_
+         * @param result_ [OUT] Used to return the result of the command as a
+         * string
          * @param timeout_ Command execution time before failing
          * @return success
          */
@@ -67,17 +67,17 @@ namespace QHelper
 
     /**
      * @brief Get the filename from a file path
-     * 
-     * @param path_ 
-     * @return std::string 
+     *
+     * @param path_
+     * @return std::string
      */
     std::string getFileNameFromPath(const std::string& path_);
 
     /**
      * @brief Get the extension from a file name
-     * 
-     * @param filename_ 
-     * @return std::string 
+     *
+     * @param filename_
+     * @return std::string
      */
     std::string getFileExtension(const std::string& filename_);
 

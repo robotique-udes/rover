@@ -486,7 +486,7 @@ void CanMaster::CB_Can_PropulsionMotor(uint16_t id_, const can_frame* frameMsg_)
 
                 default:
                     RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
-                    arrayIndex = 0; // Removes warning;
+                    arrayIndex = 0;  // Removes warning;
             }
             msg_ROS_propMotor.current_speed[arrayIndex] = msg->data.currentSpeed;
             _pub_propulsionMotor->publish(msg_ROS_propMotor);

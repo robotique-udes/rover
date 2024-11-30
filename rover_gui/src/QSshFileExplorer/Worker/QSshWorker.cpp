@@ -116,7 +116,7 @@ void QSshWorker::refreshStructureInternal(const std::string& username_,
         if (!pSftpDir)
         {
             RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"),
-                                "Error opening directory \"" << newPath_.c_str() << "\" " << sftp_get_error(pSftpSession));
+                               "Error opening directory \"" << newPath_.c_str() << "\" " << sftp_get_error(pSftpSession));
             success = false;
         }
     }

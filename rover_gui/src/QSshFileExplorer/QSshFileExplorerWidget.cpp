@@ -2,13 +2,13 @@
 
 #include <rclcpp/rclcpp.hpp>
 
+#include "QTreeViewExplorer.hpp"
+
 #include <QApplication>
 #include <QClipboard>
 #include <QDesktopServices>
 #include <QDir>
 #include <QUrl>
-
-#include "QTreeViewExplorer.hpp"
 
 const std::map<QSshFileExplorerWidget::eColumnIndex, std::string> QSshFileExplorerWidget::_columnNameMap
     = {{eColumnIndex::NAME, "Name"}, {eColumnIndex::TYPE, "Type"}, {eColumnIndex::LAST_MODIFIED, "Last modified"}};
