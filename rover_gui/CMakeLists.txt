@@ -13,6 +13,8 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
+find_package(PkgConfig REQUIRED)
+pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0)
 
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
@@ -26,7 +28,12 @@ include_directories(
   ui/include
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
+  ${GSTREAMER_INCLUDE_DIRS}
 )
+
+link_directories(${GSTREAMER_LIBRARY_DIRS})
+qt_add_resources(RTSP_RESOURCES src/Global/Constant/resources.qrc)
+
 
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
@@ -80,13 +87,17 @@ add_executable(main_gui src/gui.cpp
                         
                    src/QDashboard/QExample.hpp
                    src/QDashboard/QExample.cpp
+                   src/QRtspPlayer/QRtspPlayer.hpp
+                   src/QRtspPlayer/QRtspPlayer.cpp
+                   ${RTSP_RESOURCES}
                 )
 add_dependencies(main_gui run_generate_ui)
 
 target_link_libraries(main_gui 
                       Qt6::Widgets
                       Qt6::Gui
-                      ${LIBSSH_LIBRARY})
+                      ${LIBSSH_LIBRARY}
+                      ${GSTREAMER_LIBRARIES})
 
 ament_target_dependencies(main_gui
                           rclcpp
