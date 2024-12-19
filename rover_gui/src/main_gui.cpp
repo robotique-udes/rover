@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QMainWindow>
+#include "QRtspPlayer/QRtspPlayer.hpp"
 
 #include "Global/Constant/StyleSheet.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
@@ -13,15 +14,15 @@
 class MainWindow : public QMainWindow
 {
   public:
-    explicit MainWindow(QWidget* parent_ = nullptr): QMainWindow(parent_), _fileTransferWidget(parent_)
+    explicit MainWindow(QWidget* parent_ = nullptr): QMainWindow(parent_), _rtspPlayerWidget(new RtspPlayerWidget(this))
     {
-        this->setCentralWidget(&_fileTransferWidget);
+        this->setCentralWidget(_rtspPlayerWidget);
     }
 
     ~MainWindow() {}
 
   private:
-    QFileTransferWidget _fileTransferWidget;
+    RtspPlayerWidget* _rtspPlayerWidget;
 };
 
 int main(int argc, char* argv[])
