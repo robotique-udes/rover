@@ -2,3 +2,6 @@
 *~
 *.bkp
 rover_gui/ui/include/UI_*
+build/
+install/
+log/
