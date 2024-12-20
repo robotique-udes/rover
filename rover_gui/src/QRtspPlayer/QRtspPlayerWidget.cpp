@@ -2,6 +2,8 @@
 #include <gst/video/videooverlay.h>
 #include <QMessageBox>
 #include <QVBoxLayout>
+#include <QStyle>
+#include <QApplication>
 #include <QHBoxLayout>
 
 RtspPlayerWidget::RtspPlayerWidget(QWidget* parent)
@@ -23,7 +25,7 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent)
     connect(gstreamerWorker, &GStreamerWorker::pipelineStarted, this, &RtspPlayerWidget::onPipelineStarted);
     connect(gstreamerWorker, &GStreamerWorker::errorOccurred, this, &RtspPlayerWidget::onErrorOccurred);
     connect(ui->startButton, &QPushButton::clicked, this, [this]() {
-    // When start is clicked, call startStream with the entered URL
+
     startStream(ui->rtspUrlInput->text());
     });
 
@@ -38,7 +40,6 @@ RtspPlayerWidget::~RtspPlayerWidget()
     workerThread->wait();
     delete ui;
 }
-
 
 void RtspPlayerWidget::initializeGStreamer()
 {
@@ -75,26 +76,20 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
         QMessageBox::critical(this, "Error", "No pipeline received.");
         return;
     }
-    this->pipeline = receivedPipeline; // Store the pipeline locally
+    this->pipeline = receivedPipeline; 
 
-    // Retrieve the video sink implementing GST_TYPE_VIDEO_OVERLAY
     GstElement* videoSink = gst_bin_get_by_interface(GST_BIN(pipeline), GST_TYPE_VIDEO_OVERLAY);
     if (!videoSink) {
         QMessageBox::critical(this, "Error", "Failed to configure video sink.");
         return;
     }
 
-    // Ensure our widget has a native window ID
     ui->videoWidget->winId();
 
-    // Assign the window handle to the video sink
     gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink),
         (guintptr)ui->videoWidget->winId());
 
-    // Now start playing
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
-
-    QMessageBox::information(this, "Pipeline", "Pipeline started successfully!");
 }
 
 void RtspPlayerWidget::onErrorOccurred(const QString& error)

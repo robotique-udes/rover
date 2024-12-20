@@ -15,7 +15,6 @@ GStreamerWorker::~GStreamerWorker()
 
 void GStreamerWorker::initializeGStreamer()
 {
-    // Initialization if needed
 }
 
 void GStreamerWorker::cleanupGStreamer()
@@ -41,21 +40,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
 
     emit pipelineStarted(pipeline);
 
-    /*GstElement* videoSink = gst_bin_get_by_interface(GST_BIN(pipeline), GST_TYPE_VIDEO_OVERLAY);
-    if (videoSink) {
-        // Force creation of a native window for videoWidget
-        ui->videoWidget->winId();
-        
-        // Set the window handle for the overlay
-        gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)ui->videoWidget->winId());
-        
-        emit pipelineStarted();
-    } else {
-        emit errorOccurred("Failed to configure video sink.");
-        return;
-    }
-
-    gst_element_set_state(pipeline, GST_STATE_PLAYING);*/
 }
 
 void GStreamerWorker::stopPipeline()

@@ -1,7 +1,6 @@
-<!DOCTYPE RCC>
-<RCC version="1.0">
-  <qresource>
-    <file alias="play.png">icons/play-button.png</file>
-    <file alias="stop.png">icons/stop-button.png</file>
-  </qresource>
+<RCC>
+    <qresource prefix="/">
+        <file>icons/play.png</file>
+        <file>icons/stop.png</file>
+    </qresource>
 </RCC>
