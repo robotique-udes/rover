@@ -1,0 +1,12 @@
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/uninstall.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/rover_auxiliary_uninstall.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/light_control.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/compass_calibrator.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/goal_manager.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/test.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/edit_cache.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/rebuild_cache.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/list_install_components.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/install.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/install/local.dir
+/home/chris/ros2_ws/src/rover/build/rover_auxiliary/CMakeFiles/install/strip.dir

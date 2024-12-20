@@ -1,0 +1,95 @@
+-- The C compiler identification is GNU 11.4.0
+-- The CXX compiler identification is GNU 11.4.0
+-- Detecting C compiler ABI info
+-- Detecting C compiler ABI info - done
+-- Check for working C compiler: /usr/bin/cc - skipped
+-- Detecting C compile features
+-- Detecting C compile features - done
+-- Detecting CXX compiler ABI info
+-- Detecting CXX compiler ABI info - done
+-- Check for working CXX compiler: /usr/bin/c++ - skipped
+-- Detecting CXX compile features
+-- Detecting CXX compile features - done
+-- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+-- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+-- Found rclcpp: 16.0.7 (/opt/ros/humble/share/rclcpp/cmake)
+-- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+-- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+-- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+-- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+-- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+-- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+-- Found rmw_fastrtps_cpp: 6.2.5 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+-- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+-- Found FastRTPS: /opt/ros/humble/include  
+-- Using RMW implementation 'rmw_fastrtps_cpp' as default
+-- Looking for pthread.h
+-- Looking for pthread.h - found
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+-- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+-- Found Threads: TRUE  
+-- Found rover_msgs: 0.0.0 (/home/chris/ros2_ws/install/rover_msgs/share/rover_msgs/cmake)
+-- Performing Test HAVE_STDATOMIC
+-- Performing Test HAVE_STDATOMIC - Success
+-- Found WrapAtomic: TRUE  
+-- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
+-- Found WrapOpenGL: TRUE  
+-- Found XKB: /usr/lib/x86_64-linux-gnu/libxkbcommon.so (found suitable version "1.4.0", minimum required is "0.5.0") 
+-- Found WrapVulkanHeaders: /usr/include  
+-- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2") 
+-- Checking for modules 'gstreamer-1.0;gstreamer-plugins-base-1.0;gstreamer-video-1.0'
+--   Found gstreamer-1.0, version 1.20.3
+--   Found gstreamer-plugins-base-1.0, version 1.20.1
+--   Found gstreamer-video-1.0, version 1.20.1
+-- Configuring done
+-- Generating done
+-- Build files have been written to: /home/chris/ros2_ws/src/rover/build/rover_gui
+[  6%] [34m[1mGenerating UI files...[0m
+[0;34m=== Generating UI files ... ===[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[  6%] Built target run_generate_ui
+[ 13%] [34m[1mAutomatic MOC for target main_gui[0m
+[ 13%] Built target main_gui_autogen
+[ 20%] [34m[1mGenerating qrc_resources.cpp[0m
+[ 26%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/main_gui.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[ 46%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/QWorker.cpp.o[0m
+[ 53%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshWorker.cpp.o[0m
+[ 60%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QIconManager.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QGStreamerWorker.cpp.o[0m
+[ 73%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[ 80%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[ 86%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileItem.cpp.o[0m
+[ 93%] [32mBuilding CXX object CMakeFiles/main_gui.dir/qrc_resources.cpp.o[0m
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:[m[K In constructor ‘[01m[KRtspPlayerWidget::RtspPlayerWidget(QWidget*)[m[K’:
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:15:51:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QStyle[m[K’
+   15 |     ui->startButton->setIcon(QApplication::style()[01;31m[K->[m[KstandardIcon(QStyle::SP_MediaPlay));
+      |                                                   [01;31m[K^~[m[K
+In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:68:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QStyle[m[K’
+   68 | class [01;36m[KQStyle[m[K;
+      |       [01;36m[K^~~~~~[m[K
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:15:74:[m[K [01;31m[Kerror: [m[Kincomplete type ‘[01m[KQStyle[m[K’ used in nested name specifier
+   15 |     ui->startButton->setIcon(QApplication::style()->standardIcon(QStyle::[01;31m[KSP_MediaPlay[m[K));
+      |                                                                          [01;31m[K^~~~~~~~~~~~[m[K
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:18:50:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QStyle[m[K’
+   18 |     ui->stopButton->setIcon(QApplication::style()[01;31m[K->[m[KstandardIcon(QStyle::SP_MediaStop));
+      |                                                  [01;31m[K^~[m[K
+In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:68:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QStyle[m[K’
+   68 | class [01;36m[KQStyle[m[K;
+      |       [01;36m[K^~~~~~[m[K
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:18:73:[m[K [01;31m[Kerror: [m[Kincomplete type ‘[01m[KQStyle[m[K’ used in nested name specifier
+   18 |     ui->stopButton->setIcon(QApplication::style()->standardIcon(QStyle::[01;31m[KSP_MediaStop[m[K));
+      |                                                                         [01;31m[K^~~~~~~~~~~~[m[K
+gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:196: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

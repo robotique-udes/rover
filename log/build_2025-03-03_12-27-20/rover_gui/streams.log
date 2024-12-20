@@ -1,0 +1,26 @@
+[0.133s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12
+[0.209s] [  5%] [34m[1mGenerating UI files...[0m
+[0.215s] [0;34m=== Generating UI files ... ===[0m
+[0.229s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[0.240s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[0.250s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[0.261s] [  5%] Built target run_generate_ui
+[0.287s] [ 10%] [34m[1mAutomatic MOC for target main_gui[0m
+[0.697s] [ 10%] Built target main_gui_autogen
+[0.734s] [35m[1mConsolidate compiler generated dependencies of target main_gui[0m
+[0.811s] [ 15%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[0.813s] [ 20%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[0.814s] [ 25%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/main_gui.cpp.o[0m
+[0.814s] [ 30%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp.o[0m
+[0.817s] [ 35%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[0.819s] [ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[0.820s] [ 45%] [32mBuilding CXX object CMakeFiles/main_gui.dir/qrc_resources.cpp.o[0m
+[5.782s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp:[m[K In function ‘[01m[Kbool LibSshSupportModule::getSftpFileSize(sftp_session, const string&, uint64_t&)[m[K’:
+[5.782s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp:172:19:[m[K [01;31m[Kerror: [m[K‘[01m[KCHECK_POINTER_VALID[m[K’ was not declared in this scope
+[5.782s]   172 |         success = [01;31m[KCHECK_POINTER_VALID[m[K(sftp_);
+[5.782s]       |                   [01;31m[K^~~~~~~~~~~~~~~~~~~[m[K
+[6.671s] gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:154: CMakeFiles/main_gui.dir/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp.o] Error 1
+[6.671s] gmake[2]: *** Waiting for unfinished jobs....
+[9.267s] gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+[9.267s] gmake: *** [Makefile:146: all] Error 2
+[9.270s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_gui' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12

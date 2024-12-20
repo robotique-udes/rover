@@ -1,0 +1,29 @@
+[0.134s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_security': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_security -- -j12 -l12
+[0.201s] [ 50%] [32mBuilding CXX object CMakeFiles/heartbeat.dir/src/heartbeat.cpp.o[0m
+[8.675s] [100%] [32m[1mLinking CXX executable heartbeat[0m
+[9.700s] [100%] Built target heartbeat
+[9.757s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_security' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_security -- -j12 -l12
+[9.911s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_security': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_security
+[9.928s] -- Install configuration: ""
+[9.929s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security//launch
+[9.929s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security//launch/security_base.launch.py
+[9.929s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security//launch/security_rover.launch.py
+[9.929s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security//launch/security.launch.py
+[9.929s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/lib/rover_security/heartbeat
+[9.930s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_security/lib/rover_security/heartbeat" to ""
+[9.930s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/ament_index/resource_index/package_run_dependencies/rover_security
+[9.930s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/ament_index/resource_index/parent_prefix_path/rover_security
+[9.931s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/environment/ament_prefix_path.sh
+[9.932s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/environment/ament_prefix_path.dsv
+[9.937s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/environment/path.sh
+[9.937s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/environment/path.dsv
+[9.937s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/local_setup.bash
+[9.937s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/local_setup.sh
+[9.937s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/local_setup.zsh
+[9.937s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/local_setup.dsv
+[9.945s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/package.dsv
+[9.945s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/ament_index/resource_index/packages/rover_security
+[9.945s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/cmake/rover_securityConfig.cmake
+[9.945s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/cmake/rover_securityConfig-version.cmake
+[9.946s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_security/share/rover_security/package.xml
+[9.946s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_security' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_security

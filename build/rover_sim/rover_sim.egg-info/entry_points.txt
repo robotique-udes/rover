@@ -1,0 +1,3 @@
+[console_scripts]
+rover_sim = rover_sim.main:main
+

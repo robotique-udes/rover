@@ -1,0 +1,11 @@
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/uninstall.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/rover_joy_uninstall.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/joy_formator.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/joy_demux.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/test.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/edit_cache.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/rebuild_cache.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/list_install_components.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/install.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/install/local.dir
+/home/chris/ros2_ws/src/rover/build/rover_joy/CMakeFiles/install/strip.dir

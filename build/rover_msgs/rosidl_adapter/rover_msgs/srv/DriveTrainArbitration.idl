@@ -1,0 +1,16 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rover_msgs/srv/DriveTrainArbitration.srv
+// generated code does not contain a copyright notice
+
+#include "rover_msgs/msg/DrivetrainArbitration.idl"
+
+module rover_msgs {
+  module srv {
+    struct DriveTrainArbitration_Request {
+      rover_msgs::msg::DrivetrainArbitration target_arbitration;
+    };
+    struct DriveTrainArbitration_Response {
+      rover_msgs::msg::DrivetrainArbitration current_arbitration;
+    };
+  };
+};

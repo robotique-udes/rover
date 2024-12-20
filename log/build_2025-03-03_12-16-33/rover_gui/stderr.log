@@ -1,0 +1,8 @@
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp:[m[K In function ‘[01m[Kbool LibSshSupportModule::getSftpFileSize(sftp_session, const string&, uint64_t&)[m[K’:
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp:172:19:[m[K [01;31m[Kerror: [m[K‘[01m[KCHECK_POINTER_VALID[m[K’ was not declared in this scope
+  172 |         success = [01;31m[KCHECK_POINTER_VALID[m[K(sftp_);
+      |                   [01;31m[K^~~~~~~~~~~~~~~~~~~[m[K
+gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:154: CMakeFiles/main_gui.dir/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

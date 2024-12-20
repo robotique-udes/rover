@@ -1,0 +1,29 @@
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:[m[K In constructor ‘[01m[KRtspPlayerWidget::RtspPlayerWidget(QWidget*)[m[K’:
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:15:51:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QStyle[m[K’
+   15 |     ui->startButton->setIcon(QApplication::style()[01;31m[K->[m[KstandardIcon(QStyle::SP_MediaPlay));
+      |                                                   [01;31m[K^~[m[K
+In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:68:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QStyle[m[K’
+   68 | class [01;36m[KQStyle[m[K;
+      |       [01;36m[K^~~~~~[m[K
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:15:74:[m[K [01;31m[Kerror: [m[Kincomplete type ‘[01m[KQStyle[m[K’ used in nested name specifier
+   15 |     ui->startButton->setIcon(QApplication::style()->standardIcon(QStyle::[01;31m[KSP_MediaPlay[m[K));
+      |                                                                          [01;31m[K^~~~~~~~~~~~[m[K
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:18:50:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QStyle[m[K’
+   18 |     ui->stopButton->setIcon(QApplication::style()[01;31m[K->[m[KstandardIcon(QStyle::SP_MediaStop));
+      |                                                  [01;31m[K^~[m[K
+In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+                 from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:68:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QStyle[m[K’
+   68 | class [01;36m[KQStyle[m[K;
+      |       [01;36m[K^~~~~~[m[K
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:18:73:[m[K [01;31m[Kerror: [m[Kincomplete type ‘[01m[KQStyle[m[K’ used in nested name specifier
+   18 |     ui->stopButton->setIcon(QApplication::style()->standardIcon(QStyle::[01;31m[KSP_MediaStop[m[K));
+      |                                                                         [01;31m[K^~~~~~~~~~~~[m[K
+gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:196: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

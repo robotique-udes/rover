@@ -1,0 +1,5 @@
+uint8 LIGHT = 0
+uint8 LIGHT_INFRARED = 1
+
+uint8 index
+bool enable
