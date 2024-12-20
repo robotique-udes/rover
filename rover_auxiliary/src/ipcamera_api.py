@@ -29,6 +29,9 @@ class CameraController:
         'AntiFog': ('AFG', 10),
         'AntiFogLevel': ('AFGLevel', 20),
         'SceneSelect': ('scene_Select', 2),
+        'ExposureMode': ('AEMode_Select', 2),
+        'ShutterSpeed': ('ShutterSpeedText', 2),
+        'ManualACG': ('AEGainText', 2),
         'IRenable': ('IRenable', 0),
         'IRmode': ('IRmode', 0),
         'WhiteBalanceModeSelect': ('WBMode_Select', 3)
@@ -42,6 +45,39 @@ class CameraController:
         '960p': (1280, 960),
         '1080p': (1920, 1080),
         '1536p': (2048, 1536)
+    }
+
+    SHUTTER_MAP = {
+        "1/8000": 0,
+        "1/6000": 1,
+        "1/4000": 2,
+        "1/2000": 3,
+        "1/1000": 4,
+        "1/500": 5,
+        "1/250": 6,
+        "1/200": 7,
+        "1/150": 8,
+        "1/100": 9,
+        "1/50": 10,
+        "1/25": 11,
+        "1/20": 12,
+        "1/15": 13,
+        "1/10": 14,
+        "1/8": 15,
+        "1/5": 16,
+        "1/3": 17,
+        "1/2": 18,
+        "1": 19
+    }
+
+    AEGAIN_MAP = {
+        "1X": 0,
+        "2X": 1,
+        "4X": 2,
+        "8X": 3,
+        "16X": 4,
+        "32X": 5,
+        "64X": 6
     }
 
     def __init__(self, ip: str, port: int, username: str, password: str, timeout: int = 5):
@@ -107,15 +143,16 @@ class CameraController:
         except Exception as e:
             self.logger.error(f"Failed to set ONVIF parameter {param}: {e}")
            
-    def set_http_param(self, param: str, value: str):
+    def set_http_param(self, param: str, value: str, extra: str = None):
         try:
             headers = {'Authorization': 'Basic YWRtaW46YWRtaW4='}
             form_data = {
                 'flag': self.HTTP_PARAMS[param][1] if 'IR' not in param else '',
-                self.HTTP_PARAMS[param][0]: value
+                self.HTTP_PARAMS[param][0]: value,
+                self.HTTP_PARAMS[param][0].replace('Text', ''): extra if extra else ''
             }
+
             url = f"http://{self.ip}/form/{'IRset' if 'IR' in param else 'CameraSet'}"
-            
             response = requests.post(url, data=form_data, headers=headers)
 
             if response.status_code == 200:
@@ -224,6 +261,34 @@ class CameraController:
             return
         self.set_http_param('SceneSelect', value)
     
+    def setExposureMode(self, value = 'scene'):
+        if value == 'scene':
+            value = 0
+        elif value == 'manual':
+            value = 1
+        elif value == 'shutter':
+            value = 2
+        else:
+            self.logger.info('Invalid exposure mode value')
+            return
+        self.set_http_param('ExposureMode', value)
+    
+    def setShutterSpeed(self, value = '1/100'):
+        if value in self.SHUTTER_MAP:
+            extra = self.SHUTTER_MAP[value]
+        else:
+            self.logger.info('Invalid shutter speed')
+            return
+        self.set_http_param('ShutterSpeed', value, extra)
+
+    def setManualACG(self, value = '2X'):
+        if value in self.AEGAIN_MAP:
+            extra = self.AEGAIN_MAP[value]
+        else:
+            self.logger.info('Invalid ACG value')
+            return
+        self.set_http_param('AEGainText', value, extra)
+
     def setWhiteBalanceMode(self, value = 'auto'):
         if value == 'manual':
             value = 1
