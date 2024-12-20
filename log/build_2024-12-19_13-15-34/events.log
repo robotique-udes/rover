@@ -1,0 +1,156 @@
+[0.000000] (-) TimerEvent: {}
+[0.000140] (-) JobUnselected: {'identifier': 'rover_antenna'}
+[0.000193] (-) JobUnselected: {'identifier': 'rover_arm'}
+[0.000219] (-) JobUnselected: {'identifier': 'rover_auxiliary'}
+[0.000242] (-) JobUnselected: {'identifier': 'rover_can'}
+[0.000262] (-) JobUnselected: {'identifier': 'rover_drive_train'}
+[0.000281] (-) JobUnselected: {'identifier': 'rover_joy'}
+[0.000300] (-) JobUnselected: {'identifier': 'rover_msgs'}
+[0.000319] (-) JobUnselected: {'identifier': 'rover_security'}
+[0.000338] (-) JobUnselected: {'identifier': 'rover_sim'}
+[0.000359] (rover_gui) JobQueued: {'identifier': 'rover_gui', 'dependencies': OrderedDict([('rover_msgs', '/home/chris/ros2_ws/src/rover/install/rover_msgs')])}
+[0.000386] (rover_gui) JobStarted: {'identifier': 'rover_gui'}
+[0.099027] (-) TimerEvent: {}
+[0.118494] (rover_gui) JobProgress: {'identifier': 'rover_gui', 'progress': 'cmake'}
+[0.119639] (rover_gui) JobProgress: {'identifier': 'rover_gui', 'progress': 'build'}
+[0.120792] (rover_gui) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/chris/ros2_ws/src/rover/build/rover_gui', '--', '-j12', '-l12'], 'cwd': '/home/chris/ros2_ws/src/rover/build/rover_gui', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'chris'), ('SSH_AGENT_PID', '2637'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/chris/ros2_ws/install/rover_msgs/lib:/home/chris/ros2_ws/install/moveit_visual_tools/lib:/home/chris/ros2_ws/install/micro_ros_agent/lib:/home/chris/ros2_ws/install/micro_ros_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/chris'), ('OLDPWD', '/home/chris/ros2_ws'), ('DESKTOP_SESSION', 'ubuntu'), ('NVM_BIN', '/home/chris/.nvm/versions/node/v18.20.0/bin'), ('NVM_INC', '/home/chris/.nvm/versions/node/v18.20.0/include/node'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '2437'), ('SYSTEMD_EXEC_PID', '2700'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator21a9d5db22c73a993ff0b42f64b396873'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '7211'), ('NVM_DIR', '/home/chris/.nvm'), ('COLCON_PREFIX_PATH', '/home/chris/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'chris'), ('JOURNAL_STREAM', '8:23968'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'chris'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/chris/.nvm/versions/node/v18.20.0/bin:/opt/ros/humble/bin:/home/chris/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/chris/.local/bin'), ('SESSION_MANAGER', 'local/chris:@/tmp/.ICE-unix/2682,unix/chris:/tmp/.ICE-unix/2682'), ('INVOCATION_ID', '7d788d10fd69416ca87b7a35d4e5379d'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_configs_utils:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('TERMINATOR_UUID', 'urn:uuid:5e4267b0-44ef-4fbf-87c9-3e4bd4c7eb4f'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/chris/ros2_ws/src/rover/build/rover_gui'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('NVM_CD_FLAGS', ''), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/chris/ros2_ws/install/rover_sim/lib/python3.10/site-packages:/home/chris/ros2_ws/install/rover_msgs/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/panorama/lib/python3.10/site-packages:/home/chris/ros2_ws/install/moveit_controller/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/moveit_configs_utils/lib/python3.10/site-packages:/home/chris/ros2_ws/install/micro_ros_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble')]), 'shell': False}
+[0.198057] (rover_gui) StdoutLine: {'line': b'[  6%] \x1b[34m\x1b[1mGenerating UI files...\x1b[0m\n'}
+[0.199100] (-) TimerEvent: {}
+[0.203870] (rover_gui) StdoutLine: {'line': b'\x1b[0;34m=== Generating UI files ... ===\x1b[0m\n'}
+[0.216706] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h\x1b[0m\n'}
+[0.227202] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h\x1b[0m\n'}
+[0.238216] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h\x1b[0m\n'}
+[0.249134] (rover_gui) StdoutLine: {'line': b'[  6%] Built target run_generate_ui\n'}
+[0.276107] (rover_gui) StdoutLine: {'line': b'[ 13%] \x1b[34m\x1b[1mAutomatic MOC for target main_gui\x1b[0m\n'}
+[0.299237] (-) TimerEvent: {}
+[0.309449] (rover_gui) StdoutLine: {'line': b'[ 13%] Built target main_gui_autogen\n'}
+[0.338861] (rover_gui) StdoutLine: {'line': b'\x1b[35m\x1b[1mConsolidate compiler generated dependencies of target main_gui\x1b[0m\n'}
+[0.397809] (rover_gui) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/main_gui.cpp.o\x1b[0m\n'}
+[0.399343] (-) TimerEvent: {}
+[0.401365] (rover_gui) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QGStreamerWorker.cpp.o\x1b[0m\n'}
+[0.401644] (rover_gui) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o\x1b[0m\n'}
+[0.404845] (rover_gui) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o\x1b[0m\n'}
+[0.499483] (-) TimerEvent: {}
+[0.599919] (-) TimerEvent: {}
+[0.700350] (-) TimerEvent: {}
+[0.801007] (-) TimerEvent: {}
+[0.901480] (-) TimerEvent: {}
+[1.001990] (-) TimerEvent: {}
+[1.102572] (-) TimerEvent: {}
+[1.203154] (-) TimerEvent: {}
+[1.303550] (-) TimerEvent: {}
+[1.403947] (-) TimerEvent: {}
+[1.504702] (-) TimerEvent: {}
+[1.605116] (-) TimerEvent: {}
+[1.705773] (-) TimerEvent: {}
+[1.806157] (-) TimerEvent: {}
+[1.906682] (-) TimerEvent: {}
+[2.007055] (-) TimerEvent: {}
+[2.107447] (-) TimerEvent: {}
+[2.207873] (-) TimerEvent: {}
+[2.308294] (-) TimerEvent: {}
+[2.409636] (-) TimerEvent: {}
+[2.510070] (-) TimerEvent: {}
+[2.610516] (-) TimerEvent: {}
+[2.711045] (-) TimerEvent: {}
+[2.811481] (-) TimerEvent: {}
+[2.912313] (-) TimerEvent: {}
+[3.013286] (-) TimerEvent: {}
+[3.114474] (-) TimerEvent: {}
+[3.215166] (-) TimerEvent: {}
+[3.315812] (-) TimerEvent: {}
+[3.416251] (-) TimerEvent: {}
+[3.516627] (-) TimerEvent: {}
+[3.616988] (-) TimerEvent: {}
+[3.717368] (-) TimerEvent: {}
+[3.818070] (-) TimerEvent: {}
+[3.918473] (-) TimerEvent: {}
+[4.018918] (-) TimerEvent: {}
+[4.119314] (-) TimerEvent: {}
+[4.219668] (-) TimerEvent: {}
+[4.319991] (-) TimerEvent: {}
+[4.420359] (-) TimerEvent: {}
+[4.520747] (-) TimerEvent: {}
+[4.621084] (-) TimerEvent: {}
+[4.721404] (-) TimerEvent: {}
+[4.821793] (-) TimerEvent: {}
+[4.922192] (-) TimerEvent: {}
+[5.022546] (-) TimerEvent: {}
+[5.122925] (-) TimerEvent: {}
+[5.223286] (-) TimerEvent: {}
+[5.323633] (-) TimerEvent: {}
+[5.423984] (-) TimerEvent: {}
+[5.524385] (-) TimerEvent: {}
+[5.624868] (-) TimerEvent: {}
+[5.725330] (-) TimerEvent: {}
+[5.825771] (-) TimerEvent: {}
+[5.926168] (-) TimerEvent: {}
+[6.026510] (-) TimerEvent: {}
+[6.126881] (-) TimerEvent: {}
+[6.227235] (-) TimerEvent: {}
+[6.327608] (-) TimerEvent: {}
+[6.428024] (-) TimerEvent: {}
+[6.528361] (-) TimerEvent: {}
+[6.628788] (-) TimerEvent: {}
+[6.729222] (-) TimerEvent: {}
+[6.829639] (-) TimerEvent: {}
+[6.929997] (-) TimerEvent: {}
+[7.030342] (-) TimerEvent: {}
+[7.130706] (-) TimerEvent: {}
+[7.231117] (-) TimerEvent: {}
+[7.331507] (-) TimerEvent: {}
+[7.433927] (-) TimerEvent: {}
+[7.534424] (-) TimerEvent: {}
+[7.634788] (-) TimerEvent: {}
+[7.735156] (-) TimerEvent: {}
+[7.835502] (-) TimerEvent: {}
+[7.935847] (-) TimerEvent: {}
+[7.979028] (rover_gui) StdoutLine: {'line': b'[ 46%] \x1b[32m\x1b[1mLinking CXX executable main_gui\x1b[0m\n'}
+[8.035958] (-) TimerEvent: {}
+[8.136374] (-) TimerEvent: {}
+[8.236968] (-) TimerEvent: {}
+[8.337553] (-) TimerEvent: {}
+[8.438073] (-) TimerEvent: {}
+[8.538660] (-) TimerEvent: {}
+[8.639286] (-) TimerEvent: {}
+[8.740000] (-) TimerEvent: {}
+[8.840586] (-) TimerEvent: {}
+[8.941171] (-) TimerEvent: {}
+[9.041799] (-) TimerEvent: {}
+[9.142345] (-) TimerEvent: {}
+[9.242826] (-) TimerEvent: {}
+[9.343418] (-) TimerEvent: {}
+[9.443946] (-) TimerEvent: {}
+[9.544375] (-) TimerEvent: {}
+[9.644895] (-) TimerEvent: {}
+[9.745337] (-) TimerEvent: {}
+[9.748689] (rover_gui) StdoutLine: {'line': b'[100%] Built target main_gui\n'}
+[9.763719] (rover_gui) CommandEnded: {'returncode': 0}
+[9.833842] (rover_gui) JobProgress: {'identifier': 'rover_gui', 'progress': 'install'}
+[9.845349] (rover_gui) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/chris/ros2_ws/src/rover/build/rover_gui'], 'cwd': '/home/chris/ros2_ws/src/rover/build/rover_gui', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'chris'), ('SSH_AGENT_PID', '2637'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/chris/ros2_ws/install/rover_msgs/lib:/home/chris/ros2_ws/install/moveit_visual_tools/lib:/home/chris/ros2_ws/install/micro_ros_agent/lib:/home/chris/ros2_ws/install/micro_ros_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/chris'), ('OLDPWD', '/home/chris/ros2_ws'), ('DESKTOP_SESSION', 'ubuntu'), ('NVM_BIN', '/home/chris/.nvm/versions/node/v18.20.0/bin'), ('NVM_INC', '/home/chris/.nvm/versions/node/v18.20.0/include/node'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '2437'), ('SYSTEMD_EXEC_PID', '2700'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator21a9d5db22c73a993ff0b42f64b396873'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '7211'), ('NVM_DIR', '/home/chris/.nvm'), ('COLCON_PREFIX_PATH', '/home/chris/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'chris'), ('JOURNAL_STREAM', '8:23968'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'chris'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/chris/.nvm/versions/node/v18.20.0/bin:/opt/ros/humble/bin:/home/chris/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/chris/.local/bin'), ('SESSION_MANAGER', 'local/chris:@/tmp/.ICE-unix/2682,unix/chris:/tmp/.ICE-unix/2682'), ('INVOCATION_ID', '7d788d10fd69416ca87b7a35d4e5379d'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_configs_utils:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('TERMINATOR_UUID', 'urn:uuid:5e4267b0-44ef-4fbf-87c9-3e4bd4c7eb4f'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/chris/ros2_ws/src/rover/build/rover_gui'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('NVM_CD_FLAGS', ''), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/chris/ros2_ws/install/rover_sim/lib/python3.10/site-packages:/home/chris/ros2_ws/install/rover_msgs/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/panorama/lib/python3.10/site-packages:/home/chris/ros2_ws/install/moveit_controller/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/moveit_configs_utils/lib/python3.10/site-packages:/home/chris/ros2_ws/install/micro_ros_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble')]), 'shell': False}
+[9.846903] (-) TimerEvent: {}
+[9.856089] (rover_gui) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[9.856352] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui//launch\n'}
+[9.856511] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui//launch/gui.launch.py\n'}
+[9.856645] (rover_gui) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_gui/lib/rover_gui/main_gui\n'}
+[9.857592] (rover_gui) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_gui/lib/rover_gui/main_gui" to ""\n'}
+[9.857753] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/ament_index/resource_index/package_run_dependencies/rover_gui\n'}
+[9.857941] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/ament_index/resource_index/parent_prefix_path/rover_gui\n'}
+[9.858127] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/ament_prefix_path.sh\n'}
+[9.858289] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/ament_prefix_path.dsv\n'}
+[9.858400] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/path.sh\n'}
+[9.858571] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/path.dsv\n'}
+[9.858710] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.bash\n'}
+[9.858818] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.sh\n'}
+[9.858925] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.zsh\n'}
+[9.859030] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.dsv\n'}
+[9.859134] (rover_gui) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/package.dsv\n'}
+[9.859249] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/ament_index/resource_index/packages/rover_gui\n'}
+[9.859356] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/cmake/rover_guiConfig.cmake\n'}
+[9.859461] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/cmake/rover_guiConfig-version.cmake\n'}
+[9.859575] (rover_gui) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/package.xml\n'}
+[9.860955] (rover_gui) CommandEnded: {'returncode': 0}
+[9.947271] (-) TimerEvent: {}
+[10.047538] (-) TimerEvent: {}
+[10.131996] (rover_gui) JobEnded: {'identifier': 'rover_gui', 'rc': 0}
+[10.132964] (-) EventReactorShutdown: {}

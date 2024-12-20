@@ -24,7 +24,7 @@
       <widget class="QPushButton" name="startButton">
        <property name="icon">
         <iconset>
-         <normaloff>:/icons/play.png</normaloff>
+         <normaloff>:/icons/play-button.png</normaloff>
         </iconset>
        </property>
       </widget>
@@ -33,7 +33,7 @@
       <widget class="QPushButton" name="stopButton">
        <property name="icon">
         <iconset>
-         <normaloff>:/icons/stop.png</normaloff>
+         <normaloff>:/icons/stop-button.png</normaloff>
         </iconset>
        </property>
       </widget>

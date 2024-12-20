@@ -1,0 +1,30 @@
+[0.130s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12
+[0.200s] [  6%] [34m[1mGenerating UI files...[0m
+[0.206s] [0;34m=== Generating UI files ... ===[0m
+[0.220s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[0.231s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[0.241s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[0.252s] [  6%] Built target run_generate_ui
+[0.280s] [ 13%] [34m[1mAutomatic MOC for target main_gui[0m
+[0.752s] [ 13%] Built target main_gui_autogen
+[0.786s] [35m[1mConsolidate compiler generated dependencies of target main_gui[0m
+[0.866s] [ 20%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[0.871s] [ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[0.871s] [ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/main_gui.cpp.o[0m
+[0.877s] [ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[0.877s] [ 46%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[4.645s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:46:6:[m[K [01;31m[Kerror: [m[Kno declaration matches ‘[01m[Kvoid RtspPlayerWidget::startStream()[m[K’
+[4.645s]    46 | void [01;31m[KRtspPlayerWidget[m[K::startStream()
+[4.645s]       |      [01;31m[K^~~~~~~~~~~~~~~~[m[K
+[4.645s] In file included from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[4.645s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:25:10:[m[K [01;36m[Knote: [m[Kcandidate is: ‘[01m[Kvoid RtspPlayerWidget::startStream(const QString&)[m[K’
+[4.645s]    25 |     void [01;36m[KstartStream[m[K(const QString& rtspUrl);
+[4.645s]       |          [01;36m[K^~~~~~~~~~~[m[K
+[4.646s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:12:7:[m[K [01;36m[Knote: [m[K‘[01m[Kclass RtspPlayerWidget[m[K’ defined here
+[4.646s]    12 | class [01;36m[KRtspPlayerWidget[m[K : public QWidget
+[4.646s]       |       [01;36m[K^~~~~~~~~~~~~~~~[m[K
+[5.184s] gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:196: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o] Error 1
+[5.184s] gmake[2]: *** Waiting for unfinished jobs....
+[10.096s] gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+[10.097s] gmake: *** [Makefile:146: all] Error 2
+[10.100s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_gui' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12

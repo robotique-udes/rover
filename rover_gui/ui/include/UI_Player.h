@@ -47,7 +47,7 @@ public:
         startButton = new QPushButton(RtspPlayerWidget);
         startButton->setObjectName(QString::fromUtf8("startButton"));
         QIcon icon;
-        icon.addFile(QString::fromUtf8(":/icons/play.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon.addFile(QString::fromUtf8(":/icons/play-button.png"), QSize(), QIcon::Normal, QIcon::Off);
         startButton->setIcon(icon);
 
         topLayout->addWidget(startButton);
@@ -55,7 +55,7 @@ public:
         stopButton = new QPushButton(RtspPlayerWidget);
         stopButton->setObjectName(QString::fromUtf8("stopButton"));
         QIcon icon1;
-        icon1.addFile(QString::fromUtf8(":/icons/stop.png"), QSize(), QIcon::Normal, QIcon::Off);
+        icon1.addFile(QString::fromUtf8(":/icons/stop-button.png"), QSize(), QIcon::Normal, QIcon::Off);
         stopButton->setIcon(icon1);
 
         topLayout->addWidget(stopButton);

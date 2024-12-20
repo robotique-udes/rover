@@ -6,7 +6,7 @@
 
 #include <QApplication>
 #include <QMainWindow>
-#include "QRtspPlayer/QRtspPlayer.hpp"
+#include "QRtspPlayer/QRtspPlayerWidget.hpp"
 
 #include "Global/Constant/StyleSheet.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"

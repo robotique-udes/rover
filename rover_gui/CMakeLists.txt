@@ -59,8 +59,10 @@ add_executable(main_gui src/main_gui.cpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.cpp
                         src/QSshFileExplorer/QSshWorker.hpp
                         src/QSshFileExplorer/QSshWorker.cpp
-                        src/QRtspPlayer/QRtspPlayer.hpp
-                        src/QRtspPlayer/QRtspPlayer.cpp
+                        src/QRtspPlayer/QRtspPlayerWidget.hpp
+                        src/QRtspPlayer/QRtspPlayerWidget.cpp
+                        src/QRtspPlayer/QGStreamerWorker.cpp
+                        src/QRtspPlayer/QGStreamerWorker.hpp
                         ${RTSP_RESOURCES}
                         )
 add_dependencies(main_gui run_generate_ui)

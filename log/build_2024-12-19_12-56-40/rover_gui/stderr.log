@@ -1,0 +1,14 @@
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::startStream(QString const&) [clone .localalias]':
+QRtspPlayerWidget.cpp:(.text+0x53a): multiple definition of `RtspPlayerWidget::startStream(QString const&)'; CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x83c): first defined here
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::stopStream() [clone .localalias]':
+QRtspPlayerWidget.cpp:(.text+0x644): multiple definition of `RtspPlayerWidget::stopStream()'; CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:mocs_compilation.cpp:(.text+0x8b6): first defined here
+/usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o: in function `RtspPlayerWidget::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)':
+mocs_compilation.cpp:(.text+0x5d9): undefined reference to `RtspPlayerWidget::onPipelineStarted()'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x5f8): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*)':
+QRtspPlayerWidget.cpp:(.text+0x26b): undefined reference to `RtspPlayerWidget::onPipelineStarted()'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x2e8): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+collect2: error: ld returned 1 exit status
+gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:334: main_gui] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2
