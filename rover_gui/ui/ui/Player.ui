@@ -22,26 +22,30 @@
      </item>
      <item>
       <widget class="QPushButton" name="startButton">
+       <property name="toolTip">
+        <string>Start</string>
+       </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/icons/play-button.png</normaloff>
-        </iconset>
+        <iconset resource="../../src/Global/Constant/resources.qrc">
+         <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
        </property>
       </widget>
      </item>
      <item>
       <widget class="QPushButton" name="stopButton">
+       <property name="toolTip">
+        <string>Pause</string>
+       </property>
        <property name="icon">
-        <iconset>
-         <normaloff>:/icons/stop-button.png</normaloff>
-        </iconset>
+        <iconset resource="../../src/Global/Constant/resources.qrc">
+         <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
        </property>
       </widget>
      </item>
     </layout>
    </item>
    <item>
-    <widget class="QWidget" name="videoWidget">
+    <widget class="QWidget" name="videoWidget" native="true">
      <property name="styleSheet">
       <string>background-color: black;</string>
      </property>
@@ -50,7 +54,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="resources.qrc"/>
+  <include location="../../src/Global/Constant/resources.qrc"/>
  </resources>
  <connections/>
 </ui>
