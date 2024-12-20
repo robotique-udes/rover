@@ -34,13 +34,37 @@
      <item>
       <widget class="QPushButton" name="stopButton">
        <property name="toolTip">
-        <string>Pause</string>
+        <string>Stop</string>
        </property>
        <property name="icon">
         <iconset resource="../../src/Global/Constant/resources.qrc">
          <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
        </property>
       </widget>
+     </item>
+     <item>
+     <widget class="QFrame" name="statusIndicator">
+        <property name="minimumSize">
+            <size>
+            <width>30</width>
+            <height>30</height>
+            </size>
+        </property>
+        <property name="maximumSize">
+            <size>
+            <width>30</width>
+            <height>30</height>
+            </size>
+        </property>
+        <property name="styleSheet">
+            <string>
+            QFrame {
+                border-radius: 4px; 
+                background-color: red; /* default or when running */
+            }
+            </string>
+        </property>
+     </widget>
      </item>
     </layout>
    </item>

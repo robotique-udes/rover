@@ -21,6 +21,7 @@ signals:
     void pipelineStarted(GstElement* pipeline);
     void pipelineStopped();
     void errorOccurred(const QString& error);
+    void streamFound();
 
 private:
     GstElement* pipeline;

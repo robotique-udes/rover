@@ -37,9 +37,6 @@ private:
     QWidget* videoWidget;
     QThread* workerThread;
     GStreamerWorker* gstreamerWorker;
-
-    void initializeGStreamer();
-    void cleanupGStreamer();
 };
 
 #endif 

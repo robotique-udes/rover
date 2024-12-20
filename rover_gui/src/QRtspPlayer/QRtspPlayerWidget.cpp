@@ -5,11 +5,11 @@
 #include <QStyle>
 #include <QApplication>
 #include <QHBoxLayout>
+#include <QDebug>
 
 RtspPlayerWidget::RtspPlayerWidget(QWidget* parent)
     : QWidget(parent), pipeline(nullptr)
 {
-
     ui = new Ui::RtspPlayerWidget(); 
     ui->setupUi(this);
 
@@ -19,19 +19,29 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent)
     gstreamerWorker->moveToThread(workerThread);
 
     connect(workerThread, &QThread::finished, gstreamerWorker, &QObject::deleteLater);
-    connect(this, QOverload<const QString&>::of(&RtspPlayerWidget::requestStartStream),
-        gstreamerWorker, &GStreamerWorker::startPipeline);
-    connect(this, &RtspPlayerWidget::requestStopStream, gstreamerWorker, &GStreamerWorker::stopPipeline);
-    connect(gstreamerWorker, &GStreamerWorker::pipelineStarted, this, &RtspPlayerWidget::onPipelineStarted);
-    connect(gstreamerWorker, &GStreamerWorker::errorOccurred, this, &RtspPlayerWidget::onErrorOccurred);
-    connect(ui->startButton, &QPushButton::clicked, this, [this]() {
 
-    startStream(ui->rtspUrlInput->text());
+    // Start/Stop and error signals
+    connect(this, QOverload<const QString&>::of(&RtspPlayerWidget::requestStartStream),
+            gstreamerWorker, &GStreamerWorker::startPipeline);
+    connect(this, &RtspPlayerWidget::requestStopStream,
+            gstreamerWorker, &GStreamerWorker::stopPipeline);
+    connect(gstreamerWorker, &GStreamerWorker::pipelineStarted,
+            this, &RtspPlayerWidget::onPipelineStarted);
+    connect(gstreamerWorker, &GStreamerWorker::errorOccurred,
+            this, &RtspPlayerWidget::onErrorOccurred);
+    connect(gstreamerWorker, &GStreamerWorker::streamFound, this, [this]() {
+    // Only set green if no error has occurred
+    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: green; }");
+    });
+
+    // UI button signals
+    connect(ui->startButton, &QPushButton::clicked, this, [this]() {
+        startStream(ui->rtspUrlInput->text());
     });
 
     connect(ui->stopButton, &QPushButton::clicked, this, &RtspPlayerWidget::stopStream);
+
     workerThread->start();
-    
 }
 
 RtspPlayerWidget::~RtspPlayerWidget()
@@ -41,20 +51,6 @@ RtspPlayerWidget::~RtspPlayerWidget()
     delete ui;
 }
 
-void RtspPlayerWidget::initializeGStreamer()
-{
-    gst_init(nullptr, nullptr);
-}
-
-void RtspPlayerWidget::cleanupGStreamer()
-{
-    if (pipeline) {
-        gst_element_set_state(pipeline, GST_STATE_NULL);
-        gst_object_unref(pipeline);
-        pipeline = nullptr;
-    }
-}
-
 void RtspPlayerWidget::startStream(const QString& rtspUrl)
 {
     if (rtspUrl.isEmpty()) {
@@ -62,12 +58,14 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl)
         return;
     }
 
+    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: yellow; }");
     emit requestStartStream(rtspUrl); 
 }
 
 void RtspPlayerWidget::stopStream()
 {
     emit requestStopStream();
+    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: red; }");
 }
 
 void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
@@ -90,9 +88,13 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
         (guintptr)ui->videoWidget->winId());
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
+    
 }
 
 void RtspPlayerWidget::onErrorOccurred(const QString& error)
 {
+    qDebug() << "onErrorOccurred called with error:" << error;
+    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: red; }");
     QMessageBox::critical(this, "Error", error);
 }
+

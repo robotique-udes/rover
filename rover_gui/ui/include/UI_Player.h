@@ -12,6 +12,7 @@
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QFrame>
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
@@ -28,6 +29,7 @@ public:
     QLineEdit *rtspUrlInput;
     QPushButton *startButton;
     QPushButton *stopButton;
+    QFrame *statusIndicator;
     QWidget *videoWidget;
 
     void setupUi(QWidget *RtspPlayerWidget)
@@ -60,6 +62,13 @@ public:
 
         topLayout->addWidget(stopButton);
 
+        statusIndicator = new QFrame(RtspPlayerWidget);
+        statusIndicator->setObjectName(QString::fromUtf8("statusIndicator"));
+        statusIndicator->setMinimumSize(QSize(30, 30));
+        statusIndicator->setMaximumSize(QSize(30, 30));
+
+        topLayout->addWidget(statusIndicator);
+
 
         verticalLayout->addLayout(topLayout);
 
@@ -81,8 +90,14 @@ public:
         startButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Start", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
-        stopButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Pause", nullptr));
+        stopButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Stop", nullptr));
 #endif // QT_CONFIG(tooltip)
+        statusIndicator->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "\n"
+"            QFrame {\n"
+"                border-radius: 4px; \n"
+"                background-color: red; /* default or when running */\n"
+"            }\n"
+"            ", nullptr));
         videoWidget->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "background-color: black;", nullptr));
         (void)RtspPlayerWidget;
     } // retranslateUi
