@@ -1,0 +1,243 @@
+[0.000000] (-) TimerEvent: {}
+[0.000794] (-) JobUnselected: {'identifier': 'rover_antenna'}
+[0.001368] (-) JobUnselected: {'identifier': 'rover_arm'}
+[0.001710] (-) JobUnselected: {'identifier': 'rover_auxiliary'}
+[0.001906] (-) JobUnselected: {'identifier': 'rover_can'}
+[0.001944] (-) JobUnselected: {'identifier': 'rover_drive_train'}
+[0.001968] (-) JobUnselected: {'identifier': 'rover_joy'}
+[0.001987] (-) JobUnselected: {'identifier': 'rover_msgs'}
+[0.002006] (-) JobUnselected: {'identifier': 'rover_security'}
+[0.002025] (-) JobUnselected: {'identifier': 'rover_sim'}
+[0.002052] (rover_gui) JobQueued: {'identifier': 'rover_gui', 'dependencies': OrderedDict([('rover_msgs', '/home/chris/ros2_ws/src/rover/install/rover_msgs')])}
+[0.002090] (rover_gui) JobStarted: {'identifier': 'rover_gui'}
+[0.099324] (-) TimerEvent: {}
+[0.149782] (rover_gui) JobProgress: {'identifier': 'rover_gui', 'progress': 'cmake'}
+[0.150868] (rover_gui) JobProgress: {'identifier': 'rover_gui', 'progress': 'build'}
+[0.151829] (rover_gui) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/chris/ros2_ws/src/rover/build/rover_gui', '--', '-j12', '-l12'], 'cwd': '/home/chris/ros2_ws/src/rover/build/rover_gui', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'chris'), ('SSH_AGENT_PID', '2637'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/chris/ros2_ws/install/rover_msgs/lib:/home/chris/ros2_ws/install/moveit_visual_tools/lib:/home/chris/ros2_ws/install/micro_ros_agent/lib:/home/chris/ros2_ws/install/micro_ros_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/chris'), ('OLDPWD', '/home/chris/ros2_ws'), ('DESKTOP_SESSION', 'ubuntu'), ('NVM_BIN', '/home/chris/.nvm/versions/node/v18.20.0/bin'), ('NVM_INC', '/home/chris/.nvm/versions/node/v18.20.0/include/node'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '2437'), ('SYSTEMD_EXEC_PID', '2700'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator21a9d5db22c73a993ff0b42f64b396873'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '7211'), ('NVM_DIR', '/home/chris/.nvm'), ('COLCON_PREFIX_PATH', '/home/chris/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'chris'), ('JOURNAL_STREAM', '8:23968'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'chris'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/chris/.nvm/versions/node/v18.20.0/bin:/opt/ros/humble/bin:/home/chris/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/chris/.local/bin'), ('SESSION_MANAGER', 'local/chris:@/tmp/.ICE-unix/2682,unix/chris:/tmp/.ICE-unix/2682'), ('INVOCATION_ID', '7d788d10fd69416ca87b7a35d4e5379d'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_configs_utils:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('TERMINATOR_UUID', 'urn:uuid:5e4267b0-44ef-4fbf-87c9-3e4bd4c7eb4f'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/chris/ros2_ws/src/rover/build/rover_gui'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('NVM_CD_FLAGS', ''), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/chris/ros2_ws/install/rover_sim/lib/python3.10/site-packages:/home/chris/ros2_ws/install/rover_msgs/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/panorama/lib/python3.10/site-packages:/home/chris/ros2_ws/install/moveit_controller/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/moveit_configs_utils/lib/python3.10/site-packages:/home/chris/ros2_ws/install/micro_ros_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble')]), 'shell': False}
+[0.199441] (-) TimerEvent: {}
+[0.229218] (rover_gui) StdoutLine: {'line': b'[  6%] \x1b[34m\x1b[1mGenerating UI files...\x1b[0m\n'}
+[0.235135] (rover_gui) StdoutLine: {'line': b'\x1b[0;34m=== Generating UI files ... ===\x1b[0m\n'}
+[0.248339] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h\x1b[0m\n'}
+[0.258385] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h\x1b[0m\n'}
+[0.267713] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h\x1b[0m\n'}
+[0.278695] (rover_gui) StdoutLine: {'line': b'[  6%] Built target run_generate_ui\n'}
+[0.299555] (-) TimerEvent: {}
+[0.308288] (rover_gui) StdoutLine: {'line': b'[ 13%] \x1b[34m\x1b[1mAutomatic MOC for target main_gui\x1b[0m\n'}
+[0.399661] (-) TimerEvent: {}
+[0.500043] (-) TimerEvent: {}
+[0.600571] (-) TimerEvent: {}
+[0.701213] (-) TimerEvent: {}
+[0.727775] (rover_gui) StdoutLine: {'line': b'[ 13%] Built target main_gui_autogen\n'}
+[0.764220] (rover_gui) StdoutLine: {'line': b'\x1b[35m\x1b[1mConsolidate compiler generated dependencies of target main_gui\x1b[0m\n'}
+[0.801325] (-) TimerEvent: {}
+[0.834321] (rover_gui) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/main_gui.cpp.o\x1b[0m\n'}
+[0.834645] (rover_gui) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o\x1b[0m\n'}
+[0.836358] (rover_gui) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o\x1b[0m\n'}
+[0.838614] (rover_gui) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o\x1b[0m\n'}
+[0.844173] (rover_gui) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o\x1b[0m\n'}
+[0.903538] (-) TimerEvent: {}
+[1.004001] (-) TimerEvent: {}
+[1.104384] (-) TimerEvent: {}
+[1.204819] (-) TimerEvent: {}
+[1.305251] (-) TimerEvent: {}
+[1.406362] (-) TimerEvent: {}
+[1.508737] (-) TimerEvent: {}
+[1.610101] (-) TimerEvent: {}
+[1.710651] (-) TimerEvent: {}
+[1.811147] (-) TimerEvent: {}
+[1.911541] (-) TimerEvent: {}
+[2.011965] (-) TimerEvent: {}
+[2.112511] (-) TimerEvent: {}
+[2.213135] (-) TimerEvent: {}
+[2.314544] (-) TimerEvent: {}
+[2.415002] (-) TimerEvent: {}
+[2.515666] (-) TimerEvent: {}
+[2.616094] (-) TimerEvent: {}
+[2.716565] (-) TimerEvent: {}
+[2.817078] (-) TimerEvent: {}
+[2.917492] (-) TimerEvent: {}
+[3.017956] (-) TimerEvent: {}
+[3.118305] (-) TimerEvent: {}
+[3.219146] (-) TimerEvent: {}
+[3.319820] (-) TimerEvent: {}
+[3.421956] (-) TimerEvent: {}
+[3.522637] (-) TimerEvent: {}
+[3.626604] (-) TimerEvent: {}
+[3.727496] (-) TimerEvent: {}
+[3.828305] (-) TimerEvent: {}
+[3.929722] (-) TimerEvent: {}
+[4.030375] (-) TimerEvent: {}
+[4.131282] (-) TimerEvent: {}
+[4.231681] (-) TimerEvent: {}
+[4.332372] (-) TimerEvent: {}
+[4.433621] (-) TimerEvent: {}
+[4.534179] (-) TimerEvent: {}
+[4.634990] (-) TimerEvent: {}
+[4.735553] (-) TimerEvent: {}
+[4.836068] (-) TimerEvent: {}
+[4.936489] (-) TimerEvent: {}
+[4.946857] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1\x1b[m\x1b[K:\n'}
+[4.947179] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:30:10:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99 cannot be overloaded with \xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99\n'}
+[4.947348] (rover_gui) StderrLine: {'line': b'   30 |     void \x1b[01;31m\x1b[KstopStream\x1b[m\x1b[K();\n'}
+[4.947494] (rover_gui) StderrLine: {'line': b'      |          \x1b[01;31m\x1b[K^~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.947646] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:22:10:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kprevious declaration \xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99\n'}
+[4.947806] (rover_gui) StderrLine: {'line': b'   22 |     void \x1b[01;36m\x1b[KstopStream\x1b[m\x1b[K();\n'}
+[4.947942] (rover_gui) StderrLine: {'line': b'      |          \x1b[01;36m\x1b[K^~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.992313] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:\x1b[m\x1b[K In constructor \xe2\x80\x98\x1b[01m\x1b[KRtspPlayerWidget::RtspPlayerWidget(QWidget*)\x1b[m\x1b[K\xe2\x80\x99:\n'}
+[4.992700] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:16:12:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[Kno matching function for call to \xe2\x80\x98\x1b[01m\x1b[KRtspPlayerWidget::connect(RtspPlayerWidget*, <unresolved overloaded function type>, GStreamerWorker*&, void (GStreamerWorker::*)(const QString&))\x1b[m\x1b[K\xe2\x80\x99\n'}
+[4.992879] (rover_gui) StderrLine: {'line': b'   16 |     \x1b[01;31m\x1b[Kconnect(this, &RtspPlayerWidget::startStream, gstreamerWorker, &GStreamerWorker::startPipeline)\x1b[m\x1b[K;\n'}
+[4.993019] (rover_gui) StderrLine: {'line': b'      |     \x1b[01;31m\x1b[K~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.993152] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45\x1b[m\x1b[K,\n'}
+[4.993286] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1\x1b[m\x1b[K,\n'}
+[4.993416] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4\x1b[m\x1b[K,\n'}
+[4.993586] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1\x1b[m\x1b[K:\n'}
+[4.993716] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:217:43:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class Func1, class Func2> static QMetaObject::Connection QObject::connect(const typename QtPrivate::FunctionPointer<Func>::Object*, Func1, const typename QtPrivate::FunctionPointer<Func2>::Object*, Func2, Qt::ConnectionType)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[4.993865] (rover_gui) StderrLine: {'line': b'  217 |     static inline QMetaObject::Connection \x1b[01;36m\x1b[Kconnect\x1b[m\x1b[K(const typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal,\n'}
+[4.993989] (rover_gui) StderrLine: {'line': b'      |                                           \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[4.994112] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:217:43:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[4.994233] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:16:12:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  couldn\xe2\x80\x99t deduce template parameter \xe2\x80\x98\x1b[01m\x1b[KFunc1\x1b[m\x1b[K\xe2\x80\x99\n'}
+[4.994381] (rover_gui) StderrLine: {'line': b'   16 |     \x1b[01;36m\x1b[Kconnect(this, &RtspPlayerWidget::startStream, gstreamerWorker, &GStreamerWorker::startPipeline)\x1b[m\x1b[K;\n'}
+[4.994517] (rover_gui) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[4.994646] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45\x1b[m\x1b[K,\n'}
+[4.994767] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1\x1b[m\x1b[K,\n'}
+[4.994887] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4\x1b[m\x1b[K,\n'}
+[4.995017] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1\x1b[m\x1b[K:\n'}
+[4.995137] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:249:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class Func1, class Func2> static typename std::enable_if<((int)(QtPrivate::FunctionPointer<Func2>::ArgumentCount) >= 0), QMetaObject::Connection>::type QObject::connect(const typename QtPrivate::FunctionPointer<Func>::Object*, Func1, Func2)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[4.995272] (rover_gui) StderrLine: {'line': b'  249 |             \x1b[01;36m\x1b[Kconnect\x1b[m\x1b[K(const typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal, Func2 slot)\n'}
+[4.995392] (rover_gui) StderrLine: {'line': b'      |             \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[5.000043] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:249:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[5.000243] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:16:12:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  candidate expects 3 arguments, 4 provided\n'}
+[5.000431] (rover_gui) StderrLine: {'line': b'   16 |     \x1b[01;36m\x1b[Kconnect(this, &RtspPlayerWidget::startStream, gstreamerWorker, &GStreamerWorker::startPipeline)\x1b[m\x1b[K;\n'}
+[5.000738] (rover_gui) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[5.000879] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45\x1b[m\x1b[K,\n'}
+[5.001006] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1\x1b[m\x1b[K,\n'}
+[5.001131] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4\x1b[m\x1b[K,\n'}
+[5.001259] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1\x1b[m\x1b[K:\n'}
+[5.001386] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:258:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class Func1, class Func2> static typename std::enable_if<(((int)(QtPrivate::FunctionPointer<Func2>::ArgumentCount) >= 0) && (! QtPrivate::FunctionPointer<Func2>::IsPointerToMemberFunction)), QMetaObject::Connection>::type QObject::connect(const typename QtPrivate::FunctionPointer<Func>::Object*, Func1, const QObject*, Func2, Qt::ConnectionType)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.001558] (rover_gui) StderrLine: {'line': b'  258 |             \x1b[01;36m\x1b[Kconnect\x1b[m\x1b[K(const typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal, const QObject *context, Func2 slot,\n'}
+[5.001708] (rover_gui) StderrLine: {'line': b'      |             \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[5.001829] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:258:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[5.001958] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:16:12:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  couldn\xe2\x80\x99t deduce template parameter \xe2\x80\x98\x1b[01m\x1b[KFunc1\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.002099] (rover_gui) StderrLine: {'line': b'   16 |     \x1b[01;36m\x1b[Kconnect(this, &RtspPlayerWidget::startStream, gstreamerWorker, &GStreamerWorker::startPipeline)\x1b[m\x1b[K;\n'}
+[5.002238] (rover_gui) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[5.002363] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45\x1b[m\x1b[K,\n'}
+[5.002507] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1\x1b[m\x1b[K,\n'}
+[5.002643] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4\x1b[m\x1b[K,\n'}
+[5.002769] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1\x1b[m\x1b[K:\n'}
+[5.002895] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:289:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class Func1, class Func2> static typename std::enable_if<(QtPrivate::FunctionPointer<Func2>::ArgumentCount == -1), QMetaObject::Connection>::type QObject::connect(const typename QtPrivate::FunctionPointer<Func>::Object*, Func1, Func2)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.007096] (rover_gui) StderrLine: {'line': b'  289 |             \x1b[01;36m\x1b[Kconnect\x1b[m\x1b[K(const typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal, Func2 slot)\n'}
+[5.007307] (rover_gui) StderrLine: {'line': b'      |             \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[5.007470] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:289:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[5.007632] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:16:12:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  candidate expects 3 arguments, 4 provided\n'}
+[5.007771] (rover_gui) StderrLine: {'line': b'   16 |     \x1b[01;36m\x1b[Kconnect(this, &RtspPlayerWidget::startStream, gstreamerWorker, &GStreamerWorker::startPipeline)\x1b[m\x1b[K;\n'}
+[5.007907] (rover_gui) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[5.008042] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45\x1b[m\x1b[K,\n'}
+[5.008177] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1\x1b[m\x1b[K,\n'}
+[5.008308] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4\x1b[m\x1b[K,\n'}
+[5.008444] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1\x1b[m\x1b[K:\n'}
+[5.008618] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:297:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Ktemplate<class Func1, class Func2> static typename std::enable_if<(QtPrivate::FunctionPointer<Func2>::ArgumentCount == -1), QMetaObject::Connection>::type QObject::connect(const typename QtPrivate::FunctionPointer<Func>::Object*, Func1, const QObject*, Func2, Qt::ConnectionType)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.008765] (rover_gui) StderrLine: {'line': b'  297 |             \x1b[01;36m\x1b[Kconnect\x1b[m\x1b[K(const typename QtPrivate::FunctionPointer<Func1>::Object *sender, Func1 signal, const QObject *context, Func2 slot,\n'}
+[5.008901] (rover_gui) StderrLine: {'line': b'      |             \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[5.009041] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:297:13:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  template argument deduction/substitution failed:\n'}
+[5.009171] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:16:12:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  couldn\xe2\x80\x99t deduce template parameter \xe2\x80\x98\x1b[01m\x1b[KFunc1\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.009313] (rover_gui) StderrLine: {'line': b'   16 |     \x1b[01;36m\x1b[Kconnect(this, &RtspPlayerWidget::startStream, gstreamerWorker, &GStreamerWorker::startPipeline)\x1b[m\x1b[K;\n'}
+[5.009445] (rover_gui) StderrLine: {'line': b'      |     \x1b[01;36m\x1b[K~~~~~~~^~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~\x1b[m\x1b[K\n'}
+[5.009594] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45\x1b[m\x1b[K,\n'}
+[5.009727] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1\x1b[m\x1b[K,\n'}
+[5.009859] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4\x1b[m\x1b[K,\n'}
+[5.009990] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1\x1b[m\x1b[K:\n'}
+[5.010118] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:197:36:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Kstatic QMetaObject::Connection QObject::connect(const QObject*, const char*, const QObject*, const char*, Qt::ConnectionType)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.010276] (rover_gui) StderrLine: {'line': b'  197 |     static QMetaObject::Connection \x1b[01;36m\x1b[Kconnect\x1b[m\x1b[K(const QObject *sender, const char *signal,\n'}
+[5.010405] (rover_gui) StderrLine: {'line': b'      |                                    \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[5.015318] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:197:79:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  no known conversion for argument 2 from \xe2\x80\x98\x1b[01m\x1b[K<unresolved overloaded function type>\x1b[m\x1b[K\xe2\x80\x99 to \xe2\x80\x98\x1b[01m\x1b[Kconst char*\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.015580] (rover_gui) StderrLine: {'line': b'  197 |     static QMetaObject::Connection connect(const QObject *sender, \x1b[01;36m\x1b[Kconst char *signal\x1b[m\x1b[K,\n'}
+[5.015741] (rover_gui) StderrLine: {'line': b'      |                                                                   \x1b[01;36m\x1b[K~~~~~~~~~~~~^~~~~~\x1b[m\x1b[K\n'}
+[5.015875] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:200:36:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[Kstatic QMetaObject::Connection QObject::connect(const QObject*, const QMetaMethod&, const QObject*, const QMetaMethod&, Qt::ConnectionType)\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.016039] (rover_gui) StderrLine: {'line': b'  200 |     static QMetaObject::Connection \x1b[01;36m\x1b[Kconnect\x1b[m\x1b[K(const QObject *sender, const QMetaMethod &signal,\n'}
+[5.016182] (rover_gui) StderrLine: {'line': b'      |                                    \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[5.016313] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:200:86:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  no known conversion for argument 2 from \xe2\x80\x98\x1b[01m\x1b[K<unresolved overloaded function type>\x1b[m\x1b[K\xe2\x80\x99 to \xe2\x80\x98\x1b[01m\x1b[Kconst QMetaMethod&\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.016447] (rover_gui) StderrLine: {'line': b'  200 |     static QMetaObject::Connection connect(const QObject *sender, \x1b[01;36m\x1b[Kconst QMetaMethod &signal\x1b[m\x1b[K,\n'}
+[5.016605] (rover_gui) StderrLine: {'line': b'      |                                                                   \x1b[01;36m\x1b[K~~~~~~~~~~~~~~~~~~~^~~~~~\x1b[m\x1b[K\n'}
+[5.017207] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:443:32:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kcandidate: \xe2\x80\x98\x1b[01m\x1b[KQMetaObject::Connection QObject::connect(const QObject*, const char*, const char*, Qt::ConnectionType) const\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.017371] (rover_gui) StderrLine: {'line': b'  443 | inline QMetaObject::Connection \x1b[01;36m\x1b[KQObject\x1b[m\x1b[K::connect(const QObject *asender, const char *asignal,\n'}
+[5.017535] (rover_gui) StderrLine: {'line': b'      |                                \x1b[01;36m\x1b[K^~~~~~~\x1b[m\x1b[K\n'}
+[5.017680] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:443:85:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[K  no known conversion for argument 2 from \xe2\x80\x98\x1b[01m\x1b[K<unresolved overloaded function type>\x1b[m\x1b[K\xe2\x80\x99 to \xe2\x80\x98\x1b[01m\x1b[Kconst char*\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.017829] (rover_gui) StderrLine: {'line': b'  443 | inline QMetaObject::Connection QObject::connect(const QObject *asender, \x1b[01;36m\x1b[Kconst char *asignal\x1b[m\x1b[K,\n'}
+[5.017962] (rover_gui) StderrLine: {'line': b'      |                                                                         \x1b[01;36m\x1b[K~~~~~~~~~~~~^~~~~~~\x1b[m\x1b[K\n'}
+[5.035239] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/build/rover_gui/main_gui_autogen/WKD5JZ2BV2/moc_QRtspPlayerWidget.cpp:10\x1b[m\x1b[K,\n'}
+[5.035513] (rover_gui) StderrLine: {'line': b'                 from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/build/rover_gui/main_gui_autogen/mocs_compilation.cpp:4\x1b[m\x1b[K:\n'}
+[5.035666] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/build/rover_gui/main_gui_autogen/WKD5JZ2BV2/../../../../rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:30:10:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99 cannot be overloaded with \xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.035808] (rover_gui) StderrLine: {'line': b'   30 |     void \x1b[01;31m\x1b[KstopStream\x1b[m\x1b[K();\n'}
+[5.035937] (rover_gui) StderrLine: {'line': b'      |          \x1b[01;31m\x1b[K^~~~~~~~~~\x1b[m\x1b[K\n'}
+[5.036712] (-) TimerEvent: {}
+[5.037361] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/build/rover_gui/main_gui_autogen/WKD5JZ2BV2/../../../../rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:22:10:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kprevious declaration \xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99\n'}
+[5.038506] (rover_gui) StderrLine: {'line': b'   22 |     void \x1b[01;36m\x1b[KstopStream\x1b[m\x1b[K();\n'}
+[5.038679] (rover_gui) StderrLine: {'line': b'      |          \x1b[01;36m\x1b[K^~~~~~~~~~\x1b[m\x1b[K\n'}
+[5.136858] (-) TimerEvent: {}
+[5.238887] (-) TimerEvent: {}
+[5.339340] (-) TimerEvent: {}
+[5.441912] (-) TimerEvent: {}
+[5.542575] (-) TimerEvent: {}
+[5.570010] (rover_gui) StderrLine: {'line': b'gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:196: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o] Error 1\n'}
+[5.570286] (rover_gui) StderrLine: {'line': b'gmake[2]: *** Waiting for unfinished jobs....\n'}
+[5.642647] (-) TimerEvent: {}
+[5.743015] (-) TimerEvent: {}
+[5.843427] (-) TimerEvent: {}
+[5.943830] (-) TimerEvent: {}
+[6.044244] (-) TimerEvent: {}
+[6.144555] (-) TimerEvent: {}
+[6.244931] (-) TimerEvent: {}
+[6.345361] (-) TimerEvent: {}
+[6.359719] (rover_gui) StderrLine: {'line': b'gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:84: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o] Error 1\n'}
+[6.445523] (-) TimerEvent: {}
+[6.545937] (-) TimerEvent: {}
+[6.646313] (-) TimerEvent: {}
+[6.746694] (-) TimerEvent: {}
+[6.847065] (-) TimerEvent: {}
+[6.947446] (-) TimerEvent: {}
+[7.047877] (-) TimerEvent: {}
+[7.148269] (-) TimerEvent: {}
+[7.248746] (-) TimerEvent: {}
+[7.349107] (-) TimerEvent: {}
+[7.449466] (-) TimerEvent: {}
+[7.549916] (-) TimerEvent: {}
+[7.650315] (-) TimerEvent: {}
+[7.750622] (-) TimerEvent: {}
+[7.837179] (rover_gui) StderrLine: {'line': b'In file included from \x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/main_gui.cpp:9\x1b[m\x1b[K:\n'}
+[7.837432] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:30:10:\x1b[m\x1b[K \x1b[01;31m\x1b[Kerror: \x1b[m\x1b[K\xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99 cannot be overloaded with \xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99\n'}
+[7.837590] (rover_gui) StderrLine: {'line': b'   30 |     void \x1b[01;31m\x1b[KstopStream\x1b[m\x1b[K();\n'}
+[7.837709] (rover_gui) StderrLine: {'line': b'      |          \x1b[01;31m\x1b[K^~~~~~~~~~\x1b[m\x1b[K\n'}
+[7.837823] (rover_gui) StderrLine: {'line': b'\x1b[01m\x1b[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:22:10:\x1b[m\x1b[K \x1b[01;36m\x1b[Knote: \x1b[m\x1b[Kprevious declaration \xe2\x80\x98\x1b[01m\x1b[Kvoid RtspPlayerWidget::stopStream()\x1b[m\x1b[K\xe2\x80\x99\n'}
+[7.837940] (rover_gui) StderrLine: {'line': b'   22 |     void \x1b[01;36m\x1b[KstopStream\x1b[m\x1b[K();\n'}
+[7.838051] (rover_gui) StderrLine: {'line': b'      |          \x1b[01;36m\x1b[K^~~~~~~~~~\x1b[m\x1b[K\n'}
+[7.850739] (-) TimerEvent: {}
+[7.951102] (-) TimerEvent: {}
+[8.051508] (-) TimerEvent: {}
+[8.151886] (-) TimerEvent: {}
+[8.252307] (-) TimerEvent: {}
+[8.352796] (-) TimerEvent: {}
+[8.453144] (-) TimerEvent: {}
+[8.553531] (-) TimerEvent: {}
+[8.653930] (-) TimerEvent: {}
+[8.754315] (-) TimerEvent: {}
+[8.854953] (-) TimerEvent: {}
+[8.956068] (-) TimerEvent: {}
+[9.056514] (-) TimerEvent: {}
+[9.149312] (rover_gui) StderrLine: {'line': b'gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:98: CMakeFiles/main_gui.dir/src/main_gui.cpp.o] Error 1\n'}
+[9.156615] (-) TimerEvent: {}
+[9.257065] (-) TimerEvent: {}
+[9.357756] (-) TimerEvent: {}
+[9.458135] (-) TimerEvent: {}
+[9.558474] (-) TimerEvent: {}
+[9.659084] (-) TimerEvent: {}
+[9.759975] (-) TimerEvent: {}
+[9.860321] (-) TimerEvent: {}
+[9.960655] (-) TimerEvent: {}
+[10.061104] (-) TimerEvent: {}
+[10.109702] (rover_gui) StderrLine: {'line': b'gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2\n'}
+[10.109982] (rover_gui) StderrLine: {'line': b'gmake: *** [Makefile:146: all] Error 2\n'}
+[10.112556] (rover_gui) CommandEnded: {'returncode': 2}
+[10.161203] (-) TimerEvent: {}
+[10.261655] (-) TimerEvent: {}
+[10.278233] (rover_gui) JobEnded: {'identifier': 'rover_gui', 'rc': 2}
+[10.289003] (-) EventReactorShutdown: {}

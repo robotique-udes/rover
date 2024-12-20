@@ -1,0 +1,151 @@
+[0.127s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_gui -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_gui
+[0.205s] -- The C compiler identification is GNU 11.4.0
+[0.279s] -- The CXX compiler identification is GNU 11.4.0
+[0.289s] -- Detecting C compiler ABI info
+[0.376s] -- Detecting C compiler ABI info - done
+[0.385s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.385s] -- Detecting C compile features
+[0.386s] -- Detecting C compile features - done
+[0.389s] -- Detecting CXX compiler ABI info
+[0.494s] -- Detecting CXX compiler ABI info - done
+[0.510s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.510s] -- Detecting CXX compile features
+[0.511s] -- Detecting CXX compile features - done
+[0.519s] -- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.790s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+[0.953s] -- Found rclcpp: 16.0.7 (/opt/ros/humble/share/rclcpp/cmake)
+[1.037s] -- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[1.049s] -- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[1.064s] -- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[1.086s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[1.119s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.234s] -- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[1.241s] -- Found rmw_fastrtps_cpp: 6.2.5 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[1.400s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[1.454s] -- Found FastRTPS: /opt/ros/humble/include  
+[1.521s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.541s] -- Looking for pthread.h
+[1.640s] -- Looking for pthread.h - found
+[1.641s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[1.742s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[1.744s] -- Found Threads: TRUE  
+[2.028s] -- Found rover_msgs: 0.0.0 (/home/chris/ros2_ws/install/rover_msgs/share/rover_msgs/cmake)
+[2.073s] -- Performing Test HAVE_STDATOMIC
+[2.641s] -- Performing Test HAVE_STDATOMIC - Success
+[2.642s] -- Found WrapAtomic: TRUE  
+[2.725s] -- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
+[2.727s] -- Found WrapOpenGL: TRUE  
+[2.819s] -- Found XKB: /usr/lib/x86_64-linux-gnu/libxkbcommon.so (found suitable version "1.4.0", minimum required is "0.5.0") 
+[2.828s] -- Found WrapVulkanHeaders: /usr/include  
+[2.904s] -- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2") 
+[2.906s] -- Checking for modules 'gstreamer-1.0;gstreamer-plugins-base-1.0;gstreamer-video-1.0'
+[2.942s] --   Found gstreamer-1.0, version 1.20.3
+[2.958s] --   Found gstreamer-plugins-base-1.0, version 1.20.1
+[2.974s] --   Found gstreamer-video-1.0, version 1.20.1
+[3.099s] -- Configuring done
+[3.139s] -- Generating done
+[3.143s] -- Build files have been written to: /home/chris/ros2_ws/src/rover/build/rover_gui
+[3.165s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_gui' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_gui -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_gui
+[3.169s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12
+[3.228s] [  6%] [34m[1mGenerating UI files...[0m
+[3.234s] [0;34m=== Generating UI files ... ===[0m
+[3.246s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[3.256s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[3.266s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[3.276s] [  6%] Built target run_generate_ui
+[3.308s] [ 13%] [34m[1mAutomatic MOC for target main_gui[0m
+[3.844s] [ 13%] Built target main_gui_autogen
+[3.864s] [ 20%] [34m[1mGenerating qrc_resources.cpp[0m
+[3.906s] [ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/QWorker.cpp.o[0m
+[3.906s] [ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileItem.cpp.o[0m
+[3.906s] [ 46%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[3.909s] [ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/main_gui.cpp.o[0m
+[3.910s] [ 53%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[3.911s] [ 60%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QGStreamerWorker.cpp.o[0m
+[3.914s] [ 73%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QIconManager.cpp.o[0m
+[3.914s] [ 80%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshWorker.cpp.o[0m
+[3.914s] [ 80%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[3.918s] [ 86%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[3.921s] [ 93%] [32mBuilding CXX object CMakeFiles/main_gui.dir/qrc_resources.cpp.o[0m
+[7.691s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QGStreamerWorker.cpp:[m[K In member function ‘[01m[Kvoid GStreamerWorker::startPipeline(const QString&)[m[K’:
+[7.691s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QGStreamerWorker.cpp:40:73:[m[K [01;31m[Kerror: [m[K‘[01m[KGST_TYPE_VIDEO_OVERLAY[m[K’ was not declared in this scope
+[7.692s]    40 |     GstElement* videoSink = gst_bin_get_by_interface(GST_BIN(pipeline), [01;31m[KGST_TYPE_VIDEO_OVERLAY[m[K);
+[7.692s]       |                                                                         [01;31m[K^~~~~~~~~~~~~~~~~~~~~~[m[K
+[8.026s] gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:210: CMakeFiles/main_gui.dir/src/QRtspPlayer/QGStreamerWorker.cpp.o] Error 1
+[8.026s] gmake[2]: *** Waiting for unfinished jobs....
+[8.603s] In file included from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[8.603s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:33:5:[m[K [01;31m[Kerror: [m[K‘[01m[KGStreamerWorker[m[K’ does not name a type
+[8.603s]    33 |     [01;31m[KGStreamerWorker[m[K* gstreamerWorker;
+[8.604s]       |     [01;31m[K^~~~~~~~~~~~~~~[m[K
+[8.669s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:[m[K In constructor ‘[01m[KRtspPlayerWidget::RtspPlayerWidget(QWidget*)[m[K’:
+[8.669s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:11:36:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QThread[m[K’
+[8.670s]    11 |     workerThread = new QThread(this[01;31m[K)[m[K;
+[8.670s]       |                                    [01;31m[K^[m[K
+[8.670s] In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45[m[K,
+[8.670s]                  from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+[8.670s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+[8.670s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[8.670s] [01m[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:74:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QThread[m[K’
+[8.670s]    74 | class [01;36m[KQThread[m[K;
+[8.671s]       |       [01;36m[K^~~~~~~[m[K
+[8.743s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:12:5:[m[K [01;31m[Kerror: [m[K‘[01m[KgstreamerWorker[m[K’ was not declared in this scope
+[8.746s]    12 |     [01;31m[KgstreamerWorker[m[K = new GStreamerWorker();
+[8.746s]       |     [01;31m[K^~~~~~~~~~~~~~~[m[K
+[8.747s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:12:27:[m[K [01;31m[Kerror: [m[Kexpected type-specifier before ‘[01m[KGStreamerWorker[m[K’
+[8.747s]    12 |     gstreamerWorker = new [01;31m[KGStreamerWorker[m[K();
+[8.747s]       |                           [01;31m[K^~~~~~~~~~~~~~~[m[K
+[8.747s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:15:37:[m[K [01;31m[Kerror: [m[Kincomplete type ‘[01m[KQThread[m[K’ used in nested name specifier
+[8.747s]    15 |     connect(workerThread, &QThread::[01;31m[Kfinished[m[K, gstreamerWorker, &QObject::deleteLater);
+[8.748s]       |                                     [01;31m[K^~~~~~~~[m[K
+[8.748s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:16:69:[m[K [01;31m[Kerror: [m[K‘[01m[KGStreamerWorker[m[K’ has not been declared
+[8.748s]    16 |     connect(this, &RtspPlayerWidget::startStream, gstreamerWorker, &[01;31m[KGStreamerWorker[m[K::startPipeline);
+[8.748s]       |                                                                     [01;31m[K^~~~~~~~~~~~~~~[m[K
+[8.748s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:17:68:[m[K [01;31m[Kerror: [m[K‘[01m[KGStreamerWorker[m[K’ has not been declared
+[8.748s]    17 |     connect(this, &RtspPlayerWidget::stopStream, gstreamerWorker, &[01;31m[KGStreamerWorker[m[K::stopPipeline);
+[8.748s]       |                                                                    [01;31m[K^~~~~~~~~~~~~~~[m[K
+[8.749s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:18:31:[m[K [01;31m[Kerror: [m[K‘[01m[KGStreamerWorker[m[K’ has not been declared
+[8.749s]    18 |     connect(gstreamerWorker, &[01;31m[KGStreamerWorker[m[K::pipelineStarted, this, &RtspPlayerWidget::onPipelineStarted);
+[8.749s]       |                               [01;31m[K^~~~~~~~~~~~~~~[m[K
+[8.749s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:19:31:[m[K [01;31m[Kerror: [m[K‘[01m[KGStreamerWorker[m[K’ has not been declared
+[8.749s]    19 |     connect(gstreamerWorker, &[01;31m[KGStreamerWorker[m[K::errorOccurred, this, &RtspPlayerWidget::onErrorOccurred);
+[8.749s]       |                               [01;31m[K^~~~~~~~~~~~~~~[m[K
+[8.750s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:21:17:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QThread[m[K’
+[8.750s]    21 |     workerThread[01;31m[K->[m[Kstart();
+[8.750s]       |                 [01;31m[K^~[m[K
+[8.750s] In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45[m[K,
+[8.750s]                  from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+[8.750s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+[8.750s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[8.751s] [01m[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:74:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QThread[m[K’
+[8.751s]    74 | class [01;36m[KQThread[m[K;
+[8.751s]       |       [01;36m[K^~~~~~~[m[K
+[8.752s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:[m[K In destructor ‘[01m[Kvirtual RtspPlayerWidget::~RtspPlayerWidget()[m[K’:
+[8.752s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:26:17:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QThread[m[K’
+[8.752s]    26 |     workerThread[01;31m[K->[m[Kquit();
+[8.752s]       |                 [01;31m[K^~[m[K
+[8.752s] In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45[m[K,
+[8.753s]                  from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+[8.753s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+[8.753s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[8.753s] [01m[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:74:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QThread[m[K’
+[8.753s]    74 | class [01;36m[KQThread[m[K;
+[8.753s]       |       [01;36m[K^~~~~~~[m[K
+[8.753s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:27:17:[m[K [01;31m[Kerror: [m[Kinvalid use of incomplete type ‘[01m[Kclass QThread[m[K’
+[8.754s]    27 |     workerThread[01;31m[K->[m[Kwait();
+[8.754s]       |                 [01;31m[K^~[m[K
+[8.754s] In file included from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/qwidget.h:45[m[K,
+[8.754s]                  from [01m[K/usr/include/x86_64-linux-gnu/qt6/QtWidgets/QWidget:1[m[K,
+[8.754s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:4[m[K,
+[8.754s]                  from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:1[m[K:
+[8.754s] [01m[K/usr/include/x86_64-linux-gnu/qt6/QtCore/qobject.h:74:7:[m[K [01;36m[Knote: [m[Kforward declaration of ‘[01m[Kclass QThread[m[K’
+[8.755s]    74 | class [01;36m[KQThread[m[K;
+[8.755s]       |       [01;36m[K^~~~~~~[m[K
+[9.178s] gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:196: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o] Error 1
+[12.366s] In file included from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/main_gui.cpp:9[m[K:
+[12.366s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.hpp:33:5:[m[K [01;31m[Kerror: [m[K‘[01m[KGStreamerWorker[m[K’ does not name a type
+[12.366s]    33 |     [01;31m[KGStreamerWorker[m[K* gstreamerWorker;
+[12.366s]       |     [01;31m[K^~~~~~~~~~~~~~~[m[K
+[13.754s] gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:98: CMakeFiles/main_gui.dir/src/main_gui.cpp.o] Error 1
+[14.771s] gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+[14.771s] gmake: *** [Makefile:146: all] Error 2
+[14.775s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_gui' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12

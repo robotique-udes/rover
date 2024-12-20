@@ -1,4 +1,0 @@
-source;share/rover_drive_train/local_setup.bash
-source;share/rover_drive_train/local_setup.dsv
-source;share/rover_drive_train/local_setup.sh
-source;share/rover_drive_train/local_setup.zsh

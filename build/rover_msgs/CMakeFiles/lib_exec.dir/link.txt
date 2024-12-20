@@ -1,2 +1,0 @@
-/usr/bin/ar qc liblib_exec.a CMakeFiles/lib_exec.dir/src/lib.cpp.o
-/usr/bin/ranlib liblib_exec.a
