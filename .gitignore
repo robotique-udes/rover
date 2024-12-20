@@ -8,3 +8,6 @@ rover_gui/saved_files/navigation/route_dump.log
 *~
 
 *.bkp
+build/
+install/
+log/
