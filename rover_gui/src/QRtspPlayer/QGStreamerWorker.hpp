@@ -11,6 +11,7 @@ class GStreamerWorker : public QObject
 
 public:
     explicit GStreamerWorker(QObject* parent = nullptr);
+    GstElement* pipeline;
     ~GStreamerWorker();
 
 public slots:
@@ -22,9 +23,9 @@ signals:
     void pipelineStopped();
     void errorOccurred(const QString& error);
     void streamFound();
+    void frameReceived();
 
 private:
-    GstElement* pipeline;
     void initializeGStreamer();
     void cleanupGStreamer();
 };
