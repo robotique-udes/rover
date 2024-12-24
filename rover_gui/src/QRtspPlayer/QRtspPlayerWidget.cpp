@@ -6,14 +6,15 @@
 #include <QApplication>
 #include <QHBoxLayout>
 #include <QDebug>
+#include <QTimer>
 
 RtspPlayerWidget::RtspPlayerWidget(QWidget* parent)
-    : QWidget(parent), pipeline(nullptr)
+    : QWidget(parent), pipeline(nullptr), receivingFrames(false)
 {
     ui = new Ui::RtspPlayerWidget(); 
     ui->setupUi(this);
 
-    // Create worker thread and worker object
+    // Worker thread and object
     workerThread = new QThread(this);
     gstreamerWorker = new GStreamerWorker();
     gstreamerWorker->moveToThread(workerThread);
@@ -29,9 +30,34 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent)
             this, &RtspPlayerWidget::onPipelineStarted);
     connect(gstreamerWorker, &GStreamerWorker::errorOccurred,
             this, &RtspPlayerWidget::onErrorOccurred);
+
+    // Stream found means decodebin found a stream, stay yellow until frames arrive
     connect(gstreamerWorker, &GStreamerWorker::streamFound, this, [this]() {
-    // Only set green if no error has occurred
-    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: green; }");
+        qDebug() << "Stream found, waiting for frames...";
+        // Don't turn green yet, need actual frames
+    });
+
+    // Timer to detect frame loss (no frames for some time)
+    frameTimeoutTimer = new QTimer(this);
+    frameTimeoutTimer->setSingleShot(true);
+    connect(frameTimeoutTimer, &QTimer::timeout, this, [this]() {
+        // No frames for timeout → turn red
+        
+        ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: red; }");
+        receivingFrames = false;
+    });
+
+    // frameReceived: Actual frames coming in
+    connect(gstreamerWorker, &GStreamerWorker::frameReceived, this, [this]() {
+        receivingFrames = true;
+        // Since we have frames, reset the timer to detect future stoppages
+        frameTimeoutTimer->start(2000); // If no frames for 2s → red
+
+        // If currently yellow, now we can confidently go green
+        if (ui->statusIndicator->styleSheet().contains("yellow") ||
+            ui->statusIndicator->styleSheet().contains("red")) {
+            ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: green; }");
+        }
     });
 
     // UI button signals
@@ -40,6 +66,16 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent)
     });
 
     connect(ui->stopButton, &QPushButton::clicked, this, &RtspPlayerWidget::stopStream);
+
+    // Reconnect timer for after errors
+    reconnectTimer = new QTimer(this);
+    reconnectTimer->setSingleShot(true);
+    connect(reconnectTimer, &QTimer::timeout, this, [this]() {
+        // If no frames reappeared, turn red
+        if (!receivingFrames) {
+            ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: red; }");
+        }
+    });
 
     workerThread->start();
 }
@@ -58,14 +94,21 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl)
         return;
     }
 
+    // Starting to connect: yellow
     ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: yellow; }");
+    receivingFrames = false;
     emit requestStartStream(rtspUrl); 
 }
 
 void RtspPlayerWidget::stopStream()
 {
     emit requestStopStream();
-    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: red; }");
+    // Stopping the stream: no frames expected
+    // Set yellow indicating not streaming
+    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: yellow; }");
+    receivingFrames = false;
+    // Stop frame timer since we deliberately stopped
+    frameTimeoutTimer->stop();
 }
 
 void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
@@ -74,6 +117,7 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
         QMessageBox::critical(this, "Error", "No pipeline received.");
         return;
     }
+
     this->pipeline = receivedPipeline; 
 
     GstElement* videoSink = gst_bin_get_by_interface(GST_BIN(pipeline), GST_TYPE_VIDEO_OVERLAY);
@@ -83,18 +127,26 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
     }
 
     ui->videoWidget->winId();
-
     gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink),
         (guintptr)ui->videoWidget->winId());
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
-    
+
+    // Pipeline started, but no frames yet. Keep yellow.
+    // Start a longer timeout to see if frames come in.
+    receivingFrames = false;
+    frameTimeoutTimer->start(5000); // If no frames after 5s → red
 }
 
 void RtspPlayerWidget::onErrorOccurred(const QString& error)
 {
     qDebug() << "onErrorOccurred called with error:" << error;
-    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: red; }");
+    // Error means stream is lost. Turn yellow (attempting recovery or waiting)
+    ui->statusIndicator->setStyleSheet("QFrame { border-radius: 10px; background-color: yellow; }");
+    receivingFrames = false;
+
+    // Start a reconnect timer. If no frames arrive before it expires, go red
+    reconnectTimer->start(5000);
+
     QMessageBox::critical(this, "Error", error);
 }
-

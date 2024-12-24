@@ -37,6 +37,9 @@ private:
     QWidget* videoWidget;
     QThread* workerThread;
     GStreamerWorker* gstreamerWorker;
+    QTimer* reconnectTimer;
+    QTimer* frameTimeoutTimer;
+    bool receivingFrames;
 };
 
 #endif 
