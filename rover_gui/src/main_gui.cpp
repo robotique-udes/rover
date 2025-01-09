@@ -6,9 +6,11 @@
 #include <QApplication>
 #include <QMainWindow>
 #include <QPushButton>
-#include <QVBoxLayout>
+#include <QGridLayout>
 #include <QWidget>
+#include <QStackedWidget>
 #include <QLabel>
+#include <QComboBox>
 
 #include "Global/Constant/StyleSheet.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
@@ -16,15 +18,42 @@
 
 class MainWindow : public QMainWindow
 {
+  Q_OBJECT
+
   public:
-    explicit MainWindow(QWidget* parent_ = nullptr): QMainWindow(parent_), _fileTransferWidget(parent_), _sideBarWidget(parent_)
+    explicit MainWindow(QWidget* parent_ = nullptr)
+        : QMainWindow(parent_), _fileTransferWidget(parent_), _sideBarWidget(parent_)
     {
         QWidget* centralWidget = new QWidget(this);
-        QWidget* mainWidget = new QWidget(this);
         QHBoxLayout* layout = new QHBoxLayout(centralWidget);
-        
+
+        QWidget* dashboardWidget = new QWidget;
+        QGridLayout* dashboardLayout = new QGridLayout(dashboardWidget);
+        QLabel* dashboardLabel = new QLabel("Dashboard", dashboardWidget);
+        dashboardLabel->setAlignment(Qt::AlignCenter);
+        dashboardLayout->addWidget(dashboardLabel);
+
+        QWidget* navigationWidget = new QWidget;
+        QGridLayout* navigationLayout = new QGridLayout(navigationWidget);
+        QLabel* navigationLabel = new QLabel("Navigation", navigationWidget);
+        navigationLabel->setAlignment(Qt::AlignCenter);
+        navigationLayout->addWidget(navigationLabel);
+
+        QWidget* scienceWidget = new QWidget;
+        QGridLayout* scienceLayout = new QGridLayout(scienceWidget);
+        QLabel* scienceLabel = new QLabel("Science", scienceWidget);
+        scienceLabel->setAlignment(Qt::AlignCenter);
+        scienceLayout->addWidget(scienceLabel);
+
+        QStackedWidget* stackedWidget = new QStackedWidget;
+        stackedWidget->addWidget(dashboardWidget);
+        stackedWidget->addWidget(navigationWidget);
+        stackedWidget->addWidget(scienceWidget);
+
+        connect(&_sideBarWidget, &QSideBar::switchPage, stackedWidget, &QStackedWidget::setCurrentIndex);
+
         layout->addWidget(&_sideBarWidget);
-        layout->addWidget(mainWidget);
+        layout->addWidget(stackedWidget);
 
         this->setCentralWidget(centralWidget);
     }
@@ -74,3 +103,5 @@ int main(int argc, char* argv[])
 
     return app.exec();
 }
+
+#include "main_gui.moc"
