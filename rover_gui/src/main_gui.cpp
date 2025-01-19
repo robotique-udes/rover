@@ -70,24 +70,39 @@ class SecondaryWindow : public QMainWindow
     ~SecondaryWindow() {}
 };
 
+void node_spin_thread()
+{
+    rclcpp::init(0, nullptr);
+    auto node = rclcpp::Node::make_shared("gui_node");
+
+    RCLCPP_INFO(node->get_logger(), "GUI Node started");
+
+    rclcpp::spin(node);
+    rclcpp::shutdown();
+}
+
 int main(int argc, char* argv[])
 {
-    QApplication app(argc, argv);
+    std::thread rosThread(node_spin_thread);
 
+    QApplication app(argc, argv);
     QApplication::setStyle("Fusion");
     app.setStyleSheet(STYLE_DARK_MODE);
 
-    // Main Window
     MainWindow mainWindow;
-
-    // Secondary Window
     SecondaryWindow secondaryWindow;
     secondaryWindow.setGeometry(1220, 0, 800, 600);
 
     mainWindow.showMaximized();
     secondaryWindow.show();
 
-    return app.exec();
+    int ret = app.exec();
+
+    if (rosThread.joinable()) {
+        rosThread.join();
+    }
+
+    return ret;
 }
 
 #include "main_gui.moc"
