@@ -54,7 +54,13 @@ add_executable(main_gui src/main_gui.cpp
                         src/QSshFileExplorer/QSshWorker.cpp
                         
                         src/QSideBar/QSideBar.hpp
-                        src/QSideBar/QSideBar.cpp)
+                        src/QSideBar/QSideBar.cpp
+                        
+                        src/QDashboard/QDashboard.hpp
+                        src/QDashboard/QDashboard.cpp
+                        
+                        src/QNavigation/QNavigation.hpp
+                        src/QNavigation/QNavigation.cpp)
 #add_dependencies(main_gui run_generate_ui)
 
 target_link_libraries(main_gui 

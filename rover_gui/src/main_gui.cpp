@@ -15,6 +15,8 @@
 #include "Global/Constant/StyleSheet.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
 #include "QSideBar/QSideBar.hpp"
+#include "QDashboard/QDashboard.hpp"
+#include "QNavigation/QNavigation.hpp"
 
 class MainWindow : public QMainWindow
 {
@@ -22,33 +24,15 @@ class MainWindow : public QMainWindow
 
   public:
     explicit MainWindow(QWidget* parent_ = nullptr)
-        : QMainWindow(parent_), _fileTransferWidget(parent_), _sideBarWidget(parent_)
+        : QMainWindow(parent_), _fileTransferWidget(parent_), _sideBarWidget(parent_), _dashboardWidget(parent_), _navigationWidget(parent_)
     {
         QWidget* centralWidget = new QWidget(this);
         QHBoxLayout* layout = new QHBoxLayout(centralWidget);
 
-        QWidget* dashboardWidget = new QWidget;
-        QGridLayout* dashboardLayout = new QGridLayout(dashboardWidget);
-        QLabel* dashboardLabel = new QLabel("Dashboard", dashboardWidget);
-        dashboardLabel->setAlignment(Qt::AlignCenter);
-        dashboardLayout->addWidget(dashboardLabel);
-
-        QWidget* navigationWidget = new QWidget;
-        QGridLayout* navigationLayout = new QGridLayout(navigationWidget);
-        QLabel* navigationLabel = new QLabel("Navigation", navigationWidget);
-        navigationLabel->setAlignment(Qt::AlignCenter);
-        navigationLayout->addWidget(navigationLabel);
-
-        QWidget* scienceWidget = new QWidget;
-        QGridLayout* scienceLayout = new QGridLayout(scienceWidget);
-        QLabel* scienceLabel = new QLabel("Science", scienceWidget);
-        scienceLabel->setAlignment(Qt::AlignCenter);
-        scienceLayout->addWidget(scienceLabel);
-
         QStackedWidget* stackedWidget = new QStackedWidget;
-        stackedWidget->addWidget(dashboardWidget);
-        stackedWidget->addWidget(navigationWidget);
-        stackedWidget->addWidget(scienceWidget);
+        stackedWidget->addWidget(&_dashboardWidget);
+        stackedWidget->addWidget(&_navigationWidget);
+        stackedWidget->addWidget(&_fileTransferWidget);
 
         connect(&_sideBarWidget, &QSideBar::switchPage, stackedWidget, &QStackedWidget::setCurrentIndex);
 
@@ -63,6 +47,8 @@ class MainWindow : public QMainWindow
   private:
     QFileTransferWidget _fileTransferWidget;
     QSideBar _sideBarWidget;
+    QDashboard _dashboardWidget;
+    QNavigation _navigationWidget;
 };
 
 class SecondaryWindow : public QMainWindow

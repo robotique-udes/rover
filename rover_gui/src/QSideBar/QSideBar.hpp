@@ -11,7 +11,7 @@ class QSideBar : public QWidget
 
 			connect(_ui.pb_dashboard, &QPushButton::clicked, this, [this]() { emit switchPage(0); });
 			connect(_ui.pb_navigation, &QPushButton::clicked, this, [this]() { emit switchPage(1); });
-			connect(_ui.pb_science, &QPushButton::clicked, this, [this]() { emit switchPage(2); });
+			connect(_ui.pb_fileTransfer, &QPushButton::clicked, this, [this]() { emit switchPage(2); });
 		}
 		~QSideBar(){};
 

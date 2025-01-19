@@ -60,9 +60,9 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pb_science">
+      <widget class="QPushButton" name="pb_fileTransfer">
        <property name="text">
-        <string>Science</string>
+        <string>File transfer</string>
        </property>
       </widget>
      </item>

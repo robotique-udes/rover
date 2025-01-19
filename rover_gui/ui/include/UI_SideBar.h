@@ -28,14 +28,14 @@ public:
     QLabel *label;
     QPushButton *pb_dashboard;
     QPushButton *pb_navigation;
-    QPushButton *pb_science;
+    QPushButton *pb_fileTransfer;
     QSpacerItem *verticalSpacer;
 
     void setupUi(QWidget *SideBar)
     {
         if (SideBar->objectName().isEmpty())
             SideBar->setObjectName(QString::fromUtf8("SideBar"));
-        SideBar->resize(180, 791);
+        SideBar->resize(180, 794);
         SideBar->setMinimumSize(QSize(180, 0));
         SideBar->setMaximumSize(QSize(180, 16777215));
         gridLayout = new QGridLayout(SideBar);
@@ -47,7 +47,6 @@ public:
         QFont font;
         font.setPointSize(24);
         font.setBold(true);
-        font.setWeight(QFont::Weight::Bold);
         label->setFont(font);
         label->setAlignment(Qt::AlignCenter);
 
@@ -63,10 +62,10 @@ public:
 
         verticalLayout->addWidget(pb_navigation);
 
-        pb_science = new QPushButton(SideBar);
-        pb_science->setObjectName(QString::fromUtf8("pb_science"));
+        pb_fileTransfer = new QPushButton(SideBar);
+        pb_fileTransfer->setObjectName(QString::fromUtf8("pb_fileTransfer"));
 
-        verticalLayout->addWidget(pb_science);
+        verticalLayout->addWidget(pb_fileTransfer);
 
         verticalSpacer = new QSpacerItem(20, 40, QSizePolicy::Minimum, QSizePolicy::Expanding);
 
@@ -87,7 +86,7 @@ public:
         label->setText(QCoreApplication::translate("SideBar", "Rover GUI", nullptr));
         pb_dashboard->setText(QCoreApplication::translate("SideBar", "Dashboard", nullptr));
         pb_navigation->setText(QCoreApplication::translate("SideBar", "Navigation", nullptr));
-        pb_science->setText(QCoreApplication::translate("SideBar", "Science", nullptr));
+        pb_fileTransfer->setText(QCoreApplication::translate("SideBar", "File transfer", nullptr));
     } // retranslateUi
 
 };
