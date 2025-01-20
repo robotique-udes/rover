@@ -23,8 +23,12 @@ class MainWindow : public QMainWindow
   Q_OBJECT
 
   public:
-    explicit MainWindow(QWidget* parent_ = nullptr)
-        : QMainWindow(parent_), _fileTransferWidget(parent_), _sideBarWidget(parent_), _dashboardWidget(parent_), _navigationWidget(parent_)
+    explicit MainWindow(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr)
+        : QMainWindow(parent_),
+          _fileTransferWidget(parent_),
+          _sideBarWidget(parent_),
+          _dashboardWidget(guiNode_, parent_),
+          _navigationWidget(guiNode_, parent_)
     {
         QWidget* centralWidget = new QWidget(this);
         QHBoxLayout* layout = new QHBoxLayout(centralWidget);
@@ -70,11 +74,8 @@ class SecondaryWindow : public QMainWindow
     ~SecondaryWindow() {}
 };
 
-void node_spin_thread()
+void node_spin_thread(std::shared_ptr<rclcpp::Node> node)
 {
-    rclcpp::init(0, nullptr);
-    auto node = rclcpp::Node::make_shared("gui_node");
-
     RCLCPP_INFO(node->get_logger(), "GUI Node started");
 
     rclcpp::spin(node);
@@ -83,13 +84,16 @@ void node_spin_thread()
 
 int main(int argc, char* argv[])
 {
-    std::thread rosThread(node_spin_thread);
+    rclcpp::init(argc, argv);
+    auto guiNode = std::make_shared<rclcpp::Node>("gui_node");
+
+    std::thread rosThread(node_spin_thread, guiNode);
 
     QApplication app(argc, argv);
     QApplication::setStyle("Fusion");
     app.setStyleSheet(STYLE_DARK_MODE);
 
-    MainWindow mainWindow;
+    MainWindow mainWindow(guiNode);
     SecondaryWindow secondaryWindow;
     secondaryWindow.setGeometry(1220, 0, 800, 600);
 
@@ -102,6 +106,7 @@ int main(int argc, char* argv[])
         rosThread.join();
     }
 
+    rclcpp::shutdown();
     return ret;
 }
 

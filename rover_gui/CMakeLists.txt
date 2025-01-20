@@ -60,7 +60,10 @@ add_executable(main_gui src/main_gui.cpp
                         src/QDashboard/QDashboard.cpp
                         
                         src/QNavigation/QNavigation.hpp
-                        src/QNavigation/QNavigation.cpp)
+                        src/QNavigation/QNavigation.cpp
+                        
+                        src/QDashboard/QExample.hpp
+                        src/QDashboard/QExample.cpp)
 #add_dependencies(main_gui run_generate_ui)
 
 target_link_libraries(main_gui 
