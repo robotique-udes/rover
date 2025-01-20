@@ -11,6 +11,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(rover_msgs REQUIRED)
@@ -32,6 +33,10 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
           teleop
+        DESTINATION lib/${PROJECT_NAME})
+      
+install(PROGRAMS
+          scripts/arm_sim.py
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
