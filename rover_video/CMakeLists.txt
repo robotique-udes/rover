@@ -8,7 +8,21 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(OpenCV REQUIRED)
 # find_package(<dependency> REQUIRED)
+
+include_directories( ${OpenCV_INCLUDE_DIRS} )
+include_directories(${CMAKE_SOURCE_DIR}/include)
+
+set(SOURCES
+
+    rover_video src/cam_controller.cpp
+    rover_video src/media_server.cpp
+)
+
+add_executable( rover_video ${SOURCES})
+
+target_link_libraries( rover_video ${OpenCV_LIBS} )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)
