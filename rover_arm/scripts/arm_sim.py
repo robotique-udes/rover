@@ -1,19 +1,22 @@
-#!/usr/bin/env python
+#!/usr/bin/env python3
 
 import rclpy
 from rclpy.node import Node
-from rover_msgs.msg import ArmCmd
+
 import math as m
 from math import pi as PI
 import numpy as np
 import matplotlib.pyplot as plt
 
-class SimulationStatus(Node):
+from rover_msgs.msg import ArmMsg 
+
+class ArmSimulation(Node):
     
     def __init__(self):
-        super().__init__("simulation_status")
-        self.simulation_status = self.create_subscription(
-            ArmCmd, "/rover/arm/cmd/in/teleop", self.simulationCallback, 10)
+        super().__init__("arm_simulation")
+        
+        self.arm_simulation = self.create_subscription(
+            ArmMsg, "/rover/arm/cmd/goal_speed", self.armSimulationCallback, 10)
         
         self.fig = plt.figure(figsize=(8, 8))
         self.ax_top = self.fig.add_subplot(2, 2, 1)
@@ -22,19 +25,18 @@ class SimulationStatus(Node):
         self.ax_right = self.fig.add_subplot(2, 2, 4)
         plt.ion()
         plt.show()
-        
-    def simulationCallback(self, ArmMsg: ArmCmd):
-        
-        self.JL_pos = ArmMsg.position[ArmCmd.JL]
-        self.J0_pos = ArmMsg.position[ArmCmd.J0]
-        self.J1_pos = ArmMsg.position[ArmCmd.J1]
-        self.J2_pos = ArmMsg.position[ArmCmd.J2]
-        self.GripperTilt_pos = ArmMsg.position[ArmCmd.GRIPPERTILT]
+
+    def armSimulationCallback(self, msg):
+        self.JL_pos = ArmMsg.position[ArmMsg.JL]
+        self.J0_pos = ArmMsg.position[ArmMsg.J0]
+        self.J1_pos = ArmMsg.position[ArmMsg.J1]
+        self.J2_pos = ArmMsg.position[ArmMsg.J2]
+        self.GripperTilt_pos = ArmMsg.position[ArmMsg.GRIPPERTILT]
         
         qPosition = np.array([self.JL_pos, self.J0_pos, self.J1_pos, self.J2_pos, self.GripperTilt_pos])
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
-        
+
     def computeDirectKin(self, qPosition):
         pointPos = np.zeros((6, 3))
         
@@ -46,11 +48,11 @@ class SimulationStatus(Node):
         J1y = 0.0
         J1z = 0.0
         
-        J2x = 0.650
+        J2x = 0.65
         J2y = 0.0
         J2z = 0.0
         
-        J3x = 0.625
+        J3x = 0.62
         J3y = 0.0
         J3z = 0.0
         
@@ -89,7 +91,7 @@ class SimulationStatus(Node):
         pointPos[5, 2] = J0z + J1z + J2z * m.cos(0.5 * PI - q2) + J3z * m.cos(0.5 * PI - q2 - q3) + J4z * m.cos(0.5 * PI - q2 - q3 - q4) + J2x * m.sin(0.5 * PI - q2) + J3x * m.sin(0.5 * PI - q2 - q3) + J4x * m.sin(0.5 * PI - q2 - q3 - q4)  
 
         return pointPos
-        
+
     def plot(self, pointPos):
         xs = pointPos[:, 0]
         ys = pointPos[:, 1]
@@ -138,10 +140,10 @@ class SimulationStatus(Node):
         plt.tight_layout()
         plt.draw()
         plt.pause(0.001)
-        
+
 def main(args=None):
     rclpy.init(args=args)
-    node = SimulationStatus()
+    node = ArmSimulation()
     rclpy.spin(node)
     rclpy.shutdown()
 
