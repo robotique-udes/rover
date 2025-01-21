@@ -14,7 +14,7 @@ class QDashboard : public QWidget
 		{
 			QGridLayout* dashboardLayout = new QGridLayout(this);
 			
-			// Add you dashboard widget here
+			// Add your dashboard widget here
 			dashboardLayout->addWidget(&_exampleWidget);
 
 			setLayout(dashboardLayout);
