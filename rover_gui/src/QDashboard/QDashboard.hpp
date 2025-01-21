@@ -9,10 +9,12 @@ class QDashboard : public QWidget
 	Q_OBJECT
 
 	public:
-		QDashboard(std::shared_ptr<rclcpp::Node> _guiNode, QWidget* parent_)
-		 : QWidget(parent_), _node(_guiNode),_exampleWidget(parent_)
+		QDashboard(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
+		 : QWidget(parent_), _node(guiNode_),_exampleWidget(guiNode_, parent_)
 		{
 			QGridLayout* dashboardLayout = new QGridLayout(this);
+			
+			// Add you dashboard widget here
 			dashboardLayout->addWidget(&_exampleWidget);
 
 			setLayout(dashboardLayout);

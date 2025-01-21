@@ -9,8 +9,8 @@ class QNavigation : public QWidget
 	Q_OBJECT
 
 	public:
-		QNavigation(std::shared_ptr<rclcpp::Node> _guiNode, QWidget* parent_)
-		 : QWidget(parent_), _node(_guiNode)
+		QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
+		 : QWidget(parent_), _node(guiNode_)
 		{
 			QGridLayout* navigationLayout = new QGridLayout(this);
 			QLabel* navigationLabel = new QLabel("Navigation", this);
