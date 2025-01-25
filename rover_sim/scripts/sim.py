@@ -26,13 +26,34 @@ class ArmSimulation(Node):
         plt.ion()
         plt.show()
 
+        self.JL_pos = 0.0
+        self.J0_pos = 0.0
+        self.J1_pos = 0.0
+        self.J2_pos = 0.0
+        self.GripperTilt_pos = 0.0
+
+        self.linearJointVelocity = 0.0
+        self.rotationJointVelocity = 0.0
+        self.shoulderJointVelocity = 0.0
+        self.elbowJointVelocity = 0.0
+        self.gripperJointVelocity = 0.0
+
+        self.dt = 0.1
+
     def armSimulationCallback(self, msg):
-        self.JL_pos = ArmMsg.position[ArmMsg.JL]
-        self.J0_pos = ArmMsg.position[ArmMsg.J0]
-        self.J1_pos = ArmMsg.position[ArmMsg.J1]
-        self.J2_pos = ArmMsg.position[ArmMsg.J2]
-        self.GripperTilt_pos = ArmMsg.position[ArmMsg.GRIPPERTILT]
-        
+
+        self.linearJointVelocity = msg.data[msg.JL]
+        self.rotationJointVelocity = msg.data[msg.J0]
+        self.shoulderJointVelocity = msg.data[msg.J1]
+        self.elbowJointVelocity = msg.data[msg.J2]
+        self.gripperJointVelocity = msg.data[msg.GRIPPER_TILT]
+
+        self.JL_pos += self.linearJointVelocity * self.dt
+        self.J0_pos += self.rotationJointVelocity * self.dt
+        self.J1_pos += self.shoulderJointVelocity * self.dt
+        self.J2_pos += self.elbowJointVelocity * self.dt
+        self.GripperTilt_pos += self.gripperJointVelocity * self.dt
+
         qPosition = np.array([self.JL_pos, self.J0_pos, self.J1_pos, self.J2_pos, self.GripperTilt_pos])
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
