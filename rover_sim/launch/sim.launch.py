@@ -4,12 +4,12 @@ from launch_ros.actions import Node
 def generate_launch_description():
         ld: LaunchDescription = LaunchDescription()
 
-        teleop_node = Node (package="rover_arm",
+        sim_node = Node (package="rover_sim",
                                     namespace="/rover/arm",
-                                    executable="teleop",
-                                    name="teleop"
+                                    executable="sim.py",
+                                    name="sim"
                                     )
         
-        ld.add_action(teleop_node)
+        ld.add_action(sim_node)
 
         return ld
