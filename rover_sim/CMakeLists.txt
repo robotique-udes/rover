@@ -10,7 +10,7 @@ find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
 
 install(PROGRAMS
-  scripts/arm_sim.py
+  scripts/sim.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
