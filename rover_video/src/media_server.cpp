@@ -4,20 +4,34 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
 
+#include <cstdlib>
+
 std::string selectCam(int camID)
 {
     std::string cam_url = "";
 
-    if(camID == 25)
+    while(cam_url == "")
     {
-        cam_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
-    }
+        switch(camID)
+        {
+            case 25:
+                cam_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
+                break;
+            
+            case 40:
+                cam_url = "rtsp://rover:roverrover@192.168.144.40:554/1/h264major";
 
-    if(camID == 40)
-    {
-        
-    }
+                break;
 
+            default:
+                std::cout << "Invalid camera ID" << std::endl;
+                std::cout << "Enter new camera ID: ";
+                std::cin >> camID;
+                break;
+
+        }
+    }
+    
     return cam_url;
 }
 
@@ -38,11 +52,26 @@ int screenshotIPCam(std::string camera_url) {
     bool ret = cap.read(frame);
 
     if (ret) {
+        
+
+        // Finds the environmental variable HOME (Assuming everyone has its ros2_ws folder in its home, for now)
+        std::string dir = getenv("HOME"); //Comble les variables d'environnement
+        std::cout << "env:HOME ==> " << dir << std::endl;
+        // std::string dir2 = GET_PACKAGE_SOURCE_DIR("rover_video");      /* Need to ask Philippe how does it work */
+        // std::cout << "rover_video directory: ==> " << dir2 << std::endl;
+        
+
+
         // Save the frame as a screenshot
-        std::string dir = GET_PACKAGE_SOURCE_DIR("rover_video"); //Comble les variables d'environnement
-        std::string filename = std::string(dir) + "/screenshots/ip_camera_screenshot.jpg";
+
+        /* Test with GET_PACKAGE_SOURCE_DIR*/
+        // std::string filename2 = std::string(dir2) + "/screenshots/ip_camera_screenshot";
+        // std::cout << "Screenshot 2 saved as " << filename2 << std::endl;
+
+        std::string filename = std::string(dir) + "/ros2_ws/src/rover/rover_video/src/screenshots/ip_camera_screenshot.jpg";
         cv::imwrite(filename, frame);
         std::cout << "Screenshot saved as " << filename << std::endl;
+        
 
         // Display the frame
         cv::imshow("IP Camera Screenshot", frame);
