@@ -4,11 +4,26 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
 
+std::string selectCam(int camID)
+{
+    std::string cam_url = "";
 
+    if(camID == 25)
+    {
+        cam_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
+    }
 
-int screenshotIPCam() {
+    if(camID == 40)
+    {
+        
+    }
+
+    return cam_url;
+}
+
+int screenshotIPCam(std::string camera_url) {
     // The URL format will depend on the camera model and configuration
-    std::string camera_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
+    //std::string camera_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
 
     // Open the video stream
     cv::VideoCapture cap(camera_url);
@@ -24,7 +39,8 @@ int screenshotIPCam() {
 
     if (ret) {
         // Save the frame as a screenshot
-        std::string filename = "~/screenshots/ip_camera_screenshot.jpg";
+        std::string dir = GET_PACKAGE_SOURCE_DIR("rover_video"); //Comble les variables d'environnement
+        std::string filename = std::string(dir) + "/screenshots/ip_camera_screenshot.jpg";
         cv::imwrite(filename, frame);
         std::cout << "Screenshot saved as " << filename << std::endl;
 
@@ -42,7 +58,18 @@ int screenshotIPCam() {
     return 0;
 }
 
-int videoIPCam()
+    //Penser à créer folder screenshot avant d'en faire
+
+
+
+int main()
 {
-    return 1;
+    int cam_id = 0;
+
+    std::cout << "Enter camera ID:" << std::endl;
+    std::cin >> cam_id;
+    std::string camera_url = selectCam(cam_id);
+    screenshotIPCam(camera_url);
+    
+    return 0;
 }
