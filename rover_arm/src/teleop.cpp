@@ -9,12 +9,8 @@
 #include "arm_configuration.hpp"
 #include "keybinding.hpp"
 
-#include <iostream>
-#include <map>
-
 #include "Eigen/Dense"
 
-constexpr std::chrono::milliseconds WATCHDOG_TIMEOUT{500};
 constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 150ul;
 constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f;  // Factor of max speed
 constexpr uint8_t MAX_RECORDED_POINTS = 3;
@@ -64,7 +60,32 @@ public:
         JOINT = 0,
         CARTESIAN = 1
     };
+
+    enum class eJointIndexInverse : uint8_t
+    {
+        X = rover_msgs::msg::ArmMsg::JL,
+        Y = rover_msgs::msg::ArmMsg::J0,
+        Z = rover_msgs::msg::ArmMsg::J1,
+    };
+
+    struct sJointVelocity
+    {
+        float jlVelocity;
+        float j0Velocity;
+        float j1Velocity;
+        float j2Velocity;
+        float gripperVelocity;
+    };    
     
+    // struct sJointPosition
+    // {
+        // float jlVelocity;
+        // float j0Velocity;
+        // float j1Velocity;
+        // float j2Velocity;
+        // float gripperVelocity;
+    // };
+
     Teleop();
     ~Teleop() {};
 
@@ -97,12 +118,11 @@ private:
     bool _gripperClose = false;
     bool _gripperCloseLatchFlag = false;
 
-    std::map<eButtonId, bool> _buttonFlags = {
-        {eButtonId::RECORD, false},
-        {eButtonId::CLEAR_POINTS, false},
-        {eButtonId::CREATE_PLAN, false}
-    };
+    Eigen::MatrixXd _jacobian = Eigen::MatrixXd(3, 5);
 
+    bool _currentPosInvalid = false;
+    float _currentJointsPos[(uint8_t)eJointIndex::eLAST] = {0};
+    eControlMode _controlMode = eControlMode::JOINT;
     RoverLib::Timer<uint64_t, RoverLib::millis> timerDebounce
         = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
     
@@ -116,7 +136,13 @@ private:
     rover_msgs::msg::ArmMsg getZeroMsg(void);
     Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition_);
 
+    void CB_joy(const rover_msgs::msg::Joy::SharedPtr joyMsg);
+    void CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPos);
+    void CB_watchdog(bool& rLostHB);
 
+    rover_msgs::msg::ArmMsg getZeroMsg(void);
+    
+    Eigen::MatrixXd computeJacobian(float _currentJointPos[7]);
 };
 
 Teleop::Teleop() : Node("teleop")
@@ -293,7 +319,9 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
     // CMD GRIP_ROT
     if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
     {
-        goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_ROT) = ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
+        // RCLCPP_WARN(this->get_logger(), "This is currently being implemented");
+        _jacobian = this->computeJacobian(_currentJointsPos);
+
     }
     else if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
     {
@@ -324,7 +352,49 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
     _pubArmCmd->publish(msg);
 }
 
-void Teleop::position_CB(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_)
+Eigen::MatrixXd Teleop::computeJacobian(float _currentJointPos[7])
+{
+    _currentJointPos[(uint8_t)eJointIndex::J0];
+
+    _jacobian(0, 0) = 0;
+    _jacobian(0, 1) = -1; 
+    _jacobian(0, 2) = -1; 
+    _jacobian(0, 3) = -1; 
+    _jacobian(0, 4) = -1; 
+
+    _jacobian(1, 0) = 0;
+    _jacobian(1, 1) = 1; 
+    _jacobian(1, 2) = 1; 
+    _jacobian(1, 3) = 1; 
+    _jacobian(1, 4) = 1; 
+
+    _jacobian(2, 0) = 1;
+    _jacobian(2, 1) = 0;
+    _jacobian(2, 2) = 1; 
+    _jacobian(2, 3) = 1; 
+    _jacobian(2, 4) = 1; 
+    
+    _jacobian(0, 1) = -1; 
+    _jacobian(0, 2) = -1; 
+    _jacobian(0, 3) = -1; 
+    _jacobian(0, 4) = -1; 
+
+    _jacobian(1, 0) = 0;
+    _jacobian(1, 1) = 1; 
+    _jacobian(1, 2) = 1; 
+    _jacobian(1, 3) = 1; 
+    _jacobian(1, 4) = 1; 
+
+    _jacobian(2, 0) = 1;
+    _jacobian(2, 1) = 0;
+    _jacobian(2, 2) = 1; 
+    _jacobian(2, 3) = 1; 
+    _jacobian(2, 4) = 1; 
+
+    return _jacobian;
+}
+
+void Teleop::CB_currentPos(const rover_msgs::msg::ArmMsg::SharedPtr armCurrentPos_)
 {
     _lastPositionData = std::chrono::steady_clock::now();
     _currentPoseFailure = false;
