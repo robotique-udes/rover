@@ -29,7 +29,7 @@ class ArmSimulation(Node):
         self.JL_pos = 0.0
         self.J0_pos = 0.0
         self.J1_pos = 0.0
-        self.J2_pos = 0.0
+        self.J2_pos = PI / 2
         self.GripperTilt_pos = 0.0
 
         self.linearJointVelocity = 0.0

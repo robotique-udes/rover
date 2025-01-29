@@ -14,18 +14,23 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package (Eigen3 REQUIRED)
 
 include_directories(
   include
   ${rover_msgs_INCLUDE_DIRS}
+  ${EIGEN3_INCLUDE_DIRS}
 )
 
 add_executable(teleop src/teleop.cpp)
 
+target_link_libraries(teleop Eigen3::Eigen)
+
 ament_target_dependencies(teleop
                           rclcpp
                           std_msgs
-                          rover_msgs)
+                          rover_msgs
+                          Eigen3)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
