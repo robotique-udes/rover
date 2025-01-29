@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(std_msgs REQUIRED)
 
 include_directories(
   include
@@ -38,6 +39,11 @@ ament_target_dependencies(goal_manager
                           ament_index_cpp)
 
 ament_target_dependencies(compass_calibrator
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
+ament_target_dependencies(aruco_detection
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
