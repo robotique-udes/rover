@@ -113,8 +113,8 @@ int main()
 {
     int cam_id = 0;
 
-    std::string HOME = getenv("HOME"); //Comble les variables d'environnement
-    std::string screenshot_folder_path = std::string(HOME) + "/ros2_ws/src/rover/rover_video/src/screenshots";
+    std::string dir = GET_PACKAGE_SOURCE_DIR("rover_video"); //Comble les variables d'environnement
+    std::string screenshot_folder_path = std::string(dir) + "/ros2_ws/src/rover/rover_video/src/screenshots";
 
     screenshotFolder(screenshot_folder_path);
 
