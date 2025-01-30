@@ -5,6 +5,7 @@
 #include "opencv2/imgcodecs.hpp"
 
 #include <cstdlib>
+#include <sys/stat.h>
 
 std::string selectCam(int camID)
 {
@@ -87,13 +88,39 @@ int screenshotIPCam(std::string camera_url) {
     return 0;
 }
 
-    //Penser à créer folder screenshot avant d'en faire
+// Verifies if screenshot folder already exists
+bool screenshotFolderExists(const std::string& path)    
+{
+    struct stat info;
+    return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
+}
+
+// Creating screenshot Folder if doesnt already exists
+bool screenshotFolder(const std::string& path)    
+{
+        if (!screenshotFolderExists(path)) {
+        if (mkdir(path.c_str(), 0777) == 0) {  // 0777 = Full permissions
+            std::cout << "Directory created: " << path << std::endl;
+            return true;
+        } else {
+            perror("mkdir failed");  // Prints error if mkdir fails
+            return false;
+        }
+    }
+    std::cout << "Directory already exists: " << path << std::endl;
+    return true;
+}
 
 
 
 int main()
 {
     int cam_id = 0;
+
+    std::string HOME = getenv("HOME"); //Comble les variables d'environnement
+    std::string screenshot_folder_path = std::string(HOME) + "/ros2_ws/src/rover/rover_video/src/screenshots";
+
+    screenshotFolder(screenshot_folder_path);
 
     std::cout << "Enter camera ID:" << std::endl;
     std::cin >> cam_id;
