@@ -9,26 +9,27 @@
 #include <thread>
 #include <chrono>
 #include "rclcpp/rclcpp.hpp"
-#include "std_msgs/msg/string.hpp"  // ??
+#include "rover_msgs/msg/aruco.hpp"
+
 
 namespace ArucoDetectionHelpers {
 
-    constexpr int MAX_SAME_FRAME_IDS = 20;
+    constexpr uint8_t MAX_SAME_FRAME_IDS = 20;
     constexpr cv::aruco::PREDEFINED_DICTIONARY_NAME DICT = cv::aruco::DICT_4X4_250;
-    constexpr int DELAY_BETWEEN_CAPTURE_MS = 100;
+    constexpr uint8_t DELAY_BETWEEN_CAPTURE_MS = 100;
 
-    enum CameraAccessMode { URL = -2, ID = -3 };
+    enum CameraAccessMode : uint8_t { URL = 0, ID = 1 };
 
     class ImageCapture {
     private:
         std::string cameraURL;
-        int cameraID;
-        int cameraAccessMode;
+        uint8_t cameraID;
+        uint8_t cameraAccessMode;
         cv::VideoCapture cap;
 
     public:
-        ImageCapture(std::string _cameraURL, int _cameraAccessMode);
-        ImageCapture(int _cameraID, int _cameraAccessMode);
+        ImageCapture(std::string _cameraURL, uint8_t _cameraAccessMode);
+        ImageCapture(uint8_t _cameraID, uint8_t _cameraAccessMode);
         ~ImageCapture();
 
         void setCameraURL(std::string);
@@ -37,65 +38,57 @@ namespace ArucoDetectionHelpers {
         bool accessStream();
         bool manageStream();
         cv::Mat getFrame();
-        void getErrorFrame(cv::Mat&);
+       // void getErrorFrame(cv::Mat&);  Use for debugging
     };
 
     class FrameProcessing {
     private:
         ImageCapture stream;
-        std::vector<int> detectedIds;
+        std::vector<uint16_t> detectedIds;
         std::vector<std::vector<cv::Point2f>> corners;
         cv::Mat ids;
         cv::Ptr<cv::aruco::Dictionary> dictionary;
         cv::Ptr<cv::aruco::DetectorParameters> detectorParams;
 
     public:
-        FrameProcessing(std::string _cameraURL, int _cameraAccessMode);
-        FrameProcessing(int _cameraID, int _cameraAccessMode);
+        FrameProcessing(std::string _cameraURL, uint8_t _cameraAccessMode);
+        FrameProcessing(uint8_t _cameraID, uint8_t _cameraAccessMode);
         ~FrameProcessing();
 
         bool processFrame();
-        cv::Mat processedFrameToShow();
-        std::vector<int> getIds();
+        //cv::Mat processedFrameToShow();  Use for debugging
+        std::vector<uint16_t> getIds();
     };
 }
 
 class ArucoDetection {
 private:
     ArucoDetectionHelpers::FrameProcessing processedFrame;
-    std::vector<int> idsInValidation;
-    std::unordered_map<int, int> validationCounts;
-    int strike = 0;
+    std::vector<uint16_t> idsInValidation;
+    std::unordered_map<uint16_t, uint16_t> validationCounts;
+    uint8_t strike = 0;
 
 public:
-    ArucoDetection(int _cameraID, int _cameraAccessMode);
-    ArucoDetection(std::string _cameraURL, int _cameraAccessMode);
-    
+    ArucoDetection(uint8_t _cameraID, uint8_t _cameraAccessMode);
+    ArucoDetection(std::string _cameraURL, uint8_t _cameraAccessMode);
     ~ArucoDetection();
-
-    std::vector<int> detect();
-    bool detectAndShow();
-    std::vector<int> update();
+    std::vector<uint16_t> detect();
+    // bool detectAndShow();   Use for debugging
+    std::vector<uint16_t> update();
 };
 
 
-
-
-
-//a fix
- 
 class ArucoDetectionNode: public rclcpp::Node
 {
     public:
         ArucoDetectionNode();
         ~ArucoDetectionNode();
-        void ArucoCallback();
  
     private:
-        ArucoDetection* detection;
-        rclcpp::Publisher<rover_::msg::String>::SharedPtr publisher_;
+        void ArucoCallback();
+        rclcpp::Publisher<rover_msgs::msg::Aruco>::SharedPtr publisher_;
         rclcpp::TimerBase::SharedPtr timer_;
-        
+        std::unique_ptr<ArucoDetection> detection_;
 };
 
 #endif
