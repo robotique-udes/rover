@@ -173,19 +173,15 @@ void ArucoDetectionNode::ArucoCallback()
 {
     std::vector<uint16_t> detectedArucos = detection_->update();
 
-        // Create a message of type ArucoDetection
        rover_msgs::msg::Aruco msg;
 
-        // Set the valid field based on detection
         msg.valid = !detectedArucos.empty();
 
-        // Publish the message
         publisher_->publish(msg);
 
-        // Logging
         if (!detectedArucos.empty())
         {
-            std::string marker_list = "Publishing detected ArUco markers: ";
+            std::string marker_list = "Publishing detected Aruco markers: ";
             for (auto id : detectedArucos)
             {
                 marker_list += std::to_string(id) + " ";
@@ -194,7 +190,7 @@ void ArucoDetectionNode::ArucoCallback()
         }
         else
         {
-            RCLCPP_INFO(this->get_logger(), "No ArUco markers detected to publish");
+            RCLCPP_INFO(this->get_logger(), "No Aruco markers detected to publish");
         }
 }
     
