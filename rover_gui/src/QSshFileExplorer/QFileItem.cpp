@@ -1,5 +1,9 @@
 #include "QFileItem.hpp"
 
+#include "QIconManager.hpp"
+
+#include <QStandardItem>
+
 QFileItem::QFileItem(const std::string& name_, const std::string& extension_, const std::string& lastModified_)
 {
     _name->setText(QString(name_.c_str()));
@@ -19,7 +23,7 @@ QFileItem::QFileItem(const std::string& name_, const std::string& extension_, co
 
 QFileItem::~QFileItem() {}
 
-void QFileItem::addItemToModel(QStandardItemModel& rModel_, const bool showHidden_) const
+void QFileItem::addItemToModel(IN QStandardItemModel& rModel_, const bool showHidden_) const
 {
     if (!showHidden_ && _name->text().size() > 1)
     {

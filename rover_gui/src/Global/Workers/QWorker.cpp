@@ -34,14 +34,31 @@ void QWorker::finish(void)
     }
 }
 
+void QWorker::cancelCurrentTasks()
+{
+    _cancelCurrentTasksFlag.store(true);
+}
+
+void QWorker::cancelAllTasks()
+{
+    _cancelAllTasksFlag.store(true);
+    this->cancelCurrentTasks();
+}
+
+size_t QWorker::getTaskNb(void)
+{
+    return _taskQueueSize.load();
+}
+
 void QWorker::addTask(std::function<void()> task_)
 {
     if (task_)
     {
         {
             std::lock_guard<std::mutex> lockPendingTask(_pendingTaskMtx);
-            _newTask = true;
+            _newTaskFlag = true;
             _pendingTask.push(task_);
+            _taskQueueSize.store(_taskQueueSize.load() + 1);
         }
         _newTaskCv.notify_one();
     }
@@ -59,8 +76,13 @@ void QWorker::execLoop(void)
             std::unique_lock<std::mutex> lock(_pendingTaskMtx);
             if (_pendingTask.empty() && _taskQueue.empty())
             {
-                _newTask = false;
-                _newTaskCv.wait(lock, [this]() { return _newTask || !_alive; });
+                _taskQueueSize.store(_taskQueue.size());
+                emit this->allTasksDone();
+
+                _newTaskFlag = false;
+                _newTaskCv.wait(lock, [this]() { return _newTaskFlag || !_alive; });
+                _cancelAllTasksFlag.store(false);
+                _cancelCurrentTasksFlag.store(false);
 
                 if (!_alive)
                 {
@@ -75,10 +97,17 @@ void QWorker::execLoop(void)
             }
         }
 
+        _taskQueueSize.store(_taskQueue.size());
+
         std::function<void()> action = _taskQueue.front();
-        if (action)
+        if (action && !_cancelAllTasksFlag.load())
         {
             action();
+            _cancelCurrentTasksFlag.store(false);
+            _taskQueue.pop();
+        }
+        else if (action)
+        {
             _taskQueue.pop();
         }
     }
