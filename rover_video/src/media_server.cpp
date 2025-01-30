@@ -62,10 +62,7 @@ int screenshotIPCam(std::string camera_url) {
 
 
         // Save the frame as a screenshot
-
-        /* Test with GET_PACKAGE_SOURCE_DIR*/
-        std::string filename = std::string(dir) + "/src/screenshots/ip_camera_screenshot";
-        std::cout << "Screenshot 2 saved as " << filename << std::endl;
+        std::string filename = std::string(dir) + "/src/screenshots/ip_camera_screenshot.jpg";
         cv::imwrite(filename, frame);
         std::cout << "Screenshot saved as " << filename << std::endl;
         
@@ -96,14 +93,14 @@ bool screenshotFolder(const std::string& path)
 {
         if (!screenshotFolderExists(path)) {
         if (mkdir(path.c_str(), 0777) == 0) {  // 0777 = Full permissions
-            std::cout << "Directory created: " << path << std::endl;
+            // std::cout << "Directory created: " << path << std::endl;
             return true;
         } else {
             perror("mkdir failed");  // Prints error if mkdir fails
             return false;
         }
     }
-    std::cout << "Directory already exists: " << path << std::endl;
+   // std::cout << "Directory already exists: " << path << std::endl;
     return true;
 }
 
@@ -114,7 +111,7 @@ int main()
     int cam_id = 0;
 
     std::string dir = GET_PACKAGE_SOURCE_DIR("rover_video"); //Comble les variables d'environnement
-    std::string screenshot_folder_path = std::string(dir) + "/ros2_ws/src/rover/rover_video/src/screenshots";
+    std::string screenshot_folder_path = std::string(dir) + "/src/screenshots";
 
     screenshotFolder(screenshot_folder_path);
 
