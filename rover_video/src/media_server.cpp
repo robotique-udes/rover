@@ -92,7 +92,7 @@ int recordingIpCam(std::string camera_url, std::string folder)
 
     std::string path_to_folder = folder + "/ip_cam_recording.avi";
 
-    // Define the codec and create a VideoWriter object     /* Also from ChatGPT */
+    // Define the codec and create a VideoWriter object     /* Also from ChatGPT --> more information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
     cv::VideoWriter video_writer(path_to_folder, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
     (fps > 0 ? fps : 30), cv::Size(frame_width, frame_height));
 
