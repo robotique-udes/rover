@@ -58,7 +58,7 @@ int screenshotIPCam(std::string camera_url) {
         // Finds the environmental variable HOME (Assuming everyone has its ros2_ws folder in its home, for now)
         std::string dir = getenv("HOME"); //Comble les variables d'environnement
         std::cout << "env:HOME ==> " << dir << std::endl;
-        // std::string dir2 = GET_PACKAGE_SOURCE_DIR("rover_video");      /* Need to ask Philippe how does it work */
+        std::string dir2 = GET_PACKAGE_SOURCE_DIR("rover_video");      /* Need to ask Philippe how does it work */
         // std::cout << "rover_video directory: ==> " << dir2 << std::endl;
         
 
