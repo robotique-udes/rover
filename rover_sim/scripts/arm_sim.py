@@ -15,8 +15,13 @@ class ArmSimulation(Node):
     def __init__(self):
         super().__init__("arm_simulation")
         
-        self.arm_simulation = self.create_subscription(
-            ArmMsg, "/rover/arm/cmd/goal_speed", self.armSimulationCallback, 10)
+        self.goal_velocity = self.create_subscription(
+            ArmMsg, "/rover/arm/cmd/goal_speed", self.goalVelocityCallback, 10)        
+        
+        self.current_position_publisher = self.create_publisher(
+            ArmMsg, "/rover/arm/status/current_positions", 10)
+        
+        # self.timer = self.create_timer(0.01, self.publish_joint_positions)  
         
         self.fig = plt.figure(figsize=(8, 8))
         self.ax_top = self.fig.add_subplot(2, 2, 1)
@@ -40,7 +45,7 @@ class ArmSimulation(Node):
 
         self.dt = 0.1
 
-    def armSimulationCallback(self, msg):
+    def goalVelocityCallback(self, msg):
 
         self.linearJointVelocity = msg.data[msg.JL]
         self.rotationJointVelocity = msg.data[msg.J0]
@@ -55,6 +60,27 @@ class ArmSimulation(Node):
         self.GripperTilt_pos += self.gripperJointVelocity * self.dt
 
         qPosition = np.array([self.JL_pos, self.J0_pos, self.J1_pos, self.J2_pos, self.GripperTilt_pos])
+        pointPos = self.computeDirectKin(qPosition)
+
+        self.plot(pointPos)
+
+        self.publish_joint_positions()
+
+    def publish_joint_positions(self):
+        msg = ArmMsg()
+        msg.data = [
+            self.JL_pos,
+            self.J0_pos,
+            self.J1_pos,
+            self.J2_pos,
+            self.GripperTilt_pos,
+            0.0,
+            0.0
+        ]
+
+        self.current_position_publisher.publish(msg)
+
+        qPosition = np.array(msg.data)
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
 
