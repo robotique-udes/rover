@@ -10,10 +10,40 @@
 #include "keybinding.hpp"
 
 constexpr std::chrono::milliseconds WATCHDOG_TIMEOUT{500};
+constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 150ul;
+constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f;  // Factor of max speed
+
+bool isPressed(float buttonValue_);
 
 class Teleop : public rclcpp::Node
 {
 public:
+
+    enum class eJointIndex : uint8_t
+    {
+        JL = rover_msgs::msg::ArmMsg::JL,
+        J0 = rover_msgs::msg::ArmMsg::J0,
+        J1 = rover_msgs::msg::ArmMsg::J1,
+        J2 = rover_msgs::msg::ArmMsg::J2,
+        GRIPPER_TILT = rover_msgs::msg::ArmMsg::GRIPPER_TILT,
+        GRIPPER_ROT = rover_msgs::msg::ArmMsg::GRIPPER_ROT,
+        GRIPPER_CLOSE = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
+        eLAST
+    };
+
+    enum class eJointIndexInverse : uint8_t
+    {
+        X = rover_msgs::msg::ArmMsg::JL,
+        Y = rover_msgs::msg::ArmMsg::J0,
+        Z = rover_msgs::msg::ArmMsg::J1,
+    };
+
+    enum class eControlMode : uint8_t
+    {
+        JOINT = 0,
+        CARTESIAN = 1
+    };
+    
     Teleop();
     ~Teleop() {};
 
@@ -23,52 +53,145 @@ private:
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
     rclcpp::TimerBase::SharedPtr _armHeartbeatTimer;
 
-    bool _currentPoseFailure = false;
     std::chrono::steady_clock::time_point _lastPositionData;
+    
+    bool _currentPoseFailure = false;
+    bool _gripperClose = false;
+    bool _gripperCloseLatchFlag = false;
 
+    RoverLib::Timer<uint64_t, RoverLib::millis> timerDebounce
+        = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
+    
     void positionCallback(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg);
     void joyCallback(const rover_msgs::msg::Joy::SharedPtr positionMsg);
 
     void watchdog(bool& rLostHeartbeat);
+    rover_msgs::msg::ArmMsg getZeroMsg(void);
+
+    eControlMode _controlMode = eControlMode::CARTESIAN;
 };
 
-void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr positionMsg)
+void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 {
-    // Publish empty data for now
-    rover_msgs::msg::ArmMsg msg;
-    for (uint8_t i = 0; i < 7; i++)
+    if (!isPressed(joyMsg_->joy_data[KEYBINDING::DEADMAN_SWITCH]))
     {
-        msg.data[i] = 0;
+        _pubArmCmd->publish(this->getZeroMsg());
+        return;
+    }
+
+    float _goalJointsSpeed[(uint8_t)eJointIndex::eLAST] = {0};
+
+    if (_controlMode == eControlMode::JOINT)
+    {
+        // CMD JL
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::JL_FWD]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::JL] = ARM_CONFIGURATION::JL::MAX_VELOCITY;
+        }
+        else if (isPressed(joyMsg_->joy_data[KEYBINDING::JL_REV]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::JL] = -ARM_CONFIGURATION::JL::MAX_VELOCITY;
+        }
+
+        // CMD J0
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::J0_FWD]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::J0] = ARM_CONFIGURATION::J0::MAX_VELOCITY;
+        }
+        else if (isPressed(joyMsg_->joy_data[KEYBINDING::J0_REV]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::J0] = -ARM_CONFIGURATION::J0::MAX_VELOCITY;
+        }
+
+        // CMD J1
+        _goalJointsSpeed[(uint8_t)eJointIndex::J1] = joyMsg_->joy_data[KEYBINDING::J1] * ARM_CONFIGURATION::J1::MAX_VELOCITY;
+        // CMD J2
+        _goalJointsSpeed[(uint8_t)eJointIndex::J2] = joyMsg_->joy_data[KEYBINDING::J2] * ARM_CONFIGURATION::J2::MAX_VELOCITY;
+
+        // CMD GRIP_TILT
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_TILT_FWD]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_TILT] = ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
+        }
+        else if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_TILT_REV]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_TILT] = -ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
+        }
+
+        // CMD GRIP_ROT
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_ROT] = ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
+        }
+        else if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
+        {
+            _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_ROT] = -ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
+        }
+    }
+    else if(_controlMode == eControlMode::CARTESIAN)
+    {
+        RCLCPP_WARN(LOGGER, "Cartesian mode is currently unavailable due to fault in position data");
+        
+        if(_currentPoseFailure)
+        {
+            RCLCPP_WARN(LOGGER, "Cartesian mode is currently unavailable due to fault in position data");
+        }
+
+    }
+    // CMD GRIP
+    if (joyMsg_->joy_data[KEYBINDING::GRIPPER_CLOSE])
+    {
+        if (timerDebounce.isDone() && !_gripperCloseLatchFlag)
+        {
+            _gripperClose = !_gripperClose;
+            _gripperCloseLatchFlag = true;
+        }
+    }
+    else
+    {
+        _gripperCloseLatchFlag = false;
+    }
+    _goalJointsSpeed[(uint8_t)eJointIndex::GRIPPER_CLOSE] = _gripperClose;
+
+    rover_msgs::msg::ArmMsg msg;
+    for (uint8_t i = 0; i < (uint8_t)eJointIndex::eLAST; i++)
+    {
+        msg.data[i] = _goalJointsSpeed[i];
     }
 
     _pubArmCmd->publish(msg);
-
-    // RCLCPP_INFO(this->get_logger(), "Current Pose Failure Status: %s", _currentPoseFailure ? "True" : "False");
-
 }
 
-void Teleop::positionCallback(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg)
+void Teleop::positionCallback(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_)
 {
     _lastPositionData = std::chrono::steady_clock::now();
     bool _currentPoseFailure = false;
 }
 
-void Teleop::watchdog(bool& rLostHeartbeat)
+void Teleop::watchdog(bool& rLostHeartbeat_)
 {
-        auto now = std::chrono::steady_clock::now();
-        auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-            now - _lastPositionData);
-            
-        if (elapsed > WATCHDOG_TIMEOUT) 
-        {
-            RCLCPP_ERROR_THROTTLE(
-                this->get_logger(), 
-                *this->get_clock(), 
-                500,
-                "Arm watchdog has been triggered!"
-            );
-            rLostHeartbeat = true;
-        }
+    auto now = std::chrono::steady_clock::now();
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
+        now - _lastPositionData);
+        
+    if (elapsed > WATCHDOG_TIMEOUT) 
+    {
+        RCLCPP_ERROR_THROTTLE(
+            this->get_logger(), 
+            *this->get_clock(), 
+            5000,
+            "Arm watchdog has been triggered!"
+        );
+        rLostHeartbeat_ = true;
+    }
+}
+
+rover_msgs::msg::ArmMsg Teleop::getZeroMsg(void)
+{
+    rover_msgs::msg::ArmMsg msg;
+    msg.data[(uint8_t)eJointIndex::GRIPPER_CLOSE] = false;
+
+    return msg;
 }
 
 Teleop::Teleop() : Node("teleop")
@@ -89,6 +212,11 @@ Teleop::Teleop() : Node("teleop")
                                                                 [this]()
                                                                 { this->watchdog(_currentPoseFailure); });
 
+}
+
+bool isPressed(float buttonValue_)
+{
+    return !IN_ERROR(buttonValue_, 0.01, 0.0f);
 }
 
 int main(int argc, char* argv[])
