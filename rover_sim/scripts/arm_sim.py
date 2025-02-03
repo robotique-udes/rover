@@ -20,7 +20,9 @@ class ArmSimulation(Node):
         
         self.current_position_publisher = self.create_publisher(
             ArmMsg, "/rover/arm/status/current_positions", 10)
-                
+        
+        # self.timer = self.create_timer(0.01, self.publish_joint_positions)  
+        
         self.fig = plt.figure(figsize=(8, 8))
         self.ax_top = self.fig.add_subplot(2, 2, 1)
         self.ax_3d = self.fig.add_subplot(2, 2, 2, projection='3d')
@@ -30,11 +32,13 @@ class ArmSimulation(Node):
         plt.show()
 
         self.JL_pos = 0.0
+        self.J0_pos = 0.0
         self.J1_pos = 0.0
         self.J2_pos = PI / 2
-        self.Gripper = 0.0
+        self.GripperTilt_pos = 0.0
 
         self.linearJointVelocity = 0.0
+        self.rotationJointVelocity = 0.0
         self.shoulderJointVelocity = 0.0
         self.elbowJointVelocity = 0.0
         self.gripperJointVelocity = 0.0
@@ -44,16 +48,18 @@ class ArmSimulation(Node):
     def goalVelocityCallback(self, msg):
 
         self.linearJointVelocity = msg.data[msg.JL]
+        self.rotationJointVelocity = msg.data[msg.J0]
         self.shoulderJointVelocity = msg.data[msg.J1]
         self.elbowJointVelocity = msg.data[msg.J2]
         self.gripperJointVelocity = msg.data[msg.GRIPPER_TILT]
 
         self.JL_pos += self.linearJointVelocity * self.dt
+        self.J0_pos += self.rotationJointVelocity * self.dt
         self.J1_pos += self.shoulderJointVelocity * self.dt
         self.J2_pos += self.elbowJointVelocity * self.dt
-        self.Gripper += self.gripperJointVelocity * self.dt
+        self.GripperTilt_pos += self.gripperJointVelocity * self.dt
 
-        qPosition = np.array([self.JL_pos, self.J1_pos, self.J2_pos, self.Gripper])
+        qPosition = np.array([self.JL_pos, self.J0_pos, self.J1_pos, self.J2_pos, self.GripperTilt_pos])
         pointPos = self.computeDirectKin(qPosition)
 
         self.plot(pointPos)
@@ -64,9 +70,10 @@ class ArmSimulation(Node):
         msg = ArmMsg()
         msg.data = [
             self.JL_pos,
+            self.J0_pos,
             self.J1_pos,
             self.J2_pos,
-            self.Gripper,
+            self.GripperTilt_pos,
             0.0,
             0.0
         ]
@@ -78,32 +85,57 @@ class ArmSimulation(Node):
         self.plot(pointPos)
 
     def computeDirectKin(self, qPosition):
-        pointPos = np.zeros((4, 3))
+        pointPos = np.zeros((6, 3))
         
-        J1 = 0.435
-        J2 = 0.371
-        J3 = 0.185
+        J0x = 0.0
+        J0y = 0.0
+        J0z = 0.0
+        
+        J1x = 0.0
+        J1y = 0.0
+        J1z = 0.0
+        
+        J2x = 0.65
+        J2y = 0.0
+        J2z = 0.0
+        
+        J3x = 0.62
+        J3y = 0.0
+        J3z = 0.0
+        
+        J4x = 0.217
+        J4y = 0.0
+        J4z = 0.0
         
         q0 = qPosition[0]
         q1 = qPosition[1]
         q2 = qPosition[2]
         q3 = qPosition[3]
+        q4 = qPosition[4]
         
-        pointPos[0, 0] = q0
-        pointPos[0, 1] = 0.0
-        pointPos[0, 2] = 0.0        
+        pointPos[0, 0] = 0.0
+        pointPos[0, 1] = q0
+        pointPos[0, 2] = 0.0
         
-        pointPos[1, 0] = q0
-        pointPos[1, 1] = J1 * m.sin(q1)
-        pointPos[1, 2] = J1 * m.cos(q1)
+        pointPos[1, 0] = J0x
+        pointPos[1, 1] = J0y + q0
+        pointPos[1, 2] = J0z
         
-        pointPos[2, 0] = q0
-        pointPos[2, 1] = J1 * m.sin(q1) + J2 * m.sin(q1 + q2)
-        pointPos[2, 2] = J1 * m.cos(q1) + J2 * m.cos(q1 + q2)
+        pointPos[2, 0] = J0x + J1x * m.cos(q1) - J1y * m.sin(q1)
+        pointPos[2, 1] = J0y + q0 + J1x * m.sin(q1) + J1y * m.cos(q1)
+        pointPos[2, 2] = J0z + J1z
         
-        pointPos[3, 0] = q0
-        pointPos[3, 1] = J1 * m.sin(q1) + J2 * m.sin(q1 + q2) + J3 * m.sin(q1 + q2+ q3)
-        pointPos[3, 2] = J1 * m.cos(q1) + J2 * m.cos(q1 + q2) + J3 * m.cos(q1 + q2+ q3)
+        pointPos[3, 0] = J0x + J1x * m.cos(q1) + J2x * m.cos(q1) * m.cos(0.5 * PI - q2) + J2z * m.cos(q1) * m.sin(0.5 * PI - q2) - m.sin(q1) * (J1y + J2y)
+        pointPos[3, 1] = J0y + q0 + J1x * m.sin(q1) + m.cos(q1) * (J1y + J2y) + J2x * m.sin(q1) * m.cos(0.5 * PI - q2) + J2z * m.sin(q1) * m.sin(0.5 * PI - q2)
+        pointPos[3, 2] = J0z + J1z + J2z * m.cos(0.5 * PI - q2) + J2x * m.sin(0.5 * PI - q2)
+        
+        pointPos[4, 0] = J0x + J1x * m.cos(q1) + J2x * m.cos(q1) * m.cos(0.5 * PI - q2) + J2z * m.cos(q1) * m.sin(0.5 * PI - q2) + J3x * m.cos(q1) * m.cos(0.5 * PI - q2 - q3) + J3z * m.cos(q1) * m.sin(0.5 * PI - q2 - q3) - m.sin(q1) * (J1y + J2y + J3y)
+        pointPos[4, 1] = J0y + q0 + J1x * m.sin(q1) + m.cos(q1) * (J1y + J2y) + J2x * m.sin(q1) * m.cos(0.5 * PI - q2) + J2z * m.sin(q1) * m.sin(0.5 * PI - q2) + J3x * m.sin(q1) * m.cos(0.5 * PI - q2 - q3) + J3z * m.sin(q1) * m.sin(0.5 * PI - q2 - q3)
+        pointPos[4, 2] = J0z + J1z + J2z * m.cos(0.5 * PI - q2) + J3z * m.cos(0.5 * PI - q2 - q3) + J2x * m.sin(0.5 * PI - q2) + J3x * m.sin(0.5 * PI - q2 - q3)  
+        
+        pointPos[5, 0] = J0x + J1x * m.cos(q1) + J2x * m.cos(q1) * m.cos(0.5 * PI - q2) + J2z * m.cos(q1) * m.sin(0.5 * PI - q2) + J3x * m.cos(q1) * m.cos(0.5 * PI - q2 - q3) + J3z * m.cos(q1) * m.sin(0.5 * PI - q2 - q3) - m.sin(q1) * (J1y + J2y) + J4x * m.cos(q1) * m.cos(0.5 * PI - q2 - q3 - q4) + J4z * m.cos(q1) * m.sin(0.5 * PI - q2 - q3 - q4)
+        pointPos[5, 1] = J0y + q0 + J1x * m.sin(q1) + m.cos(q1) * (J1y + J2y) + J2x * m.sin(q1) * m.cos(0.5 * PI - q2) + J2z * m.sin(q1) * m.sin(0.5 * PI - q2) + J3x * m.sin(q1) * m.cos(0.5 * PI - q2 - q3) + J3z * m.sin(q1) * m.sin(0.5 * PI - q2 - q3) + J4x * m.sin(q1) * m.cos(0.5 * PI - q2 - q3 - q4) + J4z * m.sin(q1) * m.sin(0.5 * PI - q2 - q3 - q4)
+        pointPos[5, 2] = J0z + J1z + J2z * m.cos(0.5 * PI - q2) + J3z * m.cos(0.5 * PI - q2 - q3) + J4z * m.cos(0.5 * PI - q2 - q3 - q4) + J2x * m.sin(0.5 * PI - q2) + J3x * m.sin(0.5 * PI - q2 - q3) + J4x * m.sin(0.5 * PI - q2 - q3 - q4)  
 
         return pointPos
 
