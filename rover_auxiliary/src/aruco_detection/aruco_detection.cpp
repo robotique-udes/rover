@@ -159,18 +159,13 @@ std::vector<uint16_t> ArucoDetection::update(bool DEBUG_MODE)
         {
             it->second.addValue(static_cast<uint16_t>(1));
             detectedIds.erase(found);
-            
 
             if (it->second.getAverage() > VALIDATION_THRESHOLD)
             {
                 validatedIds.push_back(id);
-                it = validation.erase(it);
             }
-            else
-            {
-                ++it;
-            }
-            
+
+            ++it;
         }
         else 
         {

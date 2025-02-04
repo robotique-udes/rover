@@ -14,8 +14,6 @@
 #include <unordered_map>
 #include <vector>
 
-#define COEFF_NB 10
-
 class ImageCapture
 {
   public:
@@ -64,6 +62,7 @@ class ArucoDetection
     std::vector<uint16_t> update(bool DEBUG_MODE);
 
   private:
+#define COEFF_NB 10
     static constexpr float VALIDATION_THRESHOLD = 0.75;
     static constexpr uint8_t DELAY_BETWEEN_CAPTURE_MS = 100;
     FrameProcessing processedFrame;
