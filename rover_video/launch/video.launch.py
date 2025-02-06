@@ -7,13 +7,15 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld: LaunchDescription = LaunchDescription()
 
-    media_server_node = Node(package= "rover_video",
+    node_camera_main = Node(package= "rover_video",
                              namespace = "/rover/video",
                              executable = "media_server",
-                             name = "media_server")
+                             name = "camera_main",
+                             parameters = [os.path.join(get_package_share_directory('rover_video'), 'config', 'camera_main.yaml')] 
+                        )
+                        
 
-
-
+    ld.add_action(node_camera_main)
 
 
     return ld
