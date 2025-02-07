@@ -31,6 +31,12 @@ namespace KEYBINDING
     constexpr uint8_t GRIPPER_ROT_REV = rover_msgs::msg::Joy::L2;
 
     constexpr uint8_t GRIPPER_CLOSE = rover_msgs::msg::Joy::CROSS_DOWN;
+
+    constexpr uint8_t X_AXIS_CTRL = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
+    constexpr uint8_t Y_AXIS_CTRL = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
+    constexpr uint8_t Z_AXIS_FWD = rover_msgs::msg::Joy::CROSS_UP;
+    constexpr uint8_t Z_AXIS_BKW = rover_msgs::msg::Joy::CROSS_UP;
+    
 #endif  // defined(PHIL)
 }  // namespace KEYBINDING
 
