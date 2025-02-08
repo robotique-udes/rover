@@ -25,7 +25,11 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(light_control src/light_control.cpp)
 add_executable(compass_calibrator src/compass_calibrator.cpp)
 add_executable(goal_manager src/goal_manager.cpp)
-add_executable(aruco_detection src/aruco_detection.cpp)
+add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
+				src/aruco_detection/detection.cpp
+				src/aruco_detection/frame_processing.cpp
+				src/aruco_detection/image_capture.cpp)
+
 
 ament_target_dependencies(light_control
                           rclcpp
