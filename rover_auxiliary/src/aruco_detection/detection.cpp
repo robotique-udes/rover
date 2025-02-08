@@ -69,9 +69,11 @@ std::vector<uint16_t> ArucoDetection::update(bool DEBUG_MODE)
         validation.emplace(id, MovingAverage<uint16_t, COEFF_NB_ARUCO>(0));
     }
 
-    /*RoverLib::Timer<unsigned long, RoverLib::millis> timer(DELAY_BETWEEN_CAPTURE_MS);
+    RoverLib::Timer<uint64_t, RoverLib::millis> timer(DELAY_BETWEEN_CAPTURE_MS);
+    
     while (!timer.isDone())
     {
-    }*/
+    }
+
     return validatedIds;
 }
