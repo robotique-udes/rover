@@ -8,7 +8,7 @@
 class FrameProcessing
 {
   public:
-    FrameProcessing(std::string _cameraURL);
+    FrameProcessing(std::string cameraURL_);
     ~FrameProcessing(void);
     bool empty;
 
@@ -19,12 +19,12 @@ class FrameProcessing
   private:
     static constexpr uint8_t MAX_SAME_FRAME_IDS = 20;
     static constexpr cv::aruco::PREDEFINED_DICTIONARY_NAME DICT = cv::aruco::DICT_4X4_250;
-    ImageCapture stream;
-    std::vector<uint16_t> detectedIds;
-    std::vector<std::vector<cv::Point2f>> corners;
-    cv::Mat ids;
-    cv::Ptr<cv::aruco::Dictionary> dictionary;
-    cv::Ptr<cv::aruco::DetectorParameters> detectorParams;
+    ImageCapture _stream;
+    std::vector<uint16_t> _detectedIds;
+    std::vector<std::vector<cv::Point2f>> _corners;
+    cv::Mat _ids;
+    cv::Ptr<cv::aruco::Dictionary> _dictionary;
+    cv::Ptr<cv::aruco::DetectorParameters> _detectorParams;
 };
 
 #endif

@@ -1,27 +1,24 @@
 #include "image_capture.hpp"
 
-ImageCapture::ImageCapture(std::string _cameraURL): cameraURL(_cameraURL)
+ImageCapture::ImageCapture(std::string cameraURL_): _cameraURL(cameraURL_)
 {
     initCam();
 }
 
 ImageCapture::~ImageCapture(void)
 {
-    cap.release();
+    _cap.release();
     cv::destroyAllWindows();
 }
 
 bool ImageCapture::initCam()
 {
-    if (!cap.isOpened())
+    if (_cap.isOpened())
     {
-        cap.open(cameraURL);
+        return true;
     }
 
-    else
-        return true;
-
-    if (!cap.isOpened())
+    if (!_cap.open(_cameraURL))
     {
         std::string message = "Could not open streaming device";
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), message.c_str());
@@ -30,12 +27,12 @@ bool ImageCapture::initCam()
     return true;
 }
 
-bool ImageCapture::manageStream(std::string URL)
+bool ImageCapture::manageStream(std::string URL_)
 {
-    if (URL != cameraURL)
+    if (URL_ != _cameraURL)
     {
-        cap.release();
-        cameraURL = URL;
+        _cap.release();
+        _cameraURL = URL_;
 
         if (!initCam())
         {
@@ -51,30 +48,32 @@ bool ImageCapture::manageStream(std::string URL)
     }
 }
 
-cv::Mat ImageCapture::getFrame(bool DEBUG_MODE)
+std::optional<cv::Mat> ImageCapture::getFrame(bool DEBUG_MODE)
 {
     cv::Mat frame;
 
-    if (!cap.isOpened())
+    if (!_cap.isOpened() && !manageStream(_cameraURL))
     {
-        if (!manageStream(cameraURL))
-        {  // Open camera only if it's off
-            if (DEBUG_MODE)
-            {
-                getErrorFrame(frame);
-            }
-
+        if (DEBUG_MODE)
+        {
+            getErrorFrame(frame);
             return frame;
         }
+        return std::nullopt;
     }
 
-    cap >> frame;  // Store frame in matrix  (openCV syntax)
+    _cap >> frame;  // Store frame in matrix  (openCV syntax)
+
+    if (frame.empty())
+    {
+        return std::nullopt;
+    }
     return frame;
 }
 
-void ImageCapture::getErrorFrame(cv::Mat& frame)
+void ImageCapture::getErrorFrame(cv::Mat& frame_)
 {
-    frame = cv::Mat::zeros(480, 640, CV_8UC3);
+    frame_ = cv::Mat::zeros(480, 640, CV_8UC3);
     std::string error_message = "Error: Stream not found!";
-    cv::putText(frame, error_message, cv::Point(100, 240), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 0, 255), 2);
+    cv::putText(frame_, error_message, cv::Point(100, 240), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 0, 255), 2);
 }

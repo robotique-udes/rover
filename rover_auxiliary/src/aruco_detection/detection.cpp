@@ -1,21 +1,20 @@
 #include "detection.hpp"
 
-ArucoDetection::ArucoDetection(std::string _cameraURL): processedFrame(_cameraURL) {}
-ArucoDetection::~ArucoDetection() {}
+Detection::Detection(std::string cameraURL_): _processedFrame(cameraURL_) {}
 
-std::vector<uint16_t> ArucoDetection::detect(bool DEBUG_MODE)
+std::vector<uint16_t> Detection::detect(bool DEBUG_MODE)
 {
-    processedFrame.processFrame(DEBUG_MODE);
-    if (!processedFrame.IdsEmpty())
+    _processedFrame.processFrame(DEBUG_MODE);
+    if (!_processedFrame.IdsEmpty())
     {  // If ids were detected
         if (DEBUG_MODE)
         {
-            cv::Mat frame = processedFrame.processFrame(DEBUG_MODE).value_or(cv::Mat());
+            cv::Mat frame = _processedFrame.processFrame(DEBUG_MODE).value_or(cv::Mat());
             cv::imshow("Aruco Detection", frame);
             cv::waitKey(30);
         }
 
-        return processedFrame.getIds();
+        return _processedFrame.getIds();
     }
 
     return {};  // Return empty vector if no ids detected
@@ -26,12 +25,12 @@ Look for marker in a new frame every 100 ms
 Id has to be detected 10 times to be validated (not necessarily consective)
 If Id is not found in the next frame, it has 10 frame to be found again (strike), else the count is reset
 */
-std::vector<uint16_t> ArucoDetection::update(bool DEBUG_MODE)
+std::vector<uint16_t> Detection::update(bool DEBUG_MODE)
 {
     std::vector<uint16_t> validatedIds;
     std::vector<uint16_t> detectedIds = detect(DEBUG_MODE);
 
-    for (auto it = validation.begin(); it != validation.end();)
+    for (auto it = _validation.begin(); it != _validation.end();)
     {
         uint16_t id = it->first;
 
@@ -55,7 +54,7 @@ std::vector<uint16_t> ArucoDetection::update(bool DEBUG_MODE)
 
             if (it->second.getAverage() == 0)
             {
-                it = validation.erase(it);
+                it = _validation.erase(it);
             }
             else
             {
@@ -66,11 +65,11 @@ std::vector<uint16_t> ArucoDetection::update(bool DEBUG_MODE)
 
     for (const auto& id : detectedIds)
     {
-        validation.emplace(id, MovingAverage<uint16_t, COEFF_NB_ARUCO>(0));
+        _validation.emplace(id, MovingAverage<uint16_t, COEFF_NB_ARUCO>(0));
     }
 
     RoverLib::Timer<uint64_t, RoverLib::millis> timer(DELAY_BETWEEN_CAPTURE_MS);
-    
+
     while (!timer.isDone())
     {
     }

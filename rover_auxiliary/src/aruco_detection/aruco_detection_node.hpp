@@ -12,10 +12,10 @@ class ArucoDetectionNode : public rclcpp::Node
 
   private:
     static constexpr bool DEBUG_MODE = true;
-    void ArucoCallback(void);
-    rclcpp::Publisher<rover_msgs::msg::Aruco>::SharedPtr publisher_;
-    rclcpp::TimerBase::SharedPtr timer_;
-    std::unique_ptr<ArucoDetection> detection_;
+    void CB_aruco(void);
+    rclcpp::Publisher<rover_msgs::msg::Aruco>::SharedPtr _publisher;
+    rclcpp::TimerBase::SharedPtr _timer;
+    std::unique_ptr<Detection> _detection;
 };
 
 #endif

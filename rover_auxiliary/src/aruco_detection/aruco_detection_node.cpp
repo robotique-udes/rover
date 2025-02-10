@@ -8,18 +8,18 @@ int main(int argc, char** argv)
     return 0;
 }
 
-ArucoDetectionNode::ArucoDetectionNode(void): Node("aurco_detection_node")
+ArucoDetectionNode::ArucoDetectionNode(void): Node("aruco_detection_node")
 {
-    publisher_ = this->create_publisher<rover_msgs::msg::Aruco>("detected_arucos", 10);
-    timer_ = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&ArucoDetectionNode::ArucoCallback, this));
-    detection_ = std::make_unique<ArucoDetection>("v4l2:///dev/video0");
+    _publisher = this->create_publisher<rover_msgs::msg::Aruco>("detected_arucos", 10);
+    _timer = this->create_wall_timer(std::chrono::milliseconds(100), std::bind(&ArucoDetectionNode::CB_aruco, this));
+    _detection = std::make_unique<Detection>("v4l2:///dev/video0");
 }
 
 ArucoDetectionNode::~ArucoDetectionNode(void) {}
 
-void ArucoDetectionNode::ArucoCallback(void)
+void ArucoDetectionNode::CB_aruco(void)
 {
-    std::vector<uint16_t> detectedArucos = detection_->update(DEBUG_MODE);
+    std::vector<uint16_t> detectedArucos = _detection->update(DEBUG_MODE);
 
     rover_msgs::msg::Aruco msg;
 
@@ -28,7 +28,7 @@ void ArucoDetectionNode::ArucoCallback(void)
         msg.id.push_back(static_cast<uint8_t>(id));  // Ensure ID is cast to uint8
     }
 
-    publisher_->publish(msg);
+    _publisher->publish(msg);
 
     if (DEBUG_MODE)
     {

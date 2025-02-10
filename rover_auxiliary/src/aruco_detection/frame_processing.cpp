@@ -1,37 +1,41 @@
 #include "frame_processing.hpp"
 
 // Init frame processing when accessing camera with ID
-FrameProcessing::FrameProcessing(std::string _cameraURL): stream(_cameraURL)
+FrameProcessing::FrameProcessing(std::string cameraURL_): _stream(cameraURL_)
 {
-    dictionary = cv::aruco::getPredefinedDictionary(DICT);
-    detectorParams = cv::aruco::DetectorParameters::create();
+    _dictionary = cv::aruco::getPredefinedDictionary(DICT);
+    _detectorParams = cv::aruco::DetectorParameters::create();
 }
 
 FrameProcessing::~FrameProcessing(void) {}
 
 std::optional<cv::Mat> FrameProcessing::processFrame(bool DEBUG_MODE)
 {
-    cv::aruco::detectMarkers(stream.getFrame(DEBUG_MODE), dictionary, corners, ids);
-    detectedIds.clear();
-
-    for (uint8_t i = 0; i < ids.rows; ++i)
+    std::optional<cv::Mat> frame = _stream.getFrame(DEBUG_MODE);
+    if (!frame)
     {
-        detectedIds.push_back(ids.at<uint16_t>(i, 0));
+        RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Error getting frame from stream");
+    }
+    cv::aruco::detectMarkers(frame.value(), _dictionary, _corners, _ids);
+    _detectedIds.clear();
+
+    for (uint8_t i = 0; i < _ids.rows; ++i)
+    {
+        _detectedIds.push_back(_ids.at<uint16_t>(i, 0));
     }
 
     if (DEBUG_MODE)
     {
-        cv::Mat processedFrame = stream.getFrame(DEBUG_MODE);
-        cv::aruco::drawDetectedMarkers(processedFrame, corners, ids);
-        return processedFrame;
+        cv::aruco::drawDetectedMarkers(frame.value(), _corners, _ids);
+        return frame;
     }
-    empty = detectedIds.empty();
-    return std::nullopt;  // tjr 0!!
+    empty = _detectedIds.empty();
+    return std::nullopt;
 }
 
 std::vector<uint16_t> FrameProcessing::getIds()
 {
-    return detectedIds;
+    return _detectedIds;
 }
 
 bool FrameProcessing::IdsEmpty(void)
