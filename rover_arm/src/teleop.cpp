@@ -33,13 +33,6 @@ public:
         eLAST
     };
 
-    enum class eJointIndexInverse : uint8_t
-    {
-        X = rover_msgs::msg::ArmMsg::JL,
-        Y = rover_msgs::msg::ArmMsg::J0,
-        Z = rover_msgs::msg::ArmMsg::J1,
-    };
-
     enum class eControlMode : uint8_t
     {
         JOINT = 0,
@@ -218,7 +211,6 @@ void Teleop::watchdog(bool& rLostHeartbeat_)
 
 Eigen::MatrixXd Teleop::computeJacobian(float _currentJointPosition[7])
 {
-
     float q0 = _currentJointPosition[0];
     float q1 = _currentJointPosition[1];
     float q2 = _currentJointPosition[2];
@@ -253,7 +245,6 @@ Eigen::MatrixXd Teleop::computeJacobian(float _currentJointPosition[7])
     _jacobian(2, 4) = J4z * -s234 - J4x * c234; // dz/dq4
 
     // NULLSPACE
-
     _jacobian(3, 0) = 0.0f;
     _jacobian(3, 1) = 0.0f;
     _jacobian(3, 2) = 1.0f;

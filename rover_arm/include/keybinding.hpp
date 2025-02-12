@@ -34,6 +34,7 @@ namespace KEYBINDING
 
     constexpr uint8_t GRIPPER_CLOSE = rover_msgs::msg::Joy::CROSS_DOWN;
 
+    // CARTESIAN CONTROLS
     constexpr uint8_t X_AXIS_CTRL = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
     constexpr uint8_t Y_AXIS_CTRL = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
     constexpr uint8_t Z_AXIS_FWD = rover_msgs::msg::Joy::CROSS_UP;
