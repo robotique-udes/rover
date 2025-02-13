@@ -20,6 +20,9 @@ class CameraNode : public rclcpp::Node
     public:
 
     private:
+    rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_screenshot;
+    rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_recording;
+
     std::string cameraURL = "";
 
     //Gotta ask Philippe if i can do this
@@ -32,11 +35,12 @@ class CameraNode : public rclcpp::Node
 
     std::string selectCameraURL(int camID);
     void screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response); 
+    std::shared_ptr<rover_msgs::srv::CameraControl::Response> response); 
     void recordingIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response);
+    std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
+    std::string get_current_time();
 
     public:
     CameraNode();
@@ -102,7 +106,7 @@ std::string CameraNode::selectCameraURL(int camID)
 
 }
 
-std::string get_current_time()
+std::string CameraNode::get_current_time()
 {
     auto now = std::chrono::system_clock::now(); //get system time
 
@@ -117,8 +121,8 @@ std::string get_current_time()
 } 
 
 
-void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::ScreenshotControl::Request> request,
-    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response) 
+void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
+    std::shared_ptr<rover_msgs::srv::CameraControl::Response> response) 
 {
     
     // The URL format will depend on the camera model and configuration
@@ -133,6 +137,8 @@ void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::Screens
         RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
         response->success = false;
     }
+
+    cameraURL = selectCameraID(request->cameraID);
 
     // Open the video stream
     cv::VideoCapture cap(cameraURL);
@@ -152,7 +158,7 @@ void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::Screens
     {
         
         // Save the frame as a sceenshot:
-        cv::imwrite(filename, frame);
+        cv::imwrite(filePath, frame);
         RCLCPP_INFO(LOGGER, "Screenshot saved as %s", filename);
         
 
@@ -172,8 +178,8 @@ void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::Screens
 
 }
 
-void CameraNode::recordingIPCam(const std::shared_ptr<rover_msgs::srv::ScreenshotControl::Request> request,
-    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response)
+void CameraNode::recordingIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
+    std::shared_ptr<rover_msgs::srv::CameraControl::Response> response)
 {
     // Select the correct URL using the internal function
     std::string cameraURL = selectCameraURL(request->cameraID);
@@ -203,12 +209,10 @@ void CameraNode::recordingIPCam(const std::shared_ptr<rover_msgs::srv::Screensho
     int frame_height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     int fps = static_cast<int>(cap.get(cv::CAP_PROP_FPS));
 
-    std::string pathToFolder = folder + "/ip_cam_recording.avi";
-
     // Define the codec and create a VideoWriter object     
     /* Also from ChatGPT --> more information on OpenCV 
     --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
-    cv::VideoWriter video_writer(pathToFolder, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+    cv::VideoWriter video_writer(filePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
     (fps > 0 ? fps : 30), cv::Size(frame_width, frame_height));
 
     if(!video_writer.isOpened())
