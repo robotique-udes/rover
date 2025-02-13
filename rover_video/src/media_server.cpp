@@ -6,6 +6,12 @@
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
 
+#include <iostream>
+#include <chrono>
+#include <iomanip>
+#include <sstream>
+
+
 #include <cstdlib>
 #include <sys/stat.h>
 
@@ -96,6 +102,21 @@ std::string CameraNode::selectCameraURL(int camID)
 
 }
 
+std::string get_current_time()
+{
+    auto now = std::chrono::system_clock::now(); //get system time
+
+    auto now_time = std::chrono::system_clock::to_time_t(now); //convert to real time
+    
+    std::tm tm_now = *std::localtime(&now_time); //convert to calendar time
+    
+    std::stringstream current_time_output;
+    current_time_output << std::put_time(&tm_now, "%FT%T");  // ISO 8601 format  
+
+    return current_time_output.str();  
+} 
+
+
 void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::ScreenshotControl::Request> request,
     std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response) 
 {
@@ -104,7 +125,7 @@ void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::Screens
     //std::string camera_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
 
     // Use the provided file name or a default name
-    std::string filename = request->file_name.empty() ? "screenshot.png" : request->file_name;
+    std::string filename = request->file_name.empty() ? get_current_time() + "_screenshot.png" : request->file_name;
     std::string filePath = screenshotFolderPath + "/" + filename;
 
     if(!createFolder(screenshotFolderPath))
@@ -160,7 +181,7 @@ void CameraNode::recordingIPCam(const std::shared_ptr<rover_msgs::srv::Screensho
     std::string cameraURL = selectCameraURL(request->cameraID);
 
     // Use the provided file name or a default name
-    std::string filename = request->file_name.empty() ? "recording.avi" : request->file_name;
+    std::string filename = request->file_name.empty() ? get_current_time() + "_recording.avi" : request->file_name;
     std::string filePath = recordingFolderPath + "/" + filename;
 
     cv::VideoCapture cap(cameraURL);
