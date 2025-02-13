@@ -1,7 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rovus_lib/macros.h"
-#include "rover_msgs/msg/Screenshot.hpp"
-#include "rover_msgs/msg/Recording.hpp"
+#include "rover_msgs/srv/CameraControl.hpp"
 
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
@@ -26,8 +25,10 @@ class CameraNode : public rclcpp::Node
     const std::string recordingFolderPath = std::string(dir) + "/src/recordings";   
 
     std::string selectCameraURL(int camID);
-    int screenshotIPCam(std::string cameraURL, std::string folder); 
-    int recordingIPCam(std::string cameraURL, std::string folder);
+    void screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
+    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response) 
+    void recordingIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
+    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response);
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
 
@@ -60,13 +61,13 @@ CameraNode::CameraNode(): Node("media_server")
     int cameraID = this->get_parameter("cameraID").as_int();
     RCLCPP_INFO_ONCE(this->get_logger(), "Camera ID: %d", cameraID);
 
-    _srv_screenshot = this->create_service<rover_msgs::srv::Screenshot>(
+    _srv_screenshot = this->create_service<rover_msgs::srv::ScreenshotControl>(
         "screenshot",
-        std::bind(&CameraNode::screenshotIPCam, this, std::placeholders::_1, std::placeholders::_2))
+        std::bind(&CameraNode::screenshotIPCam, this, std::placeholders::_1, std::placeholders::_2));
 
-    _srv_recording = this->create_service<rover_msgs::srv::Recording>(
+    _srv_recording = this->create_service<rover_msgs::srv::ScreenshotControl>(
         "recording",
-        std::bind(&CameraNode::recordingIPCam, this, std::placeholders::_1, std::placeholders::_2))
+        std::bind(&CameraNode::recordingIPCam, this, std::placeholders::_1, std::placeholders::_2));
 
 }
 
@@ -95,27 +96,34 @@ std::string CameraNode::selectCameraURL(int camID)
 
 }
 
-int CameraNode::screenshotIPCam(std::string cameraURL, std::string folder) 
+void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::ScreenshotControl::Request> request,
+    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response) 
 {
+    
     // The URL format will depend on the camera model and configuration
     //std::string camera_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
 
-    // Open the video stream
-    cv::VideoCapture cap(cameraURL);
+    // Use the provided file name or a default name
+    std::string filename = request->file_name.empty() ? "screenshot.png" : request->file_name;
+    std::string filePath = screenshotFolderPath + "/" + filename;
 
-    if(!createFolder(folder))
+    if(!createFolder(screenshotFolderPath))
     {
         RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
         response->success = false;
-        return;
+        return -1;
     }
+
+    // Open the video stream
+    cv::VideoCapture cap(cameraURL);
 
     if (!cap.isOpened()) 
     {
         RCLCPP_ERROR(LOGGER "Failed to open camera stream.");
         response->success = false; //what does it do??
-        return; //necessary??
+        return -1; //necessary??
     }
+
 
     // Read a single frame
     cv::Mat frame;
@@ -125,7 +133,6 @@ int CameraNode::screenshotIPCam(std::string cameraURL, std::string folder)
     {
         
         // Save the frame as a sceenshot:
-        std::string filename = folder + "/ip_camera_screenshot.png";
         cv::imwrite(filename, frame);
         RCLCPP_INFO(LOGGER, "Screenshot saved as %s", filename);
         
@@ -137,31 +144,39 @@ int CameraNode::screenshotIPCam(std::string cameraURL, std::string folder)
     } 
     else 
     {
-        std::cerr << "Error: Unable to capture a frame." << std::endl;
+        RCLCPP_ERROR(LOGGER, "Failed to capture frame.");
+        response->success = false;
     }
 
     // Release the video capture object
     cap.release();
 
-    return 0;
 }
 
-int CameraNode::recordingIPCam(std::string cameraURL, std::string folder)
+void CameraNode::recordingIPCam(const std::shared_ptr<rover_msgs::srv::ScreenshotControl::Request> request,
+    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response)
 {
+    // Select the correct URL using the internal function
+    std::string cameraURL = selectCameraURL(request->cameraID);
+
+    // Use the provided file name or a default name
+    std::string filename = request->file_name.empty() ? "recording.avi" : request->file_name;
+    std::string filePath = recordingFolderPath + "/" + filename;
+
     cv::VideoCapture cap(cameraURL);
 
-        if(!createFolder(folder))
+        if(!createFolder(recordingFolderPath))
     {
         RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
         response->success = false;
-        return;
+        return -1;
     }
 
     if(!cap.isOpened())
     {
         RCLCPP_ERROR(LOGGER, "Failed to open camera stream.");
         response->success = false;
-        return;
+        return -1;
     }
 
 
@@ -216,7 +231,6 @@ int CameraNode::recordingIPCam(std::string cameraURL, std::string folder)
 
     RCLCPP_INFO(LOGGER, "Recording stopped.");
 
-    return 0;
 }
 
 // Verifies if screenshot folder already exists
@@ -238,7 +252,7 @@ bool CameraNode::createFolder(const std::string& path)
         } 
         else 
         {
-            perror("mkdir failed");  // Prints error if mkdir fails
+            RCLCPP_INFO(LOGGER, "mkdir failed");
             return false;
         }
     }

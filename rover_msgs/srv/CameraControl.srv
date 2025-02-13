@@ -1,0 +1,8 @@
+# Request
+int32 camera_id      # ID of the camera to use
+string file_name     # Optional: Name of the file to save (e.g., "screenshot.png" or "recording.avi")
+bool start_recording # For recording: true to start, false to stop
+
+---
+# Response
+bool success         # Indicates whether the operation was successful
