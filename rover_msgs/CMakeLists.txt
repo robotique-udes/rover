@@ -54,6 +54,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/PanoControl.srv"
   "srv/RtspStream.srv"
   "srv/ScreenshotControl.srv"
+  "srv/CameraControl.srv"
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

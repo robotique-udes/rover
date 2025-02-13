@@ -27,14 +27,13 @@ add_executable( cam_controller src/cam_controller.cpp )
 
 ament_target_dependencies(media_server
                           rclcpp
-                          rover_msgs)
+                          rover_msgs
+                          OpenCV)
 
 ament_target_dependencies(cam_controller
                           rclcpp
                           rover_msgs)
 
-
-target_link_libraries( media_server ${OpenCV_LIBS} )
 
 if(BUILD_TESTING)
   find_package(ament_lint_auto REQUIRED)

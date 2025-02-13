@@ -32,7 +32,7 @@ class CameraNode : public rclcpp::Node
 
     std::string selectCameraURL(int camID);
     void screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response) 
+    std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response); 
     void recordingIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
     std::shared_ptr<rover_msgs::srv::ScreenshotControl::Response> response);
     bool folderExists(const std::string& path);
@@ -67,11 +67,11 @@ CameraNode::CameraNode(): Node("media_server")
     int cameraID = this->get_parameter("cameraID").as_int();
     RCLCPP_INFO_ONCE(this->get_logger(), "Camera ID: %d", cameraID);
 
-    _srv_screenshot = this->create_service<rover_msgs::srv::ScreenshotControl>(
+    _srv_screenshot = this->create_service<rover_msgs::srv::CameraControl>(
         "screenshot",
         std::bind(&CameraNode::screenshotIPCam, this, std::placeholders::_1, std::placeholders::_2));
 
-    _srv_recording = this->create_service<rover_msgs::srv::ScreenshotControl>(
+    _srv_recording = this->create_service<rover_msgs::srv::CameraControl>(
         "recording",
         std::bind(&CameraNode::recordingIPCam, this, std::placeholders::_1, std::placeholders::_2));
 
@@ -132,7 +132,6 @@ void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::Screens
     {
         RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
         response->success = false;
-        return -1;
     }
 
     // Open the video stream
@@ -142,7 +141,6 @@ void CameraNode::screenshotIPCam( const std::shared_ptr<rover_msgs::srv::Screens
     {
         RCLCPP_ERROR(LOGGER "Failed to open camera stream.");
         response->success = false; //what does it do??
-        return -1; //necessary??
     }
 
 
@@ -190,14 +188,12 @@ void CameraNode::recordingIPCam(const std::shared_ptr<rover_msgs::srv::Screensho
     {
         RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
         response->success = false;
-        return -1;
     }
 
     if(!cap.isOpened())
     {
         RCLCPP_ERROR(LOGGER, "Failed to open camera stream.");
         response->success = false;
-        return -1;
     }
 
 
