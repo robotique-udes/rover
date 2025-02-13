@@ -14,14 +14,16 @@ int main(int argc, char** argv)
 
 ArucoDetectionNode::ArucoDetectionNode(void): Node("aruco_detection_node")
 {
-    declare_parameter("DEBUG_MODE", false);  // Command line argument for quick debugging
+    declare_parameter("DEBUG_MODE", false);  // Command-line argument for quick debugging
     get_parameter("DEBUG_MODE", DEBUG_MODE);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>("aruco_detection", 10);
-    _timer_publisher
-        = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&ArucoDetectionNode::CB_aruco_publisher, this));
-    _timer_detection
-        = this->create_wall_timer(std::chrono::milliseconds(50), std::bind(&ArucoDetectionNode::CB_aruco_detection, this));
+    _timerPublisher
+        = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS), [this]() { this->CB_aruco_publisher(); });
+
+    _timerDetection
+        = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS), [this]() { this->CB_aruco_detection(); });
+
     _detection = std::make_unique<Detection>("v4l2:///dev/video0");
 }
 
