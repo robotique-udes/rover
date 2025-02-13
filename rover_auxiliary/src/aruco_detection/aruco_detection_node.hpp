@@ -8,14 +8,16 @@ class ArucoDetectionNode : public rclcpp::Node
 {
   public:
     ArucoDetectionNode(void);
-    ~ArucoDetectionNode(void);
 
   private:
-    static constexpr bool DEBUG_MODE = true;
-    void CB_aruco(void);
+    bool DEBUG_MODE;
+    void CB_aruco_publisher(void);
+    void CB_aruco_detection(void);
     rclcpp::Publisher<rover_msgs::msg::Aruco>::SharedPtr _publisher;
-    rclcpp::TimerBase::SharedPtr _timer;
+    rclcpp::TimerBase::SharedPtr _timer_publisher;
+    rclcpp::TimerBase::SharedPtr _timer_detection;
     std::unique_ptr<Detection> _detection;
+    std::mutex _mutex;
 };
 
 #endif
