@@ -40,6 +40,11 @@ namespace KEYBINDING
     constexpr uint8_t Z_AXIS_FWD = rover_msgs::msg::Joy::CROSS_UP;
     constexpr uint8_t Z_AXIS_BKW = rover_msgs::msg::Joy::CROSS_UP;
     
+    constexpr uint8_t ALPHA = rover_msgs::msg::Joy::B;
+    constexpr uint8_t PSI = rover_msgs::msg::Joy::X;
+
+    
+    
 #endif  // defined(PHIL)
 }  // namespace KEYBINDING
 
