@@ -33,6 +33,16 @@ public:
         eLAST
     };
 
+    enum class eDesiredCartesianVel : uint8_t
+    {
+        X = 0,
+        Y = 1,
+        Z = 2,
+        ALPA = 3,
+        PSI = 4,
+        eLAST
+    };
+
     enum class eControlMode : uint8_t
     {
         JOINT = 0,
@@ -50,8 +60,9 @@ private:
 
     std::chrono::steady_clock::time_point _lastPositionData;
 
-    Eigen::MatrixXd _jacobian = Eigen::MatrixXd(3, 5);
-    Eigen::MatrixXd _jacobianPseudoInverse = Eigen::MatrixXd(3, 5);
+    Eigen::MatrixXd _jacobian = Eigen::MatrixXd(5, 5);
+    Eigen::MatrixXd _inverseJacobian = Eigen::MatrixXd(5, 5);
+    Eigen::MatrixXd _computedVelocity = Eigen::MatrixXd(1, 5);
     
     bool _currentPoseFailure = false;
     bool _gripperClose = false;
@@ -69,6 +80,7 @@ private:
 
     eControlMode _controlMode = eControlMode::JOINT;
     float _currentJointsPos[(uint8_t)eJointIndex::eLAST] = {0};
+    float _desiredCartesian[(uint8_t)eDesiredCartesianVel::eLAST] = {0};
 };
 
 void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
@@ -80,6 +92,7 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
     }
 
     float _goalJointsSpeed[(uint8_t)eJointIndex::eLAST] = {0};
+    float _desiredCartesian[(uint8_t)eDesiredCartesianVel::eLAST] = {0};
 
     if (_controlMode == eControlMode::JOINT)
     {
@@ -105,6 +118,7 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 
         // CMD J1
         _goalJointsSpeed[(uint8_t)eJointIndex::J1] = joyMsg_->joy_data[KEYBINDING::J1] * ARM_CONFIGURATION::J1::MAX_VELOCITY;
+
         // CMD J2
         _goalJointsSpeed[(uint8_t)eJointIndex::J2] = joyMsg_->joy_data[KEYBINDING::J2] * ARM_CONFIGURATION::J2::MAX_VELOCITY;
 
@@ -140,20 +154,42 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         // CMD X
         if (isPressed(joyMsg_->joy_data[KEYBINDING::X_AXIS_CTRL]))
         {
+            _desiredCartesian[(uint8_t)eDesiredCartesianVel::X] = joyMsg_->joy_data[KEYBINDING::X_AXIS_CTRL];
         }
         
         // CMD Y
-        else if (isPressed(joyMsg_->joy_data[KEYBINDING::Y_AXIS_CTRL]))
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::Y_AXIS_CTRL]))
         {
+            _desiredCartesian[(uint8_t)eDesiredCartesianVel::Y] = joyMsg_->joy_data[KEYBINDING::Y_AXIS_CTRL];
         }
 
         // CMD Z
-        else if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_FWD]))
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_FWD]))
         {
+            _desiredCartesian[(uint8_t)eDesiredCartesianVel::Z] = joyMsg_->joy_data[KEYBINDING::Z_AXIS_FWD];
         }
         else if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_BKW]))
         {
+            _desiredCartesian[(uint8_t)eDesiredCartesianVel::Z] = joyMsg_->joy_data[KEYBINDING::Z_AXIS_BKW];
         }
+
+        // ALPHA
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::ALPHA]))
+        {
+            _desiredCartesian[(uint8_t)eDesiredCartesianVel::ALPA] = joyMsg_->joy_data[KEYBINDING::ALPHA];
+
+        }
+        
+        // PSI
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::PSI]))
+        {
+            _desiredCartesian[(uint8_t)eDesiredCartesianVel::PSI] = joyMsg_->joy_data[KEYBINDING::PSI];
+
+        }
+
+        _inverseJacobian = (computeJacobian(_currentJointsPos).inverse());
+        _computedVelocity = _inverseJacobian * _desiredCartesian;
+        
 
     }
     // CMD GRIP
