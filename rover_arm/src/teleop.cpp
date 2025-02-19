@@ -9,6 +9,8 @@
 #include "arm_configuration.hpp"
 #include "keybinding.hpp"
 
+#include <iostream>
+
 #include "Eigen/Dense"
 
 constexpr std::chrono::milliseconds WATCHDOG_TIMEOUT{500};
@@ -73,7 +75,10 @@ private:
     
     void positionCallback(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg);
     void joyCallback(const rover_msgs::msg::Joy::SharedPtr positionMsg);
+    void scaleVelocities(Eigen::VectorXd& jointVelocities);
     Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition);
+
+
     // FOR TESTING PURPOSES ONLY
     void printEndEffectorPosition();
 
@@ -188,8 +193,8 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 
         _inverseJacobian = computeJacobian(_currentJointsPos).inverse();
         _computedVelocity = _inverseJacobian * desiredCartesian;
+        scaleVelocities(_computedVelocity);
         
-        // Copy computed velocities to goal joints speed
         for (int i = 0; i < _computedVelocity.size(); ++i)
         {
             goalJointsSpeed(i) = _computedVelocity(i);
@@ -211,7 +216,6 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
     }
     goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_CLOSE) = _gripperClose;
 
-    // Convert Eigen vector to ROS message
     rover_msgs::msg::ArmMsg msg;
     for (uint8_t i = 0; i < (uint8_t)eJointIndex::eLAST; i++)
     {
@@ -262,22 +266,23 @@ Eigen::MatrixXd Teleop::computeJacobian(const Eigen::VectorXd& currentJointPosit
 
     float s1 = sin(q1);
     float c1 = cos(q1);
-    float s2 = sin(0.5 * M_PI - q2);
-    float c2 = cos(0.5 * M_PI - q2);
-    float s23 = sin(0.5 * M_PI - q2 - q3);
-    float c23 = cos(0.5 * M_PI - q2 - q3);
-    float s234 = sin(0.5 * M_PI - q2 - q3 - q4);
-    float c234 = cos(0.5 * M_PI - q2 - q3 - q4);
+    float s2 = sin(0.5 * PI - q2);
+    float c2 = cos(0.5 * PI - q2);
+    float s23 = sin(0.5 * PI - q2 - q3);
+    float c23 = cos(0.5 * PI - q2 - q3);
+    float s234 = sin(0.5 * PI - q2 - q3 - q4);
+    float c234 = cos(0.5 * PI - q2 - q3 - q4);
 
-     _currentEndEffectorPosition.x() = c1 * (J1x + J2x * c2 + J2z * s2 + J3x * c23 + J3z * s23 + J4x * c234 + J4z * s234) - 
+
+    // FOR TEST PURPOSES ONLY
+    _currentEndEffectorPosition.x() = c1 * (J1x + J2x * c2 + J2z * s2 + J3x * c23 + J3z * s23 + J4x * c234 + J4z * s234) - 
                                     s1 * (J1y + J2y);
 
-    // Y position
     _currentEndEffectorPosition.y() = s1 * (J1x + J2x * c2 + J2z * s2 + J3x * c23 + J3z * s23 + J4x * c234 + J4z * s234) + 
                                     c1 * (J1y + J2y);
 
-    // Z position
     _currentEndEffectorPosition.z() = J2x * s2 - J2z * c2 + J3x * s23 - J3z * c23 + J4x * s234 - J4z * c234;
+
 
     _jacobian(0, 0) = 0.0f; // dx/dq0
     _jacobian(0, 1) = J1x * -s1 + J2x * -s1 * c2 + J2z * -s1 * s2 + J3x * -s1 * c23 + J3z * -s1 * s23 - c1 * (J1y + J2y) + J4x * c1 * c234 + J4z * c1 * s234; // ∂x/dq1
@@ -339,6 +344,24 @@ Teleop::Teleop() : Node("teleop")
                                                                 [this]()
                                                                 { this->watchdog(_currentPoseFailure); });
 
+}
+
+void Teleop::scaleVelocities(Eigen::VectorXd& velocities)
+{
+    float velocityRatio = 0.0f;
+    float test2 = 2.0f;    
+
+    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(0) / ARM_CONFIGURATION::JL::MAX_VELOCITY));
+    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(1) / ARM_CONFIGURATION::J0::MAX_VELOCITY));
+    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(2) / ARM_CONFIGURATION::J1::MAX_VELOCITY));
+    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(3) / ARM_CONFIGURATION::J2::MAX_VELOCITY));
+    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(4) / ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY));
+    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(5) / ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY));
+
+    if(velocityRatio > 1.0f)
+    {
+        velocities /= velocityRatio;
+    }
 }
 
 void Teleop::printEndEffectorPosition()
