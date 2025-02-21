@@ -3,7 +3,7 @@
 
 #if not defined(__linux__)
 #error OS Not supported
-#endif // not defined(__linux__)
+#endif  // not defined(__linux__)
 
 #if defined(__linux__)
 #include <cstdint>

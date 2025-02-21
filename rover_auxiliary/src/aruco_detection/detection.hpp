@@ -11,7 +11,7 @@ class Detection
 {
   public:
     Detection(std::string cameraURL_);
-    
+
     std::vector<uint16_t> detect(bool DEBUG_MODE);
     void update(bool DEBUG_MODE);
     std::vector<uint16_t> getValidatedIds(void);
