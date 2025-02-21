@@ -38,12 +38,10 @@ void ArucoDetectionNode::CB_aruco_publisher(void)
     }
 
     rover_msgs::msg::Aruco msg;
-
     for (auto id : detectedArucos)
     {
         msg.id.push_back(static_cast<uint8_t>(id));  // Ensure ID is cast to uint8
     }
-
     _publisher->publish(msg);
 
     if (DEBUG_MODE)
@@ -67,6 +65,5 @@ void ArucoDetectionNode::CB_aruco_publisher(void)
 void ArucoDetectionNode::CB_aruco_detection(void)
 {
     std::lock_guard<std::mutex> lock(_mutex);
-
     _detection->update(DEBUG_MODE);
 }
