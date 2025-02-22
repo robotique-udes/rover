@@ -14,15 +14,7 @@ int main(int argc, char** argv)
 
 ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv): Node("aruco_detection_node")
 {
-    this->getParams();
-
-    if (argc > 1)
-    {
-        if (argv[1][0] == 'd')
-        {
-            _debugMode = true;
-        }
-    }
+    this->getParams(argc,argv);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
     _timerPublisher
@@ -34,13 +26,21 @@ ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv): Node("aruco_detec
     _detection = std::make_unique<Detection>(_camURL);
 }
 
-void ArucoDetectionNode::getParams()
+void ArucoDetectionNode::getParams(int argc, char** argv)
 {
     this->declare_parameter<bool>("debug_mode", false);
     this->get_parameter("debug_mode", _debugMode);
 
     this->declare_parameter<std::string>("default_cam", "v4l2:///dev/video0");
     this->get_parameter("default_cam", _camURL);
+
+    if (argc > 1)
+    {
+        if (argv[1][0] == 'd')
+        {
+            _debugMode = true;
+        }
+    }
 }
 
 void ArucoDetectionNode::CB_arucoPublisher(void)

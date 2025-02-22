@@ -13,7 +13,7 @@ class ArucoDetectionNode : public rclcpp::Node
     ArucoDetectionNode(int argc, char** argv);
 
   private:
-    void getParams();
+    void getParams(int argc, char** argv);
 
     void CB_arucoPublisher(void);
     void CB_arucoDetection(void);
