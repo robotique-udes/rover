@@ -4,18 +4,18 @@ Detection::Detection(std::string cameraURL_): _frameProcessing(cameraURL_) {}
 
 std::vector<uint16_t> Detection::detect(bool debugMode_)
 {
-    _frameProcessing.processFrame(debugMode_);
-    
+    _frameProcessing.updateDetection(debugMode_);
+
     if (debugMode_)
     {
-        cv::Mat frame = _frameProcessing.processFrame(debugMode_).value_or(cv::Mat());
+        cv::Mat frame = _frameProcessing.updateDetection(debugMode_).value_or(cv::Mat());
         cv::imshow("Aruco Detection", frame);
         cv::waitKey(30);
     }
-    
+
     if (!_frameProcessing.IdsEmpty())
     {
-       return _frameProcessing.getIds();
+        return _frameProcessing.getIds();
     }
 
     return {};  // Return empty vector if no ids detected

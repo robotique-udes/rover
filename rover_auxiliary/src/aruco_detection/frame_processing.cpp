@@ -1,6 +1,5 @@
 #include "frame_processing.hpp"
 
-// Init frame processing when accessing camera with ID
 FrameProcessing::FrameProcessing(std::string cameraURL_):
     _stream(cameraURL_),
     DICTIONNARY(cv::aruco::getPredefinedDictionary(DICT))
@@ -8,7 +7,7 @@ FrameProcessing::FrameProcessing(std::string cameraURL_):
     _detectorParams = cv::aruco::DetectorParameters::create();
 }
 
-std::optional<cv::Mat> FrameProcessing::processFrame(bool debugMode_)
+std::optional<cv::Mat> FrameProcessing::updateDetection(bool debugMode_)
 {
     std::optional<cv::Mat> frame = _stream.getFrame(debugMode_);
     if (!frame)
