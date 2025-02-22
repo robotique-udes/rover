@@ -3,7 +3,7 @@
 int main(int argc, char** argv)
 {
     rclcpp::init(argc, argv);
-    auto node = std::make_shared<ArucoDetectionNode>();
+    auto node = std::make_shared<ArucoDetectionNode>(argc, argv);
     rclcpp::executors::MultiThreadedExecutor executor;
     executor.add_node(node);
     executor.spin();
@@ -12,39 +12,57 @@ int main(int argc, char** argv)
     return 0;
 }
 
-ArucoDetectionNode::ArucoDetectionNode(void): Node("aruco_detection_node")
+ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv): Node("aruco_detection_node")
 {
-    declare_parameter("DEBUG_MODE", false);  // Command-line argument for quick debugging
-    get_parameter("DEBUG_MODE", DEBUG_MODE);
+    this->getParams();
 
-    _publisher = this->create_publisher<rover_msgs::msg::Aruco>("aruco_detection", 10);
+    if (argc > 1)
+    {
+        if (argv[1][0] == 'd')
+        {
+            _debugMode = true;
+        }
+    }
+
+    _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
     _timerPublisher
-        = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS), [this]() { this->CB_aruco_publisher(); });
+        = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS), [this](void) { this->CB_arucoPublisher(); });
 
     _timerDetection
-        = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS), [this]() { this->CB_aruco_detection(); });
+        = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS), [this](void) { this->CB_arucoDetection(); });
 
-    _detection = std::make_unique<Detection>("v4l2:///dev/video0");
+    _detection = std::make_unique<Detection>(_camURL);
 }
 
-void ArucoDetectionNode::CB_aruco_publisher(void)
+void ArucoDetectionNode::getParams()
+{
+    this->declare_parameter<bool>("debug_mode", false);
+    this->get_parameter("debug_mode", _debugMode);
+
+    this->declare_parameter<std::string>("default_cam", "v4l2:///dev/video0");
+    this->get_parameter("default_cam", _camURL);
+}
+
+void ArucoDetectionNode::CB_arucoPublisher(void)
 {
     std::vector<uint16_t> detectedArucos;
 
     {
-        std::lock_guard<std::mutex> lock(_mutex);
+        std::lock_guard<std::mutex> lock(_detectedArucosMutex);
 
         detectedArucos = _detection->getValidatedIds();
     }
 
     rover_msgs::msg::Aruco msg;
+
     for (auto id : detectedArucos)
     {
-        msg.id.push_back(static_cast<uint8_t>(id));  // Ensure ID is cast to uint8
+        msg.id.push_back(id);
     }
+
     _publisher->publish(msg);
 
-    if (DEBUG_MODE)
+    if (_debugMode)
     {
         if (!detectedArucos.empty())
         {
@@ -62,8 +80,9 @@ void ArucoDetectionNode::CB_aruco_publisher(void)
     }
 }
 
-void ArucoDetectionNode::CB_aruco_detection(void)
+void ArucoDetectionNode::CB_arucoDetection(void)
 {
-    std::lock_guard<std::mutex> lock(_mutex);
-    _detection->update(DEBUG_MODE);
+    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+
+    _detection->update(_debugMode);
 }

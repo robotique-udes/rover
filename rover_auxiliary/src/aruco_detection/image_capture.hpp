@@ -12,10 +12,9 @@ class ImageCapture
     ImageCapture(std::string cameraURL_ = "v4l2:///dev/video0");
     ~ImageCapture(void);
 
-    bool manageStream(std::string URL_);
-    std::optional<cv::Mat> getFrame(bool DEBUG_MODE);
-    void getErrorFrame(cv::Mat& frame_);
-
+    bool changeStream(std::string URL_);
+    std::optional<cv::Mat> getFrame(bool debugMode_);
+    cv::Mat getErrorFrame();
     bool initCam();
 
   private:
