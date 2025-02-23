@@ -44,53 +44,29 @@ add_custom_command(
 
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
-add_executable(main_gui src/gui.cpp
-                   src/MainWindow.hpp
-                   src/MainWindow.cpp
+add_executable(main_gui src/main_gui.cpp
+                        
+                        src/Global/QWorker.hpp
+                        src/Global/QWorker.cpp
+                        src/Global/Constant/StyleSheet.hpp
 
-                   src/SecondaryWindow.hpp
-                   src/SecondaryWindow.cpp
-
-                   src/Global/Constant/StyleSheet.hpp
-                   src/Global/Helpers/QHelpers.hpp
-                   src/Global/Helpers/QHelpers.cpp
-                   src/Global/Workers/QWorker.hpp
-                   src/Global/Workers/QWorker.cpp
-                   src/Global/QTmpFolderManager.hpp
-                   src/Global/QTmpFolderManager.cpp
-
-                   src/QSshFileExplorer/Worker/LibSshSupportModule.hpp
-                   src/QSshFileExplorer/Worker/LibSshSupportModule.cpp
-                   src/QSshFileExplorer/Worker/QSshWorker.hpp
-                   src/QSshFileExplorer/Worker/QSshWorker.cpp
-                   src/QSshFileExplorer/QDownloadedFileManager.hpp
-                   src/QSshFileExplorer/QDownloadedFileManager.cpp
-                   src/QSshFileExplorer/QFileItem.hpp
-                   src/QSshFileExplorer/QFileItem.cpp
-                   src/QSshFileExplorer/QFileTransferWidget.hpp
-                   src/QSshFileExplorer/QFileTransferWidget.cpp
-                   src/QSshFileExplorer/QIconManager.hpp
-                   src/QSshFileExplorer/QIconManager.cpp
-                   src/QSshFileExplorer/QSshFileExplorerWidget.hpp
-                   src/QSshFileExplorer/QSshFileExplorerWidget.cpp
-                   src/QSshFileExplorer/QTreeViewExplorer.hpp
-                   src/QSshFileExplorer/QTreeViewExplorer.cpp
-                        
-                   src/QSideBar/QSideBar.hpp
-                   src/QSideBar/QSideBar.cpp
-                        
-                   src/QDashboard/QDashboard.hpp
-                   src/QDashboard/QDashboard.cpp
-                        
-                   src/QNavigation/QNavigation.hpp
-                   src/QNavigation/QNavigation.cpp
-                        
-                   src/QDashboard/QExample.hpp
-                   src/QDashboard/QExample.cpp
-                   src/QRtspPlayer/QRtspPlayer.hpp
-                   src/QRtspPlayer/QRtspPlayer.cpp
-                   ${RTSP_RESOURCES}
-                )
+                        src/QSshFileExplorer/QIconManager.hpp
+                        src/QSshFileExplorer/QIconManager.cpp
+                        src/QSshFileExplorer/QFileItem.hpp
+                        src/QSshFileExplorer/QFileItem.cpp
+                        src/QSshFileExplorer/QFileTransferWidget.hpp
+                        src/QSshFileExplorer/QFileTransferWidget.cpp
+                        src/QSshFileExplorer/QSshFileExplorerWidget.hpp
+                        src/QSshFileExplorer/QSshFileExplorerWidget.cpp
+                        src/QSshFileExplorer/QSshWorker.hpp
+                        src/QSshFileExplorer/QSshWorker.cpp
+                        src/QRtspPlayer/QRtspPlayerWidget.hpp
+                        src/QRtspPlayer/QRtspPlayerWidget.cpp
+                        src/QRtspPlayer/QGStreamerWorker.cpp
+                        src/QRtspPlayer/QGStreamerWorker.hpp
+                        src/QRtspPlayer/QLoggingMacros.hpp
+                        ${RTSP_RESOURCES}
+                        )
 add_dependencies(main_gui run_generate_ui)
 
 target_link_libraries(main_gui 
