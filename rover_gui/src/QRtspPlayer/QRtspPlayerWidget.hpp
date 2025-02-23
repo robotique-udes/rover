@@ -1,45 +1,54 @@
 #ifndef RTSPPLAYERWIDGET_HPP
 #define RTSPPLAYERWIDGET_HPP
 
-#include <QWidget>
-#include <QThread>
-#include "QGStreamerWorker.hpp"
-#include <gst/gst.h>
-#include <QPushButton>
 #include <QLineEdit>
+#include <QPushButton>
+#include <QThread>
+#include <QTimer>
 #include <QVBoxLayout>
+#include <QWidget>
+#include <gst/gst.h>
+
+#include "QGStreamerWorker.hpp"
 #include "UI_Player.h"
 
 class RtspPlayerWidget : public QWidget
 {
     Q_OBJECT
 
-public:
+  public:
     explicit RtspPlayerWidget(QWidget* parent = nullptr);
-    void startStream(const QString& rtspUrl);
-    void stopStream();
     ~RtspPlayerWidget();
 
-private slots:
+    void startStream(const QString& rtspUrl);
+    void stopStream();
+
+  private slots:
     void onPipelineStarted(GstElement* pipeline);
     void onErrorOccurred(const QString& error);
 
-signals:
-    void requestStartStream(const QString& rtspUrl); 
+  signals:
+    void requestStartStream(const QString& rtspUrl);
     void requestStopStream();
 
-private:
+  private:
     Ui::RtspPlayerWidget* ui;
+
+    QThread* workerThread;
+    GStreamerWorker* gstreamerWorker;
+
+    QTimer* reconnectTimer;
+    QTimer* frameTimeoutTimer;
+
     GstElement* pipeline;
+
+    bool receivingFrames;
     QLineEdit* rtspUrlInput;
     QPushButton* startButton;
     QPushButton* stopButton;
     QWidget* videoWidget;
-    QThread* workerThread;
-    GStreamerWorker* gstreamerWorker;
-    QTimer* reconnectTimer;
-    QTimer* frameTimeoutTimer;
-    bool receivingFrames;
+
+    void updateStatusIndicator(const QString& color);
 };
 
-#endif 
+#endif

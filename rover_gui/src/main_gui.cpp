@@ -6,6 +6,7 @@
 
 #include <QApplication>
 #include <QMainWindow>
+#include <QLoggingCategory>
 #include "QRtspPlayer/QRtspPlayerWidget.hpp"
 
 #include "Global/Constant/StyleSheet.hpp"
@@ -28,6 +29,8 @@ class MainWindow : public QMainWindow
 int main(int argc, char* argv[])
 {
     QApplication app(argc, argv);
+
+    QLoggingCategory::setFilterRules("*.debug=false");  // This will show info, warning, and error messages
 
     QApplication::setStyle("Fusion");
     app.setStyleSheet(STYLE_DARK_MODE);

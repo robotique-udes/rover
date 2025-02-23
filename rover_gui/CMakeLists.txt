@@ -63,6 +63,7 @@ add_executable(main_gui src/main_gui.cpp
                         src/QRtspPlayer/QRtspPlayerWidget.cpp
                         src/QRtspPlayer/QGStreamerWorker.cpp
                         src/QRtspPlayer/QGStreamerWorker.hpp
+                        src/QRtspPlayer/QLoggingMacros.hpp
                         ${RTSP_RESOURCES}
                         )
 add_dependencies(main_gui run_generate_ui)
