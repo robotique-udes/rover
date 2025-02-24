@@ -1,8 +1,15 @@
+uint8 TAKE_PICTURE = 0
+uint8 START_RECORDING = 1
+uint8 STOP_RECORDING = 2
+
+
 # Request
-int32 camera_id      # ID of the camera to use
-string file_name     # Optional: Name of the file to save (e.g., "screenshot.png" or "recording.avi")
-bool start_recording # For recording: true to start, false to stop
+string camera_url       # Mettre URL cam, prendre id url
+string capture_name     # Optional: Name of the file to save (e.g., "screenshot.png" or "recording.avi")
+uint8 command           # Whether you want to screenshot or record
 
 ---
 # Response
 bool success         # Indicates whether the operation was successful
+string reason       # Error reason
+string info         # Did it work and more information
