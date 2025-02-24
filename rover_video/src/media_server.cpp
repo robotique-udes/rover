@@ -4,6 +4,8 @@ int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
 
+    RCLCPP_INFO(rclcpp::get_logger("media_server"), "Node initialized.");
+
     try
     {
         rclcpp::spin(std::make_shared<CameraNode>());
@@ -22,12 +24,14 @@ CameraNode::CameraNode(): Node("media_server")
     _srv_recording = this->create_service<rover_msgs::srv::CameraControl>(
         "/rover/video/media_server",
         [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-               std::shared_ptr<rover_msgs::srv::CameraControl::Response> response) { this->screenshotIPCam(request, response); });
+               std::shared_ptr<rover_msgs::srv::CameraControl::Response> response) { this->controlIPCam(request, response); });
 }
 
-void CameraNode::screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-                                 std::shared_ptr<rover_msgs::srv::CameraControl::Response> response)
+void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
+                              std::shared_ptr<rover_msgs::srv::CameraControl::Response> response)
 {
+    RCLCPP_INFO(LOGGER, "Entering the controlIPCam function");
+
     std::string folderPath;
     std::string captureName;
     std::string cameraURL = request->camera_url;
@@ -47,7 +51,7 @@ void CameraNode::screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraCo
             if (getScreenshot(folderPath, captureName, cameraURL))
             {
                 response->success = true;
-                response->info = "Screenshot saved as " + folderPath + "/"+ captureName;
+                response->info = "Screenshot saved as " + folderPath + "/" + captureName;
             }
             else
             {
@@ -56,20 +60,20 @@ void CameraNode::screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraCo
             }
             break;
 
-        /*case rover_msgs::srv::CameraControl::Request::START_RECORDING: 
-            startRecording();
-            break;
+            /*case rover_msgs::srv::CameraControl::Request::START_RECORDING:
+                startRecording();
+                break;
 
-        case rover_msgs::srv::CameraControl::Request::STOP_RECORDING: 
-            stopRecording();
-            break;*/
+            case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
+                stopRecording();
+                break;*/
 
         default:
+            RCLCPP_INFO(LOGGER, "Invalid command.");
             response->success = false;
             response->reason = "Invalid command.";
             break;
     }
-
 }
 
 /*void CameraNode::recordingIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
@@ -96,15 +100,15 @@ void CameraNode::screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraCo
         response->success = false;
     }*/
 
-    // Get frame width and height
-    /* ChatGPT gave me this, gotta look into it more */
-    //int frame_width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
-    //int frame_height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
-    //int fps = static_cast<int>(cap.get(cv::CAP_PROP_FPS));
+// Get frame width and height
+/* ChatGPT gave me this, gotta look into it more */
+// int frame_width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+// int frame_height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+// int fps = static_cast<int>(cap.get(cv::CAP_PROP_FPS));
 
-    // Define the codec and create a VideoWriter object
-    /* Also from ChatGPT --> more information on OpenCV
-    --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */ /*
+// Define the codec and create a VideoWriter object
+/* Also from ChatGPT --> more information on OpenCV
+--> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */ /*
     cv::VideoWriter video_writer(filePath,
                                  cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                  (fps > 0 ? fps : 30),

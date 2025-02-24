@@ -17,7 +17,7 @@
 #define SCREENSHOT 1
 #define VIDEO 2
 
-/* This folder is used for the functions declarations */
+/* This folder is used for the functions' declarations */
 
 class CameraNode : public rclcpp::Node
 {
@@ -26,10 +26,8 @@ class CameraNode : public rclcpp::Node
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_screenshot;
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_recording;
 
-    std::string cameraURL = "";
-
-    void screenshotIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-                         std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
+    void controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
+                      std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
     void recordingIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
                         std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
     std::string getCurrentTime();
@@ -107,18 +105,20 @@ bool CameraNode::createFolder(const std::string& path)
         }
         else
         {
-            RCLCPP_INFO(LOGGER, "Couldn't create the folder");
+            RCLCPP_INFO(LOGGER, "Couldn't create the folder.");
             return false;
         }
     }
 
-    // std::cout << "Directory already exists: " << path << std::endl;
+    RCLCPP_INFO(LOGGER, "Directory already exists: %s", path.c_str());
     return true;
 }
 
 bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL)
 {
     std::string captureName = screenshotFolderPath + "/" + filename;
+
+    RCLCPP_INFO(LOGGER, "Attempting to capture screenshot from camera: %s", cameraURL.c_str());
 
     // The URL format will depend on the camera model and configuration
     // std::string camera_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
@@ -140,6 +140,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     {
         // Save the frame as a sceenshot:
         cv::imwrite(captureName, frame);
+        RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
 
         // Display the frame
         cv::imshow("IP Camera Screenshot", frame);
@@ -148,6 +149,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     }
     else
     {
+        RCLCPP_ERROR(LOGGER, "Failed to capture frame from camera.");
         return false;
     }
 
