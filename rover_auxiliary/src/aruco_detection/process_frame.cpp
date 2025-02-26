@@ -1,13 +1,11 @@
-#include "frame_processing.hpp"
+#include "process_frame.hpp"
 
-FrameProcessing::FrameProcessing(std::string cameraURL_):
-    _stream(cameraURL_),
-    DICTIONNARY(cv::aruco::getPredefinedDictionary(DICT))
+ProcessFrame::ProcessFrame(std::string cameraURL_): DICTIONNARY(cv::aruco::getPredefinedDictionary(DICT)), _stream(cameraURL_)
 {
     _detectorParams = cv::aruco::DetectorParameters::create();
 }
 
-std::optional<cv::Mat> FrameProcessing::updateDetection(bool debugMode_)
+std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
 {
     std::optional<cv::Mat> frame = _stream.getFrame(debugMode_);
     if (!frame)
@@ -30,12 +28,12 @@ std::optional<cv::Mat> FrameProcessing::updateDetection(bool debugMode_)
     return std::nullopt;
 }
 
-std::vector<uint16_t> FrameProcessing::getIds()
+std::vector<uint16_t> ProcessFrame::getIds()
 {
     return _detectedIds;
 }
 
-bool FrameProcessing::IdsEmpty(void)
+bool ProcessFrame::IdsEmpty(void)
 {
     return _detectedIds.empty();
 }

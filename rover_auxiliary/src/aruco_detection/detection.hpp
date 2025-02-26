@@ -1,7 +1,7 @@
 #ifndef __DETECTION_HPP__
 #define __DETECTION_HPP__
 
-#include "frame_processing.hpp"
+#include "process_frame.hpp"
 #include "rovus_lib/moving_average.hpp"
 #include <unordered_map>
 
@@ -20,7 +20,7 @@ class Detection
     std::vector<uint16_t> getValidatedIds(void);
 
   private:
-    FrameProcessing _frameProcessing;
+    ProcessFrame _processFrame;
     std::unordered_map<uint16_t, MovingAverage<uint16_t, COEFF_NB_ARUCO>> _validation;
     std::vector<uint16_t> _validatedIds;
 };

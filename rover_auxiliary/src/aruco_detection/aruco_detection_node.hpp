@@ -19,9 +19,7 @@ class ArucoDetectionNode : public rclcpp::Node
     void CB_arucoDetection(void);
 
     bool _debugMode;
-
     std::string _camURL;
-
     rclcpp::Publisher<rover_msgs::msg::Aruco>::SharedPtr _publisher;
     rclcpp::TimerBase::SharedPtr _timerPublisher;
     rclcpp::TimerBase::SharedPtr _timerDetection;

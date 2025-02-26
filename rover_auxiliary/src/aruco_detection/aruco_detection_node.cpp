@@ -14,7 +14,7 @@ int main(int argc, char** argv)
 
 ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv): Node("aruco_detection_node")
 {
-    this->getParams(argc,argv);
+    this->getParams(argc, argv);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
     _timerPublisher
@@ -36,7 +36,7 @@ void ArucoDetectionNode::getParams(int argc, char** argv)
 
     if (argc > 1)
     {
-        if (argv[1][0] == 'd')
+        if (argv[1][0] == 'd')  // quick debugging with CLI arg 'd' or 'debug'
         {
             _debugMode = true;
         }

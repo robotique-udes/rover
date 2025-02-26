@@ -1,31 +1,26 @@
 #include "detection.hpp"
 
-Detection::Detection(std::string cameraURL_): _frameProcessing(cameraURL_) {}
+Detection::Detection(std::string cameraURL_): _processFrame(cameraURL_) {}
 
 std::vector<uint16_t> Detection::detect(bool debugMode_)
 {
-    _frameProcessing.updateDetection(debugMode_);
+    _processFrame.updateDetection(debugMode_);
 
     if (debugMode_)
     {
-        cv::Mat frame = _frameProcessing.updateDetection(debugMode_).value_or(cv::Mat());
+        cv::Mat frame = _processFrame.updateDetection(debugMode_).value_or(cv::Mat());
         cv::imshow("Aruco Detection", frame);
         cv::waitKey(30);
     }
 
-    if (!_frameProcessing.IdsEmpty())
+    if (!_processFrame.IdsEmpty())
     {
-        return _frameProcessing.getIds();
+        return _processFrame.getIds();
     }
 
-    return {};  // Return empty vector if no ids detected
+    return {};
 }
 
-/*
-Look for marker in a new frame every 100 ms
-Id has to be detected 10 times to be validated (not necessarily consective)
-If Id is not found in the next frame, it has 10 frame to be found again (strike), else the count is reset
-*/
 void Detection::update(bool debugMode_)
 {
     _validatedIds.clear();
