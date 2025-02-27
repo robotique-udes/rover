@@ -55,12 +55,11 @@ std::string CameraNode::getCamID(std::string cameraURL)
     {
         RCLCPP_INFO(LOGGER, "'144.' found.");
         posID += 4;
-        nextDotPos = cameraURL.find('.');
+        nextDotPos = cameraURL.find('.', posID);
 
         if (nextDotPos != std::string::npos)
         {
             camID = cameraURL.substr(posID, nextDotPos - posID);
-            
         }
         else
         {
