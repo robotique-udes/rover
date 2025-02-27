@@ -39,7 +39,7 @@ void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraContr
     switch (request->command)
     {
         case rover_msgs::srv::CameraControl::Request::TAKE_PICTURE:
-            captureName = getFileName(request->capture_name);
+            captureName = getFileName(request->capture_name, SCREENSHOT);
             folderPath = getFolderPath(SCREENSHOT);
             if (!createFolder(folderPath))
             {
@@ -60,11 +60,30 @@ void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraContr
             }
             break;
 
-            /*case rover_msgs::srv::CameraControl::Request::START_RECORDING:
-                startRecording();
+            case rover_msgs::srv::CameraControl::Request::START_RECORDING:
+            captureName = getFileName(request->capture_name, VIDEO);
+            folderPath = getFolderPath(VIDEO);
+            if (!createFolder(folderPath))
+            {
+                RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
+                response->success = false;
+                response->reason = "Failed to create screenshots folder or it already exists.";
+                break;
+            }
+            if (startRecording(folderPath, captureName, cameraURL))
+            {
+                response->success = true;
+                response->info = "Screenshot saved as " + folderPath + "/" + captureName;
+            }
+            else
+            {
+                response->success = false;
+                response->reason = "Failed to take a screenshot.";
+            }
+
                 break;
 
-            case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
+            /*case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
                 stopRecording();
                 break;*/
 

@@ -28,15 +28,13 @@ class CameraNode : public rclcpp::Node
 
     void controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
                       std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
-    void recordingIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-                        std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
     std::string getCurrentTime();
-    std::string getFileName(const std::string capture_name);
+    std::string getFileName(const std::string capture_name, int state);
     const std::string getFolderPath(int state);
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
     bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
-    bool startRecording();
+    bool startRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
     bool stopRecording();
 
   public:
@@ -58,9 +56,16 @@ std::string CameraNode::getCurrentTime()
     return current_time_output.str();
 }
 
-std::string CameraNode::getFileName(const std::string capture_name)
+std::string CameraNode::getFileName(const std::string capture_name, int state)
 {
-    std::string filename = capture_name.empty() ? getCurrentTime() + "_screenshot.png" : capture_name;
+    std::string filename;
+
+    switch (state)
+    {
+        case SCREENSHOT: filename = capture_name.empty() ? getCurrentTime() + "_screenshot.png" : capture_name; break;
+
+        case VIDEO: filename = capture_name.empty() ? getCurrentTime() + "_recording.avi" : capture_name; break;
+    }
     return filename;
 }
 
@@ -159,8 +164,71 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     return true;
 }
 
-bool CameraNode::startRecording()
+bool CameraNode::startRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
 {
+    // Use the provided file name or a default name
+    std::string filePath = videoFolderPath + "/" + filename;
+
+    cv::VideoCapture cap(cameraURL);
+
+    if (!cap.isOpened())
+    {
+        RCLCPP_ERROR(LOGGER, "Failed to open camera stream.");
+        return false;
+    }
+
+    // Get frame width and height
+    // ChatGPT gave me this, gotta look into it more */
+    int frame_width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    int frame_height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    int fps = static_cast<int>(cap.get(cv::CAP_PROP_FPS));
+
+    // Define the codec and create a VideoWriter object
+    /* Also from ChatGPT --> more information on OpenCV
+    --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
+
+    cv::VideoWriter video_writer(filePath,
+                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                                 (fps > 0 ? fps : 30),
+                                 cv::Size(frame_width, frame_height));
+
+    if (!video_writer.isOpened())
+    {
+        RCLCPP_ERROR(LOGGER, "Error: Could not open the output video file for writing!");
+        return false;
+    }
+
+    RCLCPP_INFO(LOGGER, "Recording... Press 'q' to stop.");
+
+    cv::Mat frame;
+    for (EVER)
+    {
+        cap >> frame;
+        if (frame.empty())
+        {
+            RCLCPP_ERROR(LOGGER, "Error: Blank frame grabbed!");
+            return false;
+        }
+
+        // Write frame to the output video file
+        video_writer.write(frame);
+
+        // Show the frame
+        cv::imshow("IP Camera Stream", frame);
+
+        // Press 'q' to exit
+        if (cv::waitKey(1) == 'q')
+        {
+            break;
+        }
+    }
+
+    // Release resources
+    cap.release();
+    video_writer.release();
+    cv::destroyAllWindows();
+
+    RCLCPP_INFO(LOGGER, "Recording stopped.");
     return true;
 }
 
