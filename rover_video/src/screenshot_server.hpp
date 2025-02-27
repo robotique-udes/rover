@@ -43,6 +43,7 @@ class CameraNode : public rclcpp::Node
     ~CameraNode() {}
 };
 
+<<<<<<< Updated upstream
 std::string CameraNode::getCamID(std::string cameraURL)
 {
     std::string camID;
@@ -74,6 +75,16 @@ std::string CameraNode::getCamID(std::string cameraURL)
     RCLCPP_INFO(LOGGER, "Camera ID: %s", camID.c_str());
 
     return camID;
+=======
+class RecordingNode
+{
+    public:
+    private:
+
+    public:
+    RecordingNode();
+    ~RecordingNode();
+>>>>>>> Stashed changes
 }
 
 std::string CameraNode::getCurrentTime()

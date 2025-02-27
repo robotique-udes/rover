@@ -60,7 +60,7 @@ void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraContr
             }
             break;
 
-            case rover_msgs::srv::CameraControl::Request::START_RECORDING:
+        case rover_msgs::srv::CameraControl::Request::START_RECORDING:
             captureName = getFileName(request->capture_name, VIDEO);
             folderPath = getFolderPath(VIDEO);
             if (!createFolder(folderPath))
