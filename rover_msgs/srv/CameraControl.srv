@@ -11,5 +11,4 @@ uint8 command           # Whether you want to screenshot or record
 ---
 # Response
 bool success        # Indicates whether the operation was successful
-string reason       # Error reason
-string info         # Did it work and more information
+string status       # Status update
