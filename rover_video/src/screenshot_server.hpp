@@ -29,7 +29,8 @@ class CameraNode : public rclcpp::Node
     void controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
                       std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
     std::string getCurrentTime();
-    std::string getFileName(const std::string capture_name, int state);
+    std::string getFileName(const std::string capture_name, std::string camURL, int state);
+    std::string getCamID(std::string cameraURL);
     const std::string getFolderPath(int state);
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
@@ -41,6 +42,39 @@ class CameraNode : public rclcpp::Node
     CameraNode();
     ~CameraNode() {}
 };
+
+std::string CameraNode::getCamID(std::string cameraURL)
+{
+    std::string camID;
+
+    int nextDotPos;
+    int posID = cameraURL.find("144.");
+
+    if (posID != std::string::npos)
+    {
+        RCLCPP_INFO(LOGGER, "'144.' found.");
+        posID += 4;
+        nextDotPos = cameraURL.find('.');
+
+        if (nextDotPos != std::string::npos)
+        {
+            camID = cameraURL.substr(posID, nextDotPos - posID);
+            
+        }
+        else
+        {
+            camID = cameraURL.substr(posID);
+        }
+    }
+    else
+    {
+        RCLCPP_ERROR(LOGGER, "'144.' not found.");
+    }
+
+    RCLCPP_INFO(LOGGER, "Camera ID: %s", camID.c_str());
+
+    return camID;
+}
 
 std::string CameraNode::getCurrentTime()
 {
@@ -56,15 +90,22 @@ std::string CameraNode::getCurrentTime()
     return current_time_output.str();
 }
 
-std::string CameraNode::getFileName(const std::string capture_name, int state)
+std::string CameraNode::getFileName(const std::string capture_name, std::string camURL, int state)
 {
     std::string filename;
 
+    std::string time = getCurrentTime();
+    std::string ID = getCamID(camURL);
+
     switch (state)
     {
-        case SCREENSHOT: filename = capture_name.empty() ? getCurrentTime() + "_screenshot.png" : capture_name; break;
+        case SCREENSHOT: 
+        filename = capture_name.empty() ? time + "_" + ID + "_screenshot.png" : time + "_" + ID + capture_name; 
+        break;
 
-        case VIDEO: filename = capture_name.empty() ? getCurrentTime() + "_recording.avi" : capture_name; break;
+        case VIDEO: 
+        filename = capture_name.empty() ? time + "_" + ID + "_recording.avi" : time + "_" + ID + capture_name;
+        break;
     }
     return filename;
 }
