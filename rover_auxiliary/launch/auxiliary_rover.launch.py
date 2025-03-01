@@ -26,7 +26,7 @@ def generate_launch_description():
         namespace="/rover/auxiliary",
         executable="aruco_detection",
         name="aruco_detection",
-        parameters=[{'default_cam':'v4l2:///dev/video0' },
+        parameters=[{'default_cam':'rtsp://192.168.1.18:554/1/h264major' },
                     {'debug_mode': False}]
     )
     

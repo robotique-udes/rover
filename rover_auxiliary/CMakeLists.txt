@@ -13,7 +13,6 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(std_msgs REQUIRED)
 
 include_directories(
   include

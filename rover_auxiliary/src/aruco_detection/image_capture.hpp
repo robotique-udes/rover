@@ -9,7 +9,7 @@
 class ImageCapture
 {
   public:
-    ImageCapture(std::string cameraURL_ = "v4l2:///dev/video0");
+    ImageCapture(std::string cameraURL_);
     ~ImageCapture(void);
 
     bool changeStream(std::string URL_);
