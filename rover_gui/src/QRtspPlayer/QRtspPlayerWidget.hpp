@@ -1,11 +1,8 @@
 #ifndef RTSPPLAYERWIDGET_HPP
 #define RTSPPLAYERWIDGET_HPP
 
-#include <QLineEdit>
-#include <QPushButton>
 #include <QThread>
 #include <QTimer>
-#include <QVBoxLayout>
 #include <QWidget>
 #include <gst/gst.h>
 
@@ -41,12 +38,8 @@ class RtspPlayerWidget : public QWidget
     QTimer* frameTimeoutTimer;
 
     GstElement* pipeline;
-
     bool receivingFrames;
-    QLineEdit* rtspUrlInput;
-    QPushButton* startButton;
-    QPushButton* stopButton;
-    QWidget* videoWidget;
+    bool inReconnectionMode;
 
     void updateStatusIndicator(const QString& color);
 };

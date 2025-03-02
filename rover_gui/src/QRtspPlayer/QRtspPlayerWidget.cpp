@@ -11,7 +11,8 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent):
     reconnectTimer(new QTimer(this)),
     frameTimeoutTimer(new QTimer(this)),
     pipeline(nullptr),
-    receivingFrames(false)
+    receivingFrames(false),
+    inReconnectionMode(false)
 {
     ui->setupUi(this);
 
@@ -24,16 +25,25 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent):
     connect(gstreamerWorker, &GStreamerWorker::pipelineStarted, this, &RtspPlayerWidget::onPipelineStarted);
     connect(gstreamerWorker, &GStreamerWorker::errorOccurred, this, &RtspPlayerWidget::onErrorOccurred);
 
-    connect(gstreamerWorker,
+                connect(gstreamerWorker,
             &GStreamerWorker::frameReceived,
             this,
             [this]()
             {
                 if (!receivingFrames)
                 {
-                    LOG_INFO("RtspPlayer", "Receiving frames..");
+                    if (inReconnectionMode) {
+                        LOG_INFO("RtspPlayer", "Reconnection successful, receiving frames...");
+                        inReconnectionMode = false;
+                    } else {
+                        LOG_INFO("RtspPlayer", "Receiving frames...");
+                    }
                     receivingFrames = true;
+ 
+                    ui->stopButton->setEnabled(true);
+                    ui->startButton->setEnabled(false);
                 }
+                reconnectTimer->stop();
                 frameTimeoutTimer->start(2000);
                 updateStatusIndicator("green");
             });
@@ -48,6 +58,9 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent):
                 {
                     receivingFrames = false;
                     LOG_WARNING("RtspPlayer", "Frame timeout - no frames received");
+        
+                    ui->stopButton->setEnabled(false);
+                    ui->startButton->setEnabled(true);
                     updateStatusIndicator("red");
                 }
             });
@@ -60,22 +73,43 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent):
             {
                 if (!receivingFrames)
                 {
-                    LOG_WARNING("RtspPlayer", "Stream reconnection failed");
+                   
                     updateStatusIndicator("red");
+                    inReconnectionMode = true;
+          
+                    if (!ui->rtspUrlInput->text().isEmpty()) {
+                        startStream(ui->rtspUrlInput->text());
+                    }
                 }
             });
 
-    connect(ui->startButton, &QPushButton::clicked, this, [this]() { startStream(ui->rtspUrlInput->text()); });
-
     connect(ui->stopButton, &QPushButton::clicked, this, &RtspPlayerWidget::stopStream);
+    
+    connect(ui->stopButton, &QPushButton::clicked, this, [this]() {
 
+        ui->startButton->setEnabled(true);
+        LOG_DEBUG("RtspPlayer", "Stop button clicked - Start button enabled directly");
+    });
+    
+    connect(ui->startButton, &QPushButton::clicked, this, [this]() { 
+        startStream(ui->rtspUrlInput->text()); 
+    });
+
+    ui->stopButton->setEnabled(false);
+    
     workerThread->start();
+
+    ui->stopButton->setEnabled(false);
+    ui->startButton->setEnabled(true);
     updateStatusIndicator("yellow");
 }
 
 RtspPlayerWidget::~RtspPlayerWidget()
 {
     stopStream();
+    
+    ui->startButton->setEnabled(true);
+    
     workerThread->quit();
     workerThread->wait();
     delete ui;
@@ -86,11 +120,13 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl)
     if (rtspUrl.isEmpty())
     {
         LOG_WARNING("RtspPlayer", "Empty RTSP URL provided");
-        QMessageBox::warning(this, "Error", "RTSP URL cannot be empty.");
         return;
     }
 
-    LOG_INFO("RtspPlayer", QString("Starting stream: %1").arg(rtspUrl));
+    if (!inReconnectionMode) {
+        LOG_INFO("RtspPlayer", QString("Starting stream: %1").arg(rtspUrl));
+    }
+    
     receivingFrames = false;
     updateStatusIndicator("yellow");
     emit requestStartStream(rtspUrl);
@@ -106,8 +142,10 @@ void RtspPlayerWidget::stopStream()
     LOG_INFO("RtspPlayer", "Stopping stream");
     emit requestStopStream();
     receivingFrames = false;
+    inReconnectionMode = false;
 
     frameTimeoutTimer->stop();
+    reconnectTimer->stop();
     updateStatusIndicator("yellow");
 }
 
@@ -116,7 +154,6 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
     if (!receivedPipeline)
     {
         LOG_ERROR("RtspPlayer", "Pipeline creation failed");
-        QMessageBox::critical(this, "Error", "No pipeline received from worker.");
         updateStatusIndicator("red");
         return;
     }
@@ -127,12 +164,10 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
     if (!videoSink)
     {
         LOG_ERROR("RtspPlayer", "Failed to find VideoOverlay in pipeline");
-        QMessageBox::critical(this, "Error", "Failed to find a VideoOverlay in the pipeline.");
         updateStatusIndicator("red");
         return;
     }
 
-    ui->videoWidget->winId();
     gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)ui->videoWidget->winId());
     gst_object_unref(videoSink);
 
@@ -140,17 +175,25 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
     LOG_DEBUG("RtspPlayer", "Pipeline state set to PLAYING");
 
     receivingFrames = false;
-    frameTimeoutTimer->start(5000);
+    frameTimeoutTimer->start(2000);
 }
 
 void RtspPlayerWidget::onErrorOccurred(const QString& error)
 {
     if (!receivingFrames)
     {
-        LOG_ERROR("RtspPlayer", error);
+        if (inReconnectionMode) {
+            LOG_DEBUG("RtspPlayer", error);
+        } else {
+
+            LOG_ERROR("RtspPlayer", error);
+            
+            inReconnectionMode = true;
+            LOG_INFO("RtspPlayer", "Attempting reconnection in background...");
+        }
+        
         updateStatusIndicator("yellow");
         reconnectTimer->start(5000);
-        QMessageBox::critical(this, "Error", error);
     }
 }
 
