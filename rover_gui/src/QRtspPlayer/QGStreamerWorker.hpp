@@ -23,7 +23,6 @@ signals:
     void pipelineStarted(GstElement* pipeline);
     void pipelineStopped();
     void errorOccurred(const QString& error);
-    void streamFound();
     void frameReceived();
 
 private:
@@ -33,4 +32,4 @@ private:
     GstElement* m_pipeline = nullptr;
 };
 
-#endif // GSTREAMERWORKER_HPP
+#endif 

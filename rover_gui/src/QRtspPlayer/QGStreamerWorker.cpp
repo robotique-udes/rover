@@ -14,8 +14,10 @@ static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_dat
     gchar* debug = nullptr;
     gst_message_parse_error(msg, &err, &debug);
 
-    QString errorMsg = QString("GStreamer error: %1").arg(err ? err->message : "Unknown Error");
+    QString errorMsg = QString("%1").arg(err ? err->message : "Unknown Error");
 
+    LOG_DEBUG("GStreamer", errorMsg);
+    
     if (worker)
     {
         emit worker->errorOccurred(errorMsg);
@@ -46,14 +48,6 @@ static GstFlowReturn on_new_sample(GstElement* sink, gpointer user_data)
     return GST_FLOW_OK;
 }
 
-static void on_gst_eos_message(GstBus* bus, GstMessage* msg, gpointer user_data)
-{
-    Q_UNUSED(bus);
-    Q_UNUSED(msg);
-    Q_UNUSED(user_data);
-    LOG_WARNING("GStreamer", "End of stream reached");
-}
-
 static void on_gst_warning_message(GstBus* bus, GstMessage* msg)
 {
     Q_UNUSED(bus);
@@ -61,29 +55,12 @@ static void on_gst_warning_message(GstBus* bus, GstMessage* msg)
     gchar* debug = nullptr;
     gst_message_parse_warning(msg, &err, &debug);
 
-    LOG_WARNING("GStreamer", QString("%1").arg(err ? err->message : "Unknown Warning"));
+    LOG_DEBUG("GStreamer", QString("%1").arg(err ? err->message : "Unknown Warning"));
 
     if (err)
         g_error_free(err);
     if (debug)
         g_free(debug);
-}
-
-static void on_gst_state_changed_message(GstBus* bus, GstMessage* msg, gpointer user_data)
-{
-    Q_UNUSED(bus);
-    Q_UNUSED(user_data);
-
-    if (GST_MESSAGE_TYPE(msg) == GST_MESSAGE_STATE_CHANGED)
-    {
-        GstState old_state, new_state, pending_state;
-        gst_message_parse_state_changed(msg, &old_state, &new_state, &pending_state);
-        LOG_DEBUG("GStreamerWorker",
-                  QString("State: %1 -> %2 (pending: %3)")
-                      .arg(gst_element_state_get_name(old_state))
-                      .arg(gst_element_state_get_name(new_state))
-                      .arg(gst_element_state_get_name(pending_state)));
-    }
 }
 
 static void on_decodebin_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data)
@@ -95,8 +72,7 @@ static void on_decodebin_pad_added(GstElement* decodebin, GstPad* pad, gpointer 
         LOG_ERROR("GStreamer", "Invalid worker pointer in pad-added callback");
         return;
     }
-    emit worker->streamFound();
-
+    
     GstElement* queue0 = gst_bin_get_by_name(GST_BIN(worker->getPipeline()), "q0");
     if (!queue0)
     {
@@ -188,9 +164,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
     gst_bus_add_signal_watch(bus);
 
     g_signal_connect(bus, "message::error", G_CALLBACK(on_gst_error_message), this);
-    g_signal_connect(bus, "message::eos", G_CALLBACK(on_gst_eos_message), this);
     g_signal_connect(bus, "message::warning", G_CALLBACK(on_gst_warning_message), this);
-    g_signal_connect(bus, "message::state-changed", G_CALLBACK(on_gst_state_changed_message), this);
 
     g_object_unref(bus);
 
