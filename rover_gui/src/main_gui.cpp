@@ -4,10 +4,10 @@
 
 #include <cstdlib>
 
-#include <QApplication>
-#include <QMainWindow>
-#include <QLoggingCategory>
 #include "QRtspPlayer/QRtspPlayerWidget.hpp"
+#include <QApplication>
+#include <QLoggingCategory>
+#include <QMainWindow>
 
 #include "Global/Constant/StyleSheet.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"

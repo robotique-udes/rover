@@ -2,34 +2,37 @@
 #define GSTREAMERWORKER_HPP
 
 #include <QObject>
-#include <gst/gst.h>
 #include <QString>
+#include <gst/gst.h>
 
 class GStreamerWorker : public QObject
 {
     Q_OBJECT
 
-public:
+  public:
     explicit GStreamerWorker(QObject* parent = nullptr);
-    GstElement* getPipeline() const { return m_pipeline; }
-    
+    GstElement* getPipeline() const
+    {
+        return m_pipeline;
+    }
+
     ~GStreamerWorker();
 
-public slots:
+  public slots:
     void startPipeline(const QString& rtspUrl);
     void stopPipeline();
 
-signals:
+  signals:
     void pipelineStarted(GstElement* pipeline);
     void pipelineStopped();
     void errorOccurred(const QString& error);
     void frameReceived();
 
-private:
+  private:
     QString buildPipelineString(const QString& rtspUrl) const;
     void cleanupGStreamer();
 
     GstElement* m_pipeline = nullptr;
 };
 
-#endif 
+#endif
