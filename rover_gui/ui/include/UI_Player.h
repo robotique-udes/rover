@@ -23,16 +23,16 @@ QT_BEGIN_NAMESPACE
 
 class Ui_RtspPlayerWidget
 {
-public:
-    QVBoxLayout *verticalLayout;
-    QHBoxLayout *topLayout;
-    QLineEdit *rtspUrlInput;
-    QPushButton *startButton;
-    QPushButton *stopButton;
-    QFrame *statusIndicator;
-    QWidget *videoWidget;
+  public:
+    QVBoxLayout* verticalLayout;
+    QHBoxLayout* topLayout;
+    QLineEdit* rtspUrlInput;
+    QPushButton* startButton;
+    QPushButton* stopButton;
+    QFrame* statusIndicator;
+    QWidget* videoWidget;
 
-    void setupUi(QWidget *RtspPlayerWidget)
+    void setupUi(QWidget* RtspPlayerWidget)
     {
         if (RtspPlayerWidget->objectName().isEmpty())
             RtspPlayerWidget->setObjectName(QString::fromUtf8("RtspPlayerWidget"));
@@ -69,7 +69,6 @@ public:
 
         topLayout->addWidget(statusIndicator);
 
-
         verticalLayout->addLayout(topLayout);
 
         videoWidget = new QWidget(RtspPlayerWidget);
@@ -77,37 +76,41 @@ public:
 
         verticalLayout->addWidget(videoWidget);
 
-
         retranslateUi(RtspPlayerWidget);
 
         QMetaObject::connectSlotsByName(RtspPlayerWidget);
-    } // setupUi
+    }  // setupUi
 
-    void retranslateUi(QWidget *RtspPlayerWidget)
+    void retranslateUi(QWidget* RtspPlayerWidget)
     {
         rtspUrlInput->setPlaceholderText(QCoreApplication::translate("RtspPlayerWidget", "Enter RTSP URL...", nullptr));
 #if QT_CONFIG(tooltip)
         startButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Start", nullptr));
-#endif // QT_CONFIG(tooltip)
+#endif  // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         stopButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Stop", nullptr));
-#endif // QT_CONFIG(tooltip)
-        statusIndicator->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "\n"
-"            QFrame {\n"
-"                border-radius: 4px; \n"
-"                background-color: red; /* default or when running */\n"
-"            }\n"
-"            ", nullptr));
+#endif  // QT_CONFIG(tooltip)
+        statusIndicator->setStyleSheet(
+            QCoreApplication::translate("RtspPlayerWidget",
+                                        "\n"
+                                        "            QFrame {\n"
+                                        "                border-radius: 4px; \n"
+                                        "                background-color: red; /* default or when running */\n"
+                                        "            }\n"
+                                        "            ",
+                                        nullptr));
         videoWidget->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "background-color: black;", nullptr));
         (void)RtspPlayerWidget;
-    } // retranslateUi
-
+    }  // retranslateUi
 };
 
-namespace Ui {
-    class RtspPlayerWidget: public Ui_RtspPlayerWidget {};
-} // namespace Ui
+namespace Ui
+{
+    class RtspPlayerWidget : public Ui_RtspPlayerWidget
+    {
+    };
+}  // namespace Ui
 
 QT_END_NAMESPACE
 
-#endif // UI_PLAYER_H
+#endif  // UI_PLAYER_H

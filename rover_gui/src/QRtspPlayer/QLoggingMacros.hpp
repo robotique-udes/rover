@@ -9,4 +9,4 @@
 #define LOG_WARNING(component, message) qWarning().noquote() << QString("[%1] %2").arg(component, message)
 #define LOG_ERROR(component, message) qCritical().noquote() << QString("[%1] %2").arg(component, message)
 
-#endif 
+#endif
