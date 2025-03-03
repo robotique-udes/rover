@@ -10,8 +10,6 @@ class ProcessFrame
     static constexpr uint8_t MAX_SAME_FRAME_IDS = 20;
     static constexpr cv::aruco::PREDEFINED_DICTIONARY_NAME DICT = cv::aruco::DICT_4X4_250;
 
-    const cv::Ptr<cv::aruco::Dictionary> DICTIONNARY;
-
   public:
     ProcessFrame(std::string cameraURL_);
 
@@ -22,8 +20,9 @@ class ProcessFrame
     bool empty = true;
 
   private:
-    ImageCapture _stream;
+    const cv::Ptr<cv::aruco::Dictionary> DICTIONNARY;
 
+    ImageCapture _stream;
     std::vector<uint16_t> _detectedIds;
     std::vector<std::vector<cv::Point2f>> _corners;
     cv::Mat _ids;

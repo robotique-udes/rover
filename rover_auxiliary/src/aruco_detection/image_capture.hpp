@@ -14,8 +14,8 @@ class ImageCapture
 
     bool changeStream(std::string URL_);
     std::optional<cv::Mat> getFrame(bool debugMode_);
-    cv::Mat getErrorFrame();
-    bool initCam();
+    cv::Mat getErrorFrame(void);
+    bool initCam(void);
 
   private:
     std::string _cameraURL;

@@ -31,12 +31,12 @@ void ArucoDetectionNode::getParams(int argc, char** argv)
     this->declare_parameter<bool>("debug_mode", false);
     this->get_parameter("debug_mode", _debugMode);
 
-    this->declare_parameter<std::string>("default_cam", "rtsp://192.168.1.18:554/1/h264major");
+    this->declare_parameter<std::string>("default_cam", "rtsp://192.168.144.30:554/1/h264major");
     this->get_parameter("default_cam", _camURL);
 
     if (argc > 1)
     {
-        if (argv[1][0] == 'd')  // quick debugging with CLI arg 'd' or 'debug'
+        if (argv[1][0] == 'd')
         {
             _debugMode = true;
         }
@@ -47,35 +47,52 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
 {
     std::vector<uint16_t> detectedArucos;
 
+    if (_detection != nullptr)
     {
         std::lock_guard<std::mutex> lock(_detectedArucosMutex);
 
         detectedArucos = _detection->getValidatedIds();
     }
 
+    else
+    {
+        _detection = std::make_unique<Detection>(_camURL);
+    }
+
     rover_msgs::msg::Aruco msg;
 
-    for (auto id : detectedArucos)
+    for (const auto& id : detectedArucos)
     {
         msg.id.push_back(id);
     }
 
     _publisher->publish(msg);
 
-    if (_debugMode)
+    if (!detectedArucos.empty())
     {
-        if (!detectedArucos.empty())
+        std::string marker_list = "Publishing detected Aruco markers: ";
+        for (auto id : detectedArucos)
         {
-            std::string marker_list = "Publishing detected Aruco markers: ";
-            for (auto id : detectedArucos)
-            {
-                marker_list += std::to_string(id) + " ";
-            }
+            marker_list += std::to_string(id) + " ";
+        }
+        if (_debugMode)
+        {
             RCLCPP_INFO(this->get_logger(), "%s", marker_list.c_str());
         }
         else
         {
+            RCLCPP_DEBUG(this->get_logger(), "%s", marker_list.c_str());
+        }
+    }
+    else
+    {
+        if (_debugMode)
+        {
             RCLCPP_INFO(this->get_logger(), "No Aruco markers detected to publish");
+        }
+        else
+        {
+            RCLCPP_DEBUG(this->get_logger(), "No Aruco markers detected to publish");
         }
     }
 }
@@ -84,5 +101,8 @@ void ArucoDetectionNode::CB_arucoDetection(void)
 {
     std::lock_guard<std::mutex> lock(_detectedArucosMutex);
 
-    _detection->update(_debugMode);
+    if (_detection != nullptr)
+    {
+        _detection->update(_debugMode);
+    }
 }

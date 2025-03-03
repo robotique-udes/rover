@@ -11,7 +11,7 @@ ImageCapture::~ImageCapture(void)
     cv::destroyAllWindows();
 }
 
-bool ImageCapture::initCam()
+bool ImageCapture::initCam(void)
 {
     if (_cap.isOpened())
     {
@@ -69,7 +69,7 @@ std::optional<cv::Mat> ImageCapture::getFrame(bool debugMode_)
     return frame;
 }
 
-cv::Mat ImageCapture::getErrorFrame()
+cv::Mat ImageCapture::getErrorFrame(void)
 {
     cv::Mat frame = cv::Mat::zeros(480, 640, CV_8UC3);
     std::string error_message = "Error: Stream not found!";

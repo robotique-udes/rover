@@ -6,8 +6,8 @@
 
 class ArucoDetectionNode : public rclcpp::Node
 {
-    static constexpr uint64_t DELAY_PUBLISHER_MS = 1000;
-    static constexpr uint64_t DELAY_DETECTION_MS = 50;
+    static constexpr uint64_t DELAY_PUBLISHER_MS = 1'000UL;
+    static constexpr uint64_t DELAY_DETECTION_MS = 50UL;
 
   public:
     ArucoDetectionNode(int argc, char** argv);

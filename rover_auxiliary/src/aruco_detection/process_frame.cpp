@@ -11,6 +11,7 @@ std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
     if (!frame)
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Error getting frame from stream");
+        return std::nullopt;
     }
     cv::aruco::detectMarkers(frame.value(), DICTIONNARY, _corners, _ids, _detectorParams);
     _detectedIds.clear();
