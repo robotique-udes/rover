@@ -1,14 +1,14 @@
 ﻿---
 BasedOnStyle: Microsoft
 AccessModifierOffset: '-2'
-AlignAfterOpenBracket: Align
+AlignAfterOpenBracket: 'true'
 AlignConsecutiveAssignments: 'false'
 AlignEscapedNewlines: Left
 AlignOperands: 'true'
 AlignTrailingComments: 'true'
 AllowAllArgumentsOnNextLine: 'false'
 AllowAllConstructorInitializersOnNextLine: 'false'
-AllowAllParametersOfDeclarationOnNextLine: 'false'
+AllowAllParametersOfDeclarationOnNextLine: 'true'
 AllowShortBlocksOnASingleLine: 'Empty'
 AllowShortCaseLabelsOnASingleLine: 'true'
 AllowShortFunctionsOnASingleLine: Empty
@@ -75,6 +75,5 @@ BraceWrapping:
   AfterExternBlock: 'true'
   BeforeCatch: 'true'
   BeforeElse: 'true'
-  BeforeLambdaBody: 'true'
   BeforeWhile: 'true'
 ...
