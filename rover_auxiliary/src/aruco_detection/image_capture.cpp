@@ -17,8 +17,9 @@ bool ImageCapture::initCam(void)
     {
         return true;
     }
-
-    if (!_cap.open(_cameraURL))
+    
+    _pipeline = "rtspsrc location=rtsp://127.0.0.1:8554/live latency=0 ! decodebin ! videoconvert ! appsink";
+    if (!_cap.open(_pipeline, cv::CAP_GSTREAMER))
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Could not open streaming device");
         return false;

@@ -31,7 +31,7 @@ void ArucoDetectionNode::getParams(int argc, char** argv)
     this->declare_parameter<bool>("debug_mode", false);
     this->get_parameter("debug_mode", _debugMode);
 
-    this->declare_parameter<std::string>("default_cam", "rtsp://192.168.144.30:554/1/h264major");
+    this->declare_parameter<std::string>("default_cam", "rtsp://localhost:8554/live");
     this->get_parameter("default_cam", _camURL);
 
     if (argc > 1)

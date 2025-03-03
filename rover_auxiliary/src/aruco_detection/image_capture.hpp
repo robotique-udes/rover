@@ -18,6 +18,7 @@ class ImageCapture
     bool initCam(void);
 
   private:
+    std::string _pipeline;
     std::string _cameraURL;
     cv::VideoCapture _cap;
 };
