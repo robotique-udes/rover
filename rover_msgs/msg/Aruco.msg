@@ -1,2 +1,2 @@
 bool valid
-uint8[] id
+uint16[] id

@@ -12,15 +12,22 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package(OpenCV REQUIRED)
 
 include_directories(
   include
   ${rover_msgs_INCLUDE_DIRS}
 )
 
+include_directories(${OpenCV_INCLUDE_DIRS})
+
 add_executable(light_control src/light_control.cpp)
 add_executable(compass_calibrator src/compass_calibrator.cpp)
 add_executable(goal_manager src/goal_manager.cpp)
+add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
+                src/aruco_detection/detection.cpp
+                src/aruco_detection/process_frame.cpp
+                src/aruco_detection/image_capture.cpp)
 
 ament_target_dependencies(light_control
                           rclcpp
@@ -38,6 +45,13 @@ ament_target_dependencies(compass_calibrator
                           rover_msgs
                           rcl_interfaces)
 
+ament_target_dependencies(aruco_detection
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
+target_link_libraries(aruco_detection ${OpenCV_LIBS})
+
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
@@ -46,6 +60,7 @@ install(TARGETS
           light_control
           compass_calibrator
           goal_manager
+          aruco_detection
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

@@ -7,7 +7,7 @@ SCRIPT_DIR=$(cd "$(dirname "$0")" && pwd)
 
 # Finding the .clang-format file
 echo "=== Finding .clang-format file... ==="
-if [ -z "$(find $SCRIPT_DIR/.. -name '.clang-format' -print -quit)" ]; then
+if [ -z "$(find "$SCRIPT_DIR/.." -name '.clang-format' -print -quit)" ]; then
     echo "[FAILED] .clang-format file not found in the repository!"
     exit 1
 else
@@ -16,6 +16,6 @@ fi
 
 # Detecting lint
 echo "=== Applying lint... ==="
-find . \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -style=file -i {} \;
+find "$SCRIPT_DIR/.." \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -style=file -i {} \;
 
 echo -e "\e[0;32m[SUCCESS]\e[0m Linting applied successfully!"
