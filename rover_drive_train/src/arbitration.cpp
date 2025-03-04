@@ -48,7 +48,8 @@ class Arbitration : public rclcpp::Node
     bool _roverHBLost = false;
 };
 
-Arbitration::Arbitration(): Node("arbitration")
+Arbitration::Arbitration():
+    Node("arbitration")
 {
     for (size_t i = 0; i < _zeroCmd.enable.size(); ++i)
     {
@@ -61,11 +62,15 @@ Arbitration::Arbitration(): Node("arbitration")
     _subBaseHr = this->create_subscription<std_msgs::msg::Empty>("/base/heartbeat",
                                                                  1,
                                                                  [this](const std_msgs::msg::Empty msg_)
-                                                                 { this->cbHB(msg_, &_baseHBLost, _watchdogBase); });
+                                                                 {
+                                                                     this->cbHB(msg_, &_baseHBLost, _watchdogBase);
+                                                                 });
     _subRoverHr = this->create_subscription<std_msgs::msg::Empty>("/rover/heartbeat",
                                                                   1,
                                                                   [this](const std_msgs::msg::Empty msg_)
-                                                                  { this->cbHB(msg_, &_roverHBLost, _watchdogRover); });
+                                                                  {
+                                                                      this->cbHB(msg_, &_roverHBLost, _watchdogRover);
+                                                                  });
 
     _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
         "/rover/drive_train/cmd/in/teleop",
@@ -84,8 +89,16 @@ Arbitration::Arbitration(): Node("arbitration")
         "/rover/drive_train/set_arbitration",
         std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
-    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500), [this]() { this->watchdog(&_roverHBLost); });
-    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500), [this]() { this->watchdog(&_baseHBLost); });
+    _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500),
+                                             [this]()
+                                             {
+                                                 this->watchdog(&_roverHBLost);
+                                             });
+    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500),
+                                            [this]()
+                                            {
+                                                this->watchdog(&_baseHBLost);
+                                            });
 
     _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&Arbitration::cbTimerSendCmd, this));
     _timerSendStatus = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&Arbitration::cbTimerSendStatus, this));

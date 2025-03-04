@@ -204,7 +204,8 @@ int createSocket(const char* canNetworkName_)
 // =============================================================================
 //  Class method definitions
 // =============================================================================
-CanMaster::CanMaster(int canSocket_): Node("can_master")
+CanMaster::CanMaster(int canSocket_):
+    Node("can_master")
 {
     _canSocket = canSocket_;
 
@@ -526,13 +527,21 @@ void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame* frameMsg_)
 
             switch (id_)
             {
-                case (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::JL; break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::JL;
+                    break;
 
-                case (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J0; break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::J0;
+                    break;
 
-                case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J1; break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::J1;
+                    break;
 
-                case (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J2; break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::J2;
+                    break;
 
                 case (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER:
                     arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_TILT;
@@ -546,7 +555,9 @@ void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame* frameMsg_)
                     arrayIndex = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE;
                     break;
 
-                default: RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error"); break;
+                default:
+                    RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
+                    break;
             }
 
             msg_ROS_arm.data[arrayIndex] = msg->data.currentSpeed;
@@ -659,7 +670,9 @@ void CanMaster::CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::S
                 deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR;
                 break;
 
-            default: RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error"); break;
+            default:
+                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
+                break;
         }
 
         canMsg.data.enable = rosMsg_->enable[arrayIndex];
@@ -685,13 +698,21 @@ void CanMaster::CB_ROS_Arm(const rover_msgs::msg::ArmMsg::SharedPtr rosMsg_)
 
         switch (arrayIndex)
         {
-            case rover_msgs::msg::ArmMsg::JL: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER; break;
+            case rover_msgs::msg::ArmMsg::JL:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER;
+                break;
 
-            case rover_msgs::msg::ArmMsg::J0: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER; break;
+            case rover_msgs::msg::ArmMsg::J0:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER;
+                break;
 
-            case rover_msgs::msg::ArmMsg::J1: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER; break;
+            case rover_msgs::msg::ArmMsg::J1:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER;
+                break;
 
-            case rover_msgs::msg::ArmMsg::J2: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER; break;
+            case rover_msgs::msg::ArmMsg::J2:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER;
+                break;
 
             case rover_msgs::msg::ArmMsg::GRIPPER_TILT:
                 deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER;
@@ -705,7 +726,9 @@ void CanMaster::CB_ROS_Arm(const rover_msgs::msg::ArmMsg::SharedPtr rosMsg_)
                 deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER;
                 break;
 
-            default: RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error"); break;
+            default:
+                RCLCPP_FATAL(rclcpp::get_logger(LOGGER_NAME), "Shouldn't ever fall here, implementation error");
+                break;
         }
 
         canMsg.data.targetSpeed = rosMsg_->data[arrayIndex];

@@ -64,7 +64,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.fix);
                     break;
 
-                default: LOG(WARN, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    LOG(WARN, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -77,11 +79,17 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::GPS::eMsgID)msgId_)
             {
-                case eMsgID::LATITUDE: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.latitude, msg_); break;
+                case eMsgID::LATITUDE:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.latitude, msg_);
+                    break;
 
-                case eMsgID::LONGITUDE: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.longitude, msg_); break;
+                case eMsgID::LONGITUDE:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.longitude, msg_);
+                    break;
 
-                case eMsgID::FIX: Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.fix, msg_); break;
+                case eMsgID::FIX:
+                    Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.fix, msg_);
+                    break;
 
                 default:
                     LOG(ERROR, "Shouldn't ever fall here, implementation error");
@@ -117,7 +125,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<uint8_t, UnionDefinition::Uint8_tUnion>(msg_, &this->data.fix, logger_);
                     break;
 
-                default: RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -130,11 +140,17 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::GPS::eMsgID)msgId_)
             {
-                case eMsgID::LATITUDE: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.latitude, msg_); break;
+                case eMsgID::LATITUDE:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.latitude, msg_);
+                    break;
 
-                case eMsgID::LONGITUDE: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.longitude, msg_); break;
+                case eMsgID::LONGITUDE:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.longitude, msg_);
+                    break;
 
-                case eMsgID::FIX: Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.fix, msg_); break;
+                case eMsgID::FIX:
+                    Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.fix, msg_);
+                    break;
 
                 default:
                     RCLCPP_ERROR(logger_, "Shouldn't ever fall here, implementation error");

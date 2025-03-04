@@ -32,11 +32,15 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-JogAntenna::JogAntenna(): Node("jog_antenna")
+JogAntenna::JogAntenna():
+    Node("jog_antenna")
 {
     _sub_joy = this->create_subscription<rover_msgs::msg::Joy>("/joy/main/formated",
                                                                1,
-                                                               [this](const rover_msgs::msg::Joy msg_) { callbackJoy(msg_); });
+                                                               [this](const rover_msgs::msg::Joy msg_)
+                                                               {
+                                                                   callbackJoy(msg_);
+                                                               });
 
     _pub_jog = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop", 1);
 

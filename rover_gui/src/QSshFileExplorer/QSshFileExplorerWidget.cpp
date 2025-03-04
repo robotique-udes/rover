@@ -35,11 +35,29 @@ QSshFileExplorerWidget::QSshFileExplorerWidget(const std::string& user_,
 
     this->refreshItems();
 
-    connect(_ui.pb_pathCopy, &QPushButton::clicked, this, [this]() { QApplication::clipboard()->setText(_ui.le_path->text()); });
+    connect(_ui.pb_pathCopy,
+            &QPushButton::clicked,
+            this,
+            [this]()
+            {
+                QApplication::clipboard()->setText(_ui.le_path->text());
+            });
     connect(_ui.cb_showHiddenFile, &QCheckBox::stateChanged, this, &QSshFileExplorerWidget::refreshItems);
     connect(_ui.pb_refresh, &QPushButton::clicked, this, &QSshFileExplorerWidget::refreshItems);
-    connect(_ui.pb_cancelCurrentTask, &QPushButton::clicked, this, [this]() { this->_sshWorkerThread.cancelCurrentTasks(); });
-    connect(_ui.pb_cancelAllTasks, &QPushButton::clicked, this, [this]() { this->_sshWorkerThread.cancelAllTasks(); });
+    connect(_ui.pb_cancelCurrentTask,
+            &QPushButton::clicked,
+            this,
+            [this]()
+            {
+                this->_sshWorkerThread.cancelCurrentTasks();
+            });
+    connect(_ui.pb_cancelAllTasks,
+            &QPushButton::clicked,
+            this,
+            [this]()
+            {
+                this->_sshWorkerThread.cancelAllTasks();
+            });
     connect(&_refreshKeybind, &QShortcut::activated, this, &QSshFileExplorerWidget::refreshItems);
     connect(&_sshWorkerThread, &QSshWorker::newProgressBarUpdate, this, &QSshFileExplorerWidget::updateProgressBar);
     connect(&_sshWorkerThread, &QSshWorker::newStructureReady, this, &QSshFileExplorerWidget::handleNewStructure);

@@ -50,9 +50,14 @@ bool QDownloadedFileManager::getFilePath(IN const std::string& fileName_, OUT st
 
     switch (this->alreadyDownloaded(fileName_, 0u))
     {
-        case eDownloadState::NOT_DOWNLOADED: success = false; break;
-        case eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH: [[fallthrough]];
-        case eDownloadState::ALREADY_DOWNLOADED_OK: success = true; break;
+        case eDownloadState::NOT_DOWNLOADED:
+            success = false;
+            break;
+        case eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH:
+            [[fallthrough]];
+        case eDownloadState::ALREADY_DOWNLOADED_OK:
+            success = true;
+            break;
     }
 
     if (success)

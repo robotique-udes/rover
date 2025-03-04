@@ -57,7 +57,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.pitch);
                     break;
 
-                default: LOG(WARN, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    LOG(WARN, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -70,9 +72,13 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::Compass::eMsgID)msgId_)
             {
-                case eMsgID::HEADING: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.heading, msg_); break;
+                case eMsgID::HEADING:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.heading, msg_);
+                    break;
 
-                case eMsgID::PITCH: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.pitch, msg_); break;
+                case eMsgID::PITCH:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.pitch, msg_);
+                    break;
 
                 default:
                     LOG(ERROR, "Shouldn't ever fall here, implementation error");
@@ -102,7 +108,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.pitch, logger_);
                     break;
 
-                default: RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -115,9 +123,13 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::Compass::eMsgID)msgId_)
             {
-                case eMsgID::HEADING: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.heading, msg_); break;
+                case eMsgID::HEADING:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.heading, msg_);
+                    break;
 
-                case eMsgID::PITCH: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.pitch, msg_); break;
+                case eMsgID::PITCH:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.pitch, msg_);
+                    break;
 
                 default:
                     RCLCPP_ERROR(logger_, "Shouldn't ever fall here, implementation error");

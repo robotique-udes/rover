@@ -130,7 +130,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-JoyFormator::JoyFormator(): Node("joy_formator")
+JoyFormator::JoyFormator():
+    Node("joy_formator")
 {
     this->declare_parameter<std::string>("controller_type", "not_set");
     this->declare_parameter<int16_t>("disconnect_timeout_ms", 1000);

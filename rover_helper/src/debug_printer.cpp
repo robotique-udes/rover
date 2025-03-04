@@ -37,7 +37,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-JoyFormator::JoyFormator(): Node("joy_formator")
+JoyFormator::JoyFormator():
+    Node("joy_formator")
 {
     this->declare_parameter<std::string>("debug_topic", "not_set");
     _sub_log

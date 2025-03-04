@@ -12,16 +12,23 @@ int main(int argc, char** argv)
     return 0;
 }
 
-ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv): Node("aruco_detection_node")
+ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
+    Node("aruco_detection_node")
 {
     this->getParams(argc, argv);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
-    _timerPublisher
-        = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS), [this](void) { this->CB_arucoPublisher(); });
+    _timerPublisher = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
+                                              [this](void)
+                                              {
+                                                  this->CB_arucoPublisher();
+                                              });
 
-    _timerDetection
-        = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS), [this](void) { this->CB_arucoDetection(); });
+    _timerDetection = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS),
+                                              [this](void)
+                                              {
+                                                  this->CB_arucoDetection();
+                                              });
 
     _detection = std::make_unique<Detection>(_camURL);
 }

@@ -1,6 +1,8 @@
 #include "process_frame.hpp"
 
-ProcessFrame::ProcessFrame(std::string cameraURL_): DICTIONNARY(cv::aruco::getPredefinedDictionary(DICT)), _stream(cameraURL_)
+ProcessFrame::ProcessFrame(std::string cameraURL_):
+    DICTIONNARY(cv::aruco::getPredefinedDictionary(DICT)),
+    _stream(cameraURL_)
 {
     _detectorParams = cv::aruco::DetectorParameters::create();
 }
