@@ -1,23 +1,19 @@
-#include "UI_SideBar.h"
+#ifndef QSIDE_BAR_HPP
+#define QSIDE_BAR_HPP
 
+#include "UI_SideBar.h"
 class QSideBar : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		QSideBar(QWidget* parent_): QWidget(parent_)
-		{
-			_ui.setupUi(this);
+  public:
+    QSideBar(QWidget* parent_);
 
-			connect(_ui.pb_dashboard, &QPushButton::clicked, this, [this]() { emit switchPage(0); });
-			connect(_ui.pb_navigation, &QPushButton::clicked, this, [this]() { emit switchPage(1); });
-			connect(_ui.pb_fileTransfer, &QPushButton::clicked, this, [this]() { emit switchPage(2); });
-		}
-		~QSideBar(){};
+  signals:
+    void switchPage(int pageIndex);
 
-	signals:
-		void switchPage(int pageIndex);
-
-	private:
-		Ui::SideBar _ui;
+  private:
+    Ui::SideBar _ui;
 };
+
+#endif  // QSIDE_BAR_HPP

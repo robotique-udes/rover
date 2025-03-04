@@ -1,27 +1,34 @@
+#ifndef QDASHBOARD_HPP
+#define QDASHBOARD_HPP
+
 #include "rclcpp/rclcpp.hpp"
-#include <QtWidgets/QWidget>
 #include <QtWidgets/QGridLayout>
+#include <QtWidgets/QWidget>
 
 #include "QExample.hpp"
 
 class QDashboard : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		QDashboard(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
-		 : QWidget(parent_), _node(guiNode_),_exampleWidget(guiNode_, parent_)
-		{
-			QGridLayout* dashboardLayout = new QGridLayout(this);
-			
-			// Add your dashboard widget here
-			dashboardLayout->addWidget(&_exampleWidget);
+  public:
+    QDashboard(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+        QWidget(parent_),
+        _node(guiNode_),
+        _dashboardLayout(this),
+        _exampleWidget(guiNode_, this)
+    {
+        this->setLayout(&_dashboardLayout);
 
-			setLayout(dashboardLayout);
-		}
-		~QDashboard(){};
+        // Add your dashboard widget here
+        _dashboardLayout.addWidget(&_exampleWidget);
+    }
 
-	private:
-		std::shared_ptr<rclcpp::Node> _node;
-		QExample _exampleWidget;
+  private:
+    std::shared_ptr<rclcpp::Node> _node;
+
+    QGridLayout _dashboardLayout;
+    QExample _exampleWidget;
 };
+
+#endif  // QDASHBOARD_HPP

@@ -1,3 +1,6 @@
+#ifndef QNAVIGATION_HPP
+#define QNAVIGATION_HPP
+
 #include "rclcpp/rclcpp.hpp"
 
 #include <QtWidgets/QGridLayout>
@@ -6,21 +9,25 @@
 
 class QNavigation : public QWidget
 {
-	Q_OBJECT
+    Q_OBJECT
 
-	public:
-		QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
-		 : QWidget(parent_), _node(guiNode_)
-		{
-			QGridLayout* navigationLayout = new QGridLayout(this);
-			QLabel* navigationLabel = new QLabel("Navigation", this);
-			
-			navigationLabel->setAlignment(Qt::AlignCenter);
-			navigationLayout->addWidget(navigationLabel);
+  public:
+    QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+        QWidget(parent_),
+        _node(guiNode_),
+        _navigationLayout(this),
+        _navigationLabel(this)
+    {
+        _navigationLabel.setAlignment(Qt::AlignCenter);
+        _navigationLayout.addWidget(&_navigationLabel);
 
-			setLayout(navigationLayout);
-		}
-		~QNavigation(){};
-	private:
-		std::shared_ptr<rclcpp::Node> _node;
+        this->setLayout(&_navigationLayout);
+    }
+
+  private:
+    std::shared_ptr<rclcpp::Node> _node;
+    QGridLayout _navigationLayout;
+    QLabel _navigationLabel;
 };
+
+#endif  // QNAVIGATION_HPP
