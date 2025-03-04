@@ -1,6 +1,9 @@
 #include "detection.hpp"
 
-Detection::Detection(std::string cameraURL_): _processFrame(cameraURL_) {}
+Detection::Detection(std::string cameraURL_):
+    _processFrame(cameraURL_)
+{
+}
 
 std::vector<uint16_t> Detection::detect(bool debugMode_)
 {

@@ -67,20 +67,28 @@ int main(int argc, char* argv[])
     rclcpp::shutdown();
 }
 
-Teleop::Teleop(): Node("teleop")
+Teleop::Teleop():
+    Node("teleop")
 {
-    _timer_armHeartbeat
-        = this->create_wall_timer(std::chrono::milliseconds(500), [this]() { this->CB_watchdog(_currentPosInvalid); });
+    _timer_armHeartbeat = this->create_wall_timer(std::chrono::milliseconds(500),
+                                                  [this]()
+                                                  {
+                                                      this->CB_watchdog(_currentPosInvalid);
+                                                  });
 
     _sub_joyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                   1,
                                                                   [this](const rover_msgs::msg::Joy::SharedPtr joyMsg_)
-                                                                  { this->CB_joy(joyMsg_); });
+                                                                  {
+                                                                      this->CB_joy(joyMsg_);
+                                                                  });
 
     _sub_armPosition = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions",
                                                                           1,
                                                                           [this](const rover_msgs::msg::ArmMsg::SharedPtr msg)
-                                                                          { this->CB_currentPos(msg); });
+                                                                          {
+                                                                              this->CB_currentPos(msg);
+                                                                          });
 
     _pub_armCmd = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_speed", 1);
 }

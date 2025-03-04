@@ -1,6 +1,7 @@
 #include "image_capture.hpp"
 
-ImageCapture::ImageCapture(std::string cameraURL_): _cameraURL(cameraURL_)
+ImageCapture::ImageCapture(std::string cameraURL_):
+    _cameraURL(cameraURL_)
 {
     initCam();
 }

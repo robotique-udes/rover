@@ -69,17 +69,22 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-JoyDemux::JoyDemux(): Node("joy_demux")
+JoyDemux::JoyDemux():
+    Node("joy_demux")
 {
     _sub_main = this->create_subscription<rover_msgs::msg::Joy>("main_joy",
                                                                 1,
                                                                 [this](const rover_msgs::msg::Joy msg)
-                                                                { callbackJoy(msg, eControllerType::main); });
+                                                                {
+                                                                    callbackJoy(msg, eControllerType::main);
+                                                                });
 
     _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("secondary_joy",
                                                                      1,
                                                                      [this](const rover_msgs::msg::Joy msg)
-                                                                     { callbackJoy(msg, eControllerType::secondary); });
+                                                                     {
+                                                                         callbackJoy(msg, eControllerType::secondary);
+                                                                     });
 
     _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("/rover/drive_train/joy", 1);
     _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("/rover/arm/joy", 1);

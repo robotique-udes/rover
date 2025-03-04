@@ -155,7 +155,10 @@ namespace LibSshSupportModule
     {
         std::sort(vector_.begin(),
                   vector_.end(),
-                  [](const sftp_attributes& a, const sftp_attributes& b) { return std::string(a->name) < std::string(b->name); });
+                  [](const sftp_attributes& a, const sftp_attributes& b)
+                  {
+                      return std::string(a->name) < std::string(b->name);
+                  });
     }
 
     std::string unixTimeToString(const uint32_t unixTime_)
