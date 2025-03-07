@@ -16,6 +16,7 @@
 constexpr std::chrono::milliseconds WATCHDOG_TIMEOUT{500};
 constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 150ul;
 constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f;  // Factor of max speed
+constexpr uint8_t MAX_RECORDED_POINTS = 3;
 
 bool isPressed(float buttonValue_);
 
@@ -64,11 +65,14 @@ private:
     Eigen::MatrixXd _jacobian = Eigen::MatrixXd(5, 5);
     Eigen::MatrixXd _inverseJacobian = Eigen::MatrixXd(5, 5);
     Eigen::VectorXd _computedVelocity = Eigen::VectorXd(5);
-    Eigen::Vector3d _currentEndEffectorPosition;
+    std::vector<Eigen::VectorXd, 3> _planSelectionPositions;
+    Eigen::VectorXd _currentEndEffectorPosition = Eigen::VectorXd(3); 
     
     bool _currentPoseFailure = false;
     bool _gripperClose = false;
     bool _gripperCloseLatchFlag = false;
+
+    uint8_t _pointsRecorded = 0;
 
     RoverLib::Timer<uint64_t, RoverLib::millis> timerDebounce
         = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
@@ -77,7 +81,8 @@ private:
     void joyCallback(const rover_msgs::msg::Joy::SharedPtr positionMsg);
     void scaleVelocities(Eigen::VectorXd& jointVelocities);
     Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition);
-
+    Eigen::MatrixXd computeRotationMatrix(Eigen::VectorXd& planSelectionPosition);
+    void addPoint(Eigen::VectorXd pose);
 
     // FOR TESTING PURPOSES ONLY
     void printEndEffectorPosition();
@@ -151,11 +156,6 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
     }
     else if(_controlMode == eControlMode::CARTESIAN)
     {
-        // if(_currentPoseFailure)
-        // {
-        //     RCLCPP_WARN(this->get_logger(), "Cartesian mode is currently unavailable due to fault in position data");
-        //     return;
-        // }
 
         // CMD X
         if (isPressed(joyMsg_->joy_data[KEYBINDING::X_AXIS_CTRL]))
@@ -176,7 +176,7 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         }
         else if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_BKW]))
         {
-            desiredCartesian((uint8_t)eDesiredCartesianVel::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_BKW];
+            desiredCartesian((uint8_t)eDesiredCartesianVel::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_BKW] * -1.0f;
         }
 
         // ALPHA
@@ -189,6 +189,12 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         if (isPressed(joyMsg_->joy_data[KEYBINDING::PSI]))
         {
             desiredCartesian((uint8_t)eDesiredCartesianVel::PSI) = joyMsg_->joy_data[KEYBINDING::PSI];
+        }
+
+        // RECORD EF POSE
+        if (isPressed(joyMsg_->joy_data[KEYBINDING::RECORD]))
+        {
+            addPoint(_currentEndEffectorPosition);
         }
 
         _inverseJacobian = computeJacobian(_currentJointsPos).inverse();
@@ -235,7 +241,18 @@ void Teleop::positionCallback(const rover_msgs::msg::ArmMsg::SharedPtr positionM
         _currentJointsPos(i) = positionMsg_->data[i];
     }
 
-    printEndEffectorPosition();
+    // printEndEffectorPosition();
+}
+
+void Teleop::addPoint(Eigen::VectorXd pose_)
+{
+    if(_pointsRecorded == MAX_RECORDED_POINTS)
+    {
+        RCLCPP_WARN(LOGGER, "No more points can be recorded. Create a plan or clear all points");
+    }
+
+   _planSelectionPositions.insert(pose_);
+   _pointsRecorded ++;
 }
 
 void Teleop::watchdog(bool& rLostHeartbeat_)
@@ -272,7 +289,6 @@ Eigen::MatrixXd Teleop::computeJacobian(const Eigen::VectorXd& currentJointPosit
     float c23 = cos(0.5 * PI - q2 - q3);
     float s234 = sin(0.5 * PI - q2 - q3 - q4);
     float c234 = cos(0.5 * PI - q2 - q3 - q4);
-
 
     // FOR TEST PURPOSES ONLY
     _currentEndEffectorPosition.x() = c1 * (J1x + J2x * c2 + J2z * s2 + J3x * c23 + J3z * s23 + J4x * c234 + J4z * s234) - 
@@ -348,15 +364,15 @@ Teleop::Teleop() : Node("teleop")
 
 void Teleop::scaleVelocities(Eigen::VectorXd& velocities)
 {
-    float velocityRatio = 0.0f;
-    float test2 = 2.0f;    
 
-    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(0) / ARM_CONFIGURATION::JL::MAX_VELOCITY));
-    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(1) / ARM_CONFIGURATION::J0::MAX_VELOCITY));
-    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(2) / ARM_CONFIGURATION::J1::MAX_VELOCITY));
-    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(3) / ARM_CONFIGURATION::J2::MAX_VELOCITY));
-    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(4) / ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY));
-    velocityRatio = std::max(velocityRatio, static_cast<float>(velocities(5) / ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY));
+    float velocityRatio = std::max({
+        abs(static_cast<float>(velocities(0) / ARM_CONFIGURATION::JL::MAX_VELOCITY)),  
+        abs(static_cast<float>(velocities(1) / ARM_CONFIGURATION::J0::MAX_VELOCITY)),
+        abs(static_cast<float>(velocities(2) / ARM_CONFIGURATION::J1::MAX_VELOCITY)),
+        abs(static_cast<float>(velocities(3) / ARM_CONFIGURATION::J2::MAX_VELOCITY)),
+        abs(static_cast<float>(velocities(4) / ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY))
+    });
+
 
     if(velocityRatio > 1.0f)
     {
