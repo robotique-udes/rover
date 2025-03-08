@@ -32,11 +32,17 @@ class Recording
         return this->camURL;
     }
 
+    cv::Mat getFrame()
+    {
+        return this->frame;
+    }
+
     private:
     //camera variables
     std::string camURL;
     std::string filename;
     std::string videoFolderPath;
+    int recordingNumber = 1; //change type for better one later***
 
     //ros logger
     rclcpp::Logger logger_; //allows Recording objects to send logs from ROS nodes
@@ -49,7 +55,16 @@ class Recording
 
     public:
     Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger) {}
-    ~Recording(){}
+    ~Recording()
+    {
+ 
+    // Release resources
+    this->cap.release();
+    this->video_writer.release();
+    cv::destroyAllWindows();
+
+    RCLCPP_INFO(logger_, "Recording stopped.");
+    }
 };
 
 class CameraNode : public rclcpp::Node
@@ -213,39 +228,56 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     // std::string camera_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
 
     // Open the video stream
-    cv::VideoCapture cap(cameraURL);
 
-    if (!cap.isOpened())
+    if (RecordingMap.find(cameraURL) != RecordingMap.end()) //check if currently recording
     {
-        RCLCPP_ERROR(LOGGER, "Failed to open camera stream.");
-        return false;
+        Recording* pRecording = &RecordingMap.at(cameraURL); 
+        
+        // Save the last frame from recording as picture:
+            cv::imwrite(captureName, pRecording->getFrame());
+            RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
+
+            // Display the frame
+            cv::imshow("IP Camera Screenshot", pRecording->getFrame());
+
+        return true;
     }
-
-    // Read a single frame
-    cv::Mat frame;
-    bool ret = cap.read(frame);
-
-    if (ret)
+    else //if not recording proceed normaly
     {
-        // Save the frame as a sceenshot:
-        cv::imwrite(captureName, frame);
-        RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
+        cv::VideoCapture cap(cameraURL);
 
-        // Display the frame
-        cv::imshow("IP Camera Screenshot", frame);
-        cv::waitKey(0);  // Wait for a key press
-        cv::destroyAllWindows();
+        if (!cap.isOpened())
+        {
+            RCLCPP_ERROR(LOGGER, "Failed to open camera stream.");
+            return false;
+        }
+
+        // Read a single frame
+        cv::Mat frame;
+        bool ret = cap.read(frame);
+
+        if (ret)
+        {
+            // Save the frame as a sceenshot:
+            cv::imwrite(captureName, frame);
+            RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
+
+            // Display the frame
+            cv::imshow("IP Camera Screenshot", frame);
+            cv::waitKey(0);  // Wait for a key press
+            cv::destroyAllWindows();
+        }
+        else
+        {
+            RCLCPP_ERROR(LOGGER, "Failed to capture frame from camera.");
+            return false;
+        }
+
+        // Release the video capture object
+        cap.release();
+
+        return true;
     }
-    else
-    {
-        RCLCPP_ERROR(LOGGER, "Failed to capture frame from camera.");
-        return false;
-    }
-
-    // Release the video capture object
-    cap.release();
-
-    return true;
 }
 
 
@@ -301,18 +333,14 @@ bool Recording::recordFrame()
         this->video_writer.write(this->frame);
 
         // Show the frame
-        cv::imshow("IP Camera Stream", this->frame);
+        //cv::imshow("IP Camera Stream", this->frame);
     
     return true;
 }
 
 bool CameraNode::stopRecording(std::string cameraURL)
 {
-        if (RecordingMap.find(cameraURL) != RecordingMap.end())
-    {
-        return false;
-    }
-    else
+    if (RecordingMap.find(cameraURL) != RecordingMap.end())
     {
         RecordingMap.erase(cameraURL);
         if (RecordingMap.empty())
@@ -320,6 +348,10 @@ bool CameraNode::stopRecording(std::string cameraURL)
             this->isRecording = false; //if there are no more recordings: stop the thread
         }
         return true;
+    }
+    else
+    {
+        return false;
     }
 }
 
