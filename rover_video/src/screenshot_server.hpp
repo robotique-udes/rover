@@ -12,12 +12,15 @@
 #include <sstream>
 #include <unordered_map>
 #include <thread>
+#include <vector>
 
 #include <cstdlib>
 #include <sys/stat.h>
 
 #define SCREENSHOT 1
 #define VIDEO 2
+
+constexpr uint8_t RECORDING_INTERVAL = 30; //in seconds
 
 /* This folder is used for the functions' declarations */
 
@@ -42,7 +45,13 @@ class Recording
     std::string camURL;
     std::string filename;
     std::string videoFolderPath;
-    int recordingNumber = 1; //change type for better one later***
+
+    uint8_t recordingNumber = 1; //change type for better one later***
+    time_t startTime;
+
+    int frame_width;
+    int frame_height;
+    int fps;
 
     //ros logger
     rclcpp::Logger logger_; //allows Recording objects to send logs from ROS nodes
@@ -60,8 +69,7 @@ class Recording
  
     // Release resources
     this->cap.release();
-    this->video_writer.release();
-    cv::destroyAllWindows();
+    this->video_writer.release();   
 
     RCLCPP_INFO(logger_, "Recording stopped.");
     }
@@ -285,7 +293,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 bool Recording::startRecording()
 {
     // Use the provided file name or a default name
-    std::string filePath = this->videoFolderPath + "/" + this->filename;
+    std::string filePath = this->videoFolderPath + "/" + this->filename + std::to_string(this->recordingNumber++);
 
     this->cap.open((this->camURL));
     if (!this->cap.isOpened())
@@ -296,9 +304,9 @@ bool Recording::startRecording()
 
     // Get frame width and height
     // ChatGPT gave me this, gotta look into it more */
-    int frame_width = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_WIDTH));
-    int frame_height = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_HEIGHT));
-    int fps = static_cast<int>(this->cap.get(cv::CAP_PROP_FPS));
+    this->frame_width = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    this->frame_height = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    this->fps = static_cast<int>(this->cap.get(cv::CAP_PROP_FPS));
 
     // Define the codec and create a VideoWriter object
     /* Also from ChatGPT --> more information on OpenCV
@@ -314,6 +322,8 @@ bool Recording::startRecording()
         RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
         return false;
     }
+
+    this->startTime = time(0);
 
     return true;
 }
@@ -334,6 +344,26 @@ bool Recording::recordFrame()
 
         // Show the frame
         //cv::imshow("IP Camera Stream", this->frame);
+
+        if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL) //save every RECORDING_INTERVAL seconds
+        {
+            std::string filePath = this->videoFolderPath + "/" + this->filename + std::to_string(this->recordingNumber++);
+            this->video_writer.release();
+            
+            this->video_writer.open(filePath,
+                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                                 (this->fps > 0 ? this->fps : 30),
+                                 cv::Size(this->frame_width, this->frame_height));
+
+            if (!video_writer.isOpened())
+            {
+                RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
+                return false;
+            }    
+
+            this->startTime = time(0);
+
+        }
     
     return true;
 }
@@ -391,7 +421,7 @@ void CameraNode::recordingThreadFunction()
 {
     while(this->isRecording)
     {
-        for (auto& pair: RecordingMap)
+        for (auto& pair: RecordingMap) //call all active recordings
         {
             if (pair.second.recordFrame());
             else //if there is an error during the recording stop the faulty recording only
