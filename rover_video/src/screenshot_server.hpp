@@ -32,6 +32,12 @@ class Recording
     //ros logger
     rclcpp::Logger logger_;
 
+    //cv variables
+    cv::VideoCapture cap;
+    cv::VideoWriter video_writer;
+    cv::Mat frame;
+
+
     public:
     Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger) {}
     ~Recording(){}
@@ -232,11 +238,6 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 
 bool CameraNode::startRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
 {
-    if (RecordingMap.find(cameraURL) != RecordingMap.end())
-    {
-        return false;
-    }
-    RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, LOGGER));
     // Use the provided file name or a default name
     std::string filePath = videoFolderPath + "/" + filename;
 
@@ -310,8 +311,11 @@ bool CameraNode::stopRecording()
 
 bool CameraNode::newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
 {
-    (void)videoFolderPath;  // Avoid warnings
-    (void)filename;
-    (void)cameraURL;
+    if (RecordingMap.find(cameraURL) != RecordingMap.end()) //check if recording doesn't already exist
+    {
+        return false;
+    }
+    RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, LOGGER));
+
     return true;
 }
