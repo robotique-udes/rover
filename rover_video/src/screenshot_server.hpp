@@ -41,10 +41,15 @@ class Recording
     }
 
     private:
+
+    bool appendRecordings();
+
     //camera variables
     std::string camURL;
     std::string filename;
     std::string videoFolderPath;
+
+    std::vector<std::string> files;
 
     uint8_t recordingNumber = 1; //change type for better one later***
     time_t startTime;
@@ -67,11 +72,23 @@ class Recording
     ~Recording()
     {
  
-    // Release resources
-    this->cap.release();
-    this->video_writer.release();   
+        if (cap.isOpened()) //avoid unnecessary logging when creating temporary objects
+        {
+            // Release resources
+            this->cap.release();
+            this->video_writer.release();   
 
-    RCLCPP_INFO(logger_, "Recording stopped.");
+            RCLCPP_INFO(logger_, "Recording stopped.");
+
+            if(appendRecordings())
+            {
+                RCLCPP_INFO(logger_, "Succesfully appended videos");
+            }
+            else
+            {
+                RCLCPP_INFO(logger_, "Something went wrong, couldn't append videos in recording %s", camURL.c_str());
+            }
+        }
     }
 };
 
@@ -293,7 +310,9 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 bool Recording::startRecording()
 {
     // Use the provided file name or a default name
-    std::string filePath = this->videoFolderPath + "/" + this->filename + std::to_string(this->recordingNumber++);
+    std::string filePath = this->videoFolderPath + "/" + this->filename;
+    filePath.insert(filePath.length()-4, '_' + std::to_string(this->recordingNumber++)); //add recording number before .avi
+    this->files.push_back(filePath); //add file to list of recordings
 
     this->cap.open((this->camURL));
     if (!this->cap.isOpened())
@@ -347,7 +366,9 @@ bool Recording::recordFrame()
 
         if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL) //save every RECORDING_INTERVAL seconds
         {
-            std::string filePath = this->videoFolderPath + "/" + this->filename + std::to_string(this->recordingNumber++);
+            std::string filePath = this->videoFolderPath + "/" + this->filename;
+            filePath.insert(filePath.length()-4, '_' + std::to_string(this->recordingNumber++));  
+            this->files.push_back(filePath); 
             this->video_writer.release();
             
             this->video_writer.open(filePath,
@@ -430,4 +451,20 @@ void CameraNode::recordingThreadFunction()
             }
         }
     }
+}
+
+bool Recording::appendRecordings()
+{
+    if (this->files.empty())
+    {
+        return false;
+    }
+    else
+    {
+        for (const auto& current_file: files)
+        {
+            RCLCPP_INFO(logger_, "Appending file %s", current_file.c_str());
+        }
+    }
+    return true;
 }
