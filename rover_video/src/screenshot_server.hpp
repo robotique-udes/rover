@@ -27,15 +27,19 @@ class Recording
     bool startRecording();
     bool recordFrame();
 
+    std::string getURL()
+    {
+        return this->camURL;
+    }
+
     private:
-    bool isRecording{false};
     //camera variables
     std::string camURL;
     std::string filename;
     std::string videoFolderPath;
 
     //ros logger
-    rclcpp::Logger logger_;
+    rclcpp::Logger logger_; //allows Recording objects to send logs from ROS nodes
 
     //cv variables
     cv::VideoCapture cap;
@@ -65,8 +69,11 @@ class CameraNode : public rclcpp::Node
     bool createFolder(const std::string& path);
     bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
 
+    bool isRecording{false};
     bool newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
     bool stopRecording(std::string cameraURL);
+    void recordingThreadFunction();
+    std::thread recordingThread;
 
     std::unordered_map<std::string, Recording> RecordingMap;
 
@@ -276,14 +283,13 @@ bool Recording::startRecording()
         return false;
     }
 
-    this->isRecording = true;
     return true;
 }
 
 bool Recording::recordFrame()
 {
-    while(this->isRecording)
-    {
+    
+    
         this->cap >> this->frame;
         if (this->frame.empty())
             {
@@ -296,7 +302,7 @@ bool Recording::recordFrame()
 
         // Show the frame
         cv::imshow("IP Camera Stream", this->frame);
-    }
+    
     return true;
 }
 
@@ -309,6 +315,10 @@ bool CameraNode::stopRecording(std::string cameraURL)
     else
     {
         RecordingMap.erase(cameraURL);
+        if (RecordingMap.empty())
+        {
+            this->isRecording = false; //if there are no more recordings: stop the thread
+        }
         return true;
     }
 }
@@ -328,6 +338,12 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
          
         if (pRecording->startRecording()) 
         {
+            if (this->isRecording);//if thread is already started: do nothing
+            else 
+            {
+                this->isRecording = true;
+                this->recordingThread = std::thread(&CameraNode::recordingThreadFunction, this); //start thread
+            }
             return true;
         } 
         else 
@@ -337,4 +353,19 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
 
     }
 
+}
+
+void CameraNode::recordingThreadFunction()
+{
+    while(this->isRecording)
+    {
+        for (auto& pair: RecordingMap)
+        {
+            if (pair.second.recordFrame());
+            else //if there is an error during the recording stop the faulty recording only
+            {
+                stopRecording(pair.second.getURL());
+            }
+        }
+    }
 }

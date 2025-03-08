@@ -60,7 +60,7 @@ void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraContr
             }
             break;
 
-            case rover_msgs::srv::CameraControl::Request::START_RECORDING:
+        case rover_msgs::srv::CameraControl::Request::START_RECORDING:
             captureName = getFileName(request->capture_name, cameraURL, VIDEO);
             folderPath = getFolderPath(VIDEO);
             if (!createFolder(folderPath))
@@ -73,19 +73,28 @@ void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraContr
             if (newRecording(folderPath, captureName, cameraURL))
             {
                 response->success = true;
-                response->status = "Screenshot saved as " + folderPath + "/" + captureName;
+                response->status = "Recording started";
             }
             else
             {
                 response->success = false;
-                response->status = "Failed to take a screenshot.";
+                response->status = "Failed to take a video."; //add reason i.e. recording already started at TIME-GPS-NAME
             }
 
                 break;
 
-            /*case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
-                stopRecording();
-                break;*/
+        case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
+            if(stopRecording(cameraURL))
+            {
+                response->success = true;
+                response->status = "Recording ended";
+            }
+            else
+            {
+                response->success = false;
+                response->status = "No such recordings";
+            }
+                break;
 
         default:
             RCLCPP_INFO(LOGGER, "Invalid command.");
