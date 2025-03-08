@@ -10,6 +10,8 @@
 #include <iomanip>
 #include <iostream>
 #include <sstream>
+#include <unordered_map>
+#include <thread>
 
 #include <cstdlib>
 #include <sys/stat.h>
@@ -18,6 +20,22 @@
 #define VIDEO 2
 
 /* This folder is used for the functions' declarations */
+
+class Recording
+{
+    private:
+    //camera variables
+    std::string camURL;
+    std::string filename;
+    std::string videoFolderPath;
+
+    //ros logger
+    rclcpp::Logger logger_;
+
+    public:
+    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger) {}
+    ~Recording(){}
+};
 
 class CameraNode : public rclcpp::Node
 {
@@ -36,12 +54,18 @@ class CameraNode : public rclcpp::Node
     bool createFolder(const std::string& path);
     bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
     bool startRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
+    bool newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
     bool stopRecording();
+
+    std::unordered_map<std::string, Recording> RecordingMap;
 
   public:
     CameraNode();
     ~CameraNode() {}
 };
+
+
+
 
 std::string CameraNode::getCamID(std::string cameraURL)
 {
@@ -208,6 +232,11 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 
 bool CameraNode::startRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
 {
+    if (RecordingMap.find(cameraURL) != RecordingMap.end())
+    {
+        return false;
+    }
+    RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, LOGGER));
     // Use the provided file name or a default name
     std::string filePath = videoFolderPath + "/" + filename;
 
@@ -276,5 +305,13 @@ bool CameraNode::startRecording(std::string videoFolderPath, std::string filenam
 
 bool CameraNode::stopRecording()
 {
+    return true;
+}
+
+bool CameraNode::newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
+{
+    (void)videoFolderPath;  // Avoid warnings
+    (void)filename;
+    (void)cameraURL;
     return true;
 }
