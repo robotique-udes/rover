@@ -82,7 +82,6 @@ void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraContr
             }
 
                 break;
-
         case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
             if(stopRecording(cameraURL))
             {
