@@ -70,7 +70,7 @@ void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraContr
                 response->status = "Failed to create screenshots folder or it already exists.";
                 break;
             }
-            if (startRecording(folderPath, captureName, cameraURL))
+            if (newRecording(folderPath, captureName, cameraURL))
             {
                 response->success = true;
                 response->status = "Screenshot saved as " + folderPath + "/" + captureName;

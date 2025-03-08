@@ -23,7 +23,12 @@
 
 class Recording
 {
+    public:
+    bool startRecording();
+    bool recordFrame();
+
     private:
+    bool isRecording{false};
     //camera variables
     std::string camURL;
     std::string filename;
@@ -59,9 +64,9 @@ class CameraNode : public rclcpp::Node
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
     bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
-    bool startRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
+
     bool newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
-    bool stopRecording();
+    bool stopRecording(std::string cameraURL);
 
     std::unordered_map<std::string, Recording> RecordingMap;
 
@@ -236,77 +241,76 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     return true;
 }
 
-bool CameraNode::startRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
+
+
+bool Recording::startRecording()
 {
     // Use the provided file name or a default name
-    std::string filePath = videoFolderPath + "/" + filename;
+    std::string filePath = this->videoFolderPath + "/" + this->filename;
 
-    cv::VideoCapture cap(cameraURL);
-
-    if (!cap.isOpened())
+    this->cap.open((this->camURL));
+    if (!this->cap.isOpened())
     {
-        RCLCPP_ERROR(LOGGER, "Failed to open camera stream.");
+        RCLCPP_ERROR(logger_, "Failed to open camera stream.");
         return false;
     }
 
     // Get frame width and height
     // ChatGPT gave me this, gotta look into it more */
-    int frame_width = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_WIDTH));
-    int frame_height = static_cast<int>(cap.get(cv::CAP_PROP_FRAME_HEIGHT));
-    int fps = static_cast<int>(cap.get(cv::CAP_PROP_FPS));
+    int frame_width = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_WIDTH));
+    int frame_height = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    int fps = static_cast<int>(this->cap.get(cv::CAP_PROP_FPS));
 
     // Define the codec and create a VideoWriter object
     /* Also from ChatGPT --> more information on OpenCV
     --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
-    cv::VideoWriter video_writer(filePath,
+    this->video_writer.open(filePath,
                                  cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                  (fps > 0 ? fps : 30),
                                  cv::Size(frame_width, frame_height));
 
     if (!video_writer.isOpened())
     {
-        RCLCPP_ERROR(LOGGER, "Error: Could not open the output video file for writing!");
+        RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
         return false;
     }
 
-    RCLCPP_INFO(LOGGER, "Recording... Press 'q' to stop.");
-
-    cv::Mat frame;
-    for (EVER)
-    {
-        cap >> frame;
-        if (frame.empty())
-        {
-            RCLCPP_ERROR(LOGGER, "Error: Blank frame grabbed!");
-            return false;
-        }
-
-        // Write frame to the output video file
-        video_writer.write(frame);
-
-        // Show the frame
-        cv::imshow("IP Camera Stream", frame);
-
-        // Press 'q' to exit
-        if (cv::waitKey(1) == 'q')
-        {
-            break;
-        }
-    }
-
-    // Release resources
-    cap.release();
-    video_writer.release();
-    cv::destroyAllWindows();
-
-    RCLCPP_INFO(LOGGER, "Recording stopped.");
+    this->isRecording = true;
     return true;
 }
 
-bool CameraNode::stopRecording()
+bool Recording::recordFrame()
 {
+    while(this->isRecording)
+    {
+        this->cap >> this->frame;
+        if (this->frame.empty())
+            {
+                RCLCPP_ERROR(logger_, "Error: Blank frame grabbed!");
+                return false;
+            }
+
+        // Write frame to the output video file
+        this->video_writer.write(this->frame);
+
+        // Show the frame
+        cv::imshow("IP Camera Stream", this->frame);
+    }
     return true;
+}
+
+bool CameraNode::stopRecording(std::string cameraURL)
+{
+        if (RecordingMap.find(cameraURL) != RecordingMap.end())
+    {
+        return false;
+    }
+    else
+    {
+        RecordingMap.erase(cameraURL);
+        return true;
+    }
 }
 
 bool CameraNode::newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
@@ -315,7 +319,22 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
     {
         return false;
     }
-    RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, LOGGER));
+    else
+    {
+        RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, LOGGER));
 
-    return true;
+        // Access the recording using at() to safely get the reference
+        Recording* pRecording = &RecordingMap.at(cameraURL);
+         
+        if (pRecording->startRecording()) 
+        {
+            return true;
+        } 
+        else 
+        {
+            return false;
+        }
+
+    }
+
 }
