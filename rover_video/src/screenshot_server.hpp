@@ -137,8 +137,8 @@ std::string CameraNode::getCamID(std::string cameraURL)
 {
     std::string camID;
 
-    int nextDotPos;
-    int posID = cameraURL.find("144.");
+    std::string::size_type nextDotPos;
+    std::string::size_type posID = cameraURL.find("144.");
 
     if (posID != std::string::npos)
     {
