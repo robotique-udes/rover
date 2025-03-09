@@ -13,6 +13,8 @@
 #include <unordered_map>
 #include <thread>
 #include <vector>
+#include <atomic>
+#include <queue>
 
 #include <cstdlib>
 #include <sys/stat.h>
