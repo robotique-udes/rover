@@ -59,7 +59,7 @@ class Recording
 
     std::vector<std::string> files;
 
-    uint8_t recordingNumber = 1; //change type for better one later***
+    uint8_t recordingNumber = 1;
     time_t startTime;
 
     int frame_width;
