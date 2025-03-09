@@ -17,8 +17,9 @@ bool ImageCapture::initCam(void)
     {
         return true;
     }
-    
-    _pipeline = "rtspsrc location=rtsp://127.0.0.1:8554/live latency=0 ! decodebin ! videoconvert ! appsink";
+
+    _pipeline = "rtspsrc location=" + _cameraURL
+                + " latency=0 drop=true ! decodebin ! videoconvert ! queue max-size-buffers=1 ! appsink";
     if (!_cap.open(_pipeline, cv::CAP_GSTREAMER))
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Could not open streaming device");
@@ -61,7 +62,7 @@ std::optional<cv::Mat> ImageCapture::getFrame(bool debugMode_)
         return std::nullopt;
     }
 
-    _cap >> frame;  // Updates and stores new frame (openCV syntax)
+    _cap.read(frame);
 
     if (frame.empty())
     {

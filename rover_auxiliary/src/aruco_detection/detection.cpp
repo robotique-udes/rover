@@ -1,6 +1,10 @@
 #include "detection.hpp"
 
-Detection::Detection(std::string cameraURL_): _processFrame(cameraURL_) {}
+Detection::Detection(std::string cameraURL_, uint8_t detectionTag_): _processFrame(cameraURL_)
+{
+    _tag = detectionTag_;
+    _cameraURL = cameraURL_;
+}
 
 std::vector<uint16_t> Detection::detect(bool debugMode_)
 {
@@ -9,7 +13,7 @@ std::vector<uint16_t> Detection::detect(bool debugMode_)
     if (debugMode_)
     {
         cv::Mat frame = _processFrame.updateDetection(debugMode_).value_or(cv::Mat());
-        cv::imshow("Aruco Detection", frame);
+        cv::imshow("Aruco Detection" + std::to_string(_tag), frame);
         cv::waitKey(30);
     }
 
@@ -66,7 +70,22 @@ void Detection::update(bool debugMode_)
     }
 }
 
-std::vector<uint16_t> Detection::getValidatedIds(void)
+std::vector<uint16_t> Detection::getValidatedIds(void) const
 {
     return _validatedIds;
+}
+
+uint8_t Detection::getErrorFrameCount(void) const
+{
+    return _processFrame.getErrorFrameCount();
+}
+
+std::string Detection::getCamURL(void) const
+{
+    return _cameraURL;
+}
+
+uint8_t Detection::getTag(void) const
+{
+    return _tag;
 }

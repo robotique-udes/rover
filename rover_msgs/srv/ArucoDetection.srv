@@ -1,0 +1,8 @@
+bool start
+bool stop
+bool info
+string camera_url
+---
+bool success
+uint8 nbr_ongoing_streams
+string info
