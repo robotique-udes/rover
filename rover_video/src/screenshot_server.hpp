@@ -335,6 +335,8 @@ bool Recording::startRecording()
     
     this->fps = (this->fps > 0) ? fps : 30; //weird bug with usb camera, recording is 2x speed or 1,5x
 
+    RCLCPP_INFO(logger_, "fps set to %f", this->fps);
+
     // Define the codec and create a VideoWriter object
     /* Also from ChatGPT --> more information on OpenCV
     --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
