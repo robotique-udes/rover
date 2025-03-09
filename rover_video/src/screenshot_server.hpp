@@ -189,14 +189,13 @@ std::string CameraNode::getFileName(const std::string capture_name, std::string 
     switch (state)
     {
         case SCREENSHOT:
-            filename = capture_name.empty() ? time + "_" + ID + "_screenshot.png" : time + "_" + ID + capture_name;
+            filename = capture_name.empty() ? time + "_" + ID + "_screenshot.png" : time + "_camID:" + ID + "_" + capture_name;
             // Example : 2024-12-10T20:50:00_GPS_25_screenshot.png
             break;
 
         case VIDEO:
-            filename = capture_name.empty() ? time + "_" + ID + "_recording.avi" : time + "_" + ID + capture_name;
-            // Example : 2024-12-10T20:50:00_GPS_25_screenshot.png
-            break;
+            filename = capture_name.empty() ? time + "_" + ID + "_recording.avi" : time + "_camID:" + ID + "_" + capture_name;
+            // Example : 2024-12-10T20:50:00_GPS_25_recording.avi
     }
     return filename;
 }
