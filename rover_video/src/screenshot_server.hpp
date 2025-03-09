@@ -56,7 +56,7 @@ class Recording
 
     int frame_width;
     int frame_height;
-    int fps;
+    double fps;
 
     //ros logger
     rclcpp::Logger logger_; //allows Recording objects to send logs from ROS nodes
@@ -325,7 +325,9 @@ bool Recording::startRecording()
     // ChatGPT gave me this, gotta look into it more */
     this->frame_width = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_WIDTH));
     this->frame_height = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_HEIGHT));
-    this->fps = static_cast<int>(this->cap.get(cv::CAP_PROP_FPS));
+    this->fps = static_cast<double>(this->cap.get(cv::CAP_PROP_FPS));
+    
+    this->fps = (this->fps > 0) ? fps : 30; //weird bug with usb camera, recording is 2x speed or 1,5x
 
     // Define the codec and create a VideoWriter object
     /* Also from ChatGPT --> more information on OpenCV
@@ -333,7 +335,7 @@ bool Recording::startRecording()
 
     this->video_writer.open(filePath,
                                  cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                                 (fps > 0 ? fps : 30),
+                                 this->fps,
                                  cv::Size(frame_width, frame_height));
 
     if (!video_writer.isOpened())
@@ -373,7 +375,7 @@ bool Recording::recordFrame()
             
             this->video_writer.open(filePath,
                                  cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                                 (this->fps > 0 ? this->fps : 30),
+                                 this->fps,
                                  cv::Size(this->frame_width, this->frame_height));
 
             if (!video_writer.isOpened())
@@ -461,10 +463,43 @@ bool Recording::appendRecordings()
     }
     else
     {
+        std::string appendedVideoFilePath = this->videoFolderPath + "/" + this->filename;
+
+        cv::VideoWriter appender(appendedVideoFilePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                                 this->fps,
+                                 cv::Size(this->frame_width, this->frame_height));
+
+        if (!appender.isOpened()) 
+        {
+            RCLCPP_ERROR(logger_, "Couldn't launch video appender");
+            return false;
+        }
+
+
         for (const auto& current_file: files)
         {
+            
+            cv::VideoCapture cap(current_file);
+
+            if (!cap.isOpened())
+            {
+                RCLCPP_INFO(logger_, "file: %s was empty", current_file.c_str());
+                continue; // empty file; skip
+            }    
+
             RCLCPP_INFO(logger_, "Appending file %s", current_file.c_str());
+
+            while (cap.read(frame)) // Read each frame
+            {  
+                appender.write(frame); 
+            } 
+        
+            cap.release();
+            
         }
+
+        appender.release();
+        
     }
     return true;
 }
