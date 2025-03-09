@@ -40,6 +40,12 @@ class Recording
         return this->frame;
     }
 
+    uint8_t getFPS()
+    {
+        return this->fps;
+    }
+
+
     private:
 
     bool appendRecordings();
