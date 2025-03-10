@@ -421,6 +421,7 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
 {
     if (RecordingMap.find(cameraURL) != RecordingMap.end()) //check if recording doesn't already exist
     {
+        RCLCPP_ERROR(LOGGER, "Already recording on this stream");
         return false;
     }
     else
@@ -455,8 +456,7 @@ void CameraNode::recordingThreadFunction()
     {
         for (auto& pair: RecordingMap) //call all active recordings
         {
-            if (pair.second.recordFrame());
-            else //if there is an error during the recording stop the faulty recording only
+            if (!pair.second.recordFrame());//if there is an error during the recording stop the faulty recording only
             {
                 stopRecording(pair.second.getURL());
             }
@@ -480,7 +480,7 @@ bool Recording::appendRecordings()
 
         if (!appender.isOpened()) 
         {
-            RCLCPP_ERROR(logger_, "Couldn't launch video appender");
+            RCLCPP_ERROR(logger_, "Couldn't launch video appender writer");
             return false;
         }
 
@@ -488,22 +488,24 @@ bool Recording::appendRecordings()
         for (const auto& current_file: files)
         {
             
-            cv::VideoCapture cap(current_file);
+            this->cap.open(current_file);
 
-            if (!cap.isOpened())
+            if (!this->cap.isOpened())
             {
-                RCLCPP_INFO(logger_, "file: %s was empty", current_file.c_str());
+                RCLCPP_ERROR(logger_, "file: %s was empty", current_file.c_str());
                 continue; // empty file; skip
             }    
 
             RCLCPP_INFO(logger_, "Appending file %s", current_file.c_str());
 
-            while (cap.read(frame)) // Read each frame
+            while (this->cap.read(this->frame)) // Read each frame
             {  
-                appender.write(frame); 
+                appender.write(this->frame); 
             } 
         
-            cap.release();
+            this->cap.release();
+
+            RCLCPP_INFO(logger_, "Appending of %s complete", current_file.c_str());
             
         }
 
