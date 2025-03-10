@@ -456,7 +456,7 @@ void CameraNode::recordingThreadFunction()
     {
         for (auto& pair: RecordingMap) //call all active recordings
         {
-            if (!pair.second.recordFrame());//if there is an error during the recording stop the faulty recording only
+            if (!pair.second.recordFrame())//if there is an error during the recording stop the faulty recording only
             {
                 stopRecording(pair.second.getURL());
             }
@@ -488,9 +488,9 @@ bool Recording::appendRecordings()
         for (const auto& current_file: files)
         {
             
-            this->cap.open(current_file);
+            cv::VideoCapture cap(current_file);
 
-            if (!this->cap.isOpened())
+            if (!cap.isOpened())
             {
                 RCLCPP_ERROR(logger_, "file: %s was empty", current_file.c_str());
                 continue; // empty file; skip
@@ -498,19 +498,21 @@ bool Recording::appendRecordings()
 
             RCLCPP_INFO(logger_, "Appending file %s", current_file.c_str());
 
-            while (this->cap.read(this->frame)) // Read each frame
+
+            cv::Mat frame;
+            while (cap.read(frame)) // Read each frame
             {  
-                appender.write(this->frame); 
+                appender.write(frame); 
             } 
         
-            this->cap.release();
+            cap.release();
 
             RCLCPP_INFO(logger_, "Appending of %s complete", current_file.c_str());
             
         }
 
         appender.release();
-        
+        return true;    
     }
-    return true;
+    
 }
