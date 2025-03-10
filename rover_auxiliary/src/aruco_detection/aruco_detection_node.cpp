@@ -24,7 +24,7 @@ ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv): Node("aruco_detec
         = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS), [this](void) { this->CB_arucoDetection(); });
 
     _srv_detectionManager = this->create_service<rover_msgs::srv::ArucoDetection>(
-        "/rover/auxiliary/aruco/detection",
+        "/rover/auxiliary/aruco/manager",
         [this](const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
                std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_) { this->CB_srv(request_, response_); });
 }

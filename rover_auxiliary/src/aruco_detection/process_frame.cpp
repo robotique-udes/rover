@@ -32,12 +32,12 @@ std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
     return std::nullopt;
 }
 
-std::vector<uint16_t> ProcessFrame::getIds() const 
+std::vector<uint16_t> ProcessFrame::getIds() const
 {
     return _detectedIds;
 }
 
-bool ProcessFrame::IdsEmpty(void) const 
+bool ProcessFrame::IdsEmpty(void) const
 {
     return _detectedIds.empty();
 }
