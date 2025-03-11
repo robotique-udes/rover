@@ -15,6 +15,7 @@
 #include <vector>
 #include <atomic>
 #include <queue>
+#include <condition_variable>
 
 #include <cstdlib>
 #include <sys/stat.h>
