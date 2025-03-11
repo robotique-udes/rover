@@ -15,7 +15,6 @@
 #include <vector>
 #include <atomic>
 #include <queue>
-#include <condition_variable>
 
 #include <cstdlib>
 #include <sys/stat.h>
@@ -43,7 +42,7 @@ class Recording
         return this->frame;
     }
 
-    double getFPS()
+    uint8_t getFPS()
     {
         return this->fps;
     }
@@ -52,24 +51,11 @@ class Recording
     private:
 
     bool appendRecordings();
-    bool ReadThreadFunction();
-    bool WriteThreadFunction();
-
-    //thread variables
-    std::atomic<bool> isRecording{false};
-    std::thread ReadingThread;
-    std::thread WritingThread;
-    std::mutex ReadWriteMutex;
 
     //camera variables
-    int codec;
     std::string camURL;
     std::string filename;
     std::string videoFolderPath;
-
-    std::queue<cv::Mat> frameQueue;
-    std::condition_variable queueCondVar;
-
 
     std::vector<std::string> files;
 
@@ -86,15 +72,15 @@ class Recording
     //cv variables
     cv::VideoCapture cap;
     cv::VideoWriter video_writer;
-    cv::Mat frame; /*delete later*/
+    cv::Mat frame;
 
 
     public:
-    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger), codec(cv::VideoWriter::fourcc('M', 'J', 'P', 'G')){}
+    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger) {}
     ~Recording()
     {
  
-        if (cap.isOpened() || video_writer.isOpened()) //avoid unnecessary logging when creating temporary objects
+        if (cap.isOpened()) //avoid unnecessary logging when creating temporary objects
         {
             // Release resources
             this->cap.release();
@@ -333,7 +319,7 @@ bool Recording::startRecording()
     // Use the provided file name or a default name
     std::string filePath = this->videoFolderPath + "/" + this->filename;
     filePath.insert(filePath.length()-4, '_' + std::to_string(this->recordingNumber++)); //add recording number before .avi
-    this->files.push_back(filePath); //add file to list (vector) of recordings
+    this->files.push_back(filePath); //add file to list of recordings
 
     this->cap.open((this->camURL));
     if (!this->cap.isOpened())
@@ -357,7 +343,7 @@ bool Recording::startRecording()
     --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
     this->video_writer.open(filePath,
-                                 this->codec,
+                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                  this->fps,
                                  cv::Size(frame_width, frame_height));
 
@@ -397,7 +383,7 @@ bool Recording::recordFrame()
             this->video_writer.release();
             
             this->video_writer.open(filePath,
-                                 this->codec,
+                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                  this->fps,
                                  cv::Size(this->frame_width, this->frame_height));
 
@@ -470,7 +456,7 @@ void CameraNode::recordingThreadFunction()
     {
         for (auto& pair: RecordingMap) //call all active recordings
         {
-            if (!pair.second.recordFrame())//if there is an error during the recording stop the faulty recording only
+            if (!pair.second.recordFrame());//if there is an error during the recording stop the faulty recording only
             {
                 stopRecording(pair.second.getURL());
             }
@@ -488,7 +474,7 @@ bool Recording::appendRecordings()
     {
         std::string appendedVideoFilePath = this->videoFolderPath + "/" + this->filename;
 
-        cv::VideoWriter appender(appendedVideoFilePath, this->codec,
+        cv::VideoWriter appender(appendedVideoFilePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                  this->fps,
                                  cv::Size(this->frame_width, this->frame_height));
 
@@ -502,9 +488,9 @@ bool Recording::appendRecordings()
         for (const auto& current_file: files)
         {
             
-            cv::VideoCapture cap(current_file);
+            this->cap.open(current_file);
 
-            if (!cap.isOpened())
+            if (!this->cap.isOpened())
             {
                 RCLCPP_ERROR(logger_, "file: %s was empty", current_file.c_str());
                 continue; // empty file; skip
@@ -512,81 +498,19 @@ bool Recording::appendRecordings()
 
             RCLCPP_INFO(logger_, "Appending file %s", current_file.c_str());
 
-
-            cv::Mat frame;
-            while (cap.read(frame)) // Read each frame
+            while (this->cap.read(this->frame)) // Read each frame
             {  
-                appender.write(frame); 
+                appender.write(this->frame); 
             } 
         
-            cap.release();
+            this->cap.release();
 
             RCLCPP_INFO(logger_, "Appending of %s complete", current_file.c_str());
             
         }
 
         appender.release();
-        return true;    
-    }
-    
-}
-
-bool Recording::ReadThreadFunction()
-{
-    while(this->isRecording)
-    {
-        cv::Mat frame;
-        this->cap.read(frame);
-
-        if (frame.empty()) continue;
-
-        std::unique_lock<std::mutex> lock(ReadWriteMutex);
-        frameQueue.push(frame);
-        queueCondVar.notify_one(); //wake up writer
-        //unlock mutex
-    }
-}
-
-bool Recording::WriteThreadFunction()
-{
-    while(this->isRecording || !frameQueue.empty()) //completes frame queue before finishing execution
-    {
-        std::unique_lock<std::mutex> lock(ReadWriteMutex);
-        queueCondVar.wait(lock, [this] { return !frameQueue.empty() || !isRecording; });
-
-        while (!frameQueue.empty())
-        {
-            cv::Mat frame = frameQueue.front();
-            frameQueue.pop();
-            lock.unlock();
-            
-            this->video_writer.write(frame);
         
-
-            if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL) //save every RECORDING_INTERVAL seconds
-            {
-                std::string filePath = this->videoFolderPath + "/" + this->filename;
-                filePath.insert(filePath.length()-4, '_' + std::to_string(this->recordingNumber++));  
-                this->files.push_back(filePath); 
-                this->video_writer.release();
-                
-                this->video_writer.open(filePath,
-                                     this->codec,
-                                     this->fps,
-                                     cv::Size(this->frame_width, this->frame_height));
-    
-                if (!video_writer.isOpened())
-                {
-                    RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
-                    //stop the recording
-                    return false;
-                }    
-    
-                this->startTime = time(0);
-    
-            }
-
-            lock.lock();
-        }
     }
+    return true;
 }
