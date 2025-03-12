@@ -455,11 +455,9 @@ void CameraNode::recordingThreadFunction()
     {
         for (auto& pair: RecordingMap) //call all active recordings
         {
-            if (pair.second.recordFrame())
-            else //if there is an error during the recording stop the faulty recording only
-            {
+            if (!pair.second.recordFrame()) //if there is an error during the recording stop the faulty recording only
                 stopRecording(pair.second.getURL());
-            }
+            
         }
     }
 }
