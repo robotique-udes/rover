@@ -50,7 +50,6 @@ class Recording
 
     private:
 
-    bool ReadThreadFunction();
     bool appendRecordings();
 
     //camera variables
@@ -78,9 +77,7 @@ class Recording
 
 
     public:
-    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){
-        ReadThreadFunction();
-    }
+    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
     ~Recording()
     {
  
@@ -436,10 +433,10 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
          
         if (pRecording->startRecording()) 
         {
-            if (this->isRecording);//if thread is already started: do nothing
+            if (this->isRecording.load());//if thread is already started: do nothing
             else 
             {
-                this->isRecording = true;
+                this->isRecording.store(true);
                 this->recordingThread = std::thread(&CameraNode::recordingThreadFunction, this); //start thread
             }
             return true;
@@ -455,7 +452,7 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
 
 void CameraNode::recordingThreadFunction()
 {
-    while(this->isRecording)
+    while(this->isRecording.load())
     {
         for (auto& pair: RecordingMap) //call all active recordings
         {
@@ -513,11 +510,5 @@ bool Recording::appendRecordings()
         appender.release();
         
     }
-    return true;
-}
-
-bool Recording::ReadThreadFunction()
-{
-    RCLCPP_INFO(logger_, "currently in reader function");
     return true;
 }
