@@ -116,6 +116,9 @@ private:
     // TODO FIX WATCHDOG
     void watchdog(bool& rLostHeartbeat_);
 
+    // TODO ADD HOMING
+    void homeArm(void);
+
     // TODO : remove return values for these functions as they modify class elements directly
     Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition_);
 
@@ -274,7 +277,19 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         }
 
         _inverseJacobian = computeJacobian(_currentJointsPos).completeOrthogonalDecomposition().pseudoInverse();
+
+        calcManipulability();
+        _nullspaceProjector = Eigen::MatrixXd::Identity(4, 4) - _inverseJacobian * _jacobian;
+
+
         _computedVelocity = _inverseJacobian * desiredCartesian;
+
+        if (_manipulabilityMeasure < MANIPULABILITY_THRESHOLD) 
+        {
+            Eigen::VectorXd nullspaceComponent = _nullspaceProjector * _gradientManipulability;
+            _computedVelocity += NULLSPACE_GAIN * nullspaceComponent;
+        }
+        
         scaleVelocities(_computedVelocity);
         
         for (int i = 0; i < _computedVelocity.size(); ++i)
@@ -394,6 +409,32 @@ Eigen::MatrixXd Teleop::computeJacobian(const Eigen::VectorXd& currentJointPosit
 
 void Teleop::calcManipulability(void)
 {
+    Eigen::JacobiSVD<Eigen::MatrixXd> svd(_jacobian, Eigen::ComputeFullU | Eigen::ComputeFullV);
+    Eigen::VectorXd singularValues = svd.singularValues();
+
+    _manipulabilityMeasure = singularValues.prod();
+
+    const double h = 0.01; // Small perturbation
+
+    // TODO FIX FOR LOOP ITERATOR (4)
+    for (int i = 0; i < 4; i++) 
+    {
+        Eigen::VectorXd perturbedJoints = _currentJointsPos;
+        perturbedJoints(i) += h;
+        
+        Eigen::MatrixXd perturbedJacobian = computeJacobian(perturbedJoints);
+        Eigen::JacobiSVD<Eigen::MatrixXd> perturbedSvd(perturbedJacobian, Eigen::ComputeFullU | Eigen::ComputeFullV);
+        double perturbedManipulability = perturbedSvd.singularValues().prod();
+        
+    // Approximate gradient
+        _gradientManipulability(i) = (perturbedManipulability - _manipulabilityMeasure) / h;
+    }
+    
+    // Normalize gradient
+    if (_gradientManipulability.norm() > 1e-6)
+    {
+        _gradientManipulability.normalize();
+    }
 
 }
 
