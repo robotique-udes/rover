@@ -45,6 +45,7 @@ namespace KEYBINDING
     constexpr uint8_t PSI = rover_msgs::msg::Joy::X;
 
     constexpr uint8_t RECORD = rover_msgs::msg::Joy::A;
+    constexpr uint8_t CLEAR_POINTS = rover_msgs::msg::Joy::X;
     constexpr uint8_t CREATE_PLAN =rover_msgs::msg::Joy::B;
 
 #endif  // defined(PHIL)
