@@ -112,11 +112,10 @@ private:
     void scaleVelocities(Eigen::VectorXd& jointVelocities_);
     void addPoint(Eigen::VectorXd pose_);
     void calcManipulability(void);
+    void watchdog(bool& rLostHeartbeat_);
     rover_msgs::msg::ArmMsg getZeroMsg(void);
     Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition_);
 
-    // TODO FIX WATCHDOG
-    void watchdog(bool& rLostHeartbeat_);
 
 };
 
