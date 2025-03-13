@@ -23,7 +23,7 @@ class ArucoDetectionNode : public rclcpp::Node
                 std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_);
     bool startDetection(std::string URL_);
     bool stopDetection(std::string URL_);
-    std::string infoDetection(void);
+    void infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_);
 
     bool _debugMode;
     uint8_t _nbrOngoingDetection = 0;
@@ -34,6 +34,7 @@ class ArucoDetectionNode : public rclcpp::Node
     std::unordered_map<std::string, Detection> _detections;
     std::mutex _detectedArucosMutex;
     rclcpp::Service<rover_msgs::srv::ArucoDetection>::SharedPtr _srv_detectionManager;
+
 };
 
 #endif
