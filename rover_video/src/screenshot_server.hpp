@@ -1,21 +1,21 @@
 #include "rclcpp/rclcpp.hpp"
+#include "rover_msgs/msg/gps_position.hpp"
 #include "rover_msgs/srv/camera_control.hpp"
 #include "rovus_lib/macros.h"
-#include "rover_msgs/msg/gps_position.hpp"
 
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
 #include "opencv2/imgcodecs.hpp"
 
+#include <atomic>
 #include <chrono>
 #include <iomanip>
 #include <iostream>
-#include <sstream>
-#include <unordered_map>
-#include <thread>
-#include <vector>
-#include <atomic>
 #include <queue>
+#include <sstream>
+#include <thread>
+#include <unordered_map>
+#include <vector>
 
 #include <cstdlib>
 #include <sys/stat.h>
@@ -23,13 +23,13 @@
 #define SCREENSHOT 1
 #define VIDEO 2
 
-constexpr uint8_t RECORDING_INTERVAL = 30; //in seconds
+constexpr uint8_t RECORDING_INTERVAL = 30;  // in seconds
 
 /* This folder is used for the functions' declarations */
 
 class Recording
 {
-    public:
+  public:
     bool startRecording();
     bool recordFrame();
 
@@ -48,18 +48,15 @@ class Recording
         return this->fps;
     }
 
-
-    private:
-
+  private:
     bool appendRecordings();
 
-    //camera variables
+    // camera variables
     std::string camURL;
     std::string filename;
     std::string videoFolderPath;
 
     std::vector<std::string> files;
-
 
     uint8_t recordingNumber = 1;
     time_t startTime;
@@ -68,29 +65,33 @@ class Recording
     int frame_height;
     double fps;
 
-    //ros logger
-    rclcpp::Logger logger_; //allows Recording objects to send logs from ROS nodes
+    // ros logger
+    rclcpp::Logger logger_;  // allows Recording objects to send logs from ROS nodes
 
-    //cv variables
+    // cv variables
     cv::VideoCapture cap;
     cv::VideoWriter video_writer;
     cv::Mat frame;
 
-
-    public:
-    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
+  public:
+    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger):
+        camURL(URL_in),
+        filename(filename_in),
+        videoFolderPath(videoFolderPath_in),
+        logger_(logger)
+    {
+    }
     ~Recording()
     {
- 
-        if (cap.isOpened()) //avoid unnecessary logging when creating temporary objects
+        if (cap.isOpened())  // avoid unnecessary logging when creating temporary objects
         {
             // Release resources
             this->cap.release();
-            this->video_writer.release();   
+            this->video_writer.release();
 
             RCLCPP_INFO(logger_, "Recording stopped.");
 
-            if(appendRecordings())
+            if (appendRecordings())
             {
                 RCLCPP_INFO(logger_, "Succesfully appended videos");
             }
@@ -115,13 +116,13 @@ class CameraNode : public rclcpp::Node
     std::string getCurrentTime();
     std::string getFileName(const std::string capture_name, std::string camURL, int state);
     std::string getCamID(std::string cameraURL);
-    void callbackPosition(const rover_msgs::msg::GpsPosition & gps_message);
+    void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message);
     const std::string getFolderPath(int state);
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
     bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
 
-    std::atomic<bool> isRecording{false};
+    bool isRecording{false};
     bool newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
     bool stopRecording(std::string cameraURL);
     void recordingThreadFunction();
@@ -133,9 +134,6 @@ class CameraNode : public rclcpp::Node
     CameraNode();
     ~CameraNode() {}
 };
-
-
-
 
 std::string CameraNode::getCamID(std::string cameraURL)
 {
@@ -195,14 +193,16 @@ std::string CameraNode::getFileName(const std::string capture_name, std::string 
     switch (state)
     {
         case SCREENSHOT:
-            filename = capture_name.empty() ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_screenshot.png" : 
-            time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
+            filename = capture_name.empty()
+                           ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_screenshot.png"
+                           : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
             // Example : 2024-12-10T20:50:00_GPS_25_screenshot.png
             break;
 
         case VIDEO:
-            filename = capture_name.empty() ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_recording.avi" : 
-            time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
+            filename = capture_name.empty()
+                           ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_recording.avi"
+                           : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
             // Example : 2024-12-10T20:50:00_GPS_25_recording.avi
     }
     return filename;
@@ -269,20 +269,20 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 
     // Open the video stream
 
-    if (RecordingMap.find(cameraURL) != RecordingMap.end()) //check if currently recording
+    if (RecordingMap.find(cameraURL) != RecordingMap.end())  // check if currently recording
     {
-        Recording* pRecording = &RecordingMap.at(cameraURL); 
-        
-        // Save the last frame from recording as picture:
-            cv::imwrite(captureName, pRecording->getFrame());
-            RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
+        Recording* pRecording = &RecordingMap.at(cameraURL);
 
-            // Display the frame
-            cv::imshow("IP Camera Screenshot", pRecording->getFrame());
+        // Save the last frame from recording as picture:
+        cv::imwrite(captureName, pRecording->getFrame());
+        RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
+
+        // Display the frame
+        cv::imshow("IP Camera Screenshot", pRecording->getFrame());
 
         return true;
     }
-    else //if not recording proceed normaly
+    else  // if not recording proceed normaly
     {
         cv::VideoCapture cap(cameraURL);
 
@@ -320,14 +320,12 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     }
 }
 
-
-
 bool Recording::startRecording()
 {
     // Use the provided file name or a default name
     std::string filePath = this->videoFolderPath + "/" + this->filename;
-    filePath.insert(filePath.length()-4, '_' + std::to_string(this->recordingNumber++)); //add recording number before .avi
-    this->files.push_back(filePath); //add file to list of recordings
+    filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));  // add recording number before .avi
+    this->files.push_back(filePath);                                                        // add file to list of recordings
 
     this->cap.open((this->camURL));
     if (!this->cap.isOpened())
@@ -341,8 +339,8 @@ bool Recording::startRecording()
     this->frame_width = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_WIDTH));
     this->frame_height = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     this->fps = static_cast<double>(this->cap.get(cv::CAP_PROP_FPS));
-    
-    this->fps = (this->fps > 0) ? fps : 30; //weird bug with usb camera, recording is 2x speed or 1,5x
+
+    this->fps = (this->fps > 0) ? fps : 30;  // weird bug with usb camera, recording is 2x speed or 1,5x
 
     RCLCPP_INFO(logger_, "fps set to %f", this->fps);
 
@@ -351,9 +349,9 @@ bool Recording::startRecording()
     --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
     this->video_writer.open(filePath,
-                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                                 this->fps,
-                                 cv::Size(frame_width, frame_height));
+                            cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                            this->fps,
+                            cv::Size(frame_width, frame_height));
 
     if (!video_writer.isOpened())
     {
@@ -368,43 +366,40 @@ bool Recording::startRecording()
 
 bool Recording::recordFrame()
 {
-    
-    
-        this->cap >> this->frame;
-        if (this->frame.empty())
-            {
-                RCLCPP_ERROR(logger_, "Error: Blank frame grabbed!");
-                return false;
-            }
+    this->cap >> this->frame;
+    if (this->frame.empty())
+    {
+        RCLCPP_ERROR(logger_, "Error: Blank frame grabbed!");
+        return false;
+    }
 
-        // Write frame to the output video file
-        this->video_writer.write(this->frame);
+    // Write frame to the output video file
+    this->video_writer.write(this->frame);
 
-        // Show the frame
-        //cv::imshow("IP Camera Stream", this->frame);
+    // Show the frame
+    // cv::imshow("IP Camera Stream", this->frame);
 
-        if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL) //save every RECORDING_INTERVAL seconds
+    if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL)  // save every RECORDING_INTERVAL seconds
+    {
+        std::string filePath = this->videoFolderPath + "/" + this->filename;
+        filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));
+        this->files.push_back(filePath);
+        this->video_writer.release();
+
+        this->video_writer.open(filePath,
+                                cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                                this->fps,
+                                cv::Size(this->frame_width, this->frame_height));
+
+        if (!video_writer.isOpened())
         {
-            std::string filePath = this->videoFolderPath + "/" + this->filename;
-            filePath.insert(filePath.length()-4, '_' + std::to_string(this->recordingNumber++));  
-            this->files.push_back(filePath); 
-            this->video_writer.release();
-            
-            this->video_writer.open(filePath,
-                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                                 this->fps,
-                                 cv::Size(this->frame_width, this->frame_height));
-
-            if (!video_writer.isOpened())
-            {
-                RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
-                return false;
-            }    
-
-            this->startTime = time(0);
-
+            RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
+            return false;
         }
-    
+
+        this->startTime = time(0);
+    }
+
     return true;
 }
 
@@ -415,7 +410,7 @@ bool CameraNode::stopRecording(std::string cameraURL)
         RecordingMap.erase(cameraURL);
         if (RecordingMap.empty())
         {
-            this->isRecording = false; //if there are no more recordings: stop the thread
+            this->isRecording = false;  // if there are no more recordings: stop the thread
         }
         return true;
     }
@@ -427,7 +422,7 @@ bool CameraNode::stopRecording(std::string cameraURL)
 
 bool CameraNode::newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
 {
-    if (RecordingMap.find(cameraURL) != RecordingMap.end()) //check if recording doesn't already exist
+    if (RecordingMap.find(cameraURL) != RecordingMap.end())  // check if recording doesn't already exist
     {
         return false;
     }
@@ -437,36 +432,33 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
 
         // Access the recording using at() to safely get the reference
         Recording* pRecording = &RecordingMap.at(cameraURL);
-         
-        if (pRecording->startRecording()) 
+
+        if (pRecording->startRecording())
         {
-            if (this->isRecording.load());//if thread is already started: do nothing
-            else 
+            if (this->isRecording)
+                ;  // if thread is already started: do nothing
+            else
             {
-                this->isRecording.store(true);
-                this->recordingThread = std::thread(&CameraNode::recordingThreadFunction, this); //start thread
+                this->isRecording = true;
+                this->recordingThread = std::thread(&CameraNode::recordingThreadFunction, this);  // start thread
             }
             return true;
-        } 
-        else 
+        }
+        else
         {
             return false;
         }
-
     }
-
 }
 
 void CameraNode::recordingThreadFunction()
 {
-    while(this->isRecording.load())
+    while (this->isRecording)
     {
-        for (auto& pair: RecordingMap) //call all active recordings
+        for (auto& pair : RecordingMap)  // call all active recordings
         {
-            if (!pair.second.recordFrame()) //if there is an error during the recording stop the faulty recording only
-            {    
+            if (!pair.second.recordFrame())  // if there is an error during the recording stop the faulty recording only
                 stopRecording(pair.second.getURL());
-            }
         }
     }
 }
@@ -481,50 +473,44 @@ bool Recording::appendRecordings()
     {
         std::string appendedVideoFilePath = this->videoFolderPath + "/" + this->filename;
 
-        cv::VideoWriter appender(appendedVideoFilePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+        cv::VideoWriter appender(appendedVideoFilePath,
+                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                  this->fps,
                                  cv::Size(this->frame_width, this->frame_height));
 
-        if (!appender.isOpened()) 
+        if (!appender.isOpened())
         {
             RCLCPP_ERROR(logger_, "Couldn't launch video appender");
             return false;
         }
 
-
-        for (const auto& current_file: files)
+        for (const auto& current_file : files)
         {
-            
             cv::VideoCapture cap(current_file);
 
             if (!cap.isOpened())
             {
                 RCLCPP_INFO(logger_, "file: %s was empty", current_file.c_str());
-                continue; // empty file; skip
-            }    
+                continue;  // empty file; skip
+            }
 
             RCLCPP_INFO(logger_, "Appending file %s", current_file.c_str());
 
-            while (cap.read(frame)) // Read each frame
-            {  
-                appender.write(frame); 
-            } 
-        
+            while (cap.read(frame))  // Read each frame
+            {
+                appender.write(frame);
+            }
+
             cap.release();
-            
         }
 
         appender.release();
-        
     }
     return true;
 }
-<<<<<<< HEAD
-=======
 
-void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition & gps_message)
+void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_message)
 {
     last_latitude = gps_message.latitude;
     last_longitude = gps_message.longitude;
 }
->>>>>>> 3d52ca1 (Creation of subscriber for gps)
