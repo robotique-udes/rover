@@ -29,8 +29,6 @@ class ArmSimulation(Node):
         plt.ion()
         plt.show()
 
-        
-
         self.JL_pos = 0.0
         self.J1_pos = 0.0
         self.J2_pos = PI / 2
