@@ -21,7 +21,7 @@ constexpr uint8_t MAX_RECORDED_POINTS = 3;
 
 // This is the threshold below which singularity avoidance activates. 
 // It defines the "danger zone" for approaching singularities.
-constexpr float MANIPULABILITY_THRESHOLD = 0.1f;
+constexpr float MANIPULABILITY_THRESHOLD = 0.2f;
 
 // This determines how aggressively the robot responds to avoid singularities. 
 // It scales the nullspace component added to joint velocities.
@@ -50,7 +50,7 @@ public:
         CREATE_PLAN = KEYBINDING::CREATE_PLAN
     };
 
-    enum class eDesiredCartesianVel : uint8_t
+    enum class eCartesian : uint8_t
     {
         X = 0,
         Y = 1,
@@ -82,7 +82,7 @@ private:
     Eigen::VectorXd _computedVelocity = Eigen::VectorXd(4);
     Eigen::VectorXd _currentEndEffectorPosition = Eigen::VectorXd(3);
     Eigen::VectorXd _currentJointsPos = Eigen::VectorXd::Zero((uint8_t)eJointIndex::eLAST);
-    Eigen::VectorXd _desiredCartesian = Eigen::VectorXd::Zero((uint8_t)eDesiredCartesianVel::eLAST);
+    Eigen::VectorXd _desiredCartesian = Eigen::VectorXd::Zero((uint8_t)eCartesian::eLAST);
     Eigen::VectorXd _gradientManipulability = Eigen::VectorXd(4);
     std::array<Eigen::VectorXd, 3> _poseArray;
 
@@ -106,21 +106,16 @@ private:
         = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
     
     bool isSelected(float buttonValue_, eButtonId buttonId_);
-    void positionCallback(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_);
-    void joyCallback(const rover_msgs::msg::Joy::SharedPtr positionMsg_);
+    void position_CB(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_);
+    void joy_CB(const rover_msgs::msg::Joy::SharedPtr positionMsg_);
     void scaleVelocities(Eigen::VectorXd& jointVelocities_);
     void addPoint(Eigen::VectorXd pose_);
     void calcManipulability(void);
     rover_msgs::msg::ArmMsg getZeroMsg(void);
+    Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition_);
 
     // TODO FIX WATCHDOG
     void watchdog(bool& rLostHeartbeat_);
-
-    // TODO ADD HOMING
-    void homeArm(void);
-
-    // TODO : remove return values for these functions as they modify class elements directly
-    Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition_);
 
 };
 
@@ -129,12 +124,12 @@ Teleop::Teleop() : Node("teleop")
     _subArmPositions = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions",
                                                                 1,
                                                                 [this](const rover_msgs::msg::ArmMsg::SharedPtr msg)
-                                                                { this->positionCallback(msg); });
+                                                                { this->position_CB(msg); });
                                                                 
     _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                 1,
                                                                 [this](const rover_msgs::msg::Joy::SharedPtr msg)
-                                                                { this->joyCallback(msg); });
+                                                                { this->joy_CB(msg); });
 
     _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_speed", 1);
 
@@ -143,7 +138,7 @@ Teleop::Teleop() : Node("teleop")
                                                                 { this->watchdog(_currentPoseFailure); });
 }
 
-void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
+void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 {
     if (!isPressed(joyMsg_->joy_data[KEYBINDING::DEADMAN_SWITCH]))
     {
@@ -152,7 +147,7 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
     }
 
     Eigen::VectorXd goalJointsSpeed = Eigen::VectorXd::Zero((uint8_t)eJointIndex::eLAST);
-    Eigen::VectorXd desiredCartesian = Eigen::VectorXd::Zero((uint8_t)eDesiredCartesianVel::eLAST);
+    Eigen::VectorXd desiredCartesian = Eigen::VectorXd::Zero((uint8_t)eCartesian::eLAST);
 
     if (_controlMode == eControlMode::JOINT)
     {
@@ -182,48 +177,39 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
             goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_TILT) = -ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
         }
 
-        // CMD GRIP_ROT
-        if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
-        {
-            goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_ROT) = ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
-        }
-        else if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
-        {
-            goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_ROT) = -ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
-        }
     }
     else if(_controlMode == eControlMode::CARTESIAN)
     {
         // CMD X
         if (isPressed(joyMsg_->joy_data[KEYBINDING::X_AXIS_RIGHT]))
         {
-            desiredCartesian((uint8_t)eDesiredCartesianVel::X) = joyMsg_->joy_data[KEYBINDING::X_AXIS_RIGHT];
+            desiredCartesian((uint8_t)eCartesian::X) = joyMsg_->joy_data[KEYBINDING::X_AXIS_RIGHT];
         }        
         if (isPressed(joyMsg_->joy_data[KEYBINDING::X_AXIS_LEFT]))
         {
-            desiredCartesian((uint8_t)eDesiredCartesianVel::X) = joyMsg_->joy_data[KEYBINDING::X_AXIS_LEFT] * -1.0f;
+            desiredCartesian((uint8_t)eCartesian::X) = joyMsg_->joy_data[KEYBINDING::X_AXIS_LEFT] * -1.0f;
         }
         
         // CMD Y
         if (isPressed(joyMsg_->joy_data[KEYBINDING::Y_AXIS]))
         {
-            desiredCartesian((uint8_t)eDesiredCartesianVel::Y) = joyMsg_->joy_data[KEYBINDING::Y_AXIS];
+            desiredCartesian((uint8_t)eCartesian::Y) = joyMsg_->joy_data[KEYBINDING::Y_AXIS] * -1.0f;
         }
 
         // CMD Z
         if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_UP]))
         {
-            desiredCartesian((uint8_t)eDesiredCartesianVel::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_UP];
+            desiredCartesian((uint8_t)eCartesian::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_UP];
         }        
         if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_DOWN]))
         {
-            desiredCartesian((uint8_t)eDesiredCartesianVel::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_DOWN] * -1.0f;
+            desiredCartesian((uint8_t)eCartesian::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_DOWN] * -1.0f;
         }
 
         // ALPHA
         if (isPressed(joyMsg_->joy_data[KEYBINDING::ALPHA]))
         {
-            desiredCartesian((uint8_t)eDesiredCartesianVel::ALPA) = joyMsg_->joy_data[KEYBINDING::ALPHA];
+            desiredCartesian((uint8_t)eCartesian::ALPA) = joyMsg_->joy_data[KEYBINDING::ALPHA];
         }
 
         // RECORD END-EFFECTOR POSE
@@ -281,7 +267,6 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         calcManipulability();
         _nullspaceProjector = Eigen::MatrixXd::Identity(4, 4) - _inverseJacobian * _jacobian;
 
-
         _computedVelocity = _inverseJacobian * desiredCartesian;
 
         if (_manipulabilityMeasure < MANIPULABILITY_THRESHOLD) 
@@ -294,11 +279,28 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         
         for (int i = 0; i < _computedVelocity.size(); ++i)
         {
-            goalJointsSpeed(i) = _computedVelocity(i);
+            if(std::abs(_computedVelocity(i)) > 1e-4)
+            {
+                goalJointsSpeed(i) = _computedVelocity(i);
+            }
+            else
+            {
+                goalJointsSpeed(i) = 0.0f;
+            }
         }
     }
 
-    // CMD GRIP
+    // CMD GRIP_ROT
+    if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_FWD]))
+    {
+        goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_ROT) = ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
+    }
+    else if (isPressed(joyMsg_->joy_data[KEYBINDING::GRIPPER_ROT_REV]))
+    {
+        goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_ROT) = -ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
+    }
+
+    // CMD GRIP_close
     if (joyMsg_->joy_data[KEYBINDING::GRIPPER_CLOSE])
     {
         if (timerDebounce.isDone() && !_gripperCloseLatchFlag)
@@ -322,7 +324,7 @@ void Teleop::joyCallback(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
     _pubArmCmd->publish(msg);
 }
 
-void Teleop::positionCallback(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_)
+void Teleop::position_CB(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_)
 {
     _lastPositionData = std::chrono::steady_clock::now();
     _currentPoseFailure = false;
@@ -368,10 +370,10 @@ void Teleop::watchdog(bool& rLostHeartbeat_)
 
 Eigen::MatrixXd Teleop::computeJacobian(const Eigen::VectorXd& currentJointPosition_)
 {
-    float q0 = currentJointPosition_(0);
-    float q1 = currentJointPosition_(1);
-    float q2 = currentJointPosition_(2);
-    float q3 = currentJointPosition_(3);
+    float q0 = currentJointPosition_(static_cast<int>(eJointIndex::JL));
+    float q1 = currentJointPosition_(static_cast<int>(eJointIndex::J1));
+    float q2 = currentJointPosition_(static_cast<int>(eJointIndex::J2));
+    float q3 = currentJointPosition_(static_cast<int>(eJointIndex::GRIPPER_TILT));
 
     float s1 = sin(q1);
     float c1 = cos(q1);
@@ -381,28 +383,28 @@ Eigen::MatrixXd Teleop::computeJacobian(const Eigen::VectorXd& currentJointPosit
     float c123 = cos(q1 + q2 + q3);
 
     _currentEndEffectorPosition.x() = q0;
-    _currentEndEffectorPosition.y() = J1 * s1 + J2 * s12 + J3 * s123;
-    _currentEndEffectorPosition.z() = J1 * s1 + J2 * s12 + J3 * s123;
+    _currentEndEffectorPosition.y() = J1z * s1 + J2z * s12 + J3z * s123;
+    _currentEndEffectorPosition.z() = J1z * s1 + J2z * s12 + J3z * s123;
 
-    _jacobian(0, 0) = 1.0f;                             // dx/dq0
-    _jacobian(0, 1) = 0.0f;                             // dx/dq1
-    _jacobian(0, 2) = 0.0f;                             // dx/dq2
-    _jacobian(0, 3) = 0.0f;                             // dx/dq3
+    _jacobian(0, 0) = 1.0f;                                 // dx/dq0
+    _jacobian(0, 1) = 0.0f;                                 // dx/dq1
+    _jacobian(0, 2) = 0.0f;                                 // dx/dq2
+    _jacobian(0, 3) = 0.0f;                                 // dx/dq3
 
-    _jacobian(1, 0) = 0.0f;                             // dy/dq0
-    _jacobian(1, 1) = J1 * c1 + J2 * c12 + J3 * c123;   // dy/dq1
-    _jacobian(1, 2) = J2 * c12 + J3 * c123;             // dy/dq2
-    _jacobian(1, 3) = J3 * c123;                        // dy/dq3
+    _jacobian(1, 0) = 0.0f;                                 // dy/dq0
+    _jacobian(1, 1) = -J1z * c1 - J2z * c12 - J3z * c123;   // dy/dq1
+    _jacobian(1, 2) = -J2z * c12 - J3z * c123;              // dy/dq2
+    _jacobian(1, 3) = -J3z * c123;                          // dy/dq3
 
-    _jacobian(2, 0) = 0.0f;                             // dz/dq0
-    _jacobian(2, 1) = J1 * s1 + J2 * s12 + J3 * s123;   // dz/dq1
-    _jacobian(2, 2) = J2 * s12 + J3 * s123;             // dz/dq2
-    _jacobian(2, 3) = J3 * s123;                        // dz/dq3
+    _jacobian(2, 0) = 0.0f;                                 // dz/dq0
+    _jacobian(2, 1) = -J1z * s1 - J2z * s12 - J3z * s123;   // dz/dq1
+    _jacobian(2, 2) = -J2z * s12 - J3z * s123;              // dz/dq2
+    _jacobian(2, 3) = -J3z * s123;                          // dz/dq3
 
-    _jacobian(3, 0) = 0.0f;                             // dxalpha/dq0
-    _jacobian(3, 1) = 0.0f;                             // dxalpha/dq0 
-    _jacobian(3, 2) = 0.0f;                             // dxalpha/dq2
-    _jacobian(3, 3) = 0.0f;                             // dxalpha/dq3
+    _jacobian(3, 0) = 0.0f;                                 // dxalpha/dq0
+    _jacobian(3, 1) = 0.0f;                                 // dxalpha/dq0 
+    _jacobian(3, 2) = 0.0f;                                 // dxalpha/dq2
+    _jacobian(3, 3) = 0.0f;                                 // dxalpha/dq3
 
     return _jacobian;
 }
@@ -414,10 +416,9 @@ void Teleop::calcManipulability(void)
 
     _manipulabilityMeasure = singularValues.prod();
 
-    const double h = 0.01; // Small perturbation
+    const double h = 0.01;
 
-    // TODO FIX FOR LOOP ITERATOR (4)
-    for (int i = 0; i < 4; i++) 
+    for (int i = 0; i < static_cast<int>(eCartesian::eLAST); i++) 
     {
         Eigen::VectorXd perturbedJoints = _currentJointsPos;
         perturbedJoints(i) += h;
@@ -426,11 +427,9 @@ void Teleop::calcManipulability(void)
         Eigen::JacobiSVD<Eigen::MatrixXd> perturbedSvd(perturbedJacobian, Eigen::ComputeFullU | Eigen::ComputeFullV);
         double perturbedManipulability = perturbedSvd.singularValues().prod();
         
-    // Approximate gradient
         _gradientManipulability(i) = (perturbedManipulability - _manipulabilityMeasure) / h;
     }
     
-    // Normalize gradient
     if (_gradientManipulability.norm() > 1e-6)
     {
         _gradientManipulability.normalize();
