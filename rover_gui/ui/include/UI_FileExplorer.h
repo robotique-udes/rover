@@ -1,7 +1,7 @@
 /********************************************************************************
 ** Form generated from reading UI file 'FileExplorer.ui'
 **
-** Created by: Qt User Interface Compiler version 5.15.3
+** Created by: Qt User Interface Compiler version 6.2.4
 **
 ** WARNING! All changes made in this file will be lost when recompiling UI file!
 ********************************************************************************/
@@ -9,6 +9,7 @@
 #ifndef UI_FILEEXPLORER_H
 #define UI_FILEEXPLORER_H
 
+#include <QtCore/QLocale>
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
@@ -17,11 +18,12 @@
 #include <QtWidgets/QHBoxLayout>
 #include <QtWidgets/QHeaderView>
 #include <QtWidgets/QLineEdit>
+#include <QtWidgets/QProgressBar>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
-#include <QtWidgets/QTreeView>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
+#include "../../src/QSshFileExplorer/QTreeViewExplorer.hpp"
 
 QT_BEGIN_NAMESPACE
 
@@ -39,13 +41,17 @@ public:
     QHBoxLayout *horizontalLayout;
     QLineEdit *le_path;
     QPushButton *pb_pathCopy;
-    QTreeView *tv_fileExplorer;
+    QTreeViewExplorer *tv_fileExplorer;
+    QHBoxLayout *horizontalLayout_2;
+    QProgressBar *progressBar;
+    QPushButton *pb_cancelCurrentTask;
+    QPushButton *pb_cancelAllTasks;
 
     void setupUi(QWidget *FileExplorer)
     {
         if (FileExplorer->objectName().isEmpty())
             FileExplorer->setObjectName(QString::fromUtf8("FileExplorer"));
-        FileExplorer->resize(736, 419);
+        FileExplorer->resize(874, 530);
         FileExplorer->setCursor(QCursor(Qt::ArrowCursor));
         FileExplorer->setStyleSheet(QString::fromUtf8("QWidget {\n"
 "    background-color: #2e2e2e;\n"
@@ -148,18 +154,27 @@ public:
 "}\n"
 "\n"
 "QProgressBar {\n"
-"    background-color: #4b4e52;\n"
-"    color: #ffffff;\n"
+"    background-color: #2e2e2e; \n"
+"    border: 2px solid #444444;\n"
+"    border-radius: 2px;\n"
+"    text-align: center;\n"
+"    color: white;\n"
 "}\n"
 "\n"
 "QProgressBar::chunk {\n"
-"    background-color: #5cb85c;\n"
+"    background-color: #"
+                        "4caf50;\n"
+"    border-radius: 2px;\n"
+"}\n"
+"\n"
+"QProgressBar::text {\n"
+"    color: white; \n"
+"    font-weight: bold;\n"
 "}\n"
 "\n"
 "QStatusBar {\n"
 "    background-color: #3c3f41;\n"
-"    color: #fff"
-                        "fff;\n"
+"    color: #ffffff;\n"
 "}"));
         gridLayout = new QGridLayout(FileExplorer);
         gridLayout->setObjectName(QString::fromUtf8("gridLayout"));
@@ -254,10 +269,11 @@ public:
 
         verticalLayout_3->addLayout(horizontalLayout);
 
-        tv_fileExplorer = new QTreeView(FileExplorer);
+        tv_fileExplorer = new QTreeViewExplorer(FileExplorer);
         tv_fileExplorer->setObjectName(QString::fromUtf8("tv_fileExplorer"));
         tv_fileExplorer->setMinimumSize(QSize(0, 300));
         tv_fileExplorer->viewport()->setProperty("cursor", QVariant(QCursor(Qt::PointingHandCursor)));
+        tv_fileExplorer->setContextMenuPolicy(Qt::CustomContextMenu);
         tv_fileExplorer->setFrameShadow(QFrame::Sunken);
         tv_fileExplorer->setEditTriggers(QAbstractItemView::DoubleClicked);
         tv_fileExplorer->setTabKeyNavigation(true);
@@ -271,6 +287,44 @@ public:
         tv_fileExplorer->header()->setVisible(true);
 
         verticalLayout_3->addWidget(tv_fileExplorer);
+
+        horizontalLayout_2 = new QHBoxLayout();
+        horizontalLayout_2->setObjectName(QString::fromUtf8("horizontalLayout_2"));
+        progressBar = new QProgressBar(FileExplorer);
+        progressBar->setObjectName(QString::fromUtf8("progressBar"));
+        progressBar->setAutoFillBackground(false);
+        progressBar->setLocale(QLocale(QLocale::English, QLocale::UnitedStates));
+        progressBar->setMaximum(100);
+        progressBar->setValue(25);
+        progressBar->setTextVisible(true);
+        progressBar->setOrientation(Qt::Horizontal);
+        progressBar->setInvertedAppearance(false);
+        progressBar->setTextDirection(QProgressBar::TopToBottom);
+
+        horizontalLayout_2->addWidget(progressBar);
+
+        pb_cancelCurrentTask = new QPushButton(FileExplorer);
+        pb_cancelCurrentTask->setObjectName(QString::fromUtf8("pb_cancelCurrentTask"));
+        sizePolicy.setHeightForWidth(pb_cancelCurrentTask->sizePolicy().hasHeightForWidth());
+        pb_cancelCurrentTask->setSizePolicy(sizePolicy);
+        pb_cancelCurrentTask->setMinimumSize(QSize(0, 0));
+        pb_cancelCurrentTask->setMaximumSize(QSize(200, 16777215));
+        pb_cancelCurrentTask->setCursor(QCursor(Qt::PointingHandCursor));
+
+        horizontalLayout_2->addWidget(pb_cancelCurrentTask);
+
+        pb_cancelAllTasks = new QPushButton(FileExplorer);
+        pb_cancelAllTasks->setObjectName(QString::fromUtf8("pb_cancelAllTasks"));
+        sizePolicy.setHeightForWidth(pb_cancelAllTasks->sizePolicy().hasHeightForWidth());
+        pb_cancelAllTasks->setSizePolicy(sizePolicy);
+        pb_cancelAllTasks->setMinimumSize(QSize(0, 0));
+        pb_cancelAllTasks->setMaximumSize(QSize(200, 16777215));
+        pb_cancelAllTasks->setCursor(QCursor(Qt::PointingHandCursor));
+
+        horizontalLayout_2->addWidget(pb_cancelAllTasks);
+
+
+        verticalLayout_3->addLayout(horizontalLayout_2);
 
 
         gridLayout->addLayout(verticalLayout_3, 0, 0, 1, 1);
@@ -299,6 +353,8 @@ public:
 #if QT_CONFIG(shortcut)
         pb_pathCopy->setShortcut(QString());
 #endif // QT_CONFIG(shortcut)
+        pb_cancelCurrentTask->setText(QCoreApplication::translate("FileExplorer", "Cancel Current Task", nullptr));
+        pb_cancelAllTasks->setText(QCoreApplication::translate("FileExplorer", "Cancel All Tasks", nullptr));
     } // retranslateUi
 
 };
