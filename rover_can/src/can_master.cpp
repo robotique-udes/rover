@@ -55,7 +55,6 @@ RoverCanLib::Msgs::PropulsionMotorStatus msg_CAN_PropRearRight;
 
 // Arm
 RoverCanLib::Msgs::armStatus msg_CAN_ArmJl;
-RoverCanLib::Msgs::armStatus msg_CAN_ArmJ0;
 RoverCanLib::Msgs::armStatus msg_CAN_ArmJ1;
 RoverCanLib::Msgs::armStatus msg_CAN_ArmJ2;
 RoverCanLib::Msgs::armStatus msg_CAN_ArmGripperTilt;
@@ -228,7 +227,6 @@ CanMaster::CanMaster(int canSocket_):
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARLEFT_MOTOR] = &msg_CAN_PropRearLeft;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::REARRIGHT_MOTOR] = &msg_CAN_PropRearRight;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER] = &msg_CAN_ArmJl;
-    _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER] = &msg_CAN_ArmJ0;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER] = &msg_CAN_ArmJ1;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER] = &msg_CAN_ArmJ2;
     _msgsMap[(size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER] = &msg_CAN_ArmGripperTilt;
@@ -286,9 +284,6 @@ CanMaster::CanMaster(int canSocket_):
     _deviceMap.emplace(
         (size_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER,
         CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
-    _deviceMap.emplace(
-        (size_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER,
-        CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
     _deviceMap.emplace(
         (size_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER,
         CanDevice((uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER, this, &CanMaster::CB_Can_Arm, _pub_canStatus));
@@ -504,7 +499,6 @@ void CanMaster::CB_Can_PropulsionMotor(uint16_t id_, const can_frame* frameMsg_)
 void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame* frameMsg_)
 {
     if (id_ != (size_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER
-        && id_ != (size_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER
         && id_ != (size_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER
         && id_ != (size_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER
         && id_ != (size_t)RoverCanLib::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER
@@ -531,13 +525,7 @@ void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame* frameMsg_)
                     arrayIndex = rover_msgs::msg::ArmMsg::JL;
                     break;
 
-                case (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER:
-                    arrayIndex = rover_msgs::msg::ArmMsg::J0;
-                    break;
-
-                case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER:
-                    arrayIndex = rover_msgs::msg::ArmMsg::J1;
-                    break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J1; break;
 
                 case (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER:
                     arrayIndex = rover_msgs::msg::ArmMsg::J2;
@@ -702,13 +690,7 @@ void CanMaster::CB_ROS_Arm(const rover_msgs::msg::ArmMsg::SharedPtr rosMsg_)
                 deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER;
                 break;
 
-            case rover_msgs::msg::ArmMsg::J0:
-                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J0_CONTROLLER;
-                break;
-
-            case rover_msgs::msg::ArmMsg::J1:
-                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER;
-                break;
+            case rover_msgs::msg::ArmMsg::J1: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER; break;
 
             case rover_msgs::msg::ArmMsg::J2:
                 deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER;
