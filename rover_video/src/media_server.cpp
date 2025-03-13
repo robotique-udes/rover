@@ -21,10 +21,15 @@ int main(int argc, char* argv[])
 
 CameraNode::CameraNode(): Node("media_server")
 {
-    _srv_recording = this->create_service<rover_msgs::srv::CameraControl>(
+    _srv_control = this->create_service<rover_msgs::srv::CameraControl>(
         "/rover/video/media_server",
         [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
                std::shared_ptr<rover_msgs::srv::CameraControl::Response> response) { this->controlIPCam(request, response); });
+
+    _msg_position = this->create_subscription<rover_msgs::msg::GpsPosition>(
+        "/rover/gps/position",
+        1,  // What to put as QoS ?
+        [this](const rover_msgs::msg::GpsPosition & gps_message){ this->callbackPosition(gps_message); });
 }
 
 void CameraNode::controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,

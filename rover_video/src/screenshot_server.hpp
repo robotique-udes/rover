@@ -1,6 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/srv/camera_control.hpp"
 #include "rovus_lib/macros.h"
+#include "rover_msgs/msg/gps_position.hpp"
 
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
@@ -105,14 +106,16 @@ class CameraNode : public rclcpp::Node
 {
   public:
   private:
-    rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_screenshot;
-    rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_recording;
+    rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
+    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _msg_position;
+    float last_latitude = 0.0, last_longitude = 0.0;
 
     void controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
                       std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
     std::string getCurrentTime();
     std::string getFileName(const std::string capture_name, std::string camURL, int state);
     std::string getCamID(std::string cameraURL);
+    void callbackPosition(const rover_msgs::msg::GpsPosition & gps_message);
     const std::string getFolderPath(int state);
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
@@ -185,17 +188,21 @@ std::string CameraNode::getFileName(const std::string capture_name, std::string 
     std::string filename;
 
     std::string time = getCurrentTime();
+    std::string latitude = std::to_string(last_latitude);
+    std::string longitude = std::to_string(last_longitude);
     std::string ID = getCamID(camURL);
 
     switch (state)
     {
         case SCREENSHOT:
-            filename = capture_name.empty() ? time + "_" + ID + "_screenshot.png" : time + "_camID:" + ID + "_" + capture_name;
+            filename = capture_name.empty() ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_screenshot.png" : 
+            time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
             // Example : 2024-12-10T20:50:00_GPS_25_screenshot.png
             break;
 
         case VIDEO:
-            filename = capture_name.empty() ? time + "_" + ID + "_recording.avi" : time + "_camID:" + ID + "_" + capture_name;
+            filename = capture_name.empty() ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_recording.avi" : 
+            time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
             // Example : 2024-12-10T20:50:00_GPS_25_recording.avi
     }
     return filename;
@@ -512,3 +519,12 @@ bool Recording::appendRecordings()
     }
     return true;
 }
+<<<<<<< HEAD
+=======
+
+void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition & gps_message)
+{
+    last_latitude = gps_message.latitude;
+    last_longitude = gps_message.longitude;
+}
+>>>>>>> 3d52ca1 (Creation of subscriber for gps)
