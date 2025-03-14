@@ -19,11 +19,11 @@ constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 150ul;
 constexpr float JOINT_CONTROL_SPEED_FACTOR = 0.5f;  // Factor of max speed
 constexpr uint8_t MAX_RECORDED_POINTS = 3;
 
-// This is the threshold below which singularity avoidance activates. 
+// This is the threshold below which singularity avoidance activates.
 // It defines the "danger zone" for approaching singularities.
 constexpr float MANIPULABILITY_THRESHOLD = 0.2f;
 
-// This determines how aggressively the robot responds to avoid singularities. 
+// This determines how aggressively the robot responds to avoid singularities.
 // It scales the nullspace component added to joint velocities.
 constexpr float NULLSPACE_GAIN = 0.4f;
 
@@ -31,7 +31,7 @@ bool isPressed(float buttonValue_);
 
 class Teleop : public rclcpp::Node
 {
-public:
+  public:
     enum class eJointIndex : uint8_t
     {
         JL = rover_msgs::msg::ArmMsg::JL,
@@ -64,15 +64,15 @@ public:
         JOINT = 0,
         CARTESIAN = 1
     };
-    
+
     Teleop();
     ~Teleop() {};
 
-private:
+  private:
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmPositions;
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyArm;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
-    rclcpp::TimerBase::SharedPtr _armHeartbeatTimer;    
+    rclcpp::TimerBase::SharedPtr _armHeartbeatTimer;
 
     std::chrono::steady_clock::time_point _lastPositionData;
 
@@ -88,7 +88,7 @@ private:
     std::array<Eigen::VectorXd, 3> _poseArray;
 
     eControlMode _controlMode = eControlMode::CARTESIAN;
-    
+
     uint8_t _pointsRecorded = 0;
     float _manipulabilityMeasure = 0.0f;
 
@@ -97,15 +97,12 @@ private:
     bool _gripperClose = false;
     bool _gripperCloseLatchFlag = false;
 
-    std::map<eButtonId, bool> _buttonFlags = {
-        {eButtonId::RECORD, false},
-        {eButtonId::CLEAR_POINTS, false},
-        {eButtonId::CREATE_PLAN, false}
-    };
+    std::map<eButtonId, bool> _buttonFlags
+        = {{eButtonId::RECORD, false}, {eButtonId::CLEAR_POINTS, false}, {eButtonId::CREATE_PLAN, false}};
 
     RoverLib::Timer<uint64_t, RoverLib::millis> timerDebounce
         = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
-    
+
     bool isSelected(float buttonValue_, eButtonId buttonId_);
     void position_CB(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_);
     void joy_CB(const rover_msgs::msg::Joy::SharedPtr positionMsg_);
@@ -115,27 +112,32 @@ private:
     void watchdog(bool& rLostHeartbeat_);
     rover_msgs::msg::ArmMsg getZeroMsg(void);
     Eigen::MatrixXd computeJacobian(const Eigen::VectorXd& currentJointPosition_);
-
-
 };
 
-Teleop::Teleop() : Node("teleop")
+Teleop::Teleop():
+    Node("teleop")
 {
     _subArmPositions = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions",
-                                                                1,
-                                                                [this](const rover_msgs::msg::ArmMsg::SharedPtr msg)
-                                                                { this->position_CB(msg); });
-                                                                
+                                                                          1,
+                                                                          [this](const rover_msgs::msg::ArmMsg::SharedPtr msg)
+                                                                          {
+                                                                              this->position_CB(msg);
+                                                                          });
+
     _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
-                                                                1,
-                                                                [this](const rover_msgs::msg::Joy::SharedPtr msg)
-                                                                { this->joy_CB(msg); });
+                                                                 1,
+                                                                 [this](const rover_msgs::msg::Joy::SharedPtr msg)
+                                                                 {
+                                                                     this->joy_CB(msg);
+                                                                 });
 
     _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_speed", 1);
 
     _armHeartbeatTimer = this->create_wall_timer(std::chrono::milliseconds(500),
-                                                                [this]()
-                                                                { this->watchdog(_currentPoseFailure); });
+                                                 [this]()
+                                                 {
+                                                     this->watchdog(_currentPoseFailure);
+                                                 });
 }
 
 void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
@@ -176,20 +178,19 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         {
             goalJointsSpeed((uint8_t)eJointIndex::GRIPPER_TILT) = -ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
         }
-
     }
-    else if(_controlMode == eControlMode::CARTESIAN)
+    else if (_controlMode == eControlMode::CARTESIAN)
     {
         // CMD X
         if (isPressed(joyMsg_->joy_data[KEYBINDING::X_AXIS_RIGHT]))
         {
             desiredCartesian((uint8_t)eCartesian::X) = joyMsg_->joy_data[KEYBINDING::X_AXIS_RIGHT];
-        }        
+        }
         if (isPressed(joyMsg_->joy_data[KEYBINDING::X_AXIS_LEFT]))
         {
             desiredCartesian((uint8_t)eCartesian::X) = joyMsg_->joy_data[KEYBINDING::X_AXIS_LEFT] * -1.0f;
         }
-        
+
         // CMD Y
         if (isPressed(joyMsg_->joy_data[KEYBINDING::Y_AXIS]))
         {
@@ -200,7 +201,7 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
         if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_UP]))
         {
             desiredCartesian((uint8_t)eCartesian::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_UP];
-        }        
+        }
         if (isPressed(joyMsg_->joy_data[KEYBINDING::Z_AXIS_DOWN]))
         {
             desiredCartesian((uint8_t)eCartesian::Z) = joyMsg_->joy_data[KEYBINDING::Z_AXIS_DOWN] * -1.0f;
@@ -228,7 +229,7 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 
         if (isSelected(joyMsg_->joy_data[KEYBINDING::CREATE_PLAN], eButtonId::CREATE_PLAN))
         {
-            if(_pointsRecorded != MAX_RECORDED_POINTS)
+            if (_pointsRecorded != MAX_RECORDED_POINTS)
             {
                 RCLCPP_WARN(LOGGER, "Cannot create plan since not enough points have been gathered");
             }
@@ -236,29 +237,29 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
             {
                 _applyPlan = !_applyPlan;
 
-                if(_applyPlan)
+                if (_applyPlan)
                 {
                     RCLCPP_INFO(LOGGER, "Applying plan");
                 }
-                else if(!_applyPlan)
+                else if (!_applyPlan)
                 {
                     RCLCPP_INFO(LOGGER, "Unapplying plan");
                 }
             }
         }
 
-        if(_applyPlan)
+        if (_applyPlan)
         {
             Eigen::Vector3d vector12 = _poseArray[1] - _poseArray[0];
             Eigen::Vector3d vector13 = _poseArray[2] - _poseArray[0];
             Eigen::Vector3d zAxis = vector12.cross(vector13).normalized();
-            Eigen::Vector3d xAxis = vector12.normalized();     
+            Eigen::Vector3d xAxis = vector12.normalized();
             Eigen::Vector3d yAxis = zAxis.cross(xAxis);
 
             _rotationMatrix.col(0) = xAxis;
             _rotationMatrix.col(1) = yAxis;
             _rotationMatrix.col(2) = zAxis;
-            
+
             desiredCartesian.head(3) = _rotationMatrix * desiredCartesian.head(3);
         }
 
@@ -269,17 +270,17 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 
         _computedVelocity = _inverseJacobian * desiredCartesian;
 
-        if (_manipulabilityMeasure < MANIPULABILITY_THRESHOLD) 
+        if (_manipulabilityMeasure < MANIPULABILITY_THRESHOLD)
         {
             Eigen::VectorXd nullspaceComponent = _nullspaceProjector * _gradientManipulability;
             _computedVelocity += NULLSPACE_GAIN * nullspaceComponent;
         }
-        
+
         scaleVelocities(_computedVelocity);
-        
+
         for (int i = 0; i < _computedVelocity.size(); ++i)
         {
-            if(std::abs(_computedVelocity(i)) > 1e-4)
+            if (std::abs(_computedVelocity(i)) > 1e-4)
             {
                 goalJointsSpeed(i) = _computedVelocity(i);
             }
@@ -337,15 +338,15 @@ void Teleop::position_CB(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_)
 
 void Teleop::addPoint(Eigen::VectorXd pose_)
 {
-    if(_pointsRecorded == MAX_RECORDED_POINTS)
+    if (_pointsRecorded == MAX_RECORDED_POINTS)
     {
         RCLCPP_WARN(LOGGER, "No more points can be recorded. Create a plan or clear all points");
     }
     else
     {
         _poseArray[_pointsRecorded] = pose_;
-        _pointsRecorded ++;
-    
+        _pointsRecorded++;
+
         RCLCPP_INFO(LOGGER, "Point has been added to array");
     }
 }
@@ -353,17 +354,11 @@ void Teleop::addPoint(Eigen::VectorXd pose_)
 void Teleop::watchdog(bool& rLostHeartbeat_)
 {
     auto now = std::chrono::steady_clock::now();
-    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(
-        now - _lastPositionData);
-        
-    if (elapsed > WATCHDOG_TIMEOUT) 
+    auto elapsed = std::chrono::duration_cast<std::chrono::milliseconds>(now - _lastPositionData);
+
+    if (elapsed > WATCHDOG_TIMEOUT)
     {
-        RCLCPP_ERROR_THROTTLE(
-            this->get_logger(), 
-            *this->get_clock(), 
-            5000,
-            "Arm watchdog has been triggered!"
-        );
+        RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), 5000, "Arm watchdog has been triggered!");
         rLostHeartbeat_ = true;
     }
 }
@@ -386,25 +381,25 @@ Eigen::MatrixXd Teleop::computeJacobian(const Eigen::VectorXd& currentJointPosit
     _currentEndEffectorPosition.y() = J1z * s1 + J2z * s12 + J3z * s123;
     _currentEndEffectorPosition.z() = J1z * s1 + J2z * s12 + J3z * s123;
 
-    _jacobian(0, 0) = 1.0f;                                 // dx/dq0
-    _jacobian(0, 1) = 0.0f;                                 // dx/dq1
-    _jacobian(0, 2) = 0.0f;                                 // dx/dq2
-    _jacobian(0, 3) = 0.0f;                                 // dx/dq3
+    _jacobian(0, 0) = 1.0f;  // dx/dq0
+    _jacobian(0, 1) = 0.0f;  // dx/dq1
+    _jacobian(0, 2) = 0.0f;  // dx/dq2
+    _jacobian(0, 3) = 0.0f;  // dx/dq3
 
-    _jacobian(1, 0) = 0.0f;                                 // dy/dq0
-    _jacobian(1, 1) = -J1z * c1 - J2z * c12 - J3z * c123;   // dy/dq1
-    _jacobian(1, 2) = -J2z * c12 - J3z * c123;              // dy/dq2
-    _jacobian(1, 3) = -J3z * c123;                          // dy/dq3
+    _jacobian(1, 0) = 0.0f;                                // dy/dq0
+    _jacobian(1, 1) = -J1z * c1 - J2z * c12 - J3z * c123;  // dy/dq1
+    _jacobian(1, 2) = -J2z * c12 - J3z * c123;             // dy/dq2
+    _jacobian(1, 3) = -J3z * c123;                         // dy/dq3
 
-    _jacobian(2, 0) = 0.0f;                                 // dz/dq0
-    _jacobian(2, 1) = -J1z * s1 - J2z * s12 - J3z * s123;   // dz/dq1
-    _jacobian(2, 2) = -J2z * s12 - J3z * s123;              // dz/dq2
-    _jacobian(2, 3) = -J3z * s123;                          // dz/dq3
+    _jacobian(2, 0) = 0.0f;                                // dz/dq0
+    _jacobian(2, 1) = -J1z * s1 - J2z * s12 - J3z * s123;  // dz/dq1
+    _jacobian(2, 2) = -J2z * s12 - J3z * s123;             // dz/dq2
+    _jacobian(2, 3) = -J3z * s123;                         // dz/dq3
 
-    _jacobian(3, 0) = 0.0f;                                 // dxalpha/dq0
-    _jacobian(3, 1) = 0.0f;                                 // dxalpha/dq0 
-    _jacobian(3, 2) = 0.0f;                                 // dxalpha/dq2
-    _jacobian(3, 3) = 0.0f;                                 // dxalpha/dq3
+    _jacobian(3, 0) = 0.0f;  // dxalpha/dq0
+    _jacobian(3, 1) = 0.0f;  // dxalpha/dq0
+    _jacobian(3, 2) = 0.0f;  // dxalpha/dq2
+    _jacobian(3, 3) = 0.0f;  // dxalpha/dq3
 
     return _jacobian;
 }
@@ -418,23 +413,22 @@ void Teleop::calcManipulability(void)
 
     const double h = 0.01;
 
-    for (int i = 0; i < static_cast<int>(eCartesian::eLAST); i++) 
+    for (int i = 0; i < static_cast<int>(eCartesian::eLAST); i++)
     {
         Eigen::VectorXd perturbedJoints = _currentJointsPos;
         perturbedJoints(i) += h;
-        
+
         Eigen::MatrixXd perturbedJacobian = computeJacobian(perturbedJoints);
         Eigen::JacobiSVD<Eigen::MatrixXd> perturbedSvd(perturbedJacobian, Eigen::ComputeFullU | Eigen::ComputeFullV);
         double perturbedManipulability = perturbedSvd.singularValues().prod();
-        
+
         _gradientManipulability(i) = (perturbedManipulability - _manipulabilityMeasure) / h;
     }
-    
+
     if (_gradientManipulability.norm() > 1e-6)
     {
         _gradientManipulability.normalize();
     }
-
 }
 
 rover_msgs::msg::ArmMsg Teleop::getZeroMsg(void)
@@ -447,14 +441,12 @@ rover_msgs::msg::ArmMsg Teleop::getZeroMsg(void)
 
 void Teleop::scaleVelocities(Eigen::VectorXd& velocities_)
 {
-    float velocityRatio = std::max({
-        abs(static_cast<float>(velocities_(0) / ARM_CONFIGURATION::JL::MAX_VELOCITY)),  
-        abs(static_cast<float>(velocities_(1) / ARM_CONFIGURATION::J1::MAX_VELOCITY)),
-        abs(static_cast<float>(velocities_(2) / ARM_CONFIGURATION::J2::MAX_VELOCITY)),
-        abs(static_cast<float>(velocities_(3) / ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY))
-    });
+    float velocityRatio = std::max({abs(static_cast<float>(velocities_(0) / ARM_CONFIGURATION::JL::MAX_VELOCITY)),
+                                    abs(static_cast<float>(velocities_(1) / ARM_CONFIGURATION::J1::MAX_VELOCITY)),
+                                    abs(static_cast<float>(velocities_(2) / ARM_CONFIGURATION::J2::MAX_VELOCITY)),
+                                    abs(static_cast<float>(velocities_(3) / ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY))});
 
-    if(velocityRatio > 1.0f)
+    if (velocityRatio > 1.0f)
     {
         velocities_ /= velocityRatio;
     }
@@ -462,12 +454,12 @@ void Teleop::scaleVelocities(Eigen::VectorXd& velocities_)
 
 bool Teleop::isSelected(float buttonValue_, eButtonId buttonId_)
 {
-    if(isPressed(buttonValue_) && !_buttonFlags[buttonId_])
+    if (isPressed(buttonValue_) && !_buttonFlags[buttonId_])
     {
         _buttonFlags[buttonId_] = true;
         return isPressed(buttonValue_);
     }
-    else if(!isPressed(buttonValue_) && _buttonFlags[buttonId_])
+    else if (!isPressed(buttonValue_) && _buttonFlags[buttonId_])
     {
         _buttonFlags[buttonId_] = false;
         return false;
