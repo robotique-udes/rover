@@ -525,7 +525,9 @@ void CanMaster::CB_Can_Arm(uint16_t id_, const can_frame* frameMsg_)
                     arrayIndex = rover_msgs::msg::ArmMsg::JL;
                     break;
 
-                case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER: arrayIndex = rover_msgs::msg::ArmMsg::J1; break;
+                case (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER:
+                    arrayIndex = rover_msgs::msg::ArmMsg::J1;
+                    break;
 
                 case (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER:
                     arrayIndex = rover_msgs::msg::ArmMsg::J2;
@@ -690,7 +692,9 @@ void CanMaster::CB_ROS_Arm(const rover_msgs::msg::ArmMsg::SharedPtr rosMsg_)
                 deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::JL_CONTROLLER;
                 break;
 
-            case rover_msgs::msg::ArmMsg::J1: deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER; break;
+            case rover_msgs::msg::ArmMsg::J1:
+                deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J1_CONTROLLER;
+                break;
 
             case rover_msgs::msg::ArmMsg::J2:
                 deviceId = (uint16_t)RoverCanLib::Constant::eDeviceId::J2_CONTROLLER;

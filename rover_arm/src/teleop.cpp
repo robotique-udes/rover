@@ -66,7 +66,7 @@ class Teleop : public rclcpp::Node
     };
 
     Teleop();
-    ~Teleop() {};
+    ~Teleop(){};
 
   private:
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmPositions;
