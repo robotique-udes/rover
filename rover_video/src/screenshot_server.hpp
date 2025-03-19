@@ -66,21 +66,16 @@ class Recording
     double fps;
 
     // ros logger
-    rclcpp::Logger logger_;  // allows Recording objects to send logs from ROS nodes
-
+    const rclcpp::Logger& logger_; //allows Recording objects to send logs from ROS nodes
+    
     // cv variables
     cv::VideoCapture cap;
     cv::VideoWriter video_writer;
     cv::Mat frame;
 
   public:
-    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, rclcpp::Logger logger):
-        camURL(URL_in),
-        filename(filename_in),
-        videoFolderPath(videoFolderPath_in),
-        logger_(logger)
-    {
-    }
+    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, const rclcpp::Logger& logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
+    
     ~Recording()
     {
         if (cap.isOpened())  // avoid unnecessary logging when creating temporary objects
