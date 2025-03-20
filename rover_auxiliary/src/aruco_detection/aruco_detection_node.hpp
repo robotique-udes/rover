@@ -8,7 +8,9 @@
 class ArucoDetectionNode : public rclcpp::Node
 {
     static constexpr uint64_t DELAY_PUBLISHER_MS = 1'000UL;
-    static constexpr uint64_t DELAY_DETECTION_MS = 100UL;
+
+    // The delay between capture must be paired with the max rate (fps) in the pipeline
+    static constexpr uint64_t DELAY_DETECTION_MS = 200UL;
     static constexpr uint8_t ALLOWED_ERROR_FRAME = 50U;
 
   public:
@@ -34,7 +36,6 @@ class ArucoDetectionNode : public rclcpp::Node
     std::unordered_map<std::string, Detection> _detections;
     std::mutex _detectedArucosMutex;
     rclcpp::Service<rover_msgs::srv::ArucoDetection>::SharedPtr _srv_detectionManager;
-
 };
 
 #endif

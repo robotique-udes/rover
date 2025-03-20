@@ -2,7 +2,7 @@
 
 ImageCapture::ImageCapture(std::string cameraURL_): _cameraURL(cameraURL_)
 {
-    initCam();
+    _rtspPipeline = "rtspsrc location=" + _cameraURL + _PIPELINE, initCam();
 }
 
 ImageCapture::~ImageCapture(void)
@@ -13,18 +13,28 @@ ImageCapture::~ImageCapture(void)
 
 bool ImageCapture::initCam(void)
 {
+    bool res;
     if (_cap.isOpened())
     {
         return true;
     }
 
-    _pipeline = "rtspsrc location=" + _cameraURL
-                + " latency=0 drop=true ! decodebin ! videoconvert ! queue max-size-buffers=1 ! appsink";
-    if (!_cap.open(_pipeline, cv::CAP_GSTREAMER))
+    if (_cameraURL.compare(0, 4, "rtsp", 0, 4) == 0)
+    {
+        res = _cap.open(_rtspPipeline, cv::CAP_GSTREAMER);
+    }
+
+    else if (_cameraURL.compare(0, 5, "/dev/", 0, 5) == 0)
+    {
+        res = _cap.open(_cameraURL, cv::CAP_V4L2);
+    }
+
+    if (!res)
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Could not open streaming device");
         return false;
     }
+
     return true;
 }
 

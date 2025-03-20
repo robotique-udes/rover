@@ -56,10 +56,10 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
 
     rover_msgs::msg::Aruco msg;
 
-    for (size_t i = 0; i < detectedArucos.size(); ++i) 
+    for (size_t i = 0; i < detectedArucos.size(); ++i)
     {
         const auto& detection = detectedArucos[i];
-        const auto& url = matchingURL[i];    
+        const auto& url = matchingURL[i];
         msg.valid = true;
         msg.id = detection;
         msg.cam_url = url;
@@ -70,8 +70,8 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
         {
             std::string marker_list = "Publishing detected Aruco markers at ";
 
-            marker_list+= url + " : ";
-            for(const auto& id:detection)
+            marker_list += url + " : ";
+            for (const auto& id : detection)
             {
                 marker_list += std::to_string(id) + " ";
             }
@@ -101,7 +101,6 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
 
 void ArucoDetectionNode::CB_arucoDetection(void)
 {
-
     std::lock_guard<std::mutex> lock(_detectedArucosMutex);
 
     for (auto it = _detections.begin(); it != _detections.end();)
@@ -112,7 +111,7 @@ void ArucoDetectionNode::CB_arucoDetection(void)
             it = _detections.erase(it);
             _nbrOngoingDetection--;
         }
-        else 
+        else
         {
             it->second.update(_debugMode);
             ++it;
@@ -138,7 +137,6 @@ void ArucoDetectionNode::CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDete
     response_->nbr_ongoing_streams = _nbrOngoingDetection;
 
     infoDetection(response_);
-
 }
 
 bool ArucoDetectionNode::startDetection(std::string URL_)
@@ -177,5 +175,4 @@ void ArucoDetectionNode::infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDet
         response_->urls.push_back(it.second.getCamURL());
         response_->tags.push_back(it.second.getTag());
     }
-    #warning mesurer nbr detection    
 }
