@@ -50,6 +50,10 @@ class Recording
 
   private:
     bool appendRecordings();
+    void RecordingThreadFunction();
+
+    std::shared_ptr<std::thread> recordingThread;
+    bool stopRecording = false;
 
     // camera variables
     std::string camURL;
@@ -66,7 +70,7 @@ class Recording
     double fps;
 
     // ros logger
-    const rclcpp::Logger& logger_; //allows Recording objects to send logs from ROS nodes
+    std::shared_ptr<rclcpp::Logger> logger_; //allows Recording objects to send logs from ROS nodes
     
     // cv variables
     cv::VideoCapture cap;
@@ -74,25 +78,31 @@ class Recording
     cv::Mat frame;
 
   public:
-    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, const rclcpp::Logger& logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
+    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, std::shared_ptr<rclcpp::Logger> logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
     
     ~Recording()
     {
         if (cap.isOpened())  // avoid unnecessary logging when creating temporary objects
         {
+            stopRecording = true;
+
+            if(recordingThread->joinable())
+            {
+                recordingThread->join();
+            }
             // Release resources
             this->cap.release();
             this->video_writer.release();
 
-            RCLCPP_INFO(logger_, "Recording stopped.");
+            RCLCPP_INFO(*logger_, "Recording stopped.");
 
             if (appendRecordings())
             {
-                RCLCPP_INFO(logger_, "Succesfully appended videos");
+                RCLCPP_INFO(*logger_, "Succesfully appended videos");
             }
             else
             {
-                RCLCPP_INFO(logger_, "Something went wrong, couldn't append videos in recording %s", camURL.c_str());
+                RCLCPP_INFO(*logger_, "Something went wrong, couldn't append videos in recording %s", camURL.c_str());
             }
         }
     }
@@ -117,10 +127,8 @@ class CameraNode : public rclcpp::Node
     bool createFolder(const std::string& path);
     bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
 
-    bool isRecording{false};
     bool newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
     bool stopRecording(std::string cameraURL);
-    void recordingThreadFunction();
     std::thread recordingThread;
 
     std::unordered_map<std::string, Recording> RecordingMap;
@@ -325,7 +333,7 @@ bool Recording::startRecording()
     this->cap.open((this->camURL));
     if (!this->cap.isOpened())
     {
-        RCLCPP_ERROR(logger_, "Failed to open camera stream.");
+        RCLCPP_ERROR(*logger_, "Failed to open camera stream.");
         return false;
     }
 
@@ -337,7 +345,7 @@ bool Recording::startRecording()
 
     this->fps = (this->fps > 0) ? fps : 30;  // weird bug with usb camera, recording is 2x speed or 1,5x
 
-    RCLCPP_INFO(logger_, "fps set to %f", this->fps);
+    RCLCPP_INFO(*logger_, "fps set to %f", this->fps);
 
     // Define the codec and create a VideoWriter object
     /* Also from ChatGPT --> more information on OpenCV
@@ -350,11 +358,14 @@ bool Recording::startRecording()
 
     if (!video_writer.isOpened())
     {
-        RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
+        RCLCPP_ERROR(*logger_, "Error: Could not open the output video file for writing!");
         return false;
     }
 
     this->startTime = time(0);
+
+    recordingThread = std::make_shared<std::thread>([this]() { RecordingThreadFunction(); });
+    recordingThread->detach();
 
     return true;
 }
@@ -364,10 +375,16 @@ bool Recording::recordFrame()
     this->cap >> this->frame;
     if (this->frame.empty())
     {
-        RCLCPP_ERROR(logger_, "Error: Blank frame grabbed!");
+        if(!this->stopRecording) RCLCPP_ERROR(*logger_, "Error: Blank frame grabbed!");
         return false;
     }
 
+
+    if(!this->video_writer.isOpened())
+    {
+        if(!this->stopRecording) RCLCPP_ERROR(*logger_, "Error: video writer is closed");
+        return false;
+    }
     // Write frame to the output video file
     this->video_writer.write(this->frame);
 
@@ -388,7 +405,7 @@ bool Recording::recordFrame()
 
         if (!video_writer.isOpened())
         {
-            RCLCPP_ERROR(logger_, "Error: Could not open the output video file for writing!");
+            RCLCPP_ERROR(*logger_, "Error: Could not open the output video file for writing!");
             return false;
         }
 
@@ -403,10 +420,6 @@ bool CameraNode::stopRecording(std::string cameraURL)
     if (RecordingMap.find(cameraURL) != RecordingMap.end())
     {
         RecordingMap.erase(cameraURL);
-        if (RecordingMap.empty())
-        {
-            this->isRecording = false;  // if there are no more recordings: stop the thread
-        }
         return true;
     }
     else
@@ -423,20 +436,13 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
     }
     else
     {
-        RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, LOGGER));
+        RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, std::make_shared<rclcpp::Logger>(LOGGER)));
 
         // Access the recording using at() to safely get the reference
         Recording* pRecording = &RecordingMap.at(cameraURL);
 
         if (pRecording->startRecording())
         {
-            if (this->isRecording)
-                ;  // if thread is already started: do nothing
-            else
-            {
-                this->isRecording = true;
-                this->recordingThread = std::thread(&CameraNode::recordingThreadFunction, this);  // start thread
-            }
             return true;
         }
         else
@@ -446,17 +452,6 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
     }
 }
 
-void CameraNode::recordingThreadFunction()
-{
-    while (this->isRecording)
-    {
-        for (auto& pair : RecordingMap)  // call all active recordings
-        {
-            if (!pair.second.recordFrame())  // if there is an error during the recording stop the faulty recording only
-                stopRecording(pair.second.getURL());
-        }
-    }
-}
 
 bool Recording::appendRecordings()
 {
@@ -475,7 +470,7 @@ bool Recording::appendRecordings()
 
         if (!appender.isOpened())
         {
-            RCLCPP_ERROR(logger_, "Couldn't launch video appender");
+            RCLCPP_ERROR(*logger_, "Couldn't launch video appender");
             return false;
         }
 
@@ -485,11 +480,11 @@ bool Recording::appendRecordings()
 
             if (!cap.isOpened())
             {
-                RCLCPP_INFO(logger_, "file: %s was empty", current_file.c_str());
+                RCLCPP_INFO(*logger_, "file: %s was empty", current_file.c_str());
                 continue;  // empty file; skip
             }
 
-            RCLCPP_INFO(logger_, "Appending file %s", current_file.c_str());
+            RCLCPP_INFO(*logger_, "Appending file %s", current_file.c_str());
 
             while (cap.read(frame))  // Read each frame
             {
@@ -508,4 +503,13 @@ void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_messag
 {
     last_latitude = gps_message.latitude;
     last_longitude = gps_message.longitude;
+}
+
+void Recording::RecordingThreadFunction()
+{
+    while (!this->stopRecording)
+    {
+        recordFrame();
+    }
+    return;
 }
