@@ -326,7 +326,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 bool Recording::startRecording()
 {
     // Use the provided file name or a default name
-    std::string filePath = this->videoFolderPath + "/" + this->filename;
+    std::string filePath =  "/tmp/" + this->filename;
     filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));  // add recording number before .avi
     this->files.push_back(filePath);                                                        // add file to list of recordings
 
@@ -393,7 +393,7 @@ bool Recording::recordFrame()
 
     if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL)  // save every RECORDING_INTERVAL seconds
     {
-        std::string filePath = this->videoFolderPath + "/" + this->filename;
+        std::string filePath = "/tmp/" + this->filename;
         filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));
         this->files.push_back(filePath);
         this->video_writer.release();
