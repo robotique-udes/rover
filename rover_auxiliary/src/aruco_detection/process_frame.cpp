@@ -8,6 +8,7 @@ ProcessFrame::ProcessFrame(std::string cameraURL_): DICTIONNARY(cv::aruco::getPr
 std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
 {
     std::optional<cv::Mat> frame = _stream.getFrame(debugMode_);
+
     if (!frame)
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Error getting frame from stream");

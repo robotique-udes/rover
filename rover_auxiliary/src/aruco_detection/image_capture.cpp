@@ -2,7 +2,8 @@
 
 ImageCapture::ImageCapture(std::string cameraURL_): _cameraURL(cameraURL_)
 {
-    _rtspPipeline = "rtspsrc location=" + _cameraURL + _PIPELINE, initCam();
+    _rtspPipeline = "rtspsrc location=" + _cameraURL + PIPELINE;
+    initCam();
 }
 
 ImageCapture::~ImageCapture(void)
@@ -47,7 +48,7 @@ bool ImageCapture::changeStream(std::string URL_)
 
         if (!initCam())
         {
-            RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Could not change streaming device");
+            RCLCPP_WARN(rclcpp::get_logger("aruco_detection_node"), "Could not change streaming device");
             return false;
         }
         return true;

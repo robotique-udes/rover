@@ -17,10 +17,10 @@ ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv): Node("aruco_detec
     this->getParams(argc, argv);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
-    _timerPublisher
+    _timer_publisher
         = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS), [this](void) { this->CB_arucoPublisher(); });
 
-    _timerDetection
+    _timer_detection
         = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS), [this](void) { this->CB_arucoDetection(); });
 
     _srv_detectionManager = this->create_service<rover_msgs::srv::ArucoDetection>(
@@ -45,10 +45,11 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
     std::vector<std::vector<uint16_t>> detectedArucos;
     std::vector<std::string> matchingURL;
 
-    for (const auto& it : _detections)
     {
+        std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+
+        for (const auto& it : _detections)
         {
-            std::lock_guard<std::mutex> lock(_detectedArucosMutex);
             detectedArucos.push_back(it.second.getValidatedIds());
             matchingURL.push_back(it.second.getCamURL());
         }
@@ -68,9 +69,8 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
 
         if (!detection.empty())
         {
-            std::string marker_list = "Publishing detected Aruco markers at ";
+            std::string marker_list = "Publishing detected Aruco markers at " + url + " : ";
 
-            marker_list += url + " : ";
             for (const auto& id : detection)
             {
                 marker_list += std::to_string(id) + " ";
@@ -90,10 +90,6 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
             if (_debugMode)
             {
                 RCLCPP_INFO(this->get_logger(), "No Aruco markers detected at %s", url.c_str());
-            }
-            else
-            {
-                RCLCPP_DEBUG(this->get_logger(), "No Aruco markers detected at %s", url.c_str());
             }
         }
     }
@@ -170,9 +166,12 @@ void ArucoDetectionNode::infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDet
 {
     std::lock_guard<std::mutex> lock(_detectedArucosMutex);
 
-    for (auto& it : _detections)
+    if (response_ != nullptr)
     {
-        response_->urls.push_back(it.second.getCamURL());
-        response_->tags.push_back(it.second.getTag());
+        for (auto& it : _detections)
+        {
+            response_->urls.push_back(it.second.getCamURL());
+            response_->tags.push_back(it.second.getTag());
+        }
     }
 }

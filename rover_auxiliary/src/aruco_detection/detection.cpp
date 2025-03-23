@@ -28,7 +28,7 @@ std::vector<uint16_t> Detection::detect(bool debugMode_)
 void Detection::update(bool debugMode_)
 {
     _validatedIds.clear();
-    std::vector<uint16_t> detectedIds = detect(debugMode_);
+    std::vector<uint16_t> detectedIds = this->detect(debugMode_);
 
     for (auto it = _validation.begin(); it != _validation.end();)
     {
