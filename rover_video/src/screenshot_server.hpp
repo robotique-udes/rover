@@ -138,7 +138,7 @@ class CameraNode : public rclcpp::Node
     std::condition_variable recordingCv;
 
     std::unordered_map<std::string, Recording> RecordingMap;
-    std::unordered_set<std::string> RecordingShutdownSet;
+    std::unordered_set<std::string> RecordingShutdownRequestSet;
 
   public:
     CameraNode();
@@ -543,7 +543,7 @@ void Recording::RecordingThreadFunction()
 void CameraNode::RequestShutdown(std::string camURL)
 {
     RCLCPP_WARN(LOGGER, "Received shutdown request for %s", camURL.c_str());
-    RecordingShutdownSet.insert(camURL);
+    RecordingShutdownRequestSet.insert(camURL);
     recordingCv.notify_one();
     return;
 }
@@ -562,12 +562,12 @@ void CameraNode::VideoWatchDogFunction()
     while(!watchDogStop.load())
     {
         std::unique_lock<std::mutex> lock(recordingMutex);
-        recordingCv.wait(lock, [this]{ return watchDogStop.load() || !RecordingShutdownSet.empty();});
+        recordingCv.wait(lock, [this]{ return watchDogStop.load() || !RecordingShutdownRequestSet.empty();});
 
         if (watchDogStop) break;
         else
         {
-            for (std::string url : RecordingShutdownSet)
+            for (std::string url : RecordingShutdownRequestSet)
             {
                 RCLCPP_WARN(LOGGER, "Processing Shutdown for %s", url.c_str());
                 if (RecordingMap.find(url) != RecordingMap.end())
@@ -588,7 +588,7 @@ void CameraNode::VideoWatchDogFunction()
                 }
             }
 
-            RecordingShutdownSet.clear(); 
+            RecordingShutdownRequestSet.clear(); 
         }
     }
     RCLCPP_INFO(LOGGER, "Stopping video watchdog");
