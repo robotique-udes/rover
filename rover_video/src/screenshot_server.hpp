@@ -11,7 +11,6 @@
 #include <chrono>
 #include <iomanip>
 #include <iostream>
-#include <queue>
 #include <sstream>
 #include <thread>
 #include <unordered_map>
@@ -51,6 +50,7 @@ class Recording
   private:
     bool appendRecordings();
     void RecordingThreadFunction();
+    std::function<void(std::string)> RequestShutdown_;
 
     std::shared_ptr<std::thread> recordingThread;
     bool stopRecording = false;
@@ -78,7 +78,7 @@ class Recording
     cv::Mat frame;
 
   public:
-    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, std::shared_ptr<rclcpp::Logger> logger): camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
+    Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, std::shared_ptr<rclcpp::Logger> logger, std::function<void(std::string)> RequestShutdown):  RequestShutdown_(RequestShutdown), camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
     
     ~Recording()
     {
@@ -129,9 +129,16 @@ class CameraNode : public rclcpp::Node
 
     bool newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
     bool stopRecording(std::string cameraURL);
-    std::thread recordingThread;
+    bool StartWatchDog();
+    void VideoWatchDogFunction();
+    void RequestShutdown(std::string camURL);
+    std::atomic<bool> watchDogStop {false};
+    std::mutex recordingMutex;
+    std::thread videoWatchDog;
+    std::condition_variable recordingCv;
 
     std::unordered_map<std::string, Recording> RecordingMap;
+    std::unordered_set<std::string> RecordingShutdownSet;
 
   public:
     CameraNode();
@@ -417,9 +424,17 @@ bool Recording::recordFrame()
 
 bool CameraNode::stopRecording(std::string cameraURL)
 {
+    std::lock_guard<std::mutex> lock(recordingMutex);
+
     if (RecordingMap.find(cameraURL) != RecordingMap.end())
     {
         RecordingMap.erase(cameraURL);
+
+        if(RecordingMap.empty())
+        {
+            watchDogStop.store(true);
+            recordingCv.notify_one();
+        }
         return true;
     }
     else
@@ -436,7 +451,13 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
     }
     else
     {
-        RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, std::make_shared<rclcpp::Logger>(LOGGER)));
+        RecordingMap.emplace(cameraURL, Recording(videoFolderPath, filename, cameraURL, std::make_shared<rclcpp::Logger>(LOGGER), [this] (std::string url) {RequestShutdown(url);}));
+
+        if (!videoWatchDog.joinable())
+        {
+            RCLCPP_INFO(LOGGER, "Calling start watchdog");
+            StartWatchDog();
+        }
 
         // Access the recording using at() to safely get the reference
         Recording* pRecording = &RecordingMap.at(cameraURL);
@@ -509,7 +530,67 @@ void Recording::RecordingThreadFunction()
 {
     while (!this->stopRecording)
     {
-        recordFrame();
+        if(!recordFrame() && !this->stopRecording) //if error execept on last loop
+        {
+            RCLCPP_WARN(*logger_, "Requesting shutdown for %s", this->camURL.c_str());
+            RequestShutdown_(this->camURL);
+            this->stopRecording = true;
+        }
     }
+    return;
+}
+
+void CameraNode::RequestShutdown(std::string camURL)
+{
+    RCLCPP_WARN(LOGGER, "Received shutdown request for %s", camURL.c_str());
+    RecordingShutdownSet.insert(camURL);
+    recordingCv.notify_one();
+    return;
+}
+
+bool CameraNode::StartWatchDog()
+{
+    RCLCPP_INFO(LOGGER, "Creating thread");
+    watchDogStop.store(false);
+    videoWatchDog = std::thread(&CameraNode::VideoWatchDogFunction, this);
+    return true;
+}
+
+void CameraNode::VideoWatchDogFunction()
+{
+    RCLCPP_INFO(LOGGER, "Starting video watchdog");
+    while(!watchDogStop.load())
+    {
+        std::unique_lock<std::mutex> lock(recordingMutex);
+        recordingCv.wait(lock, [this]{ return watchDogStop.load() || !RecordingShutdownSet.empty();});
+
+        if (watchDogStop) break;
+        else
+        {
+            for (std::string url : RecordingShutdownSet)
+            {
+                RCLCPP_WARN(LOGGER, "Processing Shutdown for %s", url.c_str());
+                if (RecordingMap.find(url) != RecordingMap.end())
+                {
+                    if(!RecordingMap.erase(url))
+                    {
+                        RCLCPP_ERROR(LOGGER, "Shutdown request for %s could not be processed, please try again", url.c_str());
+                    }
+            
+                    if(RecordingMap.empty())
+                    {
+                        watchDogStop.store(true);
+                    }
+                }
+                else
+                {
+                    RCLCPP_ERROR(LOGGER, "Unable to find %s for shutdown, please try again", url.c_str());
+                }
+            }
+
+            RecordingShutdownSet.clear(); 
+        }
+    }
+    RCLCPP_INFO(LOGGER, "Stopping video watchdog");
     return;
 }
