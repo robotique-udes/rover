@@ -1,6 +1,7 @@
 #include "detection.hpp"
 
-Detection::Detection(std::string cameraURL_, uint8_t detectionTag_): _processFrame(cameraURL_)
+Detection::Detection(std::string cameraURL_, uint8_t detectionTag_):
+    _processFrame(cameraURL_)
 {
     _tag = detectionTag_;
     _cameraURL = cameraURL_;
