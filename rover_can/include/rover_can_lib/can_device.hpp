@@ -36,11 +36,16 @@ class CanDevice
     {
         switch (frameMsg->data[(uint8_t)RoverCanLib::Constant::eDataIndex::MSG_ID])
         {
-            case (uint8_t)RoverCanLib::Constant::eMsgId::HEARTBEAT: this->resetWatchdog(); break;
+            case (uint8_t)RoverCanLib::Constant::eMsgId::HEARTBEAT:
+                this->resetWatchdog();
+                break;
 
-            case (uint8_t)RoverCanLib::Constant::eMsgId::ERROR_STATE: this->setErrorState(frameMsg); break;
+            case (uint8_t)RoverCanLib::Constant::eMsgId::ERROR_STATE:
+                this->setErrorState(frameMsg);
+                break;
 
-            default: (_canMasterPtr->*_callback)(this->getId(), frameMsg);
+            default:
+                (_canMasterPtr->*_callback)(this->getId(), frameMsg);
         }
     }
 

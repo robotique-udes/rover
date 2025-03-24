@@ -65,7 +65,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.dig);
                     break;
 
-                default: LOG(WARN, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    LOG(WARN, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -78,13 +80,17 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
             {
-                case eMsgID::CMD: Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_); break;
+                case eMsgID::CMD:
+                    Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_);
+                    break;
 
                 case eMsgID::CURRENT_SAMPLE:
                     Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.current_sample, msg_);
                     break;
 
-                case eMsgID::DIG: Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_); break;
+                case eMsgID::DIG:
+                    Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_);
+                    break;
 
                 default:
                     LOG(ERROR, "Shouldn't ever fall here, implementation error");
@@ -120,7 +126,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.dig, logger_);
                     break;
 
-                default: RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -133,13 +141,17 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::Science::eMsgID)msgId_)
             {
-                case eMsgID::CMD: Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_); break;
+                case eMsgID::CMD:
+                    Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.cmd, msg_);
+                    break;
 
                 case eMsgID::CURRENT_SAMPLE:
                     Helpers::structToCanMsg<uint8_t, UnionDefinition::Uint8_tUnion>(&data.current_sample, msg_);
                     break;
 
-                case eMsgID::DIG: Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_); break;
+                case eMsgID::DIG:
+                    Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.dig, msg_);
+                    break;
 
                 default:
                     RCLCPP_ERROR(logger_, "Shouldn't ever fall here, implementation error");

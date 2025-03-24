@@ -46,7 +46,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-GoalManager::GoalManager(): Node("goal_manager")
+GoalManager::GoalManager():
+    Node("goal_manager")
 {
     _pubGpsGoal = this->create_publisher<rover_msgs::msg::GpsPosition>("/rover/drive_train/auto/gps/goal", 1);
     _timerPub = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&GoalManager::CB_timerPub, this));

@@ -1,6 +1,9 @@
 #include "QTreeViewExplorer.hpp"
 
-QTreeViewExplorer::QTreeViewExplorer(QWidget* parent_): QTreeView(parent_) {}
+QTreeViewExplorer::QTreeViewExplorer(QWidget* parent_):
+    QTreeView(parent_)
+{
+}
 
 QTreeViewExplorer::~QTreeViewExplorer(){};
 
