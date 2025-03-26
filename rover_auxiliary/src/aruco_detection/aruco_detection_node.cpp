@@ -42,12 +42,9 @@ ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
 
 void ArucoDetectionNode::getParams(int argc, char** argv)
 {
-    if (argc > 1)
+    if (argc > 1 && argv[1][0] == 'd')
     {
-        if (argv[1][0] == 'd')
-        {
-            _debugMode = true;
-        }
+        _debugMode = true;
     }
 }
 
@@ -136,7 +133,7 @@ void ArucoDetectionNode::CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDete
         response_->success = this->startDetection(request_->camera_url);
     }
 
-    if (request_->command == rover_msgs::srv::ArucoDetection::Request::STOP)
+    else if (request_->command == rover_msgs::srv::ArucoDetection::Request::STOP)
     {
         response_->success = this->stopDetection(request_->camera_url);
     }

@@ -26,8 +26,9 @@ bool ImageCapture::initCam(void)
         res = _cap.open(_rtspPipeline, cv::CAP_GSTREAMER);
     }
 
-    else if (_cameraURL.compare(0, 5, "/dev/", 0, 5) == 0)
+    else if (_cameraURL.compare(0, 8, "file:///", 0, 8) == 0)
     {
+        _cameraURL = _cameraURL.substr(7);
         res = _cap.open(_cameraURL, cv::CAP_V4L2);
     }
 

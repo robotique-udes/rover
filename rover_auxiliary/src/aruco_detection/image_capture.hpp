@@ -8,7 +8,7 @@
 
 class ImageCapture
 {
-    static constexpr auto PIPELINE
+    static constexpr const char* PIPELINE
         = " latency=0 drop=true ! decodebin ! videorate max-rate=5 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
   public:
