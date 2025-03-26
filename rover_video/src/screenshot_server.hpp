@@ -235,9 +235,9 @@ std::string CameraNode::getCamID(std::string cameraURL)
 
 std::string CameraNode::getCurrentTime()
 {
-    auto now = std::chrono::system_clock::now();  // get system time
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();  // get system time
 
-    auto now_time = std::chrono::system_clock::to_time_t(now);  // convert to real time
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);  // convert to real time
 
     std::tm tm_now = *std::localtime(&now_time);  // convert to calendar time
 
@@ -551,7 +551,7 @@ bool Recording::appendRecordings()
             return false;
         }
 
-        for (const auto& current_file : files)
+        for (const std::string& current_file : files)
         {
             cv::VideoCapture cap(current_file);
 
