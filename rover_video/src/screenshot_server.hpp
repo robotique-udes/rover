@@ -53,7 +53,7 @@ class Recording
     std::function<void(std::string)> RequestShutdown_;
 
     std::shared_ptr<std::thread> recordingThread;
-    bool stopRecording = false;
+    std::atomic<bool> stopRecording{false};
 
     // camera variables
     std::string camURL;
@@ -80,11 +80,31 @@ class Recording
   public:
     Recording(std::string videoFolderPath_in, std::string filename_in, std::string URL_in, std::shared_ptr<rclcpp::Logger> logger, std::function<void(std::string)> RequestShutdown):  RequestShutdown_(RequestShutdown), camURL(URL_in), filename(filename_in), videoFolderPath(videoFolderPath_in), logger_(logger){}
     
+    Recording(Recording&& other) noexcept:
+        RequestShutdown_(std::move(other.RequestShutdown_)), // Move std::function
+        recordingThread(std::move(other.recordingThread)), //move thread pointer
+        camURL(std::move(other.camURL)), //move std::strings
+        filename(std::move(other.filename)),
+        videoFolderPath(std::move(other.videoFolderPath)), 
+        files(std::move(other.files)), //move vector
+        recordingNumber(other.recordingNumber),
+        startTime(other.startTime),
+        frame_width(other.frame_width),
+        frame_height(other.frame_height),
+        fps(other.fps),
+        logger_(std::move(other.logger_)), //move ros logger pointer
+        cap(std::move(other.cap)),  //move cv variables
+        video_writer(std::move(other.video_writer)),
+        frame(std::move(other.frame)) // Must be last
+    {
+        stopRecording.store(other.stopRecording.load()); //cannot move atomic
+    }
+
     ~Recording()
     {
         if (cap.isOpened())  // avoid unnecessary logging when creating temporary objects
         {
-            stopRecording = true;
+            stopRecording.store(true);
 
             if(recordingThread->joinable())
             {
@@ -382,14 +402,14 @@ bool Recording::recordFrame()
     this->cap >> this->frame;
     if (this->frame.empty())
     {
-        if(!this->stopRecording) RCLCPP_ERROR(*logger_, "Error: Blank frame grabbed!");
+        if(!this->stopRecording.load()) RCLCPP_ERROR(*logger_, "Error: Blank frame grabbed!");
         return false;
     }
 
 
     if(!this->video_writer.isOpened())
     {
-        if(!this->stopRecording) RCLCPP_ERROR(*logger_, "Error: video writer is closed");
+        if(!this->stopRecording.load()) RCLCPP_ERROR(*logger_, "Error: video writer is closed");
         return false;
     }
     // Write frame to the output video file
@@ -528,13 +548,13 @@ void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_messag
 
 void Recording::RecordingThreadFunction()
 {
-    while (!this->stopRecording)
+    while (!this->stopRecording.load())
     {
-        if(!recordFrame() && !this->stopRecording) //if error execept on last loop
+        if(!recordFrame() && !this->stopRecording.load()) //if error execept on last loop
         {
             RCLCPP_WARN(*logger_, "Requesting shutdown for %s", this->camURL.c_str());
             RequestShutdown_(this->camURL);
-            this->stopRecording = true;
+            this->stopRecording.store(true);
         }
     }
     return;
