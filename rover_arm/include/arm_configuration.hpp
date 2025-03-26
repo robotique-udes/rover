@@ -24,7 +24,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
         }  // namespace LEN
-    }      // namespace JL
+    }  // namespace JL
 
     namespace J1
     {
@@ -35,7 +35,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0f;
             constexpr float z = 0.435f;
         }  // namespace LEN
-    }      // namespace J1
+    }  // namespace J1
 
     namespace J2
     {
@@ -46,7 +46,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0f;
             constexpr float z = 0.371f;
         }  // namespace LEN
-    }      // namespace J2
+    }  // namespace J2
 
     namespace GRIPPER_TILT
     {
@@ -57,7 +57,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0f;
             constexpr float z = 0.185f;
         }  // namespace LEN
-    }      // namespace GRIPPER_TILT
+    }  // namespace GRIPPER_TILT
 
     namespace GRIPPER_ROT
     {
@@ -68,7 +68,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
         }  // namespace LEN
-    }      // namespace GRIPPER_ROT
+    }  // namespace GRIPPER_ROT
 
     // GRIPPER_CLOSE not defined because no speed control available in current arm configuration
 }  // namespace ARM_CONFIGURATION
@@ -91,5 +91,16 @@ constexpr float J3z = ARM_CONFIGURATION::GRIPPER_TILT::LEN::z;
 constexpr float J4x = ARM_CONFIGURATION::GRIPPER_ROT::LEN::x;
 constexpr float J4y = ARM_CONFIGURATION::GRIPPER_ROT::LEN::y;
 constexpr float J4z = ARM_CONFIGURATION::GRIPPER_ROT::LEN::z;
+
+enum class eJointIndex : uint8_t
+{
+    JL = rover_msgs::msg::ArmMsg::JL,
+    J1 = rover_msgs::msg::ArmMsg::J1,
+    J2 = rover_msgs::msg::ArmMsg::J2,
+    GRIPPER_TILT = rover_msgs::msg::ArmMsg::GRIPPER_TILT,
+    GRIPPER_ROT = rover_msgs::msg::ArmMsg::GRIPPER_ROT,
+    GRIPPER_CLOSE = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
+    eLAST
+};
 
 #endif  // __ARM_CONFIGURATION__
