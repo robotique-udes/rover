@@ -589,7 +589,11 @@ void Recording::RecordingThreadFunction()
 void CameraNode::RequestShutdown(std::string camURL)
 {
     RCLCPP_WARN(LOGGER, "Received shutdown request for %s", camURL.c_str());
-    RecordingShutdownRequestSet.insert(camURL);
+
+    {
+        std::unique_lock<std::mutex> lock(recordingMutex);
+        RecordingShutdownRequestSet.insert(camURL);
+    }//unlock
     recordingCv.notify_one();
     return;
 }
