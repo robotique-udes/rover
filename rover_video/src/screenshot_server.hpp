@@ -320,7 +320,7 @@ bool CameraNode::createFolder(const std::string& path)
         }
     }
 
-    RCLCPP_INFO(LOGGER, "Directory already exists: %s", path.c_str());
+    RCLCPP_DEBUG(LOGGER, "Directory already exists: %s", path.c_str());
     return true;
 }
 
@@ -408,7 +408,7 @@ bool Recording::startRecording()
 
     this->fps = (this->fps > 0) ? fps : 30;  // weird bug with usb camera, recording is 2x speed or 1,5x
 
-    RCLCPP_INFO(*logger_, "fps set to %f", this->fps);
+    RCLCPP_DEBUG(*logger_, "fps set to %f", this->fps);
 
     // Define the codec and create a VideoWriter object
     /* Also from ChatGPT --> more information on OpenCV
@@ -428,13 +428,19 @@ bool Recording::startRecording()
     this->startTime = time(0);
 
     recordingThread = std::make_shared<std::thread>([this]() { RecordingThreadFunction(); });
-    recordingThread->detach();
 
     return true;
 }
 
 bool Recording::recordFrame()
 {
+    if(!this->cap.isOpened())
+    {
+        if(!this->stopRecording.load()) RCLCPP_ERROR(*logger_, "Error: cap is closed");
+        return false;
+    }
+
+
     this->cap >> this->frame;
     if (this->frame.empty())
     {
@@ -511,7 +517,6 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
 
         if (!videoWatchDog.joinable())
         {
-            RCLCPP_INFO(LOGGER, "Calling start watchdog");
             StartWatchDog();
         }
 
@@ -557,7 +562,7 @@ bool Recording::appendRecordings()
 
             if (!cap.isOpened())
             {
-                RCLCPP_INFO(*logger_, "file: %s was empty", current_file.c_str());
+                RCLCPP_WARN(*logger_, "file: %s was empty", current_file.c_str());
                 continue;  // empty file; skip
             }
 
@@ -610,7 +615,6 @@ void CameraNode::RequestShutdown(std::string camURL)
 
 bool CameraNode::StartWatchDog()
 {
-    RCLCPP_INFO(LOGGER, "Creating thread");
     watchDogStop.store(false);
     videoWatchDog = std::thread(&CameraNode::VideoWatchDogFunction, this);
     return true;
@@ -618,7 +622,7 @@ bool CameraNode::StartWatchDog()
 
 void CameraNode::VideoWatchDogFunction()
 {
-    RCLCPP_INFO(LOGGER, "Starting video watchdog");
+    RCLCPP_DEBUG(LOGGER, "Starting video watchdog");
     while(!watchDogStop.load())
     {
         std::unique_lock<std::mutex> lock(recordingMutex);
@@ -651,6 +655,6 @@ void CameraNode::VideoWatchDogFunction()
             RecordingShutdownRequestSet.clear(); 
         }
     }
-    RCLCPP_INFO(LOGGER, "Stopping video watchdog");
+    RCLCPP_DEBUG(LOGGER, "Stopping video watchdog");
     return;
 }
