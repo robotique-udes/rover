@@ -3,6 +3,8 @@
 #include "rover_msgs/msg/arm_msg.hpp"
 #include "rover_msgs/msg/joy.hpp"
 
+#include <joint_controller.hpp>
+
 #include "rovus_lib/timer.hpp"
 #include "rovus_lib/macros.h"
 
@@ -13,6 +15,8 @@
 #include <map>
 
 #include "Eigen/Dense"
+
+
 
 constexpr std::chrono::milliseconds WATCHDOG_TIMEOUT{500};
 constexpr uint64_t TOGGLE_DEBOUNCE_TIME_MS = 150ul;
@@ -43,7 +47,7 @@ class Teleop : public rclcpp::Node
         eLAST
     };
 
-    enum class eButtonId : uint8_t
+    enum class eButtonId : size_t
     {
         RECORD = KEYBINDING::RECORD,
         CLEAR_POINTS = KEYBINDING::CLEAR_POINTS,
@@ -65,10 +69,13 @@ class Teleop : public rclcpp::Node
         CARTESIAN = 1
     };
 
-    Teleop();
-    ~Teleop(){};
+    Teleop() = default;
+    ~Teleop() = default;
 
   private:
+    // Avoid declaring all variables in private
+    // For example, _jacobian could be instanciated in computeJacobian method
+
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmPositions;
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyArm;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
@@ -82,6 +89,7 @@ class Teleop : public rclcpp::Node
     Eigen::MatrixXd _nullspaceProjector = Eigen::MatrixXd(4, 4);
     Eigen::VectorXd _computedVelocity = Eigen::VectorXd(4);
     Eigen::VectorXd _currentEndEffectorPosition = Eigen::VectorXd(3);
+    // TO_UNDERLYING instead of casting
     Eigen::VectorXd _currentJointsPos = Eigen::VectorXd::Zero((uint8_t)eJointIndex::eLAST);
     Eigen::VectorXd _desiredCartesian = Eigen::VectorXd::Zero((uint8_t)eCartesian::eLAST);
     Eigen::VectorXd _gradientManipulability = Eigen::VectorXd(4);
@@ -104,6 +112,7 @@ class Teleop : public rclcpp::Node
         = RoverLib::Timer<uint64_t, RoverLib::millis>(TOGGLE_DEBOUNCE_TIME_MS);
 
     bool isSelected(float buttonValue_, eButtonId buttonId_);
+    // void position_CB(const rover_msgs::msg::&ArmMsg positionMsg_); avoid sharedPtr
     void position_CB(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_);
     void joy_CB(const rover_msgs::msg::Joy::SharedPtr positionMsg_);
     void scaleVelocities(Eigen::VectorXd& jointVelocities_);
@@ -278,7 +287,7 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 
         scaleVelocities(_computedVelocity);
 
-        for (int i = 0; i < _computedVelocity.size(); ++i)
+        for (size_t i = 0; i < _computedVelocity.size(); ++i)
         {
             if (std::abs(_computedVelocity(i)) > 1e-4)
             {
@@ -327,6 +336,7 @@ void Teleop::joy_CB(const rover_msgs::msg::Joy::SharedPtr joyMsg_)
 
 void Teleop::position_CB(const rover_msgs::msg::ArmMsg::SharedPtr positionMsg_)
 {
+    // Check sequence instead of time (counter)
     _lastPositionData = std::chrono::steady_clock::now();
     _currentPoseFailure = false;
 
@@ -468,11 +478,6 @@ bool Teleop::isSelected(float buttonValue_, eButtonId buttonId_)
     {
         return false;
     }
-}
-
-bool isPressed(float buttonValue_)
-{
-    return !IN_ERROR(buttonValue_, 0.01, 0.0f);
 }
 
 int main(int argc, char* argv[])
