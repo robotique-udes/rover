@@ -12,6 +12,7 @@
 class RtspPlayerWidget : public QWidget
 {
     Q_OBJECT
+    static constexpr int RECONNECT_INTERVAL = 5000;
 
   public:
     explicit RtspPlayerWidget(QWidget* parent = nullptr);
