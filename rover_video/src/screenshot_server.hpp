@@ -100,6 +100,32 @@ class Recording
         stopRecording.store(other.stopRecording.load()); //cannot move atomic
     }
 
+    Recording& operator=(Recording&& other) noexcept { //move operator just to be safe
+        if (this != &other) {  // Prevent self-assignment
+    
+            // Move resources
+            RequestShutdown_ = std::move(other.RequestShutdown_);
+            recordingThread = std::move(other.recordingThread);
+            stopRecording.store(other.stopRecording.load(std::memory_order_acquire), std::memory_order_release);
+    
+            camURL = std::move(other.camURL);
+            filename = std::move(other.filename);
+            videoFolderPath = std::move(other.videoFolderPath);
+            files = std::move(other.files);
+            recordingNumber = other.recordingNumber;
+            startTime = other.startTime;
+            frame_width = other.frame_width;
+            frame_height = other.frame_height;
+            fps = other.fps;
+            logger_ = std::move(other.logger_);
+    
+            cap = std::move(other.cap);  // Move cv ressources
+            video_writer = std::move(other.video_writer);
+            frame = std::move(other.frame);
+        }
+        return *this;
+    }
+
     ~Recording()
     {
         if (cap.isOpened())  // avoid unnecessary logging when creating temporary objects
