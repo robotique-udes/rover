@@ -262,14 +262,14 @@ std::string CameraNode::getFileName(const std::string capture_name, std::string 
             filename = capture_name.empty()
                            ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_screenshot.png"
                            : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
-            // Example : 2024-12-10T20:50:00_GPS_25_screenshot.png
+            // Example : 2024-12-10T20:50:00_GPS_30_screenshot.png
             break;
 
         case VIDEO:
             filename = capture_name.empty()
                            ? time + "_lat:" + latitude + "_long:" + longitude + ID + "_recording.avi"
                            : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
-            // Example : 2024-12-10T20:50:00_GPS_25_recording.avi
+            // Example : 2024-12-10T20:50:00_GPS_30_recording.avi
     }
     return filename;
 }
@@ -331,7 +331,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     RCLCPP_INFO(LOGGER, "Attempting to capture screenshot from camera: %s", cameraURL.c_str());
 
     // The URL format will depend on the camera model and configuration
-    // std::string camera_url = "rtsp://rover:roverrover@192.168.144.25:554/1/h264major";
+    // std::string camera_url = "rtsp://rover:roverrover@192.168.144.30:554/1/h264major";
 
     // Open the video stream
 
@@ -388,7 +388,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 
 bool Recording::startRecording()
 {
-    // Use the provided file name or a default name
+    // Getting the directory for the recording
     std::string filePath =  getTempdir() + "/" + this->filename;
     filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));  // add recording number before .avi
     this->files.push_back(filePath);                                                        // add file to list of recordings
@@ -401,7 +401,7 @@ bool Recording::startRecording()
     }
 
     // Get frame width and height
-    // ChatGPT gave me this, gotta look into it more */
+
     this->frame_width = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_WIDTH));
     this->frame_height = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     this->fps = static_cast<double>(this->cap.get(cv::CAP_PROP_FPS));
@@ -411,8 +411,7 @@ bool Recording::startRecording()
     RCLCPP_DEBUG(*logger_, "fps set to %f", this->fps);
 
     // Define the codec and create a VideoWriter object
-    /* Also from ChatGPT --> more information on OpenCV
-    --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
+    /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
     this->video_writer.open(filePath,
                             cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
