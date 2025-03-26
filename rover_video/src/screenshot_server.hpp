@@ -172,8 +172,8 @@ class CameraNode : public rclcpp::Node
     rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _msg_position;
     float last_latitude = 0.0, last_longitude = 0.0;
 
-    void controlIPCam(const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-                      std::shared_ptr<rover_msgs::srv::CameraControl::Response> response);
+    void controlIPCam(const rover_msgs::srv::CameraControl::Request& request,
+                      rover_msgs::srv::CameraControl::Response& response);
     std::string getCurrentTime();
     std::string getFileName(const std::string capture_name, std::string camURL, int state);
     std::string getCamID(std::string cameraURL);
