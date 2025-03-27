@@ -58,8 +58,8 @@ add_executable(main_gui src/main_gui.cpp
                         src/QSshFileExplorer/QFileTransferWidget.cpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.hpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.cpp
-                        src/QSshFileExplorer/QSshWorker.hpp
-                        src/QSshFileExplorer/QSshWorker.cpp
+                        src/QSshFileExplorer/QTreeViewExplorer.hpp
+                        src/QSshFileExplorer/QTreeViewExplorer.cpp
                         src/QRtspPlayer/QRtspPlayerWidget.hpp
                         src/QRtspPlayer/QRtspPlayerWidget.cpp
                         src/QRtspPlayer/QGStreamerWorker.cpp
