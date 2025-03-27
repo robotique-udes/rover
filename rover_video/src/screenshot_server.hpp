@@ -23,10 +23,11 @@
 #define SCREENSHOT 1
 #define VIDEO 2
 
-constexpr uint8_t RECORDING_INTERVAL = 30;  // in seconds
+constexpr uint8_t RECORDING_INTERVAL = 20;  // in seconds
 
 /* This folder is used for the functions' declarations */
 
+/*
 std::string getTempdir()
 {
     const char* temp = std::getenv("TMPDIR");
@@ -38,6 +39,7 @@ std::string getTempdir()
         temp = "/tmp";  // Default for Ubuntu
     return std::string(temp);
 }
+*/
 
 class Recording
 {
@@ -106,6 +108,7 @@ class Recording
     }
 
     Recording(Recording&& other) noexcept:
+        // move constructor, used to move the temporary object created by hashmap emplace
         RequestShutdown_(std::move(other.RequestShutdown_)),
         recordingThread(std::move(other.recordingThread)),
         camURL(std::move(other.camURL)),
@@ -408,7 +411,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
 bool Recording::startRecording()
 {
     // Getting the directory for the recording
-    std::string filePath = getTempdir() + "/" + this->filename;
+    std::string filePath = this->videoFolderPath + "/" + this->filename;
     filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));  // add recording number before .avi
     this->files.push_back(filePath);                                                        // add file to list of recordings
 
@@ -503,7 +506,7 @@ bool Recording::recordFrame()
 
     if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL)  // save every RECORDING_INTERVAL seconds
     {
-        std::string filePath = getTempdir() + "/" + this->filename;
+        std::string filePath = this->videoFolderPath + "/" + this->filename;
         filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));
         this->files.push_back(filePath);
         this->video_writer.release();
