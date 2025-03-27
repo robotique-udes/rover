@@ -19,17 +19,24 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-CameraNode::CameraNode(): Node("media_server")
+CameraNode::CameraNode():
+    Node("media_server")
 {
     _srv_control = this->create_service<rover_msgs::srv::CameraControl>(
         "/rover/video/media_server",
         [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-               std::shared_ptr<rover_msgs::srv::CameraControl::Response> response) { this->controlIPCam(*request, *response); });
+               std::shared_ptr<rover_msgs::srv::CameraControl::Response> response)
+        {
+            this->controlIPCam(*request, *response);
+        });
 
-    _msg_position = this->create_subscription<rover_msgs::msg::GpsPosition>(
-        "/rover/gps/position",
-        1,  // What to put as QoS ?
-        [this](const rover_msgs::msg::GpsPosition& gps_message) { this->callbackPosition(gps_message); });
+    _msg_position
+        = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
+                                                                  1,  // What to put as QoS ?
+                                                                  [this](const rover_msgs::msg::GpsPosition& gps_message)
+                                                                  {
+                                                                      this->callbackPosition(gps_message);
+                                                                  });
 }
 
 void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& request,

@@ -465,7 +465,11 @@ bool Recording::startRecording()
 
     this->startTime = time(0);
 
-    recordingThread = std::make_shared<std::thread>([this]() { RecordingThreadFunction(); });
+    recordingThread = std::make_shared<std::thread>(
+        [this]()
+        {
+            RecordingThreadFunction();
+        });
 
     RCLCPP_INFO(*logger_, "Recording started for stream %s", camURL.c_str());
 
@@ -564,7 +568,10 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
                                        filename,
                                        cameraURL,
                                        std::make_shared<rclcpp::Logger>(LOGGER),
-                                       [this](std::string url) { RequestShutdown(url); }));
+                                       [this](std::string url)
+                                       {
+                                           RequestShutdown(url);
+                                       }));
 
         if (!videoWatchDog.joinable())
         {
@@ -635,7 +642,11 @@ void CameraNode::VideoWatchDogFunction()
     while (!watchDogStop.load())
     {
         std::unique_lock<std::mutex> lock(recordingMutex);
-        recordingCv.wait(lock, [this] { return watchDogStop.load() || !RecordingShutdownRequestSet.empty(); });
+        recordingCv.wait(lock,
+                         [this]
+                         {
+                             return watchDogStop.load() || !RecordingShutdownRequestSet.empty();
+                         });
 
         if (watchDogStop)
             break;
