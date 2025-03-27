@@ -15,6 +15,8 @@ class SecondaryWindow : public QMainWindow
     QVBoxLayout _layout;
 
     QLabel _tempLabel;
+    //Q _navigationWidget;
+
 };
 
 #endif  // SECONDARY_WINDOW_HPP
