@@ -70,6 +70,7 @@ class Recording
 
     // camera variables
     std::string camURL;
+    std::string pipeline;
     std::string filename;
     std::string videoFolderPath;
 
@@ -108,6 +109,7 @@ class Recording
         RequestShutdown_(std::move(other.RequestShutdown_)),  // Move std::function
         recordingThread(std::move(other.recordingThread)),    // move thread pointer
         camURL(std::move(other.camURL)),                      // move std::strings
+        pipeline(std::move(other.pipeline)),
         filename(std::move(other.filename)),
         videoFolderPath(std::move(other.videoFolderPath)),
         files(std::move(other.files)),  // move vector
@@ -135,6 +137,7 @@ class Recording
             stopRecording.store(other.stopRecording.load(std::memory_order_acquire), std::memory_order_release);
 
             camURL = std::move(other.camURL);
+            pipeline = std::move(other.pipeline);
             filename = std::move(other.filename);
             videoFolderPath = std::move(other.videoFolderPath);
             files = std::move(other.files);
@@ -408,7 +411,9 @@ bool Recording::startRecording()
     filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));  // add recording number before .avi
     this->files.push_back(filePath);                                                        // add file to list of recordings
 
-    this->cap.open((this->camURL));
+    this->pipeline = "rtspsrc location=" + this->camURL + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+
+    this->cap.open(this->pipeline, cv::CAP_GSTREAMER);
     if (!this->cap.isOpened())
     {
         RCLCPP_ERROR(*logger_, "Failed to open camera stream.");
