@@ -28,16 +28,12 @@ include_directories( ${rover_msgs_INCLUDE_DIRS} )
 
 
 add_executable( media_server src/media_server.cpp )
-add_executable( cam_controller src/cam_controller.cpp )
 
 ament_target_dependencies(media_server
                           rclcpp
                           rover_msgs
                           OpenCV)
 
-ament_target_dependencies(cam_controller
-                          rclcpp
-                          rover_msgs)
 
 
 if(BUILD_TESTING)
@@ -53,9 +49,10 @@ if(BUILD_TESTING)
   ament_lint_auto_find_test_dependencies()
 endif()
 
+target_link_libraries(media_server ${OpenCV_LIBS})
+
 install(TARGETS 
             media_server
-            cam_controller
         DESTINATION lib/${PROJECT_NAME}/)
 
 ament_package()
