@@ -563,6 +563,8 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
 
 bool Recording::appendRecordings()
 {
+    cv::Mat frame;
+
     if (this->files.empty())
     {
         return false;
