@@ -106,23 +106,23 @@ class Recording
     }
 
     Recording(Recording&& other) noexcept:
-        RequestShutdown_(std::move(other.RequestShutdown_)),  
-        recordingThread(std::move(other.recordingThread)),    
-        camURL(std::move(other.camURL)),                      
+        RequestShutdown_(std::move(other.RequestShutdown_)),
+        recordingThread(std::move(other.recordingThread)),
+        camURL(std::move(other.camURL)),
         pipeline(std::move(other.pipeline)),
         filename(std::move(other.filename)),
         videoFolderPath(std::move(other.videoFolderPath)),
-        files(std::move(other.files)),  
+        files(std::move(other.files)),
         recordingNumber(other.recordingNumber),
         startTime(other.startTime),
         frame_width(other.frame_width),
         frame_height(other.frame_height),
         fps(other.fps),
-        logger_(std::move(other.logger_)),  
-        cap(std::move(other.cap)),            
+        logger_(std::move(other.logger_)),
+        cap(std::move(other.cap)),
         video_writer(std::move(other.video_writer)),
-        appender(std::move(other.appender)),  
-        frame(std::move(other.frame)) 
+        appender(std::move(other.appender)),
+        frame(std::move(other.frame))
     {
         stopRecording.store(other.stopRecording.load());  // cannot move atomic
     }
@@ -245,7 +245,7 @@ std::string CameraNode::getCamID(std::string cameraURL)
     return camID;
 }
 
-//get current time in ISO format for filename
+// get current time in ISO format for filename
 std::string CameraNode::getCurrentTime()
 {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();  // get system time
@@ -337,7 +337,7 @@ bool CameraNode::createFolder(const std::string& path)
     return true;
 }
 
-//capture screenshot 
+// capture screenshot either from recording stream (if it exist) or from a new stream
 bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL)
 {
     std::string captureName = screenshotFolderPath + "/" + filename;
@@ -364,7 +364,9 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     }
     else  // if not recording proceed normaly
     {
-        std::string pipeline = "rtspsrc location=" + cameraURL + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+        std::string pipeline
+            = "rtspsrc location=" + cameraURL
+              + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
         cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
 
@@ -384,10 +386,10 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
             cv::imwrite(captureName, frame);
             RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
 
-            // Display the frame
-            //cv::imshow("IP Camera Screenshot", frame);
-            //cv::waitKey(0);  // Wait for a key press
-            //cv::destroyAllWindows();
+            // Display the frame for debug
+            // cv::imshow("IP Camera Screenshot", frame);
+            // cv::waitKey(0);  // Wait for a key press
+            // cv::destroyAllWindows();
         }
         else
         {
@@ -402,6 +404,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath, std::string fil
     }
 }
 
+// Start the video recording and initialize all openCV members
 bool Recording::startRecording()
 {
     // Getting the directory for the recording
@@ -409,7 +412,9 @@ bool Recording::startRecording()
     filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));  // add recording number before .avi
     this->files.push_back(filePath);                                                        // add file to list of recordings
 
-    this->pipeline = "rtspsrc location=" + this->camURL + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+    this->pipeline
+        = "rtspsrc location=" + this->camURL
+          + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
     this->cap.open(this->pipeline, cv::CAP_GSTREAMER);
     if (!this->cap.isOpened())
@@ -445,16 +450,15 @@ bool Recording::startRecording()
     std::string appendedVideoFilePath = this->videoFolderPath + "/" + this->filename;
 
     appender = cv::VideoWriter(appendedVideoFilePath,
-                             cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                             this->fps,
-                             cv::Size(this->frame_width, this->frame_height));
+                               cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                               this->fps,
+                               cv::Size(this->frame_width, this->frame_height));
 
     if (!appender.isOpened())
     {
         RCLCPP_ERROR(*logger_, "Couldn't launch video sticher");
         return false;
     }
-
 
     this->startTime = time(0);
 
@@ -465,6 +469,8 @@ bool Recording::startRecording()
     return true;
 }
 
+// Capture 1 frame and write it to the short save and long save
+// Called from the recordingThread
 bool Recording::recordFrame()
 {
     if (!this->cap.isOpened())
@@ -519,6 +525,7 @@ bool Recording::recordFrame()
     return true;
 }
 
+// call the recording destroyer and erase it from the hashmap
 bool CameraNode::stopRecording(std::string cameraURL)
 {
     std::lock_guard<std::mutex> lock(recordingMutex);
@@ -540,6 +547,7 @@ bool CameraNode::stopRecording(std::string cameraURL)
     }
 }
 
+// add a new recording to the hashmap, check it's working and start the watch dog if it,s not already started
 bool CameraNode::newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL)
 {
     if (RecordingMap.find(cameraURL) != RecordingMap.end())  // check if recording doesn't already exist
@@ -574,13 +582,14 @@ bool CameraNode::newRecording(std::string videoFolderPath, std::string filename,
     }
 }
 
-
+// gps position for file name
 void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_message)
 {
     last_latitude = gps_message.latitude;
     last_longitude = gps_message.longitude;
 }
 
+// call recordFrame and use callback function (shutdown request) in case of error
 void Recording::RecordingThreadFunction()
 {
     while (!this->stopRecording.load())
@@ -595,6 +604,7 @@ void Recording::RecordingThreadFunction()
     return;
 }
 
+// Add recording key to shutdown list and notify watch dog for shutdown
 void CameraNode::RequestShutdown(std::string camURL)
 {
     RCLCPP_WARN(LOGGER, "Received shutdown request for %s", camURL.c_str());
@@ -607,6 +617,7 @@ void CameraNode::RequestShutdown(std::string camURL)
     return;
 }
 
+// start the VideoWatchDogFunction
 bool CameraNode::StartWatchDog()
 {
     watchDogStop.store(false);
@@ -614,6 +625,7 @@ bool CameraNode::StartWatchDog()
     return true;
 }
 
+// when requested, shutdown and erase recordings that were in error from hashmap
 void CameraNode::VideoWatchDogFunction()
 {
     RCLCPP_DEBUG(LOGGER, "Starting video watchdog");
