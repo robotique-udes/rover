@@ -1,13 +1,10 @@
 uint8 TAKE_PICTURE = 0
 uint8 START_RECORDING = 1
 uint8 STOP_RECORDING = 2
-
-
 # Request
-string camera_url       # Mettre URL cam, prendre id url
+string camera_url       # Take the cameraIR from the URL
 string capture_name     # Optional: Name of the file to save (e.g., "screenshot.png" or "recording.avi")
-uint8 command           # Whether you want to screenshot or record
-
+uint8 command           # Whether you want to screenshot, start a recording or stop it
 ---
 # Response
 bool success        # Indicates whether the operation was successful
