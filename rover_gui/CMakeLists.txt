@@ -22,7 +22,10 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
-  
+
+set(CMAKE_AUTOMOC ON)
+set(CMAKE_AUTORCC ON) 
+
 include_directories(
   src
   ui/include
@@ -44,10 +47,22 @@ add_custom_command(
 
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
-add_executable(main_gui src/main_gui.cpp
+add_executable(main_gui src/gui.cpp
+
+                        src/MainWindow.hpp
+                        src/MainWindow.cpp
+
+                        src/SecondaryWindow.hpp
+                        src/SecondaryWindow.cpp
+
+                        src/Global/Constant/StyleSheet.hpp
+                        src/Global/Helpers/QHelpers.hpp
+                        src/Global/Helpers/QHelpers.cpp
+                        src/Global/Workers/QWorker.hpp
+                        src/Global/Workers/QWorker.cpp
+                        src/Global/QTmpFolderManager.hpp
+                        src/Global/QTmpFolderManager.cpp
                         
-                        src/Global/QWorker.hpp
-                        src/Global/QWorker.cpp
                         src/Global/Constant/StyleSheet.hpp
 
                         src/QSshFileExplorer/QIconManager.hpp
@@ -60,6 +75,25 @@ add_executable(main_gui src/main_gui.cpp
                         src/QSshFileExplorer/QSshFileExplorerWidget.cpp
                         src/QSshFileExplorer/QTreeViewExplorer.hpp
                         src/QSshFileExplorer/QTreeViewExplorer.cpp
+                        src/QSshFileExplorer/Worker/LibSshSupportModule.hpp
+                        src/QSshFileExplorer/Worker/LibSshSupportModule.cpp
+                        src/QSshFileExplorer/Worker/QSshWorker.hpp
+                        src/QSshFileExplorer/Worker/QSshWorker.cpp
+                        src/QSshFileExplorer/QDownloadedFileManager.hpp
+                        src/QSshFileExplorer/QDownloadedFileManager.cpp
+
+                        src/QSideBar/QSideBar.hpp
+                        src/QSideBar/QSideBar.cpp
+                              
+                        src/QDashboard/QDashboard.hpp
+                        src/QDashboard/QDashboard.cpp
+                              
+                        src/QNavigation/QNavigation.hpp
+                        src/QNavigation/QNavigation.cpp
+                              
+                        src/QDashboard/QExample.hpp
+                        src/QDashboard/QExample.cpp
+
                         src/QRtspPlayer/QRtspPlayerWidget.hpp
                         src/QRtspPlayer/QRtspPlayerWidget.cpp
                         src/QRtspPlayer/QGStreamerWorker.cpp
