@@ -15,11 +15,13 @@ sudo apt -y install ros-dev-tools
 sudo apt -y install ros-humble-joy
 sudo apt -y install can-utils
 sudo apt -y install qt6-base-dev
+sudo apt -y install qt6-tools-dev
 sudo apt -y install python3-gi
 sudo apt -y install libssh-dev
 sudo apt -y install sl
 sudo apt -y install clang-format
 sudo apt -y install libopencv-dev
+sudo apt -y install openssh-server
 
 echo -e "\e[0;32m[OK]\e[0m"
 

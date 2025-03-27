@@ -1,13 +1,7 @@
 .vscode
-__pycache__
-.pio
-saved_elements/
-*.pyc
-.idea
-rover_gui/saved_files/navigation/route_dump.log
 *~
-
 *.bkp
 
 screenshots/
 recordings/
+rover_gui/ui/include/UI_*

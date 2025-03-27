@@ -43,17 +43,22 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-Autonomus::Autonomus(): Node("autonomus")
+Autonomus::Autonomus():
+    Node("autonomus")
 {
-    _sub_gpsRover
-        = this->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
-                                                          1,
-                                                          [this](const rover_msgs::msg::Gps msg_) { callbackGPSRover(msg_); });
+    _sub_gpsRover = this->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
+                                                                    1,
+                                                                    [this](const rover_msgs::msg::Gps msg_)
+                                                                    {
+                                                                        callbackGPSRover(msg_);
+                                                                    });
 
-    _sub_gpsAntenna
-        = this->create_subscription<rover_msgs::msg::Gps>("/base/antenna/gps/position",
-                                                          1,
-                                                          [this](const rover_msgs::msg::Gps msg_) { callbackGPSAntenna(msg_); });
+    _sub_gpsAntenna = this->create_subscription<rover_msgs::msg::Gps>("/base/antenna/gps/position",
+                                                                      1,
+                                                                      [this](const rover_msgs::msg::Gps msg_)
+                                                                      {
+                                                                          callbackGPSAntenna(msg_);
+                                                                      });
 
     _pub_cmd = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto", 1);
 

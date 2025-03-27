@@ -1,14 +1,18 @@
-#ifndef __TIMER_H__
-#define __TIMER_H__
+#ifndef __TIMER_HPP__
+#define __TIMER_HPP__
 
-namespace RoverLib
-{
+#if not defined(__linux__)
+#error OS Not supported
+#endif  // not defined(__linux__)
 
 #if defined(__linux__)
 #include <cstdint>
-#include <time.h>
+#include <thread>
 #endif  // defined(__linux__)
 
+namespace RoverLib
+{
+    // #if defined(__linux__)
     template<typename TYPE, TYPE (*clockFunc)(void)>
     class Timer
     {
@@ -129,12 +133,6 @@ namespace RoverLib
         }
     };
 
-#if defined(__linux__)
-#include <chrono>
-#include <cstdint>
-#include <thread>
-#include <time.h>
-
     // TIME_TYPE ex: std::chrono::microseconds
     template<typename TIME_TYPE>
     class TimerFixedLoop
@@ -158,29 +156,12 @@ namespace RoverLib
         std::chrono::_V2::steady_clock::time_point _nextLoopTime;
     };
 
-    uint64_t millis()
-    {
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        return (ts.tv_sec * 1'000) + (ts.tv_nsec / 1'000'000);
-    }
-
-    uint64_t micros()
-    {
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        return (ts.tv_sec * 1'000'000) + (ts.tv_nsec / 1'000);
-    }
-
-    uint64_t nanos()
-    {
-        struct timespec ts;
-        clock_gettime(CLOCK_MONOTONIC, &ts);
-        return (ts.tv_sec * 1'000'000'000) + ts.tv_nsec;
-    }
-
+#if defined(__linux__)
+    uint64_t millis();
+    uint64_t micros();
+    uint64_t nanos();
 #endif  // defined(__linux__)
 
 }  // namespace RoverLib
 
-#endif  //__TIMER_H__
+#endif  //__TIMER_HPP__

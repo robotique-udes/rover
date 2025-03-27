@@ -36,7 +36,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-LightControl::LightControl(): Node("light_controller")
+LightControl::LightControl():
+    Node("light_controller")
 {
     _pubLights = this->create_publisher<rover_msgs::msg::LightControl>("/rover/auxiliary/lights/status", 1);
     _timerPub = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&LightControl::CB_timer, this));
