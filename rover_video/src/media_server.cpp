@@ -27,6 +27,13 @@ CameraNode::CameraNode():
         [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
                std::shared_ptr<rover_msgs::srv::CameraControl::Response> response)
         {
+            if (!request || !response)
+            {
+                RCLCPP_ERROR(this->get_logger(), "NULL request or response received.");
+                response->success = false;
+                response->status = "Service call with null request or response. Possible internal ROS2 error.";
+                return;
+            }
             this->controlIPCam(*request, *response);
         });
 
