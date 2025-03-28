@@ -297,8 +297,22 @@ const std::string CameraNode::getFolderPath(int state)
 // Verifies if screenshot folder already exists
 bool CameraNode::folderExists(const std::string& path)
 {
-    struct stat info;
-    return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
+    struct stat fileInfo;
+
+    if (stat(path.c_str(), &fileInfo) != 0)
+    {
+        return false;
+    }
+
+    if (fileInfo.st_mode & S_IFDIR)
+    {
+        return true;
+    }
+    else
+    {
+        RCLCPP_ERROR(this->get_logger(), "Element Already exist with this path and name, but isn't a folder");
+        return false;  // Todo: how to handle this request
+    }
 }
 
 // Creating screenshot Folder if doesnt already exists
@@ -307,7 +321,7 @@ bool CameraNode::createFolder(const std::string& path)
     if (!this->folderExists(path))
     {
         if (mkdir(path.c_str(), 0775) == 0)
-        {  // 0775 = Full permissions for Linux
+        {  // 0775 = Permissions for Linux
             RCLCPP_INFO(LOGGER, "Succesfully created the folder.");
             return true;
         }
