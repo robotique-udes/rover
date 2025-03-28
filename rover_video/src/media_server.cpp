@@ -58,9 +58,9 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
     switch (request.command)
     {
         case rover_msgs::srv::CameraControl::Request::TAKE_PICTURE:
-            captureName = getFileName(request.capture_name, cameraURL, SCREENSHOT);
-            folderPath = getFolderPath(SCREENSHOT);
-            if (!createFolder(folderPath))
+            captureName = this->getFileName(request.capture_name, cameraURL, SCREENSHOT);
+            folderPath = this->getFolderPath(SCREENSHOT);
+            if (!this->createFolder(folderPath))
             {
                 RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
                 response.success = false;
@@ -68,7 +68,7 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
                 break;
             }
 
-            if (getScreenshot(folderPath, captureName, cameraURL))
+            if (this->getScreenshot(folderPath, captureName, cameraURL))
             {
                 response.success = true;
                 response.status = "Screenshot saved as " + folderPath + "/" + captureName;
@@ -81,16 +81,16 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
             break;
 
         case rover_msgs::srv::CameraControl::Request::START_RECORDING:
-            captureName = getFileName(request.capture_name, cameraURL, VIDEO);
-            folderPath = getFolderPath(VIDEO);
-            if (!createFolder(folderPath))
+            captureName = this->getFileName(request.capture_name, cameraURL, VIDEO);
+            folderPath = this->getFolderPath(VIDEO);
+            if (!this->createFolder(folderPath))
             {
                 RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
                 response.success = false;
                 response.status = "Failed to create screenshots folder or it already exists.";
                 break;
             }
-            if (newRecording(folderPath, captureName, cameraURL))
+            if (this->newRecording(folderPath, captureName, cameraURL))
             {
                 response.success = true;
                 response.status = "Recording started";
@@ -104,7 +104,7 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
             break;
 
         case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
-            if (stopRecording(cameraURL))
+            if (this->stopRecording(cameraURL))
             {
                 response.success = true;
                 response.status = "Recording ended";

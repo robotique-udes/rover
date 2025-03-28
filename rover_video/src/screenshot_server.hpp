@@ -252,10 +252,10 @@ std::string CameraNode::getFileName(const std::string& capture_name, std::string
 {
     std::string filename;
 
-    std::string time = getCurrentTime();
+    std::string time = this->getCurrentTime();
     std::string latitude = std::to_string(last_latitude);
     std::string longitude = std::to_string(last_longitude);
-    std::string ID = getCamID(camURL);
+    std::string ID = this->getCamID(camURL);
 
     switch (state)
     {
@@ -298,13 +298,13 @@ const std::string CameraNode::getFolderPath(int state)
 bool CameraNode::folderExists(const std::string& path)
 {
     struct stat info;
-    return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));  // I dont exactly understand this part
+    return (stat(path.c_str(), &info) == 0 && (info.st_mode & S_IFDIR));
 }
 
 // Creating screenshot Folder if doesnt already exists
 bool CameraNode::createFolder(const std::string& path)
 {
-    if (!folderExists(path))
+    if (!this->folderExists(path))
     {
         if (mkdir(path.c_str(), 0775) == 0)
         {  // 0775 = Full permissions for Linux
