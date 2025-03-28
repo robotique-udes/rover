@@ -20,12 +20,15 @@
 #include <cstdlib>
 #include <sys/stat.h>
 
-#define SCREENSHOT 1
-#define VIDEO 2
-
 constexpr uint8_t RECORDING_INTERVAL = 20;  // in seconds
 
 /* This folder is used for the functions' declarations */
+
+enum class eFileFormatNameTypes : size_t
+{
+    SCREENSHOT,
+    VIDEO,
+};
 
 class Recording
 {
@@ -175,10 +178,10 @@ class CameraNode : public rclcpp::Node
 
     void controlIPCam(const rover_msgs::srv::CameraControl::Request& request, rover_msgs::srv::CameraControl::Response& response);
     std::string getCurrentTime();
-    std::string getFileName(const std::string& capture_name, std::string camURL, int state);
+    std::string getFileName(const std::string& capture_name, std::string camURL, eFileFormatNameTypes state);
     std::string getCamID(std::string cameraURL);
     void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message);
-    const std::string getFolderPath(int state);
+    const std::string getFolderPath(eFileFormatNameTypes state);
     bool folderExists(const std::string& path);
     bool createFolder(const std::string& path);
     bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
@@ -248,7 +251,7 @@ std::string CameraNode::getCurrentTime()
     return current_time_output.str();
 }
 
-std::string CameraNode::getFileName(const std::string& capture_name, std::string camURL, int state)
+std::string CameraNode::getFileName(const std::string& capture_name, std::string camURL, eFileFormatNameTypes state)
 {
     std::string filename;
 
@@ -259,14 +262,14 @@ std::string CameraNode::getFileName(const std::string& capture_name, std::string
 
     switch (state)
     {
-        case SCREENSHOT:
+        case eFileFormatNameTypes::SCREENSHOT:
             filename = capture_name.empty()
                            ? time + "_lat:" + latitude + "_long:" + longitude + "_" + ID + "_screenshot.png"
                            : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
             // Example : 2024-12-10T20:50:00_GPS_30_screenshot.png
             break;
 
-        case VIDEO:
+        case eFileFormatNameTypes::VIDEO:
             filename = capture_name.empty()
                            ? time + "_lat:" + latitude + "_long:" + longitude + "_" + ID + "_recording.avi"
                            : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
@@ -275,18 +278,18 @@ std::string CameraNode::getFileName(const std::string& capture_name, std::string
     return filename;
 }
 
-const std::string CameraNode::getFolderPath(int state)
+const std::string CameraNode::getFolderPath(eFileFormatNameTypes state)
 {
     std::string folderPath;
     std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_video");  // finds the path to our package
 
     switch (state)
     {
-        case SCREENSHOT:
+        case eFileFormatNameTypes::SCREENSHOT:
             folderPath = std::string(currentPackageDirectory) + "/src/screenshots";
             break;
 
-        case VIDEO:
+        case eFileFormatNameTypes::VIDEO:
             folderPath = std::string(currentPackageDirectory) + "/src/recordings";
             break;
     }

@@ -58,8 +58,9 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
     switch (request.command)
     {
         case rover_msgs::srv::CameraControl::Request::TAKE_PICTURE:
-            captureName = this->getFileName(request.capture_name, cameraURL, SCREENSHOT);
-            folderPath = this->getFolderPath(SCREENSHOT);
+            captureName = this->getFileName(request.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
+            folderPath = this->getFolderPath(eFileFormatNameTypes::SCREENSHOT);
+
             if (!this->createFolder(folderPath))
             {
                 RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
@@ -81,8 +82,8 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
             break;
 
         case rover_msgs::srv::CameraControl::Request::START_RECORDING:
-            captureName = this->getFileName(request.capture_name, cameraURL, VIDEO);
-            folderPath = this->getFolderPath(VIDEO);
+            captureName = this->getFileName(request.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
+            folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
             if (!this->createFolder(folderPath))
             {
                 RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
