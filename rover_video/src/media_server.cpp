@@ -67,6 +67,7 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
                 response.status = "Failed to create screenshots folder or it already exists.";
                 break;
             }
+            
             if (getScreenshot(folderPath, captureName, cameraURL))
             {
                 response.success = true;
