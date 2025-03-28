@@ -182,11 +182,10 @@ class Recording
 
 class CameraNode : public rclcpp::Node
 {
-  public:
-  private:
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
     rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _msg_position;
-    float last_latitude = 0.0, last_longitude = 0.0;
+    float last_latitude = 0.0; 
+    float last_longitude = 0.0;
 
     void controlIPCam(const rover_msgs::srv::CameraControl::Request& request, rover_msgs::srv::CameraControl::Response& response);
     std::string getCurrentTime();
@@ -293,19 +292,16 @@ std::string CameraNode::getFileName(const std::string capture_name, std::string 
 const std::string CameraNode::getFolderPath(int state)
 {
     std::string folderPath;
-
-    std::string dir = GET_PACKAGE_SOURCE_DIR("rover_video");  // finds the path to our package
+    std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_video");  // finds the path to our package
 
     switch (state)
     {
         case SCREENSHOT:
-            // Path necessary for the screenshots folder
-            folderPath = std::string(dir) + "/src/screenshots";
+            folderPath = std::string(currentPackageDirectory) + "/src/screenshots";
             break;
 
         case VIDEO:
-            // Path necessary for the recordings folder
-            folderPath = std::string(dir) + "/src/recordings";
+            folderPath = std::string(currentPackageDirectory) + "/src/recordings";
             break;
     }
 
@@ -324,8 +320,8 @@ bool CameraNode::createFolder(const std::string& path)
 {
     if (!folderExists(path))
     {
-        if (mkdir(path.c_str(), 0777) == 0)
-        {  // 0777 = Full permissions
+        if (mkdir(path.c_str(), 0775) == 0)
+        {  // 0775 = Full permissions for Linux
             RCLCPP_INFO(LOGGER, "Succesfully created the folder.");
             return true;
         }
