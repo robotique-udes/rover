@@ -27,20 +27,6 @@ constexpr uint8_t RECORDING_INTERVAL = 20;  // in seconds
 
 /* This folder is used for the functions' declarations */
 
-/*
-std::string getTempdir()
-{
-    const char* temp = std::getenv("TMPDIR");
-    if (!temp)
-        temp = std::getenv("TMP");
-    if (!temp)
-        temp = std::getenv("TEMP");
-    if (!temp)
-        temp = "/tmp";  // Default for Ubuntu
-    return std::string(temp);
-}
-*/
-
 class Recording
 {
   public:
@@ -184,12 +170,12 @@ class CameraNode : public rclcpp::Node
 {
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
     rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _msg_position;
-    float last_latitude = 0.0; 
+    float last_latitude = 0.0;
     float last_longitude = 0.0;
 
     void controlIPCam(const rover_msgs::srv::CameraControl::Request& request, rover_msgs::srv::CameraControl::Response& response);
     std::string getCurrentTime();
-    std::string getFileName(const std::string capture_name, std::string camURL, int state);
+    std::string getFileName(const std::string& capture_name, std::string camURL, int state);
     std::string getCamID(std::string cameraURL);
     void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message);
     const std::string getFolderPath(int state);
@@ -262,7 +248,7 @@ std::string CameraNode::getCurrentTime()
     return current_time_output.str();
 }
 
-std::string CameraNode::getFileName(const std::string capture_name, std::string camURL, int state)
+std::string CameraNode::getFileName(const std::string& capture_name, std::string camURL, int state)
 {
     std::string filename;
 

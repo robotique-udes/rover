@@ -54,7 +54,7 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
     std::string folderPath;
     std::string captureName;
     std::string cameraURL = request.camera_url;
-    // Définir screenshot ou video
+
     switch (request.command)
     {
         case rover_msgs::srv::CameraControl::Request::TAKE_PICTURE:
@@ -67,7 +67,7 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
                 response.status = "Failed to create screenshots folder or it already exists.";
                 break;
             }
-            
+
             if (getScreenshot(folderPath, captureName, cameraURL))
             {
                 response.success = true;
