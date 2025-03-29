@@ -3,8 +3,6 @@
 #include "rover_msgs/msg/arm_msg.hpp"
 #include "rover_msgs/msg/joy.hpp"
 
-#include <joint_controller.hpp>
-
 #include "rovus_lib/timer.hpp"
 #include "rovus_lib/macros.h"
 
