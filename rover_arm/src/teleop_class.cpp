@@ -8,7 +8,7 @@
 #include "arm_configuration.hpp"
 #include "keybinding.hpp"
 
-#include <robot_controller.hpp>
+#include <joint_controller.hpp>
 
 class Teleop : public rclcpp::Node
 {
@@ -17,7 +17,7 @@ class Teleop : public rclcpp::Node
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyArm;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
 
-    RobotController _jointController;
+    JointController _jointController;
 
   public:
     Teleop():
@@ -38,7 +38,10 @@ class Teleop : public rclcpp::Node
         std::vector<float> joyArray(joyMsgSize);
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
 
-        _jointController.setCmd(joyArray);
+        float cmd = _jointController.setCmd(joyArray);
+
+        RCLCPP_INFO(this->get_logger(), "Send Cmd: %f, Controlled Joint: %d", cmd, _jointController.getControlledJoint());
+        // RCLCPP_INFO(this->get_logger(), "CROSS UP STATUS %d", _jointController._buttonStates[KEYBINDING::JOINT_SELECT_INC]);
     }
 };
 
