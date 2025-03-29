@@ -3,12 +3,12 @@
 
 // ROS
 #include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps.hpp"
 
 // QT
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include "UI_Aruco.h"
+#include "UI_VideoPlayer.h"
+#include "Worker/QPlayerWorker.hpp"
 
 class QAruco : public QWidget
 {
@@ -17,15 +17,23 @@ class QAruco : public QWidget
   public:
     QAruco(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
 
-  private:
-    //void gpsCallback(const rover_msgs::msg::Gps::SharedPtr rosMsg_);
+  private slots:
+    void onDetectionStarted(bool success);
 
-    //rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps;
-    void startDetection(std::string camURL_);
+  
+
+  private:
+    void startDetection();
+
+    QPlayerWorker _playerWorkerThread;
+
 
     std::string _camURL;
     std::shared_ptr<rclcpp::Node> _node;
-    Ui::Aruco _ui;
+    Ui::VideoPlayer _ui;
+
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_ArucoDetectionManager;
+
 };
 
 #endif  // __QEXAMPLE_HPP__

@@ -27,8 +27,8 @@ class QVideoPlayer : public QWidget
   private:
     std::shared_ptr<rclcpp::Node> _node;
 
-    QGridLayout _dashboardLayout;
+    QGridLayout _dashboardLayout;  // CHANGER !!
     QAruco _videoFrameWidget;
 };
 
-#endif  // QDASHBOARD_HPP
+#endif  //__QVIDEO_PLAYER_HPP__
