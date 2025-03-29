@@ -30,5 +30,6 @@ class QVideoPlayer : public QWidget
     QGridLayout _dashboardLayout;  // CHANGER !!
     QAruco _videoFrameWidget;
 };
+#warning green_checked needs to only apply to video player!!
 
 #endif  //__QVIDEO_PLAYER_HPP__

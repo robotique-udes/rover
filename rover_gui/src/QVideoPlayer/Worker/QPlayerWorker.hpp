@@ -22,19 +22,25 @@ class QPlayerWorker : public QWorker
 {
     Q_OBJECT
 
-  // static constexp
-
   public:
     QPlayerWorker(bool start_ = false, QObject* parent_ = nullptr);
     ~QPlayerWorker();
-    void startDetection(std::shared_ptr<rclcpp::Node> node_, std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> 
-    client_ArucoDetectionManager_, std::string _camURL);
+    void manageDetection(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> 
+    client_ArucoDetectionManager_, std::string _camURL, bool start_);
+    void manageDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> 
+    client_ArucoDetectionManager_, std::string _camURL, bool start_);
+
+    void updateDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,std::string camURL_);
+    void updateDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,std::string camURL_);
 
 
-signals:
-    void detectionStartedSuccessfully(bool success);
+  signals:
+    void detectionHandledSuccessfully(bool success);
+  signals:
+    void urlFoundInDetection(bool url_found);
 
   private:
+
       
 };
 

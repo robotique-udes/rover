@@ -35,6 +35,8 @@ QPushButton {
     padding: 5px 10px;
 }
 
+QPushButton:checked { background-color: green; color: white; border: 2px solid darkgreen; }
+
 QPushButton:hover {
     background-color: #4d4d4d;
 }
