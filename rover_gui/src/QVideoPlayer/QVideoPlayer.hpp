@@ -5,7 +5,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 
-#include "QAruco.hpp"
+#include "QVideoPlayerWidget.hpp"
 
 class QVideoPlayer : public QWidget
 {
@@ -28,7 +28,7 @@ class QVideoPlayer : public QWidget
     std::shared_ptr<rclcpp::Node> _node;
 
     QGridLayout _dashboardLayout;  // CHANGER !!
-    QAruco _videoFrameWidget;
+    QVideoPlayerWidget _videoFrameWidget;
 };
 #warning green_checked needs to only apply to video player!!
 

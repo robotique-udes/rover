@@ -1,6 +1,6 @@
-#include "QAruco.hpp"
+#include "QVideoPlayerWidget.hpp"
 
-QAruco::QAruco(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
 {
@@ -16,27 +16,27 @@ QAruco::QAruco(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
 
     _ui.setupUi(this);
 
-    connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QAruco::handleDetection);
+    connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleDetection);
 
-    connect(&_playerWorkerThread, &QPlayerWorker::detectionHandledSuccessfully, this, &QAruco::onDetectionHandledSuccessfully);
+    connect(&_playerWorkerThread, &QPlayerWorker::detectionHandledSuccessfully, this, &QVideoPlayerWidget::onDetectionHandledSuccessfully);
 
-    connect(&_playerWorkerThread, &QPlayerWorker::urlFoundInDetection, this, &QAruco::onUrlFoundInDetection);
+    connect(&_playerWorkerThread, &QPlayerWorker::urlFoundInDetection, this, &QVideoPlayerWidget::onUrlFoundInDetection);
 
 
     _playerWorkerThread.start();
 }
 
-void QAruco::startDetection()
+void QVideoPlayerWidget::startDetection()
 {
     _playerWorkerThread.manageDetection(_client_ArucoDetectionManager, _camURL,true);
 }
 
-void QAruco::stopDetection()
+void QVideoPlayerWidget::stopDetection()
 {
     _playerWorkerThread.manageDetection(_client_ArucoDetectionManager, _camURL,false);
 }
 
-void QAruco::handleDetection()
+void QVideoPlayerWidget::handleDetection()
 {
     if(_ui.arucoPushButton->isChecked())
     {
@@ -48,15 +48,15 @@ void QAruco::handleDetection()
     }
 }
 
-void QAruco::CB_updateDetectionManager()
+void QVideoPlayerWidget::CB_updateDetectionManager()
 {
     _playerWorkerThread.updateDetectionManager(this->_client_ArucoDetectionManager,_camURL);
 }
-void QAruco::onDetectionHandledSuccessfully(bool success) 
+void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success) 
 {
 }
 
-void QAruco::onUrlFoundInDetection(bool was_found_)
+void QVideoPlayerWidget::onUrlFoundInDetection(bool was_found_)
 {
     if(!was_found_)
     {

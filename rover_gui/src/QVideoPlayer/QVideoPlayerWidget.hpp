@@ -1,5 +1,5 @@
-#ifndef __QARUCO_HPP__
-#define __QARUCO_HPP__
+#ifndef __QVIDEOPLAYERWIDGER_HPP__
+#define __QVIDEOPLAYERWIDGER_HPP__
 
 // ROS
 #include "rclcpp/rclcpp.hpp"
@@ -10,7 +10,7 @@
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 
-class QAruco : public QWidget
+class QVideoPlayerWidget : public QWidget
 {
     Q_OBJECT
 
@@ -18,7 +18,7 @@ class QAruco : public QWidget
 
 
   public:
-    QAruco(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
     
     void startDetection();
     void stopDetection();
@@ -28,8 +28,6 @@ class QAruco : public QWidget
 
   private slots:
     void onDetectionHandledSuccessfully(bool success);
-
-  private slots:
     void onUrlFoundInDetection(bool was_found_);
 
   
@@ -51,4 +49,4 @@ class QAruco : public QWidget
 
 };
 
-#endif  // __QEXAMPLE_HPP__
+#endif  // __QVIDEOPLAYERWIDGER_HPP___

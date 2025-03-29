@@ -83,8 +83,8 @@ add_executable(main_gui src/gui.cpp
 
                    src/QVideoPlayer/QVideoPlayer.cpp
                    src/QVideoPlayer/QVideoPlayer.hpp
-                   src/QVideoPlayer/QAruco.cpp
-                   src/QVideoPlayer/QAruco.hpp
+                   src/QVideoPlayer/QVideoPlayerWidget.cpp
+                   src/QVideoPlayer/QVideoPlayerWidget.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
 
