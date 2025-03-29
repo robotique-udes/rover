@@ -18,88 +18,87 @@ ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
     this->getParams(argc, argv);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
-    _timerPublisher = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
-                                              [this](void)
-                                              {
-                                                  this->CB_arucoPublisher();
-                                              });
 
-    _timerDetection = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS),
-                                              [this](void)
-                                              {
-                                                  this->CB_arucoDetection();
-                                              });
+    _timer_publisher = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
+                                               [this](void)
+                                               {
+                                                   this->CB_arucoPublisher();
+                                               });
 
-    _detection = std::make_unique<Detection>(_camURL);
+    _timer_detection = this->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MS),
+                                               [this](void)
+                                               {
+                                                   this->CB_arucoDetection();
+                                               });
+
+    _srv_detectionManager = this->create_service<rover_msgs::srv::ArucoDetection>(
+        "/rover/auxiliary/aruco/manager",
+        [this](const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
+               std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
+        {
+            this->CB_srv(request_, response_);
+        });
 }
 
 void ArucoDetectionNode::getParams(int argc, char** argv)
 {
-    this->declare_parameter<bool>("debug_mode", false);
-    this->get_parameter("debug_mode", _debugMode);
-
-    this->declare_parameter<std::string>("default_cam", "rtsp://192.168.144.30:554/1/h264major");
-    this->get_parameter("default_cam", _camURL);
-
-    if (argc > 1)
+    if (argc > 1 && argv[1][0] == 'd')
     {
-        if (argv[1][0] == 'd')
-        {
-            _debugMode = true;
-        }
+        _debugMode = true;
     }
 }
 
 void ArucoDetectionNode::CB_arucoPublisher(void)
 {
-    std::vector<uint16_t> detectedArucos;
+    std::vector<std::vector<uint16_t>> detectedArucos;
+    std::vector<std::string> matchingURL;
 
-    if (_detection != nullptr)
     {
         std::lock_guard<std::mutex> lock(_detectedArucosMutex);
 
-        detectedArucos = _detection->getValidatedIds();
-    }
-
-    else
-    {
-        _detection = std::make_unique<Detection>(_camURL);
+        for (const auto& it : _detections)
+        {
+            detectedArucos.push_back(it.second.getValidatedIds());
+            matchingURL.push_back(it.second.getCamURL());
+        }
     }
 
     rover_msgs::msg::Aruco msg;
 
-    for (const auto& id : detectedArucos)
+    for (size_t i = 0; i < detectedArucos.size(); ++i)
     {
-        msg.id.push_back(id);
-    }
+        const auto& detection = detectedArucos[i];
+        const auto& url = matchingURL[i];
+        msg.valid = true;
+        msg.id = detection;
+        msg.cam_url = url;
 
-    _publisher->publish(msg);
+        _publisher->publish(msg);
 
-    if (!detectedArucos.empty())
-    {
-        std::string marker_list = "Publishing detected Aruco markers: ";
-        for (auto id : detectedArucos)
+        if (!detection.empty())
         {
-            marker_list += std::to_string(id) + " ";
-        }
-        if (_debugMode)
-        {
-            RCLCPP_INFO(this->get_logger(), "%s", marker_list.c_str());
+            std::string marker_list = "Publishing detected Aruco markers at " + url + " : ";
+
+            for (const auto& id : detection)
+            {
+                marker_list += std::to_string(id) + " ";
+            }
+
+            if (_debugMode)
+            {
+                RCLCPP_INFO(this->get_logger(), "%s", marker_list.c_str());
+            }
+            else
+            {
+                RCLCPP_DEBUG(this->get_logger(), "%s", marker_list.c_str());
+            }
         }
         else
         {
-            RCLCPP_DEBUG(this->get_logger(), "%s", marker_list.c_str());
-        }
-    }
-    else
-    {
-        if (_debugMode)
-        {
-            RCLCPP_INFO(this->get_logger(), "No Aruco markers detected to publish");
-        }
-        else
-        {
-            RCLCPP_DEBUG(this->get_logger(), "No Aruco markers detected to publish");
+            if (_debugMode)
+            {
+                RCLCPP_INFO(this->get_logger(), "No Aruco markers detected at %s", url.c_str());
+            }
         }
     }
 }
@@ -108,8 +107,79 @@ void ArucoDetectionNode::CB_arucoDetection(void)
 {
     std::lock_guard<std::mutex> lock(_detectedArucosMutex);
 
-    if (_detection != nullptr)
+    for (auto it = _detections.begin(); it != _detections.end();)
     {
-        _detection->update(_debugMode);
+        if (it->second.getErrorFrameCount() > ALLOWED_ERROR_FRAME)
+        {
+            RCLCPP_WARN(this->get_logger(), "Detection at %s has been shutdown", it->second.getCamURL().c_str());
+            it = _detections.erase(it);
+            _nbrOngoingDetection--;
+        }
+        else
+        {
+            it->second.update(_debugMode);
+            ++it;
+        }
+    }
+}
+
+void ArucoDetectionNode::CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
+                                std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
+{
+    response_->success = true;
+
+    if (request_->command == rover_msgs::srv::ArucoDetection::Request::START)
+    {
+        response_->success = this->startDetection(request_->camera_url);
+    }
+
+    else if (request_->command == rover_msgs::srv::ArucoDetection::Request::STOP)
+    {
+        response_->success = this->stopDetection(request_->camera_url);
+    }
+
+    response_->nbr_ongoing_streams = _nbrOngoingDetection;
+
+    infoDetection(response_);
+}
+
+bool ArucoDetectionNode::startDetection(std::string URL_)
+{
+    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+    if (!_detections.emplace(URL_, Detection(URL_, _nbrOngoingDetection + 1)).second)
+    {
+        RCLCPP_WARN(this->get_logger(), "Failed to start detection at %s", URL_.c_str());
+        return false;
+    }
+
+    _nbrOngoingDetection++;
+    return true;
+}
+
+bool ArucoDetectionNode::stopDetection(std::string URL_)
+{
+    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+
+    if (!_detections.erase(URL_))
+    {
+        RCLCPP_WARN(this->get_logger(), "Failed to stop detection at %s", URL_.c_str());
+        return false;
+    }
+
+    _nbrOngoingDetection--;
+    return true;
+}
+
+void ArucoDetectionNode::infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
+{
+    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+
+    if (response_ != nullptr)
+    {
+        for (auto& it : _detections)
+        {
+            response_->urls.push_back(it.second.getCamURL());
+            response_->tags.push_back(it.second.getTag());
+        }
     }
 }

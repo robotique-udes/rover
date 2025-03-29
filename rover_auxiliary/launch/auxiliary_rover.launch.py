@@ -25,13 +25,11 @@ def generate_launch_description():
         package="rover_auxiliary",
         namespace="/rover/auxiliary",
         executable="aruco_detection",
-        name="aruco_detection",
-        parameters=[{'default_cam':'rtsp://192.168.144.30:554/1/h264major' },
-                    {'debug_mode': False}]
+        name="aruco_detection"
     )
     
     ld.add_action(node_compass_calibrator)
     ld.add_action(node_light_control)
-    # ld.add_action(node_aruco)
+    ld.add_action(node_aruco)
 
     return ld
