@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     app.setStyleSheet(STYLE_DARK_MODE);
 
     MainWindow mainWindow(guiNode);
-    SecondaryWindow secondaryWindow;
+    SecondaryWindow secondaryWindow(guiNode);
     displayWindows(mainWindow, secondaryWindow);
 
     QProcess rosProcess;

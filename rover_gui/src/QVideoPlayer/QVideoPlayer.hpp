@@ -1,28 +1,34 @@
-#ifndef __QVIDEOPLAYER_HPP__
-#define __QVIDEOPLAYER_HPP__
+#ifndef __QVIDEO_PLAYER_HPP__
+#define __QVIDEO_PLAYER_HPP__
 
-// ROS
 #include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps.hpp"
-
-// QT
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include "UI_VideoPlayer.h"
+
+#include "QAruco.hpp"
 
 class QVideoPlayer : public QWidget
 {
     Q_OBJECT
 
   public:
-    QVideoPlayer(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    QVideoPlayer(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+        QWidget(parent_),
+        _node(guiNode_),
+        _dashboardLayout(this),
+        _videoFrameWidget(guiNode_, this)
+    {
+        this->setLayout(&_dashboardLayout);
+
+        // Add your dashboard widget here
+        _dashboardLayout.addWidget(&_videoFrameWidget);
+    }
 
   private:
-    //void gpsCallback(const rover_msgs::msg::Gps::SharedPtr rosMsg_);
-
-    //rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps;
     std::shared_ptr<rclcpp::Node> _node;
-    Ui::VideoPlayer _ui;
+
+    QGridLayout _dashboardLayout;
+    QAruco _videoFrameWidget;
 };
 
-#endif  // __QEXAMPLE_HPP__
+#endif  // QDASHBOARD_HPP
