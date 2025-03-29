@@ -1,6 +1,17 @@
 #ifndef _ARM_CONFIGURATION__
 #define _ARM_CONFIGURATION__
 
+enum class eJointIndex : uint8_t
+{
+    JL = rover_msgs::msg::ArmMsg::JL,
+    J1 = rover_msgs::msg::ArmMsg::J1,
+    J2 = rover_msgs::msg::ArmMsg::J2,
+    GRIPPER_TILT = rover_msgs::msg::ArmMsg::GRIPPER_TILT,
+    GRIPPER_ROT = rover_msgs::msg::ArmMsg::GRIPPER_ROT,
+    GRIPPER_CLOSE = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
+    eLAST
+};
+
 namespace ARM_CONFIGURATION
 {
     // Template for new joints
@@ -17,6 +28,7 @@ namespace ARM_CONFIGURATION
 
     namespace JL
     {
+        constexpr eJointIndex ID = eJointIndex::JL;
         constexpr float MAX_VELOCITY = 0.05f;  // mm/s
         namespace LEN
         {
@@ -28,6 +40,7 @@ namespace ARM_CONFIGURATION
 
     namespace J1
     {
+        constexpr eJointIndex ID = eJointIndex::J1;
         constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
@@ -39,6 +52,7 @@ namespace ARM_CONFIGURATION
 
     namespace J2
     {
+        constexpr eJointIndex ID = eJointIndex::J2;
         constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
@@ -50,6 +64,7 @@ namespace ARM_CONFIGURATION
 
     namespace GRIPPER_TILT
     {
+        constexpr eJointIndex ID = eJointIndex::GRIPPER_TILT;
         constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
@@ -61,6 +76,7 @@ namespace ARM_CONFIGURATION
 
     namespace GRIPPER_ROT
     {
+        constexpr eJointIndex ID = eJointIndex::GRIPPER_ROT;
         constexpr float MAX_VELOCITY = 1.0f;  // rad/s
         namespace LEN
         {
@@ -92,15 +108,6 @@ constexpr float J4x = ARM_CONFIGURATION::GRIPPER_ROT::LEN::x;
 constexpr float J4y = ARM_CONFIGURATION::GRIPPER_ROT::LEN::y;
 constexpr float J4z = ARM_CONFIGURATION::GRIPPER_ROT::LEN::z;
 
-enum class eJointIndex : uint8_t
-{
-    JL = rover_msgs::msg::ArmMsg::JL,
-    J1 = rover_msgs::msg::ArmMsg::J1,
-    J2 = rover_msgs::msg::ArmMsg::J2,
-    GRIPPER_TILT = rover_msgs::msg::ArmMsg::GRIPPER_TILT,
-    GRIPPER_ROT = rover_msgs::msg::ArmMsg::GRIPPER_ROT,
-    GRIPPER_CLOSE = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
-    eLAST
-};
+
 
 #endif  // __ARM_CONFIGURATION__
