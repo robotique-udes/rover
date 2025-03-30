@@ -28,33 +28,33 @@ class JointController : public RobotController
 
         if (KEYBINDINGS_EMILE::JOINT::JL::ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL::JL_RIGHT]))
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL::RIGHT]))
             {
                 return getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL::ID);
             }
-            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL::JL_LEFT]))
+            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL::LEFT]))
             {
                 return -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL::ID);
             }
         }
         if (KEYBINDINGS_EMILE::JOINT::J1::ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1::J1_FWD]))
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1::FWD]))
             {
                 return getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1::ID);
             }
-            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1::J1_REV]))
+            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1::REV]))
             {
                 return -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1::ID);
             }
         }
         if (KEYBINDINGS_EMILE::JOINT::J2::ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2::J2_FWD]))
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2::FWD]))
             {
                 return getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2::ID);
             }
-            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2::J2_REV]))
+            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2::REV]))
             {
                 return -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2::ID);
             }
@@ -65,14 +65,14 @@ class JointController : public RobotController
 
     void setControlledJoint(uint8_t command_)
     {
-        if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_INC)
+        if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::INC)
         {
             if (_currentControlledJoint < _nJoints - 1)
             {
                 _currentControlledJoint++;
             }
         }
-        else if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_DEC)
+        else if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::DEC)
         {
             if (_currentControlledJoint > 0)
             {
