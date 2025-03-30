@@ -15,39 +15,64 @@ class JointController : public RobotController
         }
         else
         {
-            _currentControlledJoint = 12;
+            _currentControlledJoint = -1;
         }
     }
 
-    float setCmd(std::vector<float> inputArray) override
+    float setCmd(std::vector<float> inputArray_) override
     {
-        if (!this->isPressed(inputArray[KEYBINDING::DEADMAN_SWITCH]))
+        if (!this->isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
         {
             return 0.0F;
         }
 
-        if (this->isSelected(inputArray[KEYBINDING::JOINT_SELECT_INC], KEYBINDING::JOINT_SELECT_INC))
+        if (KEYBINDINGS_EMILE::JOINT::JL::ID == _currentControlledJoint)
         {
-            setControlledJoint(KEYBINDING::JOINT_SELECT_INC);
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL::JL_RIGHT]))
+            {
+                return getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL::ID);
+            }
+            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL::JL_LEFT]))
+            {
+                return -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL::ID);
+            }
         }
-        else if (this->isSelected(inputArray[KEYBINDING::JOINT_SELECT_DEC], KEYBINDING::JOINT_SELECT_DEC))
+        if (KEYBINDINGS_EMILE::JOINT::J1::ID == _currentControlledJoint)
         {
-            setControlledJoint(KEYBINDING::JOINT_SELECT_DEC);
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1::J1_FWD]))
+            {
+                return getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1::ID);
+            }
+            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1::J1_REV]))
+            {
+                return -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1::ID);
+            }
+        }
+        if (KEYBINDINGS_EMILE::JOINT::J2::ID == _currentControlledJoint)
+        {
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2::J2_FWD]))
+            {
+                return getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2::ID);
+            }
+            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2::J2_REV]))
+            {
+                return -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2::ID);
+            }
         }
 
-        return getMaxVelocity(_joints[_currentControlledJoint]);
+        return 0.0F;
     }
 
     void setControlledJoint(uint8_t command_)
     {
-        if (command_ == KEYBINDING::JOINT_SELECT_INC)
+        if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_INC)
         {
             if (_currentControlledJoint < _nJoints - 1)
             {
                 _currentControlledJoint++;
             }
         }
-        else if (command_ == KEYBINDING::JOINT_SELECT_DEC)
+        else if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_DEC)
         {
             if (_currentControlledJoint > 0)
             {
