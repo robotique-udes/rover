@@ -1,7 +1,6 @@
 #ifndef __ROBOT_CONTROLLER_HPP__
 #define __ROBOT_CONTROLLER_HPP__
 
-#include "arm_configuration.hpp"
 #include "keybinding.hpp"
 
 #include "rovus_lib/timer.hpp"
@@ -11,6 +10,9 @@
 #include <vector>
 #include <map>
 #include <initializer_list>
+
+static constexpr uint8_t ALL_JOINTS = 6;
+static constexpr uint8_t ALL_INPUTS = 20;
 
 class RobotController
 {
@@ -22,7 +24,7 @@ class RobotController
         _joints.assign(joints_.begin(), joints_.end());
     }
 
-    virtual float setCmd(std::vector<float> inputArray_) = 0;
+    virtual std::array<float, ALL_JOINTS> setCmd(std::array<float, ALL_INPUTS> inputArray_) = 0;
 
     bool isPressed(float buttonValue_)
     {
