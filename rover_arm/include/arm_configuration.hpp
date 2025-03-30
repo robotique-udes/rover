@@ -28,7 +28,7 @@ namespace ARM_CONFIGURATION
 
     namespace JL
     {
-        constexpr eJointIndex ID = eJointIndex::JL;
+        constexpr uint8_t ID = TO_UNDERLYING(eJointIndex::JL);
         constexpr float MAX_VELOCITY = 0.05f;  // mm/s
         namespace LEN
         {

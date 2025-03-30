@@ -68,7 +68,7 @@ class RobotController
         return _nJoints;
     }
 
-  public:
+  protected:
     uint8_t _nJoints;
     std::vector<uint8_t> _joints;
     std::map<uint8_t, bool> _buttonStates = {{rover_msgs::msg::Joy::CROSS_UP, false},

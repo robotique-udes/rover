@@ -38,10 +38,20 @@ class Teleop : public rclcpp::Node
         std::vector<float> joyArray(joyMsgSize);
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
 
+        if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_INC],
+                                        KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_INC))
+        {
+            _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_INC);
+        }
+        if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_DEC],
+                                        KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_DEC))
+        {
+            _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECTION::JOINT_SELECT_DEC);
+        }
+
         float cmd = _jointController.setCmd(joyArray);
 
         RCLCPP_INFO(this->get_logger(), "Send Cmd: %f, Controlled Joint: %d", cmd, _jointController.getControlledJoint());
-        // RCLCPP_INFO(this->get_logger(), "CROSS UP STATUS %d", _jointController._buttonStates[KEYBINDING::JOINT_SELECT_INC]);
     }
 };
 
