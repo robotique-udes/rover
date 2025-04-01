@@ -14,13 +14,15 @@
 #include "Global/Workers/QWorker.hpp"
 #include "rover_msgs/srv/aruco_detection.hpp"
 #include "rclcpp/rclcpp.hpp"
-
-
+#include "rovus_lib/timer.hpp"
 
 
 class QPlayerWorker : public QWorker
 {
-    Q_OBJECT
+    Q_OBJECT    
+    
+    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2000UL;
+
 
   public:
     QPlayerWorker(bool start_ = false, QObject* parent_ = nullptr);
@@ -30,18 +32,16 @@ class QPlayerWorker : public QWorker
     void manageDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> 
     client_ArucoDetectionManager_, std::string _camURL, bool start_);
 
-    void updateDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,std::string camURL_);
-    void updateDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,std::string camURL_);
-
+    void updateDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
+    void updateDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
 
   signals:
     void detectionHandledSuccessfully(bool success);
   signals:
-    void urlFoundInDetection(bool url_found);
+    void urlFoundInDetection(std::vector<std::string> urls_found);
+
 
   private:
-
-      
+    RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
 };
-
 #endif  // __VIDEO_WORKER_HPP__

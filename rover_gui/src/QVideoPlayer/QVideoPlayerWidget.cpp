@@ -3,16 +3,7 @@
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
-{
-
-    _timer_detectionManagerUpdate = _node->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
-    [this](void)
     {
-        this->CB_updateDetectionManager();
-    });
-
-    _client_ArucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>(
-       "/rover/auxiliary/aruco/manager");
 
     _ui.setupUi(this);
 
@@ -20,20 +11,20 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_, Q
 
     connect(&_playerWorkerThread, &QPlayerWorker::detectionHandledSuccessfully, this, &QVideoPlayerWidget::onDetectionHandledSuccessfully);
 
-    connect(&_playerWorkerThread, &QPlayerWorker::urlFoundInDetection, this, &QVideoPlayerWidget::onUrlFoundInDetection);
-
-
     _playerWorkerThread.start();
+
+
 }
 
 void QVideoPlayerWidget::startDetection()
 {
-    _playerWorkerThread.manageDetection(_client_ArucoDetectionManager, _camURL,true);
+    qDebug()<<"start";
+    _playerWorkerThread.manageDetection(_client_arucoManager, _camURL,true);
 }
 
 void QVideoPlayerWidget::stopDetection()
 {
-    _playerWorkerThread.manageDetection(_client_ArucoDetectionManager, _camURL,false);
+    _playerWorkerThread.manageDetection(_client_arucoManager, _camURL,false);
 }
 
 void QVideoPlayerWidget::handleDetection()
@@ -48,18 +39,49 @@ void QVideoPlayerWidget::handleDetection()
     }
 }
 
-void QVideoPlayerWidget::CB_updateDetectionManager()
-{
-    _playerWorkerThread.updateDetectionManager(this->_client_ArucoDetectionManager,_camURL);
-}
 void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success) 
 {
 }
 
-void QVideoPlayerWidget::onUrlFoundInDetection(bool was_found_)
+
+void QVideoPlayerWidget::arucoStillAliveUpdate()
 {
-    if(!was_found_)
+    qDebug()<<"aruco still alive";
+    if(!_urlFound)
     {
-        _ui.arucoPushButton->setChecked(false); 
+        _ui.arucoPushButton->setChecked(false);    
     }
 }
+
+
+std::string QVideoPlayerWidget::getCamURL(void)
+{
+    return this->_camURL;
+}
+
+void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)
+{
+    if (client_!=nullptr)
+    {
+        this->_client_arucoManager = client_;
+        qDebug()<<"init!!";
+
+    }
+
+    else
+    {
+        qDebug()<<"init failed";
+        #warning debug better
+    }
+}
+
+QPlayerWorker* QVideoPlayerWidget::getWorker(void)
+{
+    return &_playerWorkerThread;
+}
+
+void QVideoPlayerWidget::setURLFound(bool urlFound_)
+{
+    this->_urlFound = urlFound_;
+}
+

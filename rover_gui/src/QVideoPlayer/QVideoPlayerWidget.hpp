@@ -14,7 +14,8 @@ class QVideoPlayerWidget : public QWidget
 {
     Q_OBJECT
 
-    static constexpr u_int16_t DELAY_DETECTION_MANAGER_UPDATE= 5000U;
+    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2000UL;
+
 
 
   public:
@@ -23,28 +24,31 @@ class QVideoPlayerWidget : public QWidget
     void startDetection();
     void stopDetection();
     void handleDetection();
+    void arucoStillAliveUpdate();
+    std::string getCamURL();
+    void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
+    QPlayerWorker* getWorker(void);
+    void setURLFound(bool urlFound_);
 
-    void CB_updateDetectionManager();
 
   private slots:
     void onDetectionHandledSuccessfully(bool success);
-    void onUrlFoundInDetection(bool was_found_);
 
   
 
   private:
 
-
-
-    QPlayerWorker _playerWorkerThread;
-
-
     std::string _camURL = "rtsp://127.0.0.1:8554/live";
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_ArucoDetectionManager;
-    rclcpp::TimerBase::SharedPtr _timer_detectionManagerUpdate;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager = nullptr;
+
+    QPlayerWorker _playerWorkerThread;
+
+    bool _urlFound = false;
+
+
 
 
 };
