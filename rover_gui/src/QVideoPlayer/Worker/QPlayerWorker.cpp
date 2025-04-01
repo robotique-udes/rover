@@ -122,13 +122,15 @@ void QPlayerWorker::updateDetectionInternal(
             {
                 liveURLs = response->urls;
                 success = true;
+                
+
             }
         }
     }
     
     if(!success)
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
+        emit arucoServerInfoFailed(false);
     }
     emit urlFoundInDetection(liveURLs);  // Notify widget of failure
 }

@@ -41,6 +41,8 @@ class QPlayerWorker : public QWorker
     void detectionHandledSuccessfully(bool success_, uint16_t tag_);
   signals:
     void urlFoundInDetection(std::vector<std::string> urls_found);
+  signals:
+    void arucoServerInfoFailed(bool success);
 
   private:
     RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;

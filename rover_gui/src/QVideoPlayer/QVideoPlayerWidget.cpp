@@ -1,4 +1,5 @@
 #include "QVideoPlayerWidget.hpp"
+#include <QStyle>
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        QWidget* parent_,
@@ -19,6 +20,10 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             this,
             &QVideoPlayerWidget::onDetectionHandledSuccessfully);
     connect(_ui.playPauseButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePlayPauseButton);
+    connect(_playerWorkerThread.get(),
+            &QPlayerWorker::arucoServerInfoFailed,
+            this,
+            &QVideoPlayerWidget::onArucoServerInfoFailed);
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);  
@@ -54,6 +59,9 @@ void QVideoPlayerWidget::handleArucoDetection()
     if (_ui.arucoPushButton->isChecked())
     {
         this->startDetection();
+        _ui.arucoPushButton->setProperty("class", "success");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);  
     }
     else
     {
@@ -66,6 +74,9 @@ void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_,uint16_t t
     if(!success_ && _tag==tag_)
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, request made on %s regarding aruco detection failed", _camURL.c_str());
+        _ui.arucoPushButton->setProperty("class", "error");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
 }
 
@@ -75,6 +86,9 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
     {
         _ui.arucoPushButton->setChecked(false);
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, aruco detection on %s was killed", _camURL.c_str());
+        _ui.arucoPushButton->setProperty("class", "error");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
 }
 
@@ -93,6 +107,9 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
     else
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access aruco detection manager client");
+        _ui.arucoPushButton->setProperty("class", "error");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
 }
 
@@ -105,4 +122,15 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
     }
  }
+
+void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
+{
+    if(!success_)
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
+        _ui.arucoPushButton->setProperty("class", "warning");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
+    }
+}
 

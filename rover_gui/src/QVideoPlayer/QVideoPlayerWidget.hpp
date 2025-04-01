@@ -34,6 +34,8 @@ class QVideoPlayerWidget : public QWidget
 
   private slots:
     void onDetectionHandledSuccessfully(bool success_,uint16_t tag_);
+  private slots:
+    void onArucoServerInfoFailed(bool success_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;

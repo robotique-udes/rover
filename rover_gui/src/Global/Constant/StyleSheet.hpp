@@ -35,8 +35,6 @@ QPushButton {
     padding: 5px 10px;
 }
 
-QPushButton:checked { background-color: green; color: white; border: 2px solid darkgreen; }
-
 QPushButton:hover {
     background-color: #4d4d4d;
 }
@@ -133,3 +131,24 @@ QStatusBar {
                                         "SideBar { border: 2px solid black; }";
 
 constexpr const char* lightMode = "";
+
+constexpr const char* STATUS_STYLE = R"(
+
+.success {
+    background-color: #81c784;
+    color: black;
+    border: 1px solid #388e3c;
+}
+
+.warning {
+    background-color: #ffb74d;
+    color: black;
+    border: 1px solid #e65100;
+}
+
+.error {
+    background-color: #e57373;
+    color: black;
+    border: 1px solid #b71c1c;
+}
+)";
