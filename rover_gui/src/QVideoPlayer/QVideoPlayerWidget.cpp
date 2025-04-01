@@ -13,11 +13,16 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 {
     _ui.setupUi(this);
 
-    connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleDetection);
+    connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
     connect(_playerWorkerThread.get(),
             &QPlayerWorker::detectionHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onDetectionHandledSuccessfully);
+    connect(_ui.playPauseButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePlayPauseButton);
+
+    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+    _ui.rtspTextBox->setAlignment(Qt::AlignCenter);  
+
 }
 
 void QVideoPlayerWidget::startDetection()
@@ -44,7 +49,7 @@ void QVideoPlayerWidget::stopDetection()
     }
 }
 
-void QVideoPlayerWidget::handleDetection()
+void QVideoPlayerWidget::handleArucoDetection()
 {
     if (_ui.arucoPushButton->isChecked())
     {
@@ -90,4 +95,14 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access aruco detection manager client");
     }
 }
+
+ void QVideoPlayerWidget::handlePlayPauseButton()
+ {
+    if (_ui.playPauseButton->isChecked()) {
+        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
+    } 
+    else {
+        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
+    }
+ }
 

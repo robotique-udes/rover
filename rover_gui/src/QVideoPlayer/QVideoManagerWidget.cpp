@@ -3,7 +3,7 @@
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),
-    _dashboardLayout(this),
+    _videoPlayerLayout(this),
     _playerWorkerThread(std::make_shared<QPlayerWorker>())
 
 {
@@ -15,10 +15,16 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     
         _videoPlaysWidgets[i] = widget;
     }
+
+    uint16_t index = 0;
     for(auto& widget:_videoPlaysWidgets)
     {
-        _dashboardLayout.addWidget(widget.get());
+        int row = index / 3;  // For example, 3 widgets per row
+        int col = index % 3;  // Adjust this logic depending on the number of widgets per row
+        _videoPlayerLayout.addWidget(widget.get(), row, col);
+        index++;
     }
+
 
     connect(_playerWorkerThread.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
 
@@ -30,7 +36,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     }
 
 
-    this->setLayout(&_dashboardLayout);
+    this->setLayout(&_videoPlayerLayout);
 
     _timer_detectionManagerUpdate = _node->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
                                                              [this](void)

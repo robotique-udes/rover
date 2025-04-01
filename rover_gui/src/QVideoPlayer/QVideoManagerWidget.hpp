@@ -24,7 +24,7 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Node> _node;
 
-    QGridLayout _dashboardLayout;  // CHANGER !!
+    QGridLayout _videoPlayerLayout;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
 
@@ -33,6 +33,7 @@ class QVideoManagerWidget : public QWidget
 
     std::array<std::shared_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
     std::array<std::string, 6> _cameras_urls = {"rtsp://127.0.0.1:8554/live","1","2","3","4","5"};
+
 };
 #warning green_checked needs to only apply to video player!!
 

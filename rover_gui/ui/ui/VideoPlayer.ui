@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>648</width>
-    <height>519</height>
+    <width>593</width>
+    <height>532</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -16,10 +16,10 @@
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>70</x>
-     <y>90</y>
-     <width>481</width>
-     <height>331</height>
+     <x>10</x>
+     <y>70</y>
+     <width>571</width>
+     <height>451</height>
     </rect>
    </property>
    <property name="frameShape">
@@ -29,77 +29,88 @@
     <enum>QFrame::Raised</enum>
    </property>
   </widget>
-  <widget class="QLineEdit" name="lineEdit">
+  <widget class="QPushButton" name="playPauseButton">
    <property name="geometry">
     <rect>
-     <x>130</x>
-     <y>30</y>
-     <width>421</width>
-     <height>25</height>
+     <x>10</x>
+     <y>10</y>
+     <width>66</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="autoFillBackground">
+    <bool>false</bool>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="icon">
+    <iconset theme="media-playback-pause">
+     <normaloff>.</normaloff>.</iconset>
+   </property>
+   <property name="checkable">
+    <bool>true</bool>
+   </property>
+  </widget>
+  <widget class="QWidget" name="layoutWidget">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>40</y>
+     <width>571</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <layout class="QHBoxLayout" name="horizontalLayout">
+    <item>
+     <widget class="QPushButton" name="arucoPushButton">
+      <property name="text">
+       <string>Aruco Detection</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QLineEdit" name="arucoIdsTextBox">
+      <property name="readOnly">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="ScreenshotButton">
+      <property name="text">
+       <string>Screenshot</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+    <item>
+     <widget class="QPushButton" name="startRecordingButton">
+      <property name="text">
+       <string>Start Recording</string>
+      </property>
+      <property name="checkable">
+       <bool>true</bool>
+      </property>
+     </widget>
+    </item>
+   </layout>
+  </widget>
+  <widget class="QLineEdit" name="rtspTextBox">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>10</y>
+     <width>501</width>
+     <height>27</height>
     </rect>
    </property>
    <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QLineEdit" name="lineEdit_2">
-   <property name="geometry">
-    <rect>
-     <x>197</x>
-     <y>61</y>
-     <width>111</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="readOnly">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="arucoPushButton">
-   <property name="geometry">
-    <rect>
-     <x>72</x>
-     <y>61</y>
-     <width>119</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Aruco Detection</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_2">
-   <property name="geometry">
-    <rect>
-     <x>319</x>
-     <y>61</y>
-     <width>111</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Screenshot</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-  </widget>
-  <widget class="QPushButton" name="pushButton_3">
-   <property name="geometry">
-    <rect>
-     <x>436</x>
-     <y>61</y>
-     <width>115</width>
-     <height>25</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Start Recording</string>
-   </property>
-   <property name="checkable">
     <bool>true</bool>
    </property>
   </widget>

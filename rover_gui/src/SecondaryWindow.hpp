@@ -19,7 +19,6 @@ class SecondaryWindow : public QMainWindow
     QVBoxLayout _layout;
     QStackedWidget _stackedWidget;
 
-    QLabel _tempLabel;
     QVideoManagerWidget _videoPlayerWidget;
 };
 

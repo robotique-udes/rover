@@ -21,7 +21,10 @@ class QVideoPlayerWidget : public QWidget
 
     void startDetection();
     void stopDetection();
-    void handleDetection();
+    void handleArucoDetection();
+
+    void handlePlayPauseButton();
+
 
     void arucoStillAliveUpdate(bool urlFound_);
     
@@ -42,6 +45,7 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager = nullptr;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
+
 
 };
 
