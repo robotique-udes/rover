@@ -7,7 +7,7 @@ SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _centralWidget(this),
     _layout(&_centralWidget),
     _tempLabel("Future camera window", this),
-    _videoPlayerWidget(guiNode_,this)
+    _videoPlayerWidget(guiNode_, this)
 {
     _tempLabel.setAlignment(Qt::AlignCenter);
     _layout.addWidget(&_tempLabel);

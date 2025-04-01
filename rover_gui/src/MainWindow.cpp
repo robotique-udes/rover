@@ -10,7 +10,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _sideBarWidget(this),
     _dashboardWidget(guiNode_, this),
     _navigationWidget(guiNode_, this)
-    //_fileTransferWidget(this)
+//_fileTransferWidget(this)
 {
     _stackedWidget.addWidget(&_dashboardWidget);
     _stackedWidget.addWidget(&_navigationWidget);
