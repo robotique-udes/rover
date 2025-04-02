@@ -1,5 +1,3 @@
-import os
-import yaml
 from ament_index_python.packages import get_package_share_directory
 from launch import LaunchDescription
 from launch_ros.actions import Node
@@ -7,15 +5,13 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld: LaunchDescription = LaunchDescription()
 
-    node_camera_main = Node(package= "rover_video",
-                             namespace = "/rover/video",
-                             executable = "media_server",
-                             name = "camera_main",
-                             parameters = [os.path.join(get_package_share_directory('rover_video'), 'config', 'camera_main.yaml')] 
-                        )
-                        
+    node_camera_node = Node(
+        package= "rover_video",
+        namespace = "/rover/video",
+        executable = "media_server",
+        name = "camera_main",
+    )
 
-    ld.add_action(node_camera_main)
-
+    ld.add_action(node_camera_node)
 
     return ld

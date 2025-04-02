@@ -52,6 +52,8 @@ endif()
 
 target_link_libraries(media_server ${OpenCV_LIBS})
 
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
 install(TARGETS 
             media_server
         DESTINATION lib/${PROJECT_NAME}/)
