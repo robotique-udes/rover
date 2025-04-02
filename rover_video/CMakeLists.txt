@@ -27,7 +27,8 @@ include_directories( ${CMAKE_SOURCE_DIR}/include )
 include_directories( ${rover_msgs_INCLUDE_DIRS} )
 
 
-add_executable( media_server src/media_server.cpp )
+add_executable( media_server src/camera_node.cpp
+                src/video_recording.cpp)
 
 ament_target_dependencies(media_server
                           rclcpp
