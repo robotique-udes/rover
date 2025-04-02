@@ -24,19 +24,19 @@ class Recording
     bool startRecording();
     bool recordFrame();
 
-    std::string getURL()
+    std::string getURL() const
     {
-        return this->camURL;
+        return camURL_;
     }
 
-    cv::Mat getFrame()
+    cv::Mat getFrame() const
     {
-        return this->frame;
+        return frame_;
     }
 
-    uint8_t getFPS()
+    uint8_t getFPS() const
     {
-        return this->fps;
+        return fps_;
     }
 
   private:
@@ -48,7 +48,7 @@ class Recording
     std::atomic<bool> stopRecording{false};
 
     // camera variables
-    std::string camURL;
+    std::string camURL_;
     std::string pipeline;
     std::string filename;
     std::string videoFolderPath;
@@ -60,7 +60,7 @@ class Recording
 
     int frame_width;
     int frame_height;
-    double fps;
+    double fps_;
 
     // ros logger
     std::shared_ptr<rclcpp::Logger> logger_;  // allows Recording objects to send logs from ROS nodes
@@ -69,7 +69,7 @@ class Recording
     cv::VideoCapture cap;
     cv::VideoWriter video_writer;
     cv::VideoWriter appender;
-    cv::Mat frame;
+    cv::Mat frame_;
 
   public:
     Recording(std::string videoFolderPath_in,
@@ -78,7 +78,7 @@ class Recording
               std::shared_ptr<rclcpp::Logger> logger,
               std::function<void(std::string)> RequestShutdown):
         RequestShutdown_(RequestShutdown),
-        camURL(URL_in),
+        camURL_(URL_in),
         filename(filename_in),
         videoFolderPath(videoFolderPath_in),
         logger_(logger)
@@ -89,7 +89,7 @@ class Recording
         // move constructor, used to move the temporary object created by hashmap emplace
         RequestShutdown_(std::move(other.RequestShutdown_)),
         recordingThread(std::move(other.recordingThread)),
-        camURL(std::move(other.camURL)),
+        camURL_(std::move(other.camURL_)),
         pipeline(std::move(other.pipeline)),
         filename(std::move(other.filename)),
         videoFolderPath(std::move(other.videoFolderPath)),
@@ -98,12 +98,12 @@ class Recording
         startTime(other.startTime),
         frame_width(other.frame_width),
         frame_height(other.frame_height),
-        fps(other.fps),
+        fps_(other.fps_),
         logger_(std::move(other.logger_)),
         cap(std::move(other.cap)),
         video_writer(std::move(other.video_writer)),
         appender(std::move(other.appender)),
-        frame(std::move(other.frame))
+        frame_(std::move(other.frame_))
     {
         stopRecording.store(other.stopRecording.load());  // cannot move atomic
     }
@@ -118,7 +118,7 @@ class Recording
             recordingThread = std::move(other.recordingThread);
             stopRecording.store(other.stopRecording.load(std::memory_order_acquire), std::memory_order_release);
 
-            camURL = std::move(other.camURL);
+            camURL_ = std::move(other.camURL_);
             pipeline = std::move(other.pipeline);
             filename = std::move(other.filename);
             videoFolderPath = std::move(other.videoFolderPath);
@@ -127,13 +127,13 @@ class Recording
             startTime = other.startTime;
             frame_width = other.frame_width;
             frame_height = other.frame_height;
-            fps = other.fps;
+            fps_ = other.fps_;
             logger_ = std::move(other.logger_);
 
             appender = std::move(other.appender);
             cap = std::move(other.cap);  // Move cv ressources
             video_writer = std::move(other.video_writer);
-            frame = std::move(other.frame);
+            frame_ = std::move(other.frame_);
         }
         return *this;
     }

@@ -9,7 +9,7 @@ bool Recording::startRecording()
     this->files.push_back(filePath);                                                        // add file to list of recordings
 
     this->pipeline
-        = "rtspsrc location=" + this->camURL
+        = "rtspsrc location=" + camURL_
           + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
     this->cap.open(this->pipeline, cv::CAP_GSTREAMER);
@@ -23,18 +23,18 @@ bool Recording::startRecording()
 
     this->frame_width = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_WIDTH));
     this->frame_height = static_cast<int>(this->cap.get(cv::CAP_PROP_FRAME_HEIGHT));
-    this->fps = static_cast<double>(this->cap.get(cv::CAP_PROP_FPS));
+    fps_ = static_cast<double>(this->cap.get(cv::CAP_PROP_FPS));
 
-    this->fps = (this->fps > 0) ? fps : 30;  // weird bug with usb camera, recording is 2x speed or 1,5x
+    fps_ = (fps_ > 0) ? fps_ : 30; 
 
-    RCLCPP_DEBUG(*logger_, "fps set to %f", this->fps);
+    RCLCPP_DEBUG(*logger_, "fps set to %f", fps_);
 
     // Define the codec and create a VideoWriter object
     /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
     this->video_writer.open(filePath,
                             cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                            this->fps,
+                            fps_,
                             cv::Size(frame_width, frame_height));
 
     if (!video_writer.isOpened())
@@ -47,7 +47,7 @@ bool Recording::startRecording()
 
     appender = cv::VideoWriter(appendedVideoFilePath,
                                cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                               this->fps,
+                               fps_,
                                cv::Size(this->frame_width, this->frame_height));
 
     if (!appender.isOpened())
@@ -64,7 +64,7 @@ bool Recording::startRecording()
             RecordingThreadFunction();
         });
 
-    RCLCPP_INFO(*logger_, "Recording started for stream %s", camURL.c_str());
+    RCLCPP_INFO(*logger_, "Recording started for stream %s", camURL_.c_str());
 
     return true;
 }
@@ -80,8 +80,8 @@ bool Recording::recordFrame()
         return false;
     }
 
-    this->cap >> this->frame;
-    if (this->frame.empty())
+    this->cap >> frame_;
+    if (this->frame_.empty())
     {
         if (!this->stopRecording.load())
             RCLCPP_ERROR(*logger_, "Error: Blank frame grabbed!");
@@ -95,11 +95,11 @@ bool Recording::recordFrame()
         return false;
     }
     // Write frame to the output video file
-    this->video_writer.write(this->frame);
-    this->appender.write(this->frame);
+    this->video_writer.write(frame_);
+    this->appender.write(frame_);
 
     // Show the frame
-    // cv::imshow("IP Camera Stream", this->frame);
+    // cv::imshow("IP Camera Stream", this->frame_);
 
     if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL)  // save every RECORDING_INTERVAL seconds
     {
@@ -110,7 +110,7 @@ bool Recording::recordFrame()
 
         this->video_writer.open(filePath,
                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                                this->fps,
+                                fps_,
                                 cv::Size(this->frame_width, this->frame_height));
 
         if (!video_writer.isOpened())
@@ -132,8 +132,8 @@ void Recording::RecordingThreadFunction()
     {
         if (!recordFrame() && !this->stopRecording.load())  // if error execept on last loop
         {
-            RCLCPP_WARN(*logger_, "Requesting shutdown for %s", this->camURL.c_str());
-            RequestShutdown_(this->camURL);
+            RCLCPP_WARN(*logger_, "Requesting shutdown for %s", camURL_.c_str());
+            RequestShutdown_(camURL_);
             this->stopRecording.store(true);
         }
     }
