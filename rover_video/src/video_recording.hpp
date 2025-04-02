@@ -16,7 +16,7 @@
 #include <unordered_set>
 #include <vector>
 
-constexpr uint8_t RECORDING_INTERVAL = 20U;  // in seconds
+
 
 class Recording
 {
@@ -40,6 +40,7 @@ class Recording
     }
 
   private:
+    static constexpr uint8_t RECORDING_INTERVAL = 20U;  // in seconds
     void RecordingThreadFunction();
     std::function<void(std::string)> RequestShutdown_;
 
