@@ -1,18 +1,17 @@
 #ifndef __CAMERA__NODE__HPP__
 #define __CAMERA__NODE__HPP__
 
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps_position.hpp"
-#include "rover_msgs/srv/camera_control.hpp"
-#include "rovus_lib/macros.h"
 #include "video_recording.hpp"
 
-#include "opencv2/core.hpp"
-#include "opencv2/highgui.hpp"
-#include "opencv2/imgcodecs.hpp"
+#include "rclcpp/rclcpp.hpp"
+#include "rovus_lib/macros.h"
+#include "rover_msgs/msg/gps_position.hpp"
+#include "rover_msgs/srv/camera_control.hpp"
 
-#include <cstdlib>
 #include <sys/stat.h>
+#include <cstdlib>
+
+
 
 enum class eFileFormatNameTypes : size_t
 {
@@ -53,7 +52,7 @@ class CameraNode : public rclcpp::Node
 
   public:
     CameraNode();
-    ~CameraNode() {}
+    ~CameraNode() = default;
 };
 
 #endif

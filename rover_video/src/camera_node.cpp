@@ -194,6 +194,7 @@ std::string CameraNode::getFileName(const std::string& capture_name, std::string
                            ? time + "_lat:" + latitude + "_long:" + longitude + "_" + ID + "_recording.avi"
                            : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name;
             // Example : 2024-12-10T20:50:00_GPS_30_recording.avi
+            break;
     }
     return filename;
 }

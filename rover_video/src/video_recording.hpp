@@ -1,8 +1,12 @@
 #ifndef __VIDEO__RECORDING__
 #define __VIDEO__RECORDING__
 
+#include "rclcpp/rclcpp.hpp"
+#include "rovus_lib/macros.h"
 
-#include "camera_node.hpp"
+#include "opencv2/core.hpp"
+#include "opencv2/highgui.hpp"
+#include "opencv2/imgcodecs.hpp"
 
 #include <atomic>
 #include <chrono>
