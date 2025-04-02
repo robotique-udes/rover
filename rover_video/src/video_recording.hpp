@@ -49,9 +49,9 @@ class Recording
 
     // camera variables
     std::string camURL_;
-    std::string pipeline;
-    std::string filename;
-    std::string videoFolderPath;
+    std::string pipeline_;
+    std::string filename_;
+    std::string videoFolderPath_;
 
     std::vector<std::string> files;
 
@@ -79,8 +79,8 @@ class Recording
               std::function<void(std::string)> RequestShutdown):
         RequestShutdown_(RequestShutdown),
         camURL_(URL_in),
-        filename(filename_in),
-        videoFolderPath(videoFolderPath_in),
+        filename_(filename_in),
+        videoFolderPath_(videoFolderPath_in),
         logger_(logger)
     {
     }
@@ -90,9 +90,9 @@ class Recording
         RequestShutdown_(std::move(other.RequestShutdown_)),
         recordingThread(std::move(other.recordingThread)),
         camURL_(std::move(other.camURL_)),
-        pipeline(std::move(other.pipeline)),
-        filename(std::move(other.filename)),
-        videoFolderPath(std::move(other.videoFolderPath)),
+        pipeline_(std::move(other.pipeline_)),
+        filename_(std::move(other.filename_)),
+        videoFolderPath_(std::move(other.videoFolderPath_)),
         files(std::move(other.files)),
         recordingNumber(other.recordingNumber),
         startTime(other.startTime),
@@ -119,9 +119,9 @@ class Recording
             stopRecording.store(other.stopRecording.load(std::memory_order_acquire), std::memory_order_release);
 
             camURL_ = std::move(other.camURL_);
-            pipeline = std::move(other.pipeline);
-            filename = std::move(other.filename);
-            videoFolderPath = std::move(other.videoFolderPath);
+            pipeline_ = std::move(other.pipeline_);
+            filename_ = std::move(other.filename_);
+            videoFolderPath_ = std::move(other.videoFolderPath_);
             files = std::move(other.files);
             recordingNumber = other.recordingNumber;
             startTime = other.startTime;

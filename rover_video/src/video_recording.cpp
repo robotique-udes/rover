@@ -4,15 +4,15 @@
 bool Recording::startRecording()
 {
     // Getting the directory for the recording
-    std::string filePath = this->videoFolderPath + "/" + this->filename;
+    std::string filePath = videoFolderPath_ + "/" + filename_;
     filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));  // add recording number before .avi
     this->files.push_back(filePath);                                                        // add file to list of recordings
 
-    this->pipeline
+    pipeline_
         = "rtspsrc location=" + camURL_
           + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
-    this->cap.open(this->pipeline, cv::CAP_GSTREAMER);
+    this->cap.open(pipeline_, cv::CAP_GSTREAMER);
     if (!this->cap.isOpened())
     {
         RCLCPP_ERROR(*logger_, "Failed to open camera stream.");
@@ -43,7 +43,7 @@ bool Recording::startRecording()
         return false;
     }
 
-    std::string appendedVideoFilePath = this->videoFolderPath + "/" + this->filename;
+    std::string appendedVideoFilePath = videoFolderPath_ + "/" + filename_;
 
     appender = cv::VideoWriter(appendedVideoFilePath,
                                cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
@@ -103,7 +103,7 @@ bool Recording::recordFrame()
 
     if (difftime(time(0), this->startTime) >= RECORDING_INTERVAL)  // save every RECORDING_INTERVAL seconds
     {
-        std::string filePath = this->videoFolderPath + "/" + this->filename;
+        std::string filePath = videoFolderPath_ + "/" + filename_;
         filePath.insert(filePath.length() - 4, '_' + std::to_string(this->recordingNumber++));
         this->files.push_back(filePath);
         this->video_writer.release();
