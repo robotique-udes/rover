@@ -83,9 +83,8 @@ class JointController : public RobotController
         }
     }
 
-    uint8_t getControlledJoint()
+    uint8_t getControlledJoint(void)
     {
-        // Could appear in UI
         return _currentControlledJoint;
     }
 
