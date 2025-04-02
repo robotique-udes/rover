@@ -16,7 +16,7 @@
 #include <unordered_set>
 #include <vector>
 
-constexpr uint8_t RECORDING_INTERVAL = 20;  // in seconds
+constexpr uint8_t RECORDING_INTERVAL = 20U;  // in seconds
 
 class Recording
 {
