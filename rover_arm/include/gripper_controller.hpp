@@ -6,6 +6,7 @@
 class GripperController : public RobotController
 {
   public:
+
     GripperController(std::initializer_list<uint8_t> joints_):
         RobotController(joints_)
     {

@@ -41,9 +41,9 @@ class RobotController
         else if (!isPressed(buttonValue_) && _buttonStates[buttonId])
         {
             _buttonStates[buttonId] = false;
-            return false; 
+            return false;
         }
-        return false; 
+        return false;
     }
 
     static float getMaxVelocity(uint8_t joint)
@@ -65,7 +65,7 @@ class RobotController
         }
     }
 
-    uint8_t getNJoints()
+    uint8_t getNJoints(void)
     {
         return _nJoints;
     }
@@ -80,7 +80,9 @@ class RobotController
                                              {rover_msgs::msg::Joy::A, false},
                                              {rover_msgs::msg::Joy::B, false},
                                              {rover_msgs::msg::Joy::X, false},
-                                             {rover_msgs::msg::Joy::Y, false}};
+                                             {rover_msgs::msg::Joy::Y, false},
+                                             {rover_msgs::msg::Joy::L1, false},
+                                             {rover_msgs::msg::Joy::L2, false}};
 };
 
 #endif

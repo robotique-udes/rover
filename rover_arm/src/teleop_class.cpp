@@ -10,29 +10,49 @@
 
 #include <joint_controller.hpp>
 #include <gripper_controller.hpp>
+#include <cartesian_controller.hpp>
 
 class Teleop : public rclcpp::Node
 {
   public:
+    enum class eControlMode : size_t
+    {
+        JOINT = 0,
+        CARTESIAN = 1
+    };
+
   private:
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyArm;
+    rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmPositions;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
 
     JointController _jointController;
     GripperController _gripperController;
+    CartesianController _cartesianController;
+
+    eControlMode _controlMode = eControlMode::CARTESIAN;
+
+    std::array<float, ALL_JOINTS> _jointPositions;
 
   public:
     Teleop():
         rclcpp::Node("teleop_node"),
         _jointController({TO_UNDERLYING(eJointIndex::JL), TO_UNDERLYING(eJointIndex::J1), TO_UNDERLYING(eJointIndex::J2)}),
+        _cartesianController({TO_UNDERLYING(eJointIndex::JL), TO_UNDERLYING(eJointIndex::J1), TO_UNDERLYING(eJointIndex::J2)}),
         _gripperController({TO_UNDERLYING(eJointIndex::GRIPPER_TILT), TO_UNDERLYING(eJointIndex::GRIPPER_ROT)})
     {
         _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                      1,
-                                                                     [this](const rover_msgs::msg::Joy& msg)
+                                                                     [this](const rover_msgs::msg::Joy& joyMsg_)
                                                                      {
-                                                                         this->joy_CB(msg);
+                                                                         this->joy_CB(joyMsg_);
                                                                      });
+        _subArmPositions = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions",
+                                                                              1,
+                                                                              [this](const rover_msgs::msg::ArmMsg& armMsg_)
+                                                                              {
+                                                                                  this->position_CB(armMsg_);
+                                                                              });
 
         _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_speed", 1);
     }
@@ -44,31 +64,92 @@ class Teleop : public rclcpp::Node
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
         rover_msgs::msg::ArmMsg armMsg;
 
-        // JOINT CONTROL -- DEFAULT MODE
-        if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC],
-                                        KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC))
+        // TOGGLE CONTROL MODE
+        if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN],
+                                            KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN))
         {
-            _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC);
-        }
-        if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC],
-                                        KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC))
-        {
-            _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC);
+            if (_controlMode == eControlMode::JOINT)
+            {
+                _controlMode = eControlMode::CARTESIAN;
+            }
+            else if ((_controlMode == eControlMode::CARTESIAN))
+            {
+                _controlMode = eControlMode::JOINT;
+            }
         }
 
-        armMsg.data = _jointController.setCmd(joyArray);
+        // JOINT CONTROL -- DEFAULT MODE
+        if (_controlMode == eControlMode::JOINT)
+        {
+            if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC],
+                                            KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC))
+            {
+                _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC);
+            }
+            if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC],
+                                            KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC))
+            {
+                _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC);
+            }
+
+            armMsg.data = _jointController.setCmd(joyArray);
+        }
 
         // CARTESIAN CONTROL
+        else if (_controlMode == eControlMode::CARTESIAN)
+        {
+            _cartesianController.getJointPositions(_jointPositions);
 
+            if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::RECORD],
+                                                KEYBINDINGS_EMILE::CARTESIAN::RECORD))
+            {
+                if (_cartesianController.getRecordedPoints() == MAX_RECORDED_POINTS)
+                {
+                    RCLCPP_WARN(this->get_logger(), "No more points can be recorded. Create a plan or clear all points");
+                }
+                else
+                {
+                    _cartesianController.addPoint(_cartesianController.getEndEffectorPose(_jointPositions));
+                    RCLCPP_INFO(this->get_logger(), "Point has been added to array");
+                }
+            }
+
+            if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN],
+                                                KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN))
+            {
+                if (_cartesianController.getRecordedPoints() != MAX_RECORDED_POINTS)
+                {
+                    RCLCPP_WARN(this->get_logger(), "Cannot create plan since not enough points have been gathered");
+                }
+                else
+                {
+                    if(_cartesianController.applyPlan())
+                    {
+                        RCLCPP_INFO(this->get_logger(), "Applying plan");
+                    }
+                    else
+                    {
+                        RCLCPP_INFO(this->get_logger(), "Unapplying");
+                    }
+                }
+            }
+            
+            armMsg.data = _cartesianController.setCmd(joyArray);
+        }
 
         // GRIPPER CONTROL
-        if(_gripperController.isPressed(joyArray[KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER]))
+        if (_gripperController.isSelected(joyArray[KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER],
+                                          KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER))
         {
             armMsg.data = _gripperController.setCmd(joyArray);
         }
 
-
         _pubArmCmd->publish(armMsg);
+    }
+
+    void position_CB(const rover_msgs::msg::ArmMsg& armMsg_)
+    {
+        std::copy_n(armMsg_.data.begin(), _jointPositions, _jointPositions.begin());
     }
 };
 
