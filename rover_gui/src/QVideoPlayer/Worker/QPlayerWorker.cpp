@@ -128,9 +128,6 @@ void QPlayerWorker::updateDetectionInternal(
         }
     }
     
-    if(!success)
-    {
-        emit arucoServerInfoFailed(false);
-    }
+    emit arucoServerInfoFailed(success);
     emit urlFoundInDetection(liveURLs);  // Notify widget of failure
 }

@@ -15,6 +15,7 @@ class QVideoPlayerWidget : public QWidget
     Q_OBJECT
 
     static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2000UL;
+    static constexpr uint16_t NBR_IDS_TO_DISPLAY = 5U;
 
   public:
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_,std::string url_,uint16_t tag_, std::shared_ptr<QPlayerWorker> worker_);
@@ -27,6 +28,8 @@ class QVideoPlayerWidget : public QWidget
 
 
     void arucoStillAliveUpdate(bool urlFound_);
+
+    void displayDetectedArucos(std::vector<uint16_t> ids_);
     
     void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
     std::string getCamURL();
@@ -44,6 +47,7 @@ class QVideoPlayerWidget : public QWidget
     std::string _camURL = "";
     uint16_t _tag;
 
+    uint16_t _lastIds[NBR_IDS_TO_DISPLAY];
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager = nullptr;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;

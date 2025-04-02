@@ -25,10 +25,16 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
         index++;
     }
 
-
     connect(_playerWorkerThread.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
 
     _client_arucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>("/rover/auxiliary/aruco/manager");
+
+    _sub_arucoDetection = _node->create_subscription<rover_msgs::msg::Aruco>("/rover/video/aruco",
+                                                                       1,
+                                                                       [this](const rover_msgs::msg::Aruco msg)
+                                                                       {
+                                                                           CB_displayArucoDetected(msg);
+                                                                       });
 
     for(auto& widget:_videoPlaysWidgets)
     {
@@ -77,4 +83,19 @@ void QVideoManagerWidget::onArucoDetectionIsLive(std::vector<std::string> live_u
         widget->arucoStillAliveUpdate(urlFound);
     }
 
+}
+
+void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
+{
+    std::string url = msg_.cam_url;
+    std::vector<uint16_t> detectedIds = msg_.id;
+    
+    for(auto& widget:_videoPlaysWidgets)
+    {
+        if(widget->getCamURL() == url)
+        {
+            widget->displayDetectedArucos(detectedIds);
+            break;
+        }
+    }
 }

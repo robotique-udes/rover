@@ -28,6 +28,12 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);  
 
+    _ui.arucoIdsTextBox->setText("Ids: ");
+
+    for(size_t i=0; i<NBR_IDS_TO_DISPLAY; i++)
+    {
+        _lastIds[i] = 65535;
+    }
 }
 
 void QVideoPlayerWidget::startDetection()
@@ -66,6 +72,9 @@ void QVideoPlayerWidget::handleArucoDetection()
     else
     {
         this->stopDetection();
+        _ui.arucoPushButton->setProperty("class", "normal");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
 }
 
@@ -90,7 +99,59 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
+    if(urlFound_ && !_ui.arucoPushButton->isChecked())
+    {
+        _ui.arucoPushButton->setChecked(true);
+        _ui.arucoPushButton->setProperty("class", "success");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
+    }
 }
+
+void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
+{
+    uint16_t nbr_ids_detected = ids_.size();
+
+    _ui.arucoIdsTextBox->setText("Ids: ");
+    
+    for (auto it = ids_.begin(); it != ids_.end(); ) 
+    {
+        if(*it == _lastIds[0])
+        {
+            it = ids_.erase(it);
+            nbr_ids_detected--;
+        }
+        else
+        {
+            ++it;
+        }
+    }
+
+    for(size_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
+    {
+        uint16_t new_pos = (NBR_IDS_TO_DISPLAY-(i+1)) + nbr_ids_detected;
+        if(new_pos<NBR_IDS_TO_DISPLAY)
+        {
+            _lastIds[new_pos] = _lastIds[NBR_IDS_TO_DISPLAY-(i+1)];
+        }
+
+    }
+
+    for (size_t i = 0; i < NBR_IDS_TO_DISPLAY; ++i) {
+       
+        if(i<nbr_ids_detected)
+        {
+            _lastIds[i] = ids_.at(i);
+        }
+
+        if(_lastIds[i]!=65535)
+        {
+            _ui.arucoIdsTextBox->setText(_ui.arucoIdsTextBox->text() + "  " + QString::number(_lastIds[i]));
+        }
+    }
+
+}
+
 
 std::string QVideoPlayerWidget::getCamURL(void)
 {
@@ -128,9 +189,21 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
     if(!success_)
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
-        _ui.arucoPushButton->setProperty("class", "warning");
-        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
-        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
+        if(_ui.arucoPushButton->property("class") != "error") 
+        {
+            _ui.arucoPushButton->setProperty("class", "warning");
+            _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+            _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
+        }
+    }
+    else
+    {
+        if(_ui.arucoPushButton->property("class") != "success" && _ui.arucoPushButton->property("class") != "error") 
+        {
+            _ui.arucoPushButton->setProperty("class", "normal");
+            _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+            _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
+        }
     }
 }
 

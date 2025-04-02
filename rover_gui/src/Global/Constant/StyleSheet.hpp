@@ -134,21 +134,34 @@ constexpr const char* lightMode = "";
 
 constexpr const char* STATUS_STYLE = R"(
 
+.normal {
+    background-color: #3c3f41;
+    border: 1px solid #4b4e52;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
 .success {
     background-color: #81c784;
     color: black;
     border: 1px solid #388e3c;
+    border-radius: 5px;
+    padding: 5px 10px;
 }
 
 .warning {
     background-color: #ffb74d;
     color: black;
     border: 1px solid #e65100;
+    border-radius: 5px;
+    padding: 5px 10px;
 }
 
 .error {
     background-color: #e57373;
     color: black;
     border: 1px solid #b71c1c;
+    border-radius: 5px;
+    padding: 5px 10px;
 }
 )";
