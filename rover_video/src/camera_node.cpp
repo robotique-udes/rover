@@ -101,7 +101,7 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
 }
 
 void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
-                                    rover_msgs::srv::CameraControl::Response& response_)
+                                     rover_msgs::srv::CameraControl::Response& response_)
 {
     std::string folderPath;
     std::string captureName;
@@ -129,7 +129,7 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
 }
 
 void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
-    rover_msgs::srv::CameraControl::Response& response_)
+                                    rover_msgs::srv::CameraControl::Response& response_)
 {
     std::string cameraURL = request_.camera_url;
 
