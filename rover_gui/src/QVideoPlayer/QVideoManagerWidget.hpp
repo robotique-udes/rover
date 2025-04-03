@@ -12,7 +12,8 @@
 class QVideoManagerWidget : public QWidget
 {
     Q_OBJECT
-    static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 5000U;
+    
+    static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 1000U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
 
   public:

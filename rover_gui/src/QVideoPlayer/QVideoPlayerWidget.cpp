@@ -12,6 +12,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _tag(tag_),
     _playerWorkerThread(worker_)
 {
+    this->_defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
@@ -24,6 +25,10 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::arucoServerInfoFailed,
             this,
             &QVideoPlayerWidget::onArucoServerInfoFailed);
+    
+    connect(_ui.rtspTextBox, &QLineEdit::textChanged,this, &QVideoPlayerWidget::updateCamURL);
+    connect(_ui.defaultStreamPushButton, &QPushButton::clicked,this, &QVideoPlayerWidget::setURLToDefault);
+
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);  
@@ -65,6 +70,10 @@ void QVideoPlayerWidget::handleArucoDetection()
     if (_ui.arucoPushButton->isChecked())
     {
         this->startDetection();
+        if (!_ui.arucoPushButton->isChecked()) 
+        {
+            _ui.arucoPushButton->setChecked(true);
+        }
         _ui.arucoPushButton->setProperty("class", "success");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);  
@@ -72,6 +81,10 @@ void QVideoPlayerWidget::handleArucoDetection()
     else
     {
         this->stopDetection();
+        if (_ui.arucoPushButton->isChecked()) 
+        {
+            _ui.arucoPushButton->setChecked(false);
+        }        
         _ui.arucoPushButton->setProperty("class", "normal");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -93,15 +106,34 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 {
     if (!urlFound_ && _ui.arucoPushButton->isChecked())
     {
-        _ui.arucoPushButton->setChecked(false);
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, aruco detection on %s was killed", _camURL.c_str());
+        _ui.arucoPushButton->setChecked(true);
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, aruco detection on %s was not found", _camURL.c_str());
+        _ui.arucoPushButton->setProperty("class", "normal");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
+    }
+}
+
+void QVideoPlayerWidget::arucoCameraFailure(bool valid_)
+{
+    if (!valid_)
+    {
+        if (_ui.arucoPushButton->isChecked()) 
+        {
+            _ui.arucoPushButton->setChecked(false);
+        }
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
-    if(urlFound_ && !_ui.arucoPushButton->isChecked())
+
+    if(valid_ && !_ui.arucoPushButton->isChecked())
     {
-        _ui.arucoPushButton->setChecked(true);
+        if (!_ui.arucoPushButton->isChecked()) 
+        {
+            _ui.arucoPushButton->setChecked(true);
+        }
         _ui.arucoPushButton->setProperty("class", "success");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -112,42 +144,15 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 {
     uint16_t nbr_ids_detected = ids_.size();
 
+    if(nbr_ids_detected>NBR_IDS_TO_DISPLAY)
+    {
+        ids_.resize(5);
+    }
     _ui.arucoIdsTextBox->setText("Ids: ");
     
-    for (auto it = ids_.begin(); it != ids_.end(); ) 
+    for (const auto& id:ids_) 
     {
-        if(*it == _lastIds[0])
-        {
-            it = ids_.erase(it);
-            nbr_ids_detected--;
-        }
-        else
-        {
-            ++it;
-        }
-    }
-
-    for(size_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
-    {
-        uint16_t new_pos = (NBR_IDS_TO_DISPLAY-(i+1)) + nbr_ids_detected;
-        if(new_pos<NBR_IDS_TO_DISPLAY)
-        {
-            _lastIds[new_pos] = _lastIds[NBR_IDS_TO_DISPLAY-(i+1)];
-        }
-
-    }
-
-    for (size_t i = 0; i < NBR_IDS_TO_DISPLAY; ++i) {
-       
-        if(i<nbr_ids_detected)
-        {
-            _lastIds[i] = ids_.at(i);
-        }
-
-        if(_lastIds[i]!=65535)
-        {
-            _ui.arucoIdsTextBox->setText(_ui.arucoIdsTextBox->text() + "  " + QString::number(_lastIds[i]));
-        }
+        _ui.arucoIdsTextBox->setText(_ui.arucoIdsTextBox->text() + "  " + QString::number(id));
     }
 
 }
@@ -156,6 +161,11 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 std::string QVideoPlayerWidget::getCamURL(void)
 {
     return this->_camURL;
+}
+
+void QVideoPlayerWidget::updateCamURL()
+{
+    _camURL = _ui.rtspTextBox->text().toStdString();
 }
 
 void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)
@@ -174,33 +184,45 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
     }
 }
 
- void QVideoPlayerWidget::handlePlayPauseButton()
- {
-    if (_ui.playPauseButton->isChecked()) {
+void QVideoPlayerWidget::handlePlayPauseButton()
+{
+    if (_ui.playPauseButton->isChecked()) 
+    {
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
-    } 
-    else {
+    }
+    else 
+    {
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
     }
- }
+}
+
+void QVideoPlayerWidget::setURLToDefault()
+{
+    _camURL = this->_defaultCamUrl;
+    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+}
+
+void QVideoPlayerWidget::setCamURL(std::string _newCamUrl)
+{
+    _camURL = _newCamUrl;
+}
 
 void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
 {
     if(!success_)
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
-        if(_ui.arucoPushButton->property("class") != "error") 
-        {
-            _ui.arucoPushButton->setProperty("class", "warning");
-            _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
-            _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
-        }
+        _ui.arucoPushButton->setProperty("class", "disabled");
+        _ui.arucoPushButton->setEnabled(false);
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
     else
     {
         if(_ui.arucoPushButton->property("class") != "success" && _ui.arucoPushButton->property("class") != "error") 
         {
             _ui.arucoPushButton->setProperty("class", "normal");
+            _ui.arucoPushButton->setEnabled(true);
             _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
             _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
         }

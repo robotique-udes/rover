@@ -19,8 +19,10 @@ class ImageCapture
     std::optional<cv::Mat> getFrame(bool debugMode_);
     cv::Mat getErrorFrame(void);
     bool initCam(void);
+    bool isValid(void) const;
 
   private:
+    bool _isValid;
     std::string _pipeline;
     std::string _cameraURL;
     cv::VideoCapture _cap;

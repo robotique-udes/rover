@@ -49,3 +49,8 @@ uint8_t ProcessFrame::getErrorFrameCount(void) const
 {
     return _errorFrameCount;
 }
+
+bool ProcessFrame::isValid(void) const
+{
+    return _stream.isValid();
+}

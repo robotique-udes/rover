@@ -90,3 +90,9 @@ uint8_t Detection::getTag(void) const
 {
     return _tag;
 }
+
+bool Detection::isValid(void) const
+{
+    return _processFrame.isValid();
+}
+

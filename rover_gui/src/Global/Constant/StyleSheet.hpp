@@ -3,6 +3,34 @@
 #include <QString>
 
 // Here some style presets can be added for different app themes
+
+constexpr const char* STATUS_STYLE = R"(
+
+.success {
+    background-color: #81c784;
+    color: black;
+    border: 1px solid #388e3c;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.warning {
+    background-color: #ffb74d;
+    color: black;
+    border: 1px solid #e65100;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+
+.error {
+    background-color: #e57373;
+    color: black;
+    border: 1px solid #b71c1c;
+    border-radius: 5px;
+    padding: 5px 10px;
+}
+)";
+
 constexpr const char* STYLE_DARK_MODE = R"(
 QWidget {
      background-color: #2e2e2e;
@@ -126,19 +154,20 @@ QStatusBar {
     background-color: #3c3f41;
     color: #ffffff;
 }
-)"
-
-                                        "SideBar { border: 2px solid black; }";
-
-constexpr const char* lightMode = "";
-
-constexpr const char* STATUS_STYLE = R"(
 
 .normal {
     background-color: #3c3f41;
     border: 1px solid #4b4e52;
     border-radius: 5px;
     padding: 5px 10px;
+}
+
+.disabled {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: #777777;  /* Light grey text to indicate disabled state */
 }
 
 .success {
@@ -164,4 +193,11 @@ constexpr const char* STATUS_STYLE = R"(
     border-radius: 5px;
     padding: 5px 10px;
 }
-)";
+
+
+)"
+
+                                        "SideBar { border: 2px solid black; }";
+
+constexpr const char* lightMode = "";
+

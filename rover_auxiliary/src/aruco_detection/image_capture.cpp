@@ -35,9 +35,10 @@ bool ImageCapture::initCam(void)
     if (!res)
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Could not open streaming device");
+        _isValid = false;
         return false;
     }
-
+    _isValid = true;
     return true;
 }
 
@@ -51,8 +52,10 @@ bool ImageCapture::changeStream(std::string URL_)
         if (!initCam())
         {
             RCLCPP_WARN(rclcpp::get_logger("aruco_detection_node"), "Could not change streaming device");
+            _isValid = false;
             return false;
         }
+        _isValid = true;
         return true;
     }
     else
@@ -90,4 +93,9 @@ cv::Mat ImageCapture::getErrorFrame(void)
     std::string error_message = "Error: Stream not found!";
     cv::putText(frame, error_message, cv::Point(100, 240), cv::FONT_HERSHEY_SIMPLEX, 1.0, cv::Scalar(0, 0, 255), 2);
     return frame;
+}
+
+bool ImageCapture::isValid(void) const
+{
+    return _isValid;
 }

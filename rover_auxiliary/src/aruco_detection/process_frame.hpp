@@ -17,6 +17,7 @@ class ProcessFrame
     std::vector<uint16_t> getIds(void) const;
     bool IdsEmpty(void) const;
     uint8_t getErrorFrameCount(void) const;
+    bool isValid(void) const;
 
     bool empty = true;
 

@@ -20,6 +20,8 @@ class Detection
     uint8_t getErrorFrameCount(void) const;
     std::string getCamURL(void) const;
     uint8_t getTag(void) const;
+    bool isValid(void) const;
+
 
   private:
     uint8_t _tag;

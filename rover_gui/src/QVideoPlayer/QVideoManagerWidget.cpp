@@ -1,4 +1,5 @@
 #include "QVideoManagerWidget.hpp"
+#include <QString>
 
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -14,6 +15,17 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
         widget->setObjectName(QString("camera%1_widget").arg(i+1));
     
         _videoPlaysWidgets[i] = widget;
+
+        if(widget==nullptr)
+        {
+            qDebug()<<"wtf";
+        }
+
+        else
+        {
+            qDebug()<<"ok";
+        }
+
     }
 
     uint16_t index = 0;
@@ -30,7 +42,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _client_arucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>("/rover/auxiliary/aruco/manager");
 
     _sub_arucoDetection = _node->create_subscription<rover_msgs::msg::Aruco>("/rover/video/aruco",
-                                                                       1,
+                                                                       6,
                                                                        [this](const rover_msgs::msg::Aruco msg)
                                                                        {
                                                                            CB_displayArucoDetected(msg);
@@ -40,7 +52,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     {
         widget->setArucoClientManager(_client_arucoDetectionManager);
     }
-
 
     this->setLayout(&_videoPlayerLayout);
 
@@ -92,10 +103,13 @@ void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
     
     for(auto& widget:_videoPlaysWidgets)
     {
-        if(widget->getCamURL() == url)
+        if (widget != nullptr)
         {
-            widget->displayDetectedArucos(detectedIds);
-            break;
+            if(widget->getCamURL() == url)
+            {
+                widget->displayDetectedArucos(detectedIds);            
+                widget->arucoCameraFailure(msg_.valid);
+            }
         }
     }
 }

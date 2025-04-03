@@ -26,18 +26,21 @@ class QVideoPlayerWidget : public QWidget
 
     void handlePlayPauseButton();
 
-
     void arucoStillAliveUpdate(bool urlFound_);
+
+    void arucoCameraFailure(bool valid_);
 
     void displayDetectedArucos(std::vector<uint16_t> ids_);
     
     void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
     std::string getCamURL();
+    void setURLToDefault();
+    void setCamURL(std::string _newCamUrl);
 
+    void updateCamURL();
 
   private slots:
     void onDetectionHandledSuccessfully(bool success_,uint16_t tag_);
-  private slots:
     void onArucoServerInfoFailed(bool success_);
 
   private:
@@ -45,6 +48,7 @@ class QVideoPlayerWidget : public QWidget
     Ui::VideoPlayer _ui;
 
     std::string _camURL = "";
+    std::string _defaultCamUrl = "";
     uint16_t _tag;
 
     uint16_t _lastIds[NBR_IDS_TO_DISPLAY];
