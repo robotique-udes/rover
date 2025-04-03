@@ -472,7 +472,11 @@ void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_messag
     _last_longitude = gps_message_.longitude;
 }
 
-// Add recording key to shutdown list and notify watch dog for shutdown
+/**
+ * @brief Add the URL to the shutdown list and notify watchdog to process shutdown
+ *        This function is passed as a callback function to the recording class
+ * @param camURL_ key for the hashmap
+ */
 void CameraNode::RequestShutdown(std::string camURL_)
 {
     RCLCPP_WARN(LOGGER, "Received shutdown request for %s", camURL_.c_str());
@@ -485,7 +489,10 @@ void CameraNode::RequestShutdown(std::string camURL_)
     return;
 }
 
-// start the VideoWatchDogFunction
+/**
+ * @brief Start the Watchdog thread
+ * 
+ */
 bool CameraNode::StartWatchDog(void)
 {
     _watchDogStop.store(false);
@@ -493,7 +500,10 @@ bool CameraNode::StartWatchDog(void)
     return true;
 }
 
-// when requested, shutdown and erase recordings that were in error from hashmap
+/**
+ * @brief Shutdown and erase a recording from the hashmap
+ * @until watchDogStop = true
+ */
 void CameraNode::VideoWatchDogFunction(void)
 {
     RCLCPP_DEBUG(LOGGER, "Starting video watchdog");
