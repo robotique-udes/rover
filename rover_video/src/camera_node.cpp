@@ -145,38 +145,6 @@ void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Reques
     }
 }
 
-std::string CameraNode::getCamID(std::string cameraURL_)
-{
-    std::string camID;
-
-    std::string::size_type nextDotPos;
-    std::string::size_type posID = cameraURL_.find("144.");
-
-    if (posID != std::string::npos)
-    {
-        RCLCPP_DEBUG(LOGGER, "'144.' found.");
-        posID += 4;
-        nextDotPos = cameraURL_.find(':', posID);
-
-        if (nextDotPos != std::string::npos)
-        {
-            camID = cameraURL_.substr(posID, nextDotPos - posID);
-        }
-        else
-        {
-            camID = cameraURL_.substr(posID);
-        }
-    }
-    else
-    {
-        RCLCPP_ERROR(LOGGER, "'144.' not found.");
-    }
-
-    RCLCPP_DEBUG(LOGGER, "Camera ID: %s", camID.c_str());
-
-    return camID;
-}
-
 std::string CameraNode::getCurrentTime(void)
 {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();  // get system time
@@ -198,7 +166,13 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     std::string time = this->getCurrentTime();
     std::string latitude = std::to_string(_last_latitude);
     std::string longitude = std::to_string(_last_longitude);
-    std::string ID = this->getCamID(camURL_);
+    std::string ID = "UnknownID";
+    auto it = CameraInfo::CameraName.find(camURL_);
+
+    if (it != CameraInfo::CameraName.end())
+    {
+        ID = it->second;
+    }
 
     switch (state_)
     {
@@ -308,7 +282,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
             = "rtspsrc location=" + cameraURL_
               + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
-        cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
+        cv::VideoCapture cap(cameraURL_);
 
         if (!cap.isOpened())
         {

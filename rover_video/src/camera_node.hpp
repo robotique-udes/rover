@@ -2,9 +2,10 @@
 #define __CAMERA__NODE__HPP__
 
 #include "video_recording.hpp"
+#include "rovus_lib/camera_info.hpp"
+#include "rovus_lib/macros.h"
 
 #include "rclcpp/rclcpp.hpp"
-#include "rovus_lib/macros.h"
 #include "rover_msgs/msg/gps_position.hpp"
 #include "rover_msgs/srv/camera_control.hpp"
 
@@ -35,7 +36,6 @@ class CameraNode : public rclcpp::Node
 
     std::string getCurrentTime(void);
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes state_);
-    std::string getCamID(std::string cameraURL);
     const std::string getFolderPath(eFileFormatNameTypes state_);
     void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
     bool folderExists(const std::string& path_);
