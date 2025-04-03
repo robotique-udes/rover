@@ -19,7 +19,7 @@
 /**
  * @brief Each Recording objects handle 1 camera stream \n
  * @brief They must be initialized with startRecording()
- * @attention Cameral URL must be RTSP stream for Gstreamer pipeline
+ * @attention Cameral URL must be RTSP stream for GStreamer pipeline
  */
 class Recording
 {
