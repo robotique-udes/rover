@@ -8,9 +8,8 @@ bool Recording::startRecording(void)
     filePath.insert(filePath.length() - 4, '_' + std::to_string(_recordingNumber++));  // add recording number before .avi
     _files.push_back(filePath);                                                        // add file to list of recordings
 
-    _pipeline
-        = "rtspsrc location=" + _camURL
-          + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+    _pipeline = "rtspsrc location=" + _camURL
+                + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
     _cap.open(_pipeline, cv::CAP_GSTREAMER);
     if (!_cap.isOpened())
@@ -25,17 +24,14 @@ bool Recording::startRecording(void)
     _frame_height = static_cast<int>(_cap.get(cv::CAP_PROP_FRAME_HEIGHT));
     _fps = static_cast<double>(_cap.get(cv::CAP_PROP_FPS));
 
-    _fps = (_fps > 0) ? _fps : 30; 
+    _fps = (_fps > 0) ? _fps : 30;
 
     RCLCPP_DEBUG(*rLogger, "fps set to %f", _fps);
 
     // Define the codec and create a VideoWriter object
     /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
-    _video_writer.open(filePath,
-                            cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                            _fps,
-                            cv::Size(_frame_width, _frame_height));
+    _video_writer.open(filePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
 
     if (!_video_writer.isOpened())
     {
@@ -46,9 +42,9 @@ bool Recording::startRecording(void)
     std::string appendedVideoFilePath = _videoFolderPath + "/" + _filename;
 
     _appender = cv::VideoWriter(appendedVideoFilePath,
-                               cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                               _fps,
-                               cv::Size(_frame_width, _frame_height));
+                                cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                                _fps,
+                                cv::Size(_frame_width, _frame_height));
 
     if (!_appender.isOpened())
     {
@@ -108,10 +104,7 @@ bool Recording::recordFrame(void)
         _files.push_back(filePath);
         _video_writer.release();
 
-        _video_writer.open(filePath,
-                                cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                                _fps,
-                                cv::Size(_frame_width, _frame_height));
+        _video_writer.open(filePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
 
         if (!_video_writer.isOpened())
         {

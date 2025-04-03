@@ -16,8 +16,6 @@
 #include <unordered_set>
 #include <vector>
 
-
-
 class Recording
 {
   public:
