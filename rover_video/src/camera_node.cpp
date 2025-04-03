@@ -6,14 +6,7 @@ int main(int argc, char* argv[])
 
     RCLCPP_INFO(rclcpp::get_logger("media_server"), "Node initialized.");
 
-    try
-    {
-        rclcpp::spin(std::make_shared<CameraNode>());
-    }
-    catch (const std::exception& e)
-    {
-        RCLCPP_FATAL(rclcpp::get_logger("Dead Node"), "Killing node on exception: %s", e.what());
-    }
+    rclcpp::spin(std::make_shared<CameraNode>());
 
     rclcpp::shutdown();
     return 0;
@@ -354,14 +347,14 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
     else
     {
         _RecordingMap.emplace(cameraURL_,
-                             Recording(videoFolderPath_,
-                                       filename_,
-                                       cameraURL_,
-                                       std::make_shared<rclcpp::Logger>(LOGGER),
-                                       [this](std::string url)
-                                       {
-                                           RequestShutdown(url);
-                                       }));
+                              Recording(videoFolderPath_,
+                                        filename_,
+                                        cameraURL_,
+                                        std::make_shared<rclcpp::Logger>(LOGGER),
+                                        [this](std::string url)
+                                        {
+                                            RequestShutdown(url);
+                                        }));
 
         if (!_videoWatchDog.joinable())
         {
@@ -418,10 +411,10 @@ void CameraNode::VideoWatchDogFunction(void)
     {
         std::unique_lock<std::mutex> lock(_recordingMutex);
         _recordingCv.wait(lock,
-                         [this]
-                         {
-                             return _watchDogStop.load() || !_RecordingShutdownRequestSet.empty();
-                         });
+                          [this]
+                          {
+                              return _watchDogStop.load() || !_RecordingShutdownRequestSet.empty();
+                          });
 
         if (_watchDogStop)
             break;
