@@ -11,14 +11,11 @@
 #include <sys/stat.h>
 #include <cstdlib>
 
-
-
 enum class eFileFormatNameTypes : size_t
 {
     SCREENSHOT,
     VIDEO,
 };
-
 
 class CameraNode : public rclcpp::Node
 {
@@ -27,28 +24,29 @@ class CameraNode : public rclcpp::Node
     float last_latitude = 0.0;
     float last_longitude = 0.0;
 
-    void controlIPCam(const rover_msgs::srv::CameraControl::Request& request, rover_msgs::srv::CameraControl::Response& response);
+    void controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
+                      rover_msgs::srv::CameraControl::Response& response_);
     std::string getCurrentTime();
-    std::string getFileName(const std::string& capture_name, std::string camURL, eFileFormatNameTypes state);
+    std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes state_);
     std::string getCamID(std::string cameraURL);
-    void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message);
-    const std::string getFolderPath(eFileFormatNameTypes state);
-    bool folderExists(const std::string& path);
-    bool createFolder(const std::string& path);
-    bool getScreenshot(std::string screenshotFolderPath, std::string filename, std::string cameraURL);
+    void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
+    const std::string getFolderPath(eFileFormatNameTypes state_);
+    bool folderExists(const std::string& path_);
+    bool createFolder(const std::string& path_);
+    bool getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
 
-    bool newRecording(std::string videoFolderPath, std::string filename, std::string cameraURL);
-    bool stopRecording(std::string cameraURL);
+    bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
+    bool stopRecording(std::string cameraURL_);
     bool StartWatchDog();
     void VideoWatchDogFunction();
-    void RequestShutdown(std::string camURL);
-    std::atomic<bool> watchDogStop{false};
-    std::mutex recordingMutex;
-    std::thread videoWatchDog;
-    std::condition_variable recordingCv;
+    void RequestShutdown(std::string camURL_);
+    std::atomic<bool> _watchDogStop{false};
+    std::mutex _recordingMutex;
+    std::thread _videoWatchDog;
+    std::condition_variable _recordingCv;
 
-    std::unordered_map<std::string, Recording> RecordingMap;
-    std::unordered_set<std::string> RecordingShutdownRequestSet;
+    std::unordered_map<std::string, Recording> _RecordingMap;
+    std::unordered_set<std::string> _RecordingShutdownRequestSet;
 
   public:
     CameraNode();
