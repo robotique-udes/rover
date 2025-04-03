@@ -491,7 +491,7 @@ void CameraNode::RequestShutdown(std::string camURL_)
 
 /**
  * @brief Start the Watchdog thread
- * 
+ *
  */
 bool CameraNode::StartWatchDog(void)
 {
