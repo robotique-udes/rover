@@ -352,7 +352,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
             = "rtspsrc location=" + cameraURL_
               + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
-        cv::VideoCapture cap(cameraURL_);
+        cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
 
         if (!cap.isOpened())
         {
