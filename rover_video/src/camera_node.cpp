@@ -12,33 +12,43 @@ int main(int argc, char* argv[])
     return 0;
 }
 
+/**
+ * @brief Construct a new Camera Node:: Camera Node object
+ *
+ */
 CameraNode::CameraNode():
     Node("media_server")
 {
     _srv_control = this->create_service<rover_msgs::srv::CameraControl>(
         "/rover/video/media_server",
-        [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request,
-               std::shared_ptr<rover_msgs::srv::CameraControl::Response> response)
+        [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request_,
+               std::shared_ptr<rover_msgs::srv::CameraControl::Response> response_)
         {
-            if (!request || !response)
+            if (!request_ || !response_)
             {
                 RCLCPP_ERROR(this->get_logger(), "NULL request or response received.");
-                response->success = false;
-                response->status = "Service call with null request or response. Possible internal ROS2 error.";
+                response_->success = false;
+                response_->status = "Service call with null request or response. Possible internal ROS2 error.";
                 return;
             }
-            this->controlIPCam(*request, *response);
+            this->controlIPCam(*request_, *response_);
         });
 
     _sub_position
         = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
                                                                   1,
-                                                                  [this](const rover_msgs::msg::GpsPosition& gps_message)
+                                                                  [this](const rover_msgs::msg::GpsPosition& gps_message_)
                                                                   {
-                                                                      this->callbackPosition(gps_message);
+                                                                      this->callbackPosition(gps_message_);
                                                                   });
 }
 
+/**
+ * @brief Decides what to do depending on the oncoming request
+ *
+ * @param request_
+ * @param response_
+ */
 void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
                               rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -70,6 +80,12 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
     }
 }
 
+/**
+ * @brief Executes the program in order to take a screenshot
+ *
+ * @param request_
+ * @param response_
+ */
 void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& request_,
                                 rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -100,6 +116,12 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     }
 }
 
+/**
+ * @brief Executes the program in order when a new recording starts
+ *
+ * @param request_
+ * @param response_
+ */
 void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                                      rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -128,6 +150,12 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     }
 }
 
+/**
+ * @brief Executes the program in order when a recording stops
+ *
+ * @param request_
+ * @param response_
+ */
 void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                                     rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -145,6 +173,11 @@ void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Reques
     }
 }
 
+/**
+ * @brief Get the time the request was made
+ *
+ * @return std::string
+ */
 std::string CameraNode::getCurrentTime(void)
 {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();  // get system time
@@ -159,7 +192,15 @@ std::string CameraNode::getCurrentTime(void)
     return current_time_output.str();
 }
 
-std::string CameraNode::getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes state_)
+/**
+ * @brief Gets the filename necessary to save the file, depending on the file type
+ *
+ * @param capture_name_ Custom name made by the user
+ * @param camURL_ The rtsp url for the camera in use
+ * @param fileType_ Whether it is a screenshot or a video
+ * @return std::string of the complete filename
+ */
+std::string CameraNode::getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_)
 {
     std::string filename;
 
@@ -174,7 +215,7 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
         ID = it->second;
     }
 
-    switch (state_)
+    switch (fileType_)
     {
         case eFileFormatNameTypes::SCREENSHOT:
             filename = capture_name_.empty()
@@ -193,12 +234,18 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     return filename;
 }
 
-const std::string CameraNode::getFolderPath(eFileFormatNameTypes state_)
+/**
+ * @brief Finds the directory of the current package in use depending on the file type
+ *
+ * @param fileType_ Whether it is a screenshot or a video
+ * @return const std::string of the complete directory
+ */
+const std::string CameraNode::getFolderPath(eFileFormatNameTypes fileType_)
 {
     std::string folderPath;
     std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_video");  // finds the path to our package
 
-    switch (state_)
+    switch (fileType_)
     {
         case eFileFormatNameTypes::SCREENSHOT:
             folderPath = std::string(currentPackageDirectory) + "/src/screenshots";
@@ -212,6 +259,13 @@ const std::string CameraNode::getFolderPath(eFileFormatNameTypes state_)
     return folderPath;
 }
 
+/**
+ * @brief Checks if the screenshot or the recording folder exists
+ *
+ * @param path_ Path the the saving folder
+ * @return true if it exists.
+ * @return false if it doesn't or it isn't a folder
+ */
 bool CameraNode::folderExists(const std::string& path_)
 {
     struct stat fileInfo;
@@ -232,6 +286,13 @@ bool CameraNode::folderExists(const std::string& path_)
     }
 }
 
+/**
+ * @brief Creates the desired folder with the necessary permissions for Linux
+ *
+ * @param path_ Path to the folder that needs to be created
+ * @return true
+ * @return false
+ */
 bool CameraNode::createFolder(const std::string& path_)
 {
     if (!this->folderExists(path_))
@@ -252,6 +313,15 @@ bool CameraNode::createFolder(const std::string& path_)
     return true;
 }
 
+/**
+ * @brief OpenCV implementation in order to capture a screenshot from a desired camera
+ *
+ * @param screenshotFolderPath_ Absolute path to the saving folder
+ * @param filename_ The name of the resulting screenshot
+ * @param cameraURL_ RTSP url of the camera that is currently being used
+ * @return true if succesfully taken a screenshot.
+ * @return false if unsuccesful in its task
+ */
 bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_)
 {
     std::string captureName = screenshotFolderPath_ + "/" + filename_;
@@ -271,8 +341,8 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
         cv::imwrite(captureName, pRecording->getFrame());
         RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
 
-        // Display the frame
-        cv::imshow("IP Camera Screenshot", pRecording->getFrame());
+        // Display the frame for debug
+        // cv::imshow("IP Camera Screenshot", pRecording->getFrame());
 
         return true;
     }
@@ -318,6 +388,13 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
     }
 }
 
+/**
+ * @brief Stops a recording that is being currently made
+ *
+ * @param cameraURL_ RTSP url of the camera that is currently being used
+ * @return true if successfully stopped the recording.
+ * @return false if unsuccesful
+ */
 bool CameraNode::stopRecording(std::string cameraURL_)
 {
     std::lock_guard<std::mutex> lock(_recordingMutex);
@@ -376,7 +453,11 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
     }
 }
 
-// gps position for file name
+/**
+ * @brief Writes the current value of the GPS onto placeholding variables
+ *
+ * @param gps_message_ Address reference of the GPS subscriber
+ */
 void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_)
 {
     _last_latitude = gps_message_.latitude;

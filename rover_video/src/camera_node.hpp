@@ -35,8 +35,8 @@ class CameraNode : public rclcpp::Node
                             rover_msgs::srv::CameraControl::Response& response_);
 
     std::string getCurrentTime(void);
-    std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes state_);
-    const std::string getFolderPath(eFileFormatNameTypes state_);
+    std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
+    const std::string getFolderPath(eFileFormatNameTypes fileType_);
     void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
     bool folderExists(const std::string& path_);
     bool createFolder(const std::string& path_);
