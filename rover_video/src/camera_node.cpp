@@ -52,7 +52,15 @@ CameraNode::CameraNode():
 void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
                               rover_msgs::srv::CameraControl::Response& response_)
 {
-    RCLCPP_DEBUG(LOGGER, "Entering the controlIPCam function");
+    RCLCPP_DEBUG(this->get_logger(),
+                 "Entry CameraNode::controlIPCam("
+                 "resquest_.camera_url = %s\n"
+                 "\t.capture_name = %s\n"
+                 "\t.command = %u)\n"
+                 "\tresponse: Not set",
+                 request_.camera_url.c_str(),
+                 request_.capture_name.c_str(),
+                 request_.command);
 
     std::string folderPath;
     std::string captureName;
