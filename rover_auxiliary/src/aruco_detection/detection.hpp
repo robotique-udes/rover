@@ -10,16 +10,20 @@
 class Detection
 {
     static constexpr float VALIDATION_THRESHOLD = 0.75;
-    static constexpr uint64_t DELAY_BETWEEN_CAPTURE_MS = 50;
 
   public:
-    Detection(std::string cameraURL_);
+    Detection(std::string cameraURL_, uint8_t detectionTag_);
 
     std::vector<uint16_t> detect(bool debugMode_);
     void update(bool debugMode_);
-    std::vector<uint16_t> getValidatedIds(void);
+    std::vector<uint16_t> getValidatedIds(void) const;
+    uint8_t getErrorFrameCount(void) const;
+    std::string getCamURL(void) const;
+    uint8_t getTag(void) const;
 
   private:
+    uint8_t _tag;
+    std::string _cameraURL;
     ProcessFrame _processFrame;
     std::unordered_map<uint16_t, MovingAverage<uint16_t, COEFF_NB_ARUCO>> _validation;
     std::vector<uint16_t> _validatedIds;
