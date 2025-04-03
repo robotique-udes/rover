@@ -29,7 +29,7 @@ class CameraNode : public rclcpp::Node
     void takeScreenshot(const rover_msgs::srv::CameraControl::Request& request_,
                         rover_msgs::srv::CameraControl::Response& response_);
     void startRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
-                            rover_msgs::srv::CameraControl::Response& response_);
+                             rover_msgs::srv::CameraControl::Response& response_);
     void stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                             rover_msgs::srv::CameraControl::Response& response_);
 
@@ -41,7 +41,6 @@ class CameraNode : public rclcpp::Node
     bool folderExists(const std::string& path_);
     bool createFolder(const std::string& path_);
     bool getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
-
 
     bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
     bool stopRecording(std::string cameraURL_);
