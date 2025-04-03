@@ -13,7 +13,7 @@ int main(int argc, char* argv[])
 }
 
 /**
- * @brief Construct a new Camera Node:: Camera Node object
+ * @brief Construct a new CameraNode object
  *
  */
 CameraNode::CameraNode():
@@ -424,6 +424,15 @@ bool CameraNode::stopRecording(std::string cameraURL_)
     }
 }
 
+/**
+ * @brief Creates a new recording inside the hashmap if it doesn't already exists.
+ *
+ * @param videoFolderPath_ Absolute path to the saving folder
+ * @param filename_ Name for the recording
+ * @param cameraURL_ RTSP url of the camera that is currently being used
+ * @return true
+ * @return false
+ */
 bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_)
 {
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if recording doesn't already exist
