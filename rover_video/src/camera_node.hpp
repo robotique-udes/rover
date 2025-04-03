@@ -26,14 +26,22 @@ class CameraNode : public rclcpp::Node
   private:
     void controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
                       rover_msgs::srv::CameraControl::Response& response_);
+    void takeScreenshot(const rover_msgs::srv::CameraControl::Request& request_,
+                        rover_msgs::srv::CameraControl::Response& response_);
+    void startRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
+                            rover_msgs::srv::CameraControl::Response& response_);
+    void stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
+                            rover_msgs::srv::CameraControl::Response& response_);
+
     std::string getCurrentTime(void);
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes state_);
     std::string getCamID(std::string cameraURL);
-    void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
     const std::string getFolderPath(eFileFormatNameTypes state_);
+    void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
     bool folderExists(const std::string& path_);
     bool createFolder(const std::string& path_);
     bool getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
+
 
     bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
     bool stopRecording(std::string cameraURL_);
@@ -42,7 +50,7 @@ class CameraNode : public rclcpp::Node
     void RequestShutdown(std::string camURL_);
 
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
-    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _msg_position;
+    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
 
     float _last_latitude = 0.0;
     float _last_longitude = 0.0;

@@ -30,7 +30,7 @@ CameraNode::CameraNode():
             this->controlIPCam(*request, *response);
         });
 
-    _msg_position
+    _sub_position
         = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
                                                                   1,
                                                                   [this](const rover_msgs::msg::GpsPosition& gps_message)
@@ -51,63 +51,15 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
     switch (request_.command)
     {
         case rover_msgs::srv::CameraControl::Request::TAKE_PICTURE:
-            captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
-            folderPath = this->getFolderPath(eFileFormatNameTypes::SCREENSHOT);
-
-            if (!this->createFolder(folderPath))
-            {
-                RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
-                response_.success = false;
-                response_.status = "Failed to create screenshots folder or it already exists.";
-                break;
-            }
-
-            if (this->getScreenshot(folderPath, captureName, cameraURL))
-            {
-                response_.success = true;
-                response_.status = "Screenshot saved as " + folderPath + "/" + captureName;
-            }
-            else
-            {
-                response_.success = false;
-                response_.status = "Failed to take a screenshot.";
-            }
+            this->takeScreenshot(request_, response_);
             break;
 
         case rover_msgs::srv::CameraControl::Request::START_RECORDING:
-            captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
-            folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
-            if (!this->createFolder(folderPath))
-            {
-                RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
-                response_.success = false;
-                response_.status = "Failed to create screenshots folder or it already exists.";
-                break;
-            }
-            if (this->newRecording(folderPath, captureName, cameraURL))
-            {
-                response_.success = true;
-                response_.status = "Recording started";
-            }
-            else
-            {
-                response_.success = false;
-                response_.status = "Failed to take a video.";  // add reason i.e. recording already started at TIME-GPS-NAME
-            }
-
+            this->startRecordingLogic(request_, response_);
             break;
 
         case rover_msgs::srv::CameraControl::Request::STOP_RECORDING:
-            if (this->stopRecording(cameraURL))
-            {
-                response_.success = true;
-                response_.status = "Recording ended";
-            }
-            else
-            {
-                response_.success = false;
-                response_.status = "No such recordings";
-            }
+            this->stopRecordingLogic(request_, response_);
             break;
 
         default:
@@ -115,6 +67,81 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
             response_.success = false;
             response_.status = "Invalid command.";
             break;
+    }
+}
+
+void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& request_,
+                                rover_msgs::srv::CameraControl::Response& response_)
+{
+    std::string folderPath;
+    std::string captureName;
+    std::string cameraURL = request_.camera_url;
+
+    captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
+    folderPath = this->getFolderPath(eFileFormatNameTypes::SCREENSHOT);
+
+    if (!this->createFolder(folderPath))
+    {
+        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
+        response_.success = false;
+        response_.status = "Failed to create screenshots folder or it already exists.";
+        // Need to find how to handle
+    }
+
+    if (this->getScreenshot(folderPath, captureName, cameraURL))
+    {
+        response_.success = true;
+        response_.status = "Screenshot saved as " + folderPath + "/" + captureName;
+    }
+    else
+    {
+        response_.success = false;
+        response_.status = "Failed to take a screenshot.";
+    }
+}
+
+void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
+                                    rover_msgs::srv::CameraControl::Response& response_)
+{
+    std::string folderPath;
+    std::string captureName;
+    std::string cameraURL = request_.camera_url;
+
+    captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
+    folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
+    if (!this->createFolder(folderPath))
+    {
+        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
+        response_.success = false;
+        response_.status = "Failed to create screenshots folder or it already exists.";
+        // Need to find how to handle
+    }
+    if (this->newRecording(folderPath, captureName, cameraURL))
+    {
+        response_.success = true;
+        response_.status = "Recording started";
+    }
+    else
+    {
+        response_.success = false;
+        response_.status = "Failed to take a video.";  // add reason i.e. recording already started at TIME-GPS-NAME
+    }
+}
+
+void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
+    rover_msgs::srv::CameraControl::Response& response_)
+{
+    std::string cameraURL = request_.camera_url;
+
+    if (this->stopRecording(cameraURL))
+    {
+        response_.success = true;
+        response_.status = "Recording ended";
+    }
+    else
+    {
+        response_.success = false;
+        response_.status = "No such recordings";
     }
 }
 
