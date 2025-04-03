@@ -289,8 +289,8 @@ bool CameraNode::folderExists(const std::string& path_)
     }
     else
     {
-        RCLCPP_ERROR(this->get_logger(), "Element Already exist with this path and name, but isn't a folder");
-        return false;  // Todo: how to handle this request
+        RCLCPP_FATAL(this->get_logger(), "Element already exist with this path and name, but isn't a folder");
+        assert(false);
     }
 }
 
