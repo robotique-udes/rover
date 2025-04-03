@@ -42,7 +42,7 @@ class Recording
     void recordingThreadFunction();
     std::function<void(std::string)> _RequestShutdown;
 
-    std::shared_ptr<std::thread> _recordingThread;
+    std::thread _recordingThread;
     std::atomic<bool> _stopRecording{false};
 
     // camera variables
@@ -142,9 +142,9 @@ class Recording
         {
             _stopRecording.store(true);
 
-            if (_recordingThread->joinable())
+            if (_recordingThread.joinable())
             {
-                _recordingThread->join();
+                _recordingThread.join();
             }
             // Release resources
             _cap.release();

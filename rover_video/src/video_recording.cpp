@@ -54,7 +54,7 @@ bool Recording::startRecording(void)
 
     _startTime = time(0);
 
-    _recordingThread = std::make_shared<std::thread>(
+    _recordingThread = std::thread(
         [this]()
         {
             recordingThreadFunction();
