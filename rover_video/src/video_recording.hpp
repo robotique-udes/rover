@@ -41,7 +41,6 @@ class Recording
 
     ~Recording(void);
 
-
     bool startRecording(void);
     bool recordFrame(void);
 
@@ -91,7 +90,6 @@ class Recording
     cv::VideoWriter _video_writer;
     cv::VideoWriter _appender;
     cv::Mat _frame;
-
 };
 
 #endif

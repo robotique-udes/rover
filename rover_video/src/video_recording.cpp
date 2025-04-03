@@ -1,9 +1,8 @@
 #include "video_recording.hpp"
 
-
 /**
  * @brief Construct a new Recording:: Recording object
- * 
+ *
  * @param videoFolderPath_in Path to the video folder
  * @param filename_in Desired file name
  * @param URL_in Target URL
@@ -21,14 +20,13 @@ Recording::Recording(std::string videoFolderPath_in,
     _filename(filename_in),
     _videoFolderPath(videoFolderPath_in),
     rLogger(logger)
-{}
-
-
+{
+}
 
 /**
  * @brief Construct a new Recording:: Recording object using move
  * @brief Used when emplacing temporary objects into a hashmap
- * 
+ *
  * @param other Recording object
  */
 Recording::Recording(Recording&& other) noexcept:
@@ -53,12 +51,11 @@ Recording::Recording(Recording&& other) noexcept:
     _stopRecording.store(other._stopRecording.load());  // cannot move atomic
 }
 
-
 /**
  * @brief Move operator for the recording class
- * 
+ *
  * @param other Recording object
- * @return Recording& 
+ * @return Recording&
  */
 Recording& Recording::operator=(Recording&& other) noexcept
 {  // move operator just to be safe
@@ -93,7 +90,7 @@ Recording& Recording::operator=(Recording&& other) noexcept
 /**
  * @brief Destroy the Recording:: Recording object \n
  * @brief Handle the release of CV objects
- * 
+ *
  */
 Recording::~Recording(void)
 {
@@ -116,7 +113,7 @@ Recording::~Recording(void)
 
 /**
  * @brief initialize all CV variables
- * 
+ *
  * @return true if all CV variables are initialized correctly \n
  * @return false if there's any error
  */
@@ -186,7 +183,7 @@ bool Recording::startRecording(void)
 
 /**
  * @brief This function records 1 frame and writes in the short and the long video
- * 
+ *
  * @return true if the read-write is a success \n
  * @return false if there's any error
  */
