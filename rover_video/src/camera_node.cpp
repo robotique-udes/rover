@@ -157,7 +157,7 @@ std::string CameraNode::getCamID(std::string cameraURL_)
     return camID;
 }
 
-std::string CameraNode::getCurrentTime()
+std::string CameraNode::getCurrentTime(void)
 {
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();  // get system time
 
@@ -176,8 +176,8 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     std::string filename;
 
     std::string time = this->getCurrentTime();
-    std::string latitude = std::to_string(last_latitude);
-    std::string longitude = std::to_string(last_longitude);
+    std::string latitude = std::to_string(_last_latitude);
+    std::string longitude = std::to_string(_last_longitude);
     std::string ID = this->getCamID(camURL_);
 
     switch (state_)
@@ -385,8 +385,8 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
 // gps position for file name
 void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_)
 {
-    last_latitude = gps_message_.latitude;
-    last_longitude = gps_message_.longitude;
+    _last_latitude = gps_message_.latitude;
+    _last_longitude = gps_message_.longitude;
 }
 
 // Add recording key to shutdown list and notify watch dog for shutdown
@@ -403,7 +403,7 @@ void CameraNode::RequestShutdown(std::string camURL_)
 }
 
 // start the VideoWatchDogFunction
-bool CameraNode::StartWatchDog()
+bool CameraNode::StartWatchDog(void)
 {
     _watchDogStop.store(false);
     _videoWatchDog = std::thread(&CameraNode::VideoWatchDogFunction, this);
@@ -411,7 +411,7 @@ bool CameraNode::StartWatchDog()
 }
 
 // when requested, shutdown and erase recordings that were in error from hashmap
-void CameraNode::VideoWatchDogFunction()
+void CameraNode::VideoWatchDogFunction(void)
 {
     RCLCPP_DEBUG(LOGGER, "Starting video watchdog");
     while (!_watchDogStop.load())
