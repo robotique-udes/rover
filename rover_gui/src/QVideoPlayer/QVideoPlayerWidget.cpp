@@ -1,6 +1,6 @@
 #include "QVideoPlayerWidget.hpp"
 #include <QStyle>
-
+#include <QTimer>
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        QWidget* parent_,
                                        std::string url_,
@@ -116,6 +116,7 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 
 void QVideoPlayerWidget::arucoCameraFailure(bool valid_)
 {
+    QTimer::singleShot(0, this, [this, valid_] {
     if (!valid_)
     {
         if (_ui.arucoPushButton->isChecked()) 
@@ -138,6 +139,8 @@ void QVideoPlayerWidget::arucoCameraFailure(bool valid_)
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
+    });
+    
 }
 
 void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
