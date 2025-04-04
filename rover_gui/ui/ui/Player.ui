@@ -21,24 +21,21 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="startButton">
+      <widget class="QPushButton" name="playPauseButton">
+       <property name="minimumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
+       <property name="maximumSize">
+        <size>
+         <width>40</width>
+         <height>40</height>
+        </size>
+       </property>
        <property name="toolTip">
-        <string>Start</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../src/Global/Constant/resources.qrc">
-         <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
-       </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="stopButton">
-       <property name="toolTip">
-        <string>Stop</string>
-       </property>
-       <property name="icon">
-        <iconset resource="../../src/Global/Constant/resources.qrc">
-         <normaloff>:/icons/stop.png</normaloff>:/icons/stop.png</iconset>
+        <string>Play/Pause</string>
        </property>
       </widget>
      </item>

@@ -55,6 +55,9 @@ add_executable(main_gui src/gui.cpp
                         src/SecondaryWindow.hpp
                         src/SecondaryWindow.cpp
 
+                        src/QLogManager.hpp
+                        src/QLogManager.cpp
+
                         src/Global/Constant/StyleSheet.hpp
                         src/Global/Helpers/QHelpers.hpp
                         src/Global/Helpers/QHelpers.cpp
@@ -99,6 +102,9 @@ add_executable(main_gui src/gui.cpp
                         src/QRtspPlayer/QGStreamerWorker.cpp
                         src/QRtspPlayer/QGStreamerWorker.hpp
                         src/QRtspPlayer/QLoggingMacros.hpp
+                        src/QRtspPlayer/StreamDialog.hpp
+                        src/QRtspPlayer/QPlayPauseButton.hpp
+
                         ${RTSP_RESOURCES}
                         )
 add_dependencies(main_gui run_generate_ui)
