@@ -106,7 +106,6 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 {
     if (!urlFound_ && _ui.arucoPushButton->isChecked())
     {
-        _ui.arucoPushButton->setChecked(true);
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, aruco detection on %s was not found", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "normal");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
@@ -119,9 +118,9 @@ void QVideoPlayerWidget::arucoCameraFailure(bool valid_)
     QTimer::singleShot(0, this, [this, valid_] {
     if (!valid_)
     {
-        if (_ui.arucoPushButton->isChecked()) 
+        if (!_ui.arucoPushButton->isChecked()) 
         {
-            _ui.arucoPushButton->setChecked(false);
+            _ui.arucoPushButton->setChecked(true);
         }
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "error");
@@ -232,3 +231,4 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
     }
 }
 
+#warning style grey out not applying correctly;

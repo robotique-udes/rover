@@ -29,6 +29,14 @@ constexpr const char* STATUS_STYLE = R"(
     border-radius: 5px;
     padding: 5px 10px;
 }
+
+.disabled {
+    background-color: #2a2a2a;
+    border: 1px solid #3a3a3a;
+    border-radius: 5px;
+    padding: 5px 10px;
+    color: #777777; 
+}
 )";
 
 constexpr const char* STYLE_DARK_MODE = R"(
@@ -167,7 +175,7 @@ QStatusBar {
     border: 1px solid #3a3a3a;
     border-radius: 5px;
     padding: 5px 10px;
-    color: #777777;  /* Light grey text to indicate disabled state */
+    color: #777777; 
 }
 
 .success {

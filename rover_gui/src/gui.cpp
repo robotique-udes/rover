@@ -23,8 +23,7 @@ int main(int argc, char* argv[])
     QApplication app(argc, argv);
     app.setApplicationName(WM_CLASS);
     QApplication::setStyle("Fusion");
-    QString STYLE_DARK_MODE_EXTENDED = QString(STYLE_DARK_MODE) + STATUS_STYLE;
-    app.setStyleSheet(STYLE_DARK_MODE_EXTENDED);
+    app.setStyleSheet(STYLE_DARK_MODE);
 
     MainWindow mainWindow(guiNode);
     SecondaryWindow secondaryWindow(guiNode);
