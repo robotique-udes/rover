@@ -14,10 +14,8 @@ std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
     if (!frame)
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Error getting frame from stream");
-        _errorFrameCount++;
         return std::nullopt;
     }
-    _errorFrameCount = 0;
 
     cv::aruco::detectMarkers(frame.value(), DICTIONNARY, _corners, _ids, _detectorParams);
     _detectedIds.clear();
@@ -32,7 +30,7 @@ std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
         cv::aruco::drawDetectedMarkers(frame.value(), _corners, _ids);
         return frame;
     }
-    return std::nullopt;
+    return cv::Mat();
 }
 
 std::vector<uint16_t> ProcessFrame::getIds() const
@@ -43,11 +41,6 @@ std::vector<uint16_t> ProcessFrame::getIds() const
 bool ProcessFrame::IdsEmpty(void) const
 {
     return _detectedIds.empty();
-}
-
-uint8_t ProcessFrame::getErrorFrameCount(void) const
-{
-    return _errorFrameCount;
 }
 
 bool ProcessFrame::isValid(void) const

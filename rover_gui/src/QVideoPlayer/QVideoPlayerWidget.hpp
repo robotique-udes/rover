@@ -28,8 +28,6 @@ class QVideoPlayerWidget : public QWidget
 
     void arucoStillAliveUpdate(bool urlFound_);
 
-    void arucoCameraFailure(bool valid_);
-
     void displayDetectedArucos(std::vector<uint16_t> ids_);
     
     void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
@@ -39,9 +37,13 @@ class QVideoPlayerWidget : public QWidget
 
     void updateCamURL();
 
+  signals:
+    void arucoCameraFailure(bool valid_);
+
   private slots:
     void onDetectionHandledSuccessfully(bool success_,uint16_t tag_);
     void onArucoServerInfoFailed(bool success_);
+    void onArucoCameraFailed(bool valid_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;

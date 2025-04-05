@@ -1,6 +1,6 @@
 #include "QVideoPlayerWidget.hpp"
 #include <QStyle>
-#include <QTimer>
+
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        QWidget* parent_,
                                        std::string url_,
@@ -28,6 +28,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     
     connect(_ui.rtspTextBox, &QLineEdit::textChanged,this, &QVideoPlayerWidget::updateCamURL);
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked,this, &QVideoPlayerWidget::setURLToDefault);
+    connect(this,&QVideoPlayerWidget::arucoCameraFailure,
+            this,
+            &QVideoPlayerWidget::onArucoCameraFailed);
 
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
@@ -113,35 +116,6 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
     }
 }
 
-void QVideoPlayerWidget::arucoCameraFailure(bool valid_)
-{
-    QTimer::singleShot(0, this, [this, valid_] {
-    if (!valid_)
-    {
-        if (!_ui.arucoPushButton->isChecked()) 
-        {
-            _ui.arucoPushButton->setChecked(true);
-        }
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
-        _ui.arucoPushButton->setProperty("class", "error");
-        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
-        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
-    }
-
-    if(valid_ && !_ui.arucoPushButton->isChecked())
-    {
-        if (!_ui.arucoPushButton->isChecked()) 
-        {
-            _ui.arucoPushButton->setChecked(true);
-        }
-        _ui.arucoPushButton->setProperty("class", "success");
-        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
-        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
-    }
-    });
-    
-}
-
 void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 {
     uint16_t nbr_ids_detected = ids_.size();
@@ -214,10 +188,7 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
     if(!success_)
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
-        _ui.arucoPushButton->setProperty("class", "disabled");
         _ui.arucoPushButton->setEnabled(false);
-        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
-        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
     else
     {
@@ -228,6 +199,41 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
             _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
             _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
         }
+    }
+}
+
+void QVideoPlayerWidget::onArucoCameraFailed(bool valid_)
+{
+    if (!valid_)
+    {
+        if (!_ui.arucoPushButton->isChecked()) 
+        {
+            _ui.arucoPushButton->setChecked(true);
+        }
+        if(!_ui.arucoPushButton->isEnabled())
+        {
+            _ui.arucoPushButton->setEnabled(true);
+        }
+
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
+        _ui.arucoPushButton->setProperty("class", "error");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
+    }
+
+    if(valid_)
+    {
+        if (!_ui.arucoPushButton->isChecked()) 
+        {
+            _ui.arucoPushButton->setChecked(true);
+        }
+        if(!_ui.arucoPushButton->isEnabled())
+        {
+            _ui.arucoPushButton->setEnabled(true);
+        }
+        _ui.arucoPushButton->setProperty("class", "success");
+        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
+        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
 }
 

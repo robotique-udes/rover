@@ -5,6 +5,8 @@
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
 #include <optional>
+#include "rovus_lib/timer.hpp"
+
 
 class ImageCapture
 {

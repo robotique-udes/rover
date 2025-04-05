@@ -16,7 +16,6 @@ class ProcessFrame
     std::optional<cv::Mat> updateDetection(bool debugMode_);
     std::vector<uint16_t> getIds(void) const;
     bool IdsEmpty(void) const;
-    uint8_t getErrorFrameCount(void) const;
     bool isValid(void) const;
 
     bool empty = true;
@@ -29,7 +28,6 @@ class ProcessFrame
     std::vector<std::vector<cv::Point2f>> _corners;
     cv::Mat _ids;
     cv::Ptr<cv::aruco::DetectorParameters> _detectorParams;
-    uint8_t _errorFrameCount = 0;
 };
 
 #endif
