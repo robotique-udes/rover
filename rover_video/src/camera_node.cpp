@@ -526,7 +526,9 @@ void CameraNode::VideoWatchDogFunction(void)
                           });
 
         if (_watchDogStop)
+        {
             break;
+        }
         else
         {
             for (std::string url : _RecordingShutdownRequestSet)
