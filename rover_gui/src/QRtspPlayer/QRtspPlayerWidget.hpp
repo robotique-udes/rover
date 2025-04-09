@@ -33,6 +33,10 @@ public:
     
     // Get streaming state
     bool isStreaming() const { return receivingFrames; }
+    
+    // Make these methods public so they can be called from SecondaryWindow
+    bool validateRtspUrl(const QString& url);
+    void updateUrlValidationUI(bool isValid);
 
 private slots:
     void onPipelineStarted(GstElement* pipeline);
@@ -55,7 +59,8 @@ private:
     QString _widgetId;
     int _streamIndex;
 
-    Ui::RtspPlayerWidget* ui;
+    // Changed from pointer to object
+    Ui::RtspPlayerWidget ui;
 
     QThread* workerThread;
     GStreamerWorker* gstreamerWorker;
@@ -66,10 +71,6 @@ private:
     GstElement* pipeline;
     bool receivingFrames;
     bool inReconnectionMode;
-    void updateUrlValidationUI(bool isValid);
-    
-    bool validateRtspUrl(QString& url);
-    QString correctRtspUrl(const QString& url);
 
     // Main stacked widget to switch between views
     QStackedWidget* _stackedWidget;

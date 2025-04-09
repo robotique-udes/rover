@@ -8,31 +8,13 @@
 #include <QMessageBox>
 
 
-class URLInputEventFilter : public QObject
-{
-public:
-    URLInputEventFilter(QLineEdit* lineEdit, QObject* parent = nullptr) 
-        : QObject(parent), _lineEdit(lineEdit) {}
-
-protected:
-    bool eventFilter(QObject* watched, QEvent* event) override {
-        if (watched == _lineEdit && event->type() == QEvent::FocusIn) {
-            _lineEdit->setStyleSheet("");
-            return false; // Don't consume the event
-        }
-        return QObject::eventFilter(watched, event);
-    }
-
-private:
-    QLineEdit* _lineEdit;
-};
+// Remove URL event filter class - no longer needed
 
 // Initialize static counter
 int RtspPlayerWidget::instanceCounter = 0;
 
 RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
     QWidget(parent),
-    ui(new Ui::RtspPlayerWidget),
     workerThread(new QThread(this)),
     gstreamerWorker(new GStreamerWorker()),
     reconnectTimer(new QTimer(this)),
@@ -48,39 +30,18 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
     // Setup UI elements
     setupUI();
 
-    connect(ui->rtspUrlInput, &QLineEdit::editingFinished, this, [this]() {
-        QString url = ui->rtspUrlInput->text();
-        if (!url.isEmpty()) {
-            QString validatedUrl = url;
-            validateRtspUrl(validatedUrl);
-            
-            // Only update if different and not empty
-            if (validatedUrl != url && !validatedUrl.isEmpty()) {
-                ui->rtspUrlInput->setText(validatedUrl);
-            }
-        }
-    });
-
-    connect(ui->rtspUrlInput, &QLineEdit::textChanged, this, [this](const QString& text) {
+    // Simple text change connections without autocorrection
+    connect(ui.rtspUrlInput, &QLineEdit::textChanged, this, [this](const QString& text) {
         if (text.isEmpty()) {
             // Empty input - reset to default style
-            ui->rtspUrlInput->setStyleSheet("");
-            ui->rtspUrlInput->setToolTip("Enter RTSP URL...");
+            ui.rtspUrlInput->setStyleSheet("");
+            ui.rtspUrlInput->setToolTip("Enter RTSP URL...");
         } else {
             // Validate without modifying
-            QString testUrl = text;
-            validateRtspUrl(testUrl);
-            
-            // We don't update the text while typing, just the validation UI
+            bool isValid = validateRtspUrl(text);
+            updateUrlValidationUI(isValid);
         }
     });
-
-    //connect(ui->rtspUrlInput, &QLineEdit::focusInEvent, this, [this](QFocusEvent* event) {
-        //ui->rtspUrlInput->setStyleSheet("");
-    //});
-
-    URLInputEventFilter* urlEventFilter = new URLInputEventFilter(ui->rtspUrlInput, this);
-    ui->rtspUrlInput->installEventFilter(urlEventFilter);
 
     gstreamerWorker->moveToThread(workerThread);
     connect(workerThread, &QThread::finished, gstreamerWorker, &QObject::deleteLater);
@@ -147,9 +108,9 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
                     updateStatusIndicator("yellow");
                     inReconnectionMode = true;
 
-                    if (!ui->rtspUrlInput->text().isEmpty())
+                    if (!ui.rtspUrlInput->text().isEmpty())
                     {
-                        startStream(ui->rtspUrlInput->text());
+                        startStream(ui.rtspUrlInput->text());
                     }
                 }
             });
@@ -168,7 +129,7 @@ RtspPlayerWidget::~RtspPlayerWidget()
 
     workerThread->quit();
     workerThread->wait();
-    delete ui;
+    // No need to delete ui as it's on the stack now
 }
 
 void RtspPlayerWidget::setupUI()
@@ -183,14 +144,13 @@ void RtspPlayerWidget::setupUI()
     
     // --- VIDEO VIEW ---
     
-    // Setup the original UI
-    ui = new Ui::RtspPlayerWidget();
+    // Create the video widget and setup the UI in it
     _videoWidget = new QWidget();
-    ui->setupUi(_videoWidget);
+    ui.setupUi(_videoWidget);
     
     // Promote the playPauseButton to our custom class
     QPlayPauseButton* playPauseButton = new QPlayPauseButton(this);
-    QWidget* oldButton = ui->playPauseButton;
+    QWidget* oldButton = ui.playPauseButton;
 
     // Copy the geometry and other properties
     playPauseButton->setObjectName("playPauseButton");
@@ -201,7 +161,7 @@ void RtspPlayerWidget::setupUI()
     playPauseButton->setEnabled(true);
 
     // Replace the button in the layout
-    QHBoxLayout* topLayout = ui->topLayout;
+    QHBoxLayout* topLayout = ui.topLayout;
     topLayout->replaceWidget(oldButton, playPauseButton);
 
     // Delete the old button
@@ -209,7 +169,7 @@ void RtspPlayerWidget::setupUI()
 
     // Connect play/pause button signals
     connect(playPauseButton, &QPlayPauseButton::playClicked, this, [this]() { 
-        startStream(ui->rtspUrlInput->text()); 
+        startStream(ui.rtspUrlInput->text()); 
     });
     connect(playPauseButton, &QPlayPauseButton::pauseClicked, this, &RtspPlayerWidget::stopStream);
 
@@ -303,30 +263,23 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl)
         return;
     }
 
-    // Validate and possibly correct the URL
-    QString validatedUrl = rtspUrl;
-    if (!validateRtspUrl(validatedUrl)) {
+    // Validate URL without modifying it
+    if (!validateRtspUrl(rtspUrl)) {
         // Show a warning to the user
         QMessageBox::warning(this, "Invalid RTSP URL",
                            "The URL format is invalid. Please enter a valid RTSP URL.\n\n"
                            "Format: rtsp://[username:password@]host[:port]/path");
         return;
     }
-    
-    // Update the input field with the possibly corrected URL
-    if (validatedUrl != rtspUrl) {
-        ui->rtspUrlInput->setText(validatedUrl);
-        LOG_INFO_TARGET("RtspPlayer", QString("URL corrected: %1 -> %2").arg(rtspUrl).arg(validatedUrl), _widgetId.toUtf8().constData());
-    }
 
     if (!inReconnectionMode)
     {
-        LOG_INFO_TARGET("RtspPlayer", QString("Starting stream: %1").arg(validatedUrl), _widgetId.toUtf8().constData());
+        LOG_INFO_TARGET("RtspPlayer", QString("Starting stream: %1").arg(rtspUrl), _widgetId.toUtf8().constData());
     }
 
     receivingFrames = false;
     updateStatusIndicator("yellow");
-    emit requestStartStream(validatedUrl);
+    emit requestStartStream(rtspUrl);
 }
 
 void RtspPlayerWidget::stopStream()
@@ -370,7 +323,7 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
         return;
     }
 
-    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)ui->videoWidget->winId());
+    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)ui.videoWidget->winId());
     gst_object_unref(videoSink);
 
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
@@ -404,7 +357,7 @@ void RtspPlayerWidget::onErrorOccurred(const QString& error)
 
 void RtspPlayerWidget::updateStatusIndicator(const QString& color)
 {
-    ui->statusIndicator->setStyleSheet(QString("QFrame { border-radius: 10px; background-color: %1; }").arg(color));
+    ui.statusIndicator->setStyleSheet(QString("QFrame { border-radius: 10px; background-color: %1; }").arg(color));
 }
 
 void RtspPlayerWidget::onNewLogMessage(const QString& message, const QString& target)
@@ -461,7 +414,7 @@ void RtspPlayerWidget::emitStateChanged()
     emit streamStateChanged(receivingFrames, _streamIndex);
 }
 
-bool RtspPlayerWidget::validateRtspUrl(QString& url)
+bool RtspPlayerWidget::validateRtspUrl(const QString& url)
 {
     // Basic RTSP URL pattern:
     // rtsp://[username:password@]host[:port]/path
@@ -473,82 +426,24 @@ bool RtspPlayerWidget::validateRtspUrl(QString& url)
     QRegularExpressionMatch match = rtspRegex.match(url);
     
     if (!match.hasMatch()) {
-        // Try to auto-correct and validate again
-        url = correctRtspUrl(url);
-        match = rtspRegex.match(url);
-        
-        if (!match.hasMatch()) {
-            LOG_WARNING_TARGET("RtspPlayer", "Invalid RTSP URL format: " + url, _widgetId.toUtf8().constData());
-            updateUrlValidationUI(false);
-            return false;
-        }
+        LOG_WARNING_TARGET("RtspPlayer", "Invalid RTSP URL format: " + url, _widgetId.toUtf8().constData());
+        return false;
     }
     
-    // Extract components for logging/debugging
-    QString username = match.captured(1);
-    QString password = match.captured(2);
-    QString host = match.captured(3);
-    QString port = match.captured(4);
-    QString path = match.captured(5);
-    
-    if (path.isEmpty()) {
-        // Add a trailing slash if there's no path
-        url += "/";
-    }
-    
-    if (port.isEmpty()) {
-        // RTSP default port is 554, but we don't modify the URL
-        // Just log it for informational purposes
-        LOG_DEBUG_TARGET("RtspPlayer", "No port specified, will use default (554)", _widgetId.toUtf8().constData());
-    }
-    
+    // URL is valid
     LOG_DEBUG_TARGET("RtspPlayer", "Valid RTSP URL: " + url, _widgetId.toUtf8().constData());
-    updateUrlValidationUI(true);
     return true;
-}
-
-
-QString RtspPlayerWidget::correctRtspUrl(const QString& url)
-{
-    QString corrected = url.trimmed();
-    
-    // Common mistake 1: Missing rtsp:// prefix
-    if (!corrected.startsWith("rtsp://", Qt::CaseInsensitive)) {
-        // Check if it starts with another protocol
-        if (corrected.contains("://")) {
-            // Replace the protocol
-            corrected.replace(QRegularExpression("^[^:]+://"), "rtsp://");
-        } else {
-            // Add the protocol
-            corrected = "rtsp://" + corrected;
-        }
-    }
-    
-    // Common mistake 2: Multiple consecutive slashes in the path
-    corrected.replace(QRegularExpression("/{2,}"), "/");
-    
-    // Common mistake 3: Special characters not being URL-encoded
-    // We'll handle specific cases like spaces
-    if (corrected.contains(" ")) {
-        // Replace spaces with %20
-        corrected.replace(" ", "%20");
-    }
-    
-    // Ensure we have rtsp:// with exactly two slashes before the host
-    corrected.replace(QRegularExpression("^rtsp:/+"), "rtsp://");
-    
-    return corrected;
 }
 
 void RtspPlayerWidget::updateUrlValidationUI(bool isValid)
 {
     if (isValid) {
-        // Valid URL - green border or default style
-        ui->rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #5cb85c; }");
-        ui->rtspUrlInput->setToolTip("Valid RTSP URL");
+        // Valid URL - green border
+        ui.rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #5cb85c; }");
+        ui.rtspUrlInput->setToolTip("Valid RTSP URL");
     } else {
         // Invalid URL - red border
-        ui->rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #d9534f; }");
-        ui->rtspUrlInput->setToolTip("Invalid RTSP URL format.\nExpected: rtsp://[username:password@]host[:port]/path");
+        ui.rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #d9534f; }");
+        ui.rtspUrlInput->setToolTip("Invalid RTSP URL format.\nExpected: rtsp://[username:password@]host[:port]/path");
     }
 }

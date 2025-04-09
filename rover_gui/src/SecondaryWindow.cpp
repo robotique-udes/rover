@@ -261,10 +261,17 @@ void SecondaryWindow::updateStreamHeader(int streamIndex)
         stream.headerLabel->setFrameShadow(QFrame::Raised);
         stream.headerLabel->setAlignment(Qt::AlignCenter);
         
-        // For original RTSP widget, directly set the URL in its input field
+        // Find the URL input field by name (using findChild works with both pointer and stack-based ui)
         QLineEdit* urlInput = stream.widget->findChild<QLineEdit*>("rtspUrlInput");
         if (urlInput && !stream.url.isEmpty()) {
+            // Set URL text but don't trigger validation (just set the text)
+            urlInput->blockSignals(true);
             urlInput->setText(stream.url);
+            urlInput->blockSignals(false);
+            
+            // Manually trigger validation to update the color
+            bool isValid = stream.widget->validateRtspUrl(stream.url);
+            stream.widget->updateUrlValidationUI(isValid);
         }
     }
 }
@@ -340,6 +347,12 @@ void SecondaryWindow::addStream()
                 false
             });
             
+            // Find the URL input and set it
+            QLineEdit* urlInput = _streams.back().widget->findChild<QLineEdit*>("rtspUrlInput");
+            if (urlInput && !url.isEmpty()) {
+                urlInput->setText(url);
+            }
+            
             // Start the stream if URL is provided
             if (!url.isEmpty()) {
                 _streams.back().widget->startStream(url);
@@ -385,7 +398,14 @@ void SecondaryWindow::editStream()
             // Update the URL in the widget's input field directly
             QLineEdit* urlInput = stream.widget->findChild<QLineEdit*>("rtspUrlInput");
             if (urlInput) {
+                // Set URL text but block signals
+                urlInput->blockSignals(true);
                 urlInput->setText(url);
+                urlInput->blockSignals(false);
+                
+                // Manually trigger validation to update the color
+                bool isValid = stream.widget->validateRtspUrl(url);
+                stream.widget->updateUrlValidationUI(isValid);
             }
             
             // Start with new URL if provided
