@@ -20,22 +20,22 @@ class QVideoPlayerWidget : public QWidget
   public:
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_,std::string url_,uint16_t tag_, std::shared_ptr<QPlayerWorker> worker_);
 
-    void startDetection();
-    void stopDetection();
-    void handleArucoDetection();
+    void startDetection(void);
+    void stopDetection(void);
+    void handleArucoDetection(void);
 
-    void handlePlayPauseButton();
+    void handlePlayPauseButton(void);
 
     void arucoStillAliveUpdate(bool urlFound_);
 
     void displayDetectedArucos(std::vector<uint16_t> ids_);
     
     void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
-    std::string getCamURL();
-    void setURLToDefault();
+    std::string getCamURL(void);
+    void setURLToDefault(void);
     void setCamURL(std::string _newCamUrl);
 
-    void updateCamURL();
+    void updateCamURL(void);
 
   signals:
     void arucoCameraFailure(bool valid_);

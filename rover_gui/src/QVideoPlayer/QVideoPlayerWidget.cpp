@@ -44,7 +44,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     }
 }
 
-void QVideoPlayerWidget::startDetection()
+void QVideoPlayerWidget::startDetection(void)
 {
     if(_playerWorkerThread.get()!=nullptr)
     {
@@ -68,7 +68,7 @@ void QVideoPlayerWidget::stopDetection()
     }
 }
 
-void QVideoPlayerWidget::handleArucoDetection()
+void QVideoPlayerWidget::handleArucoDetection(void)
 {
     if (_ui.arucoPushButton->isChecked())
     {
@@ -160,7 +160,7 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
     }
 }
 
-void QVideoPlayerWidget::handlePlayPauseButton()
+void QVideoPlayerWidget::handlePlayPauseButton(void)
 {
     if (_ui.playPauseButton->isChecked()) 
     {
@@ -172,7 +172,7 @@ void QVideoPlayerWidget::handlePlayPauseButton()
     }
 }
 
-void QVideoPlayerWidget::setURLToDefault()
+void QVideoPlayerWidget::setURLToDefault(void)
 {
     _camURL = this->_defaultCamUrl;
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));

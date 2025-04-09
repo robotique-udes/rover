@@ -98,13 +98,13 @@ void QPlayerWorker::updateDetectionInternal(
 
     _timer_serviceCall.reset();
 
-    bool service_call_interrupte = false;
+    bool service_call_interrupt = false;
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
     {
         if (_timer_serviceCall.isDone())
         {
-            service_call_interrupte = true;
+            service_call_interrupt = true;
             break;
         }
     }
@@ -114,7 +114,7 @@ void QPlayerWorker::updateDetectionInternal(
 
     if (result.valid())
     {
-        if (!service_call_interrupte)
+        if (!service_call_interrupt)
         {
             std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();  // Capture the response data
 
