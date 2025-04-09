@@ -109,13 +109,28 @@ GStreamerWorker::~GStreamerWorker()
 
 QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
 {
-    return QString("rtspsrc location=%1 latency=50 timeout=5000000 ! decodebin "
+    return QString("rtspsrc location=%1 latency=50 timeout=5000000 buffer-mode=none do-retransmission=false drop-on-latency=true ! decodebin "
                    "name=dec "
-                   "queue name=q0 ! videoconvert ! tee name=t "
-                   "t. ! queue ! xvimagesink sync=false "
-                   "t. ! queue ! videoconvert ! appsink name=myappsink sync=false")
+                   "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
+                   "t. ! queue max-size-buffers=2 leaky=downstream ! ximagesink sync=false "
+                   "t. ! queue max-size-buffers=2 leaky=downstream ! videoconvert ! appsink name=myappsink sync=false")
         .arg(rtspUrl);
 }
+
+//QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
+//{
+    //return QString("rtspsrc location=%1 latency=50 timeout=5000000 "
+                  //"buffer-mode=none do-retransmission=false drop-on-latency=true "
+                  //"! rtph264depay ! h264parse ! "
+                  //"decodebin name=dec max-size-buffers=1 "
+                  //"! queue name=q0 max-size-buffers=1 max-size-time=0 max-size-bytes=0 leaky=downstream "
+                  //"! videoconvert max-threads=1 ! video/x-raw,format=I420 ! tee name=t "
+                  //"t. ! queue max-size-buffers=1 leaky=downstream ! videoconvert ! "
+                  //"ximagesink sync=false name=videosink " // Use ximagesink instead of xvimagesink
+                  //"t. ! queue max-size-buffers=1 leaky=downstream ! videoconvert ! "
+                  //"appsink name=myappsink sync=false max-buffers=1 drop=true")
+        //.arg(rtspUrl);
+//}
 
 void GStreamerWorker::startPipeline(const QString& rtspUrl)
 {
@@ -149,10 +164,35 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
         emit errorOccurred("Failed to get appsink");
         return;
     }
+    
+    // Configure once with all settings
+    g_object_set(G_OBJECT(appSink), 
+        "emit-signals", TRUE, 
+        "sync", FALSE,
+        "max-buffers", 2,  
+        "drop", TRUE,      
+        nullptr);
+    
+    static gulong signal_id = 0;
+    if (signal_id != 0) {
+        g_signal_handler_disconnect(appSink, signal_id);
+    }
 
-    g_object_set(G_OBJECT(appSink), "emit-signals", TRUE, "sync", FALSE, nullptr);
-    g_signal_connect(appSink, "new-sample", G_CALLBACK(on_new_sample), this);
+    if (newSampleSignalId != 0) {
+        g_signal_handler_disconnect(appSink, newSampleSignalId);
+        newSampleSignalId = 0;
+    }
+    
+    newSampleSignalId = g_signal_connect(appSink, "new-sample", G_CALLBACK(on_new_sample), this);
+    
+    
+    // Unref exactly once
     gst_object_unref(appSink);
+    
+
+    //g_object_set(G_OBJECT(appSink), "emit-signals", TRUE, "sync", FALSE, nullptr);
+    //g_signal_connect(appSink, "new-sample", G_CALLBACK(on_new_sample), this);
+    //gst_object_unref(appSink);
 
     GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
     if (!bus)
@@ -183,8 +223,24 @@ void GStreamerWorker::cleanupGStreamer()
 {
     if (m_pipeline)
     {
-        gst_element_set_state(m_pipeline, GST_STATE_NULL);
+        // First set pipeline to NULL state
+        GstStateChangeReturn ret = gst_element_set_state(m_pipeline, GST_STATE_NULL);
+        
+        // Wait for state change to complete
+        if (ret == GST_STATE_CHANGE_ASYNC) {
+            gst_element_get_state(m_pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
+        }
+        
+        // Get the bus and remove watch
+        GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
+        if (bus) {
+            gst_bus_remove_signal_watch(bus);
+            gst_object_unref(bus);
+        }
+        
+        // Unreference the pipeline
         gst_object_unref(m_pipeline);
         m_pipeline = nullptr;
+        
     }
 }

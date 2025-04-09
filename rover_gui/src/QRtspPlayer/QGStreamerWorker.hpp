@@ -32,6 +32,11 @@ class GStreamerWorker : public QObject
     QString buildPipelineString(const QString& rtspUrl) const;
     void cleanupGStreamer();
 
+    gulong newSampleSignalId = 0;
+    gulong padAddedSignalId = 0;
+    gulong busErrorSignalId = 0;
+    gulong busWarningSignalId = 0;
+    
     GstElement* m_pipeline = nullptr;
 };
 

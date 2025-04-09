@@ -30,6 +30,7 @@ SecondaryWindow::SecondaryWindow():
     _layoutSelector->addItem("Single Stream");
     _layoutSelector->addItem("2 Streams");
     _layoutSelector->addItem("4 Streams");
+    _layoutSelector->addItem("6 Streams");
     
     // Create stream selection combo
     _streamSelector = new QComboBox();
@@ -228,6 +229,64 @@ void SecondaryWindow::updateLayout()
                     containerLayout->addWidget(_streams[i].widget);
                     
                     // Add container to grid layout
+                    int row = static_cast<int>(i) / 2;
+                    int col = static_cast<int>(i) % 2;
+                    _multiStreamGrid->addWidget(container, row, col);
+                }
+            }
+            _layoutStack->setCurrentWidget(_multiStreamView);
+            break;
+        }
+        
+        case 3: // 6 Streams (new case)
+        {
+            // Special case for exactly 5 streams - make the fifth stream take the full width of the bottom row
+            if (_streams.size() == 5) {
+                // First four streams in a 2x2 grid
+                for (size_t i = 0; i < 4; i++) {
+                    // Create a container for header and widget
+                    QWidget* container = new QWidget();
+                    QVBoxLayout* containerLayout = new QVBoxLayout(container);
+                    containerLayout->setContentsMargins(0, 0, 0, 0);
+                    containerLayout->setSpacing(0);
+                    
+                    // Add header and widget to container
+                    containerLayout->addWidget(_streams[i].headerLabel);
+                    containerLayout->addWidget(_streams[i].widget);
+                    
+                    // Add container to grid layout - 2x2 grid for first 4 streams
+                    int row = static_cast<int>(i) / 2;
+                    int col = static_cast<int>(i) % 2;
+                    _multiStreamGrid->addWidget(container, row, col);
+                }
+                
+                // Fifth stream spans full width on bottom row
+                QWidget* container = new QWidget();
+                QVBoxLayout* containerLayout = new QVBoxLayout(container);
+                containerLayout->setContentsMargins(0, 0, 0, 0);
+                containerLayout->setSpacing(0);
+                
+                // Add header and widget to container
+                containerLayout->addWidget(_streams[4].headerLabel);
+                containerLayout->addWidget(_streams[4].widget);
+                
+                // Add container to grid layout - bottom row, spanning two columns
+                _multiStreamGrid->addWidget(container, 2, 0, 1, 2);
+            }
+            // Normal case - up to 6 streams in 3x2 grid
+            else {
+                for (size_t i = 0; i < _streams.size() && i < 6; i++) {
+                    // Create a container for header and widget
+                    QWidget* container = new QWidget();
+                    QVBoxLayout* containerLayout = new QVBoxLayout(container);
+                    containerLayout->setContentsMargins(0, 0, 0, 0);
+                    containerLayout->setSpacing(0);
+                    
+                    // Add header and widget to container
+                    containerLayout->addWidget(_streams[i].headerLabel);
+                    containerLayout->addWidget(_streams[i].widget);
+                    
+                    // Add container to grid layout - 3 rows, 2 columns
                     int row = static_cast<int>(i) / 2;
                     int col = static_cast<int>(i) % 2;
                     _multiStreamGrid->addWidget(container, row, col);

@@ -59,7 +59,7 @@ private:
         bool isRunning;
     };
     std::vector<StreamInfo> _streams;
-    int _maxStreams = 4;
+    int _maxStreams = 6;
     int _currentStreamIndex = 0;
     
     void setupLayout();

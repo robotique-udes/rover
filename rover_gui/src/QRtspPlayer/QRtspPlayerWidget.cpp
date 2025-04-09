@@ -7,7 +7,6 @@
 #include <QEvent>
 #include <QMessageBox>
 
-
 // Remove URL event filter class - no longer needed
 
 // Initialize static counter
@@ -114,7 +113,7 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
                     }
                 }
             });
-
+    
     workerThread->start();
 
     updateStatusIndicator("yellow");
@@ -127,9 +126,14 @@ RtspPlayerWidget::~RtspPlayerWidget()
 {
     stopStream();
 
-    workerThread->quit();
-    workerThread->wait();
-    // No need to delete ui as it's on the stack now
+    // Ensure thread properly terminates
+    if (workerThread) {
+        workerThread->requestInterruption();
+        workerThread->quit();
+        if (!workerThread->wait(1000)) {
+            workerThread->terminate(); // Force termination as last resort
+        }
+    }
 }
 
 void RtspPlayerWidget::setupUI()
