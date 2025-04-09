@@ -9,7 +9,7 @@ def generate_launch_description():
         package= "rover_video",
         namespace = "/rover/video",
         executable = "media_server",
-        name = "camera_main",
+        name = "cmedia_server",
     )
 
     ld.add_action(node_camera_node)
