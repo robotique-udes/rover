@@ -81,7 +81,7 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
             break;
 
         default:
-            RCLCPP_INFO(LOGGER, "Invalid command.");
+            RCLCPP_WARN(LOGGER, "Invalid command.");
             response_.success = false;
             response_.status = "Invalid command.";
             break;
@@ -306,7 +306,7 @@ bool CameraNode::createFolder(const std::string& path_)
     if (!this->folderExists(path_))
     {
         if (mkdir(path_.c_str(), 0775) == 0)
-        {  // 0775 = Permissions for Linux
+        {
             RCLCPP_INFO(LOGGER, "Succesfully created the folder.");
             return true;
         }
