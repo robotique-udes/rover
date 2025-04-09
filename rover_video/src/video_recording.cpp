@@ -88,7 +88,7 @@ Recording& Recording::operator=(Recording&& other) noexcept
 }
 
 /**
- * @brief Destroy the Recording:: Recording object \n
+ * @brief Destroy the Recording:: Recording object.
  * @brief Handle the release of CV objects
  *
  */
@@ -114,7 +114,7 @@ Recording::~Recording(void)
 /**
  * @brief initialize all CV variables
  *
- * @return true if all CV variables are initialized correctly \n
+ * @return true if all CV variables are initialized correctly.
  * @return false if there's any error
  */
 bool Recording::startRecording(void)
@@ -184,7 +184,7 @@ bool Recording::startRecording(void)
 /**
  * @brief This function records 1 frame and writes in the short and the long video
  *
- * @return true if the read-write is a success \n
+ * @return true if the read-write is a success.
  * @return false if there's any error
  */
 bool Recording::recordFrame(void)

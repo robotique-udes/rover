@@ -21,7 +21,7 @@ class CameraNode : public rclcpp::Node
     };
 
   public:
-    CameraNode(void);
+    CameraNode();
     ~CameraNode() = default;
 
   private:
