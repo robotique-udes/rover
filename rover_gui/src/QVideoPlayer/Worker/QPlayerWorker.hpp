@@ -8,7 +8,6 @@
 #include <thread>
 
 #include <QObject>
-#include <QProgressBar>
 #include <QString>
 
 #include "Global/Workers/QWorker.hpp"
@@ -25,6 +24,7 @@ class QPlayerWorker : public QWorker
   public:
     QPlayerWorker(bool start_ = false, QObject* parent_ = nullptr);
     ~QPlayerWorker();
+
     void manageDetection(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,
                          std::string _camURL,
                          uint16_t tag_,
@@ -39,12 +39,11 @@ class QPlayerWorker : public QWorker
 
   signals:
     void detectionHandledSuccessfully(bool success_, uint16_t tag_);
-  signals:
     void urlFoundInDetection(std::vector<std::string> urls_found);
-  signals:
     void arucoServerInfoFailed(bool success);
 
   private:
     RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
 };
+
 #endif  // __VIDEO_WORKER_HPP__

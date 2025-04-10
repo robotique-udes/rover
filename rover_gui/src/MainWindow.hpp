@@ -26,7 +26,7 @@ class MainWindow : public QMainWindow
     QSideBar _sideBarWidget;
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
-    // QFileTransferWidget _fileTransferWidget;
+    QFileTransferWidget _fileTransferWidget;
 };
 
 #endif  // MAIN_WINDOWS_HPP

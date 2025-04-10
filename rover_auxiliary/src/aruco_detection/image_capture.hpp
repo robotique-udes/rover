@@ -7,7 +7,6 @@
 #include <optional>
 #include "rovus_lib/timer.hpp"
 
-
 class ImageCapture
 {
     static constexpr const char* PIPELINE

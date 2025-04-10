@@ -37,21 +37,22 @@ void QPlayerWorker::manageDetectionInternal(
     auto result = client_ArucoDetectionManager_->async_send_request(request);
 
     _timer_serviceCall.reset();
-    bool service_call_interrupte = false;
+    bool service_call_interrupted = false;
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
     {
         if (_timer_serviceCall.isDone())
         {
-            service_call_interrupte = true;
+            service_call_interrupted = true;
             break;
         }
     }
+
     if (result.valid())
     {
-        if (!service_call_interrupte)
+        if (!service_call_interrupted)
         {
-            std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();  // Capture the response data
+            std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();
 
             if (response != nullptr)
             {
@@ -59,7 +60,7 @@ void QPlayerWorker::manageDetectionInternal(
             }
         }
     }
-    emit detectionHandledSuccessfully(success,tag_);  // Notify widget of successs
+    emit detectionHandledSuccessfully(success, tag_);
 }
 
 void QPlayerWorker::manageDetection(
@@ -69,9 +70,9 @@ void QPlayerWorker::manageDetection(
     bool start_)
 {
     this->addTask(
-        [this, client_ArucoDetectionManager_, _camURL, tag_,start_](void)
+        [this, client_ArucoDetectionManager_, _camURL, tag_, start_](void)
         {
-            this->manageDetectionInternal(client_ArucoDetectionManager_, _camURL,tag_, start_);
+            this->manageDetectionInternal(client_ArucoDetectionManager_, _camURL, tag_, start_);
         });
 }
 
@@ -116,18 +117,16 @@ void QPlayerWorker::updateDetectionInternal(
     {
         if (!service_call_interrupt)
         {
-            std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();  // Capture the response data
+            std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();
 
             if (response != nullptr)
             {
                 liveURLs = response->urls;
                 success = true;
-                
-
             }
         }
     }
-    
+
     emit arucoServerInfoFailed(success);
-    emit urlFoundInDetection(liveURLs);  // Notify widget of failure
+    emit urlFoundInDetection(liveURLs);
 }

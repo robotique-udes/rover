@@ -200,4 +200,3 @@ QStatusBar {
                                         "SideBar { border: 2px solid black; }";
 
 constexpr const char* lightMode = "";
-

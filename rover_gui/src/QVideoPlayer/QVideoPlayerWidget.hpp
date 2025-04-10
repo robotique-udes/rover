@@ -1,10 +1,8 @@
 #ifndef __QVIDEOPLAYERWIDGER_HPP__
 #define __QVIDEOPLAYERWIDGER_HPP__
 
-// ROS
 #include "rclcpp/rclcpp.hpp"
 
-// QT
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include "UI_VideoPlayer.h"
@@ -18,30 +16,32 @@ class QVideoPlayerWidget : public QWidget
     static constexpr uint16_t NBR_IDS_TO_DISPLAY = 5U;
 
   public:
-    QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_,std::string url_,uint16_t tag_, std::shared_ptr<QPlayerWorker> worker_);
+    QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
+                       QWidget* parent_,
+                       std::string url_,
+                       uint16_t tag_,
+                       std::shared_ptr<QPlayerWorker> worker_);
+
+    void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
 
     void startDetection(void);
     void stopDetection(void);
     void handleArucoDetection(void);
+    void arucoStillAliveUpdate(bool urlFound_);
+    void displayDetectedArucos(std::vector<uint16_t> ids_);
 
     void handlePlayPauseButton(void);
 
-    void arucoStillAliveUpdate(bool urlFound_);
-
-    void displayDetectedArucos(std::vector<uint16_t> ids_);
-    
-    void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
     std::string getCamURL(void);
+    void setCamURL(std::string newCamUrl_);
     void setURLToDefault(void);
-    void setCamURL(std::string _newCamUrl);
-
     void updateCamURL(void);
 
   signals:
     void arucoCameraFailure(bool valid_);
 
   private slots:
-    void onDetectionHandledSuccessfully(bool success_,uint16_t tag_);
+    void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
 
@@ -53,12 +53,9 @@ class QVideoPlayerWidget : public QWidget
     std::string _defaultCamUrl = "";
     uint16_t _tag;
 
-    uint16_t _lastIds[NBR_IDS_TO_DISPLAY];
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager = nullptr;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
-
-
 };
 
 #endif  // __QVIDEOPLAYERWIDGER_HPP___

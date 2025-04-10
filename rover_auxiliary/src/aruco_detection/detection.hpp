@@ -22,7 +22,6 @@ class Detection
     bool isValid(void) const;
     bool camLost(void) const;
 
-
   private:
     uint8_t _tag;
     bool _camLost = false;

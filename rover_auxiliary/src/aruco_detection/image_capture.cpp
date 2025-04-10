@@ -84,7 +84,7 @@ std::optional<cv::Mat> ImageCapture::getFrame(bool debugMode_)
         initCam();
         return std::nullopt;
     }
-    
+
     _cap.retrieve(frame);
 
     if (frame.empty())

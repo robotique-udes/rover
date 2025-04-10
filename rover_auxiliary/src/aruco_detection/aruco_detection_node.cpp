@@ -16,7 +16,6 @@ int main(int argc, char** argv)
 ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
     Node("aruco_detection_node")
 {
-
     cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
 
     this->getParams(argc, argv);
@@ -80,10 +79,9 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
         msg.id = detection;
         msg.cam_url = url;
         msg.valid = isValid.at(i);
-        if(camLost.at(i))
+        if (camLost.at(i))
         {
             msg.valid = false;
-
         }
 
         _publisher->publish(msg);

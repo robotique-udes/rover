@@ -9,7 +9,7 @@ Detection::Detection(std::string cameraURL_, uint8_t detectionTag_):
 
 std::optional<std::vector<uint16_t>> Detection::detect(bool debugMode_)
 {
-    if(!(_processFrame.updateDetection(debugMode_).has_value()))
+    if (!(_processFrame.updateDetection(debugMode_).has_value()))
     {
         return std::nullopt;
     }
@@ -33,13 +33,13 @@ void Detection::update(bool debugMode_)
 {
     _validatedIds.clear();
     std::optional<std::vector<uint16_t>> detectionResult = this->detect(debugMode_);
-    if(!detectionResult.has_value())
+    if (!detectionResult.has_value())
     {
         _camLost = true;
         return;
     }
 
-    std::vector<uint16_t>detectedIds = detectionResult.value();
+    std::vector<uint16_t> detectedIds = detectionResult.value();
     for (auto it = _validation.begin(); it != _validation.end();)
     {
         uint16_t id = it->first;
@@ -105,4 +105,3 @@ bool Detection::camLost(void) const
 {
     return _camLost;
 }
-
