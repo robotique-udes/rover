@@ -139,9 +139,9 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
+        RCLCPP_ERROR(LOGGER, "Failed to create recordings folder or it already exists.");
         response_.success = false;
-        response_.status = "Failed to create screenshots folder or it already exists.";
+        response_.status = "Failed to create recordings folder or it already exists.";
         // Need to find how to handle
     }
     if (this->newRecording(folderPath, captureName, cameraURL))
