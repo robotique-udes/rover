@@ -98,16 +98,24 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     std::string folderPath;
     std::string captureName;
     std::string cameraURL = request_.camera_url;
+    std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
     folderPath = this->getFolderPath(eFileFormatNameTypes::SCREENSHOT);
+    auto it = CameraInfo::CameraName.find(cameraURL);
+
+    if (it != CameraInfo::CameraName.end())
+    {
+        currentCamera = it->second;
+    }
 
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists.");
+        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists at ", 
+                            folderPath.c_str(), "for camera: ", currentCamera.c_str());
         response_.success = false;
-        response_.status = "Failed to create screenshots folder or it already exists.";
-        // Need to find how to handle
+        response_.status = "Failed to create screenshots folder or it already exists at " 
+                            + folderPath + "for camera: " + currentCamera;
     }
 
     if (this->getScreenshot(folderPath, captureName, cameraURL))
@@ -134,15 +142,24 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     std::string folderPath;
     std::string captureName;
     std::string cameraURL = request_.camera_url;
+    std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
     folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
+    auto it = CameraInfo::CameraName.find(cameraURL);
+
+    if (it != CameraInfo::CameraName.end())
+    {
+        currentCamera = it->second;
+    }
+
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER, "Failed to create recordings folder or it already exists.");
+        RCLCPP_ERROR(LOGGER, "Failed to create recordings folder or it already exists at ", 
+                            folderPath.c_str(), "for camera: ", currentCamera.c_str());
         response_.success = false;
-        response_.status = "Failed to create recordings folder or it already exists.";
-        // Need to find how to handle
+        response_.status = "Failed to create recordings folder or it already exists at " 
+                            + folderPath + "for camera: " + currentCamera;
     }
     if (this->newRecording(folderPath, captureName, cameraURL))
     {
@@ -186,13 +203,11 @@ void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Reques
  */
 std::string CameraNode::getCurrentTime(void)
 {
-    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();  // get system time
-
-    std::time_t now_time = std::chrono::system_clock::to_time_t(now);  // convert to real time
-
-    std::tm tm_now = *std::localtime(&now_time);  // convert to calendar time
-
     std::stringstream current_time_output;
+
+    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
+    std::time_t now_time = std::chrono::system_clock::to_time_t(now);  // convert to real time
+    std::tm tm_now = *std::localtime(&now_time);  // convert to calendar time
     current_time_output << std::put_time(&tm_now, "%FT%T");  // ISO 8601 format
 
     return current_time_output.str();
