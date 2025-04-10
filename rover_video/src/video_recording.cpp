@@ -176,6 +176,8 @@ bool Recording::startRecording(void)
         return false;
     }
 
+    _shortTimer = time(0);
+
     _video_writer_long = cv::VideoWriter(filepath_long,
                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                 _fps,
@@ -187,9 +189,7 @@ bool Recording::startRecording(void)
         return false;
     }
 
-    _shortTimer = time(0);
     _longTimer = time(0);
-
     _recordingThread = std::thread(
         [this](void)
         {
