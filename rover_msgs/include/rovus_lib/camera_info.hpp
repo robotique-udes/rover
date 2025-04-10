@@ -11,4 +11,4 @@ namespace CameraInfo
                                                         };
 }
 
-#endif
+#endif //__CAMERA__INFO__HPP__
