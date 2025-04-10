@@ -24,7 +24,8 @@
 class Recording
 {
   private:
-    static constexpr uint8_t RECORDING_INTERVAL = 20U;  // in seconds
+    static constexpr uint8_t RECORDING_INTERVAL_SHORT_S = 20U;  // in seconds
+    static constexpr uint16_t RECORDING_INTERVAL_LONG_S = 900U;  // in seconds (15 minutes)
 
   public:
     Recording() = delete;
@@ -75,8 +76,10 @@ class Recording
 
     std::vector<std::string> _files;
 
-    uint8_t _recordingNumber = 1;
-    time_t _startTime;
+    uint8_t _recordingNumberShort = 1;
+    uint8_t _recordingNumberLong = 1;
+    time_t _shortTimer;
+    time_t _longTimer;
 
     int _frame_width;
     int _frame_height;
@@ -87,8 +90,8 @@ class Recording
 
     // cv variables
     cv::VideoCapture _cap;
-    cv::VideoWriter _video_writer;
-    cv::VideoWriter _appender;
+    cv::VideoWriter _video_writer_short;
+    cv::VideoWriter _video_writer_long;
     cv::Mat _frame;
 };
 

@@ -37,15 +37,16 @@ Recording::Recording(Recording&& other) noexcept:
     _filename(std::move(other._filename)),
     _videoFolderPath(std::move(other._videoFolderPath)),
     _files(std::move(other._files)),
-    _recordingNumber(other._recordingNumber),
-    _startTime(other._startTime),
+    _recordingNumberShort(other._recordingNumberShort),
+    _shortTimer(other._shortTimer),
+    _longTimer(other._longTimer),
     _frame_width(other._frame_width),
     _frame_height(other._frame_height),
     _fps(other._fps),
     rLogger(std::move(other.rLogger)),
     _cap(std::move(other._cap)),
-    _video_writer(std::move(other._video_writer)),
-    _appender(std::move(other._appender)),
+    _video_writer_short(std::move(other._video_writer_short)),
+    _video_writer_long(std::move(other._video_writer_long)),
     _frame(std::move(other._frame))
 {
     _stopRecording.store(other._stopRecording.load());  // cannot move atomic
@@ -72,16 +73,17 @@ Recording& Recording::operator=(Recording&& other) noexcept
         _filename = std::move(other._filename);
         _videoFolderPath = std::move(other._videoFolderPath);
         _files = std::move(other._files);
-        _recordingNumber = other._recordingNumber;
-        _startTime = other._startTime;
+        _recordingNumberShort = other._recordingNumberShort;
+        _shortTimer = other._shortTimer;
+        _longTimer = other._longTimer;
         _frame_width = other._frame_width;
         _frame_height = other._frame_height;
         _fps = other._fps;
         rLogger = std::move(other.rLogger);
 
-        _appender = std::move(other._appender);
+        _video_writer_long = std::move(other._video_writer_long);
         _cap = std::move(other._cap);  // Move cv ressources
-        _video_writer = std::move(other._video_writer);
+        _video_writer_short = std::move(other._video_writer_short);
         _frame = std::move(other._frame);
     }
     return *this;
@@ -104,8 +106,8 @@ Recording::~Recording(void)
         }
         // Release resources
         _cap.release();
-        _video_writer.release();
-        _appender.release();
+        _video_writer_short.release();
+        _video_writer_long.release();
 
         RCLCPP_INFO(*rLogger, "Recording stopped.");
     }
@@ -120,9 +122,13 @@ Recording::~Recording(void)
 bool Recording::startRecording(void)
 {
     // Getting the directory for the recording
-    std::string filePath = _videoFolderPath + "/" + _filename;
-    filePath.insert(filePath.length() - 4, '_' + std::to_string(_recordingNumber++));  // add recording number before .avi
-    _files.push_back(filePath);                                                        // add file to list of recordings
+    std::string filepath_short = _videoFolderPath + "/" + _filename;
+    filepath_short.insert(filepath_short.length() - 4, "_short_" + std::to_string(_recordingNumberShort++));  // add recording number before .avi
+    _files.push_back(filepath_short);                                                        // add file to list of recordings
+
+
+    std::string filepath_long = _videoFolderPath + "/" + _filename;
+    filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));  // add recording number before .avi
 
     _pipeline = "rtspsrc location=" + _camURL
                 + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
@@ -147,28 +153,27 @@ bool Recording::startRecording(void)
     // Define the codec and create a VideoWriter object
     /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
-    _video_writer.open(filePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+    _video_writer_short.open(filepath_short, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
 
-    if (!_video_writer.isOpened())
+    if (!_video_writer_short.isOpened())
     {
         RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing!");
         return false;
     }
 
-    std::string appendedVideoFilePath = _videoFolderPath + "/" + _filename;
-
-    _appender = cv::VideoWriter(appendedVideoFilePath,
+    _video_writer_long = cv::VideoWriter(filepath_long,
                                 cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
                                 _fps,
                                 cv::Size(_frame_width, _frame_height));
 
-    if (!_appender.isOpened())
+    if (!_video_writer_long.isOpened())
     {
         RCLCPP_ERROR(*rLogger, "Couldn't launch video sticher");
         return false;
     }
 
-    _startTime = time(0);
+    _shortTimer = time(0);
+    _longTimer = time(0);
 
     _recordingThread = std::thread(
         [this]()
@@ -204,35 +209,52 @@ bool Recording::recordFrame(void)
         return false;
     }
 
-    if (!_video_writer.isOpened() || !_appender.isOpened())
+    if (!_video_writer_short.isOpened() || !_video_writer_long.isOpened())
     {
         if (!_stopRecording.load())
             RCLCPP_ERROR(*rLogger, "Error: video writer is closed");
         return false;
     }
     // Write frame to the output video file
-    _video_writer.write(_frame);
-    _appender.write(_frame);
+    _video_writer_short.write(_frame);
+    _video_writer_long.write(_frame);
 
     // Show the frame
     // cv::imshow("IP Camera Stream", this->_frame);
 
-    if (difftime(time(0), _startTime) >= RECORDING_INTERVAL)  // save every RECORDING_INTERVAL seconds
+    if (difftime(time(0), _shortTimer) >= RECORDING_INTERVAL_SHORT_S)  // save every RECORDING_INTERVAL_SHORT_S seconds
     {
-        std::string filePath = _videoFolderPath + "/" + _filename;
-        filePath.insert(filePath.length() - 4, '_' + std::to_string(_recordingNumber++));
-        _files.push_back(filePath);
-        _video_writer.release();
+        std::string filepath_short = _videoFolderPath + "/" + _filename;
+        filepath_short.insert(filepath_short.length() - 4, "_short_" + std::to_string(_recordingNumberShort++));
+        _files.push_back(filepath_short);
+        _video_writer_short.release();
 
-        _video_writer.open(filePath, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+        _video_writer_short.open(filepath_short, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
 
-        if (!_video_writer.isOpened())
+        if (!_video_writer_short.isOpened())
         {
             RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing!");
             return false;
         }
 
-        _startTime = time(0);
+        _shortTimer = time(0);
+    }
+
+    if (difftime(time(0), _longTimer) >= RECORDING_INTERVAL_LONG_S)  // save every RECORDING_INTERVAL_LONG_S seconds
+    {
+        std::string filepath_long = _videoFolderPath + "/" + _filename;
+        filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));
+        _video_writer_long.release();
+
+        _video_writer_long.open(filepath_long, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+
+        if (!_video_writer_long.isOpened())
+        {
+            RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing!");
+            return false;
+        }
+
+        _longTimer = time(0);
     }
 
     return true;
