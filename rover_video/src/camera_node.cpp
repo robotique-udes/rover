@@ -341,8 +341,10 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
 
     // Open the video stream
 
+    
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if currently recording
     {
+        std::lock_guard<std::mutex> lock(_recordingMutex);
         Recording& rRecording = _RecordingMap.at(cameraURL_);
 
 
@@ -437,6 +439,7 @@ bool CameraNode::stopRecording(std::string cameraURL_)
  */
 bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_)
 {
+    std::lock_guard<std::mutex> lock(_recordingMutex);
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if recording doesn't already exist
     {
         return false;
@@ -525,7 +528,7 @@ void CameraNode::VideoWatchDogFunction(void)
         _recordingCv.wait(lock,
                           [this]
                           {
-                              return _watchDogStop.load() || !_RecordingShutdownRequestSet.empty();
+                              return (_watchDogStop.load() || !_RecordingShutdownRequestSet.empty());
                           });
 
         if (_watchDogStop)
