@@ -8,7 +8,6 @@ SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _layout(&_centralWidget),
     _videoPlayerWidget(guiNode_, this)
 {
-    //_tempLabel.setAlignment(Qt::AlignCenter);
     _layout.addWidget(&_videoPlayerWidget);
     this->setCentralWidget(&_centralWidget);
 }
