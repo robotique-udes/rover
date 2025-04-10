@@ -46,10 +46,10 @@ class Recording
     bool recordFrame(void);
 
     std::string getURL(void) const;
-
+    std::string getFilename(void) const;
     cv::Mat getFrame(void) const;
-
     double getFPS(void) const;
+
 
   private:
     void recordingThreadFunction(void);

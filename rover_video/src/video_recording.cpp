@@ -114,19 +114,24 @@ Recording::~Recording(void)
 }
 
 std::string Recording::getURL(void) const
-    {
-        return _camURL;
-    }
+{
+    return _camURL;
+}
+
+std::string Recording::getFilename(void) const
+{
+    return _filename;
+}
 
 cv::Mat Recording::getFrame(void) const
-    {
-        return _frame;
-    }
+{
+    return _frame;
+}
 
 double Recording::getFPS(void) const
-    {
-        return _fps;
-    }    
+{
+    return _fps;
+}    
 
 /**
  * @brief initialize all CV variables
@@ -172,7 +177,7 @@ bool Recording::startRecording(void)
 
     if (!_video_writer_short.isOpened())
     {
-        RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing!");
+        RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing short video!");
         return false;
     }
 
@@ -185,7 +190,7 @@ bool Recording::startRecording(void)
 
     if (!_video_writer_long.isOpened())
     {
-        RCLCPP_ERROR(*rLogger, "Couldn't launch video sticher");
+        RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing long video!");
         return false;
     }
 

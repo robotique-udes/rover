@@ -111,8 +111,8 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
 
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists at ", 
-                            folderPath.c_str(), "for camera: ", currentCamera.c_str());
+        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists at %s for camera: %s",
+                             folderPath.c_str(), currentCamera.c_str());
         response_.success = false;
         response_.status = "Failed to create screenshots folder or it already exists at " 
                             + folderPath + "for camera: " + currentCamera;
@@ -155,8 +155,8 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
 
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER, "Failed to create recordings folder or it already exists at ", 
-                            folderPath.c_str(), "for camera: ", currentCamera.c_str());
+        RCLCPP_ERROR(LOGGER, "Failed to create recordings folder or it already exists at %s for camera: %s", 
+                              folderPath.c_str(), currentCamera.c_str());
         response_.success = false;
         response_.status = "Failed to create recordings folder or it already exists at " 
                             + folderPath + "for camera: " + currentCamera;
@@ -169,7 +169,7 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     else
     {
         response_.success = false;
-        response_.status = "Failed to take a video.";  // add reason i.e. recording already started at TIME-GPS-NAME
+        response_.status = "Failed to take a video, check logs for reason";
     }
 }
 
@@ -455,6 +455,8 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
     std::lock_guard<std::mutex> lock(_recordingMutex);
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if recording doesn't already exist
     {
+        Recording& rRecording = _RecordingMap.at(cameraURL_);
+        RCLCPP_ERROR(LOGGER, "Recording already exist!\nSee file:\t%s",rRecording.getFilename().c_str());
         return false;
     }
     else
