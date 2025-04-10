@@ -64,31 +64,31 @@ class CartesianController : public RobotController
             _desiredCartesian[TO_UNDERLYING(eCartesian::Z)] = -1.0F * inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS_DOWN];
         }
 
-        if (_planApplied)
-        {
-            Eigen::Vector<float, CARTESIAN_JOINTS> vector12, vector13;
+        // if (_planApplied)
+        // {
+        //     Eigen::Vector<float, CARTESIAN_JOINTS> vector12, vector13;
 
-            for (int i = 0; i < 3; ++i)
-            {
-                vector12(i) = _poseArray[1][i] - _poseArray[0][i];
-                vector13(i) = _poseArray[2][i] - _poseArray[0][i];
-            }
+        //     for (int i = 0; i < 3; ++i)
+        //     {
+        //         vector12(i) = _poseArray[1][i] - _poseArray[0][i];
+        //         vector13(i) = _poseArray[2][i] - _poseArray[0][i];
+        //     }
 
-            Eigen::Vector<float, CARTESIAN_JOINTS> zAxis = vector12.cross(vector13).normalized();
-            Eigen::Vector<float, CARTESIAN_JOINTS> xAxis = vector12.normalized();
-            Eigen::Vector<float, CARTESIAN_JOINTS> yAxis = zAxis.cross(xAxis);
+        //     Eigen::Vector<float, CARTESIAN_JOINTS> zAxis = vector12.cross(vector13).normalized();
+        //     Eigen::Vector<float, CARTESIAN_JOINTS> xAxis = vector12.normalized();
+        //     Eigen::Vector<float, CARTESIAN_JOINTS> yAxis = zAxis.cross(xAxis);
 
-            std::array<float, CARTESIAN_JOINTS * CARTESIAN_JOINTS> _rotationMatrix;
-            _rotationMatrix = {xAxis(0), yAxis(0), zAxis(0), xAxis(1), yAxis(1), zAxis(1), xAxis(2), yAxis(2), zAxis(2)};
+        //     std::array<float, CARTESIAN_JOINTS * CARTESIAN_JOINTS> _rotationMatrix;
+        //     _rotationMatrix = {xAxis(0), yAxis(0), zAxis(0), xAxis(1), yAxis(1), zAxis(1), xAxis(2), yAxis(2), zAxis(2)};
 
-            Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> rotationMat(_rotationMatrix.data());
-            Eigen::Map<Eigen::Vector<float, 3>> desiredCartesianVec(_desiredCartesian.data());
+        //     Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> rotationMat(_rotationMatrix.data());
+        //     Eigen::Map<Eigen::Vector<float, 3>> desiredCartesianVec(_desiredCartesian.data());
 
-            desiredCartesianVec = rotationMat * desiredCartesianVec;
-        }
+        //     desiredCartesianVec = rotationMat * desiredCartesianVec;
+        // }
 
-        Eigen::Map<Eigen::Matrix<float, CARTESIAN_JOINTS, CARTESIAN_JOINTS>> jacobian(
-            this->computeJacobian(_desiredCartesian).data());
+        Eigen::Map<Eigen::Matrix<float, CARTESIAN_JOINTS, CARTESIAN_JOINTS, Eigen::RowMajor>> jacobian(
+            this->computeJacobian(_jointPositions).data());
         Eigen::Map<Eigen::Vector<float, CARTESIAN_JOINTS>> desiredCartesianVector(_desiredCartesian.data());
 
         Eigen::Matrix<float, CARTESIAN_JOINTS, CARTESIAN_JOINTS> inverseJacobian
@@ -107,7 +107,7 @@ class CartesianController : public RobotController
     }
 
     std::array<float, CARTESIAN_JOINTS * CARTESIAN_JOINTS> computeJacobian(
-        std::array<float, CARTESIAN_JOINTS> currentJointPosition_)
+        std::array<float, ALL_JOINTS> currentJointPosition_)
     {
         // float q0 = currentJointPosition_[TO_UNDERLYING(eJointIndex::JL)]; // Commented out to avoid unsued variable warning
         float q1 = currentJointPosition_[TO_UNDERLYING(eJointIndex::J1)];
@@ -124,9 +124,9 @@ class CartesianController : public RobotController
         _jacobian[0 * CARTESIAN_JOINTS + 1] = 0.0f;  // dx/dq1
         _jacobian[0 * CARTESIAN_JOINTS + 2] = 0.0f;  // dx/dq2
 
-        _jacobian[1 * CARTESIAN_JOINTS + 0] = 0.0f;             // dy/dq0
+        _jacobian[1 * CARTESIAN_JOINTS + 0] = 0.0f;                   // dy/dq0
         _jacobian[1 * CARTESIAN_JOINTS + 1] = -J1z * c1 - J2z * c12;  // dy/dq1
-        _jacobian[1 * CARTESIAN_JOINTS + 2] = -J2z * c12;       // dy/dq2
+        _jacobian[1 * CARTESIAN_JOINTS + 2] = -J2z * c12;             // dy/dq2
 
         _jacobian[2 * CARTESIAN_JOINTS + 0] = 0.0f;                   // dz/dq0
         _jacobian[2 * CARTESIAN_JOINTS + 1] = -J1z * s1 - J2z * s12;  // dz/dq1
@@ -138,11 +138,11 @@ class CartesianController : public RobotController
     std::array<float, CARTESIAN_JOINTS> scaleVelocities(std::array<float, CARTESIAN_JOINTS> velocities_)
     {
         float velocityRatio
-            = std::max({abs(velocities_[TO_UNDERLYING(eJointIndex::JL)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::JL)),
-                        abs(velocities_[TO_UNDERLYING(eJointIndex::J1)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J1)),
-                        abs(velocities_[TO_UNDERLYING(eJointIndex::J2)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J2))});
+            = std::max({fabs(velocities_[TO_UNDERLYING(eJointIndex::JL)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::JL)),
+                        fabs(velocities_[TO_UNDERLYING(eJointIndex::J1)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J1)),
+                        fabs(velocities_[TO_UNDERLYING(eJointIndex::J2)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J2))});
 
-        if (velocityRatio > 1.0f)
+        if (velocityRatio > 1.0F)
         {
             velocities_[TO_UNDERLYING(eJointIndex::JL)] /= velocityRatio;
             velocities_[TO_UNDERLYING(eJointIndex::J1)] /= velocityRatio;
