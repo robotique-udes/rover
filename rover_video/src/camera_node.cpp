@@ -386,6 +386,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
         else
         {
             RCLCPP_ERROR(LOGGER, "Failed to capture frame from camera.");
+            cap.release();
             return false;
         }
 
