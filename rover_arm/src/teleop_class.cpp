@@ -38,8 +38,8 @@ class Teleop : public rclcpp::Node
     Teleop():
         rclcpp::Node("teleop_node"),
         _jointController({TO_UNDERLYING(eJointIndex::JL), TO_UNDERLYING(eJointIndex::J1), TO_UNDERLYING(eJointIndex::J2)}),
-        _cartesianController({TO_UNDERLYING(eJointIndex::JL), TO_UNDERLYING(eJointIndex::J1), TO_UNDERLYING(eJointIndex::J2)}),
-        _gripperController({TO_UNDERLYING(eJointIndex::GRIPPER_TILT), TO_UNDERLYING(eJointIndex::GRIPPER_ROT)})
+        _gripperController({TO_UNDERLYING(eJointIndex::GRIPPER_TILT), TO_UNDERLYING(eJointIndex::GRIPPER_ROT)}),
+        _cartesianController({TO_UNDERLYING(eJointIndex::JL), TO_UNDERLYING(eJointIndex::J1), TO_UNDERLYING(eJointIndex::J2)})
     {
         _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                      1,
@@ -65,18 +65,18 @@ class Teleop : public rclcpp::Node
         rover_msgs::msg::ArmMsg armMsg;
 
         // TOGGLE CONTROL MODE
-        if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN],
-                                            KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN))
-        {
-            if (_controlMode == eControlMode::JOINT)
-            {
-                _controlMode = eControlMode::CARTESIAN;
-            }
-            else if ((_controlMode == eControlMode::CARTESIAN))
-            {
-                _controlMode = eControlMode::JOINT;
-            }
-        }
+        // if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN],
+        //                                     KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN))
+        // {
+        //     if (_controlMode == eControlMode::JOINT)
+        //     {
+        //         _controlMode = eControlMode::CARTESIAN;
+        //     }
+        //     else if ((_controlMode == eControlMode::CARTESIAN))
+        //     {
+        //         _controlMode = eControlMode::JOINT;
+        //     }
+        // }
 
         // JOINT CONTROL -- DEFAULT MODE
         if (_controlMode == eControlMode::JOINT)
@@ -98,58 +98,62 @@ class Teleop : public rclcpp::Node
         // CARTESIAN CONTROL
         else if (_controlMode == eControlMode::CARTESIAN)
         {
+
             _cartesianController.getJointPositions(_jointPositions);
-
-            if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::RECORD],
-                                                KEYBINDINGS_EMILE::CARTESIAN::RECORD))
-            {
-                if (_cartesianController.getRecordedPoints() == MAX_RECORDED_POINTS)
-                {
-                    RCLCPP_WARN(this->get_logger(), "No more points can be recorded. Create a plan or clear all points");
-                }
-                else
-                {
-                    _cartesianController.addPoint(_cartesianController.getEndEffectorPose(_jointPositions));
-                    RCLCPP_INFO(this->get_logger(), "Point has been added to array");
-                }
-            }
-
-            if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN],
-                                                KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN))
-            {
-                if (_cartesianController.getRecordedPoints() != MAX_RECORDED_POINTS)
-                {
-                    RCLCPP_WARN(this->get_logger(), "Cannot create plan since not enough points have been gathered");
-                }
-                else
-                {
-                    if(_cartesianController.applyPlan())
-                    {
-                        RCLCPP_INFO(this->get_logger(), "Applying plan");
-                    }
-                    else
-                    {
-                        RCLCPP_INFO(this->get_logger(), "Unapplying");
-                    }
-                }
-            }
-            
             armMsg.data = _cartesianController.setCmd(joyArray);
+            std::array<float, CARTESIAN_JOINTS> desiredCart = _cartesianController.getDesiredCartesian();
+
+            // RCLCPP_INFO(this->get_logger(), "Desired Cartesian X: %f, Desired Cartesian Y: %f Desired Cartesian z: %f", desiredCart[0], desiredCart[1], desiredCart[2]);
+
+            // if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::RECORD],
+            //                                     KEYBINDINGS_EMILE::CARTESIAN::RECORD))
+            // {
+            //     if (_cartesianController.getRecordedPoints() == MAX_RECORDED_POINTS)
+            //     {
+            //         RCLCPP_WARN(this->get_logger(), "No more points can be recorded. Create a plan or clear all points");
+            //     }
+            //     else
+            //     {
+            //         _cartesianController.addPoint(_cartesianController.getEndEffectorPose(_jointPositions));
+            //         RCLCPP_INFO(this->get_logger(), "Point has been added to array");
+            //     }
+            // }
+
+            // if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN],
+            //                                     KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN))
+            // {
+            //     if (_cartesianController.getRecordedPoints() != MAX_RECORDED_POINTS)
+            //     {
+            //         RCLCPP_WARN(this->get_logger(), "Cannot create plan since not enough points have been gathered");
+            //     }
+            //     else
+            //     {
+            //         if (_cartesianController.applyPlan())
+            //         {
+            //             RCLCPP_INFO(this->get_logger(), "Applying plan");
+            //         }
+            //         else
+            //         {
+            //             RCLCPP_INFO(this->get_logger(), "Unapplying");
+            //         }
+            //     }
+            // }
+
         }
 
-        // GRIPPER CONTROL
-        if (_gripperController.isSelected(joyArray[KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER],
-                                          KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER))
-        {
-            armMsg.data = _gripperController.setCmd(joyArray);
-        }
+        // // GRIPPER CONTROL
+        // if (_gripperController.isSelected(joyArray[KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER],
+        //                                   KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER))
+        // {
+        //     armMsg.data = _gripperController.setCmd(joyArray);
+        // }
 
         _pubArmCmd->publish(armMsg);
     }
 
     void position_CB(const rover_msgs::msg::ArmMsg& armMsg_)
     {
-        std::copy_n(armMsg_.data.begin(), _jointPositions, _jointPositions.begin());
+        std::copy_n(armMsg_.data.begin(), ALL_JOINTS, _jointPositions.begin());
     }
 };
 

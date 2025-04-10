@@ -27,7 +27,7 @@ namespace KEYBINDINGS_EMILE
 
     namespace CARTESIAN
     {
-        constexpr uint8_t TOGGLE_CARTESIAN = rover_msgs::msg::Joy::CROSS_LEFT;
+        constexpr uint8_t TOGGLE_CARTESIAN = rover_msgs::msg::Joy::R1;
 
         constexpr uint8_t X_AXIS_RIGHT = rover_msgs::msg::Joy::CROSS_RIGHT;
         constexpr uint8_t X_AXIS_LEFT = rover_msgs::msg::Joy::CROSS_LEFT;
