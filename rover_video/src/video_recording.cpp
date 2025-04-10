@@ -29,7 +29,7 @@ Recording::Recording(std::string videoFolderPath_in,
  *
  * @param other Recording object
  */
-Recording::Recording(Recording&& other) noexcept:
+Recording::Recording(Recording&& other):
     _RequestShutdown(std::move(other._RequestShutdown)),
     _recordingThread(std::move(other._recordingThread)),
     _camURL(std::move(other._camURL)),
@@ -58,7 +58,7 @@ Recording::Recording(Recording&& other) noexcept:
  * @param other Recording object
  * @return Recording&
  */
-Recording& Recording::operator=(Recording&& other) noexcept
+Recording& Recording::operator=(Recording&& other)
 {  // move operator just to be safe
     if (this != &other)
     {  // Prevent self-assignment
@@ -112,6 +112,21 @@ Recording::~Recording(void)
         RCLCPP_INFO(*rLogger, "Recording stopped.");
     }
 }
+
+std::string Recording::getURL(void) const
+    {
+        return _camURL;
+    }
+
+cv::Mat Recording::getFrame(void) const
+    {
+        return _frame;
+    }
+
+double Recording::getFPS(void) const
+    {
+        return _fps;
+    }    
 
 /**
  * @brief initialize all CV variables

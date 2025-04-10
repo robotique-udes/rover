@@ -36,29 +36,20 @@ class Recording
               std::shared_ptr<rclcpp::Logger> logger,
               std::function<void(std::string)> RequestShutdown);
 
-    Recording(Recording&& other) noexcept;
+    Recording(Recording&& other);
 
-    Recording& operator=(Recording&& other) noexcept;
+    Recording& operator=(Recording&& other);
 
     ~Recording(void);
 
     bool startRecording(void);
     bool recordFrame(void);
 
-    std::string getURL(void) const
-    {
-        return _camURL;
-    }
+    std::string getURL(void) const;
 
-    cv::Mat getFrame(void) const
-    {
-        return _frame;
-    }
+    cv::Mat getFrame(void) const;
 
-    uint8_t getFPS(void) const
-    {
-        return _fps;
-    }
+    double getFPS(void) const;
 
   private:
     void recordingThreadFunction(void);
