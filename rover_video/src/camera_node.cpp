@@ -426,21 +426,19 @@ bool CameraNode::stopRecording(std::string cameraURL_)
 {
     std::lock_guard<std::mutex> lock(_recordingMutex);
 
-    if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())
-    {
-        _RecordingMap.erase(cameraURL_);
-
-        if (_RecordingMap.empty())
-        {
-            _watchDogStop.store(true);
-            _recordingCv.notify_one();
-        }
-        return true;
-    }
-    else
+    if (_RecordingMap.find(cameraURL_) == _RecordingMap.end())
     {
         return false;
     }
+
+    _RecordingMap.erase(cameraURL_);
+    if (_RecordingMap.empty())
+    {
+            _watchDogStop.store(true);
+        _recordingCv.notify_one();
+     }
+
+        return true;
 }
 
 /**
