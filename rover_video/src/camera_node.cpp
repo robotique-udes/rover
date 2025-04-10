@@ -343,14 +343,15 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
 
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if currently recording
     {
-        Recording* pRecording = &_RecordingMap.at(cameraURL_);
+        Recording& rRecording = _RecordingMap.at(cameraURL_);
+
 
         // Save the last frame from recording as picture:
-        cv::imwrite(captureName, pRecording->getFrame());
+        cv::imwrite(captureName, rRecording.getFrame());
         RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
 
         // Display the frame for debug
-        // cv::imshow("IP Camera Screenshot", pRecording->getFrame());
+        // cv::imshow("IP Camera Screenshot", rRecording.getFrame());
 
         return true;
     }
@@ -458,9 +459,10 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
         }
 
         // Access the recording using at() to safely get the reference
-        Recording* pRecording = &_RecordingMap.at(cameraURL_);
+        Recording& rRecording = _RecordingMap.at(cameraURL_);
 
-        if (pRecording->startRecording())
+
+        if (rRecording.startRecording())
         {
             return true;
         }
