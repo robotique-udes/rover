@@ -115,7 +115,7 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
                              folderPath.c_str(), currentCamera.c_str());
         response_.success = false;
         response_.status = "Failed to create screenshots folder or it already exists at " 
-                            + folderPath + "for camera: " + currentCamera;
+                            + folderPath + " for camera: " + currentCamera;
     }
 
     if (this->getScreenshot(folderPath, captureName, cameraURL))
@@ -305,7 +305,7 @@ bool CameraNode::folderExists(const std::string& path_)
     else
     {
         RCLCPP_FATAL(this->get_logger(), "Element already exist with this path and name, but isn't a folder");
-        assert(false);
+        return false;
     }
 }
 
