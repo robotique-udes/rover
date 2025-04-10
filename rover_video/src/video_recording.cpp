@@ -191,7 +191,7 @@ bool Recording::startRecording(void)
     _longTimer = time(0);
 
     _recordingThread = std::thread(
-        [this]()
+        [this](void)
         {
             recordingThreadFunction();
         });
@@ -212,7 +212,9 @@ bool Recording::recordFrame(void)
     if (!_cap.isOpened())
     {
         if (!_stopRecording.load())
+        {
             RCLCPP_ERROR(*rLogger, "Error: cap is closed");
+        }
         return false;
     }
 
@@ -220,7 +222,9 @@ bool Recording::recordFrame(void)
     if (_frame.empty())
     {
         if (!_stopRecording.load())
+        {
             RCLCPP_ERROR(*rLogger, "Error: Blank frame grabbed!");
+        }
         return false;
     }
 
