@@ -3,6 +3,7 @@
 ImageCapture::ImageCapture(std::string cameraURL_):
     _cameraURL(cameraURL_)
 {
+    _rtspPipeline = "rtspsrc location=" + _cameraURL + PIPELINE;
     initCam();
 }
 
@@ -14,16 +15,29 @@ ImageCapture::~ImageCapture(void)
 
 bool ImageCapture::initCam(void)
 {
+    bool res;
     if (_cap.isOpened())
     {
         return true;
     }
 
-    if (!_cap.open(_cameraURL))
+    if (_cameraURL.compare(0, 4, "rtsp", 0, 4) == 0)
+    {
+        res = _cap.open(_rtspPipeline, cv::CAP_GSTREAMER);
+    }
+
+    else if (_cameraURL.compare(0, 8, "file:///", 0, 8) == 0)
+    {
+        _cameraURL = _cameraURL.substr(7);
+        res = _cap.open(_cameraURL, cv::CAP_V4L2);
+    }
+
+    if (!res)
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Could not open streaming device");
         return false;
     }
+
     return true;
 }
 
@@ -36,7 +50,7 @@ bool ImageCapture::changeStream(std::string URL_)
 
         if (!initCam())
         {
-            RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Could not change streaming device");
+            RCLCPP_WARN(rclcpp::get_logger("aruco_detection_node"), "Could not change streaming device");
             return false;
         }
         return true;
@@ -61,7 +75,7 @@ std::optional<cv::Mat> ImageCapture::getFrame(bool debugMode_)
         return std::nullopt;
     }
 
-    _cap >> frame;  // Updates and stores new frame (openCV syntax)
+    _cap.read(frame);
 
     if (frame.empty())
     {
