@@ -36,26 +36,26 @@ class CartesianController : public RobotController
         std::array<float, ALL_JOINTS> jointCommands = {};
         _desiredCartesian = {};
 
-        if (!this->isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
+        if (!_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
         {
             return jointCommands;
         }
 
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::X_AXIS_RIGHT]))
+        if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::X_AXIS_RIGHT]))
         {
             _desiredCartesian[TO_UNDERLYING(eCartesian::X)] = inputArray_[KEYBINDINGS_EMILE::CARTESIAN::X_AXIS_RIGHT];
         }
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::X_AXIS_LEFT]))
+        if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::X_AXIS_LEFT]))
         {
             _desiredCartesian[TO_UNDERLYING(eCartesian::X)] = -1.0F * inputArray_[KEYBINDINGS_EMILE::CARTESIAN::X_AXIS_LEFT];
         }
 
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Y_AXIS]))
+        if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Y_AXIS]))
         {
             _desiredCartesian[TO_UNDERLYING(eCartesian::Y)] = -1.0F * inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Y_AXIS];
         }
 
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS]))
+        if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS]))
         {
             _desiredCartesian[TO_UNDERLYING(eCartesian::Z)] = inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS];
         }

@@ -2,6 +2,7 @@
 #define __ROBOT_CONTROLLER_HPP__
 
 #include "keybinding.hpp"
+#include "joy_controller.hpp"
 
 #include "rovus_lib/timer.hpp"
 #include "rovus_lib/macros.h"
@@ -25,26 +26,6 @@ class RobotController
     }
 
     virtual std::array<float, ALL_JOINTS> setCmd(std::array<float, ALL_INPUTS> inputArray_) = 0;
-
-    bool isPressed(float buttonValue_)
-    {
-        return !IN_ERROR(buttonValue_, 0.01, 0.0f);
-    }
-
-    bool isSelected(float buttonValue_, uint8_t buttonId)
-    {
-        if (isPressed(buttonValue_) && !_buttonStates[buttonId])
-        {
-            _buttonStates[buttonId] = true;
-            return true;
-        }
-        else if (!isPressed(buttonValue_) && _buttonStates[buttonId])
-        {
-            _buttonStates[buttonId] = false;
-            return false;
-        }
-        return false;
-    }
 
     static float getMaxVelocity(uint8_t joint)
     {
@@ -73,16 +54,7 @@ class RobotController
   protected:
     uint8_t _nJoints;
     std::vector<uint8_t> _joints;
-    std::map<uint8_t, bool> _buttonStates = {{rover_msgs::msg::Joy::CROSS_UP, false},
-                                             {rover_msgs::msg::Joy::CROSS_DOWN, false},
-                                             {rover_msgs::msg::Joy::CROSS_RIGHT, false},
-                                             {rover_msgs::msg::Joy::CROSS_LEFT, false},
-                                             {rover_msgs::msg::Joy::A, false},
-                                             {rover_msgs::msg::Joy::B, false},
-                                             {rover_msgs::msg::Joy::X, false},
-                                             {rover_msgs::msg::Joy::Y, false},
-                                             {rover_msgs::msg::Joy::L1, false},
-                                             {rover_msgs::msg::Joy::L2, false}};
+    JoyController _joyController;
 };
 
 #endif

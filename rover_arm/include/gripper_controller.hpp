@@ -6,7 +6,6 @@
 class GripperController : public RobotController
 {
   public:
-
     GripperController(std::initializer_list<uint8_t> joints_):
         RobotController(joints_)
     {
@@ -16,35 +15,35 @@ class GripperController : public RobotController
     {
         std::array<float, ALL_JOINTS> jointCommands = {};
 
-        if (!this->isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
+        if (!_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
         {
             return jointCommands;
         }
 
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::ROT_FWD]))
+        if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::ROT_FWD]))
         {
             _currentControlledJoint = KEYBINDINGS_EMILE::GRIPPER::ROT_ID;
             jointCommands[_currentControlledJoint] = getMaxVelocity(KEYBINDINGS_EMILE::GRIPPER::ROT_ID);
         }
-        else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::ROT_REV]))
+        else if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::ROT_REV]))
         {
             _currentControlledJoint = KEYBINDINGS_EMILE::GRIPPER::ROT_ID;
             jointCommands[_currentControlledJoint] = -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::GRIPPER::ROT_ID);
         }
 
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::TILT_FWD]))
+        if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::TILT_FWD]))
         {
             _currentControlledJoint = KEYBINDINGS_EMILE::GRIPPER::TILT_ID;
             jointCommands[_currentControlledJoint] = getMaxVelocity(KEYBINDINGS_EMILE::GRIPPER::TILT_ID);
         }
-        else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::TILT_REV]))
+        else if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::TILT_REV]))
         {
             _currentControlledJoint = KEYBINDINGS_EMILE::GRIPPER::TILT_ID;
             jointCommands[_currentControlledJoint] = -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::GRIPPER::TILT_ID);
         }
 
         // VELOCITY CONTROL FOR GRIPPER_CLOSE IS NOT YET IMPLEMENTED
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::CLOSE]))
+        if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::GRIPPER::CLOSE]))
         {
             _currentControlledJoint = KEYBINDINGS_EMILE::GRIPPER::CLOSE_ID;
             jointCommands[_currentControlledJoint] = getMaxVelocity(KEYBINDINGS_EMILE::GRIPPER::CLOSE_ID);
