@@ -71,7 +71,7 @@ class CartesianController : public RobotController
             }
 
             Eigen::Vector<float, CARTESIAN_JOINTS> xAxis;
-            xAxis << 1.0f, 0.0f, 0.0f; 
+            xAxis << 1.0f, 0.0f, 0.0f;
 
             Eigen::Vector<float, CARTESIAN_JOINTS> zAxis = vector12.cross(vector13).normalized();
             Eigen::Vector<float, CARTESIAN_JOINTS> yAxis = zAxis.cross(xAxis).normalized();

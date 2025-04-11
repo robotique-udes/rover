@@ -19,7 +19,7 @@ class JoyController
 
     bool isPressed(float buttonValue_)
     {
-        return !IN_ERROR(buttonValue_, 0.01, 0.0f);
+        return !IN_ERROR(buttonValue_, 0.01F, 0.0F);
     }
 
     bool isSelected(float buttonValue_, uint8_t buttonId)

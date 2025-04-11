@@ -29,62 +29,62 @@ namespace ARM_CONFIGURATION
     namespace JL
     {
         constexpr uint8_t ID = TO_UNDERLYING(eJointIndex::JL);
-        constexpr float MAX_VELOCITY = 0.05f;  // mm/s
+        constexpr float MAX_VELOCITY = 0.05F;  // mm/s
         namespace LEN
         {
             constexpr float x = 0.0f;
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
         }  // namespace LEN
-    }  // namespace JL
+    }      // namespace JL
 
     namespace J1
     {
         constexpr eJointIndex ID = eJointIndex::J1;
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.0f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.435f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.435F;
         }  // namespace LEN
-    }  // namespace J1
+    }      // namespace J1
 
     namespace J2
     {
         constexpr eJointIndex ID = eJointIndex::J2;
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.0f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.371f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.371F;
         }  // namespace LEN
-    }  // namespace J2
+    }      // namespace J2
 
     namespace GRIPPER_TILT
     {
         constexpr eJointIndex ID = eJointIndex::GRIPPER_TILT;
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.0f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.185f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.185F;
         }  // namespace LEN
-    }  // namespace GRIPPER_TILT
+    }      // namespace GRIPPER_TILT
 
     namespace GRIPPER_ROT
     {
         constexpr eJointIndex ID = eJointIndex::GRIPPER_ROT;
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.0f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.0f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.0F;
         }  // namespace LEN
-    }  // namespace GRIPPER_ROT
+    }      // namespace GRIPPER_ROT
 
     // GRIPPER_CLOSE not defined because no speed control available in current arm configuration
 }  // namespace ARM_CONFIGURATION
@@ -107,7 +107,5 @@ constexpr float J3z = ARM_CONFIGURATION::GRIPPER_TILT::LEN::z;
 constexpr float J4x = ARM_CONFIGURATION::GRIPPER_ROT::LEN::x;
 constexpr float J4y = ARM_CONFIGURATION::GRIPPER_ROT::LEN::y;
 constexpr float J4z = ARM_CONFIGURATION::GRIPPER_ROT::LEN::z;
-
-
 
 #endif  // __ARM_CONFIGURATION__
