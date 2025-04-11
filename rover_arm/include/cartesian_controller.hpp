@@ -52,40 +52,40 @@ class CartesianController : public RobotController
 
         if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Y_AXIS]))
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesian::Y)] = inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Y_AXIS];
+            _desiredCartesian[TO_UNDERLYING(eCartesian::Y)] = -1.0F * inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Y_AXIS];
         }
 
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS_UP]))
+        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS]))
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesian::Z)] = inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS_UP];
+            _desiredCartesian[TO_UNDERLYING(eCartesian::Z)] = inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS];
         }
-        if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS_DOWN]))
+
+        if (_planApplied)
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesian::Z)] = -1.0F * inputArray_[KEYBINDINGS_EMILE::CARTESIAN::Z_AXIS_DOWN];
+            Eigen::Vector<float, CARTESIAN_JOINTS> vector12, vector13;
+
+            for (int i = 0; i < CARTESIAN_JOINTS; ++i)
+            {
+                vector12(i) = _poseArray[1][i] - _poseArray[0][i];
+                vector13(i) = _poseArray[2][i] - _poseArray[0][i];
+            }
+
+            Eigen::Vector<float, CARTESIAN_JOINTS> xAxis;
+            xAxis << 1.0f, 0.0f, 0.0f; 
+
+            Eigen::Vector<float, CARTESIAN_JOINTS> zAxis = vector12.cross(vector13).normalized();
+            Eigen::Vector<float, CARTESIAN_JOINTS> yAxis = zAxis.cross(xAxis).normalized();
+
+            zAxis = xAxis.cross(yAxis).normalized();
+
+            Eigen::Matrix<float, CARTESIAN_JOINTS, CARTESIAN_JOINTS> rotationMatrix;
+            rotationMatrix.col(0) = xAxis;
+            rotationMatrix.col(1) = yAxis;
+            rotationMatrix.col(2) = zAxis;
+
+            Eigen::Map<Eigen::Vector<float, CARTESIAN_JOINTS>> desiredCartesianVec(_desiredCartesian.data());
+            desiredCartesianVec = rotationMatrix * desiredCartesianVec;
         }
-
-        // if (_planApplied)
-        // {
-        //     Eigen::Vector<float, CARTESIAN_JOINTS> vector12, vector13;
-
-        //     for (int i = 0; i < 3; ++i)
-        //     {
-        //         vector12(i) = _poseArray[1][i] - _poseArray[0][i];
-        //         vector13(i) = _poseArray[2][i] - _poseArray[0][i];
-        //     }
-
-        //     Eigen::Vector<float, CARTESIAN_JOINTS> zAxis = vector12.cross(vector13).normalized();
-        //     Eigen::Vector<float, CARTESIAN_JOINTS> xAxis = vector12.normalized();
-        //     Eigen::Vector<float, CARTESIAN_JOINTS> yAxis = zAxis.cross(xAxis);
-
-        //     std::array<float, CARTESIAN_JOINTS * CARTESIAN_JOINTS> _rotationMatrix;
-        //     _rotationMatrix = {xAxis(0), yAxis(0), zAxis(0), xAxis(1), yAxis(1), zAxis(1), xAxis(2), yAxis(2), zAxis(2)};
-
-        //     Eigen::Map<Eigen::Matrix<float, 3, 3, Eigen::RowMajor>> rotationMat(_rotationMatrix.data());
-        //     Eigen::Map<Eigen::Vector<float, 3>> desiredCartesianVec(_desiredCartesian.data());
-
-        //     desiredCartesianVec = rotationMat * desiredCartesianVec;
-        // }
 
         Eigen::Map<Eigen::Matrix<float, CARTESIAN_JOINTS, CARTESIAN_JOINTS, Eigen::RowMajor>> jacobian(
             this->computeJacobian(_jointPositions).data());
@@ -106,8 +106,7 @@ class CartesianController : public RobotController
         return jointCommands;
     }
 
-    std::array<float, CARTESIAN_JOINTS * CARTESIAN_JOINTS> computeJacobian(
-        std::array<float, ALL_JOINTS> currentJointPosition_)
+    std::array<float, CARTESIAN_JOINTS * CARTESIAN_JOINTS> computeJacobian(std::array<float, ALL_JOINTS> currentJointPosition_)
     {
         // float q0 = currentJointPosition_[TO_UNDERLYING(eJointIndex::JL)]; // Commented out to avoid unsued variable warning
         float q1 = currentJointPosition_[TO_UNDERLYING(eJointIndex::J1)];
@@ -137,10 +136,10 @@ class CartesianController : public RobotController
 
     std::array<float, CARTESIAN_JOINTS> scaleVelocities(std::array<float, CARTESIAN_JOINTS> velocities_)
     {
-        float velocityRatio
-            = std::max({fabs(velocities_[TO_UNDERLYING(eJointIndex::JL)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::JL)),
-                        fabs(velocities_[TO_UNDERLYING(eJointIndex::J1)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J1)),
-                        fabs(velocities_[TO_UNDERLYING(eJointIndex::J2)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J2))});
+        float velocityRatio = std::max(
+            {fabs(velocities_[TO_UNDERLYING(eJointIndex::JL)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::JL)),
+             fabs(velocities_[TO_UNDERLYING(eJointIndex::J1)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J1)),
+             fabs(velocities_[TO_UNDERLYING(eJointIndex::J2)]) / this->getMaxVelocity(TO_UNDERLYING(eJointIndex::J2))});
 
         if (velocityRatio > 1.0F)
         {

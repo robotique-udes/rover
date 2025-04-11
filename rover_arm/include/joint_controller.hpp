@@ -41,24 +41,16 @@ class JointController : public RobotController
         }
         if (KEYBINDINGS_EMILE::JOINT::J1_ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1_FWD]))
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1]))
             {
-                jointCommands[_currentControlledJoint] = getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1_ID);
-            }
-            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1_REV]))
-            {
-                jointCommands[_currentControlledJoint] = -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1_ID);
+                jointCommands[_currentControlledJoint] = inputArray_[KEYBINDINGS_EMILE::JOINT::J1] * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1_ID);
             }
         }
         if (KEYBINDINGS_EMILE::JOINT::J2_ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2_FWD]))
+            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2]))
             {
-                jointCommands[_currentControlledJoint] = getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2_ID);
-            }
-            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2_REV]))
-            {
-                jointCommands[_currentControlledJoint] = -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2_ID);
+                jointCommands[_currentControlledJoint] = inputArray_[KEYBINDINGS_EMILE::JOINT::J2] * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2_ID);
             }
         }
 
