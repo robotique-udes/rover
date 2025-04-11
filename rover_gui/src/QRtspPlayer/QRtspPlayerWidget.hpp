@@ -10,6 +10,7 @@
 #include <QHBoxLayout>
 #include <QVBoxLayout>
 #include <QStackedWidget>
+#include <QLabel>
 #include <gst/gst.h>
 
 #include "QGStreamerWorker.hpp"
@@ -71,12 +72,21 @@ private:
     GstElement* pipeline;
     bool receivingFrames;
     bool inReconnectionMode;
+    int reconnectAttempts; // Counter for reconnection attempts
+    static const int maxReconnectAttempts = 3; // Maximum number of reconnection attempts
+    bool wasEverConnected; // Track if we ever successfully connected
+    bool connectionFailed; // Track if connection failed permanently
 
     // Main stacked widget to switch between views
     QStackedWidget* _stackedWidget;
     
     // Main video view
     QWidget* _videoWidget;
+    
+    // Video/Status stacked widget
+    QStackedWidget* _videoStack;
+    QWidget* _statusPage;
+    QLabel* _statusLabel;
     
     // Our custom play/pause button
     QPlayPauseButton* _playPauseButton;
@@ -93,7 +103,7 @@ private:
     QPushButton* _clearButton;
     QPushButton* _toggleViewButton;
 
-    void updateStatusIndicator(const QString& color);
+    void updateStatusText(const QString& text);
     void setupUI();
     void emitStateChanged();
 };

@@ -7,8 +7,6 @@
 #include <QEvent>
 #include <QMessageBox>
 
-// Remove URL event filter class - no longer needed
-
 // Initialize static counter
 int RtspPlayerWidget::instanceCounter = 0;
 
@@ -20,7 +18,10 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
     frameTimeoutTimer(new QTimer(this)),
     pipeline(nullptr),
     receivingFrames(false),
-    inReconnectionMode(false)
+    inReconnectionMode(false),
+    reconnectAttempts(0),
+    wasEverConnected(false),
+    connectionFailed(false)  // Initialize connection failure flag
 {
     // Generate a unique ID if not provided
     _widgetId = widgetId.isEmpty() ? QString("rtsp_player_%1").arg(++instanceCounter) : widgetId;
@@ -39,6 +40,11 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
             // Validate without modifying
             bool isValid = validateRtspUrl(text);
             updateUrlValidationUI(isValid);
+            
+            // Reset connection failed flag when URL changes
+            if (connectionFailed && isValid) {
+                connectionFailed = false;
+            }
         }
     });
 
@@ -50,6 +56,17 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
 
     connect(gstreamerWorker, &GStreamerWorker::pipelineStarted, this, &RtspPlayerWidget::onPipelineStarted);
     connect(gstreamerWorker, &GStreamerWorker::errorOccurred, this, &RtspPlayerWidget::onErrorOccurred);
+    
+    // Connect to the connectionFailed signal from GStreamerWorker
+    connect(gstreamerWorker, &GStreamerWorker::connectionFailed, this, [this]() {
+        inReconnectionMode = false;
+        reconnectAttempts = 0;
+        reconnectTimer->stop();
+        connectionFailed = true;  // Set the connection failed flag
+        updateStatusText("Connection Failed");
+        _playPauseButton->setPlaying(false);
+        LOG_ERROR_TARGET("RtspPlayer", "Connection failed permanently", _widgetId.toUtf8().constData());
+    });
 
     connect(gstreamerWorker,
             &GStreamerWorker::frameReceived,
@@ -62,20 +79,25 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
                     {
                         LOG_INFO_TARGET("RtspPlayer", "Reconnection successful, receiving frames...", _widgetId.toUtf8().constData());
                         inReconnectionMode = false;
+                        reconnectAttempts = 0; // Reset reconnection attempts counter on success
                     }
                     else
                     {
                         LOG_INFO_TARGET("RtspPlayer", "Receiving frames...", _widgetId.toUtf8().constData());
                     }
                     receivingFrames = true;
+                    wasEverConnected = true;  // Mark that we've connected successfully
+                    connectionFailed = false; // Reset connection failed flag when successful
 
                     // Update the play/pause button state
                     _playPauseButton->setPlaying(true);
                     emitStateChanged();
+                    
+                    // Show video when receiving frames (switch to video page)
+                    updateStatusText("");
                 }
                 reconnectTimer->stop();
                 frameTimeoutTimer->start(2000);
-                updateStatusIndicator("green");
             });
 
     frameTimeoutTimer->setSingleShot(true);
@@ -91,7 +113,12 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
 
                     // Update the play/pause button state
                     _playPauseButton->setPlaying(false);
-                    updateStatusIndicator("red");
+                    
+                    // Start reconnection process automatically
+                    inReconnectionMode = true;
+                    updateStatusText("Connection Lost");
+                    reconnectTimer->start(3000); // Start reconnection timer with shorter timeout
+                    
                     emitStateChanged();
                 }
             });
@@ -104,19 +131,38 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
             {
                 if (!receivingFrames)
                 {
-                    updateStatusIndicator("yellow");
-                    inReconnectionMode = true;
-
-                    if (!ui.rtspUrlInput->text().isEmpty())
+                    // Increment reconnection attempt counter
+                    reconnectAttempts++;
+                    
+                    if (reconnectAttempts <= maxReconnectAttempts)
                     {
-                        startStream(ui.rtspUrlInput->text());
+                        // Still have attempts left
+                        updateStatusText(QString("Reconnecting... (%1/%2)").arg(reconnectAttempts).arg(maxReconnectAttempts));
+                        LOG_INFO_TARGET("RtspPlayer", QString("Automatic reconnection attempt %1 of %2").arg(reconnectAttempts).arg(maxReconnectAttempts), _widgetId.toUtf8().constData());
+                        
+                        inReconnectionMode = true;
+
+                        if (!ui.rtspUrlInput->text().isEmpty())
+                        {
+                            startStream(ui.rtspUrlInput->text());
+                        }
+                    }
+                    else
+                    {
+                        // Max attempts reached
+                        inReconnectionMode = false;
+                        connectionFailed = true;  // Set connection failed flag
+                        updateStatusText("Connection Failed");
+                        _playPauseButton->setPlaying(false);
+                        LOG_ERROR_TARGET("RtspPlayer", "Maximum reconnection attempts reached", _widgetId.toUtf8().constData());
                     }
                 }
             });
     
     workerThread->start();
-
-    updateStatusIndicator("yellow");
+    
+    // Set initial status text to "Not Connected"
+    updateStatusText("Not Connected");
     
     LOG_INFO_TARGET("RtspPlayer", "RTSP Player Widget initialized", _widgetId.toUtf8().constData());
     emitStateChanged();
@@ -151,6 +197,49 @@ void RtspPlayerWidget::setupUI()
     // Create the video widget and setup the UI in it
     _videoWidget = new QWidget();
     ui.setupUi(_videoWidget);
+    
+    // Remove the status indicator frame
+    if (ui.statusIndicator) {
+        ui.statusIndicator->hide();
+        ui.statusIndicator->setMaximumSize(0, 0);
+    }
+    
+    // Create a stacked widget container where the video widget was
+    QWidget* videoContainer = ui.videoWidget->parentWidget();
+    QLayout* originalLayout = nullptr;
+    
+    if (videoContainer) {
+        originalLayout = videoContainer->layout();
+        
+        // Remove the video widget from its parent
+        originalLayout->removeWidget(ui.videoWidget);
+        
+        // Create video/status stacked widget
+        _videoStack = new QStackedWidget(videoContainer);
+        
+        // Add the video widget to the stacked widget
+        _videoStack->addWidget(ui.videoWidget);
+        
+        // Create status page with centered text
+        _statusPage = new QWidget();
+        _statusPage->setStyleSheet("background-color: black;");
+        
+        QVBoxLayout* statusLayout = new QVBoxLayout(_statusPage);
+        statusLayout->setAlignment(Qt::AlignCenter);
+        
+        _statusLabel = new QLabel();
+        _statusLabel->setAlignment(Qt::AlignCenter);
+        _statusLabel->setStyleSheet("QLabel { color: white; background-color: rgba(0, 0, 0, 180); "
+                                 "padding: 15px; border-radius: 5px; font-weight: bold; font-size: 16px; }");
+        
+        statusLayout->addWidget(_statusLabel);
+        
+        // Add status page to stacked widget
+        _videoStack->addWidget(_statusPage);
+        
+        // Add the stacked widget to the original layout
+        originalLayout->addWidget(_videoStack);
+    }
     
     // Promote the playPauseButton to our custom class
     QPlayPauseButton* playPauseButton = new QPlayPauseButton(this);
@@ -279,17 +368,25 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl)
     if (!inReconnectionMode)
     {
         LOG_INFO_TARGET("RtspPlayer", QString("Starting stream: %1").arg(rtspUrl), _widgetId.toUtf8().constData());
+        // Reset reconnection attempts when manually starting the stream
+        reconnectAttempts = 0;
+        connectionFailed = false; // Reset failure flag on manual start
     }
 
     receivingFrames = false;
-    updateStatusIndicator("yellow");
+    updateStatusText("Connecting...");
+    
+    // Set button to playing state when starting stream
+    _playPauseButton->setPlaying(true);
+    
     emit requestStartStream(rtspUrl);
 }
 
 void RtspPlayerWidget::stopStream()
 {
-    if (!pipeline && !receivingFrames)
+    if (!pipeline && !receivingFrames && !inReconnectionMode)
     {
+        // If we're not streaming and not in reconnection mode, don't do anything
         return;
     }
 
@@ -300,7 +397,16 @@ void RtspPlayerWidget::stopStream()
 
     frameTimeoutTimer->stop();
     reconnectTimer->stop();
-    updateStatusIndicator("yellow");
+    
+    // Don't change status message if connection has failed
+    if (!connectionFailed) {
+        // Use appropriate status message based on connection history
+        if (wasEverConnected) {
+            updateStatusText("Paused");  // Only show "Paused" if we were connected before
+        } else {
+            updateStatusText("Not Connected");  // Show "Not Connected" if we never connected
+        }
+    }
     
     // Make sure the button reflects the correct state
     _playPauseButton->setPlaying(false);
@@ -313,7 +419,8 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
     if (!receivedPipeline)
     {
         LOG_ERROR_TARGET("RtspPlayer", "Pipeline creation failed", _widgetId.toUtf8().constData());
-        updateStatusIndicator("red");
+        updateStatusText("Connection Error");
+        _playPauseButton->setPlaying(false);
         return;
     }
 
@@ -323,7 +430,8 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
     if (!videoSink)
     {
         LOG_ERROR_TARGET("RtspPlayer", "Failed to find VideoOverlay in pipeline", _widgetId.toUtf8().constData());
-        updateStatusIndicator("red");
+        updateStatusText("Connection Error");
+        _playPauseButton->setPlaying(false);
         return;
     }
 
@@ -333,7 +441,8 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
     gst_element_set_state(pipeline, GST_STATE_PLAYING);
     LOG_DEBUG_TARGET("RtspPlayer", "Pipeline state set to PLAYING", _widgetId.toUtf8().constData());
 
-    receivingFrames = false;
+    // Keep play button in playing state while connecting
+    _playPauseButton->setPlaying(true);
     frameTimeoutTimer->start(2000);
 }
 
@@ -344,24 +453,41 @@ void RtspPlayerWidget::onErrorOccurred(const QString& error)
         if (inReconnectionMode)
         {
             LOG_DEBUG_TARGET("RtspPlayer", error, _widgetId.toUtf8().constData());
+            updateStatusText(QString("Reconnecting... (%1/%2)").arg(reconnectAttempts).arg(maxReconnectAttempts));
+            
+            // Make sure reconnect timer is running
+            if (!reconnectTimer->isActive()) {
+                reconnectTimer->start(3000);
+            }
         }
         else
         {
             LOG_ERROR_TARGET("RtspPlayer", error, _widgetId.toUtf8().constData());
+            updateStatusText("Connection Error");
 
             inReconnectionMode = true;
-            LOG_INFO_TARGET("RtspPlayer", "Attempting reconnection in background...", _widgetId.toUtf8().constData());
+            reconnectAttempts = 0; // Reset counter for new connection attempt series
+            LOG_INFO_TARGET("RtspPlayer", "Attempting reconnection...", _widgetId.toUtf8().constData());
+            reconnectTimer->start(3000);
         }
-
-        updateStatusIndicator("yellow");
-        _playPauseButton->setPlaying(false);
-        reconnectTimer->start(5000);
     }
 }
 
-void RtspPlayerWidget::updateStatusIndicator(const QString& color)
+void RtspPlayerWidget::updateStatusText(const QString& text)
 {
-    ui.statusIndicator->setStyleSheet(QString("QFrame { border-radius: 10px; background-color: %1; }").arg(color));
+    if (!_statusLabel || !_videoStack)
+        return;
+        
+    _statusLabel->setText(text);
+    
+    // Switch to appropriate stacked widget page
+    if (text.isEmpty()) {
+        // Empty text means we're showing video
+        _videoStack->setCurrentIndex(0); // First page is video
+    } else {
+        // Non-empty text means showing status
+        _videoStack->setCurrentIndex(1); // Second page is status
+    }
 }
 
 void RtspPlayerWidget::onNewLogMessage(const QString& message, const QString& target)

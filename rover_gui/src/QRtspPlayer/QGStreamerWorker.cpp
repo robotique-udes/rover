@@ -4,6 +4,11 @@
 #include <gst/app/gstappsink.h>
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
+#include <QUrl>
+
+// Maximum number of errors before considering the connection failed
+static const int MAX_CONSECUTIVE_ERRORS = 3;
+static int consecutive_errors_count = 0;
 
 static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_data)
 {
@@ -20,7 +25,16 @@ static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_dat
 
     if (worker)
     {
-        emit worker->errorOccurred(errorMsg);
+        // Count consecutive errors
+        consecutive_errors_count++;
+        
+        if (consecutive_errors_count >= MAX_CONSECUTIVE_ERRORS) {
+            LOG_ERROR("GStreamer", "Maximum consecutive errors reached, connection failed");
+            emit worker->connectionFailed();
+            consecutive_errors_count = 0; // Reset for next attempt
+        } else {
+            emit worker->errorOccurred(errorMsg);
+        }
     }
 
     if (err)
@@ -37,6 +51,9 @@ static GstFlowReturn on_new_sample(GstElement* sink, gpointer user_data)
         return GST_FLOW_OK;
     }
 
+    // Reset error count when we receive a sample
+    consecutive_errors_count = 0;
+    
     emit worker->frameReceived();
 
     GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
@@ -117,24 +134,20 @@ QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
         .arg(rtspUrl);
 }
 
-//QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
-//{
-    //return QString("rtspsrc location=%1 latency=50 timeout=5000000 "
-                  //"buffer-mode=none do-retransmission=false drop-on-latency=true "
-                  //"! rtph264depay ! h264parse ! "
-                  //"decodebin name=dec max-size-buffers=1 "
-                  //"! queue name=q0 max-size-buffers=1 max-size-time=0 max-size-bytes=0 leaky=downstream "
-                  //"! videoconvert max-threads=1 ! video/x-raw,format=I420 ! tee name=t "
-                  //"t. ! queue max-size-buffers=1 leaky=downstream ! videoconvert ! "
-                  //"ximagesink sync=false name=videosink " // Use ximagesink instead of xvimagesink
-                  //"t. ! queue max-size-buffers=1 leaky=downstream ! videoconvert ! "
-                  //"appsink name=myappsink sync=false max-buffers=1 drop=true")
-        //.arg(rtspUrl);
-//}
-
 void GStreamerWorker::startPipeline(const QString& rtspUrl)
 {
     cleanupGStreamer();
+
+    // Store the URL
+    m_lastUrl = rtspUrl;
+    
+    // Basic URL validation
+    QUrl url(rtspUrl);
+    if (!url.isValid() || url.host().isEmpty()) {
+        LOG_ERROR("GStreamer", "Invalid URL or missing host part");
+        emit errorOccurred("Invalid URL format");
+        return;
+    }
 
     const QString pipelineDesc = buildPipelineString(rtspUrl);
     m_pipeline = gst_parse_launch(pipelineDesc.toUtf8().constData(), nullptr);
@@ -185,14 +198,8 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
     
     newSampleSignalId = g_signal_connect(appSink, "new-sample", G_CALLBACK(on_new_sample), this);
     
-    
     // Unref exactly once
     gst_object_unref(appSink);
-    
-
-    //g_object_set(G_OBJECT(appSink), "emit-signals", TRUE, "sync", FALSE, nullptr);
-    //g_signal_connect(appSink, "new-sample", G_CALLBACK(on_new_sample), this);
-    //gst_object_unref(appSink);
 
     GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
     if (!bus)
@@ -209,6 +216,9 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
 
     g_object_unref(bus);
 
+    // Reset consecutive errors count when starting a new pipeline
+    consecutive_errors_count = 0;
+    
     LOG_DEBUG("GstreamerWorker", "Pipeline started");
     emit pipelineStarted(m_pipeline);
 }

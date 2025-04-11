@@ -26,6 +26,7 @@ class GStreamerWorker : public QObject
     void pipelineStarted(GstElement* pipeline);
     void pipelineStopped();
     void errorOccurred(const QString& error);
+    void connectionFailed(); // New signal for permanent connection failure
     void frameReceived();
 
   private:
@@ -38,6 +39,7 @@ class GStreamerWorker : public QObject
     gulong busWarningSignalId = 0;
     
     GstElement* m_pipeline = nullptr;
+    QString m_lastUrl; // Store the last URL for connection status tracking
 };
 
 #endif
