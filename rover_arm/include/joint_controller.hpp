@@ -49,7 +49,7 @@ class JointController : public RobotController
         }
         if (KEYBINDINGS_EMILE::JOINT::J2_ID == _currentControlledJoint)
         {
-            if (_joyController; (inputArray_[KEYBINDINGS_EMILE::JOINT::J2]))
+            if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2]))
             {
                 jointCommands[_currentControlledJoint]
                     = inputArray_[KEYBINDINGS_EMILE::JOINT::J2] * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2_ID);
