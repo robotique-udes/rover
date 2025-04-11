@@ -23,32 +23,32 @@ class JointController : public RobotController
     {
         std::array<float, ALL_JOINTS> jointCommands = {};
 
-        if (!this->isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
+        if (!_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
         {
             return jointCommands;
         }
 
         if (KEYBINDINGS_EMILE::JOINT::JL_ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL_RIGHT]))
+            if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL_RIGHT]))
             {
                 jointCommands[_currentControlledJoint] = getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL_ID);
             }
-            else if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL_LEFT]))
+            else if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL_LEFT]))
             {
                 jointCommands[_currentControlledJoint] = -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL_ID);
             }
         }
         if (KEYBINDINGS_EMILE::JOINT::J1_ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1]))
+            if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1]))
             {
                 jointCommands[_currentControlledJoint] = inputArray_[KEYBINDINGS_EMILE::JOINT::J1] * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1_ID);
             }
         }
         if (KEYBINDINGS_EMILE::JOINT::J2_ID == _currentControlledJoint)
         {
-            if (this->isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2]))
+            if (_joyController;(inputArray_[KEYBINDINGS_EMILE::JOINT::J2]))
             {
                 jointCommands[_currentControlledJoint] = inputArray_[KEYBINDINGS_EMILE::JOINT::J2] * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2_ID);
             }

@@ -29,6 +29,7 @@ class Teleop : public rclcpp::Node
     JointController _jointController;
     GripperController _gripperController;
     CartesianController _cartesianController;
+    JoyController _joyController;
 
     eControlMode _controlMode = eControlMode::JOINT;
 
@@ -65,8 +66,8 @@ class Teleop : public rclcpp::Node
         rover_msgs::msg::ArmMsg armMsg;
 
         // TOGGLE CONTROL MODE
-        if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN],
-                                            KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN))
+        if (_joyController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN],
+                                      KEYBINDINGS_EMILE::CARTESIAN::TOGGLE_CARTESIAN))
         {
             if (_controlMode == eControlMode::JOINT)
             {
@@ -83,13 +84,13 @@ class Teleop : public rclcpp::Node
         // JOINT CONTROL -- DEFAULT MODE
         if (_controlMode == eControlMode::JOINT)
         {
-            if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC],
-                                            KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC))
+            if (_joyController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC],
+                                          KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC))
             {
                 _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC);
             }
-            if (_jointController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC],
-                                            KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC))
+            if (_joyController.isSelected(joyArray[KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC],
+                                          KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC))
             {
                 _jointController.setControlledJoint(KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC);
             }
@@ -103,8 +104,7 @@ class Teleop : public rclcpp::Node
             _cartesianController.getJointPositions(_jointPositions);
             armMsg.data = _cartesianController.setCmd(joyArray);
 
-            if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::RECORD],
-                                                KEYBINDINGS_EMILE::CARTESIAN::RECORD))
+            if (_joyController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::RECORD], KEYBINDINGS_EMILE::CARTESIAN::RECORD))
             {
                 if (_cartesianController.getRecordedPoints() == MAX_RECORDED_POINTS)
                 {
@@ -117,8 +117,8 @@ class Teleop : public rclcpp::Node
                 }
             }
 
-            if (_cartesianController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN],
-                                                KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN))
+            if (_joyController.isSelected(joyArray[KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN],
+                                          KEYBINDINGS_EMILE::CARTESIAN::CREATE_PLAN))
             {
                 if (_cartesianController.getRecordedPoints() != MAX_RECORDED_POINTS)
                 {
@@ -139,7 +139,7 @@ class Teleop : public rclcpp::Node
         }
 
         // GRIPPER CONTROL
-        if (_gripperController.isPressed(joyArray[KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER]))
+        if (_joyController.isPressed(joyArray[KEYBINDINGS_EMILE::GRIPPER::ACTIVATE_GRIPPER]))
         {
             armMsg.data = _gripperController.setCmd(joyArray);
         }
