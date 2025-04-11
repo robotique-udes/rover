@@ -22,7 +22,7 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
-add_executable(teleop src/teleop_class.cpp)
+add_executable(teleop src/teleop.cpp)
 
 target_link_libraries(teleop Eigen3::Eigen)
 
