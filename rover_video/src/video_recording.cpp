@@ -96,21 +96,18 @@ Recording& Recording::operator=(Recording&& other)
  */
 Recording::~Recording(void)
 {
-    if (_cap.isOpened())  // avoid unnecessary logging when creating temporary objects
+    _stopRecording.store(true);
+
+    if (_recordingThread.joinable())
     {
-        _stopRecording.store(true);
-
-        if (_recordingThread.joinable())
-        {
-            _recordingThread.join();
-        }
-        // Release resources
-        _cap.release();
-        _video_writer_short.release();
-        _video_writer_long.release();
-
+        _recordingThread.join();
         RCLCPP_INFO(rLogger, "Recording stopped.");
     }
+    // Release resources
+    _cap.release();
+    _video_writer_short.release();
+    _video_writer_long.release();
+
 }
 
 std::string Recording::getURL(void) const
