@@ -15,11 +15,11 @@ Recording::Recording(std::string videoFolderPath_in,
                      std::string URL_in,
                      rclcpp::Logger logger,
                      std::function<void(std::string)> RequestShutdown):
-    _RequestShutdown(RequestShutdown),
-    _camURL(URL_in),
-    _filename(filename_in),
-    _videoFolderPath(videoFolderPath_in),
-    rLogger(logger)
+    _RequestShutdown{RequestShutdown},
+    _camURL{URL_in},
+    _filename{filename_in},
+    _videoFolderPath{videoFolderPath_in},
+    rLogger{logger}
 {
 }
 
@@ -107,7 +107,6 @@ Recording::~Recording(void)
     _cap.release();
     _video_writer_short.release();
     _video_writer_long.release();
-
 }
 
 std::string Recording::getURL(void) const
@@ -128,7 +127,7 @@ cv::Mat Recording::getFrame(void) const
 double Recording::getFPS(void) const
 {
     return _fps;
-}    
+}
 
 /**
  * @brief initialize all CV variables
@@ -140,12 +139,13 @@ bool Recording::startRecording(void)
 {
     // Getting the directory for the recording
     std::string filepath_short = _videoFolderPath + "/" + _filename;
-    filepath_short.insert(filepath_short.length() - 4, "_short_" + std::to_string(_recordingNumberShort++));  // add recording number before .avi
-    _files.push_back(filepath_short);                                                        // add file to list of recordings
-
+    filepath_short.insert(filepath_short.length() - 4,
+                          "_short_" + std::to_string(_recordingNumberShort++));  // add recording number before .avi
+    _files.push_back(filepath_short);                                            // add file to list of recordings
 
     std::string filepath_long = _videoFolderPath + "/" + _filename;
-    filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));  // add recording number before .avi
+    filepath_long.insert(filepath_long.length() - 4,
+                         "_long_" + std::to_string(_recordingNumberLong++));  // add recording number before .avi
 
     _pipeline = "rtspsrc location=" + _camURL
                 + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
@@ -180,10 +180,7 @@ bool Recording::startRecording(void)
 
     _shortTimer = time(0);
 
-    _video_writer_long = cv::VideoWriter(filepath_long,
-                                CODEC_MJPG,
-                                _fps,
-                                cv::Size(_frame_width, _frame_height));
+    _video_writer_long = cv::VideoWriter(filepath_long, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
 
     if (!_video_writer_long.isOpened())
     {

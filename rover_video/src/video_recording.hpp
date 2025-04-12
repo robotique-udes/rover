@@ -24,11 +24,9 @@
 class Recording
 {
   private:
-    static constexpr uint8_t RECORDING_INTERVAL_SHORT_S = 20U;  // in seconds
+    static constexpr uint8_t RECORDING_INTERVAL_SHORT_S = 20U;   // in seconds
     static constexpr uint16_t RECORDING_INTERVAL_LONG_S = 900U;  // in seconds (15 minutes)
     static constexpr int CODEC_MJPG = ('M') | ('J' << 8) | ('P' << 16) | ('G' << 24);
-
-
 
   public:
     Recording() = delete;
@@ -52,7 +50,6 @@ class Recording
     std::string getFilename(void) const;
     cv::Mat getFrame(void) const;
     double getFPS(void) const;
-
 
   private:
     void recordingThreadFunction(void);

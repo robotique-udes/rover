@@ -111,11 +111,13 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
 
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER, "Failed to create screenshots folder or it already exists at %s for camera: %s",
-                             folderPath.c_str(), currentCamera.c_str());
+        RCLCPP_ERROR(LOGGER,
+                     "Failed to create screenshots folder or it already exists at %s for camera: %s",
+                     folderPath.c_str(),
+                     currentCamera.c_str());
         response_.success = false;
-        response_.status = "Failed to create screenshots folder or it already exists at " 
-                            + folderPath + " for camera: " + currentCamera;
+        response_.status
+            = "Failed to create screenshots folder or it already exists at " + folderPath + " for camera: " + currentCamera;
     }
 
     if (this->getScreenshot(folderPath, captureName, cameraURL))
@@ -155,11 +157,13 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
 
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER, "Failed to create recordings folder or it already exists at %s for camera: %s", 
-                              folderPath.c_str(), currentCamera.c_str());
+        RCLCPP_ERROR(LOGGER,
+                     "Failed to create recordings folder or it already exists at %s for camera: %s",
+                     folderPath.c_str(),
+                     currentCamera.c_str());
         response_.success = false;
-        response_.status = "Failed to create recordings folder or it already exists at " 
-                            + folderPath + "for camera: " + currentCamera;
+        response_.status
+            = "Failed to create recordings folder or it already exists at " + folderPath + "for camera: " + currentCamera;
     }
     if (this->newRecording(folderPath, captureName, cameraURL))
     {
@@ -208,8 +212,8 @@ std::string CameraNode::getCurrentTime(void)
 
     std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
     std::time_t now_time = std::chrono::system_clock::to_time_t(now);  // convert to real time
-    std::tm tm_now = *std::localtime(&now_time);  // convert to calendar time
-    current_time_output << std::put_time(&tm_now, "%FT%T");  // ISO 8601 format
+    std::tm tm_now = *std::localtime(&now_time);                       // convert to calendar time
+    current_time_output << std::put_time(&tm_now, "%FT%T");            // ISO 8601 format
 
     return current_time_output.str();
 }
@@ -357,12 +361,10 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
 
     // Open the video stream
 
-    
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if currently recording
     {
         std::lock_guard<std::mutex> lock(_recordingMapMutex);
         Recording& rRecording = _RecordingMap.at(cameraURL_);
-
 
         // Save the last frame from recording as picture:
         cv::imwrite(captureName, rRecording.getFrame());
@@ -435,11 +437,11 @@ bool CameraNode::stopRecording(std::string cameraURL_)
     _RecordingMap.erase(cameraURL_);
     if (_RecordingMap.empty())
     {
-            _watchDogStop.store(true);
+        _watchDogStop.store(true);
         _recordingCv.notify_one();
-     }
+    }
 
-        return true;
+    return true;
 }
 
 /**
@@ -457,7 +459,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if recording doesn't already exist
     {
         Recording& rRecording = _RecordingMap.at(cameraURL_);
-        RCLCPP_ERROR(LOGGER, "Recording already exist!\nSee file:\t%s",rRecording.getFilename().c_str());
+        RCLCPP_ERROR(LOGGER, "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
         return false;
     }
     else
@@ -479,7 +481,6 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
 
         // Access the recording using at() to safely get the reference
         Recording& rRecording = _RecordingMap.at(cameraURL_);
-
 
         if (rRecording.startRecording())
         {
