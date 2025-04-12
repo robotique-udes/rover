@@ -159,8 +159,8 @@ bool Recording::startRecording(void)
 
     // Get frame width and height
 
-    _frame_width = static_cast<int>(_cap.get(cv::CAP_PROP_FRAME_WIDTH));
-    _frame_height = static_cast<int>(_cap.get(cv::CAP_PROP_FRAME_HEIGHT));
+    _frame_width = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_WIDTH)));
+    _frame_height = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_HEIGHT)));
     _fps = static_cast<double>(_cap.get(cv::CAP_PROP_FPS));
 
     _fps = CONSTRAIN(_fps, 0.0F, 30.0F);
