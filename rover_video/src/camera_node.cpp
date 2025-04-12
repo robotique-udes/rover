@@ -357,7 +357,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
     RCLCPP_INFO(LOGGER, "Attempting to capture screenshot from camera: %s", cameraURL_.c_str());
 
     // The URL format will depend on the camera model and configuration
-    // std::string camera_url = "rtsp://rover:roverrover@192.168.144.30:554/1/h264major";
+    // std::string camera_url = "rtsp://usual:usualusual@192.168.144.30:554/1/h264major";
 
     // Open the video stream
 
