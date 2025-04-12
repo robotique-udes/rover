@@ -33,7 +33,7 @@ class Recording
     Recording(std::string videoFolderPath_in,
               std::string filename_in,
               std::string URL_in,
-              std::shared_ptr<rclcpp::Logger> logger,
+              rclcpp::Logger logger,
               std::function<void(std::string)> RequestShutdown);
 
     Recording(Recording&& other);
@@ -77,7 +77,7 @@ class Recording
     double _fps;
 
     // ros logger
-    std::shared_ptr<rclcpp::Logger> rLogger;  // allows Recording objects to send logs from ROS nodes
+    rclcpp::Logger rLogger;  // allows Recording objects to send logs from ROS nodes
 
     // cv variables
     cv::VideoCapture _cap;

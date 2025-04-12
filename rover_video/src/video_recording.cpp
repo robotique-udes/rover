@@ -13,7 +13,7 @@
 Recording::Recording(std::string videoFolderPath_in,
                      std::string filename_in,
                      std::string URL_in,
-                     std::shared_ptr<rclcpp::Logger> logger,
+                     rclcpp::Logger logger,
                      std::function<void(std::string)> RequestShutdown):
     _RequestShutdown(RequestShutdown),
     _camURL(URL_in),
@@ -43,7 +43,7 @@ Recording::Recording(Recording&& other):
     _frame_width(other._frame_width),
     _frame_height(other._frame_height),
     _fps(other._fps),
-    rLogger(std::move(other.rLogger)),
+    rLogger(other.rLogger),
     _cap(std::move(other._cap)),
     _video_writer_short(std::move(other._video_writer_short)),
     _video_writer_long(std::move(other._video_writer_long)),
@@ -79,7 +79,7 @@ Recording& Recording::operator=(Recording&& other)
         _frame_width = other._frame_width;
         _frame_height = other._frame_height;
         _fps = other._fps;
-        rLogger = std::move(other.rLogger);
+        rLogger = other.rLogger;
 
         _video_writer_long = std::move(other._video_writer_long);
         _cap = std::move(other._cap);  // Move cv ressources
@@ -109,7 +109,7 @@ Recording::~Recording(void)
         _video_writer_short.release();
         _video_writer_long.release();
 
-        RCLCPP_INFO(*rLogger, "Recording stopped.");
+        RCLCPP_INFO(rLogger, "Recording stopped.");
     }
 }
 
@@ -156,7 +156,7 @@ bool Recording::startRecording(void)
     _cap.open(_pipeline, cv::CAP_GSTREAMER);
     if (!_cap.isOpened())
     {
-        RCLCPP_ERROR(*rLogger, "Failed to open camera stream.");
+        RCLCPP_ERROR(rLogger, "Failed to open camera stream.");
         return false;
     }
 
@@ -168,7 +168,7 @@ bool Recording::startRecording(void)
 
     _fps = (_fps > 0) ? _fps : 30;
 
-    RCLCPP_DEBUG(*rLogger, "fps set to %f", _fps);
+    RCLCPP_DEBUG(rLogger, "fps set to %f", _fps);
 
     // Define the codec and create a VideoWriter object
     /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
@@ -177,7 +177,7 @@ bool Recording::startRecording(void)
 
     if (!_video_writer_short.isOpened())
     {
-        RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing short video!");
+        RCLCPP_ERROR(rLogger, "Error: Could not open the output video file for writing short video!");
         return false;
     }
 
@@ -190,7 +190,7 @@ bool Recording::startRecording(void)
 
     if (!_video_writer_long.isOpened())
     {
-        RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing long video!");
+        RCLCPP_ERROR(rLogger, "Error: Could not open the output video file for writing long video!");
         return false;
     }
 
@@ -201,7 +201,7 @@ bool Recording::startRecording(void)
             recordingThreadFunction();
         });
 
-    RCLCPP_INFO(*rLogger, "Recording started for stream %s", _camURL.c_str());
+    RCLCPP_INFO(rLogger, "Recording started for stream %s", _camURL.c_str());
 
     return true;
 }
@@ -218,7 +218,7 @@ bool Recording::recordFrame(void)
     {
         if (!_stopRecording.load())
         {
-            RCLCPP_ERROR(*rLogger, "Error: cap is closed");
+            RCLCPP_ERROR(rLogger, "Error: cap is closed");
         }
         return false;
     }
@@ -228,7 +228,7 @@ bool Recording::recordFrame(void)
     {
         if (!_stopRecording.load())
         {
-            RCLCPP_ERROR(*rLogger, "Error: Blank frame grabbed!");
+            RCLCPP_ERROR(rLogger, "Error: Blank frame grabbed!");
         }
         return false;
     }
@@ -236,7 +236,7 @@ bool Recording::recordFrame(void)
     if (!_video_writer_short.isOpened() || !_video_writer_long.isOpened())
     {
         if (!_stopRecording.load())
-            RCLCPP_ERROR(*rLogger, "Error: video writer is closed");
+            RCLCPP_ERROR(rLogger, "Error: video writer is closed");
         return false;
     }
     // Write frame to the output video file
@@ -257,7 +257,7 @@ bool Recording::recordFrame(void)
 
         if (!_video_writer_short.isOpened())
         {
-            RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing!");
+            RCLCPP_ERROR(rLogger, "Error: Could not open the output video file for writing!");
             return false;
         }
 
@@ -274,7 +274,7 @@ bool Recording::recordFrame(void)
 
         if (!_video_writer_long.isOpened())
         {
-            RCLCPP_ERROR(*rLogger, "Error: Could not open the output video file for writing!");
+            RCLCPP_ERROR(rLogger, "Error: Could not open the output video file for writing!");
             return false;
         }
 
@@ -294,7 +294,7 @@ void Recording::recordingThreadFunction(void)
     {
         if (!this->recordFrame() && !_stopRecording.load())  // if error execept on last loop
         {
-            RCLCPP_WARN(*rLogger, "Requesting shutdown for %s", _camURL.c_str());
+            RCLCPP_WARN(rLogger, "Requesting shutdown for %s", _camURL.c_str());
             _RequestShutdown(_camURL);
             _stopRecording.store(true);
         }

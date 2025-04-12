@@ -359,7 +359,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
     
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if currently recording
     {
-        std::lock_guard<std::mutex> lock(_recordingMutex);
+        std::lock_guard<std::mutex> lock(_recordingMapMutex);
         Recording& rRecording = _RecordingMap.at(cameraURL_);
 
 
@@ -424,7 +424,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
  */
 bool CameraNode::stopRecording(std::string cameraURL_)
 {
-    std::lock_guard<std::mutex> lock(_recordingMutex);
+    std::lock_guard<std::mutex> lock(_recordingMapMutex);
 
     if (_RecordingMap.find(cameraURL_) == _RecordingMap.end())
     {
@@ -452,7 +452,7 @@ bool CameraNode::stopRecording(std::string cameraURL_)
  */
 bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_)
 {
-    std::lock_guard<std::mutex> lock(_recordingMutex);
+    std::lock_guard<std::mutex> lock(_recordingMapMutex);
     if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if recording doesn't already exist
     {
         Recording& rRecording = _RecordingMap.at(cameraURL_);
@@ -465,15 +465,15 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
                               Recording(videoFolderPath_,
                                         filename_,
                                         cameraURL_,
-                                        std::make_shared<rclcpp::Logger>(LOGGER),
-                                        [this](std::string url)
+                                        LOGGER,
+                                        [this](std::string url_)
                                         {
-                                            RequestShutdown(url);
+                                            this->requestShutdown(url_);
                                         }));
 
-        if (!_videoWatchDog.joinable())
+        if (!_videoThread.joinable())
         {
-            StartWatchDog();
+            startWatchDog();
         }
 
         // Access the recording using at() to safely get the reference
@@ -507,12 +507,12 @@ void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_messag
  *        This function is passed as a callback function to the recording class
  * @param camURL_ key for the hashmap
  */
-void CameraNode::RequestShutdown(std::string camURL_)
+void CameraNode::requestShutdown(std::string camURL_)
 {
     RCLCPP_WARN(LOGGER, "Received shutdown request for %s", camURL_.c_str());
 
     {
-        std::unique_lock<std::mutex> lock(_recordingMutex);
+        std::unique_lock<std::mutex> lock(_recordingMapMutex);
         _RecordingShutdownRequestSet.insert(camURL_);
     }  // unlock
     _recordingCv.notify_one();
@@ -523,10 +523,10 @@ void CameraNode::RequestShutdown(std::string camURL_)
  * @brief Start the Watchdog thread
  *
  */
-bool CameraNode::StartWatchDog(void)
+bool CameraNode::startWatchDog(void)
 {
     _watchDogStop.store(false);
-    _videoWatchDog = std::thread(&CameraNode::VideoWatchDogFunction, this);
+    _videoThread = std::thread(&CameraNode::videoWatchDogFunction, this);
     return true;
 }
 
@@ -534,12 +534,12 @@ bool CameraNode::StartWatchDog(void)
  * @brief Shutdown and erase a recording from the hashmap
  * @until watchDogStop = true
  */
-void CameraNode::VideoWatchDogFunction(void)
+void CameraNode::videoWatchDogFunction(void)
 {
     RCLCPP_DEBUG(LOGGER, "Starting video watchdog");
     while (!_watchDogStop.load())
     {
-        std::unique_lock<std::mutex> lock(_recordingMutex);
+        std::unique_lock<std::mutex> lock(_recordingMapMutex);
         _recordingCv.wait(lock,
                           [this]
                           {
@@ -569,7 +569,7 @@ void CameraNode::VideoWatchDogFunction(void)
                 }
                 else
                 {
-                    RCLCPP_ERROR(LOGGER, "Unable to find %s for shutdown, please try again", url.c_str());
+                    RCLCPP_ERROR(LOGGER, "Shutdown requested for %s but no recordings found, no action done", url.c_str());
                 }
             }
 

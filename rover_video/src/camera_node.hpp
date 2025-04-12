@@ -44,9 +44,9 @@ class CameraNode : public rclcpp::Node
 
     bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
     bool stopRecording(std::string cameraURL_);
-    bool StartWatchDog(void);
-    void VideoWatchDogFunction(void);
-    void RequestShutdown(std::string camURL_);
+    bool startWatchDog(void);
+    void videoWatchDogFunction(void);
+    void requestShutdown(std::string camURL_);
 
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
     rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
@@ -55,8 +55,8 @@ class CameraNode : public rclcpp::Node
     float _last_longitude = 0.0;
 
     std::atomic<bool> _watchDogStop{false};
-    std::mutex _recordingMutex;
-    std::thread _videoWatchDog;
+    std::mutex _recordingMapMutex;
+    std::thread _videoThread;
     std::condition_variable _recordingCv;
     std::unordered_map<std::string, Recording> _RecordingMap;
     std::unordered_set<std::string> _RecordingShutdownRequestSet;
