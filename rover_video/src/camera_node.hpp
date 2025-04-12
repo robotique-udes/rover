@@ -51,15 +51,15 @@ class CameraNode : public rclcpp::Node
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
     rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
 
-    float _last_latitude = 0.0;
-    float _last_longitude = 0.0;
+    float _lastLatitude = 0.0;
+    float _lastLongitude = 0.0;
 
     std::atomic<bool> _watchDogStop{false};
     std::mutex _recordingMapMutex;
     std::thread _videoThread;
     std::condition_variable _recordingCv;
-    std::unordered_map<std::string, Recording> _RecordingMap;
-    std::unordered_set<std::string> _RecordingShutdownRequestSet;
+    std::unordered_map<std::string, Recording> _recordingMap;
+    std::unordered_set<std::string> _recordingShutdownRequestSet;
 };
 
 #endif

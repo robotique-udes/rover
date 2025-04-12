@@ -15,7 +15,7 @@ Recording::Recording(std::string videoFolderPath_in,
                      std::string URL_in,
                      rclcpp::Logger logger,
                      std::function<void(std::string)> RequestShutdown):
-    _RequestShutdown{RequestShutdown},
+    _requestShutdown{RequestShutdown},
     _camURL{URL_in},
     _filename{filename_in},
     _videoFolderPath{videoFolderPath_in},
@@ -30,7 +30,7 @@ Recording::Recording(std::string videoFolderPath_in,
  * @param other Recording object
  */
 Recording::Recording(Recording&& other):
-    _RequestShutdown(std::move(other._RequestShutdown)),
+    _requestShutdown(std::move(other._requestShutdown)),
     _recordingThread(std::move(other._recordingThread)),
     _camURL(std::move(other._camURL)),
     _pipeline(std::move(other._pipeline)),
@@ -40,8 +40,8 @@ Recording::Recording(Recording&& other):
     _recordingNumberShort(other._recordingNumberShort),
     _shortTimer(other._shortTimer),
     _longTimer(other._longTimer),
-    _frame_width(other._frame_width),
-    _frame_height(other._frame_height),
+    _frameWidth(other._frameWidth),
+    _frameHeight(other._frameHeight),
     _fps(other._fps),
     rLogger(other.rLogger),
     _cap(std::move(other._cap)),
@@ -64,7 +64,7 @@ Recording& Recording::operator=(Recording&& other)
     {  // Prevent self-assignment
 
         // Move resources
-        _RequestShutdown = std::move(other._RequestShutdown);
+        _requestShutdown = std::move(other._requestShutdown);
         _recordingThread = std::move(other._recordingThread);
         _stopRecording.store(other._stopRecording.load(std::memory_order_acquire), std::memory_order_release);
 
@@ -76,8 +76,8 @@ Recording& Recording::operator=(Recording&& other)
         _recordingNumberShort = other._recordingNumberShort;
         _shortTimer = other._shortTimer;
         _longTimer = other._longTimer;
-        _frame_width = other._frame_width;
-        _frame_height = other._frame_height;
+        _frameWidth = other._frameWidth;
+        _frameHeight = other._frameHeight;
         _fps = other._fps;
         rLogger = other.rLogger;
 
@@ -159,8 +159,8 @@ bool Recording::startRecording(void)
 
     // Get frame width and height
 
-    _frame_width = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_WIDTH)));
-    _frame_height = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_HEIGHT)));
+    _frameWidth = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_WIDTH)));
+    _frameHeight = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_HEIGHT)));
     _fps = static_cast<double>(_cap.get(cv::CAP_PROP_FPS));
 
     _fps = CONSTRAIN(_fps, 0.0F, 30.0F);
@@ -170,7 +170,7 @@ bool Recording::startRecording(void)
     // Define the codec and create a VideoWriter object
     /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
-    _video_writer_short.open(filepath_short, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
+    _video_writer_short.open(filepath_short, CODEC_MJPG, _fps, cv::Size(_frameWidth, _frameHeight));
 
     if (!_video_writer_short.isOpened())
     {
@@ -180,7 +180,7 @@ bool Recording::startRecording(void)
 
     _shortTimer = time(0);
 
-    _video_writer_long = cv::VideoWriter(filepath_long, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
+    _video_writer_long = cv::VideoWriter(filepath_long, CODEC_MJPG, _fps, cv::Size(_frameWidth, _frameHeight));
 
     if (!_video_writer_long.isOpened())
     {
@@ -247,7 +247,7 @@ bool Recording::recordFrame(void)
         _files.push_back(filepath_short);
         _video_writer_short.release();
 
-        _video_writer_short.open(filepath_short, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
+        _video_writer_short.open(filepath_short, CODEC_MJPG, _fps, cv::Size(_frameWidth, _frameHeight));
 
         if (!_video_writer_short.isOpened())
         {
@@ -264,7 +264,7 @@ bool Recording::recordFrame(void)
         filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));
         _video_writer_long.release();
 
-        _video_writer_long.open(filepath_long, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
+        _video_writer_long.open(filepath_long, CODEC_MJPG, _fps, cv::Size(_frameWidth, _frameHeight));
 
         if (!_video_writer_long.isOpened())
         {
@@ -289,7 +289,7 @@ void Recording::recordingThreadFunction(void)
         if (!this->recordFrame() && !_stopRecording.load())  // if error execept on last loop
         {
             RCLCPP_WARN(rLogger, "Requesting shutdown for %s", _camURL.c_str());
-            _RequestShutdown(_camURL);
+            _requestShutdown(_camURL);
             _stopRecording.store(true);
         }
     }

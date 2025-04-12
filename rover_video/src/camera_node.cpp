@@ -25,8 +25,6 @@ CameraNode::CameraNode():
             if (!request_ || !response_)
             {
                 RCLCPP_ERROR(this->get_logger(), "NULL request or response received.");
-                response_->success = false;
-                response_->status = "Service call with null request or response. Possible internal ROS2 error.";
                 return;
             }
             this->controlIPCam(*request_, *response_);
@@ -231,8 +229,8 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     std::string filename;
 
     std::string time = this->getCurrentTime();
-    std::string latitude = std::to_string(_last_latitude);
-    std::string longitude = std::to_string(_last_longitude);
+    std::string latitude = std::to_string(_lastLatitude);
+    std::string longitude = std::to_string(_lastLongitude);
     std::string ID = "UnknownID";
     auto it = CameraInfo::CameraName.find(camURL_);
 
@@ -361,10 +359,10 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
 
     // Open the video stream
 
-    if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if currently recording
+    if (_recordingMap.find(cameraURL_) != _recordingMap.end())  // check if currently recording
     {
         std::lock_guard<std::mutex> lock(_recordingMapMutex);
-        Recording& rRecording = _RecordingMap.at(cameraURL_);
+        Recording& rRecording = _recordingMap.at(cameraURL_);
 
         // Save the last frame from recording as picture:
         cv::imwrite(captureName, rRecording.getFrame());
@@ -429,13 +427,13 @@ bool CameraNode::stopRecording(std::string cameraURL_)
 {
     std::lock_guard<std::mutex> lock(_recordingMapMutex);
 
-    if (_RecordingMap.find(cameraURL_) == _RecordingMap.end())
+    if (_recordingMap.find(cameraURL_) == _recordingMap.end())
     {
         return false;
     }
 
-    _RecordingMap.erase(cameraURL_);
-    if (_RecordingMap.empty())
+    _recordingMap.erase(cameraURL_);
+    if (_recordingMap.empty())
     {
         _watchDogStop.store(true);
         _recordingCv.notify_one();
@@ -456,15 +454,15 @@ bool CameraNode::stopRecording(std::string cameraURL_)
 bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_)
 {
     std::lock_guard<std::mutex> lock(_recordingMapMutex);
-    if (_RecordingMap.find(cameraURL_) != _RecordingMap.end())  // check if recording doesn't already exist
+    if (_recordingMap.find(cameraURL_) != _recordingMap.end())  // check if recording doesn't already exist
     {
-        Recording& rRecording = _RecordingMap.at(cameraURL_);
-        RCLCPP_ERROR(LOGGER, "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
+        Recording& rRecording = _recordingMap.at(cameraURL_);
+        RCLCPP_WARN(LOGGER, "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
         return false;
     }
     else
     {
-        _RecordingMap.emplace(cameraURL_,
+        _recordingMap.emplace(cameraURL_,
                               Recording(videoFolderPath_,
                                         filename_,
                                         cameraURL_,
@@ -480,7 +478,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
         }
 
         // Access the recording using at() to safely get the reference
-        Recording& rRecording = _RecordingMap.at(cameraURL_);
+        Recording& rRecording = _recordingMap.at(cameraURL_);
 
         if (rRecording.startRecording())
         {
@@ -500,8 +498,8 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
  */
 void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_)
 {
-    _last_latitude = gps_message_.latitude;
-    _last_longitude = gps_message_.longitude;
+    _lastLatitude = gps_message_.latitude;
+    _lastLongitude = gps_message_.longitude;
 }
 
 /**
@@ -515,7 +513,7 @@ void CameraNode::requestShutdown(std::string camURL_)
 
     {
         std::unique_lock<std::mutex> lock(_recordingMapMutex);
-        _RecordingShutdownRequestSet.insert(camURL_);
+        _recordingShutdownRequestSet.insert(camURL_);
     }  // unlock
     _recordingCv.notify_one();
     return;
@@ -545,7 +543,7 @@ void CameraNode::videoWatchDogFunction(void)
         _recordingCv.wait(lock,
                           [this]
                           {
-                              return (_watchDogStop.load() || !_RecordingShutdownRequestSet.empty());
+                              return (_watchDogStop.load() || !_recordingShutdownRequestSet.empty());
                           });
 
         if (_watchDogStop)
@@ -554,17 +552,17 @@ void CameraNode::videoWatchDogFunction(void)
         }
         else
         {
-            for (std::string url : _RecordingShutdownRequestSet)
+            for (std::string url : _recordingShutdownRequestSet)
             {
                 RCLCPP_WARN(LOGGER, "Processing Shutdown for %s", url.c_str());
-                if (_RecordingMap.find(url) != _RecordingMap.end())
+                if (_recordingMap.find(url) != _recordingMap.end())
                 {
-                    if (!_RecordingMap.erase(url))
+                    if (!_recordingMap.erase(url))
                     {
                         RCLCPP_ERROR(LOGGER, "Shutdown request for %s could not be processed, please try again", url.c_str());
                     }
 
-                    if (_RecordingMap.empty())
+                    if (_recordingMap.empty())
                     {
                         _watchDogStop.store(true);
                     }
@@ -575,7 +573,7 @@ void CameraNode::videoWatchDogFunction(void)
                 }
             }
 
-            _RecordingShutdownRequestSet.clear();
+            _recordingShutdownRequestSet.clear();
         }
     }
     RCLCPP_DEBUG(LOGGER, "Stopping video watchdog");

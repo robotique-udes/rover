@@ -1,5 +1,5 @@
-#ifndef __VIDEO__RECORDING__
-#define __VIDEO__RECORDING__
+#ifndef __VIDEO__RECORDING__HPP__
+#define __VIDEO__RECORDING__HPP__
 
 #include "rclcpp/rclcpp.hpp"
 #include "rovus_lib/macros.h"
@@ -54,7 +54,7 @@ class Recording
   private:
     void recordingThreadFunction(void);
 
-    std::function<void(std::string)> _RequestShutdown;
+    std::function<void(std::string)> _requestShutdown;
 
     std::thread _recordingThread;
     std::atomic<bool> _stopRecording{false};
@@ -72,8 +72,8 @@ class Recording
     time_t _shortTimer;
     time_t _longTimer;
 
-    int _frame_width;
-    int _frame_height;
+    int _frameWidth;
+    int _frameHeight;
     double _fps;
 
     // ros logger
