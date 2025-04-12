@@ -8,6 +8,9 @@
 
 class ImageCapture
 {
+    static constexpr const char* PIPELINE
+        = " latency=0 drop=true ! decodebin ! videorate max-rate=5 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+
   public:
     ImageCapture(std::string cameraURL_);
     ~ImageCapture(void);
@@ -18,8 +21,12 @@ class ImageCapture
     bool initCam(void);
 
   private:
+    std::string _pipeline;
     std::string _cameraURL;
     cv::VideoCapture _cap;
+
+    // The the max rate (fps) must be paired with the detection delay
+    std::string _rtspPipeline;
 };
 
 #endif
