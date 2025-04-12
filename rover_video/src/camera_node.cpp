@@ -265,8 +265,8 @@ const std::string CameraNode::getFolderPath(eFileFormatNameTypes fileType_)
 {
     std::string folderPath;
     std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_video");  // finds the path to our package
-    const std::string pathForScreenshots = "src/screenshots";
-    const std::string pathForRecordings = "src/recordings";
+    const std::string pathForScreenshots = "/src/screenshots";
+    const std::string pathForRecordings = "/src/recordings";
 
     switch (fileType_)
     {
