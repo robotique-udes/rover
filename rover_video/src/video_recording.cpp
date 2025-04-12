@@ -140,12 +140,12 @@ bool Recording::startRecording(void)
 {
     // Getting the directory for the recording
     std::string filepath_short = _videoFolderPath + "/" + _filename;
-    filepath_short.insert(filepath_short.length() - 4, "_short_" + std::to_string(_recordingNumberShort++));  // add recording number before .avi
+    filepath_short.insert(filepath_short.length() - 4, "_short_" + std::to_string(_recordingNumberShort++));  // add recording number before .mp4
     _files.push_back(filepath_short);                                                        // add file to list of recordings
 
 
     std::string filepath_long = _videoFolderPath + "/" + _filename;
-    filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));  // add recording number before .avi
+    filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));  // add recording number before .mp4
 
     _pipeline = "rtspsrc location=" + _camURL
                 + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
@@ -170,7 +170,9 @@ bool Recording::startRecording(void)
     // Define the codec and create a VideoWriter object
     /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
-    _video_writer_short.open(filepath_short, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+    std::string pipeline_out = "appsrc ! videoconvert ! x264enc ! mp4mux ! filesink location=" + filepath_short;
+    _video_writer_short.open(pipeline_out, cv::CAP_GSTREAMER, 0, _fps, cv::Size(_frame_width, _frame_height));
+    
 
     if (!_video_writer_short.isOpened())
     {
@@ -180,10 +182,8 @@ bool Recording::startRecording(void)
 
     _shortTimer = time(0);
 
-    _video_writer_long = cv::VideoWriter(filepath_long,
-                                cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
-                                _fps,
-                                cv::Size(_frame_width, _frame_height));
+    std::string pipeline_out_long = "appsrc ! videoconvert ! x264enc ! mp4mux ! filesink location=" + filepath_long;
+    _video_writer_long.open(pipeline_out_long, cv::CAP_GSTREAMER, 0, _fps, cv::Size(_frame_width, _frame_height));
 
     if (!_video_writer_long.isOpened())
     {
@@ -250,7 +250,9 @@ bool Recording::recordFrame(void)
         _files.push_back(filepath_short);
         _video_writer_short.release();
 
-        _video_writer_short.open(filepath_short, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+        std::string pipeline_out = "appsrc ! videoconvert ! x264enc ! mp4mux ! filesink location=" + filepath_short;
+        _video_writer_short.open(pipeline_out, cv::CAP_GSTREAMER, 0, _fps, cv::Size(_frame_width, _frame_height));
+
 
         if (!_video_writer_short.isOpened())
         {
@@ -267,7 +269,9 @@ bool Recording::recordFrame(void)
         filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));
         _video_writer_long.release();
 
-        _video_writer_long.open(filepath_long, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+        std::string pipeline_out_long = "appsrc ! videoconvert ! x264enc ! mp4mux ! filesink location=" + filepath_long;
+        _video_writer_long.open(pipeline_out_long, cv::CAP_GSTREAMER, 0, _fps, cv::Size(_frame_width, _frame_height));
+
 
         if (!_video_writer_long.isOpened())
         {

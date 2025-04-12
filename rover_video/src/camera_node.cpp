@@ -247,9 +247,9 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
 
         case eFileFormatNameTypes::VIDEO:
             filename = capture_name_.empty()
-                           ? time + "_lat:" + latitude + "_long:" + longitude + "_" + ID + "_recording.avi"
-                           : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name_ + ".avi";
-            // Example : 2024-12-10T20:50:00_GPS_30_recording.avi
+                           ? time + "_lat:" + latitude + "_long:" + longitude + "_" + ID + "_recording.mp4"
+                           : time + "_lat:" + latitude + "_long:" + longitude + "_camID:" + ID + "_" + capture_name_ + ".mp4";
+            // Example : 2024-12-10T20:50:00_GPS_30_recording.mp4
             break;
     }
     return filename;
