@@ -170,7 +170,7 @@ bool Recording::startRecording(void)
     // Define the codec and create a VideoWriter object
     /* More information on OpenCV --> https://docs.opencv.org/4.x/dd/d9e/classcv_1_1VideoWriter.html */
 
-    _video_writer_short.open(filepath_short, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+    _video_writer_short.open(filepath_short, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
 
     if (!_video_writer_short.isOpened())
     {
@@ -181,7 +181,7 @@ bool Recording::startRecording(void)
     _shortTimer = time(0);
 
     _video_writer_long = cv::VideoWriter(filepath_long,
-                                cv::VideoWriter::fourcc('M', 'J', 'P', 'G'),
+                                CODEC_MJPG,
                                 _fps,
                                 cv::Size(_frame_width, _frame_height));
 
@@ -250,7 +250,7 @@ bool Recording::recordFrame(void)
         _files.push_back(filepath_short);
         _video_writer_short.release();
 
-        _video_writer_short.open(filepath_short, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+        _video_writer_short.open(filepath_short, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
 
         if (!_video_writer_short.isOpened())
         {
@@ -267,7 +267,7 @@ bool Recording::recordFrame(void)
         filepath_long.insert(filepath_long.length() - 4, "_long_" + std::to_string(_recordingNumberLong++));
         _video_writer_long.release();
 
-        _video_writer_long.open(filepath_long, cv::VideoWriter::fourcc('M', 'J', 'P', 'G'), _fps, cv::Size(_frame_width, _frame_height));
+        _video_writer_long.open(filepath_long, CODEC_MJPG, _fps, cv::Size(_frame_width, _frame_height));
 
         if (!_video_writer_long.isOpened())
         {

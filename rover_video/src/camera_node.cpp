@@ -168,6 +168,7 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     }
     else
     {
+        this->requestShutdown(cameraURL);
         response_.success = false;
         response_.status = "Failed to take a video, check logs for reason";
     }
