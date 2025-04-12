@@ -114,6 +114,11 @@ std::string Recording::getURL(void) const
     return _camURL;
 }
 
+/**
+ * @brief Return filename for error logging
+ *
+ * @return std::string
+ */
 std::string Recording::getFilename(void) const
 {
     return _filename;
