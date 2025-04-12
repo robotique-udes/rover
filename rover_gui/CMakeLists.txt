@@ -105,6 +105,8 @@ add_executable(main_gui src/gui.cpp
                         src/QRtspPlayer/StreamDialog.hpp
                         src/QRtspPlayer/QPlayPauseButton.hpp
 
+                        src/QArrucoWorker/QPlayerWorker.cpp
+                        src/QArrucoWorker/QPlayerWorker.hpp
                         ${RTSP_RESOURCES}
                         )
 add_dependencies(main_gui run_generate_ui)

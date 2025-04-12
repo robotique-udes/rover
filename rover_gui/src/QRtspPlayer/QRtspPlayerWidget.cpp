@@ -8,6 +8,7 @@
 #include <QMessageBox>
 #include <QStyle>
 #include <QToolButton>
+#include <QDateTime>
 
 // Initialize static counter
 int RtspPlayerWidget::instanceCounter = 0;
@@ -27,14 +28,28 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
     connectionFailed(false),
     _controlsVisible(true),
     _lastStreamUrl(""),
-    _lastStreamTime(QDateTime())
+    _lastStreamTime(QDateTime()),
+    _arucoDetectionEnabled(false),
+    _playerWorkerThread(new QPlayerWorker(true)),
+    _tag(instanceCounter)
 {
     // Generate a unique ID if not provided
     _widgetId = widgetId.isEmpty() ? QString("rtsp_player_%1").arg(++instanceCounter) : widgetId;
     _streamIndex = instanceCounter - 1; // 0-based index for the stream
     
+    // Initialize lastIds
+    for(size_t i=0; i<NBR_IDS_TO_DISPLAY; i++) {
+        _lastIds[i] = 65535;
+    }
+    
     // Setup UI elements
     setupUI();
+
+    // Connect worker thread signals
+    connect(_playerWorkerThread.get(), &QPlayerWorker::detectionHandledSuccessfully,
+            this, &RtspPlayerWidget::onDetectionHandledSuccessfully);
+    connect(_playerWorkerThread.get(), &QPlayerWorker::arucoServerInfoFailed,
+            this, &RtspPlayerWidget::onArucoServerInfoFailed);
 
     // Simple text change connections without autocorrection
     connect(ui.rtspUrlInput, &QLineEdit::textChanged, this, [this](const QString& text) {
@@ -105,6 +120,11 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
                     
                     // Show video when receiving frames (switch to video page)
                     updateStatusText("");
+                    
+                    // Enable enhanced control buttons when stream is active
+                    _arucoButton->setEnabled(true);
+                    _screenshotButton->setEnabled(true);
+                    _recordButton->setEnabled(true);
                 }
                 reconnectTimer->stop();
                 frameTimeoutTimer->start(2000);
@@ -128,6 +148,11 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
                     inReconnectionMode = true;
                     updateStatusText("Connection Lost");
                     reconnectTimer->start(3000); // Start reconnection timer with shorter timeout
+                    
+                    // Disable enhanced control buttons when stream is lost
+                    _arucoButton->setEnabled(false);
+                    _screenshotButton->setEnabled(false);
+                    _recordButton->setEnabled(false);
                     
                     emitStateChanged();
                 }
@@ -198,6 +223,10 @@ RtspPlayerWidget::~RtspPlayerWidget()
 {
     stopStream();
 
+    if (_playerWorkerThread) {
+        _playerWorkerThread->finish();
+    }
+
     // Ensure thread properly terminates
     if (workerThread) {
         workerThread->requestInterruption();
@@ -206,6 +235,57 @@ RtspPlayerWidget::~RtspPlayerWidget()
             workerThread->terminate(); // Force termination as last resort
         }
     }
+}
+
+void RtspPlayerWidget::setupEnhancedControls()
+{
+    // Find the appropriate layout to add our buttons
+    QHBoxLayout* topLayout = ui.topLayout;
+    if (!topLayout) {
+        LOG_ERROR_TARGET("RtspPlayer", "Could not find top layout to add enhanced controls", _widgetId.toUtf8().constData());
+        return;
+    }
+
+    // Create Aruco IDs text box
+    _arucoIdsTextBox = new QLineEdit(this);
+    _arucoIdsTextBox->setReadOnly(true);
+    _arucoIdsTextBox->setText("Ids: ");
+    _arucoIdsTextBox->setAlignment(Qt::AlignCenter);
+    _arucoIdsTextBox->setMinimumWidth(120);
+
+    // Create Aruco detection button
+    _arucoButton = new QPushButton(this);
+    _arucoButton->setText("Aruco");
+    _arucoButton->setCheckable(true);
+    _arucoButton->setEnabled(false); // Initially disabled until stream is active
+    _arucoButton->setToolTip("Enable Aruco marker detection");
+    _arucoButton->setObjectName("arucoPushButton");
+    connect(_arucoButton, &QPushButton::clicked, this, &RtspPlayerWidget::onArucoButtonClicked);
+    
+    // Handle aruco camera failure
+    connect(this, &RtspPlayerWidget::arucoCameraFailure, this, &RtspPlayerWidget::onArucoCameraFailed);
+
+    // Create screenshot button
+    _screenshotButton = new QPushButton(this);
+    _screenshotButton->setText("Screenshot");
+    _screenshotButton->setEnabled(false); // Initially disabled until stream is active
+    _screenshotButton->setToolTip("Take a screenshot");
+
+    // Create recording button
+    _recordButton = new QPushButton(this);
+    _recordButton->setText("Record");
+    _recordButton->setCheckable(true);
+    _recordButton->setEnabled(false); // Initially disabled until stream is active
+    _recordButton->setToolTip("Start/stop recording");
+
+    // Add buttons to layout
+    topLayout->insertWidget(0, _arucoButton);
+    topLayout->insertWidget(1, _arucoIdsTextBox);
+    topLayout->insertWidget(2, _screenshotButton);
+    topLayout->insertWidget(3, _recordButton);
+    
+    // Add a stretch to push the play button to the right
+    topLayout->insertStretch(4);
 }
 
 void RtspPlayerWidget::setupUI()
@@ -294,6 +374,9 @@ void RtspPlayerWidget::setupUI()
 
     // Store the button pointer for later use
     _playPauseButton = playPauseButton;
+    
+    // Add enhanced controls
+    setupEnhancedControls();
     
     // Add a logs toggle button to the video view
     _toggleViewButton = new QPushButton("Show Logs", _videoWidget);
@@ -401,6 +484,147 @@ void RtspPlayerWidget::setupUI()
     _logDisplay->append("Log initialized for RTSP player " + _widgetId);
 }
 
+void RtspPlayerWidget::onArucoButtonClicked()
+{
+    if (_arucoButton->isChecked()) {
+        startArucoDetection();
+    } else {
+        stopArucoDetection();
+    }
+}
+
+void RtspPlayerWidget::startArucoDetection()
+{
+    if (_playerWorkerThread.get() != nullptr) {
+        std::string url = ui.rtspUrlInput->text().toStdString();
+        _playerWorkerThread->manageDetection(_arucoDetectionClient, url, _tag, true);
+        
+        if (!_arucoButton->isChecked()) {
+            _arucoButton->setChecked(true);
+        }
+        _arucoButton->setProperty("class", "success");
+        _arucoButton->setStyleSheet("background-color: #5cb85c; color: white;");
+        _arucoButton->style()->unpolish(_arucoButton);
+        _arucoButton->style()->polish(_arucoButton);
+    } else {
+        LOG_WARNING_TARGET("RtspPlayer", "Error, couldn't access Video Player worker", _widgetId.toUtf8().constData());
+    }
+}
+
+void RtspPlayerWidget::stopArucoDetection()
+{
+    if (_playerWorkerThread.get() != nullptr) {
+        std::string url = ui.rtspUrlInput->text().toStdString();
+        _playerWorkerThread->manageDetection(_arucoDetectionClient, url, _tag, false);
+        
+        if (_arucoButton->isChecked()) {
+            _arucoButton->setChecked(false);
+        }
+        _arucoButton->setProperty("class", "normal");
+        _arucoButton->setStyleSheet("");
+        _arucoButton->style()->unpolish(_arucoButton);
+        _arucoButton->style()->polish(_arucoButton);
+    } else {
+        LOG_WARNING_TARGET("RtspPlayer", "Error, couldn't access Video Player worker", _widgetId.toUtf8().constData());
+    }
+}
+
+void RtspPlayerWidget::displayDetectedArucos(const std::vector<uint16_t>& ids)
+{
+    std::vector<uint16_t> idsToShow = ids;
+    if (idsToShow.size() > NBR_IDS_TO_DISPLAY) {
+        idsToShow.resize(NBR_IDS_TO_DISPLAY);
+    }
+    
+    _arucoIdsTextBox->setText("Ids: ");
+    
+    for (const auto& id : idsToShow) {
+        _arucoIdsTextBox->setText(_arucoIdsTextBox->text() + "  " + QString::number(id));
+    }
+}
+
+void RtspPlayerWidget::setArucoDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client)
+{
+    if (client != nullptr) {
+        _arucoDetectionClient = client;
+    } else {
+        LOG_WARNING_TARGET("RtspPlayer", "Error, couldn't access aruco detection manager client", _widgetId.toUtf8().constData());
+        _arucoButton->setProperty("class", "error");
+        _arucoButton->setStyleSheet("background-color: #d9534f; color: white;");
+        _arucoButton->style()->unpolish(_arucoButton);
+        _arucoButton->style()->polish(_arucoButton);
+    }
+}
+
+void RtspPlayerWidget::arucoStillAliveUpdate(bool urlFound)
+{
+    if (!urlFound && _arucoButton->isChecked()) {
+        LOG_WARNING_TARGET("RtspPlayer", QString("Error, aruco detection on %1 was not found").arg(ui.rtspUrlInput->text()), _widgetId.toUtf8().constData());
+        _arucoButton->setProperty("class", "normal");
+        _arucoButton->setStyleSheet("");
+        _arucoButton->style()->unpolish(_arucoButton);
+        _arucoButton->style()->polish(_arucoButton);
+    }
+}
+
+void RtspPlayerWidget::onDetectionHandledSuccessfully(bool success, uint16_t tag)
+{
+    if (!success && _tag == tag) {
+        LOG_WARNING_TARGET("RtspPlayer", QString("Error, request made on %1 regarding aruco detection failed").arg(ui.rtspUrlInput->text()), _widgetId.toUtf8().constData());
+        _arucoButton->setProperty("class", "error");
+        _arucoButton->setStyleSheet("background-color: #d9534f; color: white;");
+        _arucoButton->style()->unpolish(_arucoButton);
+        _arucoButton->style()->polish(_arucoButton);
+    }
+}
+
+void RtspPlayerWidget::onArucoServerInfoFailed(bool success)
+{
+    if (!success) {
+        LOG_WARNING_TARGET("RtspPlayer", "Error, info request to aruco detection manager client failed", _widgetId.toUtf8().constData());
+        _arucoButton->setEnabled(false);
+    } else {
+        if (_arucoButton->property("class") != "success" && _arucoButton->property("class") != "error") {
+            _arucoButton->setProperty("class", "normal");
+            _arucoButton->setEnabled(true);
+            _arucoButton->setStyleSheet("");
+            _arucoButton->style()->unpolish(_arucoButton);
+            _arucoButton->style()->polish(_arucoButton);
+        }
+    }
+}
+
+void RtspPlayerWidget::onArucoCameraFailed(bool valid)
+{
+    if (!valid) {
+        if (!_arucoButton->isChecked()) {
+            _arucoButton->setChecked(true);
+        }
+        if (!_arucoButton->isEnabled()) {
+            _arucoButton->setEnabled(true);
+        }
+
+        LOG_WARNING_TARGET("RtspPlayer", QString("Error, camera at %1 is not accessible").arg(ui.rtspUrlInput->text()), _widgetId.toUtf8().constData());
+        _arucoButton->setProperty("class", "error");
+        _arucoButton->setStyleSheet("background-color: #d9534f; color: white;");
+        _arucoButton->style()->unpolish(_arucoButton);
+        _arucoButton->style()->polish(_arucoButton);
+    }
+
+    if (valid) {
+        if (!_arucoButton->isChecked()) {
+            _arucoButton->setChecked(true);
+        }
+        if (!_arucoButton->isEnabled()) {
+            _arucoButton->setEnabled(true);
+        }
+        _arucoButton->setProperty("class", "success");
+        _arucoButton->setStyleSheet("background-color: #5cb85c; color: white;");
+        _arucoButton->style()->unpolish(_arucoButton);
+        _arucoButton->style()->polish(_arucoButton);
+    }
+}
+
 void RtspPlayerWidget::startStream(const QString& rtspUrl)
 {
     if (rtspUrl.isEmpty())
@@ -468,6 +692,11 @@ void RtspPlayerWidget::stopStream()
 
     frameTimeoutTimer->stop();
     reconnectTimer->stop();
+    
+    // Disable enhanced control buttons
+    _arucoButton->setEnabled(false);
+    _screenshotButton->setEnabled(false);
+    _recordButton->setEnabled(false);
     
     // Don't change status message if connection has failed
     if (!connectionFailed) {
