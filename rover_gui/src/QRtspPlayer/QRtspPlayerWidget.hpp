@@ -11,6 +11,7 @@
 #include <QVBoxLayout>
 #include <QStackedWidget>
 #include <QLabel>
+#include <QDateTime>
 #include <gst/gst.h>
 
 #include "QGStreamerWorker.hpp"
@@ -38,6 +39,10 @@ public:
     // Make these methods public so they can be called from SecondaryWindow
     bool validateRtspUrl(const QString& url);
     void updateUrlValidationUI(bool isValid);
+    
+    // Toggle control visibility
+    void setControlsVisible(bool visible);
+    bool areControlsVisible() const { return _controlsVisible; }
 
 private slots:
     void onPipelineStarted(GstElement* pipeline);
@@ -49,11 +54,13 @@ private slots:
     void onToggleError(bool checked);
     void onClearLogs();
     void onToggleView();
+    void onToggleControls();
     
 signals:
     void requestStartStream(const QString& rtspUrl);
     void requestStopStream();
     void streamStateChanged(bool isRunning, int streamIndex);
+    void controlsVisibilityChanged(bool visible);
 
 private:
     static int instanceCounter;
@@ -68,6 +75,11 @@ private:
 
     QTimer* reconnectTimer;
     QTimer* frameTimeoutTimer;
+    QTimer* connectionTimeoutTimer; // New timer for initial connection timeout
+
+    // For preventing duplicate stream starts
+    QString _lastStreamUrl;
+    QDateTime _lastStreamTime;
 
     GstElement* pipeline;
     bool receivingFrames;
@@ -76,6 +88,7 @@ private:
     static const int maxReconnectAttempts = 3; // Maximum number of reconnection attempts
     bool wasEverConnected; // Track if we ever successfully connected
     bool connectionFailed; // Track if connection failed permanently
+    bool _controlsVisible; // Track visibility of controls
 
     // Main stacked widget to switch between views
     QStackedWidget* _stackedWidget;
@@ -90,6 +103,12 @@ private:
     
     // Our custom play/pause button
     QPlayPauseButton* _playPauseButton;
+    
+    // Toggle button for controls
+    QPushButton* _toggleControlsButton;
+    
+    // Controls container
+    QWidget* _controlsContainer;
     
     // Log view components
     QWidget* _logWidget;

@@ -6,6 +6,8 @@
 #include <QRegularExpression>
 #include <QEvent>
 #include <QMessageBox>
+#include <QStyle>
+#include <QToolButton>
 
 // Initialize static counter
 int RtspPlayerWidget::instanceCounter = 0;
@@ -16,12 +18,16 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
     gstreamerWorker(new GStreamerWorker()),
     reconnectTimer(new QTimer(this)),
     frameTimeoutTimer(new QTimer(this)),
+    connectionTimeoutTimer(new QTimer(this)), // New timer for initial connection
     pipeline(nullptr),
     receivingFrames(false),
     inReconnectionMode(false),
     reconnectAttempts(0),
     wasEverConnected(false),
-    connectionFailed(false)  // Initialize connection failure flag
+    connectionFailed(false),
+    _controlsVisible(true),
+    _lastStreamUrl(""),
+    _lastStreamTime(QDateTime())
 {
     // Generate a unique ID if not provided
     _widgetId = widgetId.isEmpty() ? QString("rtsp_player_%1").arg(++instanceCounter) : widgetId;
@@ -62,6 +68,7 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
         inReconnectionMode = false;
         reconnectAttempts = 0;
         reconnectTimer->stop();
+        connectionTimeoutTimer->stop(); // Stop connection timeout timer
         connectionFailed = true;  // Set the connection failed flag
         updateStatusText("Connection Failed");
         _playPauseButton->setPlaying(false);
@@ -73,6 +80,9 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
             this,
             [this]()
             {
+                // Stop the connection timeout timer as we've connected successfully
+                connectionTimeoutTimer->stop();
+                
                 if (!receivingFrames)
                 {
                     if (inReconnectionMode)
@@ -158,6 +168,22 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent, const QString& widgetId):
                     }
                 }
             });
+            
+    // Setup connection timeout timer (for initial connection)
+    connectionTimeoutTimer->setSingleShot(true);
+    connect(connectionTimeoutTimer, &QTimer::timeout, this, [this]() {
+        LOG_ERROR_TARGET("RtspPlayer", "Connection timeout - no response from server", _widgetId.toUtf8().constData());
+        
+        // Similar handling as connection failure
+        inReconnectionMode = false;
+        reconnectAttempts = 0;
+        connectionFailed = true;
+        updateStatusText("Connection Timeout");
+        _playPauseButton->setPlaying(false);
+        
+        // Stop the pipeline
+        emit requestStopStream();
+    });
     
     workerThread->start();
     
@@ -276,8 +302,35 @@ void RtspPlayerWidget::setupUI()
     btnLayout->addStretch();
     btnLayout->addWidget(_toggleViewButton);
     
+    // Create toggle controls button
+    _toggleControlsButton = new QPushButton(this);
+    _toggleControlsButton->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
+    _toggleControlsButton->setToolTip("Hide Controls");
+    _toggleControlsButton->setMaximumWidth(25);
+    _toggleControlsButton->setMaximumHeight(25);
+    _toggleControlsButton->setFlat(true);
+    connect(_toggleControlsButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleControls);
+    
     // Add button to layout
+    btnLayout->addWidget(_toggleControlsButton);
+    
+    // Add button layout to main layout
     static_cast<QVBoxLayout*>(_videoWidget->layout())->addLayout(btnLayout);
+    
+    // Create a container widget for all controls (top bar)
+    _controlsContainer = new QWidget(_videoWidget);
+    _controlsContainer->setObjectName("controlsContainer");
+    
+    // Move top layout to controls container
+    QVBoxLayout* videoLayout = static_cast<QVBoxLayout*>(_videoWidget->layout());
+    videoLayout->removeItem(topLayout);
+    
+    QVBoxLayout* containerLayout = new QVBoxLayout(_controlsContainer);
+    containerLayout->setContentsMargins(0, 0, 0, 0);
+    containerLayout->addLayout(topLayout);
+    
+    // Insert controls container at the top of the video layout
+    videoLayout->insertWidget(0, _controlsContainer);
     
     // --- LOG VIEW ---
     
@@ -364,6 +417,18 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl)
                            "Format: rtsp://[username:password@]host[:port]/path");
         return;
     }
+    
+    // Prevent duplicate starts of the same URL in quick succession (500ms)
+    QDateTime currentTime = QDateTime::currentDateTime();
+    if (rtspUrl == _lastStreamUrl && _lastStreamTime.isValid() && 
+        _lastStreamTime.msecsTo(currentTime) < 500) {
+        // Skip duplicate start
+        return;
+    }
+    
+    // Update last stream URL and time
+    _lastStreamUrl = rtspUrl;
+    _lastStreamTime = currentTime;
 
     if (!inReconnectionMode)
     {
@@ -379,11 +444,17 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl)
     // Set button to playing state when starting stream
     _playPauseButton->setPlaying(true);
     
+    // Start the connection timeout timer (8 seconds for initial connection)
+    connectionTimeoutTimer->start(8000);
+    
     emit requestStartStream(rtspUrl);
 }
 
 void RtspPlayerWidget::stopStream()
 {
+    // Stop the connection timeout timer
+    connectionTimeoutTimer->stop();
+    
     if (!pipeline && !receivingFrames && !inReconnectionMode)
     {
         // If we're not streaming and not in reconnection mode, don't do anything
@@ -421,6 +492,7 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
         LOG_ERROR_TARGET("RtspPlayer", "Pipeline creation failed", _widgetId.toUtf8().constData());
         updateStatusText("Connection Error");
         _playPauseButton->setPlaying(false);
+        connectionTimeoutTimer->stop(); // Stop the connection timeout timer
         return;
     }
 
@@ -432,6 +504,7 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* receivedPipeline)
         LOG_ERROR_TARGET("RtspPlayer", "Failed to find VideoOverlay in pipeline", _widgetId.toUtf8().constData());
         updateStatusText("Connection Error");
         _playPauseButton->setPlaying(false);
+        connectionTimeoutTimer->stop(); // Stop the connection timeout timer
         return;
     }
 
@@ -537,6 +610,36 @@ void RtspPlayerWidget::onToggleView()
     } else {
         _stackedWidget->setCurrentWidget(_videoWidget);
     }
+}
+
+void RtspPlayerWidget::onToggleControls()
+{
+    // Toggle controls visibility
+    setControlsVisible(!_controlsVisible);
+}
+
+void RtspPlayerWidget::setControlsVisible(bool visible)
+{
+    _controlsVisible = visible;
+    
+    // Show/hide controls container
+    if (_controlsContainer) {
+        _controlsContainer->setVisible(visible);
+    }
+    
+    // Update toggle button icon and tooltip
+    if (_toggleControlsButton) {
+        if (visible) {
+            _toggleControlsButton->setIcon(style()->standardIcon(QStyle::SP_ArrowUp));
+            _toggleControlsButton->setToolTip("Hide Controls");
+        } else {
+            _toggleControlsButton->setIcon(style()->standardIcon(QStyle::SP_ArrowDown));
+            _toggleControlsButton->setToolTip("Show Controls");
+        }
+    }
+    
+    // Emit signal about visibility change
+    emit controlsVisibilityChanged(visible);
 }
 
 void RtspPlayerWidget::emitStateChanged()

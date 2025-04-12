@@ -24,10 +24,6 @@ public:
 
 private slots:
     void onLayoutChange(int index);
-    void addStream();
-    void editStream();
-    void removeStream();
-    void onStreamSelection(int index);
     void onStreamStateChanged(bool running, int streamIndex);
 
 private:
@@ -40,37 +36,38 @@ private:
     QWidget* _multiStreamView;     // Container for multi-stream mode
     
     QStackedWidget* _singleStreamStack; // For switching between streams in single mode
-    QGridLayout* _multiStreamGrid;      // Grid for 2 or 4 stream mode
+    QGridLayout* _multiStreamGrid;      // Grid for 2, 4 or 6 stream mode
     
     // Layout controls
     QHBoxLayout* _controlLayout;
-    QPushButton* _addStreamBtn;
-    QPushButton* _removeStreamBtn;
-    QPushButton* _editStreamBtn;
-    QComboBox* _streamSelector;
     QComboBox* _layoutSelector;
     
-    // Stream list and properties
-    struct StreamInfo {
-        RtspPlayerWidget* widget;
-        QLabel* headerLabel;
+    // Predefined streams
+    struct PredefinedStream {
         QString name;
         QString url;
+    };
+    std::vector<PredefinedStream> _predefinedStreams;
+    
+    // Active streams
+    struct ActiveStream {
+        RtspPlayerWidget* widget;
+        QLabel* headerLabel;
+        int predefinedStreamIndex; // Index in the predefined streams list
         bool isRunning;
     };
-    std::vector<StreamInfo> _streams;
+    std::vector<ActiveStream> _activeStreams;
     int _maxStreams = 6;
     int _currentStreamIndex = 0;
     
-    void setupLayout();
+    void setupUI();
     void updateLayout();
     void setupSingleStreamView();
     void setupMultiStreamView();
-    void updateStreamSelectionCombo();
     void updateStreamHeader(int streamIndex);
     void updateAllStreamHeaders();
-    QString generateDefaultStreamName(int index);
-    void selectStream(int streamIndex);
+    void loadPredefinedStreams(); // Method to load predefined streams
+    void addStreamSelector(RtspPlayerWidget* widget, int position);
 };
 
 #endif  // SECONDARY_WINDOW_HPP
