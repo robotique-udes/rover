@@ -12,6 +12,14 @@ def generate_launch_description():
         name = "media_server",
     )
 
+    node_aruco = Node(
+        package="rover_video",
+        namespace="/rover/video",
+        executable="aruco_detection",
+        name="aruco_detection"
+    )
+
     ld.add_action(node_camera_node)
+    ld.add_action(node_aruco)
 
     return ld
