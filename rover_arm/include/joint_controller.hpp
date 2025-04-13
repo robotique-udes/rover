@@ -6,8 +6,9 @@
 class JointController : public RobotController
 {
   public:
-    JointController(std::initializer_list<uint8_t> joints_):
-        RobotController(joints_)
+    JointController(std::initializer_list<eJointIndex> joints_):
+        RobotController(joints_),
+        _currentControlledJoint()
     {
         if (joints_.size() != 0)
         {
@@ -15,44 +16,45 @@ class JointController : public RobotController
         }
         else
         {
-            _currentControlledJoint = -1;
+            _currentControlledJoint = eJointIndex::eLAST;
         }
     }
 
-    std::array<float, ALL_JOINTS> setCmd(std::array<float, ALL_INPUTS> inputArray_) override
+    std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(
+        std::array<float, TO_UNDERLYING(JoyController::eJoyInput::eLAST)> inputArray_) override
     {
-        std::array<float, ALL_JOINTS> jointCommands = {};
+        std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
 
-        if (!_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::DEADMAN_SWITCH]))
+        if (!_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::DEADMAN_SWITCH]))
         {
             return jointCommands;
         }
 
-        if (KEYBINDINGS_EMILE::JOINT::JL_ID == _currentControlledJoint)
+        if (ARM_CONFIGURATION::JL::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL_RIGHT]))
+            if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::JL_RIGHT]))
             {
-                jointCommands[_currentControlledJoint] = getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL_ID);
+                jointCommands[TO_UNDERLYING(_currentControlledJoint)] = getMaxVelocity(ARM_CONFIGURATION::JL::ID);
             }
-            else if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::JL_LEFT]))
+            else if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::JL_LEFT]))
             {
-                jointCommands[_currentControlledJoint] = -1.0F * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::JL_ID);
-            }
-        }
-        if (KEYBINDINGS_EMILE::JOINT::J1_ID == _currentControlledJoint)
-        {
-            if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J1]))
-            {
-                jointCommands[_currentControlledJoint]
-                    = inputArray_[KEYBINDINGS_EMILE::JOINT::J1] * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J1_ID);
+                jointCommands[TO_UNDERLYING(_currentControlledJoint)] = -1.0F * getMaxVelocity(ARM_CONFIGURATION::JL::ID);
             }
         }
-        if (KEYBINDINGS_EMILE::JOINT::J2_ID == _currentControlledJoint)
+        if (ARM_CONFIGURATION::J1::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[KEYBINDINGS_EMILE::JOINT::J2]))
+            if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::J1]))
             {
-                jointCommands[_currentControlledJoint]
-                    = inputArray_[KEYBINDINGS_EMILE::JOINT::J2] * getMaxVelocity(KEYBINDINGS_EMILE::JOINT::J2_ID);
+                jointCommands[TO_UNDERLYING(_currentControlledJoint)]
+                    = inputArray_[KEYBINDINGS::EMILE::JOINT::J1] * getMaxVelocity(ARM_CONFIGURATION::J1::ID);
+            }
+        }
+        if (ARM_CONFIGURATION::J2::ID == _currentControlledJoint)
+        {
+            if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::J2]))
+            {
+                jointCommands[TO_UNDERLYING(_currentControlledJoint)]
+                    = inputArray_[KEYBINDINGS::EMILE::JOINT::J2] * getMaxVelocity(ARM_CONFIGURATION::J2::ID);
             }
         }
 
@@ -61,29 +63,31 @@ class JointController : public RobotController
 
     void setControlledJoint(uint8_t command_)
     {
-        if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_INC)
+        size_t currentIndex = TO_UNDERLYING(_currentControlledJoint);
+
+        if (command_ == KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_INC)
         {
-            if (_currentControlledJoint < _nJoints - 1)
+            if (currentIndex + 1 < TO_UNDERLYING(eJointIndex::eLAST))
             {
-                _currentControlledJoint++;
+                _currentControlledJoint = static_cast<eJointIndex>(currentIndex + 1);
             }
         }
-        else if (command_ == KEYBINDINGS_EMILE::JOINT::JOINT_SELECT_DEC)
+        else if (command_ == KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_DEC)
         {
-            if (_currentControlledJoint > 0)
+            if (_currentControlledJoint > eJointIndex::JL)  // JL REPRESENTS THE JOINT AT INDEX 0
             {
-                _currentControlledJoint--;
+                _currentControlledJoint = static_cast<eJointIndex>(currentIndex - 1);
             }
         }
     }
 
-    uint8_t getControlledJoint(void)
+    eJointIndex getControlledJoint(void)
     {
         return _currentControlledJoint;
     }
 
   private:
-    uint8_t _currentControlledJoint;
+    eJointIndex _currentControlledJoint;
 };
 
 #endif

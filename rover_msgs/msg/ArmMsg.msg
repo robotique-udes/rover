@@ -1,8 +1,9 @@
 uint8 JL = 0
-uint8 J1 = 1
-uint8 J2 = 2
-uint8 GRIPPER_TILT = 3
-uint8 GRIPPER_ROT= 4
-uint8 GRIPPER_CLOSE = 5
+uint8 J0 = 1
+uint8 J1 = 2
+uint8 J2 = 3
+uint8 GRIPPER_TILT = 4
+uint8 GRIPPER_ROT= 5
+uint8 GRIPPER_CLOSE = 6
 
-float32[6] data
+float32[7] data
