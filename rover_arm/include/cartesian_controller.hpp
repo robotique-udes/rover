@@ -109,9 +109,9 @@ class CartesianController : public RobotController
         Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianQ::eLAST)>>(velocityArray.data()) = computedVelocity;
         std::array<float, TO_UNDERLYING(eCartesianR::eLAST)> scaledVelocities = this->scaleVelocities(velocityArray);
 
-        jointCommands[TO_UNDERLYING(eJointIndex::JL)] = velocityArray[TO_UNDERLYING(eCartesianQ::Q0)];
-        jointCommands[TO_UNDERLYING(eJointIndex::J1)] = velocityArray[TO_UNDERLYING(eCartesianQ::Q1)];
-        jointCommands[TO_UNDERLYING(eJointIndex::J2)] = velocityArray[TO_UNDERLYING(eCartesianQ::Q2)];
+        jointCommands[TO_UNDERLYING(eJointIndex::JL)] = scaledVelocities[TO_UNDERLYING(eCartesianQ::Q0)];
+        jointCommands[TO_UNDERLYING(eJointIndex::J1)] = scaledVelocities[TO_UNDERLYING(eCartesianQ::Q1)];
+        jointCommands[TO_UNDERLYING(eJointIndex::J2)] = scaledVelocities[TO_UNDERLYING(eCartesianQ::Q2)];
 
         return jointCommands;
     }
@@ -128,27 +128,19 @@ class CartesianController : public RobotController
         float s12 = sin(q1 + q2);
         float c12 = cos(q1 + q2);
 
-        uint8_t CARTESIAN_X = TO_UNDERLYING(eCartesianR::X);
-        uint8_t CARTESIAN_Y = TO_UNDERLYING(eCartesianR::Y);
-        uint8_t CARTESIAN_Z = TO_UNDERLYING(eCartesianR::Z);
-
-        uint8_t CARTESIAN_Q0 = TO_UNDERLYING(eCartesianQ::Q0);
-        uint8_t CARTESIAN_Q1 = TO_UNDERLYING(eCartesianQ::Q1);
-        uint8_t CARTESIAN_Q2 = TO_UNDERLYING(eCartesianQ::Q2);
-
         std::array<float, TO_UNDERLYING(eCartesianR::eLAST) * TO_UNDERLYING(eCartesianQ::eLAST)> _jacobian;
 
-        _jacobian[CARTESIAN_X * CARTESIAN_Q0] = 1.0F;  // dx/dq0
-        _jacobian[CARTESIAN_X * CARTESIAN_Q1] = 0.0F;  // dx/dq1
-        _jacobian[CARTESIAN_X * CARTESIAN_Q2] = 0.0F;  // dx/dq2
+        _jacobian[0] = 1.0F;  // dx/dq0
+        _jacobian[1] = 0.0F;  // dx/dq1
+        _jacobian[2] = 0.0F;  // dx/dq2
 
-        _jacobian[CARTESIAN_Y * CARTESIAN_Q0] = 0.0F;                   // dy/dq0
-        _jacobian[CARTESIAN_Y * CARTESIAN_Q1] = -J1z * c1 - J2z * c12;  // dy/dq1
-        _jacobian[CARTESIAN_Y * CARTESIAN_Q2] = -J2z * c12;             // dy/dq2
+        _jacobian[3] = 0.0F;                   // dy/dq0
+        _jacobian[4] = -J1z * c1 - J2z * c12;  // dy/dq1
+        _jacobian[5] = -J2z * c12;             // dy/dq2
 
-        _jacobian[CARTESIAN_Z * CARTESIAN_Q0] = 0.0F;                   // dz/dq0
-        _jacobian[CARTESIAN_Z * CARTESIAN_Q1] = -J1z * s1 - J2z * s12;  // dz/dq1
-        _jacobian[CARTESIAN_Z * CARTESIAN_Q2] = -J2z * s12;             // dz/dq2
+        _jacobian[6] = 0.0F;                   // dz/dq0
+        _jacobian[7] = -J1z * s1 - J2z * s12;  // dz/dq1
+        _jacobian[8] = -J2z * s12;             // dz/dq2
 
         return _jacobian;
     }

@@ -14,7 +14,6 @@
 class JoyController
 {
   public:
-
     ~JoyController() = default;
     JoyController() = default;
 

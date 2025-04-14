@@ -11,7 +11,8 @@ class GripperController : public RobotController
     {
     }
 
-    std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
+    std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(
+        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
 

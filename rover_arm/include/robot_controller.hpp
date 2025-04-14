@@ -20,9 +20,12 @@ class RobotController
         _nJoints(joints_.size()),
         _joints(joints_),
         _joyController()
-    {}
+    {
+    }
 
-    virtual std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) = 0;
+    virtual std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(
+        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_)
+        = 0;
 
     static float getMaxVelocity(eJointIndex joint_)
     {

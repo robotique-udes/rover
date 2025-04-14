@@ -104,14 +104,6 @@ class Teleop : public rclcpp::Node
         {
             _cartesianController.getJointPositions(_jointPositions);
             armMsg.data = _cartesianController.setCmd(joyArray);
-            std::array<float, TO_UNDERLYING(CartesianController::eCartesianR::eLAST)> desiredCart
-                = _cartesianController.getDesiredCartesian();
-
-            RCLCPP_INFO(this->get_logger(),
-                        "Desired Cartesian: x=%.3f, y=%.3f, z=%.3f",
-                        desiredCart[0],
-                        desiredCart[1],
-                        desiredCart[2]);
 
             if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::RECORD)],
                                           KEYBINDINGS::EMILE::CARTESIAN::RECORD))

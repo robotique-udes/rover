@@ -43,7 +43,7 @@ namespace KEYBINDINGS
             constexpr eJoyInput JL_RIGHT = eJoyInput::CROSS_RIGHT;
             constexpr eJoyInput JL_LEFT = eJoyInput::CROSS_LEFT;
 
-            constexpr eJoyInput J0 = eJoyInput::eLAST; // Is set to eLAST since rotating joint is not implemented
+            constexpr eJoyInput J0 = eJoyInput::eLAST;  // Is set to eLAST since rotating joint is not implemented
 
             constexpr eJoyInput J1 = eJoyInput::JOYSTICK_LEFT_FRONT;
 
