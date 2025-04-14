@@ -42,38 +42,49 @@ class ArmSimulation(Node):
         self.dt = 0.1
 
     def goalVelocityCallback(self, msg):
+        assert len(msg.data) >= 5, f"Expected at least 5 elements in ArmMsg.data, got {len(msg.data)}"
 
-        self.linearJointVelocity = msg.data[msg.JL]
-        self.shoulderJointVelocity = msg.data[msg.J1]
-        self.elbowJointVelocity = msg.data[msg.J2]
-        self.gripperJointVelocity = msg.data[msg.GRIPPER_TILT]
+        self.linearJointVelocity = msg.data[ArmMsg.JL]
+        self.shoulderJointVelocity = msg.data[ArmMsg.J1]
+        self.elbowJointVelocity = msg.data[ArmMsg.J2]
+        self.gripperJointVelocity = msg.data[ArmMsg.GRIPPER_TILT]
 
         self.JL_pos += self.linearJointVelocity * self.dt
         self.J1_pos += self.shoulderJointVelocity * self.dt
         self.J2_pos += self.elbowJointVelocity * self.dt
         self.Gripper += self.gripperJointVelocity * self.dt
 
-        qPosition = np.array([self.JL_pos, self.J1_pos, self.J2_pos, self.Gripper])
+        qPosition = np.array([
+            self.JL_pos,
+            self.J1_pos,
+            self.J2_pos,
+            self.Gripper
+        ])
+
         pointPos = self.computeDirectKin(qPosition)
-
         self.plot(pointPos)
-
         self.publish_joint_positions()
 
     def publish_joint_positions(self):
         msg = ArmMsg()
         msg.data = [
-            self.JL_pos,
-            self.J1_pos,
-            self.J2_pos,
-            self.Gripper,
-            0.0,
-            0.0
+            self.JL_pos,    # JL
+            0.0,            # BASE (unused)
+            self.J1_pos,    # J1
+            self.J2_pos,    # J2
+            self.Gripper,   # GRIPPER_TILT
+            0.0,            # Extra (maybe wrist or finger)
+            0.0             # Extra
         ]
 
         self.current_position_publisher.publish(msg)
 
-        qPosition = np.array(msg.data)
+        qPosition = np.array([
+            msg.data[ArmMsg.JL],
+            msg.data[ArmMsg.J1],
+            msg.data[ArmMsg.J2],
+            msg.data[ArmMsg.GRIPPER_TILT]
+        ])
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
 
@@ -84,10 +95,10 @@ class ArmSimulation(Node):
         J2 = 0.371
         J3 = 0.185
         
-        q0 = qPosition[0]
-        q1 = qPosition[1]
-        q2 = qPosition[2]
-        q3 = qPosition[3]
+        q0 = qPosition[0]  # JL
+        q1 = qPosition[1]  # J1
+        q2 = qPosition[2]  # J2
+        q3 = qPosition[3]  # Gripper tilt
         
         pointPos[0, 0] = q0
         pointPos[0, 1] = 0.0
@@ -102,8 +113,8 @@ class ArmSimulation(Node):
         pointPos[2, 2] = J1 * m.cos(q1) + J2 * m.cos(q1 + q2)
         
         pointPos[3, 0] = q0
-        pointPos[3, 1] = J1 * m.sin(q1) + J2 * m.sin(q1 + q2) + J3 * m.sin(q1 + q2+ q3)
-        pointPos[3, 2] = J1 * m.cos(q1) + J2 * m.cos(q1 + q2) + J3 * m.cos(q1 + q2+ q3)
+        pointPos[3, 1] = J1 * m.sin(q1) + J2 * m.sin(q1 + q2) + J3 * m.sin(q1 + q2 + q3)
+        pointPos[3, 2] = J1 * m.cos(q1) + J2 * m.cos(q1 + q2) + J3 * m.cos(q1 + q2 + q3)
 
         return pointPos
 
@@ -123,7 +134,6 @@ class ArmSimulation(Node):
         self.ax_top.set_ylabel('y')
         self.ax_top.set_xlim(-2, 2)
         self.ax_top.set_ylim(-2, 2)
-
         self.ax_top.grid(True)
 
         self.ax_3d.plot(xs, ys, zs, marker='o')

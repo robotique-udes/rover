@@ -18,8 +18,8 @@ class CartesianController : public RobotController
     enum class eCartesianQ
     {
         Q0 = 0,
-        Q1,
-        Q2,
+        Q1 = 1,
+        Q2 = 2,
         eLAST,
     };
 
@@ -38,33 +38,36 @@ class CartesianController : public RobotController
 
   public:
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(
-        std::array<float, TO_UNDERLYING(JoyController::eJoyInput::eLAST)> inputArray_) override
+        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
         _desiredCartesian = {};
 
-        if (!_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::DEADMAN_SWITCH]))
+        if (!_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::DEADMAN_SWITCH)]))
         {
             return jointCommands;
         }
 
-        if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_RIGHT]))
+        if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_RIGHT)]))
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesianR::X)] = inputArray_[KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_RIGHT];
+            _desiredCartesian[TO_UNDERLYING(eCartesianR::X)]
+                = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_RIGHT)];
         }
-        if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_LEFT]))
+        if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_LEFT)]))
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesianR::X)] = -1.0F * inputArray_[KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_LEFT];
-        }
-
-        if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::CARTESIAN::Y_AXIS]))
-        {
-            _desiredCartesian[TO_UNDERLYING(eCartesianR::Y)] = -1.0F * inputArray_[KEYBINDINGS::EMILE::CARTESIAN::Y_AXIS];
+            _desiredCartesian[TO_UNDERLYING(eCartesianR::X)]
+                = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::X_AXIS_LEFT)];
         }
 
-        if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::CARTESIAN::Z_AXIS]))
+        if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::Y_AXIS)]))
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesianR::Z)] = inputArray_[KEYBINDINGS::EMILE::CARTESIAN::Z_AXIS];
+            _desiredCartesian[TO_UNDERLYING(eCartesianR::Y)]
+                = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::Y_AXIS)];
+        }
+
+        if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::Z_AXIS)]))
+        {
+            _desiredCartesian[TO_UNDERLYING(eCartesianR::Z)] = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::Z_AXIS)];
         }
 
         if (_planApplied)
@@ -78,7 +81,7 @@ class CartesianController : public RobotController
             }
 
             Eigen::Vector<float, TO_UNDERLYING(eCartesianR::eLAST)> xAxis;
-            xAxis << 1.0f, 0.0f, 0.0f;
+            xAxis << 1.0F, 0.0F, 0.0F;
 
             Eigen::Vector<float, TO_UNDERLYING(eCartesianR::eLAST)> zAxis = vector12.cross(vector13).normalized();
             Eigen::Vector<float, TO_UNDERLYING(eCartesianR::eLAST)> yAxis = zAxis.cross(xAxis).normalized();
@@ -106,9 +109,9 @@ class CartesianController : public RobotController
         Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianQ::eLAST)>>(velocityArray.data()) = computedVelocity;
         std::array<float, TO_UNDERLYING(eCartesianR::eLAST)> scaledVelocities = this->scaleVelocities(velocityArray);
 
-        jointCommands[TO_UNDERLYING(eJointIndex::JL)] = scaledVelocities[TO_UNDERLYING(eJointIndex::JL)];
-        jointCommands[TO_UNDERLYING(eJointIndex::J1)] = scaledVelocities[TO_UNDERLYING(eJointIndex::J1)];
-        jointCommands[TO_UNDERLYING(eJointIndex::J2)] = scaledVelocities[TO_UNDERLYING(eJointIndex::J2)];
+        jointCommands[TO_UNDERLYING(eJointIndex::JL)] = velocityArray[TO_UNDERLYING(eCartesianQ::Q0)];
+        jointCommands[TO_UNDERLYING(eJointIndex::J1)] = velocityArray[TO_UNDERLYING(eCartesianQ::Q1)];
+        jointCommands[TO_UNDERLYING(eJointIndex::J2)] = velocityArray[TO_UNDERLYING(eCartesianQ::Q2)];
 
         return jointCommands;
     }
@@ -125,13 +128,13 @@ class CartesianController : public RobotController
         float s12 = sin(q1 + q2);
         float c12 = cos(q1 + q2);
 
-        size_t CARTESIAN_X = TO_UNDERLYING(eCartesianR::X);
-        size_t CARTESIAN_Y = TO_UNDERLYING(eCartesianR::Y);
-        size_t CARTESIAN_Z = TO_UNDERLYING(eCartesianR::Z);
+        uint8_t CARTESIAN_X = TO_UNDERLYING(eCartesianR::X);
+        uint8_t CARTESIAN_Y = TO_UNDERLYING(eCartesianR::Y);
+        uint8_t CARTESIAN_Z = TO_UNDERLYING(eCartesianR::Z);
 
-        size_t CARTESIAN_Q0 = TO_UNDERLYING(eCartesianQ::Q0);
-        size_t CARTESIAN_Q1 = TO_UNDERLYING(eCartesianQ::Q1);
-        size_t CARTESIAN_Q2 = TO_UNDERLYING(eCartesianQ::Q2);
+        uint8_t CARTESIAN_Q0 = TO_UNDERLYING(eCartesianQ::Q0);
+        uint8_t CARTESIAN_Q1 = TO_UNDERLYING(eCartesianQ::Q1);
+        uint8_t CARTESIAN_Q2 = TO_UNDERLYING(eCartesianQ::Q2);
 
         std::array<float, TO_UNDERLYING(eCartesianR::eLAST) * TO_UNDERLYING(eCartesianQ::eLAST)> _jacobian;
 
@@ -154,15 +157,15 @@ class CartesianController : public RobotController
         std::array<float, TO_UNDERLYING(eCartesianQ::eLAST)> velocities_)
     {
         float velocityRatio
-            = std::max({fabs(velocities_[TO_UNDERLYING(eJointIndex::JL)]) / this->getMaxVelocity(ARM_CONFIGURATION::JL::ID),
-                        fabs(velocities_[TO_UNDERLYING(eJointIndex::J1)]) / this->getMaxVelocity(ARM_CONFIGURATION::J1::ID),
-                        fabs(velocities_[TO_UNDERLYING(eJointIndex::J2)]) / this->getMaxVelocity(ARM_CONFIGURATION::J2::ID)});
+            = std::max({fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q0)]) / this->getMaxVelocity(ARM_CONFIGURATION::JL::ID),
+                        fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q1)]) / this->getMaxVelocity(ARM_CONFIGURATION::J1::ID),
+                        fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q2)]) / this->getMaxVelocity(ARM_CONFIGURATION::J2::ID)});
 
         if (velocityRatio > 1.0F)
         {
-            velocities_[TO_UNDERLYING(eJointIndex::JL)] /= velocityRatio;
-            velocities_[TO_UNDERLYING(eJointIndex::J1)] /= velocityRatio;
-            velocities_[TO_UNDERLYING(eJointIndex::J2)] /= velocityRatio;
+            velocities_[TO_UNDERLYING(eCartesianQ::Q0)] /= velocityRatio;
+            velocities_[TO_UNDERLYING(eCartesianQ::Q1)] /= velocityRatio;
+            velocities_[TO_UNDERLYING(eCartesianQ::Q2)] /= velocityRatio;
         }
 
         return velocities_;
@@ -182,7 +185,7 @@ class CartesianController : public RobotController
     }
 
     std::array<float, TO_UNDERLYING(eCartesianR::eLAST)> getEndEffectorPose(
-        std::array<float, TO_UNDERLYING(eCartesianQ::eLAST)> currentJointPosition_)
+        std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> currentJointPosition_)
     {
         float q0 = currentJointPosition_[TO_UNDERLYING(eJointIndex::JL)];
         float q1 = currentJointPosition_[TO_UNDERLYING(eJointIndex::J1)];

@@ -21,52 +21,64 @@ class JointController : public RobotController
     }
 
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(
-        std::array<float, TO_UNDERLYING(JoyController::eJoyInput::eLAST)> inputArray_) override
+        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
 
-        if (!_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::DEADMAN_SWITCH]))
+        if (!_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::DEADMAN_SWITCH)]))
         {
             return jointCommands;
         }
 
         if (ARM_CONFIGURATION::JL::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::JL_RIGHT]))
+            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::JL_RIGHT)]))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)] = getMaxVelocity(ARM_CONFIGURATION::JL::ID);
             }
-            else if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::JL_LEFT]))
+            else if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::JL_LEFT)]))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)] = -1.0F * getMaxVelocity(ARM_CONFIGURATION::JL::ID);
             }
         }
+        // Uncomment when implemented
+        // if (ARM_CONFIGURATION::J0::ID == _currentControlledJoint)
+        // {
+        //     if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J0)]))
+        //     {
+        //         jointCommands[TO_UNDERLYING(_currentControlledJoint)] = getMaxVelocity(ARM_CONFIGURATION::J0::ID);
+        //     }
+        // }
         if (ARM_CONFIGURATION::J1::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::J1]))
+            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J1)]))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)]
-                    = inputArray_[KEYBINDINGS::EMILE::JOINT::J1] * getMaxVelocity(ARM_CONFIGURATION::J1::ID);
+                    = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J1)] * getMaxVelocity(ARM_CONFIGURATION::J1::ID);
             }
         }
         if (ARM_CONFIGURATION::J2::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[KEYBINDINGS::EMILE::JOINT::J2]))
+            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J2)]))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)]
-                    = inputArray_[KEYBINDINGS::EMILE::JOINT::J2] * getMaxVelocity(ARM_CONFIGURATION::J2::ID);
+                    = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J2)] * getMaxVelocity(ARM_CONFIGURATION::J2::ID);
             }
         }
 
         return jointCommands;
     }
 
-    void setControlledJoint(uint8_t command_)
+    void setControlledJoint(eJoyInput command_)
     {
         size_t currentIndex = TO_UNDERLYING(_currentControlledJoint);
 
         if (command_ == KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_INC)
         {
+            if (currentIndex + 1 == TO_UNDERLYING(eJointIndex::J0))
+            {
+                currentIndex++;
+            }
             if (currentIndex + 1 < TO_UNDERLYING(eJointIndex::eLAST))
             {
                 _currentControlledJoint = static_cast<eJointIndex>(currentIndex + 1);
@@ -74,6 +86,10 @@ class JointController : public RobotController
         }
         else if (command_ == KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_DEC)
         {
+            if (currentIndex - 1 == TO_UNDERLYING(eJointIndex::J0))
+            {
+                currentIndex--;
+            }
             if (_currentControlledJoint > eJointIndex::JL)  // JL REPRESENTS THE JOINT AT INDEX 0
             {
                 _currentControlledJoint = static_cast<eJointIndex>(currentIndex - 1);
