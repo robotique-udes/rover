@@ -35,6 +35,7 @@ class DDBControlNode : public rclcpp::Node
 
   void toggleSwitch(const rover_msgs::srv::DDBControl::Request& request_);
   void togglePWM(const rover_msgs::srv::DDBControl::Request& request_);
+  void modifyPWM(uint8_t duty_cycle, uint8_t frequency);
 
   rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
 
