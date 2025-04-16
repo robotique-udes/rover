@@ -29,8 +29,7 @@ DDBControlNode::DDBControlNode():
 void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& request_,
                                 rover_msgs::srv::DDBControl::Response& response_)
 {
-
-    if(request_.switch_id >= 8 || request_.switch_id < 0)
+    if (request_.switch_id >= 8 || request_.switch_id < 0)
     {
         RCLCPP_ERROR(this->get_logger(), "Invalid switch ID: %d", request_.switch_id);
         response_.success = false;
@@ -91,6 +90,7 @@ void DDBControlNode::toggleSwitch(uint8_t switchID_)
 void DDBControlNode::togglePWM(uint8_t switchID_)
 {
     eToggleMode wantedMode = eToggleMode::FIX;
+    std::string currentMode;
 
     if (_switchInfo[switchID_].mode == eToggleMode::FIX)
     {
@@ -105,18 +105,31 @@ void DDBControlNode::togglePWM(uint8_t switchID_)
     {
         case eToggleMode::PWM:
             _switchInfo[switchID_].mode = eToggleMode::PWM;
-            RCLCPP_INFO(this->get_logger(), "Current mode: %d", _switchInfo[switchID_].mode);  // Not good
+            currentMode = toStr(_switchInfo[switchID_].mode);
+            RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentMode);
             break;
 
         case eToggleMode::FIX:
             _switchInfo[switchID_].mode = eToggleMode::FIX;
-            RCLCPP_INFO(this->get_logger(), "Current mode: %d", _switchInfo[switchID_].mode);  // Not good
+            currentMode = toStr(_switchInfo[switchID_].mode);
+            RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentMode);
             break;
     }
 }
 
-void DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t switchID_) 
+void DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t switchID_)
 {
     _switchInfo[switchID_].frequency = frequency_;
     _switchInfo[switchID_].dutyCycle = dutyCycle_;
+}
+
+std::string DDBControlNode::toStr(eToggleMode mode_)
+{
+    switch (mode_)
+    {
+        case eToggleMode::FIX:
+            return "FIX";
+        case eToggleMode::PWM:
+            return "PWM";
+    }
 }

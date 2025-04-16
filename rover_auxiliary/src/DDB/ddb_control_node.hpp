@@ -39,6 +39,7 @@ class DDBControlNode : public rclcpp::Node
     void toggleSwitch(uint8_t switchID_);
     void togglePWM(uint8_t switchID_);
     void modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t switchID_);
+    std::string toStr(eToggleMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
 
