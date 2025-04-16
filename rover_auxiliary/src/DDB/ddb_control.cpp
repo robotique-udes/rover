@@ -29,89 +29,94 @@ DDBControlNode::DDBControlNode():
 void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& request_,
                                 rover_msgs::srv::DDBControl::Response& response_)
 {
+
+    if(request_.switch_id >= 8 || request_.switch_id < 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Invalid switch ID: %d", request_.switch_id);
+        response_.success = false;
+        response_.status = "Invalid switch ID";
+        return;
+    }
+
     if (request_.on_off == rover_msgs::srv::DDBControl::Request::TOGGLE_SWITCH)
     {
-        this->toggleSwitch(request_); 
+        this->toggleSwitch(request_.switch_id);
     }
 
-    if(request_.toggle_mode == rover_msgs::srv::DDBControl::Request::TOGGLE_PWM)
+    if (request_.toggle_mode == rover_msgs::srv::DDBControl::Request::TOGGLE_PWM && request_.switch_id < 4)
     {
-        this->togglePWM(request_);
+        this->togglePWM(request_.switch_id);
+
+        if (request_.frequency >= 0 && request_.duty_cycle >= 0)
+        {
+            this->modifyPWM(request_.duty_cycle, request_.frequency, request_.switch_id);
+        }
+        else
+        {
+            RCLCPP_ERROR(this->get_logger(), "Invalid frequency or duty cycle");
+            response_.success = false;
+            response_.status = "Invalid frequency or duty cycle";
+            return;
+        }
     }
-
-    if(request_.frequency > 0 && request_.duty_cycle > 0)
-    {
-        this->modifyPWM(request_.duty_cycle, request_.frequency);
-    }
-
-
 }
 
-void DDBControlNode::toggleSwitch(const rover_msgs::srv::DDBControl::Request& request_)
+void DDBControlNode::toggleSwitch(uint8_t switchID_)
 {
+    eToggleState wantedState;
 
-    eSwitchState wantedState;
-
-    if (_currentSwitchState == eSwitchState::OFF)
+    if (_switchInfo[switchID_].state == eToggleState::OFF)
     {
-        wantedState = eSwitchState::ON;
+        wantedState = eToggleState::ON;
     }
-    else if (_currentSwitchState == eSwitchState::ON)
+    else if (_switchInfo[switchID_].state == eToggleState::ON)
     {
-        wantedState = eSwitchState::OFF;
+        wantedState = eToggleState::OFF;
     }
 
     switch (wantedState)
     {
-        case eSwitchState::ON:
-            _currentSwitchState = eSwitchState::ON;
-            RCLCPP_INFO(this->get_logger(), "Switch #%d turned ON", request_.switch_id);
+        case eToggleState::ON:
+            _switchInfo[switchID_].state = eToggleState::ON;
+            RCLCPP_INFO(this->get_logger(), "Switch #%d turned ON", switchID_);
             break;
 
-        case eSwitchState::OFF:
-            _currentSwitchState = eSwitchState::OFF;
-            RCLCPP_INFO(this->get_logger(), "Switch #%d turned OFF", request_.switch_id);
+        case eToggleState::OFF:
+            _switchInfo[switchID_].state = eToggleState::OFF;
+            RCLCPP_INFO(this->get_logger(), "Switch #%d turned OFF", switchID_);
             break;
     }
 }
 
-void DDBControlNode::togglePWM(const rover_msgs::srv::DDBControl::Request& request_)
+void DDBControlNode::togglePWM(uint8_t switchID_)
 {
-    eSwitchState wantedMode;
-    std::string currentModeStr;
+    eToggleMode wantedMode = eToggleMode::FIX;
 
-    if (_currentPWMMode == eSwitchState::OFF)
+    if (_switchInfo[switchID_].mode == eToggleMode::FIX)
     {
-        wantedMode= eSwitchState::ON;
+        wantedMode = eToggleMode::PWM;
     }
-    else if (_currentPWMMode == eSwitchState::ON)
+    else if (_switchInfo[switchID_].mode == eToggleMode::PWM)
     {
-        wantedMode= eSwitchState::OFF;
+        wantedMode = eToggleMode::FIX;
     }
 
     switch (wantedMode)
     {
-        case eSwitchState::ON:
-            _currentPWMMode = eSwitchState::ON;
-            if (_currentPWMMode == eSwitchState::ON)
-            {
-                currentModeStr = "PWM";
-            }
-            RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentModeStr.c_str());
+        case eToggleMode::PWM:
+            _switchInfo[switchID_].mode = eToggleMode::PWM;
+            RCLCPP_INFO(this->get_logger(), "Current mode: %d", _switchInfo[switchID_].mode);  // Not good
             break;
 
-        case eSwitchState::OFF:
-            _currentPWMMode = eSwitchState::OFF;
-            if (_currentPWMMode == eSwitchState::ON)
-            {
-                currentModeStr = "Normal";
-            }
-            RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentModeStr.c_str());
+        case eToggleMode::FIX:
+            _switchInfo[switchID_].mode = eToggleMode::FIX;
+            RCLCPP_INFO(this->get_logger(), "Current mode: %d", _switchInfo[switchID_].mode);  // Not good
             break;
     }
 }
 
-void DDBControlNode::modifyPWM(uint8_t duty_cycle, uint8_t frequency)
+void DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t switchID_) 
 {
-    
+    _switchInfo[switchID_].frequency = frequency_;
+    _switchInfo[switchID_].dutyCycle = dutyCycle_;
 }
