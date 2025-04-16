@@ -20,7 +20,13 @@ def generate_launch_description():
         executable="light_control",
         name="light_control"
     )
-    
+     
+     node_panorama = Node(
+        package="rover_auxiliary",
+        namespace="/rover/auxiliary",
+        executable="panorama",
+        name="panorama"
+    )
     
     ld.add_action(node_compass_calibrator)
     ld.add_action(node_light_control)
