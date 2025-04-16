@@ -1,9 +1,10 @@
-uint8 PWM_ON = 1
-uint8 PWM_OFF = 2
+bool TOGGLE_PWM = true
+bool TOGGLE_SWITCH = true
 
 # Request
+uint8 switch_id
 bool on_off
-uint8 mode
+bool toggle_mode
 uint8 frequency
 uint8 duty_cycle
 ---

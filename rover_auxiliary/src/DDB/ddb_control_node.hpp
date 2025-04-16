@@ -9,6 +9,21 @@
 
 class DDBControlNode : public rclcpp::Node
 {
+
+  enum class eSwitchState : size_t
+  {
+    OFF = 0,
+    ON = 1,
+  };
+
+  struct switchInfo 
+  {
+    eSwitchState state;
+    std::string mode;
+    uint8_t dutyCycle;
+    uint8_t frequency;
+  };
+
   public:
     DDBControlNode();
     ~DDBControlNode() = default;
@@ -18,7 +33,13 @@ class DDBControlNode : public rclcpp::Node
   void ddbControl(const rover_msgs::srv::DDBControl::Request& request_,
                   rover_msgs::srv::DDBControl::Response& response_);
 
+  void toggleSwitch(const rover_msgs::srv::DDBControl::Request& request_);
+  void togglePWM(const rover_msgs::srv::DDBControl::Request& request_);
+
   rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
+
+  eSwitchState _currentSwitchState;
+  eSwitchState _currentPWMMode;
      
 };
 
