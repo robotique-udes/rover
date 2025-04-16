@@ -1,0 +1,12 @@
+uint8 PWM_ON = 1
+uint8 PWM_OFF = 2
+
+# Request
+bool on_off
+uint8 mode
+uint8 frequency
+uint8 duty_cycle
+---
+# Response
+bool success
+string status

@@ -24,6 +24,7 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(light_control src/light_control.cpp)
 add_executable(compass_calibrator src/compass_calibrator.cpp)
 add_executable(goal_manager src/goal_manager.cpp)
+add_executable(ddb_control src/DDB/ddb_control.cpp)
 
 ament_target_dependencies(light_control
                           rclcpp
@@ -37,6 +38,11 @@ ament_target_dependencies(goal_manager
                           ament_index_cpp)
 
 ament_target_dependencies(compass_calibrator
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
+ament_target_dependencies(ddb_control
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
