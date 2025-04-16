@@ -1,8 +1,8 @@
 bool TOGGLE_PWM = true
-bool TOGGLE_SWITCH = true
+bool TOGGLE_CHANNEL = true
 
 # Request
-uint8 switch_id
+uint8 channel_id
 bool on_off
 bool toggle_mode
 uint8 frequency

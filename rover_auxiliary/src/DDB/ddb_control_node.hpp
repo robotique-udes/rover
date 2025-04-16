@@ -21,7 +21,7 @@ class DDBControlNode : public rclcpp::Node
         PWM,
     };
 
-    struct sSwitchInfo
+    struct sChannelInfo
     {
         eToggleState state = eToggleState::ON;
         eToggleMode mode = eToggleMode::FIX;
@@ -36,14 +36,14 @@ class DDBControlNode : public rclcpp::Node
   private:
     void ddbControl(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
-    void toggleSwitch(uint8_t switchID_);
-    void togglePWM(uint8_t switchID_);
-    void modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t switchID_);
+    bool toggleChannel(uint8_t channelID_);
+    bool togglePWM(uint8_t channelID_);
+    bool modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t channelID_);
     std::string toStr(eToggleMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
 
-    struct sSwitchInfo _switchInfo[8];
+    struct sChannelInfo _channelInfo[8];
 };
 
 #endif
