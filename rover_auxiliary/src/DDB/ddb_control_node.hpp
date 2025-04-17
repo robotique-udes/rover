@@ -9,6 +9,8 @@
 
 class DDBControlNode : public rclcpp::Node
 {
+    static constexpr size_t MAX_CHANNELS = 8;
+
     enum class eToggleState : size_t
     {
         OFF = 0,
@@ -34,21 +36,18 @@ class DDBControlNode : public rclcpp::Node
     ~DDBControlNode() = default;
 
   private:
-    void ddbControl(const rover_msgs::srv::DDBControl::Request& request_, 
-                    rover_msgs::srv::DDBControl::Response& response_);
-    void pwmLogic(const rover_msgs::srv::DDBControl::Request& request_,
-                      rover_msgs::srv::DDBControl::Response& response_);
-    void stateLogic(const rover_msgs::srv::DDBControl::Request& request_,
-                        rover_msgs::srv::DDBControl::Response& response_);
+    void ddbControl(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void modeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void stateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
     bool toggleChannel(uint8_t channelID_);
-    bool togglePWM(uint8_t channelID_);
+    bool toggleMode(uint8_t channelID_);
     bool modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t channelID_);
     std::string toStr(eToggleMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
 
-    struct sChannelInfo _channelInfo[8];
+    sChannelInfo _channelInfo[MAX_CHANNELS] = {};
 };
 
 #endif
