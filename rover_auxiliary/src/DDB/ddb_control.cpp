@@ -42,28 +42,40 @@ void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& requ
                      "Duty cycle must be specified as percentage (0 to 100). DC received: %d",
                      request_.duty_cycle);
         response_.success = false;
-        response_.status = "Invalid duty cycle" + std::to_string(request_.duty_cycle);
+        response_.status
+            = "Duty cycle must be specified as percentage (0 to 100). DC received: " + std::to_string(request_.duty_cycle);
     }
 
-    if (request_.on_off == rover_msgs::srv::DDBControl::Request::TOGGLE_CHANNEL)
+    if (request_.frequency == 0)
     {
-        this->stateLogic(request_, response_);
-    }
-
-    if (request_.toggle_mode == rover_msgs::srv::DDBControl::Request::TOGGLE_MODE && request_.channel_id < 4)
-    {
-        this->modeLogic(request_, response_);
-    }
-
-    if (_channelInfo[request_.channel_id].mode == eToggleMode::PWM && request_.channel_id < 4)
-    {
-        this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id);
-    }
-    else
-    {
-        RCLCPP_WARN(this->get_logger(), "Received request without a valid toggle command");
+        RCLCPP_ERROR(this->get_logger(), "Frequency must be higher than 0 Hz. Frequency received: %d", request_.frequency);
         response_.success = false;
-        response_.status = "Received request without a valid toggle command";
+        response_.status = "Frequency must be higher than 0 Hz. Frequency received: " + std::to_string(request_.frequency);
+    }
+
+    switch (request_.command)
+    {
+        case rover_msgs::srv::DDBControl::Request::TOGGLE_CHANNEL:
+            this->stateLogic(request_, response_);
+            break;
+
+        case rover_msgs::srv::DDBControl::Request::TOGGLE_MODE:
+            this->modeLogic(request_, response_);
+
+            if (_channelInfo[request_.channel_id].mode == eToggleMode::PWM && (request_.frequency > 0 && request_.duty_cycle > 0))
+            {
+                this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id);
+            }
+            break;
+
+        case rover_msgs::srv::DDBControl::Request::CHANGE_VALUES:
+            this->valuesLogic(request_, response_);
+            break;
+
+        default:
+            RCLCPP_WARN(this->get_logger(), "Received request without a valid command");
+            response_.success = false;
+            response_.status = "Received request without a valid command";
     }
 }
 
@@ -203,41 +215,41 @@ void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& requ
 void DDBControlNode::modeLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                rover_msgs::srv::DDBControl::Response& response_)
 {
-    bool toggledMode = this->toggleMode(request_.channel_id);
-
-    if (!toggledMode)
+    if (request_.channel_id > 4)
     {
-        RCLCPP_INFO(this->get_logger(), "Mode could not be toggled for channel #%d", request_.channel_id);
+        RCLCPP_WARN(this->get_logger(), "Channels 4 to 7 can't be put in PWM mode. Received channel: %d", request_.channel_id);
+        response_.success = false;
+        response_.status = "Channels 4 to 7 can't be put in PWM mode. Received channel: " + std::to_string(request_.channel_id);
+        return;
+    }
+
+    if (!toggleMode(request_.channel_id))
+    {
+        RCLCPP_ERROR(this->get_logger(), "Mode could not be toggled for channel #%d", request_.channel_id);
         response_.success = false;
         response_.status = "Mode could not be toggled for channel #" + std::to_string(request_.channel_id);
     }
     else
     {
-        switch (_channelInfo[request_.channel_id].mode)
-        {
-            case eToggleMode::FIX:
-                RCLCPP_INFO(this->get_logger(), "Successfully set to FIX for channel #%d", request_.channel_id);
-                response_.success = true;
-                response_.status = "Successfully set to FIX for channel #" + std::to_string(request_.channel_id);
-                break;
+        RCLCPP_INFO(this->get_logger(), "Successfully toggled mode for channel #%d", request_.channel_id);
+        response_.success = true;
+        response_.status = "Successfully toggled mode for channel #" + std::to_string(request_.channel_id);
+    }
+}
 
-            case eToggleMode::PWM:
-                if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
-                {
-                    RCLCPP_INFO(this->get_logger(),
-                                "Successfully toggled PWM and modified values for channel #%d",
-                                request_.channel_id);
-                    response_.success = true;
-                    response_.status
-                        = "Successfully toggled PWM and modified values for channel #" + std::to_string(request_.channel_id);
-                }
-                else
-                {
-                    RCLCPP_ERROR(this->get_logger(), "Could not modify PWM Values.");
-                    response_.success = false;
-                    response_.status = "Could not modify PWM Values. Check logs for details";
-                }
-                break;
-        }
+void DDBControlNode::valuesLogic(const rover_msgs::srv::DDBControl::Request& request_,
+                                 rover_msgs::srv::DDBControl::Response& response_)
+{
+    if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
+    {
+        RCLCPP_INFO(this->get_logger(), "Values for PWM successfully changed.");
+        response_.success = true;
+        response_.status = "Values for PWM successfully changed.";
+    }
+    else
+    {
+        RCLCPP_INFO(this->get_logger(), "Values for PWM could not be changed. Check logs for details.");
+        response_.success = false;
+        response_.status = "Values for PWM could not be changed. Check logs for details.";
     }
 }

@@ -1,10 +1,10 @@
-bool TOGGLE_PWM = true
-bool TOGGLE_CHANNEL = true
+uint8 TOGGLE_CHANNEL = 0
+uint8 TOGGLE_MODE = 1
+uint8 CHANGE_VALUES = 2
 
 # Request
 uint8 channel_id
-bool on_off
-bool toggle_mode
+uint8 command
 uint8 frequency
 uint8 duty_cycle
 ---
