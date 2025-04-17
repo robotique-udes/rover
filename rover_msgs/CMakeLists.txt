@@ -73,6 +73,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Compass.msg"
   "msg/CameraAngle.msg"
   "msg/Aruco.msg"
+  "msg/DDBInfo.msg"
 
   "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"

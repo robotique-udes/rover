@@ -24,6 +24,27 @@ DDBControlNode::DDBControlNode():
             }
             this->ddbControl(*request_, *response_);
         });
+
+    _pub_info = this->create_publisher<rover_msgs::msg::DDBInfo>("rover/auxiliary/ddb_output_controller", 10);
+
+    _timer_info = this->create_wall_timer(std::chrono::milliseconds(500),
+                                          [this]()
+                                          {
+                                              rover_msgs::msg::DDBInfo msg;
+                                              this->publishInfo(msg);
+                                          });
+}
+
+void DDBControlNode::publishInfo(rover_msgs::msg::DDBInfo& msg_)
+{
+    const auto& channel = _channelInfo[0];
+
+    msg_.state = (channel.state == eToggleState::ON) ? "ON" : "OFF";
+    msg_.mode = (channel.mode == eToggleMode::PWM) ? "PWM" : "FIX";
+    msg_.duty_cycle = channel.dutyCycle;
+    msg_.frequency = channel.frequency;
+
+    _pub_info->publish(msg_);
 }
 
 void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& request_,
@@ -234,13 +255,10 @@ bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, uint8_t frequency_, rover_m
 {
     if (dutyCycle_ > 100)
     {
-        RCLCPP_ERROR(this->get_logger(),
-                     "Duty cycle must be specified as percentage (0 to 100). DC received: %d",
-                     dutyCycle_);
+        RCLCPP_ERROR(this->get_logger(), "Duty cycle must be specified as percentage (0 to 100). DC received: %d", dutyCycle_);
         response_.success = false;
-        response_.status
-            = "Duty cycle must be specified as percentage (0 to 100). DC received: " + std::to_string(dutyCycle_);
-            return false;
+        response_.status = "Duty cycle must be specified as percentage (0 to 100). DC received: " + std::to_string(dutyCycle_);
+        return false;
     }
 
     if (frequency_ == 0)

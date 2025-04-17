@@ -6,6 +6,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include <rover_msgs/srv/ddb_control.hpp>
+#include <rover_msgs/msg/ddb_info.hpp>
 
 class DDBControlNode : public rclcpp::Node
 {
@@ -40,6 +41,7 @@ class DDBControlNode : public rclcpp::Node
     void modeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void stateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void valuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void publishInfo(rover_msgs::msg::DDBInfo& msg_);
 
     bool toggleChannel(uint8_t channelID_);
     bool toggleMode(uint8_t channelID_);
@@ -48,6 +50,8 @@ class DDBControlNode : public rclcpp::Node
     std::string toStr(eToggleMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
+    rclcpp::Publisher<rover_msgs::msg::DDBInfo>::SharedPtr _pub_info;
+    rclcpp::TimerBase::SharedPtr _timer_info;
 
     sChannelInfo _channelInfo[MAX_CHANNELS] = {};
 };
