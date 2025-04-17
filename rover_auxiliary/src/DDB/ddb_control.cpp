@@ -161,7 +161,7 @@ bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t c
 
     if (_channelInfo[channelID_].frequency == oldFrequency)
     {
-        RCLCPP_ERROR(this->get_logger(), "Could not change the frequency for channel %d", channelID_);
+        RCLCPP_WARN(this->get_logger(), "Received same the same frequency of could not change it for channel %d", channelID_);
     }
     else
     {
@@ -171,7 +171,7 @@ bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t c
 
     if (_channelInfo[channelID_].dutyCycle == oldDutyCycle)
     {
-        RCLCPP_ERROR(this->get_logger(), "Could not change the duty cycle for channel %d", channelID_);
+        RCLCPP_WARN(this->get_logger(), "Received same the same duty cycle of could not change it for channel %d", channelID_);
     }
     else
     {
@@ -248,7 +248,7 @@ void DDBControlNode::valuesLogic(const rover_msgs::srv::DDBControl::Request& req
     }
     else
     {
-        RCLCPP_INFO(this->get_logger(), "Values for PWM could not be changed. Check logs for details.");
+        RCLCPP_ERROR(this->get_logger(), "Values for PWM could not be changed. Check logs for details.");
         response_.success = false;
         response_.status = "Values for PWM could not be changed. Check logs for details.";
     }
