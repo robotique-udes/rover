@@ -14,6 +14,28 @@ class PhotoPanoramique : public rclcpp::Node
 {
   public:
     PhotoPanoramique();
+    
+    Mat warp_correction(Mat pano) {
+
+	    Size dimensions = pano.size();
+	    
+	    int width = dimensions.width;
+	    int hauteur = dimensions.height;
+	    
+	    Rect coupe(50, 50, width-100, hauteur-100);
+	    Mat pano_rectangle = pano(coupe);
+	    
+	    return pano_rectangle;
+	}
+
+     Mat stitching(vector<Mat> images_cam)  {
+	    Mat pano;
+	    cout<<"Maintenant en essai de stitching"<<endl;
+	    Ptr<Stitcher> stitcher = Stitcher::create(Stitcher::PANORAMA);
+	    stitcher->stitch(images_cam, pano);
+	 
+	     return pano;
+	}
 
   private:
     rclcpp::Publisher<rover_msgs::msg::PhotoPanoramique>::SharedPtr _pubpanorama;
@@ -32,46 +54,24 @@ PhotoPanoramique::PhotoPanoramique():
     Node("photo_panoramique")
 {
     _pubpanorama = this->create_publisher<rover_msgs::msg::PhotoPanoramique>("/rover/auxiliary/panorama", 1);
+    
+    _srvpanorama = this->create_service<rover_msgs::srv::PhotoPanoramique>(
+        "/rover/auxiliary/panorama",
+        std::bind(&PhotoPanoramique::CB_srv, this, std::placeholders::_1, std::placeholders::_2));
+        
 }
+
 
 void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request,
                                std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response)
 {
     response->success = false;
     
+    RCLCPP_INFO(rclcpp::get_logger("rclcpp"), "Incoming request");
+    
    if(request->start == true){
-       response->success = true;
-       }
-}
+       cout<<"Panorama started"<<endl;
 
-
-//fonctions
-Mat warp_correction(Mat pano) {
-
-    Size dimensions = pano.size();
-    
-    int width = dimensions.width;
-    int hauteur = dimensions.height;
-    
-    Rect coupe(50, 50, width-100, hauteur-100);
-    Mat pano_rectangle = pano(coupe);
-    
-    return pano_rectangle;
-}
-
-Mat stitching(vector<Mat> images_cam)  {
-    Mat pano;
-    cout<<"Maintenant en essai de stitching"<<endl;
-    Ptr<Stitcher> stitcher = Stitcher::create(Stitcher::PANORAMA);
-    stitcher->stitch(images_cam, pano);
- 
-     return pano;
-}
-
-int main(int argc, char* argv[])
-{
-  rclcpp::init(argc, argv);
-  rclcpp::spin(std::make_shared<PhotoPanoramique>());
 
   //paramètres pour le stitching
   string result_name = "panorama.jpg";
@@ -83,11 +83,6 @@ int main(int argc, char* argv[])
    int apiID = cv::CAP_ANY; 
    cap.open(path_camera, apiID);
    
-    if (!cap.isOpened()) 
-    {
-        cerr << "ERROR! Unable to open camera\n";
-        return -1;
-    }
     cout << "camera open" << endl;
 
 
@@ -125,7 +120,7 @@ int main(int argc, char* argv[])
 
     // Fermer la fenêtre après la capture
     cap.release();
-    destroyAllWindows();
+    //destroyAllWindows();
 
     //stitching de la panoramique
     Mat pano=stitching(images_cam);
@@ -136,16 +131,29 @@ int main(int argc, char* argv[])
     //ajout du text
     Size dimensions = pano_rectangle.size();
     int hauteur = dimensions.height;
+    char nom_photo = request->nom;
     putText(pano_rectangle, "coordonees GPS", Point (10,hauteur-20), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2); // pour un font plus gros et lisible FONT_HERSHEY_SIMPLEX
-    putText(pano_rectangle, "nom photo", Point (10,hauteur-50), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2);
+    putText(pano_rectangle, "nom_photo", Point (10,hauteur-50), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2);
         
     //display de la panoramique
     imwrite(result_name, pano_rectangle);
-    imshow("Panorama", pano_rectangle);
-    waitKey(0);
-    destroyAllWindows();
+    //imshow("Panorama", pano_rectangle);
+    //waitKey(0);
+    //destroyAllWindows();
+    
+    cout << "Panorama done" << endl;
+    
+       response->success = true;
+       }
+    
+    
+    }
 
-    rclcpp::shutdown();
+int main(int argc, char* argv[])
+{
+  rclcpp::init(argc, argv);
+  rclcpp::spin(std::make_shared<PhotoPanoramique>());
+  rclcpp::shutdown();
     return 0;
   
   }

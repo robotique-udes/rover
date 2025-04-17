@@ -1,5 +1,4 @@
 bool start
 char nom
-bool stop
 ---
 bool success
