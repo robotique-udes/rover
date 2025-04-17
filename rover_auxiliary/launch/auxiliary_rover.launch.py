@@ -20,6 +20,13 @@ def generate_launch_description():
         executable="light_control",
         name="light_control"
     )
+
+    node_ddb_control = Node(
+        package="rover_auxiliary",
+        namespace="/rover/auxiliary",
+        executable="ddb_control",
+        name="ddb_control"
+    )
     
     
     ld.add_action(node_compass_calibrator)
