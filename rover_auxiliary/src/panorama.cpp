@@ -74,8 +74,10 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 
 
   //paramètres pour le stitching
-  string result_name = "panorama.jpg";
-  
+  int num = request->pano_number;
+  string numero = to_string(num);
+  string result_name = "panorama"+numero;
+  result_name =result_name+".jpg";
   
   //paramètres pour la lecture de la camera
    VideoCapture cap;
@@ -98,11 +100,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     while (taking_panorama) 
     {
         cap.read(frame);
-        
-        //imshow("Live", frame);
-        
 
-        // Stocker les images pour le panorama
+         // Stocker les images pour le panorama
         if (i % 5 == 0)
         {
         images_cam.push_back(frame.clone());
@@ -120,7 +119,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 
     // Fermer la fenêtre après la capture
     cap.release();
-    //destroyAllWindows();
+
 
     //stitching de la panoramique
     Mat pano=stitching(images_cam);
@@ -137,9 +136,6 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
         
     //display de la panoramique
     imwrite(result_name, pano_rectangle);
-    //imshow("Panorama", pano_rectangle);
-    //waitKey(0);
-    //destroyAllWindows();
     
     cout << "Panorama done" << endl;
     
