@@ -56,6 +56,7 @@ install(TARGETS
           light_control
           compass_calibrator
           goal_manager
+          ddb_control
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

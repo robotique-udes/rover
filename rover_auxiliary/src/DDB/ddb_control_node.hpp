@@ -36,9 +36,9 @@ class DDBControlNode : public rclcpp::Node
   private:
     void ddbControl(const rover_msgs::srv::DDBControl::Request& request_, 
                     rover_msgs::srv::DDBControl::Response& response_);
-    void DDBControlNode::pwmLogic(const rover_msgs::srv::DDBControl::Request& request_,
+    void pwmLogic(const rover_msgs::srv::DDBControl::Request& request_,
                       rover_msgs::srv::DDBControl::Response& response_);
-    void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& request_,
+    void stateLogic(const rover_msgs::srv::DDBControl::Request& request_,
                         rover_msgs::srv::DDBControl::Response& response_);
 
     bool toggleChannel(uint8_t channelID_);

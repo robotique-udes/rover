@@ -38,7 +38,9 @@ void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& requ
 
     if (request_.duty_cycle > 100)
     {
-        RCLCPP_ERROR(this->get_logger(), "Duty cycle must be specified as percentage. DC received: %d", request_.duty_cycle);
+        RCLCPP_ERROR(this->get_logger(),
+                     "Duty cycle must be specified as percentage (0 to 100). DC received: %d",
+                     request_.duty_cycle);
         response_.success = false;
         response_.status = "Invalid duty cycle" + std::to_string(request_.duty_cycle);
     }
@@ -196,18 +198,27 @@ void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& requ
 void DDBControlNode::pwmLogic(const rover_msgs::srv::DDBControl::Request& request_,
                               rover_msgs::srv::DDBControl::Response& response_)
 {
-    this->togglePWM(request_.channel_id);
-
-    if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
+    bool toggledPWM = this->togglePWM(request_.channel_id);
+    if (!toggledPWM)
     {
-        RCLCPP_INFO(this->get_logger(), "PWM values modified successfully for channel #%d", request_.channel_id);
-        response_.success = true;
-        response_.status = "Values for PWM modified successfully for channel #" + std::to_string(request_.channel_id);
+        RCLCPP_INFO(this->get_logger(), "PWM could not be toggled for channel #%d", request_.channel_id);
+        response_.success = false;
+        response_.status = "PWM could not be toggled for channel #" + std::to_string(request_.channel_id);
     }
     else
     {
-        RCLCPP_ERROR(this->get_logger(), "Could not modify PWM Values.");
-        response_.success = false;
-        response_.status = "Could not modify PWM Values. Check logs for details";
+        if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id)
+            && _channelInfo[request_.channel_id].mode == eToggleMode::PWM)
+        {
+            RCLCPP_INFO(this->get_logger(), "Successfully toggled PWM and modified values for channel #%d", request_.channel_id);
+            response_.success = true;
+            response_.status = "Successfully toggled PWM and modified values for channel #" + std::to_string(request_.channel_id);
+        }
+        else
+        {
+            RCLCPP_ERROR(this->get_logger(), "Could not modify PWM Values.");
+            response_.success = false;
+            response_.status = "Could not modify PWM Values. Check logs for details";
+        }
     }
 }
