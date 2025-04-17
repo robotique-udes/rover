@@ -36,23 +36,6 @@ void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& requ
         response_.status = "Invalid channel ID";
     }
 
-    if (request_.duty_cycle > 100)
-    {
-        RCLCPP_ERROR(this->get_logger(),
-                     "Duty cycle must be specified as percentage (0 to 100). DC received: %d",
-                     request_.duty_cycle);
-        response_.success = false;
-        response_.status
-            = "Duty cycle must be specified as percentage (0 to 100). DC received: " + std::to_string(request_.duty_cycle);
-    }
-
-    if (request_.frequency == 0)
-    {
-        RCLCPP_ERROR(this->get_logger(), "Frequency must be higher than 0 Hz. Frequency received: %d", request_.frequency);
-        response_.success = false;
-        response_.status = "Frequency must be higher than 0 Hz. Frequency received: " + std::to_string(request_.frequency);
-    }
-
     switch (request_.command)
     {
         case rover_msgs::srv::DDBControl::Request::TOGGLE_CHANNEL:
@@ -62,14 +45,24 @@ void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& requ
         case rover_msgs::srv::DDBControl::Request::TOGGLE_MODE:
             this->modeLogic(request_, response_);
 
-            if (_channelInfo[request_.channel_id].mode == eToggleMode::PWM && (request_.frequency > 0 && request_.duty_cycle > 0))
+            if (_channelInfo[request_.channel_id].mode == eToggleMode::PWM
+                && this->valuesCheck(request_.duty_cycle, request_.frequency, response_))
             {
                 this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id);
             }
             break;
 
         case rover_msgs::srv::DDBControl::Request::CHANGE_VALUES:
-            this->valuesLogic(request_, response_);
+            if (valuesCheck(request_.duty_cycle, request_.frequency, response_))
+            {
+                this->valuesLogic(request_, response_);
+            }
+            else
+            {
+                RCLCPP_ERROR(this->get_logger(), "Invalid frequency or duty cycle. Check logs for details.");
+                response_.success = false;
+                response_.status = "Invalid frequency or duty cycle. Check logs for details.";
+            }
             break;
 
         default:
@@ -161,7 +154,7 @@ bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t c
 
     if (_channelInfo[channelID_].frequency == oldFrequency)
     {
-        RCLCPP_WARN(this->get_logger(), "Received same the same frequency of could not change it for channel %d", channelID_);
+        RCLCPP_WARN(this->get_logger(), "Received the same frequency of could not change it for channel %d", channelID_);
     }
     else
     {
@@ -171,7 +164,7 @@ bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t c
 
     if (_channelInfo[channelID_].dutyCycle == oldDutyCycle)
     {
-        RCLCPP_WARN(this->get_logger(), "Received same the same duty cycle of could not change it for channel %d", channelID_);
+        RCLCPP_WARN(this->get_logger(), "Received the same duty cycle of could not change it for channel %d", channelID_);
     }
     else
     {
@@ -237,19 +230,52 @@ void DDBControlNode::modeLogic(const rover_msgs::srv::DDBControl::Request& reque
     }
 }
 
+bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, uint8_t frequency_, rover_msgs::srv::DDBControl::Response& response_)
+{
+    if (dutyCycle_ > 100)
+    {
+        RCLCPP_ERROR(this->get_logger(),
+                     "Duty cycle must be specified as percentage (0 to 100). DC received: %d",
+                     dutyCycle_);
+        response_.success = false;
+        response_.status
+            = "Duty cycle must be specified as percentage (0 to 100). DC received: " + std::to_string(dutyCycle_);
+            return false;
+    }
+
+    if (frequency_ == 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Frequency must be higher than 0 Hz. Frequency received: %d", frequency_);
+        response_.success = false;
+        response_.status = "Frequency must be higher than 0 Hz. Frequency received: " + std::to_string(frequency_);
+        return false;
+    }
+
+    return true;
+}
+
 void DDBControlNode::valuesLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                  rover_msgs::srv::DDBControl::Response& response_)
 {
-    if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
+    switch (_channelInfo[request_.channel_id].mode)
     {
-        RCLCPP_INFO(this->get_logger(), "Values for PWM successfully changed.");
-        response_.success = true;
-        response_.status = "Values for PWM successfully changed.";
-    }
-    else
-    {
-        RCLCPP_ERROR(this->get_logger(), "Values for PWM could not be changed. Check logs for details.");
-        response_.success = false;
-        response_.status = "Values for PWM could not be changed. Check logs for details.";
+        case eToggleMode::FIX:
+            RCLCPP_ERROR(this->get_logger(), "Current mode doesn't allow changing PWM values");
+            break;
+
+        case eToggleMode::PWM:
+            if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
+            {
+                RCLCPP_INFO(this->get_logger(), "Values for PWM successfully changed.");
+                response_.success = true;
+                response_.status = "Values for PWM successfully changed.";
+            }
+            else
+            {
+                RCLCPP_ERROR(this->get_logger(), "Values for PWM could not be changed. Check logs for details.");
+                response_.success = false;
+                response_.status = "Values for PWM could not be changed. Check logs for details.";
+            }
+            break;
     }
 }

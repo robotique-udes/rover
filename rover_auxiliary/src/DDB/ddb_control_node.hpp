@@ -44,6 +44,7 @@ class DDBControlNode : public rclcpp::Node
     bool toggleChannel(uint8_t channelID_);
     bool toggleMode(uint8_t channelID_);
     bool modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t channelID_);
+    bool valuesCheck(uint8_t dutyCycle_, uint8_t frequency_, rover_msgs::srv::DDBControl::Response& response_);
     std::string toStr(eToggleMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
