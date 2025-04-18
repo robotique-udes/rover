@@ -5,8 +5,8 @@
 #include "rovus_lib/macros.h"
 
 #include "rclcpp/rclcpp.hpp"
-#include <rover_msgs/srv/ddb_control.hpp>
-#include <rover_msgs/msg/ddb_info.hpp>
+#include "rover_msgs/srv/ddb_control.hpp"
+#include "rover_msgs/msg/ddb_info.hpp"
 
 class DDBControlNode : public rclcpp::Node
 {
@@ -17,7 +17,7 @@ class DDBControlNode : public rclcpp::Node
         OFF = 0,
         ON = 1,
     };
-    // Should this be one and only enum class?
+
     enum class eToggleMode : size_t
     {
         FIX,
@@ -42,7 +42,6 @@ class DDBControlNode : public rclcpp::Node
     void modeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void stateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void valuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
-    void publishInfo(rover_msgs::msg::DDBInfo& msg_);
 
     bool toggleChannel(uint8_t channelID_);
     bool toggleMode(uint8_t channelID_);

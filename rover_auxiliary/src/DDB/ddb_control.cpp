@@ -9,6 +9,10 @@ int main(int argc, char** argv)
     return 0;
 }
 
+/**
+ * @brief Construct a new DDBControlNode::DDBControlNode object
+ * 
+ */
 DDBControlNode::DDBControlNode():
     Node("ddb_control")
 {
@@ -39,6 +43,12 @@ DDBControlNode::DDBControlNode():
         });
 }
 
+/**
+ * @brief Decides what to do depending on the user requested command for bank 0
+ * 
+ * @param request_ 
+ * @param response_ 
+ */
 void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
                                      rover_msgs::srv::DDBControl::Response& response_)
 {
@@ -86,6 +96,12 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
     }
 }
 
+/**
+ * @brief Decides what to do depending on the user requested command for bank 1
+ * 
+ * @param request_ 
+ * @param response_ 
+ */
 void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request& request_,
                                      rover_msgs::srv::DDBControl::Response& response_)
 {
@@ -109,6 +125,13 @@ void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request&
     }
 }
 
+/**
+ * @brief Changes the state to ON or OFF based on the current state. 
+ * 
+ * @param channelID_ Received from the user service call
+ * @return true if successfully changed the state of the desired channel else
+ * @return false
+ */
 bool DDBControlNode::toggleChannel(uint8_t channelID_)
 {
     eToggleState wantedState;
@@ -142,6 +165,13 @@ bool DDBControlNode::toggleChannel(uint8_t channelID_)
     return true;
 }
 
+/**
+ * @brief Changes the mode to FIX or PWM based on the current mode.
+ * 
+ * @param channelID_ Received from the user service call
+ * @return true 
+ * @return false 
+ */
 bool DDBControlNode::toggleMode(uint8_t channelID_)
 {
     eToggleMode wantedMode = eToggleMode::FIX;
@@ -179,6 +209,15 @@ bool DDBControlNode::toggleMode(uint8_t channelID_)
     return true;
 }
 
+/**
+ * @brief Changes the values for the PWM mode when requested.
+ * 
+ * @param dutyCycle_ Value between 0 and 100 received from user service call
+ * @param frequency_ Value higher than 0 received from user service call
+ * @param channelID_ Received from user service call
+ * @return true 
+ * @return false 
+ */
 bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t channelID_)
 {
     bool isUpdated = false;
@@ -212,6 +251,12 @@ bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t cha
     return isUpdated;
 }
 
+/**
+ * @brief Takes the current mode and changes it for a std::string
+ * 
+ * @param mode_ Current mode of the channel
+ * @return std::string corresponding to the mode asked
+ */
 std::string DDBControlNode::toStr(eToggleMode mode_)
 {
     switch (mode_)
@@ -225,6 +270,12 @@ std::string DDBControlNode::toStr(eToggleMode mode_)
     }
 }
 
+/**
+ * @brief Main logic for switching state of the desired channel
+ * 
+ * @param request_ 
+ * @param response_ 
+ */
 void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                 rover_msgs::srv::DDBControl::Response& response_)
 {
@@ -242,6 +293,12 @@ void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& requ
     }
 }
 
+/**
+ * @brief Main logic for switching mode of the desired channel. Only in bank 0
+ * 
+ * @param request_ 
+ * @param response_ 
+ */
 void DDBControlNode::modeLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                rover_msgs::srv::DDBControl::Response& response_)
 {
@@ -259,6 +316,15 @@ void DDBControlNode::modeLogic(const rover_msgs::srv::DDBControl::Request& reque
     }
 }
 
+/**
+ * @brief Checks if the user entered valid values for the duty cycle (between 0 and 100) and frequency (cannot be 0)
+ * 
+ * @param dutyCycle_ Percentage value received from the user service call
+ * @param frequency_ Hertz value received from the user service call
+ * @param response_ 
+ * @return true if both checks are valid else
+ * @return false if either check isn't valid
+ */
 bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msgs::srv::DDBControl::Response& response_)
 {
     if (dutyCycle_ > 100)
@@ -280,6 +346,12 @@ bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msg
     return true;
 }
 
+/**
+ * @brief Main logic for changing PWM values based on the current mode of desired channel
+ * 
+ * @param request_ 
+ * @param response_ 
+ */
 void DDBControlNode::valuesLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                  rover_msgs::srv::DDBControl::Response& response_)
 {
