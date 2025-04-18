@@ -68,12 +68,6 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
 
         case rover_msgs::srv::DDBControl::Request::TOGGLE_MODE:
             this->modeLogic(request_, response_);
-
-            if (_channelInfo[request_.channel_id].mode == eToggleMode::PWM
-                && this->valuesCheck(request_.duty_cycle, request_.frequency, response_))
-            {
-                this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id);
-            }
             break;
 
         case rover_msgs::srv::DDBControl::Request::CHANGE_VALUES:
