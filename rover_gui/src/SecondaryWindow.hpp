@@ -12,7 +12,6 @@
 #include <QDialog>
 #include <vector>
 #include "QRtspPlayer/QRtspPlayerWidget.hpp"
-#include "QRtspPlayer/StreamDialog.hpp"
 
 class SecondaryWindow : public QMainWindow
 {
@@ -35,6 +34,9 @@ private:
     QWidget* _singleStreamView;    // Container for single stream mode
     QWidget* _multiStreamView;     // Container for multi-stream mode
     
+    std::shared_ptr<rclcpp::Node> _node;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _arucoDetectionClient;
+
     QStackedWidget* _singleStreamStack; // For switching between streams in single mode
     QGridLayout* _multiStreamGrid;      // Grid for 2, 4 or 6 stream mode
     

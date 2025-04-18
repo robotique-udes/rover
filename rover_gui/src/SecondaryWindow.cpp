@@ -7,12 +7,19 @@ SecondaryWindow::SecondaryWindow():
     _centralWidget(this),
     _currentStreamIndex(0)
 {
+
+    // Initialize ROS node
+    _node = std::make_shared<rclcpp::Node>("secondary_window_node");
+    
+    // Create Aruco detection client
+    _arucoDetectionClient = _node->create_client<rover_msgs::srv::ArucoDetection>("/rover/auxiliary/aruco/manager");
+    
     // Setup main layout
     _mainLayout = new QVBoxLayout(&_centralWidget);
     
     // Load predefined streams first
     loadPredefinedStreams();
-    
+  
     // Create layout stack (to switch between single/multi views)
     _layoutStack = new QStackedWidget();
     
@@ -32,6 +39,11 @@ SecondaryWindow::SecondaryWindow():
             -1, // No predefined stream selected
             false
         });
+    }
+
+    // NOW set the Aruco manager for each widget
+    for (auto& streamInfo : _activeStreams) {
+        streamInfo.widget->setArucoDetectionManager(_arucoDetectionClient);
     }
     
     // Setup the rest of the UI
@@ -168,7 +180,6 @@ void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
                     // Update header
                     updateStreamHeader(position);
                     
-                    // Start the stream - only here, don't rely on URL change events
                     // FIXED: Let the play button handle starting the stream instead of doing it here
                     // This avoids the duplicate "Starting stream" log messages
                 }
@@ -198,9 +209,9 @@ void SecondaryWindow::setupMultiStreamView()
     layout->addLayout(_multiStreamGrid);
 }
 
-void SecondaryWindow::onLayoutChange(int index)
+void SecondaryWindow::onLayoutChange(int /* index */)
 {
-    // Update the layout
+    // Update the layout (index parameter not used directly but needed for signal connection)
     updateLayout();
 }
 
@@ -265,7 +276,7 @@ void SecondaryWindow::updateLayout()
         case 2: // 4 Streams
         case 3: // 6 Streams
         {
-            int rows = (layoutMode == 1) ? 2 : (layoutMode == 2) ? 2 : 3;
+            // Fixed: rows variable is used, but we compute it directly
             int cols = 2;
             
             for (int i = 0; i < numStreams; i++) {
