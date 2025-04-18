@@ -12,8 +12,8 @@ int main(int argc, char** argv)
 DDBControlNode::DDBControlNode():
     Node("ddb_control")
 {
-    _srv_control = this->create_service<rover_msgs::srv::DDBControl>(
-        "/rover/auxiliary/ddb_control",
+    _srv_control_bank0 = this->create_service<rover_msgs::srv::DDBControl>(
+        "/rover/auxiliary/ddb_control_bank0",
         [this](const std::shared_ptr<rover_msgs::srv::DDBControl::Request> request_,
                std::shared_ptr<rover_msgs::srv::DDBControl::Response> response_)
         {
@@ -22,39 +22,32 @@ DDBControlNode::DDBControlNode():
                 RCLCPP_FATAL(this->get_logger(), "NULL request or response received.");
                 return;
             }
-            this->ddbControl(*request_, *response_);
+            this->ddbControlBank0(*request_, *response_);
         });
 
-    _pub_info = this->create_publisher<rover_msgs::msg::DDBInfo>("rover/auxiliary/ddb_output_controller", 10);
-
-    _timer_info = this->create_wall_timer(std::chrono::milliseconds(500),
-                                          [this]()
-                                          {
-                                              rover_msgs::msg::DDBInfo msg;
-                                              this->publishInfo(msg);
-                                          });
+    _srv_control_bank1 = this->create_service<rover_msgs::srv::DDBControl>(
+        "/rover/auxiliary/ddb_control_bank1",
+        [this](const std::shared_ptr<rover_msgs::srv::DDBControl::Request> request_,
+               std::shared_ptr<rover_msgs::srv::DDBControl::Response> response_)
+        {
+            if (!request_ || !response_)
+            {
+                RCLCPP_FATAL(this->get_logger(), "NULL request or response received.");
+                return;
+            }
+            this->ddbControlBank1(*request_, *response_);
+        });
 }
 
-void DDBControlNode::publishInfo(rover_msgs::msg::DDBInfo& msg_)
+void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
+                                     rover_msgs::srv::DDBControl::Response& response_)
 {
-    const auto& channel = _channelInfo[0];
-
-    msg_.state = (channel.state == eToggleState::ON) ? "ON" : "OFF";
-    msg_.mode = (channel.mode == eToggleMode::PWM) ? "PWM" : "FIX";
-    msg_.duty_cycle = channel.dutyCycle;
-    msg_.frequency = channel.frequency;
-
-    _pub_info->publish(msg_);
-}
-
-void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& request_,
-                                rover_msgs::srv::DDBControl::Response& response_)
-{
-    if (request_.channel_id >= 8)
+    if (request_.channel_id >= MAX_CHANNELS)
     {
-        RCLCPP_ERROR(this->get_logger(), "Invalid channel ID: %d", request_.channel_id);
+        RCLCPP_WARN(this->get_logger(), "Invalid channel (0 to 3). Received channel: %d", request_.channel_id);
         response_.success = false;
-        response_.status = "Invalid channel ID";
+        response_.status = "Invalid channel (0 to 3). Received channel: " + std::to_string(request_.channel_id);
+        return;
     }
 
     switch (request_.command)
@@ -87,9 +80,32 @@ void DDBControlNode::ddbControl(const rover_msgs::srv::DDBControl::Request& requ
             break;
 
         default:
-            RCLCPP_WARN(this->get_logger(), "Received request without a valid command");
+            RCLCPP_WARN(this->get_logger(), "Received request without a valid command: %d", request_.command);
             response_.success = false;
-            response_.status = "Received request without a valid command";
+            response_.status = "Received request without a valid command" + std::to_string(request_.command);
+    }
+}
+
+void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request& request_,
+                                     rover_msgs::srv::DDBControl::Response& response_)
+{
+    if (request_.channel_id >= MAX_CHANNELS)
+    {
+        RCLCPP_WARN(this->get_logger(), "Invalid channel (0 to 3). Received channel: %d", request_.channel_id);
+        response_.success = false;
+        response_.status = "Invalid channel (0 to 3). Received channel: " + std::to_string(request_.channel_id);
+        return;
+    }
+
+    if (request_.command == rover_msgs::srv::DDBControl::Request::TOGGLE_CHANNEL)
+    {
+        this->stateLogic(request_, response_);
+    }
+    else
+    {
+        RCLCPP_WARN(this->get_logger(), "Received request without a valid command: %d", request_.command);
+        response_.success = false;
+        response_.status = "Received request without a valid command: " + std::to_string(request_.command);
     }
 }
 
@@ -163,11 +179,11 @@ bool DDBControlNode::toggleMode(uint8_t channelID_)
     return true;
 }
 
-bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t channelID_)
+bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t channelID_)
 {
     bool isUpdated = false;
 
-    uint8_t oldFrequency = _channelInfo[channelID_].frequency;
+    float oldFrequency = _channelInfo[channelID_].frequency;
     uint8_t oldDutyCycle = _channelInfo[channelID_].dutyCycle;
 
     _channelInfo[channelID_].frequency = frequency_;
@@ -179,7 +195,7 @@ bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t c
     }
     else
     {
-        RCLCPP_INFO(this->get_logger(), "Frequency set to %d", _channelInfo[channelID_].frequency);
+        RCLCPP_INFO(this->get_logger(), "Frequency set to %f", _channelInfo[channelID_].frequency);
         isUpdated = true;
     }
 
@@ -229,14 +245,6 @@ void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& requ
 void DDBControlNode::modeLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                rover_msgs::srv::DDBControl::Response& response_)
 {
-    if (request_.channel_id > 4)
-    {
-        RCLCPP_WARN(this->get_logger(), "Channels 4 to 7 can't be put in PWM mode. Received channel: %d", request_.channel_id);
-        response_.success = false;
-        response_.status = "Channels 4 to 7 can't be put in PWM mode. Received channel: " + std::to_string(request_.channel_id);
-        return;
-    }
-
     if (!toggleMode(request_.channel_id))
     {
         RCLCPP_ERROR(this->get_logger(), "Mode could not be toggled for channel #%d", request_.channel_id);
@@ -251,7 +259,7 @@ void DDBControlNode::modeLogic(const rover_msgs::srv::DDBControl::Request& reque
     }
 }
 
-bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, uint8_t frequency_, rover_msgs::srv::DDBControl::Response& response_)
+bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msgs::srv::DDBControl::Response& response_)
 {
     if (dutyCycle_ > 100)
     {
@@ -261,9 +269,9 @@ bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, uint8_t frequency_, rover_m
         return false;
     }
 
-    if (frequency_ == 0)
+    if (frequency_ == 0.0)
     {
-        RCLCPP_ERROR(this->get_logger(), "Frequency must be higher than 0 Hz. Frequency received: %d", frequency_);
+        RCLCPP_ERROR(this->get_logger(), "Frequency must be higher than 0 Hz. Frequency received: %f", frequency_);
         response_.success = false;
         response_.status = "Frequency must be higher than 0 Hz. Frequency received: " + std::to_string(frequency_);
         return false;

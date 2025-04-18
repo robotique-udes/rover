@@ -10,7 +10,7 @@
 
 class DDBControlNode : public rclcpp::Node
 {
-    static constexpr size_t MAX_CHANNELS = 8;
+    static constexpr size_t MAX_CHANNELS = 4;
 
     enum class eToggleState : size_t
     {
@@ -29,7 +29,7 @@ class DDBControlNode : public rclcpp::Node
         eToggleState state = eToggleState::ON;
         eToggleMode mode = eToggleMode::FIX;
         uint8_t dutyCycle = 0;
-        uint8_t frequency = 0;
+        float frequency = 0.0;
     };
 
   public:
@@ -37,7 +37,8 @@ class DDBControlNode : public rclcpp::Node
     ~DDBControlNode() = default;
 
   private:
-    void ddbControl(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void ddbControlBank0(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void ddbControlBank1(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void modeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void stateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void valuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
@@ -45,13 +46,12 @@ class DDBControlNode : public rclcpp::Node
 
     bool toggleChannel(uint8_t channelID_);
     bool toggleMode(uint8_t channelID_);
-    bool modifyPWM(uint8_t dutyCycle_, uint8_t frequency_, uint8_t channelID_);
-    bool valuesCheck(uint8_t dutyCycle_, uint8_t frequency_, rover_msgs::srv::DDBControl::Response& response_);
+    bool modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t channelID_);
+    bool valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msgs::srv::DDBControl::Response& response_);
     std::string toStr(eToggleMode mode_);
 
-    rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control;
-    rclcpp::Publisher<rover_msgs::msg::DDBInfo>::SharedPtr _pub_info;
-    rclcpp::TimerBase::SharedPtr _timer_info;
+    rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank0;
+    rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank1;
 
     sChannelInfo _channelInfo[MAX_CHANNELS] = {};
 };
