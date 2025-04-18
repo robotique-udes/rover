@@ -29,7 +29,7 @@ class DDBControlNode : public rclcpp::Node
         eToggleState state = eToggleState::ON;
         eToggleMode mode = eToggleMode::FIX;
         uint8_t dutyCycle = 0;
-        float frequency = 0.0;
+        float frequency = 1.0;
     };
 
   public:
