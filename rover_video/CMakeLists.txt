@@ -22,6 +22,8 @@ add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
                 src/aruco_detection/detection.cpp
                 src/aruco_detection/process_frame.cpp
                 src/aruco_detection/image_capture.cpp)
+                
+add_executable(panorama src/panorama.cpp)
 
 ament_target_dependencies(media_server
                           rclcpp
@@ -32,6 +34,13 @@ ament_target_dependencies(aruco_detection
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+                          
+ament_target_dependencies(panorama
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces
+                          OpenCV)
+
 
 
 target_link_libraries(media_server ${OpenCV_LIBS})
@@ -42,6 +51,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS 
             media_server
             aruco_detection
+            panorama
         DESTINATION lib/${PROJECT_NAME}/)
 
 ament_package()
