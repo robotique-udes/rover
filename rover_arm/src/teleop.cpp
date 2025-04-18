@@ -27,7 +27,7 @@ class Teleop : public rclcpp::Node
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
 
     JointController _jointController;
-    GripperController _gripperController;
+    // GripperController _gripperController;
     CartesianController _cartesianController;
     JoyController _joyController;
 
@@ -39,7 +39,7 @@ class Teleop : public rclcpp::Node
     Teleop():
         rclcpp::Node("teleop_node"),
         _jointController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2}),
-        _gripperController({eJointIndex::GRIPPER_TILT, eJointIndex::GRIPPER_ROT}),
+        // _gripperController({eJointIndex::GRIPPER_TILT, eJointIndex::GRIPPER_ROT}),
         _cartesianController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2}),
         _joyController()
     {
@@ -96,14 +96,14 @@ class Teleop : public rclcpp::Node
                 _jointController.setControlledJoint(KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_DEC);
             }
 
-            armMsg.data = _jointController.setCmd(joyArray);
+            armMsg.data = _jointController.getJointCmdFromInput(joyArray);
         }
 
         // CARTESIAN CONTROL
         else if (_controlMode == eControlMode::CARTESIAN)
         {
             _cartesianController.getJointPositions(_jointPositions);
-            armMsg.data = _cartesianController.setCmd(joyArray);
+            armMsg.data = _cartesianController.getJointCmdFromInput(joyArray);
 
             if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::RECORD)],
                                           KEYBINDINGS::EMILE::CARTESIAN::RECORD))
@@ -140,11 +140,11 @@ class Teleop : public rclcpp::Node
             }
         }
 
-        // GRIPPER CONTROL
-        if (_joyController.isPressed(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::GRIPPER::ACTIVATE_GRIPPER)]))
-        {
-            armMsg.data = _gripperController.setCmd(joyArray);
-        }
+        // // GRIPPER CONTROL
+        // if (_joyController.isPressed(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::GRIPPER::ACTIVATE_GRIPPER)]))
+        // {
+        //     armMsg.data = _gripperController.setCmd(joyArray);
+        // }
 
         _pubArmCmd->publish(armMsg);
     }

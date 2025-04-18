@@ -14,9 +14,6 @@
 class JoyController
 {
   public:
-    ~JoyController() = default;
-    JoyController() = default;
-
     bool isPressed(float buttonValue_)
     {
         return !IN_ERROR(buttonValue_, 0.01F, 0.0F);
@@ -37,14 +34,7 @@ class JoyController
         return false;
     }
 
-    uint8_t getNJoints(void)
-    {
-        return _nJoints;
-    }
-
   protected:
-    uint8_t _nJoints;
-    std::vector<uint8_t> _joints;
     std::map<eJoyInput, bool> _buttonStates = {{eJoyInput::CROSS_UP, false},
                                                {eJoyInput::CROSS_DOWN, false},
                                                {eJoyInput::CROSS_RIGHT, false},

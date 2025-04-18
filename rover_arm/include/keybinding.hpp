@@ -29,6 +29,26 @@ enum class eJoyInput
     eLAST
 };
 
+enum class eBooleanJoyInputs
+{
+    CROSS_UP = rover_msgs::msg::Joy::CROSS_UP,
+    CROSS_DOWN = rover_msgs::msg::Joy::CROSS_DOWN,
+    CROSS_LEFT = rover_msgs::msg::Joy::CROSS_LEFT,
+    CROSS_RIGHT = rover_msgs::msg::Joy::CROSS_RIGHT,
+    L1 = rover_msgs::msg::Joy::L1,
+    L2 = rover_msgs::msg::Joy::L2,
+    R1 = rover_msgs::msg::Joy::R1,
+    R2 = rover_msgs::msg::Joy::R2,
+    A = rover_msgs::msg::Joy::A,
+    B = rover_msgs::msg::Joy::B,
+    X = rover_msgs::msg::Joy::X,
+    Y = rover_msgs::msg::Joy::Y,
+    EXT0 = rover_msgs::msg::Joy::EXT0,
+    EXT1 = rover_msgs::msg::Joy::EXT1,
+    EXT2 = rover_msgs::msg::Joy::EXT2,
+    eLAST
+};
+
 namespace KEYBINDINGS
 {
     namespace EMILE
@@ -61,6 +81,9 @@ namespace KEYBINDINGS
 
             constexpr eJoyInput Z_AXIS = eJoyInput::JOYSTICK_LEFT_FRONT;
 
+            constexpr eJoyInput ACTIVATE_ALPHA = eJoyInput::R1;
+            constexpr eJoyInput ALPHA = eJoyInput::JOYSTICK_RIGHT_FRONT;
+
             constexpr eJoyInput RECORD = eJoyInput::A;
             constexpr eJoyInput CLEAR_POINTS = eJoyInput::X;
             constexpr eJoyInput CREATE_PLAN = eJoyInput::B;
@@ -69,7 +92,6 @@ namespace KEYBINDINGS
 
         namespace GRIPPER
         {
-            constexpr eJoyInput ACTIVATE_GRIPPER = eJoyInput::R1;
 
             constexpr eJoyInput ROT_FWD = eJoyInput::B;
             constexpr eJoyInput ROT_REV = eJoyInput::X;

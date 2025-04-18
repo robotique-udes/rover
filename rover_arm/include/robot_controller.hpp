@@ -23,11 +23,11 @@ class RobotController
     {
     }
 
-    virtual std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(
+    virtual std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
         std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_)
         = 0;
 
-    static float getMaxVelocity(eJointIndex joint_)
+    constexpr float getMaxVelocity(eJointIndex joint_)
     {
         switch (joint_)
         {
@@ -43,8 +43,6 @@ class RobotController
                 return ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
             case eJointIndex::GRIPPER_ROT:
                 return ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
-            default:
-                return 0.0F;
         }
     }
 

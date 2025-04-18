@@ -1,5 +1,5 @@
-#ifndef _ARM_CONFIGURATION__
-#define _ARM_CONFIGURATION__
+#ifndef _ARM_CONFIGURATION__HPP__
+#define _ARM_CONFIGURATION__HPP__
 
 enum class eJointIndex
 {

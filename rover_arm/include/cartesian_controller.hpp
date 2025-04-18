@@ -12,6 +12,7 @@ class CartesianController : public RobotController
         X = 0,
         Y = 1,
         Z = 2,
+        ALPHA = 3,
         eLAST
     };
 
@@ -20,6 +21,7 @@ class CartesianController : public RobotController
         Q0 = 0,
         Q1 = 1,
         Q2 = 2,
+        Q3 = 3,
         eLAST,
     };
 
@@ -37,7 +39,7 @@ class CartesianController : public RobotController
     bool _planApplied = false;
 
   public:
-    std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> setCmd(
+    std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
         std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
@@ -68,6 +70,12 @@ class CartesianController : public RobotController
         if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::Z_AXIS)]))
         {
             _desiredCartesian[TO_UNDERLYING(eCartesianR::Z)] = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::Z_AXIS)];
+        }
+
+        if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::ACTIVATE_ALPHA)]))
+        {
+            _desiredCartesian[TO_UNDERLYING(eCartesianR::ALPHA)]
+                = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::ALPHA)];
         }
 
         if (_planApplied)
@@ -122,25 +130,36 @@ class CartesianController : public RobotController
         // float q0 = currentJointPosition_[TO_UNDERLYING(eJointIndex::JL)]; // Commented out to avoid unsued variable warning
         float q1 = currentJointPosition_[TO_UNDERLYING(eJointIndex::J1)];
         float q2 = currentJointPosition_[TO_UNDERLYING(eJointIndex::J2)];
+        float q3 = currentJointPosition_[TO_UNDERLYING(eJointIndex::GRIPPER_TILT)];
 
         float s1 = sin(q1);
         float c1 = cos(q1);
         float s12 = sin(q1 + q2);
         float c12 = cos(q1 + q2);
+        float s123 = sin(q1 + q2 + q3);
+        float c123 = cos(q1 + q2 + q3);
 
         std::array<float, TO_UNDERLYING(eCartesianR::eLAST) * TO_UNDERLYING(eCartesianQ::eLAST)> _jacobian;
 
         _jacobian[0] = 1.0F;  // dx/dq0
         _jacobian[1] = 0.0F;  // dx/dq1
         _jacobian[2] = 0.0F;  // dx/dq2
+        _jacobian[3] = 0.0F;  // dx/ALPHA
 
-        _jacobian[3] = 0.0F;                   // dy/dq0
-        _jacobian[4] = -J1z * c1 - J2z * c12;  // dy/dq1
-        _jacobian[5] = -J2z * c12;             // dy/dq2
+        _jacobian[4] = 0.0F;                   // dy/dq0
+        _jacobian[5] = -J1z * c1 - J2z * c12;  // dy/dq1
+        _jacobian[6] = -J2z * c12;             // dy/dq2
+        _jacobian[7] = 0.0F;                   // dy/dq2
 
-        _jacobian[6] = 0.0F;                   // dz/dq0
-        _jacobian[7] = -J1z * s1 - J2z * s12;  // dz/dq1
-        _jacobian[8] = -J2z * s12;             // dz/dq2
+        _jacobian[8] = 0.0F;                   // dz/dq0
+        _jacobian[9] = -J1z * s1 - J2z * s12;  // dz/dq1
+        _jacobian[10] = -J2z * s12;            // dz/dq2
+        _jacobian[11] = -J2z * s12;            // dz/dq2
+      
+        _jacobian[12] = 0.0F;                   // dz/dq0
+        _jacobian[13] = -J1z * s1 - J2z * s12;  // dz/dq1
+        _jacobian[14] = -J2z * s12;            // dz/dq2
+        _jacobian[15] = -J2z * s12;            // dz/dq2
 
         return _jacobian;
     }
@@ -151,13 +170,16 @@ class CartesianController : public RobotController
         float velocityRatio
             = std::max({fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q0)]) / this->getMaxVelocity(ARM_CONFIGURATION::JL::ID),
                         fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q1)]) / this->getMaxVelocity(ARM_CONFIGURATION::J1::ID),
-                        fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q2)]) / this->getMaxVelocity(ARM_CONFIGURATION::J2::ID)});
+                        fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q2)]) / this->getMaxVelocity(ARM_CONFIGURATION::J2::ID),
+                        fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q3)]) / this->getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID),
+                        });
 
         if (velocityRatio > 1.0F)
         {
             velocities_[TO_UNDERLYING(eCartesianQ::Q0)] /= velocityRatio;
             velocities_[TO_UNDERLYING(eCartesianQ::Q1)] /= velocityRatio;
             velocities_[TO_UNDERLYING(eCartesianQ::Q2)] /= velocityRatio;
+            velocities_[TO_UNDERLYING(eCartesianQ::Q3)] /= velocityRatio;
         }
 
         return velocities_;
