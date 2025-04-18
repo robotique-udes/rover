@@ -6,7 +6,6 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/srv/ddb_control.hpp"
-#include "rover_msgs/msg/ddb_info.hpp"
 
 class DDBControlNode : public rclcpp::Node
 {
