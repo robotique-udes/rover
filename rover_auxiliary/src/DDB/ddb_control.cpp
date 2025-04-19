@@ -44,7 +44,7 @@ DDBControlNode::DDBControlNode():
 }
 
 /**
- * @brief Decides what to do depending on the user requested command for bank 0
+ * @brief Tries to apply the user requested command for bank 0
  *
  * @param request_
  * @param response_
@@ -63,17 +63,17 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
     switch (request_.command)
     {
         case rover_msgs::srv::DDBControl::Request::TOGGLE_CHANNEL:
-            this->stateLogic(request_, response_);
+            this->setStateLogic(request_, response_);
             break;
 
         case rover_msgs::srv::DDBControl::Request::TOGGLE_MODE:
-            this->modeLogic(request_, response_);
+            this->setModeLogic(request_, response_);
             break;
 
         case rover_msgs::srv::DDBControl::Request::CHANGE_VALUES:
             if (valuesCheck(request_.duty_cycle, request_.frequency, response_))
             {
-                this->valuesLogic(request_, response_);
+                this->setValuesLogic(request_, response_);
             }
             else
             {
@@ -91,7 +91,7 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
 }
 
 /**
- * @brief Decides what to do depending on the user requested command for bank 1
+ * @brief Tries to apply the user requested command for bank 1
  *
  * @param request_
  * @param response_
@@ -109,7 +109,7 @@ void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request&
 
     if (request_.command == rover_msgs::srv::DDBControl::Request::TOGGLE_CHANNEL)
     {
-        this->stateLogic(request_, response_);
+        this->setStateLogic(request_, response_);
     }
     else
     {
@@ -126,17 +126,17 @@ void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request&
  * @return true if successfully changed the state of the desired channel else
  * @return false
  */
-bool DDBControlNode::toggleChannel(uint8_t channelID_)
+bool DDBControlNode::setOutputChannel(uint8_t channelID_)
 {
-    eToggleState wantedState;
+    eOutputState wantedState = eOutputState::OFF;
 
-    if (_channelInfo[channelID_].state == eToggleState::OFF)
+    if (_channelInfo[channelID_].state == eOutputState::OFF)
     {
-        wantedState = eToggleState::ON;
+        wantedState = eOutputState::ON;
     }
-    else if (_channelInfo[channelID_].state == eToggleState::ON)
+    else if (_channelInfo[channelID_].state == eOutputState::ON)
     {
-        wantedState = eToggleState::OFF;
+        wantedState = eOutputState::OFF;
     }
     else
     {
@@ -146,13 +146,13 @@ bool DDBControlNode::toggleChannel(uint8_t channelID_)
 
     switch (wantedState)
     {
-        case eToggleState::ON:
-            _channelInfo[channelID_].state = eToggleState::ON;
+        case eOutputState::ON:
+            _channelInfo[channelID_].state = eOutputState::ON;
             RCLCPP_INFO(this->get_logger(), "Channel #%d turned ON", channelID_);
             break;
 
-        case eToggleState::OFF:
-            _channelInfo[channelID_].state = eToggleState::OFF;
+        case eOutputState::OFF:
+            _channelInfo[channelID_].state = eOutputState::OFF;
             RCLCPP_INFO(this->get_logger(), "Channel #%d turned OFF", channelID_);
             break;
     }
@@ -166,18 +166,18 @@ bool DDBControlNode::toggleChannel(uint8_t channelID_)
  * @return true
  * @return false
  */
-bool DDBControlNode::toggleMode(uint8_t channelID_)
+bool DDBControlNode::setOutputMode(uint8_t channelID_)
 {
-    eToggleMode wantedMode = eToggleMode::FIX;
+    eOutputMode wantedMode = eOutputMode::FIX;
     std::string currentMode;
 
-    if (_channelInfo[channelID_].mode == eToggleMode::FIX)
+    if (_channelInfo[channelID_].mode == eOutputMode::FIX)
     {
-        wantedMode = eToggleMode::PWM;
+        wantedMode = eOutputMode::PWM;
     }
-    else if (_channelInfo[channelID_].mode == eToggleMode::PWM)
+    else if (_channelInfo[channelID_].mode == eOutputMode::PWM)
     {
-        wantedMode = eToggleMode::FIX;
+        wantedMode = eOutputMode::FIX;
     }
     else
     {
@@ -187,15 +187,15 @@ bool DDBControlNode::toggleMode(uint8_t channelID_)
 
     switch (wantedMode)
     {
-        case eToggleMode::PWM:
-            _channelInfo[channelID_].mode = eToggleMode::PWM;
-            currentMode = this->toStr(_channelInfo[channelID_].mode);
+        case eOutputMode::PWM:
+            _channelInfo[channelID_].mode = eOutputMode::PWM;
+            currentMode = this->eOutputModeToStr(_channelInfo[channelID_].mode);
             RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentMode.c_str());
             break;
 
-        case eToggleMode::FIX:
-            _channelInfo[channelID_].mode = eToggleMode::FIX;
-            currentMode = this->toStr(_channelInfo[channelID_].mode);
+        case eOutputMode::FIX:
+            _channelInfo[channelID_].mode = eOutputMode::FIX;
+            currentMode = this->eOutputModeToStr(_channelInfo[channelID_].mode);
             RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentMode.c_str());
             break;
     }
@@ -251,13 +251,13 @@ bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t cha
  * @param mode_ Current mode of the channel
  * @return std::string corresponding to the mode asked
  */
-std::string DDBControlNode::toStr(eToggleMode mode_)
+std::string DDBControlNode::eOutputModeToStr(eOutputMode mode_)
 {
     switch (mode_)
     {
-        case eToggleMode::FIX:
+        case eOutputMode::FIX:
             return "FIX";
-        case eToggleMode::PWM:
+        case eOutputMode::PWM:
             return "PWM";
         default:
             return "UNKNOWN";
@@ -270,10 +270,10 @@ std::string DDBControlNode::toStr(eToggleMode mode_)
  * @param request_
  * @param response_
  */
-void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& request_,
+void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                 rover_msgs::srv::DDBControl::Response& response_)
 {
-    if (this->toggleChannel(request_.channel_id))
+    if (this->setOutputChannel(request_.channel_id))
     {
         RCLCPP_INFO(this->get_logger(), "Channel #%d toggled successfully", request_.channel_id);
         response_.success = true;
@@ -293,10 +293,10 @@ void DDBControlNode::stateLogic(const rover_msgs::srv::DDBControl::Request& requ
  * @param request_
  * @param response_
  */
-void DDBControlNode::modeLogic(const rover_msgs::srv::DDBControl::Request& request_,
+void DDBControlNode::setModeLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                rover_msgs::srv::DDBControl::Response& response_)
 {
-    if (!toggleMode(request_.channel_id))
+    if (!setOutputMode(request_.channel_id))
     {
         RCLCPP_ERROR(this->get_logger(), "Mode could not be toggled for channel #%d", request_.channel_id);
         response_.success = false;
@@ -346,16 +346,16 @@ bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msg
  * @param request_
  * @param response_
  */
-void DDBControlNode::valuesLogic(const rover_msgs::srv::DDBControl::Request& request_,
+void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                  rover_msgs::srv::DDBControl::Response& response_)
 {
     switch (_channelInfo[request_.channel_id].mode)
     {
-        case eToggleMode::FIX:
+        case eOutputMode::FIX:
             RCLCPP_ERROR(this->get_logger(), "Current mode doesn't allow changing PWM values");
             break;
 
-        case eToggleMode::PWM:
+        case eOutputMode::PWM:
             if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
             {
                 RCLCPP_INFO(this->get_logger(), "Values for PWM successfully changed.");

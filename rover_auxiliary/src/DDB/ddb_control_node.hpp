@@ -9,15 +9,15 @@
 
 class DDBControlNode : public rclcpp::Node
 {
-    static constexpr size_t MAX_CHANNELS = 4;
+    static constexpr size_t MAX_CHANNELS = 4UL;
 
-    enum class eToggleState : size_t
+    enum class eOutputState : size_t
     {
         OFF = 0,
         ON = 1,
     };
 
-    enum class eToggleMode : size_t
+    enum class eOutputMode : size_t
     {
         FIX,
         PWM,
@@ -25,10 +25,10 @@ class DDBControlNode : public rclcpp::Node
 
     struct sChannelInfo
     {
-        eToggleState state = eToggleState::ON;
-        eToggleMode mode = eToggleMode::FIX;
+        eOutputState state = eOutputState::ON;
+        eOutputMode mode = eOutputMode::FIX;
         uint8_t dutyCycle = 0;
-        float frequency = 1.0;
+        float frequency = 0.0;
     };
 
   public:
@@ -38,15 +38,15 @@ class DDBControlNode : public rclcpp::Node
   private:
     void ddbControlBank0(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void ddbControlBank1(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
-    void modeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
-    void stateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
-    void valuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void setModeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void setStateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
-    bool toggleChannel(uint8_t channelID_);
-    bool toggleMode(uint8_t channelID_);
+    bool setOutputChannel(uint8_t channelID_);
+    bool setOutputMode(uint8_t channelID_);
     bool modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t channelID_);
     bool valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msgs::srv::DDBControl::Response& response_);
-    std::string toStr(eToggleMode mode_);
+    std::string eOutputModeToStr(eOutputMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank0;
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank1;
