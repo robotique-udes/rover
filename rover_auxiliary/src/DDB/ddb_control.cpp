@@ -54,9 +54,11 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
 {
     if (request_.channel_id >= MAX_CHANNELS)
     {
-        RCLCPP_WARN(this->get_logger(), "Invalid channel (0 to 3). Received channel: %d", request_.channel_id);
+        std::string msg = "Invalid channel, range is [0; " + std::to_string(MAX_CHANNELS - 1UL)
+                          + "]. Received channel : " + std::to_string(request_.channel_id);
+        RCLCPP_WARN(this->get_logger(), msg.c_str());
         response_.success = false;
-        response_.status = "Invalid channel (0 to 3). Received channel: " + std::to_string(request_.channel_id);
+        response_.status = msg;
         return;
     }
 
@@ -70,7 +72,7 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
 
         case rover_msgs::srv::DDBControl::Request::OUTPUT_PWM:
             this->setModeLogic(request_, response_);
-            if (valuesCheck(request_.duty_cycle, request_.frequency, response_))
+            if (valuesCheck(request_.duty_cycle, request_.frequency, request_.channel_id, response_))
             {
                 this->setValuesLogic(request_, response_);
             }
@@ -78,6 +80,7 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
             {
                 RCLCPP_ERROR(this->get_logger(), "Invalid frequency or duty cycle. Check logs for details.");
                 response_.success = false;
+                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
                 response_.status = "Invalid frequency or duty cycle. Check logs for details.";
             }
             break;
@@ -85,6 +88,7 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
         default:
             RCLCPP_WARN(this->get_logger(), "Received request without a valid command: %d", request_.output_state);
             response_.success = false;
+            response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
             response_.status = "Received request without a valid command" + std::to_string(request_.output_state);
     }
 }
@@ -117,6 +121,7 @@ void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request&
     {
         RCLCPP_WARN(this->get_logger(), "Received request without a valid command: %d", request_.output_state);
         response_.success = false;
+        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
         response_.status = "Received request without a valid command: " + std::to_string(request_.output_state);
     }
 }
@@ -245,6 +250,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
         std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
         RCLCPP_INFO(this->get_logger(), msg.c_str());
         response_.success = true;
+        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
         response_.status = msg;
     }
     else
@@ -253,6 +259,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
             = "Could not set channel #" + std::to_string(request_.channel_id) + " to " + std::to_string(request_.output_state);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
         response_.success = false;
+        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
         response_.status = msg;
     }
 }
@@ -291,14 +298,7 @@ void DDBControlNode::setModeLogic(const rover_msgs::srv::DDBControl::Request& re
                           + std::to_string(request_.channel_id);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
         response_.success = false;
-        if (_channelInfo[request_.channel_id].state == eOutputState::ON)
-        {
-            response_.current_output_state = rover_msgs::srv::DDBControl::Request::OUTPUT_ON;
-        }
-        else
-        {
-            response_.current_output_state = rover_msgs::srv::DDBControl::Request::OUTPUT_OFF;
-        }
+        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
         response_.status = msg;
     }
     else
@@ -307,14 +307,7 @@ void DDBControlNode::setModeLogic(const rover_msgs::srv::DDBControl::Request& re
                           + " for channel #" + std::to_string(request_.channel_id);
         RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
         response_.success = true;
-        if (_channelInfo[request_.channel_id].state == eOutputState::ON)
-        {
-            response_.current_output_state = rover_msgs::srv::DDBControl::Request::OUTPUT_ON;
-        }
-        else
-        {
-            response_.current_output_state = rover_msgs::srv::DDBControl::Request::OUTPUT_OFF;
-        }
+        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
         response_.status = msg;
     }
 }
@@ -328,13 +321,14 @@ void DDBControlNode::setModeLogic(const rover_msgs::srv::DDBControl::Request& re
  * @return true if both checks are valid else
  * @return false if either check isn't valid
  */
-bool DDBControlNode::valuesCheck(float dutyCycle_, float frequency_, rover_msgs::srv::DDBControl::Response& response_)
+bool DDBControlNode::valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_)
 {
     if (dutyCycle_ > 100)
     {
         std::string msg = "Duty cycle must be in range [0.0; 100.0]. Duty cycle received: " + std::to_string(dutyCycle_);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
         response_.success = false;
+        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[channelID_].state);
         response_.status = msg;
         return false;
     }
@@ -344,6 +338,7 @@ bool DDBControlNode::valuesCheck(float dutyCycle_, float frequency_, rover_msgs:
         std::string msg = "Frequency must in range ]0.0; 100.0]. Frequency received: " + std::to_string(frequency_);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
         response_.success = false;
+        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[channelID_].state);
         response_.status = msg;
         return false;
     }
@@ -373,6 +368,7 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
                                   + std::to_string(request_.duty_cycle) + "\nFrequency: " + std::to_string(request_.frequency);
                 RCLCPP_INFO(this->get_logger(), msg.c_str());
                 response_.success = true;
+                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
                 response_.status = msg;
             }
             else
@@ -381,8 +377,21 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
                                   + ". Check logs for details.";
                 RCLCPP_ERROR(this->get_logger(), msg.c_str());
                 response_.success = false;
+                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
                 response_.status = msg;
             }
             break;
     }
+}
+
+uint8_t DDBControlNode::eOutputStateToUint8_t(eOutputState state_)
+{
+    if (state_ == eOutputState::ON)
+        {
+            return rover_msgs::srv::DDBControl::Request::OUTPUT_ON;
+        }
+        else
+        {
+            return rover_msgs::srv::DDBControl::Request::OUTPUT_OFF;
+        }
 }
