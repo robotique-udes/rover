@@ -38,9 +38,9 @@ class Teleop : public rclcpp::Node
   public:
     Teleop():
         rclcpp::Node("teleop_node"),
-        _jointController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2}),
+        _jointController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2, eJointIndex::GRIPPER_TILT}),
         // _gripperController({eJointIndex::GRIPPER_TILT, eJointIndex::GRIPPER_ROT}),
-        _cartesianController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2}),
+        _cartesianController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2, eJointIndex::GRIPPER_TILT}),
         _joyController()
     {
         _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
@@ -108,7 +108,7 @@ class Teleop : public rclcpp::Node
             if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::RECORD)],
                                           KEYBINDINGS::EMILE::CARTESIAN::RECORD))
             {
-                if (_cartesianController.getRecordedPoints() == TO_UNDERLYING(CartesianController::eCartesianR::eLAST))
+                if (_cartesianController.getRecordedPoints() == TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
                 {
                     RCLCPP_WARN(this->get_logger(), "No more points can be recorded. Create a plan or clear all points");
                 }
@@ -122,7 +122,7 @@ class Teleop : public rclcpp::Node
             if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::CREATE_PLAN)],
                                           KEYBINDINGS::EMILE::CARTESIAN::CREATE_PLAN))
             {
-                if (_cartesianController.getRecordedPoints() != TO_UNDERLYING(CartesianController::eCartesianR::eLAST))
+                if (_cartesianController.getRecordedPoints() != TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
                 {
                     RCLCPP_WARN(this->get_logger(), "Cannot create plan since not enough points have been gathered");
                 }

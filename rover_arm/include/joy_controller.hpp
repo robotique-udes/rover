@@ -34,6 +34,9 @@ class JoyController
         return false;
     }
 
+    // method load input array
+    
+
   protected:
     std::map<eJoyInput, bool> _buttonStates = {{eJoyInput::CROSS_UP, false},
                                                {eJoyInput::CROSS_DOWN, false},

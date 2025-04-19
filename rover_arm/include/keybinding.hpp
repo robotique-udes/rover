@@ -68,6 +68,10 @@ namespace KEYBINDINGS
             constexpr eJoyInput J1 = eJoyInput::JOYSTICK_LEFT_FRONT;
 
             constexpr eJoyInput J2 = eJoyInput::JOYSTICK_RIGHT_FRONT;
+
+            constexpr eJoyInput WRIST_UP = eJoyInput::L2;
+            constexpr eJoyInput WRIST_DOWN = eJoyInput::R2;
+
         }  // namespace JOINT
 
         namespace CARTESIAN
@@ -82,7 +86,8 @@ namespace KEYBINDINGS
             constexpr eJoyInput Z_AXIS = eJoyInput::JOYSTICK_LEFT_FRONT;
 
             constexpr eJoyInput ACTIVATE_ALPHA = eJoyInput::R1;
-            constexpr eJoyInput ALPHA = eJoyInput::JOYSTICK_RIGHT_FRONT;
+            constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::R2;
+            constexpr eJoyInput ALPHA_NEGATIVE = eJoyInput::L2;
 
             constexpr eJoyInput RECORD = eJoyInput::A;
             constexpr eJoyInput CLEAR_POINTS = eJoyInput::X;
@@ -92,7 +97,6 @@ namespace KEYBINDINGS
 
         namespace GRIPPER
         {
-
             constexpr eJoyInput ROT_FWD = eJoyInput::B;
             constexpr eJoyInput ROT_REV = eJoyInput::X;
 

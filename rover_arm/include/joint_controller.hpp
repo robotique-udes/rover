@@ -62,6 +62,18 @@ class JointController : public RobotController
             }
         }
 
+        if (ARM_CONFIGURATION::GRIPPER_TILT::ID == _currentControlledJoint)
+        {
+            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::WRIST_UP)]))
+            {
+                jointCommands[TO_UNDERLYING(_currentControlledJoint)] = getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID);
+            }
+            else if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::WRIST_DOWN)]))
+            {
+                jointCommands[TO_UNDERLYING(_currentControlledJoint)] = -1.0F * getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID);
+            }
+        }
+
         return jointCommands;
     }
 

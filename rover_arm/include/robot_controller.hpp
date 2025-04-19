@@ -43,12 +43,9 @@ class RobotController
                 return ARM_CONFIGURATION::GRIPPER_TILT::MAX_VELOCITY;
             case eJointIndex::GRIPPER_ROT:
                 return ARM_CONFIGURATION::GRIPPER_ROT::MAX_VELOCITY;
+            default:
+                return 0.0F;
         }
-    }
-
-    uint8_t getNJoints(void)
-    {
-        return _nJoints;
     }
 
   protected:
