@@ -102,7 +102,7 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
             break;
 
         default:
-        std::string msg = "Received request without a valid command" + std::to_string(request_.output_state);
+            std::string msg = "Received request without a valid command" + std::to_string(request_.output_state);
             RCLCPP_WARN(this->get_logger(), msg.c_str());
             response_.success = false;
             response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
@@ -338,7 +338,10 @@ void DDBControlNode::setModeLogic(const rover_msgs::srv::DDBControl::Request& re
  * @return true if both checks are valid else
  * @return false if either check isn't valid
  */
-bool DDBControlNode::valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_)
+bool DDBControlNode::valuesCheck(float dutyCycle_,
+                                 float frequency_,
+                                 uint8_t channelID_,
+                                 rover_msgs::srv::DDBControl::Response& response_)
 {
     if (dutyCycle_ > 100)
     {
@@ -404,11 +407,11 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
 uint8_t DDBControlNode::eOutputStateToUint8_t(eOutputState state_)
 {
     if (state_ == eOutputState::ON)
-        {
-            return rover_msgs::srv::DDBControl::Request::OUTPUT_ON;
-        }
-        else
-        {
-            return rover_msgs::srv::DDBControl::Request::OUTPUT_OFF;
-        }
+    {
+        return rover_msgs::srv::DDBControl::Request::OUTPUT_ON;
+    }
+    else
+    {
+        return rover_msgs::srv::DDBControl::Request::OUTPUT_OFF;
+    }
 }
