@@ -154,7 +154,7 @@ bool ImageCapture::isCameraReachable(const std::string& url_, int port_, int tim
         addr.sin_port = htons(port_);
         addr.sin_addr.s_addr = inet_addr(ip.c_str());
 
-        int result = connect(sock, (struct sockaddr*)&addr, sizeof(addr));
+        int result = connect(sock, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr));
         if (result < 0 && errno != EINPROGRESS)
         {
             close(sock);
