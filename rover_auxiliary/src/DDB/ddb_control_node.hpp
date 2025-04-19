@@ -42,10 +42,10 @@ class DDBControlNode : public rclcpp::Node
     void setStateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
-    bool setOutputChannel(uint8_t channelID_);
-    bool setOutputMode(uint8_t channelID_);
-    bool modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t channelID_);
-    bool valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msgs::srv::DDBControl::Response& response_);
+    bool setChannelOutput(uint8_t channelID_, uint8_t desiredState_);
+    bool setOutputMode(uint8_t channelID_, eOutputMode mode_);
+    bool modifyPWM(float dutyCycle_, float frequency_, uint8_t channelID_);
+    bool valuesCheck(float dutyCycle_, float frequency_, rover_msgs::srv::DDBControl::Response& response_);
     std::string eOutputModeToStr(eOutputMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank0;
