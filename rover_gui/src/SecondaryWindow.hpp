@@ -4,11 +4,12 @@
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include <QLabel>
+#include "Global/Helpers/QToastNotification.hpp"
 
 class SecondaryWindow : public QMainWindow
 {
   public:
-    explicit SecondaryWindow();
+    explicit SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_);
 
   private:
     QWidget _centralWidget;

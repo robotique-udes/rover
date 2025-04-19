@@ -26,7 +26,7 @@ int main(int argc, char* argv[])
     app.setStyleSheet(STYLE_DARK_MODE);
 
     MainWindow mainWindow(guiNode);
-    SecondaryWindow secondaryWindow;
+    SecondaryWindow secondaryWindow(guiNode);
     displayWindows(mainWindow, secondaryWindow);
 
     QProcess rosProcess;
@@ -76,6 +76,10 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
             mainWindow_.show();
             secondWindow_.setGeometry(screenGeometry.x() + screenWidth / 2, screenGeometry.y(), screenWidth / 2, screenHeight);
             secondWindow_.show();
+            QTimer::singleShot(1000, [] {
+            QToastNotification::getInstance().showMessage("Hello from the toast!", 3000);
+            });
+            #warning enleveee
             break;
         }
 
@@ -84,6 +88,10 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
             secondWindow_.setGeometry(screens[1]->geometry());
             mainWindow_.showMaximized();
             secondWindow_.showMaximized();
+             QTimer::singleShot(1000, [] {
+            QToastNotification::getInstance().showMessage("Hello from the toast!", 3000);
+            });
+            #warning enleveee
             break;
     }
 }

@@ -1,6 +1,6 @@
 #include "SecondaryWindow.hpp"
 
-SecondaryWindow::SecondaryWindow():
+SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     QMainWindow(nullptr),
     _centralWidget(this),
     _layout(&_centralWidget),

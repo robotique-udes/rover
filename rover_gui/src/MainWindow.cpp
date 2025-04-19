@@ -9,12 +9,13 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _stackedWidget(this),
     _sideBarWidget(this),
     _dashboardWidget(guiNode_, this),
-    _navigationWidget(guiNode_, this),
-    _fileTransferWidget(this)
+    _navigationWidget(guiNode_, this)//,
+    //_fileTransferWidget(this)
+    #warning put the file transfer widget back
 {
     _stackedWidget.addWidget(&_dashboardWidget);
     _stackedWidget.addWidget(&_navigationWidget);
-    _stackedWidget.addWidget(&_fileTransferWidget);
+    //_stackedWidget.addWidget(&_fileTransferWidget);
 
     _layout.addWidget(&_sideBarWidget);
     _layout.addWidget(&_stackedWidget);

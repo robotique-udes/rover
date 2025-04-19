@@ -8,6 +8,7 @@
 #include <QtWidgets/QWidget>
 #include <QPropertyAnimation>
 #include <QTimer>
+#include <QApplication>
 #include "UI_ToastNotification.h"
 
 
@@ -16,12 +17,22 @@ class QToastNotification : public QWidget
         Q_OBJECT
     
     public:
-        QToastNotification(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-        void showMessage(const QString& message, int durationMs);
+        
+        static QToastNotification& getInstance();
+        
+        void showMessage(const QString& message, int durationMs = 3000);
 
     private:
+        QToastNotification();
+        ~QToastNotification() = default;
 
-        std::shared_ptr<rclcpp::Node> _node;
+        QToastNotification(const QToastNotification&) = delete;
+        QToastNotification& operator=(const QToastNotification&) = delete;
+
+        void setupAnimations();
+
+        //Q_DISABLE_COPY(QSingletonToast)
+        
         Ui::ToastNotification _ui;
 
         QPropertyAnimation _fadeInAnim;
@@ -29,9 +40,6 @@ class QToastNotification : public QWidget
         QPropertyAnimation _slideAnim;
         QTimer _closeTimer; 
 
-        void setupAnimations();
-
 };
 
-
-#endif // QTOASTNOTIFICATION
+#endif
