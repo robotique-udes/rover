@@ -68,28 +68,45 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
         case rover_msgs::srv::DDBControl::Request::OUTPUT_OFF:
             this->setStateLogic(request_, response_);
             this->setModeLogic(request_, response_);
+            this->modifyPWM(0.0, 0.0, request_.channel_id);
             break;
 
         case rover_msgs::srv::DDBControl::Request::OUTPUT_PWM:
-            this->setModeLogic(request_, response_);
+            if (_channelInfo[request_.channel_id].state != eOutputState::OFF)
+            {
+                this->setModeLogic(request_, response_);
+            }
+            else
+            {
+                std::string msg = "Current state is OFF. Cannot set PWM mode.";
+                RCLCPP_ERROR(this->get_logger(), msg.c_str());
+                response_.success = false;
+                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
+                response_.status = msg;
+                return;
+            }
+
             if (valuesCheck(request_.duty_cycle, request_.frequency, request_.channel_id, response_))
             {
                 this->setValuesLogic(request_, response_);
             }
             else
             {
-                RCLCPP_ERROR(this->get_logger(), "Invalid frequency or duty cycle. Check logs for details.");
+                std::string msg = "Invalid frequency or duty cycle. Check logs for details.";
+                RCLCPP_ERROR(this->get_logger(), msg.c_str());
                 response_.success = false;
                 response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
-                response_.status = "Invalid frequency or duty cycle. Check logs for details.";
+                response_.status = msg;
+                return;
             }
             break;
 
         default:
-            RCLCPP_WARN(this->get_logger(), "Received request without a valid command: %d", request_.output_state);
+        std::string msg = "Received request without a valid command" + std::to_string(request_.output_state);
+            RCLCPP_WARN(this->get_logger(), msg.c_str());
             response_.success = false;
             response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
-            response_.status = "Received request without a valid command" + std::to_string(request_.output_state);
+            response_.status = msg;
     }
 }
 
@@ -364,7 +381,7 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
         case eOutputMode::PWM:
             if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
             {
-                std::string msg = "PWM values changed for channel #" + std::to_string(request_.channel_id) + ". Duty cycle: "
+                std::string msg = "PWM values changed for channel #" + std::to_string(request_.channel_id) + "\nDuty cycle: "
                                   + std::to_string(request_.duty_cycle) + "\nFrequency: " + std::to_string(request_.frequency);
                 RCLCPP_INFO(this->get_logger(), msg.c_str());
                 response_.success = true;
