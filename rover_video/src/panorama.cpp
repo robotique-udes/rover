@@ -81,7 +81,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
   
   //paramètres pour la lecture de la camera
    VideoCapture cap;
-   string path_camera= "/dev/video0";        
+   string path_camera= request->camera_path;        
    int apiID = cv::CAP_ANY; 
    cap.open(path_camera, apiID);
    
@@ -130,9 +130,9 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     //ajout du text
     Size dimensions = pano_rectangle.size();
     int hauteur = dimensions.height;
-    char nom_photo = request->nom;
+    string nom_photo = request->nom;
     putText(pano_rectangle, "coordonees GPS", Point (10,hauteur-20), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2); // pour un font plus gros et lisible FONT_HERSHEY_SIMPLEX
-    putText(pano_rectangle, "nom_photo", Point (10,hauteur-50), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2);
+    putText(pano_rectangle, nom_photo, Point (10,hauteur-50), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2);
         
     //display de la panoramique
     imwrite(result_name, pano_rectangle);

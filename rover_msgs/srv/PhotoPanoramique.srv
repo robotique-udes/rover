@@ -1,5 +1,6 @@
 bool start
-char nom
-char pano_number
+string camera_path
+string nom
+uint8 pano_number
 ---
 bool success
