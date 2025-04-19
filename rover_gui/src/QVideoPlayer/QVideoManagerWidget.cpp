@@ -8,7 +8,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThread(std::make_shared<QPlayerWorker>())
 
 {
-    for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
+    for (size_t i = 0UL; i < NBR_CAM_TO_TRACK; ++i)
     {
         std::shared_ptr<QVideoPlayerWidget> widget
             = std::make_shared<QVideoPlayerWidget>(_node, this, _cameras_urls[i], i, _playerWorkerThread);
@@ -73,13 +73,10 @@ void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
 
     for (auto& widget : _videoPlaysWidgets)
     {
-        if (widget != nullptr)
+        if (widget != nullptr && widget->getCamURL() == url)
         {
-            if (widget->getCamURL() == url)
-            {
-                widget->displayDetectedArucos(detectedIds);
-                emit widget->arucoCameraFailure(msg_.valid);
-            }
+            widget->displayDetectedArucos(detectedIds);
+            emit widget->arucoCameraFailure(msg_.valid);
         }
     }
 }

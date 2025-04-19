@@ -4,9 +4,9 @@
 #include <rclcpp/rclcpp.hpp>
 
 QPlayerWorker::QPlayerWorker(bool start_, QObject* parent_):
-    QWorker(start_, parent_)
+    QWorker(start_, parent_),
+    _timer_serviceCall(MAX_DELAY_SERVICE_CALL)
 {
-    _timer_serviceCall = RoverLib::Timer<uint64_t, RoverLib::millis>(MAX_DELAY_SERVICE_CALL);
 }
 
 QPlayerWorker::~QPlayerWorker()
@@ -89,11 +89,18 @@ void QPlayerWorker::updateDetectionManager(
 void QPlayerWorker::updateDetectionInternal(
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_)
 {
+    bool success = false;
+
     auto request = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
 
     request->command = rover_msgs::srv::ArucoDetection::Request::INFO;
 
     request->camera_url = "";
+
+    if (!client_ArucoDetectionManager_)
+    {
+        return;
+    }
 
     auto result = client_ArucoDetectionManager_->async_send_request(request);
 
@@ -111,7 +118,6 @@ void QPlayerWorker::updateDetectionInternal(
     }
 
     std::vector<std::string> liveURLs;
-    bool success = false;
 
     if (result.valid())
     {

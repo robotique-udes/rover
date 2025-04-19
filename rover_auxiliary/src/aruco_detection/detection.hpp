@@ -1,5 +1,5 @@
-#ifndef __DETECTION_HPP__
-#define __DETECTION_HPP__
+#ifndef DETECTION_HPP
+#define DETECTION_HPP
 
 #include "process_frame.hpp"
 #include "rovus_lib/moving_average.hpp"
@@ -20,7 +20,8 @@ class Detection
     std::string getCamURL(void) const;
     uint8_t getTag(void) const;
     bool isValid(void) const;
-    bool camLost(void) const;
+    bool getCamLost(void) const;
+    void setCamLost(bool camLost_);
 
   private:
     uint8_t _tag;

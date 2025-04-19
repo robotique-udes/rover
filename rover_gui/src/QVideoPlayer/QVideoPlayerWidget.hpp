@@ -1,5 +1,5 @@
-#ifndef __QVIDEOPLAYERWIDGER_HPP__
-#define __QVIDEOPLAYERWIDGER_HPP__
+#ifndef QVIDEOPLAYERWIDGER_HPP
+#define QVIDEOPLAYERWIDGER_HPP
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -12,7 +12,8 @@ class QVideoPlayerWidget : public QWidget
 {
     Q_OBJECT
 
-    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2000UL;
+    static constexpr uint64_t DELAY_OPENING_CAM_RETRY_MS = 60'000UL;
+    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2'000UL;
     static constexpr uint16_t NBR_IDS_TO_DISPLAY = 5U;
 
   public:
@@ -58,4 +59,4 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
 };
 
-#endif  // __QVIDEOPLAYERWIDGER_HPP___
+#endif  // QVIDEOPLAYERWIDGER_HPP

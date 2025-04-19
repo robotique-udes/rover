@@ -12,7 +12,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _tag(tag_),
     _playerWorkerThread(worker_)
 {
-    this->_defaultCamUrl = _camURL;
+    _defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
@@ -35,7 +35,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
 void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)
 {
-    if (client_ != nullptr)
+    if (client_)
     {
         this->_client_arucoManager = client_;
     }
@@ -78,6 +78,7 @@ void QVideoPlayerWidget::handleArucoDetection(void)
     if (_ui.arucoPushButton->isChecked())
     {
         this->startDetection();
+
         if (!_ui.arucoPushButton->isChecked())
         {
             _ui.arucoPushButton->setChecked(true);

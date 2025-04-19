@@ -1,5 +1,5 @@
-#ifndef __FRAME_PROCESSING_HPP__
-#define __FRAME_PROCESSING_HPP__
+#ifndef FRAME_PROCESSING_HPP
+#define FRAME_PROCESSING_HPP
 
 #include "image_capture.hpp"
 #include <optional>

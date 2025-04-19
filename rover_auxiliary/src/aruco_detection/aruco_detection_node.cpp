@@ -1,5 +1,4 @@
 #include "aruco_detection_node.hpp"
-#include <opencv2/core/utils/logger.hpp>
 
 int main(int argc, char** argv)
 {
@@ -16,7 +15,7 @@ int main(int argc, char** argv)
 ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
     Node("aruco_detection_node")
 {
-    cv::utils::logging::setLogLevel(cv::utils::logging::LOG_LEVEL_SILENT);
+    cv::utils::logging::setLogLevel(OPENCV_LOG_LEVEL);
 
     this->getParams(argc, argv);
 
@@ -66,7 +65,7 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
             detectedArucos.push_back(it.second.getValidatedIds());
             matchingURL.push_back(it.second.getCamURL());
             isValid.push_back(it.second.isValid());
-            camLost.push_back(it.second.camLost());
+            camLost.push_back(it.second.getCamLost());
         }
     }
 

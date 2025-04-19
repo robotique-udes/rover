@@ -1,5 +1,5 @@
-#ifndef __QVIDEO_PLAYER_HPP__
-#define __QVIDEO_PLAYER_HPP__
+#ifndef QVIDEO_PLAYER_HPP
+#define QVIDEO_PLAYER_HPP
 
 #include "QVideoPlayerWidget.hpp"
 
@@ -13,8 +13,14 @@ class QVideoManagerWidget : public QWidget
 {
     Q_OBJECT
 
-    static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 1000U;
+    static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
+    static constexpr const char* CAM_MAIN = "rtsp://192.168.144.30";
+    static constexpr const char* CAM_ANTENNA = "rtsp://192.168.144.31";
+    static constexpr const char* CAM_ODOM = "rtsp://192.168.144.32";
+    static constexpr const char* CAM_GRIPPER_1 = "rtsp://192.168.144.35";
+    static constexpr const char* CAM_GRIPPER_2 = "rtsp://192.168.144.36";
+    static constexpr const char* CAM_6 = "";
 
   public:
     QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
@@ -37,7 +43,7 @@ class QVideoManagerWidget : public QWidget
     rclcpp::TimerBase::SharedPtr _timer_detectionManagerUpdate;
 
     std::array<std::shared_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
-    std::array<std::string, 6> _cameras_urls = {"rtsp://127.0.0.1:8554/live", "1", "2", "3", "4", "5"};
+    std::array<const char*, 6> _cameras_urls = {CAM_MAIN, CAM_ANTENNA, CAM_ODOM, CAM_GRIPPER_1, CAM_GRIPPER_2, CAM_6};
 };
 
-#endif  //__QVIDEO_PLAYER_HPP__
+#endif  // QVIDEO_PLAYER_HPP

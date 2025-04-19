@@ -33,9 +33,10 @@ void Detection::update(bool debugMode_)
 {
     _validatedIds.clear();
     std::optional<std::vector<uint16_t>> detectionResult = this->detect(debugMode_);
-    if (!detectionResult.has_value())
+    this->setCamLost(!detectionResult.has_value());
+
+    if (this->getCamLost())
     {
-        _camLost = true;
         return;
     }
 
@@ -78,7 +79,6 @@ void Detection::update(bool debugMode_)
     {
         _validation.emplace(id, MovingAverage<uint16_t, COEFF_NB_ARUCO>(0));
     }
-    _camLost = false;
 }
 
 std::vector<uint16_t> Detection::getValidatedIds(void) const
@@ -101,7 +101,12 @@ bool Detection::isValid(void) const
     return _processFrame.isValid();
 }
 
-bool Detection::camLost(void) const
+bool Detection::getCamLost(void) const
 {
     return _camLost;
+}
+
+void Detection::setCamLost(bool camLost_)
+{
+    _camLost = camLost_;
 }

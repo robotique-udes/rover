@@ -1,5 +1,5 @@
-#ifndef __VIDEO_WORKER_HPP__
-#define __VIDEO_WORKER_HPP__
+#ifndef VIDEO_WORKER_HPP
+#define VIDEO_WORKER_HPP
 
 #include <condition_variable>
 #include <functional>
@@ -19,7 +19,7 @@ class QPlayerWorker : public QWorker
 {
     Q_OBJECT
 
-    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2000UL;
+    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2'000UL;
 
   public:
     QPlayerWorker(bool start_ = false, QObject* parent_ = nullptr);
@@ -46,4 +46,4 @@ class QPlayerWorker : public QWorker
     RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
 };
 
-#endif  // __VIDEO_WORKER_HPP__
+#endif  // VIDEO_WORKER_HPP
