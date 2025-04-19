@@ -32,6 +32,10 @@ class QVideoManagerWidget : public QWidget
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
 
   private:
+    void initWidget(void);
+    void initArucoPublisher(void);
+    void initArucoClient(void);
+
     std::shared_ptr<rclcpp::Node> _node;
 
     QGridLayout _videoPlayerLayout;
