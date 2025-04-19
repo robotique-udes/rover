@@ -6,14 +6,10 @@
 class JointController : public RobotController
 {
   public:
-    JointController(std::initializer_list<eJointIndex> joints_):
-        RobotController(joints_),
+    JointController(std::initializer_list<eJointIndex> joints_, JoyManager joyManager_):
+        RobotController(joints_, joyManager_),
         _currentControlledJoint(eJointIndex::eLAST)
     {
-        if (joints_.size() != 0)
-        {
-            _currentControlledJoint = *joints_.begin();
-        }
     }
 
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(

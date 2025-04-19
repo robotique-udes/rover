@@ -2,7 +2,7 @@
 #define __ROBOT_CONTROLLER_HPP__
 
 #include "keybinding.hpp"
-#include "joy_controller.hpp"
+#include "joy_manager.hpp"
 
 #include "rovus_lib/timer.hpp"
 #include "rovus_lib/macros.h"
@@ -16,10 +16,8 @@ class RobotController
 {
   public:
     virtual ~RobotController() = default;
-    RobotController(std::initializer_list<eJointIndex> joints_):
-        _nJoints(joints_.size()),
-        _joints(joints_),
-        _joyController()
+    RobotController(std::initializer_list<eJointIndex> joints_, JoyManager joyManager_):
+        _joyManager(joyManager_)
     {
     }
 
@@ -49,9 +47,7 @@ class RobotController
     }
 
   protected:
-    uint8_t _nJoints;
-    std::vector<eJointIndex> _joints;
-    JoyController _joyController;
+    JoyManager& _joyManager;
 };
 
 #endif
