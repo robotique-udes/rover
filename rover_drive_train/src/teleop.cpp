@@ -115,7 +115,8 @@ class Teleop : public rclcpp::Node
 };
 
 // Constructor
-Teleop::Teleop(): Node("teleop")
+Teleop::Teleop():
+    Node("teleop")
 {
     this->getParams();
 

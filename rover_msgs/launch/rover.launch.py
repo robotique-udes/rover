@@ -32,5 +32,8 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_sim'), 'launch', 'sim.launch.py'])]),
             launch_arguments={'simulate_arm': simulate_arm}.items()
-        )
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([PathJoinSubstitution([FindPackageShare('rover_video'), 'launch', 'video.launch.py'])]))
     ])

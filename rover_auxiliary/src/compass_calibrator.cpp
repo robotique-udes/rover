@@ -33,7 +33,8 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-CompassCalibrator::CompassCalibrator(): Node("compass_calibrator")
+CompassCalibrator::CompassCalibrator():
+    Node("compass_calibrator")
 {
     _pub_compass = this->create_publisher<rover_msgs::msg::Compass>("/rover/auxiliary/compass", 1);
     _sub_compassRaw = this->create_subscription<rover_msgs::msg::Compass>(

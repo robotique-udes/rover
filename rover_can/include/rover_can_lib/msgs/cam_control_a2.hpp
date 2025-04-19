@@ -64,7 +64,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.posTilt);
                     break;
 
-                default: LOG(WARN, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    LOG(WARN, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -77,11 +79,17 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::camControlA2::eMsgID)msgId_)
             {
-                case eMsgID::ENABLE: Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_); break;
+                case eMsgID::ENABLE:
+                    Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_);
+                    break;
 
-                case eMsgID::POS_YAW: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posYaw, msg_); break;
+                case eMsgID::POS_YAW:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posYaw, msg_);
+                    break;
 
-                case eMsgID::POS_TILT: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posTilt, msg_); break;
+                case eMsgID::POS_TILT:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posTilt, msg_);
+                    break;
 
                 default:
                     LOG(ERROR, "Shouldn't ever fall here, implementation error");
@@ -115,7 +123,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<float, UnionDefinition::FloatUnion>(msg_, &this->data.posTilt, logger_);
                     break;
 
-                default: RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -128,11 +138,17 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::camControlA2::eMsgID)msgId_)
             {
-                case eMsgID::ENABLE: Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_); break;
+                case eMsgID::ENABLE:
+                    Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_);
+                    break;
 
-                case eMsgID::POS_YAW: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posYaw, msg_); break;
+                case eMsgID::POS_YAW:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posYaw, msg_);
+                    break;
 
-                case eMsgID::POS_TILT: Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posTilt, msg_); break;
+                case eMsgID::POS_TILT:
+                    Helpers::structToCanMsg<float, UnionDefinition::FloatUnion>(&data.posTilt, msg_);
+                    break;
 
                 default:
                     RCLCPP_ERROR(logger_, "Shouldn't ever fall here, implementation error");

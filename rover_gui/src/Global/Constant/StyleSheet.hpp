@@ -126,6 +126,8 @@ QStatusBar {
     background-color: #3c3f41;
     color: #ffffff;
 }
-)";
+)"
+
+                                        "SideBar { border: 2px solid black; }";
 
 constexpr const char* lightMode = "";

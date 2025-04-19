@@ -50,7 +50,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.enable);
                     break;
 
-                default: LOG(WARN, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    LOG(WARN, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -63,7 +65,9 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::lightControl::eMsgID)msgId_)
             {
-                case eMsgID::ENABLE: Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_); break;
+                case eMsgID::ENABLE:
+                    Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_);
+                    break;
 
                 default:
                     LOG(ERROR, "Shouldn't ever fall here, implementation error");
@@ -89,7 +93,9 @@ namespace RoverCanLib::Msgs
                     RoverCanLib::Helpers::canMsgToStruct<bool, UnionDefinition::BoolUnion>(msg_, &this->data.enable, logger_);
                     break;
 
-                default: RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\""); return Constant::eInternalErrorCode::ERROR;
+                default:
+                    RCLCPP_WARN(logger_, "Unknown \"Message Specific Id\"");
+                    return Constant::eInternalErrorCode::ERROR;
             }
 
             return Constant::eInternalErrorCode::OK;
@@ -102,7 +108,9 @@ namespace RoverCanLib::Msgs
 
             switch ((RoverCanLib::Msgs::lightControl::eMsgID)msgId_)
             {
-                case eMsgID::ENABLE: Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_); break;
+                case eMsgID::ENABLE:
+                    Helpers::structToCanMsg<bool, UnionDefinition::BoolUnion>(&data.enable, msg_);
+                    break;
 
                 default:
                     RCLCPP_ERROR(logger_, "Shouldn't ever fall here, implementation error");

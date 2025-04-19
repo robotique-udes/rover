@@ -2,7 +2,8 @@
 
 #include <rclcpp/rclcpp.hpp>
 
-QWorker::QWorker(bool start_, QObject* parent_): QObject(parent_)
+QWorker::QWorker(bool start_, QObject* parent_):
+    QObject(parent_)
 {
     if (start_)
     {
@@ -80,7 +81,11 @@ void QWorker::execLoop(void)
                 emit this->allTasksDone();
 
                 _newTaskFlag = false;
-                _newTaskCv.wait(lock, [this]() { return _newTaskFlag || !_alive; });
+                _newTaskCv.wait(lock,
+                                [this]()
+                                {
+                                    return _newTaskFlag || !_alive;
+                                });
                 _cancelAllTasksFlag.store(false);
                 _cancelCurrentTasksFlag.store(false);
 

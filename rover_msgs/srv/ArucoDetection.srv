@@ -1,0 +1,12 @@
+uint8 START = 0
+uint8 STOP = 1
+uint8 INFO = 2
+
+uint8 command
+string camera_url
+---
+bool success
+uint8 nbr_ongoing_streams
+string[] urls
+uint8[] tags
+

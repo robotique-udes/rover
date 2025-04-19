@@ -12,7 +12,10 @@
 class ExeptBadLaunchParameters : public std::exception
 {
   public:
-    ExeptBadLaunchParameters(const char* message): errorMessage(std::string("Bad Launch Parameters: " + std::string(message))) {}
+    ExeptBadLaunchParameters(const char* message):
+        errorMessage(std::string("Bad Launch Parameters: " + std::string(message)))
+    {
+    }
 
     const char* what() const noexcept override
     {

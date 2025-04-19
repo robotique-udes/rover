@@ -37,17 +37,22 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-Arbitration::Arbitration(): Node("arbitration")
+Arbitration::Arbitration():
+    Node("arbitration")
 {
     _sub_jog = this->create_subscription<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/teleop",
                                                                       1,
                                                                       [this](const rover_msgs::msg::AntennaCmd msg)
-                                                                      { callbackJog(msg); });
+                                                                      {
+                                                                          callbackJog(msg);
+                                                                      });
 
     _sub_auto = this->create_subscription<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/in/auto",
                                                                        1,
                                                                        [this](const rover_msgs::msg::AntennaCmd msg)
-                                                                       { callbackAuto(msg); });
+                                                                       {
+                                                                           callbackAuto(msg);
+                                                                       });
 
     _pub_abtr = this->create_publisher<rover_msgs::msg::AntennaCmd>("/base/antenna/cmd/out/goal", 1);
 

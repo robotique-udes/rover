@@ -216,7 +216,9 @@ namespace RoverCanLib
                 }
                 break;
 
-            default: _canBusState = eCanBusStatus::error; ASSERT(true, "Unknowned error, shouldn't ever fall here");
+            default:
+                _canBusState = eCanBusStatus::error;
+                ASSERT(true, "Unknowned error, shouldn't ever fall here");
         }
     }
 
@@ -284,7 +286,9 @@ namespace RoverCanLib
                 ASSERT(true, "Canbus/Twai controller has fallen in an invalid state");
                 break;
 
-            default: _canBusState = eCanBusStatus::error; ASSERT(true, "Unknowned error, shoudln't ever fall here");
+            default:
+                _canBusState = eCanBusStatus::error;
+                ASSERT(true, "Unknowned error, shoudln't ever fall here");
         }
 
         // Process received message
@@ -319,19 +323,32 @@ namespace RoverCanLib
         {
             switch (_canBusState)
             {
-                case notInit: _statusLed.setOff(); break;
+                case notInit:
+                    _statusLed.setOff();
+                    break;
 
-                case idle: _statusLed.setOn(); break;
+                case idle:
+                    _statusLed.setOn();
+                    break;
 
-                case running: _statusLed.setBlink(1, 50.0f); break;
+                case running:
+                    _statusLed.setBlink(1, 50.0f);
+                    break;
 
-                case warning: _statusLed.setBlink(2, 50.0f); break;
+                case warning:
+                    _statusLed.setBlink(2, 50.0f);
+                    break;
 
-                case watchdogError: _statusLed.setBlink(20, 25.0f); break;
+                case watchdogError:
+                    _statusLed.setBlink(20, 25.0f);
+                    break;
 
-                case error: _statusLed.setBlink(10, 50.0f); break;
+                case error:
+                    _statusLed.setBlink(10, 50.0f);
+                    break;
 
-                default: break;
+                default:
+                    break;
             }
         }
 

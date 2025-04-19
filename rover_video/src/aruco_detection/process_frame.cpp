@@ -1,6 +1,8 @@
 #include "process_frame.hpp"
 
-ProcessFrame::ProcessFrame(std::string cameraURL_): DICTIONNARY(cv::aruco::getPredefinedDictionary(DICT)), _stream(cameraURL_)
+ProcessFrame::ProcessFrame(std::string cameraURL_):
+    DICTIONNARY(cv::aruco::getPredefinedDictionary(DICT)),
+    _stream(cameraURL_)
 {
     _detectorParams = cv::aruco::DetectorParameters::create();
 }
@@ -8,11 +10,15 @@ ProcessFrame::ProcessFrame(std::string cameraURL_): DICTIONNARY(cv::aruco::getPr
 std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
 {
     std::optional<cv::Mat> frame = _stream.getFrame(debugMode_);
+
     if (!frame)
     {
         RCLCPP_WARN(rclcpp::get_logger("ArucoDetection"), "Error getting frame from stream");
+        _errorFrameCount++;
         return std::nullopt;
     }
+    _errorFrameCount = 0;
+
     cv::aruco::detectMarkers(frame.value(), DICTIONNARY, _corners, _ids, _detectorParams);
     _detectedIds.clear();
 
@@ -29,12 +35,17 @@ std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
     return std::nullopt;
 }
 
-std::vector<uint16_t> ProcessFrame::getIds()
+std::vector<uint16_t> ProcessFrame::getIds() const
 {
     return _detectedIds;
 }
 
-bool ProcessFrame::IdsEmpty(void)
+bool ProcessFrame::IdsEmpty(void) const
 {
     return _detectedIds.empty();
+}
+
+uint8_t ProcessFrame::getErrorFrameCount(void) const
+{
+    return _errorFrameCount;
 }

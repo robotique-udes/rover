@@ -13,9 +13,16 @@
 
 std::mutex QSshWorker::_libSshMutex;
 
-QSshWorker::QSshWorker(bool start_, QObject* parent_): QWorker(start_, parent_)
+QSshWorker::QSshWorker(bool start_, QObject* parent_):
+    QWorker(start_, parent_)
 {
-    connect(this, &QWorker::allTasksDone, this, [this]() { emit this->newProgressBarUpdate("", 100.0f); });
+    connect(this,
+            &QWorker::allTasksDone,
+            this,
+            [this]()
+            {
+                emit this->newProgressBarUpdate("", 100.0f);
+            });
 }
 
 QSshWorker::~QSshWorker()
@@ -28,20 +35,31 @@ void QSshWorker::refreshStructure(const std::string& username_,
                                   const std::string& oldPath_,
                                   const std::string& newPath_)
 {
-    this->addTask([username = std::move(username_),
-                   hostname = std::move(hostname_),
-                   oldPath = std::move(oldPath_),
-                   newPath = std::move(newPath_),
-                   this](void) { this->refreshStructureInternal(username, hostname, oldPath, newPath); });
+    this->addTask(
+        [username = std::move(username_),
+         hostname = std::move(hostname_),
+         oldPath = std::move(oldPath_),
+         newPath = std::move(newPath_),
+         this](void)
+        {
+            this->refreshStructureInternal(username, hostname, oldPath, newPath);
+        });
 
     emit this->newProgressBarUpdate(std::string("Getting items for " + newPath_), 0.0f);
 }
 
 void QSshWorker::openFile(const std::string& rUsername_, const std::string& rHostname_, const std::string& rfilePath_)
 {
-    this->addTask([username = std::move(rUsername_), hostname = std::move(rHostname_), path = std::move(rfilePath_), this](void)
-                  { this->downloadFileInternal(username, hostname, path); });
-    this->addTask([path = QHelper::getFileNameFromPath(rfilePath_), this](void) { this->openLocalFile(path); });
+    this->addTask(
+        [username = std::move(rUsername_), hostname = std::move(rHostname_), path = std::move(rfilePath_), this](void)
+        {
+            this->downloadFileInternal(username, hostname, path);
+        });
+    this->addTask(
+        [path = QHelper::getFileNameFromPath(rfilePath_), this](void)
+        {
+            this->openLocalFile(path);
+        });
 
     emit this->newProgressBarUpdate("", 0.0f);
 }
@@ -54,16 +72,24 @@ void QSshWorker::transferFile(const std::string& fileName_,
                               const std::string& receiverHostname_,
                               const std::string& receiverFolderPath_)
 {
-    this->addTask([username = std::move(ownerUsername_),
-                   hostname = std::move(ownerHostname_),
-                   filePath = std::move(ownerFolderPath_ + "/" + fileName_),
-                   this](void) { this->downloadFileInternal(username, hostname, filePath); });
+    this->addTask(
+        [username = std::move(ownerUsername_),
+         hostname = std::move(ownerHostname_),
+         filePath = std::move(ownerFolderPath_ + "/" + fileName_),
+         this](void)
+        {
+            this->downloadFileInternal(username, hostname, filePath);
+        });
 
-    this->addTask([username = std::move(receiverUsername_),
-                   hostname = std::move(receiverHostname_),
-                   fileName = std::move(fileName_),
-                   folderPath = std::move(receiverFolderPath_),
-                   this](void) { this->uploadFileInternal(username, hostname, fileName, folderPath); });
+    this->addTask(
+        [username = std::move(receiverUsername_),
+         hostname = std::move(receiverHostname_),
+         fileName = std::move(fileName_),
+         folderPath = std::move(receiverFolderPath_),
+         this](void)
+        {
+            this->uploadFileInternal(username, hostname, fileName, folderPath);
+        });
 }
 
 std::vector<QFileItem> QSshWorker::getFileStructure(void)
@@ -233,7 +259,9 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
 
     switch (QDownloadedFileManager::getInstance().alreadyDownloaded(QHelper::getFileNameFromPath(rRemoteFilePath_), fileSize))
     {
-        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_OK: success = false; break;
+        case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_OK:
+            success = false;
+            break;
         case QDownloadedFileManager::eDownloadState::ALREADY_DOWNLOADED_SIZE_MISSMATCH:
         {
             QMessageBox::StandardButton userSelection = QMessageBox::StandardButton::No;
@@ -245,7 +273,9 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
             success = userSelection == QMessageBox::StandardButton::Yes ? true : false;
             break;
         }
-        case QDownloadedFileManager::eDownloadState::NOT_DOWNLOADED: success = true; break;
+        case QDownloadedFileManager::eDownloadState::NOT_DOWNLOADED:
+            success = true;
+            break;
     }
 
     if (success)
