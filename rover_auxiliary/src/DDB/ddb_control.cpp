@@ -214,33 +214,13 @@ bool DDBControlNode::setOutputMode(uint8_t channelID_)
  */
 bool DDBControlNode::modifyPWM(uint8_t dutyCycle_, float frequency_, uint8_t channelID_)
 {
-    bool isUpdated = false;
-
-    float oldFrequency = _channelInfo[channelID_].frequency;
-    uint8_t oldDutyCycle = _channelInfo[channelID_].dutyCycle;
+    bool isUpdated = true;
 
     _channelInfo[channelID_].frequency = frequency_;
+    RCLCPP_INFO(this->get_logger(), "Frequency set to %f", _channelInfo[channelID_].frequency);
+
     _channelInfo[channelID_].dutyCycle = dutyCycle_;
-
-    if (_channelInfo[channelID_].frequency == oldFrequency)
-    {
-        RCLCPP_WARN(this->get_logger(), "Received the same frequency of could not change it for channel %d", channelID_);
-    }
-    else
-    {
-        RCLCPP_INFO(this->get_logger(), "Frequency set to %f", _channelInfo[channelID_].frequency);
-        isUpdated = true;
-    }
-
-    if (_channelInfo[channelID_].dutyCycle == oldDutyCycle)
-    {
-        RCLCPP_WARN(this->get_logger(), "Received the same duty cycle of could not change it for channel %d", channelID_);
-    }
-    else
-    {
-        RCLCPP_INFO(this->get_logger(), "Duty cycle set to %d", _channelInfo[channelID_].dutyCycle);
-        isUpdated = true;
-    }
+    RCLCPP_INFO(this->get_logger(), "Duty cycle set to %d", _channelInfo[channelID_].dutyCycle);
 
     return isUpdated;
 }
@@ -271,7 +251,7 @@ std::string DDBControlNode::eOutputModeToStr(eOutputMode mode_)
  * @param response_
  */
 void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& request_,
-                                rover_msgs::srv::DDBControl::Response& response_)
+                                   rover_msgs::srv::DDBControl::Response& response_)
 {
     if (this->setOutputChannel(request_.channel_id))
     {
@@ -294,7 +274,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
  * @param response_
  */
 void DDBControlNode::setModeLogic(const rover_msgs::srv::DDBControl::Request& request_,
-                               rover_msgs::srv::DDBControl::Response& response_)
+                                  rover_msgs::srv::DDBControl::Response& response_)
 {
     if (!setOutputMode(request_.channel_id))
     {
@@ -347,7 +327,7 @@ bool DDBControlNode::valuesCheck(uint8_t dutyCycle_, float frequency_, rover_msg
  * @param response_
  */
 void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_,
-                                 rover_msgs::srv::DDBControl::Response& response_)
+                                    rover_msgs::srv::DDBControl::Response& response_)
 {
     switch (_channelInfo[request_.channel_id].mode)
     {

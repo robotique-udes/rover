@@ -4,7 +4,7 @@ uint8 OUTPUT_ON = 1
 uint8 OUTPUT_PWM = 2
 
 # Request
-uint8 channel_id
+uint8 channel_id # Range is [0, 3]
 uint8 output_state
 float32 frequency # Range is ]0.0; 100.0]
 float32 duty_cycle # Range is [0.0; 100,0]
