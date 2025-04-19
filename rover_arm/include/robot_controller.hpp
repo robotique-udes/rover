@@ -16,7 +16,7 @@ class RobotController
 {
   public:
     virtual ~RobotController() = default;
-    RobotController(std::initializer_list<eJointIndex> joints_, JoyManager joyManager_):
+    RobotController(JoyManager& joyManager_):
         _joyManager(joyManager_)
     {
     }

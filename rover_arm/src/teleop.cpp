@@ -26,10 +26,9 @@ class Teleop : public rclcpp::Node
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmPositions;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
 
+    JoyManager _joyManager;
     JointController _jointController;
-    // GripperController _gripperController;
     CartesianController _cartesianController;
-    JoyController _joyController;
 
     eControlMode _controlMode = eControlMode::JOINT;
 
@@ -38,10 +37,9 @@ class Teleop : public rclcpp::Node
   public:
     Teleop():
         rclcpp::Node("teleop_node"),
-        _jointController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2, eJointIndex::GRIPPER_TILT}),
-        // _gripperController({eJointIndex::GRIPPER_TILT, eJointIndex::GRIPPER_ROT}),
-        _cartesianController({eJointIndex::JL, eJointIndex::J1, eJointIndex::J2, eJointIndex::GRIPPER_TILT}),
-        _joyController()
+        _joyManager(),
+        _jointController(_joyManager),
+        _cartesianController(_joyManager)
     {
         _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
                                                                      1,
@@ -66,9 +64,10 @@ class Teleop : public rclcpp::Node
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
         rover_msgs::msg::ArmMsg armMsg;
 
+        _joyManager.updateJoyArray(joyArray);
+
         // TOGGLE CONTROL MODE
-        if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::TOGGLE_CARTESIAN)],
-                                      KEYBINDINGS::EMILE::CARTESIAN::TOGGLE_CARTESIAN))
+        if (_joyManager.isTriggered(KEYBINDINGS::EMILE::CARTESIAN::TOGGLE_CARTESIAN))
         {
             if (_controlMode == eControlMode::JOINT)
             {
@@ -85,13 +84,11 @@ class Teleop : public rclcpp::Node
         // JOINT CONTROL -- DEFAULT MODE
         if (_controlMode == eControlMode::JOINT)
         {
-            if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_INC)],
-                                          KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_INC))
+            if (_joyManager.isTriggered(KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_INC))
             {
                 _jointController.setControlledJoint(KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_INC);
             }
-            if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_DEC)],
-                                          KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_DEC))
+            if (_joyManager.isTriggered(KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_DEC))
             {
                 _jointController.setControlledJoint(KEYBINDINGS::EMILE::JOINT::JOINT_SELECT_DEC);
             }
@@ -105,8 +102,7 @@ class Teleop : public rclcpp::Node
             _cartesianController.getJointPositions(_jointPositions);
             armMsg.data = _cartesianController.getJointCmdFromInput(joyArray);
 
-            if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::RECORD)],
-                                          KEYBINDINGS::EMILE::CARTESIAN::RECORD))
+            if (_joyManager.isTriggered(KEYBINDINGS::EMILE::CARTESIAN::RECORD))
             {
                 if (_cartesianController.getRecordedPoints() == TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
                 {
@@ -119,8 +115,7 @@ class Teleop : public rclcpp::Node
                 }
             }
 
-            if (_joyController.isSelected(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::CARTESIAN::CREATE_PLAN)],
-                                          KEYBINDINGS::EMILE::CARTESIAN::CREATE_PLAN))
+            if (_joyManager.isTriggered(KEYBINDINGS::EMILE::CARTESIAN::CREATE_PLAN))
             {
                 if (_cartesianController.getRecordedPoints() != TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
                 {
@@ -141,7 +136,7 @@ class Teleop : public rclcpp::Node
         }
 
         // // GRIPPER CONTROL
-        // if (_joyController.isPressed(joyArray[TO_UNDERLYING(KEYBINDINGS::EMILE::GRIPPER::ACTIVATE_GRIPPER)]))
+        // if (_joyManager.isPressed(KEYBINDINGS::EMILE::GRIPPER::ACTIVATE_GRIPPER)]))
         // {
         //     armMsg.data = _gripperController.setCmd(joyArray);
         // }

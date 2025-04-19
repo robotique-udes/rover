@@ -22,11 +22,11 @@ class JoyManager
     {
     }
 
-    void updateJoyArray(const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> joyInputArray_)
+    void updateJoyArray(std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> joyInputArray_)
     {
         _joyInputArray = joyInputArray_;
 
-        for (size_t i = 0; i < TO_UNDERLYING(eJointIndex::eLAST); ++i)
+        for (size_t i = 0; i < TO_UNDERLYING(eJoyInput::eLAST); ++i)
         {
             eJoyInput button = static_cast<eJoyInput>(i);
             bool isPressedNow = isPressed(button);
@@ -41,6 +41,11 @@ class JoyManager
     bool isTriggered(eJoyInput joyInput_)
     {
         return _risingEdgeStates[TO_UNDERLYING(joyInput_)];
+    }
+
+    std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> getJoyArray(void)
+    {
+        return _joyInputArray;
     }
 
   protected:

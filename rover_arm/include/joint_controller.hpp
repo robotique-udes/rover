@@ -6,9 +6,9 @@
 class JointController : public RobotController
 {
   public:
-    JointController(std::initializer_list<eJointIndex> joints_, JoyManager joyManager_):
-        RobotController(joints_, joyManager_),
-        _currentControlledJoint(eJointIndex::eLAST)
+    JointController(JoyManager& joyManager_):
+        RobotController(joyManager_),
+        _currentControlledJoint(eJointIndex::JL)
     {
     }
 
@@ -17,18 +17,18 @@ class JointController : public RobotController
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
 
-        if (!_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::DEADMAN_SWITCH)]))
+        if (!_joyManager.isPressed(KEYBINDINGS::EMILE::DEADMAN_SWITCH))
         {
             return jointCommands;
         }
 
         if (ARM_CONFIGURATION::JL::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::JL_RIGHT)]))
+            if(_joyManager.isPressed(KEYBINDINGS::EMILE::JOINT::JL_RIGHT))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)] = getMaxVelocity(ARM_CONFIGURATION::JL::ID);
             }
-            else if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::JL_LEFT)]))
+            else if (_joyManager.isPressed(KEYBINDINGS::EMILE::JOINT::JL_LEFT))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)] = -1.0F * getMaxVelocity(ARM_CONFIGURATION::JL::ID);
             }
@@ -43,7 +43,7 @@ class JointController : public RobotController
         // }
         if (ARM_CONFIGURATION::J1::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J1)]))
+            if (_joyManager.isPressed(KEYBINDINGS::EMILE::JOINT::J1))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)]
                     = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J1)] * getMaxVelocity(ARM_CONFIGURATION::J1::ID);
@@ -51,7 +51,7 @@ class JointController : public RobotController
         }
         if (ARM_CONFIGURATION::J2::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J2)]))
+            if (_joyManager.isPressed(KEYBINDINGS::EMILE::JOINT::J2))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)]
                     = inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::J2)] * getMaxVelocity(ARM_CONFIGURATION::J2::ID);
@@ -60,13 +60,14 @@ class JointController : public RobotController
 
         if (ARM_CONFIGURATION::GRIPPER_TILT::ID == _currentControlledJoint)
         {
-            if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::WRIST_UP)]))
+            if (_joyManager.isPressed(KEYBINDINGS::EMILE::JOINT::WRIST_UP))
             {
                 jointCommands[TO_UNDERLYING(_currentControlledJoint)] = getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID);
             }
-            else if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::JOINT::WRIST_DOWN)]))
+            else if (_joyManager.isPressed(KEYBINDINGS::EMILE::JOINT::WRIST_DOWN))
             {
-                jointCommands[TO_UNDERLYING(_currentControlledJoint)] = -1.0F * getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID);
+                jointCommands[TO_UNDERLYING(_currentControlledJoint)]
+                    = -1.0F * getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID);
             }
         }
 
