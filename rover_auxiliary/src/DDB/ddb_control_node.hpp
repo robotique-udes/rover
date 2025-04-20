@@ -15,6 +15,7 @@ class DDBControlNode : public rclcpp::Node
     {
         OFF = rover_msgs::srv::DDBControl::Request::OUTPUT_OFF,
         ON = rover_msgs::srv::DDBControl::Request::OUTPUT_ON,
+        PWM = rover_msgs::srv::DDBControl::Request::OUTPUT_PWM,
     };
 
     enum class eOutputMode : size_t
@@ -36,13 +37,13 @@ class DDBControlNode : public rclcpp::Node
     ~DDBControlNode() = default;
 
   private:
-    void ddbControlBank0(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
-    void ddbControlBank1(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void callbackDdbControlBank0(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void callbackDdbControlBank1(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void setModeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void setStateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
-    bool setChannelOutput(uint8_t channelID_, uint8_t desiredState_);
+    bool setChannelOutput(uint8_t channelID_, eOutputState desiredState_);
     bool setOutputMode(uint8_t channelID_, eOutputMode mode_);
     bool setPWMValues(float dutyCycle_, float frequency_, uint8_t channelID_);
     bool valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_);

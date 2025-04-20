@@ -26,7 +26,7 @@ DDBControlNode::DDBControlNode():
                 RCLCPP_FATAL(this->get_logger(), "NULL request or response received.");
                 return;
             }
-            this->ddbControlBank0(*request_, *response_);
+            this->callbackDdbControlBank0(*request_, *response_);
         });
 
     _srv_control_bank1 = this->create_service<rover_msgs::srv::DDBControl>(
@@ -39,7 +39,7 @@ DDBControlNode::DDBControlNode():
                 RCLCPP_FATAL(this->get_logger(), "NULL request or response received.");
                 return;
             }
-            this->ddbControlBank1(*request_, *response_);
+            this->callbackDdbControlBank1(*request_, *response_);
         });
 }
 
@@ -49,7 +49,7 @@ DDBControlNode::DDBControlNode():
  * @param request_
  * @param response_
  */
-void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
+void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
                                      rover_msgs::srv::DDBControl::Response& response_)
 {
     if (request_.channel_id >= MAX_CHANNELS)
@@ -106,7 +106,7 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
  * @param request_
  * @param response_
  */
-void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request& request_,
+void DDBControlNode::callbackDdbControlBank1(const rover_msgs::srv::DDBControl::Request& request_,
                                      rover_msgs::srv::DDBControl::Response& response_)
 {
     if (request_.channel_id >= MAX_CHANNELS)
@@ -140,23 +140,9 @@ void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request&
  * @return true if successfully changed the state of the desired channel else
  * @return false
  */
-bool DDBControlNode::setChannelOutput(uint8_t channelID_, uint8_t desiredState_)
+bool DDBControlNode::setChannelOutput(uint8_t channelID_, eOutputState desiredState_)
 {
     eOutputState wantedState = TO_UNDERLYING(desiredState_);
-
-    if (desiredState_ == rover_msgs::srv::DDBControl::Request::OUTPUT_ON)
-    {
-        wantedState = eOutputState::ON;
-    }
-    else if (desiredState_ == rover_msgs::srv::DDBControl::Request::OUTPUT_OFF)
-    {
-        wantedState = eOutputState::OFF;
-    }
-    else
-    {
-        RCLCPP_ERROR(this->get_logger(), "Invalid state for channel: %d", channelID_);
-        return false;
-    }
 
     switch (wantedState)
     {
