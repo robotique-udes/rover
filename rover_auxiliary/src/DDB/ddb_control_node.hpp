@@ -11,17 +11,11 @@ class DDBControlNode : public rclcpp::Node
 {
     static constexpr size_t MAX_CHANNELS = 4UL;
 
-    enum class eOutputState : size_t
+    enum class eOutputState : uint8_t
     {
         OFF = rover_msgs::srv::DDBControl::Request::OUTPUT_OFF,
         ON = rover_msgs::srv::DDBControl::Request::OUTPUT_ON,
         PWM = rover_msgs::srv::DDBControl::Request::OUTPUT_PWM,
-    };
-
-    enum class eOutputMode : size_t
-    {
-        FIX,
-        PWM,
     };
 
     struct sChannelInfo
