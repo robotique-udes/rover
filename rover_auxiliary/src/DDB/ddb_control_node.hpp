@@ -1,5 +1,5 @@
-#ifndef __DDB__NODE__HPP__
-#define __DDB__NODE__HPP__
+#ifndef __DDB_NODE_HPP__
+#define __DDB_NODE_HPP__
 
 #include "rovus_lib/camera_info.hpp"
 #include "rovus_lib/macros.h"
@@ -13,8 +13,8 @@ class DDBControlNode : public rclcpp::Node
 
     enum class eOutputState : size_t
     {
-        OFF = 0,
-        ON = 1,
+        OFF = rover_msgs::srv::DDBControl::Request::OUTPUT_OFF,
+        ON = rover_msgs::srv::DDBControl::Request::OUTPUT_ON,
     };
 
     enum class eOutputMode : size_t
@@ -27,7 +27,7 @@ class DDBControlNode : public rclcpp::Node
     {
         eOutputState state = eOutputState::ON;
         eOutputMode mode = eOutputMode::FIX;
-        uint8_t dutyCycle = 0;
+        float dutyCycle = 0.0;
         float frequency = 0.0;
     };
 
@@ -44,7 +44,7 @@ class DDBControlNode : public rclcpp::Node
 
     bool setChannelOutput(uint8_t channelID_, uint8_t desiredState_);
     bool setOutputMode(uint8_t channelID_, eOutputMode mode_);
-    bool modifyPWM(float dutyCycle_, float frequency_, uint8_t channelID_);
+    bool setPWMValues(float dutyCycle_, float frequency_, uint8_t channelID_);
     bool valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_);
     std::string eOutputModeToStr(eOutputMode mode_);
     uint8_t eOutputStateToUint8_t(eOutputState state_);
@@ -55,4 +55,4 @@ class DDBControlNode : public rclcpp::Node
     sChannelInfo _channelInfo[MAX_CHANNELS] = {};
 };
 
-#endif
+#endif // __DDB_NODE_HPP__

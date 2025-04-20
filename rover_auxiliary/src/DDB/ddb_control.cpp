@@ -65,26 +65,16 @@ void DDBControlNode::ddbControlBank0(const rover_msgs::srv::DDBControl::Request&
     switch (request_.output_state)
     {
         case rover_msgs::srv::DDBControl::Request::OUTPUT_ON:
+            [[fallthrough]];
+
         case rover_msgs::srv::DDBControl::Request::OUTPUT_OFF:
             this->setStateLogic(request_, response_);
             this->setModeLogic(request_, response_);
-            this->modifyPWM(0.0, 0.0, request_.channel_id);
+            this->setPWMValues(0.0, 0.0, request_.channel_id);
             break;
 
         case rover_msgs::srv::DDBControl::Request::OUTPUT_PWM:
-            if (_channelInfo[request_.channel_id].state != eOutputState::OFF)
-            {
-                this->setModeLogic(request_, response_);
-            }
-            else
-            {
-                std::string msg = "Current state is OFF. Cannot set PWM mode.";
-                RCLCPP_ERROR(this->get_logger(), msg.c_str());
-                response_.success = false;
-                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
-                response_.status = msg;
-                return;
-            }
+            this->setModeLogic(request_, response_);
 
             if (valuesCheck(request_.duty_cycle, request_.frequency, request_.channel_id, response_))
             {
@@ -152,7 +142,7 @@ void DDBControlNode::ddbControlBank1(const rover_msgs::srv::DDBControl::Request&
  */
 bool DDBControlNode::setChannelOutput(uint8_t channelID_, uint8_t desiredState_)
 {
-    eOutputState wantedState = eOutputState::OFF;
+    eOutputState wantedState = TO_UNDERLYING(desiredState_);
 
     if (desiredState_ == rover_msgs::srv::DDBControl::Request::OUTPUT_ON)
     {
@@ -221,7 +211,7 @@ bool DDBControlNode::setOutputMode(uint8_t channelID_, eOutputMode desiredMode_)
  * @return true
  * @return false
  */
-bool DDBControlNode::modifyPWM(float dutyCycle_, float frequency_, uint8_t channelID_)
+bool DDBControlNode::setPWMValues(float dutyCycle_, float frequency_, uint8_t channelID_)
 {
     bool isUpdated = true;
 
@@ -343,7 +333,7 @@ bool DDBControlNode::valuesCheck(float dutyCycle_,
                                  uint8_t channelID_,
                                  rover_msgs::srv::DDBControl::Response& response_)
 {
-    if (dutyCycle_ > 100)
+    if (dutyCycle_ > 100.0 || dutyCycle_ < 0.0)
     {
         std::string msg = "Duty cycle must be in range [0.0; 100.0]. Duty cycle received: " + std::to_string(dutyCycle_);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
@@ -353,7 +343,7 @@ bool DDBControlNode::valuesCheck(float dutyCycle_,
         return false;
     }
 
-    if (frequency_ == 0.0)
+    if (frequency_ == 0.0F || frequency_ < 0.0F)
     {
         std::string msg = "Frequency must in range ]0.0; 100.0]. Frequency received: " + std::to_string(frequency_);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
@@ -382,7 +372,7 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
             break;
 
         case eOutputMode::PWM:
-            if (this->modifyPWM(request_.duty_cycle, request_.frequency, request_.channel_id))
+            if (this->setPWMValues(request_.duty_cycle, request_.frequency, request_.channel_id))
             {
                 std::string msg = "PWM values changed for channel #" + std::to_string(request_.channel_id) + "\nDuty cycle: "
                                   + std::to_string(request_.duty_cycle) + "\nFrequency: " + std::to_string(request_.frequency);
