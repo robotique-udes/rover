@@ -21,7 +21,6 @@ class DDBControlNode : public rclcpp::Node
     struct sChannelInfo
     {
         eOutputState state = eOutputState::ON;
-        eOutputMode mode = eOutputMode::FIX;
         float dutyCycle = 0.0;
         float frequency = 0.0;
     };
@@ -31,17 +30,16 @@ class DDBControlNode : public rclcpp::Node
     ~DDBControlNode() = default;
 
   private:
-    void callbackDdbControlBank0(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
-    void callbackDdbControlBank1(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
-    void setModeLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
+    void callbackDdbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
+                                 rover_msgs::srv::DDBControl::Response& response_);
+    void callbackDdbControlBank1(const rover_msgs::srv::DDBControl::Request& request_,
+                                 rover_msgs::srv::DDBControl::Response& response_);
     void setStateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
     bool setChannelOutput(uint8_t channelID_, eOutputState desiredState_);
-    bool setOutputMode(uint8_t channelID_, eOutputMode mode_);
     bool setPWMValues(float dutyCycle_, float frequency_, uint8_t channelID_);
     bool valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_);
-    std::string eOutputModeToStr(eOutputMode mode_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank0;
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank1;
@@ -49,4 +47,4 @@ class DDBControlNode : public rclcpp::Node
     sChannelInfo _channelInfo[MAX_CHANNELS] = {};
 };
 
-#endif // __DDB_NODE_HPP__
+#endif  // __DDB_NODE_HPP__

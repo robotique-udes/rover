@@ -50,7 +50,7 @@ DDBControlNode::DDBControlNode():
  * @param response_
  */
 void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
-                                     rover_msgs::srv::DDBControl::Response& response_)
+                                             rover_msgs::srv::DDBControl::Response& response_)
 {
     if (request_.channel_id >= MAX_CHANNELS)
     {
@@ -69,12 +69,11 @@ void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::
 
         case rover_msgs::srv::DDBControl::Request::OUTPUT_OFF:
             this->setStateLogic(request_, response_);
-            this->setModeLogic(request_, response_);
             this->setPWMValues(0.0, 0.0, request_.channel_id);
             break;
 
         case rover_msgs::srv::DDBControl::Request::OUTPUT_PWM:
-            this->setModeLogic(request_, response_);
+            this->setStateLogic(request_, response_);
 
             if (valuesCheck(request_.duty_cycle, request_.frequency, request_.channel_id, response_))
             {
@@ -85,7 +84,7 @@ void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::
                 std::string msg = "Invalid frequency or duty cycle. Check logs for details.";
                 RCLCPP_ERROR(this->get_logger(), msg.c_str());
                 response_.success = false;
-                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
+                response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
                 response_.status = msg;
                 return;
             }
@@ -95,7 +94,7 @@ void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::
             std::string msg = "Received request without a valid command" + std::to_string(request_.output_state);
             RCLCPP_WARN(this->get_logger(), msg.c_str());
             response_.success = false;
-            response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
+            response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
             response_.status = msg;
     }
 }
@@ -107,7 +106,7 @@ void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::
  * @param response_
  */
 void DDBControlNode::callbackDdbControlBank1(const rover_msgs::srv::DDBControl::Request& request_,
-                                     rover_msgs::srv::DDBControl::Response& response_)
+                                             rover_msgs::srv::DDBControl::Response& response_)
 {
     if (request_.channel_id >= MAX_CHANNELS)
     {
@@ -128,7 +127,7 @@ void DDBControlNode::callbackDdbControlBank1(const rover_msgs::srv::DDBControl::
     {
         RCLCPP_WARN(this->get_logger(), "Received request without a valid command: %d", request_.output_state);
         response_.success = false;
-        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
+        response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
         response_.status = "Received request without a valid command: " + std::to_string(request_.output_state);
     }
 }
@@ -142,9 +141,7 @@ void DDBControlNode::callbackDdbControlBank1(const rover_msgs::srv::DDBControl::
  */
 bool DDBControlNode::setChannelOutput(uint8_t channelID_, eOutputState desiredState_)
 {
-    eOutputState wantedState = TO_UNDERLYING(desiredState_);
-
-    switch (wantedState)
+    switch (desiredState_)
     {
         case eOutputState::ON:
             _channelInfo[channelID_].state = eOutputState::ON;
@@ -155,36 +152,12 @@ bool DDBControlNode::setChannelOutput(uint8_t channelID_, eOutputState desiredSt
             _channelInfo[channelID_].state = eOutputState::OFF;
             RCLCPP_INFO(this->get_logger(), "Set channel #%d output as OFF", channelID_);
             break;
-    }
-    return true;
-}
 
-/**
- * @brief Changes the mode to FIX or PWM based on the current mode.
- *
- * @param channelID_ Received from the user service call
- * @return true
- * @return false
- */
-bool DDBControlNode::setOutputMode(uint8_t channelID_, eOutputMode desiredMode_)
-{
-    std::string currentMode;
-
-    switch (desiredMode_)
-    {
-        case eOutputMode::PWM:
-            _channelInfo[channelID_].mode = eOutputMode::PWM;
-            currentMode = this->eOutputModeToStr(_channelInfo[channelID_].mode);
-            RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentMode.c_str());
-            break;
-
-        case eOutputMode::FIX:
-            _channelInfo[channelID_].mode = eOutputMode::FIX;
-            currentMode = this->eOutputModeToStr(_channelInfo[channelID_].mode);
-            RCLCPP_INFO(this->get_logger(), "Current mode: %s", currentMode.c_str());
+        case eOutputState::PWM:
+            _channelInfo[channelID_].state = eOutputState::PWM;
+            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as PWM", channelID_);
             break;
     }
-
     return true;
 }
 
@@ -211,25 +184,6 @@ bool DDBControlNode::setPWMValues(float dutyCycle_, float frequency_, uint8_t ch
 }
 
 /**
- * @brief Takes the current mode and changes it for a std::string
- *
- * @param mode_ Current mode of the channel
- * @return std::string corresponding to the mode asked
- */
-std::string DDBControlNode::eOutputModeToStr(eOutputMode mode_)
-{
-    switch (mode_)
-    {
-        case eOutputMode::FIX:
-            return "FIX";
-        case eOutputMode::PWM:
-            return "PWM";
-        default:
-            return "UNKNOWN";
-    }
-}
-
-/**
  * @brief Main logic for switching state of the desired channel
  *
  * @param request_
@@ -243,7 +197,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
         std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
         RCLCPP_INFO(this->get_logger(), msg.c_str());
         response_.success = true;
-        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
+        response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
         response_.status = msg;
     }
     else
@@ -252,55 +206,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
             = "Could not set channel #" + std::to_string(request_.channel_id) + " to " + std::to_string(request_.output_state);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
         response_.success = false;
-        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
-        response_.status = msg;
-    }
-}
-
-/**
- * @brief Main logic for switching mode of the desired channel. Only in bank 0
- *
- * @param request_
- * @param response_
- */
-void DDBControlNode::setModeLogic(const rover_msgs::srv::DDBControl::Request& request_,
-                                  rover_msgs::srv::DDBControl::Response& response_)
-{
-    eOutputMode desiredMode = eOutputMode::FIX;
-
-    if (request_.output_state == rover_msgs::srv::DDBControl::Request::OUTPUT_ON
-        || request_.output_state == rover_msgs::srv::DDBControl::Request::OUTPUT_OFF)
-    {
-        desiredMode = eOutputMode::FIX;
-    }
-    else if (request_.output_state == rover_msgs::srv::DDBControl::Request::OUTPUT_PWM)
-    {
-        desiredMode = eOutputMode::PWM;
-    }
-    else
-    {
-        RCLCPP_ERROR(this->get_logger(), "Invalid mode for channel: %d", request_.channel_id);
-        response_.success = false;
-        response_.status = "Invalid mode for channel: " + std::to_string(request_.channel_id);
-        return;
-    }
-
-    if (!setOutputMode(request_.channel_id, desiredMode))
-    {
-        std::string msg = "Mode could not be set to " + std::to_string(request_.output_state) + " for channel #"
-                          + std::to_string(request_.channel_id);
-        RCLCPP_ERROR(this->get_logger(), msg.c_str());
-        response_.success = false;
-        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
-        response_.status = msg;
-    }
-    else
-    {
-        std::string msg = "Succesfully assigned mode " + eOutputModeToStr(_channelInfo[request_.channel_id].mode)
-                          + " for channel #" + std::to_string(request_.channel_id);
-        RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
-        response_.success = true;
-        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
+        response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
         response_.status = msg;
     }
 }
@@ -319,12 +225,12 @@ bool DDBControlNode::valuesCheck(float dutyCycle_,
                                  uint8_t channelID_,
                                  rover_msgs::srv::DDBControl::Response& response_)
 {
-    if (dutyCycle_ > 100.0 || dutyCycle_ < 0.0)
+    if (dutyCycle_ > 100.0F || dutyCycle_ < 0.0F)
     {
         std::string msg = "Duty cycle must be in range [0.0; 100.0]. Duty cycle received: " + std::to_string(dutyCycle_);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
         response_.success = false;
-        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[channelID_].state);
+        response_.current_output_state = TO_UNDERLYING(_channelInfo[channelID_].state);
         response_.status = msg;
         return false;
     }
@@ -334,7 +240,7 @@ bool DDBControlNode::valuesCheck(float dutyCycle_,
         std::string msg = "Frequency must in range ]0.0; 100.0]. Frequency received: " + std::to_string(frequency_);
         RCLCPP_ERROR(this->get_logger(), msg.c_str());
         response_.success = false;
-        response_.current_output_state = eOutputStateToUint8_t(_channelInfo[channelID_].state);
+        response_.current_output_state = TO_UNDERLYING(_channelInfo[channelID_].state);
         response_.status = msg;
         return false;
     }
@@ -351,31 +257,25 @@ bool DDBControlNode::valuesCheck(float dutyCycle_,
 void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                     rover_msgs::srv::DDBControl::Response& response_)
 {
-    switch (_channelInfo[request_.channel_id].mode)
+    if (_channelInfo[request_.channel_id].state == eOutputState::PWM)
     {
-        case eOutputMode::FIX:
-            RCLCPP_ERROR(this->get_logger(), "Current mode doesn't allow changing PWM values");
-            break;
-
-        case eOutputMode::PWM:
-            if (this->setPWMValues(request_.duty_cycle, request_.frequency, request_.channel_id))
-            {
-                std::string msg = "PWM values changed for channel #" + std::to_string(request_.channel_id) + "\nDuty cycle: "
-                                  + std::to_string(request_.duty_cycle) + "\nFrequency: " + std::to_string(request_.frequency);
-                RCLCPP_INFO(this->get_logger(), msg.c_str());
-                response_.success = true;
-                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
-                response_.status = msg;
-            }
-            else
-            {
-                std::string msg = "PWM values could not be changed for channel #" + std::to_string(request_.channel_id)
-                                  + ". Check logs for details.";
-                RCLCPP_ERROR(this->get_logger(), msg.c_str());
-                response_.success = false;
-                response_.current_output_state = eOutputStateToUint8_t(_channelInfo[request_.channel_id].state);
-                response_.status = msg;
-            }
-            break;
+        if (this->setPWMValues(request_.duty_cycle, request_.frequency, request_.channel_id))
+        {
+            std::string msg = "PWM values changed for channel #" + std::to_string(request_.channel_id) + "\nDuty cycle: "
+                              + std::to_string(request_.duty_cycle) + "\nFrequency: " + std::to_string(request_.frequency);
+            RCLCPP_INFO(this->get_logger(), msg.c_str());
+            response_.success = true;
+            response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
+            response_.status = msg;
+        }
+        else
+        {
+            std::string msg = "PWM values could not be changed for channel #" + std::to_string(request_.channel_id)
+                              + ". Check logs for details.";
+            RCLCPP_ERROR(this->get_logger(), msg.c_str());
+            response_.success = false;
+            response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
+            response_.status = msg;
+        }
     }
 }
