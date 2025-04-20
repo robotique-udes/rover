@@ -379,15 +379,3 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
             break;
     }
 }
-
-uint8_t DDBControlNode::eOutputStateToUint8_t(eOutputState state_)
-{
-    if (state_ == eOutputState::ON)
-    {
-        return rover_msgs::srv::DDBControl::Request::OUTPUT_ON;
-    }
-    else
-    {
-        return rover_msgs::srv::DDBControl::Request::OUTPUT_OFF;
-    }
-}
