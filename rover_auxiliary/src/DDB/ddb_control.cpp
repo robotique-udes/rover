@@ -178,7 +178,7 @@ bool DDBControlNode::setPWMValues(float dutyCycle_, float frequency_, uint8_t ch
     RCLCPP_INFO(this->get_logger(), "Frequency set to %f", _channelInfo[channelID_].frequency);
 
     _channelInfo[channelID_].dutyCycle = dutyCycle_;
-    RCLCPP_INFO(this->get_logger(), "Duty cycle set to %d", _channelInfo[channelID_].dutyCycle);
+    RCLCPP_INFO(this->get_logger(), "Duty cycle set to %f", _channelInfo[channelID_].dutyCycle);
 
     return isUpdated;
 }
@@ -192,7 +192,9 @@ bool DDBControlNode::setPWMValues(float dutyCycle_, float frequency_, uint8_t ch
 void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& request_,
                                    rover_msgs::srv::DDBControl::Response& response_)
 {
-    if (this->setChannelOutput(request_.channel_id, request_.output_state))
+    eOutputState wantedState = static_cast<eOutputState>(request_.output_state);
+
+    if (this->setChannelOutput(request_.channel_id, wantedState))
     {
         std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
         RCLCPP_INFO(this->get_logger(), msg.c_str());
