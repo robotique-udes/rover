@@ -38,6 +38,15 @@ int main(int argc, char* argv[])
     rosProcess.start("bash",
                      QStringList() << "-c"
                                    << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
+    
+    #warning enelver
+
+    QTimer* timer = new QTimer(&app);
+    QObject::connect(timer, &QTimer::timeout, []() {
+        QToastNotification::getInstance().notify("Periodic Update", "This is a periodic toast. The description can be quite long and its perfect this way wow very long only shit ye give me some info", QToastNotification::eNotifType::ERROR, 5000);
+    });
+    timer->start(15000);
+
 
     int ret = app.exec();
     rosProcess.terminate();
@@ -76,10 +85,10 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
             mainWindow_.show();
             secondWindow_.setGeometry(screenGeometry.x() + screenWidth / 2, screenGeometry.y(), screenWidth / 2, screenHeight);
             secondWindow_.show();
-            QTimer::singleShot(1000, [] {
-            QToastNotification::getInstance().showMessage("Hello from the toast!", 3000);
-            });
-            #warning enleveee
+            QTimer::singleShot(1000,
+                               []
+                               {
+                               });
             break;
         }
 
@@ -88,10 +97,10 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
             secondWindow_.setGeometry(screens[1]->geometry());
             mainWindow_.showMaximized();
             secondWindow_.showMaximized();
-             QTimer::singleShot(1000, [] {
-            QToastNotification::getInstance().showMessage("Hello from the toast!", 3000);
-            });
-            #warning enleveee
+            QTimer::singleShot(1000,
+                               []
+                               {
+                               });
             break;
     }
 }
