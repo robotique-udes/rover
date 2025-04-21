@@ -11,6 +11,9 @@
 #include <map>
 #include <initializer_list>
 
+static constexpr float DEADZONE = 0.01F;
+static constexpr float NEUTRAL = 0.0F;
+
 class JoyManager
 {
   public:
@@ -36,7 +39,7 @@ class JoyManager
     }
     bool isPressed(eJoyInput joyInput_)
     {
-        return !IN_ERROR(_joyInputArray[TO_UNDERLYING(joyInput_)], 0.01F, 0.0F);
+        return !IN_ERROR(_joyInputArray[TO_UNDERLYING(joyInput_)], DEADZONE, NEUTRAL);
     }
     bool isTriggered(eJoyInput joyInput_)
     {

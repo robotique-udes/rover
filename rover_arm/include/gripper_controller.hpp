@@ -40,7 +40,8 @@
 //         else if (_joyController.isPressed(inputArray_[TO_UNDERLYING(KEYBINDINGS::EMILE::GRIPPER::TILT_REV)]))
 //         {
 //             _currentControlledJoint = ARM_CONFIGURATION::GRIPPER_TILT::ID;
-//             jointCommands[TO_UNDERLYING(_currentControlledJoint)] = -1.0F * getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID);
+//             jointCommands[TO_UNDERLYING(_currentControlledJoint)] = -1.0F *
+//             getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID);
 //         }
 
 //         // VELOCITY CONTROL FOR GRIPPER_CLOSE IS NOT YET IMPLEMENTED

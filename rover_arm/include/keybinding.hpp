@@ -51,62 +51,49 @@ enum class eBooleanJoyInputs
 
 namespace KEYBINDINGS
 {
-    namespace EMILE
+
+    constexpr eJoyInput DEADMAN_SWITCH = eJoyInput::L1;
+
+    namespace JOINT
     {
-        constexpr eJoyInput DEADMAN_SWITCH = eJoyInput::L1;
+        constexpr eJoyInput JOINT_SELECT_INC = eJoyInput::CROSS_UP;
+        constexpr eJoyInput JOINT_SELECT_DEC = eJoyInput::CROSS_DOWN;
 
-        namespace JOINT
-        {
-            constexpr eJoyInput JOINT_SELECT_INC = eJoyInput::CROSS_UP;
-            constexpr eJoyInput JOINT_SELECT_DEC = eJoyInput::CROSS_DOWN;
+        constexpr eJoyInput JL_RIGHT = eJoyInput::CROSS_RIGHT;
+        constexpr eJoyInput JL_LEFT = eJoyInput::CROSS_LEFT;
 
-            constexpr eJoyInput JL_RIGHT = eJoyInput::CROSS_RIGHT;
-            constexpr eJoyInput JL_LEFT = eJoyInput::CROSS_LEFT;
+        constexpr eJoyInput J0 = eJoyInput::eLAST;  // Is set to eLAST since rotating joint is not implemented
 
-            constexpr eJoyInput J0 = eJoyInput::eLAST;  // Is set to eLAST since rotating joint is not implemented
+        constexpr eJoyInput J1 = eJoyInput::JOYSTICK_LEFT_FRONT;
 
-            constexpr eJoyInput J1 = eJoyInput::JOYSTICK_LEFT_FRONT;
+        constexpr eJoyInput J2 = eJoyInput::JOYSTICK_RIGHT_FRONT;
 
-            constexpr eJoyInput J2 = eJoyInput::JOYSTICK_RIGHT_FRONT;
+        constexpr eJoyInput WRIST_UP = eJoyInput::L2;
+        constexpr eJoyInput WRIST_DOWN = eJoyInput::R2;
 
-            constexpr eJoyInput WRIST_UP = eJoyInput::L2;
-            constexpr eJoyInput WRIST_DOWN = eJoyInput::R2;
+    }  // namespace JOINT
 
-        }  // namespace JOINT
+    namespace CARTESIAN
+    {
+        constexpr eJoyInput TOGGLE_CARTESIAN = eJoyInput::Y;
 
-        namespace CARTESIAN
-        {
-            constexpr eJoyInput TOGGLE_CARTESIAN = eJoyInput::Y;
+        constexpr eJoyInput X_AXIS_RIGHT = eJoyInput::CROSS_RIGHT;
+        constexpr eJoyInput X_AXIS_LEFT = eJoyInput::CROSS_LEFT;
 
-            constexpr eJoyInput X_AXIS_RIGHT = eJoyInput::CROSS_RIGHT;
-            constexpr eJoyInput X_AXIS_LEFT = eJoyInput::CROSS_LEFT;
+        constexpr eJoyInput Y_AXIS = eJoyInput::JOYSTICK_RIGHT_FRONT;
 
-            constexpr eJoyInput Y_AXIS = eJoyInput::JOYSTICK_RIGHT_FRONT;
+        constexpr eJoyInput Z_AXIS = eJoyInput::JOYSTICK_LEFT_FRONT;
 
-            constexpr eJoyInput Z_AXIS = eJoyInput::JOYSTICK_LEFT_FRONT;
+        constexpr eJoyInput ACTIVATE_ALPHA = eJoyInput::R1;
+        constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::R2;
+        constexpr eJoyInput ALPHA_NEGATIVE = eJoyInput::L2;
 
-            constexpr eJoyInput ACTIVATE_ALPHA = eJoyInput::R1;
-            constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::R2;
-            constexpr eJoyInput ALPHA_NEGATIVE = eJoyInput::L2;
+        constexpr eJoyInput RECORD = eJoyInput::A;
+        constexpr eJoyInput CLEAR_POINTS = eJoyInput::X;
+        constexpr eJoyInput CREATE_PLAN = eJoyInput::B;
 
-            constexpr eJoyInput RECORD = eJoyInput::A;
-            constexpr eJoyInput CLEAR_POINTS = eJoyInput::X;
-            constexpr eJoyInput CREATE_PLAN = eJoyInput::B;
+    }  // namespace CARTESIAN
 
-        }  // namespace CARTESIAN
-
-        namespace GRIPPER
-        {
-            constexpr eJoyInput ROT_FWD = eJoyInput::B;
-            constexpr eJoyInput ROT_REV = eJoyInput::X;
-
-            constexpr eJoyInput TILT_FWD = eJoyInput::Y;
-            constexpr eJoyInput TILT_REV = eJoyInput::A;
-
-            constexpr eJoyInput CLOSE = eJoyInput::CROSS_DOWN;
-        }  // namespace GRIPPER
-
-    }  // namespace EMILE
 }  // namespace KEYBINDINGS
 
 #endif
