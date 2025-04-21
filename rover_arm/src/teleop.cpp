@@ -9,7 +9,6 @@
 #include "keybinding.hpp"
 
 #include <joint_controller.hpp>
-#include <gripper_controller.hpp>
 #include <cartesian_controller.hpp>
 
 class Teleop : public rclcpp::Node
