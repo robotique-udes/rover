@@ -57,4 +57,11 @@
 #define GET_WORSE_OF(A, B) (A == true && B == true)
 #define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
 
+template<typename ENUM_T>
+constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T enum_) noexcept
+{
+    static_assert(std::is_enum_v<ENUM_T>, "TO_UNDERLYING() can only be used with enum types");
+    return static_cast<std::underlying_type_t<ENUM_T>>(enum_);
+}
+
 #endif  //__MACROS_H__
