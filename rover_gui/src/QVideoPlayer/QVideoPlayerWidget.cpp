@@ -57,7 +57,7 @@ void QVideoPlayerWidget::startDetection(void)
     }
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
     }
 }
 
@@ -69,7 +69,7 @@ void QVideoPlayerWidget::stopDetection(void)
     }
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
     }
 }
 
@@ -113,11 +113,11 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 
 void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 {
-    uint16_t nbr_ids_detected = ids_.size();
+    size_t nbr_ids_detected = ids_.size();
 
     if (nbr_ids_detected > NBR_IDS_TO_DISPLAY)
     {
-        ids_.resize(5);
+        ids_.resize(NBR_IDS_TO_DISPLAY);
     }
     _ui.arucoIdsTextBox->setText("Ids: ");
 
@@ -164,7 +164,7 @@ void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t 
 {
     if (!success_ && _tag == tag_)
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, request made on %s regarding aruco detection failed", _camURL.c_str());
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, request made on %s regarding aruco detection failed", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -203,7 +203,7 @@ void QVideoPlayerWidget::onArucoCameraFailed(bool valid_)
             _ui.arucoPushButton->setEnabled(true);
         }
 
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);

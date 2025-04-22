@@ -173,4 +173,4 @@ QStatusBar {
 
                                         "SideBar { border: 2px solid black; }";
 
-constexpr const char* lightMode = "";
+constexpr const char* STYLE_LIGHT_MODE = "";

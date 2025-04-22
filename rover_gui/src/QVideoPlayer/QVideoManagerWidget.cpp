@@ -28,7 +28,7 @@ void QVideoManagerWidget::CB_updateArucoDetectionManager()
     }
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
     }
 }
 
@@ -97,10 +97,9 @@ void QVideoManagerWidget::initArucoPublisher(void)
                                                                                      CB_displayArucoDetected(msg);
                                                                                  });
     }
-
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
     }
 }
 
@@ -110,10 +109,9 @@ void QVideoManagerWidget::initArucoClient(void)
     {
         _client_arucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>("/rover/auxiliary/aruco/manager");
     }
-
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
     }
 
     for (auto& widget : _videoPlaysWidgets)

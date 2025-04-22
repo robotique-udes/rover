@@ -48,16 +48,13 @@ void QPlayerWorker::manageDetectionInternal(
         }
     }
 
-    if (result.valid())
+    if (result.valid() && !service_call_interrupted)
     {
-        if (!service_call_interrupted)
-        {
-            std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();
+        std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();
 
-            if (response != nullptr)
-            {
-                success = response->success;
-            }
+        if (response != nullptr)
+        {
+            success = response->success;
         }
     }
     emit detectionHandledSuccessfully(success, tag_);
