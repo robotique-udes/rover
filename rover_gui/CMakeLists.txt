@@ -106,7 +106,6 @@ add_executable(main_gui src/gui.cpp
                         src/QRtspPlayer/QGStreamerWorker.cpp
                         src/QRtspPlayer/QGStreamerWorker.hpp
                         src/QRtspPlayer/QLoggingMacros.hpp
-                        src/QRtspPlayer/QPlayPauseButton.hpp
 
                         src/QArrucoWorker/QPlayerWorker.cpp
                         src/QArrucoWorker/QPlayerWorker.hpp

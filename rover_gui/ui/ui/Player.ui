@@ -297,25 +297,28 @@
         <item>
          <widget class="QPushButton" name="playPauseButton">
           <property name="minimumSize">
-           <size>
+          <size>
             <width>28</width>
             <height>28</height>
-           </size>
+          </size>
           </property>
           <property name="maximumSize">
-           <size>
+          <size>
             <width>28</width>
             <height>28</height>
-           </size>
+          </size>
           </property>
           <property name="toolTip">
-           <string>Play/Pause</string>
+          <string>Play</string>
           </property>
           <property name="icon">
-           <iconset resource="../../src/Global/Constant/resources.qrc">
+          <iconset resource="../../src/Global/Constant/resources.qrc">
             <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
           </property>
-         </widget>
+          <property name="checkable">
+          <bool>true</bool>
+          </property>
+        </widget>
         </item>
         <item>
          <widget class="QFrame" name="statusIndicator">

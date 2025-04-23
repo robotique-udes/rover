@@ -134,6 +134,7 @@ public:
         QIcon icon3;
         icon3.addFile(QString::fromUtf8(":/icons/play.png"), QSize(), QIcon::Normal, QIcon::Off);
         playPauseButton->setIcon(icon3);
+        playPauseButton->setCheckable(true);
 
         topLayout->addWidget(playPauseButton);
 
@@ -279,7 +280,7 @@ public:
 #endif // QT_CONFIG(tooltip)
         rtspUrlInput->setPlaceholderText(QCoreApplication::translate("RtspPlayerWidget", "Enter RTSP URL...", nullptr));
 #if QT_CONFIG(tooltip)
-        playPauseButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Play/Pause", nullptr));
+        playPauseButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Play", nullptr));
 #endif // QT_CONFIG(tooltip)
         statusIndicator->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "QFrame { border-radius: 4px; background-color: red; }", nullptr));
         videoWidget->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "background-color: black;", nullptr));

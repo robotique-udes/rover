@@ -22,7 +22,7 @@
 #include "QGStreamerWorker.hpp"
 #include "UI_Player.h"
 #include "QLogManager.hpp"
-#include "QPlayPauseButton.hpp" 
+// Remove QPlayPauseButton include
 #include "QArrucoWorker/QPlayerWorker.hpp"
 
 enum class PlayerState {
@@ -166,7 +166,7 @@ private:
     QStackedWidget* _videoStack = nullptr;
     QWidget* _statusPage = nullptr;
     QLabel* _statusLabel = nullptr;
-    QPlayPauseButton* _playPauseButton = nullptr;
+    QPushButton* _playPauseButton = nullptr; // Changed from QPlayPauseButton* to QPushButton*
     QPushButton* _toggleControlsButton = nullptr;
     QWidget* _controlsContainer = nullptr;
     QToolButton* _screenshotButton = nullptr;

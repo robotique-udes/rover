@@ -94,32 +94,8 @@ void RtspPlayerWidget::setupVideoStack(void)
 
 void RtspPlayerWidget::setupCustomControls(void)
 {
-    // Create custom play/pause button
-    QPlayPauseButton* playPauseButton = new QPlayPauseButton(this);
-    QWidget* oldButton = this->_ui.playPauseButton;
-    
-    if (oldButton) {
-        playPauseButton->setObjectName("playPauseButton");
-        playPauseButton->setToolTip(oldButton->toolTip());
-        
-        // Set play/pause icons from resources
-        playPauseButton->setPlayIcon(QIcon(":/icons/play.png"));
-        playPauseButton->setPauseIcon(QIcon(":/icons/stop.png"));
-        
-        // Match the size of the original button
-        playPauseButton->setMinimumSize(oldButton->minimumSize());
-        playPauseButton->setMaximumSize(oldButton->maximumSize());
-        
-        // Replace the old button
-        QHBoxLayout* topLayout = this->_ui.topLayout;
-        if (topLayout) {
-            topLayout->replaceWidget(oldButton, playPauseButton);
-            oldButton->hide(); // Hide rather than delete to avoid layout issues
-        }
-    }
-    
     // Store references to UI elements we need to access later
-    this->_playPauseButton = playPauseButton;
+    this->_playPauseButton = this->_ui.playPauseButton;
     this->_arucoButton = this->_ui.arucoButton;
     this->_arucoIdsTextBox = this->_ui.arucoIdsTextBox;
     this->_screenshotButton = this->_ui.screenshotButton;
@@ -130,12 +106,20 @@ void RtspPlayerWidget::setupCustomControls(void)
     this->_streamSelector = this->findChild<QComboBox*>("streamSelector");
     
     // Connect UI signals
-    // Connect play/pause button signals
-    connect(playPauseButton, &QPlayPauseButton::playClicked, this, [this]()
-    { 
-        this->startStream(this->_ui.rtspUrlInput->text()); 
+    // Connect play/pause button signal
+    connect(this->_playPauseButton, &QPushButton::clicked, this, [this]() {
+        if (this->_playPauseButton->isChecked()) {
+            // Button is checked (showing pause icon) - start stream
+            this->startStream(this->_ui.rtspUrlInput->text());
+            this->_playPauseButton->setIcon(QIcon(":/icons/stop.png"));
+            this->_playPauseButton->setToolTip("Stop");
+        } else {
+            // Button is unchecked (showing play icon) - stop stream
+            this->stopStream();
+            this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
+            this->_playPauseButton->setToolTip("Play");
+        }
     });
-    connect(playPauseButton, &QPlayPauseButton::pauseClicked, this, &RtspPlayerWidget::stopStream);
     
     // Connect other button signals - only if they exist
     if (this->_arucoButton)

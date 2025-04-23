@@ -117,18 +117,27 @@ void RtspPlayerWidget::setPlayerState(PlayerState state_)
     {
         case PlayerState::NotConnected:
             this->updateStatusText("Not Connected");
-            this->_playPauseButton->setPlaying(false);
+            // Update button to play state (unchecked)
+            this->_playPauseButton->setChecked(false);
+            this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
+            this->_playPauseButton->setToolTip("Play");
             break;
             
         case PlayerState::Connecting:
             this->updateStatusText("Connecting...");
-            this->_playPauseButton->setPlaying(true);
+            // Update button to pause state (checked)
+            this->_playPauseButton->setChecked(true);
+            this->_playPauseButton->setIcon(QIcon(":/icons/stop.png"));
+            this->_playPauseButton->setToolTip("Stop");
             this->_connectionTimeoutTimer->start(8000);
             break;
             
         case PlayerState::Streaming:
             this->updateStatusText("");
-            this->_playPauseButton->setPlaying(true);
+            // Update button to pause state (checked)
+            this->_playPauseButton->setChecked(true);
+            this->_playPauseButton->setIcon(QIcon(":/icons/stop.png"));
+            this->_playPauseButton->setToolTip("Stop");
             this->_wasEverConnected = true;
             this->_arucoButton->setEnabled(true);
             this->_frameTimeoutTimer->start(2000);
@@ -136,7 +145,10 @@ void RtspPlayerWidget::setPlayerState(PlayerState state_)
             
         case PlayerState::Reconnecting:
             this->updateStatusText(QString("Reconnecting... (%1/%2)").arg(this->_reconnectAttempts).arg(MAX_RECONNECT_ATTEMPTS));
-            this->_playPauseButton->setPlaying(false);
+            // Update button to play state (unchecked)
+            this->_playPauseButton->setChecked(false);
+            this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
+            this->_playPauseButton->setToolTip("Play");
             if (this->_arucoButton->isChecked())
             {
                 LOG_INFO_TARGET("RtspPlayer", "Automatically stopping Aruco detection due to stream loss", this->_widgetId.toUtf8().constData());
@@ -148,19 +160,28 @@ void RtspPlayerWidget::setPlayerState(PlayerState state_)
             
         case PlayerState::Paused:
             this->updateStatusText("Paused");
-            this->_playPauseButton->setPlaying(false);
+            // Update button to play state (unchecked)
+            this->_playPauseButton->setChecked(false);
+            this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
+            this->_playPauseButton->setToolTip("Play");
             this->_arucoButton->setEnabled(false);
             break;
             
         case PlayerState::ConnectionError:
             this->updateStatusText("Connection Error");
-            this->_playPauseButton->setPlaying(false);
+            // Update button to play state (unchecked)
+            this->_playPauseButton->setChecked(false);
+            this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
+            this->_playPauseButton->setToolTip("Play");
             this->tryReconnect();
             break;
             
         case PlayerState::ConnectionFailed:
             this->updateStatusText("Connection Failed");
-            this->_playPauseButton->setPlaying(false);
+            // Update button to play state (unchecked)
+            this->_playPauseButton->setChecked(false);
+            this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
+            this->_playPauseButton->setToolTip("Play");
             this->_arucoButton->setEnabled(false);
             break;
     }
