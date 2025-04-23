@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_msgs)
 
+if(POLICY CMP0148)
+  cmake_policy(SET CMP0148 OLD)
+endif()
+
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/..")
 
 set(ROVER_BASE_EXEC_PATH "${INSTALL_PATH}/rover_gui/lib/rover_gui/main_gui")
