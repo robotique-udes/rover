@@ -2,5 +2,12 @@
     <qresource prefix="/">
         <file>icons/play.png</file>
         <file>icons/stop.png</file>
+        <file>icons/aruco_marker.png</file>
+        <file>icons/camera.png</file>
+        <file>icons/record_on.png</file>
+        <file>icons/record_off.png</file>
+        <file>icons/log_view.png</file>
+        <file>icons/up_arrow.png</file>
+        <file>icons/down_arrow.png</file>
     </qresource>
 </RCC>

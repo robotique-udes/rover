@@ -97,8 +97,12 @@ add_executable(main_gui src/gui.cpp
                         src/QDashboard/QExample.hpp
                         src/QDashboard/QExample.cpp
 
-                        src/QRtspPlayer/QRtspPlayerWidget.hpp
-                        src/QRtspPlayer/QRtspPlayerWidget.cpp
+                        src/QRtspPlayer/QRtspPlayerWidgetHeader.hpp
+                        src/QRtspPlayer/QRtspPlayerWidgetCore.cpp
+                        src/QRtspPlayer/QRtspPlayerWidgetLogging.cpp
+                        src/QRtspPlayer/QRtspPlayerWidgetArruco.cpp
+                        src/QRtspPlayer/QRtspPlayerWidgetStreaming.cpp
+                        src/QRtspPlayer/QRtspPlayerWidgetUI.cpp
                         src/QRtspPlayer/QGStreamerWorker.cpp
                         src/QRtspPlayer/QGStreamerWorker.hpp
                         src/QRtspPlayer/QLoggingMacros.hpp

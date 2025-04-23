@@ -10,8 +10,9 @@
 #include <QMap>
 #include <QLineEdit>
 #include <QDialog>
+#include <memory>
 #include <vector>
-#include "QRtspPlayer/QRtspPlayerWidget.hpp"
+#include "QRtspPlayer/QRtspPlayerWidgetHeader.hpp"
 
 class SecondaryWindow : public QMainWindow
 {
@@ -22,54 +23,68 @@ public:
     ~SecondaryWindow();
 
 private slots:
-    void onLayoutChange(int index);
-    void onStreamStateChanged(bool running, int streamIndex);
+    void onLayoutChange(int index_);
+    void onStreamStateChanged(bool running_, int streamIndex_);
 
 private:
+    // Layout types
+    enum class LayoutMode {
+        SingleStream = 0,
+        TwoStreams = 1,
+        FourStreams = 2,
+        SixStreams = 3
+    };
+    
+    // UI setup methods
+    void setupUI(void);
+    void loadPredefinedStreams(void);
+    void initializeStreams(void);
+    void updateLayout(void);
+    
+    // Stream container helpers
+    QWidget* createStreamContainer(int streamIndex_);
+    void setupSingleStreamView(void);
+    void setupMultiStreamView(void);
+    void updateStreamHeader(int streamIndex_);
+    void updateAllStreamHeaders(void);
+    void addStreamSelector(RtspPlayerWidget* widget_, int position_);
+    
+    // Core widget components
     QWidget _centralWidget;
-    QVBoxLayout* _mainLayout;
+    QVBoxLayout* _mainLayout = nullptr;
+    QStackedWidget* _layoutStack = nullptr;
+    QWidget* _singleStreamView = nullptr;
+    QWidget* _multiStreamView = nullptr;
     
-    // Layout widgets
-    QStackedWidget* _layoutStack;  // Holds different layout types
-    QWidget* _singleStreamView;    // Container for single stream mode
-    QWidget* _multiStreamView;     // Container for multi-stream mode
-    
+    // ROS components
     std::shared_ptr<rclcpp::Node> _node;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _arucoDetectionClient;
 
-    QStackedWidget* _singleStreamStack; // For switching between streams in single mode
-    QGridLayout* _multiStreamGrid;      // Grid for 2, 4 or 6 stream mode
+    // Layout components
+    QStackedWidget* _singleStreamStack = nullptr;
+    QGridLayout* _multiStreamGrid = nullptr;
+    QHBoxLayout* _controlLayout = nullptr;
+    QComboBox* _layoutSelector = nullptr;
     
-    // Layout controls
-    QHBoxLayout* _controlLayout;
-    QComboBox* _layoutSelector;
-    
-    // Predefined streams
+    // Stream configuration
     struct PredefinedStream {
         QString name;
         QString url;
     };
     std::vector<PredefinedStream> _predefinedStreams;
     
-    // Active streams
+    // Active stream management
     struct ActiveStream {
-        RtspPlayerWidget* widget;
-        QLabel* headerLabel;
-        int predefinedStreamIndex; // Index in the predefined streams list
-        bool isRunning;
+        std::unique_ptr<RtspPlayerWidget> widget;
+        std::unique_ptr<QLabel> headerLabel;
+        int predefinedStreamIndex = -1; // -1 = None
+        bool isRunning = false;
     };
     std::vector<ActiveStream> _activeStreams;
-    int _maxStreams = 6;
-    int _currentStreamIndex = 0;
     
-    void setupUI();
-    void updateLayout();
-    void setupSingleStreamView();
-    void setupMultiStreamView();
-    void updateStreamHeader(int streamIndex);
-    void updateAllStreamHeaders();
-    void loadPredefinedStreams(); // Method to load predefined streams
-    void addStreamSelector(RtspPlayerWidget* widget, int position);
+    // Configuration
+    static constexpr int MAX_STREAMS = 6;
+    int _currentStreamIndex = 0;
 };
 
 #endif  // SECONDARY_WINDOW_HPP

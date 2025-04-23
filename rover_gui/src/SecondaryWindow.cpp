@@ -7,7 +7,6 @@ SecondaryWindow::SecondaryWindow():
     _centralWidget(this),
     _currentStreamIndex(0)
 {
-
     // Initialize ROS node
     _node = std::make_shared<rclcpp::Node>("secondary_window_node");
     
@@ -32,16 +31,17 @@ SecondaryWindow::SecondaryWindow():
     _layoutStack->addWidget(_multiStreamView);
     
     // Initialize active streams with empty placeholders
-    for (int i = 0; i < _maxStreams; i++) {
-        _activeStreams.push_back({
-            new RtspPlayerWidget(nullptr, QString("stream_%1").arg(i)),
-            new QLabel(""),
-            -1, // No predefined stream selected
-            false
-        });
+    for (int i = 0; i < MAX_STREAMS; i++) {
+        ActiveStream stream;
+        stream.widget = std::make_unique<RtspPlayerWidget>(nullptr, QString("stream_%1").arg(i));
+        stream.headerLabel = std::make_unique<QLabel>("");
+        stream.headerLabel->setMaximumHeight(0);
+        stream.predefinedStreamIndex = -1; // No predefined stream selected
+        stream.isRunning = false;
+        _activeStreams.push_back(std::move(stream));
     }
 
-    // NOW set the Aruco manager for each widget
+    // Set the Aruco manager for each widget
     for (auto& streamInfo : _activeStreams) {
         streamInfo.widget->setArucoDetectionManager(_arucoDetectionClient);
     }
@@ -58,11 +58,7 @@ SecondaryWindow::SecondaryWindow():
 
 SecondaryWindow::~SecondaryWindow()
 {
-    // Clean up widgets
-    for (auto& streamInfo : _activeStreams) {
-        delete streamInfo.widget;
-        delete streamInfo.headerLabel;
-    }
+    // Smart pointers will automatically clean up, no manual deletion needed
 }
 
 void SecondaryWindow::loadPredefinedStreams()
@@ -81,8 +77,10 @@ void SecondaryWindow::loadPredefinedStreams()
 
 void SecondaryWindow::setupUI() 
 {
-    // Create control layout
+    // Create control layout with minimal margins
     _controlLayout = new QHBoxLayout();
+    _controlLayout->setContentsMargins(3, 0, 3, 0); // Reduced vertical margins
+    _controlLayout->setSpacing(2); // Minimal spacing
     
     // Create layout selector
     QLabel* layoutLabel = new QLabel("Layout:");
@@ -92,14 +90,20 @@ void SecondaryWindow::setupUI()
     _layoutSelector->addItem("4 Streams");
     _layoutSelector->addItem("6 Streams");
     
+    // Apply consistent styling to layout selector
+    _layoutSelector->setFixedHeight(26);
+    _layoutSelector->setStyleSheet("QComboBox { border: 1px solid #777777; border-radius: 2px; padding: 0px 2px; }");
+    
     // Add widgets to control layout
     _controlLayout->addWidget(layoutLabel);
     _controlLayout->addWidget(_layoutSelector);
     _controlLayout->addStretch();
     
-    // Add layouts to main layout
+    // Add layouts to main layout with minimal spacing
+    _mainLayout->setContentsMargins(0, 0, 0, 0);
+    _mainLayout->setSpacing(0); // Zero spacing to maximize video area
     _mainLayout->addLayout(_controlLayout);
-    _mainLayout->addWidget(_layoutStack, 1); // Give the layout stack a stretch factor
+    _mainLayout->addWidget(_layoutStack, 1);
     
     // Set central widget
     this->setCentralWidget(&_centralWidget);
@@ -113,30 +117,28 @@ void SecondaryWindow::setupUI()
     
     // Connect signals for active streams and add selectors
     for (int i = 0; i < static_cast<int>(_activeStreams.size()); i++) {
-        connect(_activeStreams[i].widget, &RtspPlayerWidget::streamStateChanged,
+        connect(_activeStreams[i].widget.get(), &RtspPlayerWidget::streamStateChanged,
                 this, [this, i](bool running, int) { 
                     this->onStreamStateChanged(running, static_cast<int>(i)); 
                 });
                 
         // Add stream selector to each widget
-        addStreamSelector(_activeStreams[i].widget, i);
+        addStreamSelector(_activeStreams[i].widget.get(), i);
     }
 }
 
 void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
 {
-    // Find the top layout in the widget
-    QHBoxLayout* topLayout = widget->findChild<QHBoxLayout*>("topLayout");
-    if (!topLayout) return;
+    // Find the existing stream selector in the widget (from the UI file)
+    QComboBox* selector = widget->findChild<QComboBox*>("streamSelector");
+    if (!selector) {
+        // If not found (shouldn't happen if it's in the UI file), log a warning and return
+        qDebug() << "Warning: Could not find streamSelector in widget" << position;
+        return;
+    }
     
-    // Find the play/pause button
-    QWidget* playPauseBtn = widget->findChild<QWidget*>("playPauseButton");
-    if (!playPauseBtn) return;
-    
-    // Create the stream selector
-    QComboBox* selector = new QComboBox(widget);
-    selector->setObjectName(QString("streamSelector_%1").arg(position));
-    selector->setMaximumWidth(150);
+    // Clear any existing items (important if we're reusing the widget)
+    selector->clear();
     
     // Add "None" option and all predefined streams
     selector->addItem("None");
@@ -144,17 +146,15 @@ void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
         selector->addItem(stream.name);
     }
     
-    // Insert selector to the left of play/pause button
-    int btnIndex = topLayout->indexOf(playPauseBtn);
-    if (btnIndex >= 0) {
-        topLayout->insertWidget(btnIndex, selector);
-    }
+    // Connect signal for selection changes
+    // First disconnect any existing connections to avoid duplicates
+    disconnect(selector, QOverload<int>::of(&QComboBox::currentIndexChanged), nullptr, nullptr);
     
-    // Connect signal
+    // Now connect the signal
     connect(selector, QOverload<int>::of(&QComboBox::currentIndexChanged),
             [this, position](int index) {
                 // Check if this is a valid position and selection
-                if (position < 0 || position >= _maxStreams) {
+                if (position < 0 || position >= MAX_STREAMS) {
                     return;
                 }
                 
@@ -179,18 +179,15 @@ void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
                     
                     // Update header
                     updateStreamHeader(position);
-                    
-                    // FIXED: Let the play button handle starting the stream instead of doing it here
-                    // This avoids the duplicate "Starting stream" log messages
                 }
             });
 }
-
 void SecondaryWindow::setupSingleStreamView()
 {
     _singleStreamView = new QWidget();
     QVBoxLayout* layout = new QVBoxLayout(_singleStreamView);
     layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0); // Zero spacing
     
     // Create stacked widget for streams
     _singleStreamStack = new QStackedWidget();
@@ -202,14 +199,15 @@ void SecondaryWindow::setupMultiStreamView()
     _multiStreamView = new QWidget();
     QVBoxLayout* layout = new QVBoxLayout(_multiStreamView);
     layout->setContentsMargins(0, 0, 0, 0);
+    layout->setSpacing(0); // Zero spacing
     
     // Create grid layout for streams
     _multiStreamGrid = new QGridLayout();
-    _multiStreamGrid->setSpacing(4);
+    _multiStreamGrid->setSpacing(1); // Minimal spacing between streams
     layout->addLayout(_multiStreamGrid);
 }
 
-void SecondaryWindow::onLayoutChange(int /* index */)
+void SecondaryWindow::onLayoutChange(int /* index_ */)
 {
     // Update the layout (index parameter not used directly but needed for signal connection)
     updateLayout();
@@ -219,7 +217,8 @@ void SecondaryWindow::updateLayout()
 {
     // Determine layout mode
     int layoutMode = _layoutSelector->currentIndex();
-    
+    _multiStreamGrid->setSpacing(1);
+
     // Clear layouts first
     while (_singleStreamStack->count() > 0) {
         QWidget* widget = _singleStreamStack->widget(0);
@@ -254,9 +253,9 @@ void SecondaryWindow::updateLayout()
                 QVBoxLayout* containerLayout = new QVBoxLayout(container);
                 containerLayout->setContentsMargins(0, 0, 0, 0);
                 
-                // Add header and widget to container
-                containerLayout->addWidget(_activeStreams[i].headerLabel);
-                containerLayout->addWidget(_activeStreams[i].widget);
+                // Add header and widget to container - use .get() to get raw pointers
+                containerLayout->addWidget(_activeStreams[i].headerLabel.get());
+                containerLayout->addWidget(_activeStreams[i].widget.get());
                 
                 // Add container to stacked widget
                 _singleStreamStack->addWidget(container);
@@ -286,14 +285,13 @@ void SecondaryWindow::updateLayout()
                 containerLayout->setContentsMargins(0, 0, 0, 0);
                 containerLayout->setSpacing(0);
                 
-                // Add header and widget to container
-                containerLayout->addWidget(_activeStreams[i].headerLabel);
-                containerLayout->addWidget(_activeStreams[i].widget);
+                // Add header and widget to container - use .get() to get raw pointers
+                containerLayout->addWidget(_activeStreams[i].widget.get());
                 
                 // Add container to grid layout
                 int row = i / cols;
                 int col = i % cols;
-                _multiStreamGrid->addWidget(container, row, col);
+                _multiStreamGrid->addWidget(_activeStreams[i].widget.get(), row, col);
             }
             _layoutStack->setCurrentWidget(_multiStreamView);
             break;
@@ -308,18 +306,16 @@ void SecondaryWindow::updateStreamHeader(int streamIndex)
         
         if (stream.predefinedStreamIndex >= 0 && 
             stream.predefinedStreamIndex < static_cast<int>(_predefinedStreams.size())) {
-            // Create header text with name and URL
+            // Create more compact header - just use the name
             const auto& predefined = _predefinedStreams[stream.predefinedStreamIndex];
             QString headerText = predefined.name;
-            if (!predefined.url.isEmpty()) {
-                headerText += " - " + predefined.url;
-            }
             
-            // Update header label
+            // Update header label with minimal styling for more space
             stream.headerLabel->setText(headerText);
-            stream.headerLabel->setFrameShape(QFrame::StyledPanel);
-            stream.headerLabel->setFrameShadow(QFrame::Raised);
+            stream.headerLabel->setFrameShape(QFrame::NoFrame); // Remove frame
+            stream.headerLabel->setMaximumHeight(16); // Smaller height
             stream.headerLabel->setAlignment(Qt::AlignCenter);
+            stream.headerLabel->setStyleSheet("QLabel { font-size: 9pt; padding: 0; margin: 0; }");
         }
     }
 }

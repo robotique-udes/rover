@@ -139,7 +139,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
     cleanupGStreamer();
 
     // Store the URL
-    m_lastUrl = rtspUrl;
+    _lastUrl = rtspUrl;
     
     // Basic URL validation
     QUrl url(rtspUrl);
@@ -150,16 +150,16 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
     }
 
     const QString pipelineDesc = buildPipelineString(rtspUrl);
-    m_pipeline = gst_parse_launch(pipelineDesc.toUtf8().constData(), nullptr);
+    _pipeline = gst_parse_launch(pipelineDesc.toUtf8().constData(), nullptr);
 
-    if (!m_pipeline)
+    if (!_pipeline)
     {
         LOG_ERROR("GStreamer", "Failed to create pipeline");
         emit errorOccurred("Failed to create GStreamer pipeline");
         return;
     }
 
-    GstElement* decodebin = gst_bin_get_by_name(GST_BIN(m_pipeline), "dec");
+    GstElement* decodebin = gst_bin_get_by_name(GST_BIN(_pipeline), "dec");
     if (!decodebin)
     {
         LOG_ERROR("GStreamer", "Failed to get decodebin element");
@@ -170,7 +170,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
     g_signal_connect(decodebin, "pad-added", G_CALLBACK(on_decodebin_pad_added), this);
     gst_object_unref(decodebin);
 
-    GstElement* appSink = gst_bin_get_by_name(GST_BIN(m_pipeline), "myappsink");
+    GstElement* appSink = gst_bin_get_by_name(GST_BIN(_pipeline), "myappsink");
     if (!appSink)
     {
         LOG_ERROR("GStreamer", "Failed to get appsink");
@@ -191,17 +191,17 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
         g_signal_handler_disconnect(appSink, signal_id);
     }
 
-    if (newSampleSignalId != 0) {
-        g_signal_handler_disconnect(appSink, newSampleSignalId);
-        newSampleSignalId = 0;
+    if (_newSampleSignalId != 0) {
+        g_signal_handler_disconnect(appSink, _newSampleSignalId);
+        _newSampleSignalId = 0;
     }
     
-    newSampleSignalId = g_signal_connect(appSink, "new-sample", G_CALLBACK(on_new_sample), this);
+    _newSampleSignalId = g_signal_connect(appSink, "new-sample", G_CALLBACK(on_new_sample), this);
     
     // Unref exactly once
     gst_object_unref(appSink);
 
-    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
+    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(_pipeline));
     if (!bus)
     {
         LOG_ERROR("GStreamer", "Failed to get GStreamer bus");
@@ -220,7 +220,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
     consecutive_errors_count = 0;
     
     LOG_DEBUG("GstreamerWorker", "Pipeline started");
-    emit pipelineStarted(m_pipeline);
+    emit pipelineStarted(_pipeline);
 }
 
 void GStreamerWorker::stopPipeline()
@@ -231,26 +231,26 @@ void GStreamerWorker::stopPipeline()
 
 void GStreamerWorker::cleanupGStreamer()
 {
-    if (m_pipeline)
+    if (_pipeline)
     {
         // First set pipeline to NULL state
-        GstStateChangeReturn ret = gst_element_set_state(m_pipeline, GST_STATE_NULL);
+        GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_NULL);
         
         // Wait for state change to complete
         if (ret == GST_STATE_CHANGE_ASYNC) {
-            gst_element_get_state(m_pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
+            gst_element_get_state(_pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
         }
         
         // Get the bus and remove watch
-        GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(m_pipeline));
+        GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(_pipeline));
         if (bus) {
             gst_bus_remove_signal_watch(bus);
             gst_object_unref(bus);
         }
         
         // Unreference the pipeline
-        gst_object_unref(m_pipeline);
-        m_pipeline = nullptr;
+        gst_object_unref(_pipeline);
+        _pipeline = nullptr;
         
     }
 }

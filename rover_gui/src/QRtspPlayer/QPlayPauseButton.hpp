@@ -18,8 +18,8 @@ public:
         _isPlaying(false),
         _animationProgress(0.0)
     {
-        // Set fixed size for better appearance
-        setFixedSize(40, 40);
+        // Set smaller fixed size to match other controls
+        setFixedSize(26, 26);
         
         // Create animation
         _animation = new QPropertyAnimation(this, "animationProgress");
@@ -28,6 +28,9 @@ public:
         
         // Connect toggle signal
         connect(this, &QPushButton::clicked, this, &QPlayPauseButton::toggle);
+        
+        // Apply consistent border style to match other controls
+        setStyleSheet("QPushButton { border: 1px solid #444444; border-radius: 4px; }");
         
         // Set tooltip based on initial state
         updateTooltip();
@@ -72,9 +75,32 @@ public slots:
         }
     }
     
+    void setPlayIcon(const QIcon& icon) {
+        _playIcon = icon;
+        if (!_isPlaying) {
+            QPushButton::setIcon(icon); // Set icon directly if in play state
+        }
+    }
+    
+    void setPauseIcon(const QIcon& icon) {
+        _pauseIcon = icon;
+        if (_isPlaying) {
+            QPushButton::setIcon(icon); // Set icon directly if in pause state
+        }
+    }
+
     void setPlaying(bool playing) {
         if (_isPlaying != playing) {
-            toggle();
+            _isPlaying = playing;
+            
+            // Update animation progress instantly without animation
+            _animationProgress = _isPlaying ? 1.0 : 0.0;
+            
+            // Update appearance
+            update();
+            
+            // Update tooltip
+            updateTooltip();
         }
     }
 
@@ -89,11 +115,8 @@ protected:
         QPainter painter(this);
         painter.setRenderHint(QPainter::Antialiasing);
         
-        // Draw background
-        QColor bgColor = isEnabled() ? QColor(60, 60, 60) : QColor(40, 40, 40);
-        painter.setBrush(bgColor);
-        painter.setPen(Qt::NoPen);
-        painter.drawRoundedRect(rect(), 5, 5);
+        // Skip drawing the background as it's handled by stylesheet
+        // This allows for consistent appearance with other buttons
         
         // Set foreground color - always using white with different brightness levels based on state
         QColor fgColor;
@@ -110,36 +133,32 @@ protected:
         painter.setBrush(fgColor);
         painter.setPen(Qt::NoPen);
         
-        // Calculate dimensions
-        const int margin = 10;
+        // Use smaller margins for 26x26 button to make icon larger
+        const int margin = 4; 
         QRect contentRect = rect().adjusted(margin, margin, -margin, -margin);
         
         // Mix between play and pause icons based on animation progress
         if (_animationProgress < 0.5) {
             // More like a play triangle
-            // Using animation progress directly instead of calculating unused playRatio
-            
-            // Draw a triangle morphing to bars
+            // Draw a larger triangle icon
             QPolygonF polygon;
             
-            // Left point (moves right)
+            // Calculate points for a right-pointing triangle
             polygon << QPointF(contentRect.left() + contentRect.width() * _animationProgress,
                               contentRect.top());
             
-            // Right point (fixed)
             polygon << QPointF(contentRect.right(),
                               contentRect.top() + contentRect.height() / 2);
             
-            // Bottom point (moves up)
             polygon << QPointF(contentRect.left() + contentRect.width() * _animationProgress,
                               contentRect.bottom());
             
             painter.drawPolygon(polygon);
             
             // Draw emerging right bar (gets more visible)
-            QRectF rightBar(contentRect.right() - contentRect.width() * 0.2,
+            QRectF rightBar(contentRect.right() - contentRect.width() * 0.25,
                            contentRect.top(),
-                           contentRect.width() * 0.2,
+                           contentRect.width() * 0.25,
                            contentRect.height());
             
             QColor rightBarColor = fgColor;
@@ -150,17 +169,17 @@ protected:
             // More like pause bars
             qreal pauseRatio = (_animationProgress - 0.5) * 2.0;
             
-            // Draw left bar
+            // Draw left bar - thicker for better visibility
             QRectF leftBar(contentRect.left(),
                           contentRect.top(),
-                          contentRect.width() * 0.2,
+                          contentRect.width() * 0.25,
                           contentRect.height());
             painter.drawRoundedRect(leftBar, 2, 2);
             
-            // Draw right bar
-            QRectF rightBar(contentRect.right() - contentRect.width() * 0.2,
+            // Draw right bar - thicker for better visibility
+            QRectF rightBar(contentRect.right() - contentRect.width() * 0.25,
                            contentRect.top(),
-                           contentRect.width() * 0.2,
+                           contentRect.width() * 0.25,
                            contentRect.height());
             painter.drawRoundedRect(rightBar, 2, 2);
             
@@ -183,6 +202,9 @@ private:
     qreal _animationProgress;
     QPropertyAnimation* _animation;
     
+    QIcon _playIcon;   // Add this member
+    QIcon _pauseIcon;  // Add this member
+
     void updateTooltip() {
         setToolTip(_isPlaying ? "Stop" : "Play");
     }
