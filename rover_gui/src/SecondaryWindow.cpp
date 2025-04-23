@@ -34,8 +34,6 @@ SecondaryWindow::SecondaryWindow():
     for (int i = 0; i < MAX_STREAMS; i++) {
         ActiveStream stream;
         stream.widget = std::make_unique<RtspPlayerWidget>(nullptr, QString("stream_%1").arg(i));
-        stream.headerLabel = std::make_unique<QLabel>("");
-        stream.headerLabel->setMaximumHeight(0);
         stream.predefinedStreamIndex = -1; // No predefined stream selected
         stream.isRunning = false;
         _activeStreams.push_back(std::move(stream));
@@ -48,9 +46,6 @@ SecondaryWindow::SecondaryWindow():
     
     // Setup the rest of the UI
     setupUI();
-    
-    // Update all stream headers
-    updateAllStreamHeaders();
     
     // Update the layout
     updateLayout();
@@ -176,9 +171,6 @@ void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
                         // Set URL text
                         urlInput->setText(_predefinedStreams[predefinedIndex].url);
                     }
-                    
-                    // Update header
-                    updateStreamHeader(position);
                 }
             });
 }
@@ -296,34 +288,6 @@ void SecondaryWindow::updateLayout()
             _layoutStack->setCurrentWidget(_multiStreamView);
             break;
         }
-    }
-}
-
-void SecondaryWindow::updateStreamHeader(int streamIndex)
-{
-    if (streamIndex >= 0 && streamIndex < static_cast<int>(_activeStreams.size())) {
-        auto& stream = _activeStreams[streamIndex];
-        
-        if (stream.predefinedStreamIndex >= 0 && 
-            stream.predefinedStreamIndex < static_cast<int>(_predefinedStreams.size())) {
-            // Create more compact header - just use the name
-            const auto& predefined = _predefinedStreams[stream.predefinedStreamIndex];
-            QString headerText = predefined.name;
-            
-            // Update header label with minimal styling for more space
-            stream.headerLabel->setText(headerText);
-            stream.headerLabel->setFrameShape(QFrame::NoFrame); // Remove frame
-            stream.headerLabel->setMaximumHeight(16); // Smaller height
-            stream.headerLabel->setAlignment(Qt::AlignCenter);
-            stream.headerLabel->setStyleSheet("QLabel { font-size: 9pt; padding: 0; margin: 0; }");
-        }
-    }
-}
-
-void SecondaryWindow::updateAllStreamHeaders()
-{
-    for (size_t i = 0; i < _activeStreams.size(); i++) {
-        updateStreamHeader(static_cast<int>(i));
     }
 }
 

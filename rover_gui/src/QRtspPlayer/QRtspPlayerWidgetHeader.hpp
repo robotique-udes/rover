@@ -22,7 +22,6 @@
 #include "QGStreamerWorker.hpp"
 #include "UI_Player.h"
 #include "QLogManager.hpp"
-// Remove QPlayPauseButton include
 #include "QArrucoWorker/QPlayerWorker.hpp"
 
 enum class PlayerState {
@@ -115,10 +114,11 @@ private:
     void updateStatusText(const QString& text_);
     void emitStateChanged(void);
     
+    // UI setup methods - simplified for UI definition from .ui file
     void setupUI(void);
-    void setupVideoStack(void);
-    void setupCustomControls(void);
-    void setupLogView(void);
+    void storeUIReferences(void);
+    void connectUISignals(void);
+    void initializeUIState(void);
     void connectSignals(void);
     
     void setArucoButtonStyle(const QString& styleClass_, const QString& bgColor_ = "");
@@ -151,37 +151,37 @@ private:
         QString url;
     };
     std::vector<PredefinedStream> _predefinedStreams;
-    QComboBox* _streamSelector = nullptr;
 
-    QPushButton* _arucoButton = nullptr;
-    QLineEdit* _arucoIdsTextBox = nullptr;
-    bool _arucoDetectionEnabled;
-    uint16_t _lastIds[NBR_IDS_TO_DISPLAY];
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _arucoDetectionClient;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread;
-    uint16_t _tag;
-
+    // UI element references - all found from UI file
     QStackedWidget* _stackedWidget = nullptr;
     QWidget* _videoWidget = nullptr;
     QStackedWidget* _videoStack = nullptr;
     QWidget* _statusPage = nullptr;
     QLabel* _statusLabel = nullptr;
-    QPushButton* _playPauseButton = nullptr; // Changed from QPlayPauseButton* to QPushButton*
+    QPushButton* _playPauseButton = nullptr;
     QPushButton* _toggleControlsButton = nullptr;
+    QPushButton* _toggleViewButton = nullptr; // Added this missing member
     QWidget* _controlsContainer = nullptr;
     QToolButton* _screenshotButton = nullptr;
     QToolButton* _recordButton = nullptr;
+    QPushButton* _arucoButton = nullptr;
+    QLineEdit* _arucoIdsTextBox = nullptr;
+    QComboBox* _streamSelector = nullptr;
     
     QWidget* _logWidget = nullptr;
-    QVBoxLayout* _logLayout = nullptr;
-    QHBoxLayout* _logControlLayout = nullptr;
     QTextEdit* _logDisplay = nullptr;
     QCheckBox* _debugCheckbox = nullptr;
     QCheckBox* _infoCheckbox = nullptr;
     QCheckBox* _warningCheckbox = nullptr;
     QCheckBox* _errorCheckbox = nullptr;
     QPushButton* _clearButton = nullptr;
-    QPushButton* _toggleViewButton = nullptr;
+    
+    // Aruco detection
+    bool _arucoDetectionEnabled;
+    uint16_t _lastIds[NBR_IDS_TO_DISPLAY];
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _arucoDetectionClient;
+    std::shared_ptr<QPlayerWorker> _playerWorkerThread;
+    uint16_t _tag;
 };
 
 #endif

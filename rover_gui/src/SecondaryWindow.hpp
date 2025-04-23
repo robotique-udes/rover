@@ -45,8 +45,6 @@ private:
     QWidget* createStreamContainer(int streamIndex_);
     void setupSingleStreamView(void);
     void setupMultiStreamView(void);
-    void updateStreamHeader(int streamIndex_);
-    void updateAllStreamHeaders(void);
     void addStreamSelector(RtspPlayerWidget* widget_, int position_);
     
     // Core widget components

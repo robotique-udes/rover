@@ -31,7 +31,7 @@
     /* Control buttons - consistent sizing and reduced padding for larger icons */
     QPushButton#arucoButton, QPushButton#toggleViewButton, 
     QPushButton#toggleControlsButton, QToolButton#screenshotButton, 
-    QToolButton#recordButton, QPushButton#playPauseButton, QPlayPauseButton {
+    QToolButton#recordButton, QPushButton#playPauseButton {
       min-width: 26px;
       max-width: 26px;
       min-height: 26px;
@@ -66,6 +66,13 @@
       font-size: 16px;
     }
     
+    /* Log text styling */
+    QTextEdit#logDisplay {
+      background-color: black;
+      color: white; 
+      font-family: monospace;
+    }
+    
     /* Stream header labels - hide them */
     QLabel.stream-header {
       max-height: 0px;
@@ -94,358 +101,533 @@
     <number>0</number>
    </property>
    <item>
-    <widget class="QWidget" name="controlsContainer" native="true">
-     <layout class="QVBoxLayout" name="controlsLayout">
-      <property name="spacing">
-       <number>0</number>
-      </property>
-      <property name="leftMargin">
-       <number>0</number>
-      </property>
-      <property name="topMargin">
-       <number>0</number>
-      </property>
-      <property name="rightMargin">
-       <number>0</number>
-      </property>
-      <property name="bottomMargin">
-       <number>0</number>
-      </property>
-      <item>
-       <layout class="QHBoxLayout" name="topLayout">
-        <property name="spacing">
-         <number>3</number>
-        </property>
-        <property name="leftMargin">
-         <number>3</number>
-        </property>
-        <property name="topMargin">
-         <number>2</number>
-        </property>
-        <property name="rightMargin">
-         <number>3</number>
-        </property>
-        <property name="bottomMargin">
-         <number>0</number>
-        </property>
-        <item>
-         <widget class="QPushButton" name="arucoButton">
-          <property name="minimumSize">
-           <size>
-            <width>28</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>28</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Enable Aruco marker detection</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../../src/Global/Constant/resources.qrc">
-            <normaloff>:/icons/aruco_marker.png</normaloff>:/icons/aruco_marker.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>40</width>
-            <height>40</height>
-           </size>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="arucoIdsTextBox">
-          <property name="minimumSize">
-           <size>
-            <width>46</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>66</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="text">
-           <string>Ids:</string>
-          </property>
-          <property name="alignment">
-           <set>Qt::AlignCenter</set>
-          </property>
-          <property name="readOnly">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="screenshotButton">
-          <property name="minimumSize">
-           <size>
-            <width>28</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>28</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Take Screenshot</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../../src/Global/Constant/resources.qrc">
-            <normaloff>:/icons/camera.png</normaloff>:/icons/camera.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>40</width>
-            <height>40</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QToolButton" name="recordButton">
-          <property name="minimumSize">
-           <size>
-            <width>28</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>28</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="toolTip">
-           <string>Start/stop recording</string>
-          </property>
-          <property name="icon">
-           <iconset resource="../../src/Global/Constant/resources.qrc">
-            <normaloff>:/icons/record_off.png</normaloff>:/icons/record_off.png</iconset>
-          </property>
-          <property name="iconSize">
-           <size>
-            <width>20</width>
-            <height>20</height>
-           </size>
-          </property>
-          <property name="checkable">
-           <bool>true</bool>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <spacer name="horizontalSpacer">
-          <property name="orientation">
-           <enum>Qt::Horizontal</enum>
-          </property>
-          <property name="sizeHint" stdset="0">
-           <size>
-            <width>40</width>
-            <height>20</height>
-           </size>
-          </property>
-         </spacer>
-        </item>
-        <item>
-         <widget class="QLineEdit" name="rtspUrlInput">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>16777215</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="placeholderText">
-           <string>Enter RTSP URL...</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QComboBox" name="streamSelector">
-          <property name="minimumSize">
-           <size>
-            <width>80</width>
-            <height>28</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>120</width>
-            <height>28</height>
-           </size>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <widget class="QPushButton" name="playPauseButton">
-          <property name="minimumSize">
-          <size>
-            <width>28</width>
-            <height>28</height>
-          </size>
-          </property>
-          <property name="maximumSize">
-          <size>
-            <width>28</width>
-            <height>28</height>
-          </size>
-          </property>
-          <property name="toolTip">
-          <string>Play</string>
-          </property>
-          <property name="icon">
-          <iconset resource="../../src/Global/Constant/resources.qrc">
-            <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
-          </property>
-          <property name="checkable">
-          <bool>true</bool>
-          </property>
-        </widget>
-        </item>
-        <item>
-         <widget class="QFrame" name="statusIndicator">
-          <property name="minimumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="maximumSize">
-           <size>
-            <width>0</width>
-            <height>0</height>
-           </size>
-          </property>
-          <property name="styleSheet">
-           <string>QFrame { border-radius: 4px; background-color: red; }</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </item>
-     </layout>
-    </widget>
-   </item>
-   <item>
-    <widget class="QWidget" name="videoWidget" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>0</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
-     </property>
-     <property name="styleSheet">
-      <string>background-color: black;</string>
-     </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QHBoxLayout" name="bottomLayout">
-     <property name="spacing">
-      <number>3</number>
-     </property>
-     <property name="leftMargin">
-      <number>3</number>
-     </property>
-     <property name="topMargin">
+    <!-- Main stacked widget for switching between video and logs -->
+    <widget class="QStackedWidget" name="mainStackedWidget">
+     <property name="currentIndex">
       <number>0</number>
      </property>
-     <property name="rightMargin">
-      <number>3</number>
-     </property>
-     <property name="bottomMargin">
-      <number>1</number>
-     </property>
-     <item>
-      <widget class="QPushButton" name="toggleControlsButton">
-       <property name="minimumSize">
-        <size>
-         <width>28</width>
-         <height>28</height>
-        </size>
+     
+     <!-- Page 1: Video Page -->
+     <widget class="QWidget" name="videoPage">
+      <layout class="QVBoxLayout" name="videoPageLayout">
+       <property name="spacing">
+        <number>0</number>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>28</width>
-         <height>28</height>
-        </size>
+       <property name="leftMargin">
+        <number>0</number>
        </property>
-       <property name="toolTip">
-        <string>Hide Controls</string>
+       <property name="topMargin">
+        <number>0</number>
        </property>
-       <property name="icon">
-        <iconset resource="../../src/Global/Constant/resources.qrc">
-         <normaloff>:/icons/up_arrow.png</normaloff>:/icons/up_arrow.png</iconset>
+       <property name="rightMargin">
+        <number>0</number>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
+       <property name="bottomMargin">
+        <number>0</number>
        </property>
-      </widget>
-     </item>
-     <item>
-      <widget class="QPushButton" name="toggleViewButton">
-       <property name="minimumSize">
-        <size>
-         <width>28</width>
-         <height>28</height>
-        </size>
+       
+       <item>
+        <widget class="QWidget" name="controlsContainer" native="true">
+         <layout class="QVBoxLayout" name="controlsLayout">
+          <property name="spacing">
+           <number>0</number>
+          </property>
+          <property name="leftMargin">
+           <number>0</number>
+          </property>
+          <property name="topMargin">
+           <number>0</number>
+          </property>
+          <property name="rightMargin">
+           <number>0</number>
+          </property>
+          <property name="bottomMargin">
+           <number>0</number>
+          </property>
+          <item>
+           <layout class="QHBoxLayout" name="topLayout">
+            <property name="spacing">
+             <number>3</number>
+            </property>
+            <property name="leftMargin">
+             <number>3</number>
+            </property>
+            <property name="topMargin">
+             <number>2</number>
+            </property>
+            <property name="rightMargin">
+             <number>3</number>
+            </property>
+            <property name="bottomMargin">
+             <number>0</number>
+            </property>
+            <item>
+             <widget class="QPushButton" name="arucoButton">
+              <property name="minimumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Enable Aruco marker detection</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../../src/Global/Constant/resources.qrc">
+                <normaloff>:/icons/aruco_marker.png</normaloff>:/icons/aruco_marker.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>40</width>
+                <height>40</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="arucoIdsTextBox">
+              <property name="minimumSize">
+               <size>
+                <width>46</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>66</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="text">
+               <string>Ids:</string>
+              </property>
+              <property name="alignment">
+               <set>Qt::AlignCenter</set>
+              </property>
+              <property name="readOnly">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="screenshotButton">
+              <property name="minimumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Take Screenshot</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../../src/Global/Constant/resources.qrc">
+                <normaloff>:/icons/camera.png</normaloff>:/icons/camera.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>40</width>
+                <height>40</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QToolButton" name="recordButton">
+              <property name="minimumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Start/stop recording</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../../src/Global/Constant/resources.qrc">
+                <normaloff>:/icons/record_off.png</normaloff>:/icons/record_off.png</iconset>
+              </property>
+              <property name="iconSize">
+               <size>
+                <width>20</width>
+                <height>20</height>
+               </size>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <spacer name="horizontalSpacer">
+              <property name="orientation">
+               <enum>Qt::Horizontal</enum>
+              </property>
+              <property name="sizeHint" stdset="0">
+               <size>
+                <width>40</width>
+                <height>20</height>
+               </size>
+              </property>
+             </spacer>
+            </item>
+            <item>
+             <widget class="QLineEdit" name="rtspUrlInput">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>16777215</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="placeholderText">
+               <string>Enter RTSP URL...</string>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QComboBox" name="streamSelector">
+              <property name="minimumSize">
+               <size>
+                <width>80</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>120</width>
+                <height>28</height>
+               </size>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QPushButton" name="playPauseButton">
+              <property name="minimumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>28</width>
+                <height>28</height>
+               </size>
+              </property>
+              <property name="toolTip">
+               <string>Play</string>
+              </property>
+              <property name="icon">
+               <iconset resource="../../src/Global/Constant/resources.qrc">
+                <normaloff>:/icons/play.png</normaloff>:/icons/play.png</iconset>
+              </property>
+              <property name="checkable">
+               <bool>true</bool>
+              </property>
+             </widget>
+            </item>
+            <item>
+             <widget class="QFrame" name="statusIndicator">
+              <property name="minimumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="maximumSize">
+               <size>
+                <width>0</width>
+                <height>0</height>
+               </size>
+              </property>
+              <property name="styleSheet">
+               <string>QFrame { border-radius: 4px; background-color: red; }</string>
+              </property>
+             </widget>
+            </item>
+           </layout>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <!-- Video stack - for showing video or status message -->
+        <widget class="QStackedWidget" name="videoStack">
+         <property name="currentIndex">
+          <number>0</number>
+         </property>
+         <!-- Video widget -->
+         <widget class="QWidget" name="videoWidget">
+          <property name="sizePolicy">
+           <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+            <horstretch>0</horstretch>
+            <verstretch>0</verstretch>
+           </sizepolicy>
+          </property>
+          <property name="styleSheet">
+           <string>background-color: black;</string>
+          </property>
+         </widget>
+         <!-- Status page -->
+         <widget class="QWidget" name="statusPage">
+          <property name="styleSheet">
+           <string>background-color: black;</string>
+          </property>
+          <layout class="QVBoxLayout" name="statusLayout">
+           <property name="alignment">
+            <set>Qt::AlignCenter</set>
+           </property>
+           <item>
+            <widget class="QLabel" name="statusLabel">
+             <property name="text">
+              <string>Not Connected</string>
+             </property>
+             <property name="alignment">
+              <set>Qt::AlignCenter</set>
+             </property>
+            </widget>
+           </item>
+          </layout>
+         </widget>
+        </widget>
+       </item>
+       <item>
+        <layout class="QHBoxLayout" name="bottomLayout">
+         <property name="spacing">
+          <number>3</number>
+         </property>
+         <property name="leftMargin">
+          <number>3</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>3</number>
+         </property>
+         <property name="bottomMargin">
+          <number>1</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="toggleControlsButton">
+           <property name="minimumSize">
+            <size>
+             <width>28</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>28</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Hide Controls</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../src/Global/Constant/resources.qrc">
+             <normaloff>:/icons/up_arrow.png</normaloff>:/icons/up_arrow.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="toggleViewButton">
+           <property name="minimumSize">
+            <size>
+             <width>28</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>28</width>
+             <height>28</height>
+            </size>
+           </property>
+           <property name="toolTip">
+            <string>Show Logs</string>
+           </property>
+           <property name="icon">
+            <iconset resource="../../src/Global/Constant/resources.qrc">
+             <normaloff>:/icons/log_view.png</normaloff>:/icons/log_view.png</iconset>
+           </property>
+           <property name="iconSize">
+            <size>
+             <width>30</width>
+             <height>30</height>
+            </size>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="horizontalSpacer_2">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+        </layout>
+       </item>
+      </layout>
+     </widget>
+     
+     <!-- Page 2: Logs Page -->
+     <widget class="QWidget" name="logWidget">
+      <layout class="QVBoxLayout" name="logLayout">
+       <property name="spacing">
+        <number>3</number>
        </property>
-       <property name="maximumSize">
-        <size>
-         <width>28</width>
-         <height>28</height>
-        </size>
+       <property name="leftMargin">
+        <number>3</number>
        </property>
-       <property name="toolTip">
-        <string>Show Logs</string>
+       <property name="topMargin">
+        <number>3</number>
        </property>
-       <property name="icon">
-        <iconset resource="../../src/Global/Constant/resources.qrc">
-         <normaloff>:/icons/log_view.png</normaloff>:/icons/log_view.png</iconset>
+       <property name="rightMargin">
+        <number>3</number>
        </property>
-       <property name="iconSize">
-        <size>
-         <width>30</width>
-         <height>30</height>
-        </size>
+       <property name="bottomMargin">
+        <number>3</number>
        </property>
-      </widget>
-     </item>
-     <item>
-      <spacer name="horizontalSpacer_2">
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>40</width>
-         <height>20</height>
-        </size>
-       </property>
-      </spacer>
-     </item>
-    </layout>
+       <item>
+        <layout class="QHBoxLayout" name="logControlLayout">
+         <property name="spacing">
+          <number>6</number>
+         </property>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>3</number>
+         </property>
+         <item>
+          <widget class="QPushButton" name="backToVideoBtn">
+           <property name="text">
+            <string>Back to Video</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <spacer name="logControlSpacer">
+           <property name="orientation">
+            <enum>Qt::Horizontal</enum>
+           </property>
+           <property name="sizeHint" stdset="0">
+            <size>
+             <width>40</width>
+             <height>20</height>
+            </size>
+           </property>
+          </spacer>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="debugCheckbox">
+           <property name="text">
+            <string>Debug</string>
+           </property>
+           <property name="checked">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="infoCheckbox">
+           <property name="text">
+            <string>Info</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="warningCheckbox">
+           <property name="text">
+            <string>Warning</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QCheckBox" name="errorCheckbox">
+           <property name="text">
+            <string>Error</string>
+           </property>
+           <property name="checked">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QPushButton" name="clearButton">
+           <property name="text">
+            <string>Clear</string>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </item>
+       <item>
+        <widget class="QTextEdit" name="logDisplay">
+         <property name="readOnly">
+          <bool>true</bool>
+         </property>
+         <property name="lineWrapMode">
+          <enum>QTextEdit::NoWrap</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
    </item>
   </layout>
  </widget>

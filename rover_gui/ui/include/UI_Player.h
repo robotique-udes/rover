@@ -12,12 +12,16 @@
 #include <QtCore/QVariant>
 #include <QtGui/QIcon>
 #include <QtWidgets/QApplication>
+#include <QtWidgets/QCheckBox>
 #include <QtWidgets/QComboBox>
 #include <QtWidgets/QFrame>
 #include <QtWidgets/QHBoxLayout>
+#include <QtWidgets/QLabel>
 #include <QtWidgets/QLineEdit>
 #include <QtWidgets/QPushButton>
 #include <QtWidgets/QSpacerItem>
+#include <QtWidgets/QStackedWidget>
+#include <QtWidgets/QTextEdit>
 #include <QtWidgets/QToolButton>
 #include <QtWidgets/QVBoxLayout>
 #include <QtWidgets/QWidget>
@@ -28,6 +32,9 @@ class Ui_RtspPlayerWidget
 {
 public:
     QVBoxLayout *verticalLayout;
+    QStackedWidget *mainStackedWidget;
+    QWidget *videoPage;
+    QVBoxLayout *videoPageLayout;
     QWidget *controlsContainer;
     QVBoxLayout *controlsLayout;
     QHBoxLayout *topLayout;
@@ -40,11 +47,26 @@ public:
     QComboBox *streamSelector;
     QPushButton *playPauseButton;
     QFrame *statusIndicator;
+    QStackedWidget *videoStack;
     QWidget *videoWidget;
+    QWidget *statusPage;
+    QVBoxLayout *statusLayout;
+    QLabel *statusLabel;
     QHBoxLayout *bottomLayout;
     QPushButton *toggleControlsButton;
     QPushButton *toggleViewButton;
     QSpacerItem *horizontalSpacer_2;
+    QWidget *logWidget;
+    QVBoxLayout *logLayout;
+    QHBoxLayout *logControlLayout;
+    QPushButton *backToVideoBtn;
+    QSpacerItem *logControlSpacer;
+    QCheckBox *debugCheckbox;
+    QCheckBox *infoCheckbox;
+    QCheckBox *warningCheckbox;
+    QCheckBox *errorCheckbox;
+    QPushButton *clearButton;
+    QTextEdit *logDisplay;
 
     void setupUi(QWidget *RtspPlayerWidget)
     {
@@ -55,7 +77,15 @@ public:
         verticalLayout->setSpacing(0);
         verticalLayout->setObjectName(QString::fromUtf8("verticalLayout"));
         verticalLayout->setContentsMargins(0, 0, 0, 0);
-        controlsContainer = new QWidget(RtspPlayerWidget);
+        mainStackedWidget = new QStackedWidget(RtspPlayerWidget);
+        mainStackedWidget->setObjectName(QString::fromUtf8("mainStackedWidget"));
+        videoPage = new QWidget();
+        videoPage->setObjectName(QString::fromUtf8("videoPage"));
+        videoPageLayout = new QVBoxLayout(videoPage);
+        videoPageLayout->setSpacing(0);
+        videoPageLayout->setObjectName(QString::fromUtf8("videoPageLayout"));
+        videoPageLayout->setContentsMargins(0, 0, 0, 0);
+        controlsContainer = new QWidget(videoPage);
         controlsContainer->setObjectName(QString::fromUtf8("controlsContainer"));
         controlsLayout = new QVBoxLayout(controlsContainer);
         controlsLayout->setSpacing(0);
@@ -149,23 +179,38 @@ public:
         controlsLayout->addLayout(topLayout);
 
 
-        verticalLayout->addWidget(controlsContainer);
+        videoPageLayout->addWidget(controlsContainer);
 
-        videoWidget = new QWidget(RtspPlayerWidget);
+        videoStack = new QStackedWidget(videoPage);
+        videoStack->setObjectName(QString::fromUtf8("videoStack"));
+        videoWidget = new QWidget();
         videoWidget->setObjectName(QString::fromUtf8("videoWidget"));
         QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
         sizePolicy.setHorizontalStretch(0);
         sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(videoWidget->sizePolicy().hasHeightForWidth());
         videoWidget->setSizePolicy(sizePolicy);
+        videoStack->addWidget(videoWidget);
+        statusPage = new QWidget();
+        statusPage->setObjectName(QString::fromUtf8("statusPage"));
+        statusLayout = new QVBoxLayout(statusPage);
+        statusLayout->setObjectName(QString::fromUtf8("statusLayout"));
+        statusLayout->setAlignment(Qt::AlignCenter);
+        statusLabel = new QLabel(statusPage);
+        statusLabel->setObjectName(QString::fromUtf8("statusLabel"));
+        statusLabel->setAlignment(Qt::AlignCenter);
 
-        verticalLayout->addWidget(videoWidget);
+        statusLayout->addWidget(statusLabel);
+
+        videoStack->addWidget(statusPage);
+
+        videoPageLayout->addWidget(videoStack);
 
         bottomLayout = new QHBoxLayout();
         bottomLayout->setSpacing(3);
         bottomLayout->setObjectName(QString::fromUtf8("bottomLayout"));
         bottomLayout->setContentsMargins(3, 0, 3, 1);
-        toggleControlsButton = new QPushButton(RtspPlayerWidget);
+        toggleControlsButton = new QPushButton(videoPage);
         toggleControlsButton->setObjectName(QString::fromUtf8("toggleControlsButton"));
         toggleControlsButton->setMinimumSize(QSize(28, 28));
         toggleControlsButton->setMaximumSize(QSize(28, 28));
@@ -176,7 +221,7 @@ public:
 
         bottomLayout->addWidget(toggleControlsButton);
 
-        toggleViewButton = new QPushButton(RtspPlayerWidget);
+        toggleViewButton = new QPushButton(videoPage);
         toggleViewButton->setObjectName(QString::fromUtf8("toggleViewButton"));
         toggleViewButton->setMinimumSize(QSize(28, 28));
         toggleViewButton->setMaximumSize(QSize(28, 28));
@@ -192,10 +237,77 @@ public:
         bottomLayout->addItem(horizontalSpacer_2);
 
 
-        verticalLayout->addLayout(bottomLayout);
+        videoPageLayout->addLayout(bottomLayout);
+
+        mainStackedWidget->addWidget(videoPage);
+        logWidget = new QWidget();
+        logWidget->setObjectName(QString::fromUtf8("logWidget"));
+        logLayout = new QVBoxLayout(logWidget);
+        logLayout->setSpacing(3);
+        logLayout->setObjectName(QString::fromUtf8("logLayout"));
+        logLayout->setContentsMargins(3, 3, 3, 3);
+        logControlLayout = new QHBoxLayout();
+        logControlLayout->setSpacing(6);
+        logControlLayout->setObjectName(QString::fromUtf8("logControlLayout"));
+        logControlLayout->setContentsMargins(0, 0, 0, 3);
+        backToVideoBtn = new QPushButton(logWidget);
+        backToVideoBtn->setObjectName(QString::fromUtf8("backToVideoBtn"));
+
+        logControlLayout->addWidget(backToVideoBtn);
+
+        logControlSpacer = new QSpacerItem(40, 20, QSizePolicy::Expanding, QSizePolicy::Minimum);
+
+        logControlLayout->addItem(logControlSpacer);
+
+        debugCheckbox = new QCheckBox(logWidget);
+        debugCheckbox->setObjectName(QString::fromUtf8("debugCheckbox"));
+        debugCheckbox->setChecked(false);
+
+        logControlLayout->addWidget(debugCheckbox);
+
+        infoCheckbox = new QCheckBox(logWidget);
+        infoCheckbox->setObjectName(QString::fromUtf8("infoCheckbox"));
+        infoCheckbox->setChecked(true);
+
+        logControlLayout->addWidget(infoCheckbox);
+
+        warningCheckbox = new QCheckBox(logWidget);
+        warningCheckbox->setObjectName(QString::fromUtf8("warningCheckbox"));
+        warningCheckbox->setChecked(true);
+
+        logControlLayout->addWidget(warningCheckbox);
+
+        errorCheckbox = new QCheckBox(logWidget);
+        errorCheckbox->setObjectName(QString::fromUtf8("errorCheckbox"));
+        errorCheckbox->setChecked(true);
+
+        logControlLayout->addWidget(errorCheckbox);
+
+        clearButton = new QPushButton(logWidget);
+        clearButton->setObjectName(QString::fromUtf8("clearButton"));
+
+        logControlLayout->addWidget(clearButton);
+
+
+        logLayout->addLayout(logControlLayout);
+
+        logDisplay = new QTextEdit(logWidget);
+        logDisplay->setObjectName(QString::fromUtf8("logDisplay"));
+        logDisplay->setReadOnly(true);
+        logDisplay->setLineWrapMode(QTextEdit::NoWrap);
+
+        logLayout->addWidget(logDisplay);
+
+        mainStackedWidget->addWidget(logWidget);
+
+        verticalLayout->addWidget(mainStackedWidget);
 
 
         retranslateUi(RtspPlayerWidget);
+
+        mainStackedWidget->setCurrentIndex(0);
+        videoStack->setCurrentIndex(0);
+
 
         QMetaObject::connectSlotsByName(RtspPlayerWidget);
     } // setupUi
@@ -222,7 +334,7 @@ public:
 "    /* Control buttons - consistent sizing and reduced padding for larger icons */\n"
 "    QPushButton#arucoButton, QPushButton#toggleViewButton, \n"
 "    QPushButton#toggleControlsButton, QToolButton#screenshotButton, \n"
-"    QToolButton#recordButton, QPushButton#playPauseButton, QPlayPauseButton {\n"
+"    QToolButton#recordButton, QPushButton#playPauseButton {\n"
 "      min-width: 26px;\n"
 "      max-width: 26px;\n"
 "      min-height: 26px;\n"
@@ -232,9 +344,9 @@ public:
 "      padding: 0px;\n"
 "    }\n"
 "    \n"
-"    /* Aruco IDs tex"
-                        "t box */\n"
-"    QLineEdit#arucoIdsTextBox {\n"
+"    /* Aruco IDs text box */\n"
+"    Q"
+                        "LineEdit#arucoIdsTextBox {\n"
 "      min-width: 40px;\n"
 "      max-width: 60px;\n"
 "      color: #e0e0e0;\n"
@@ -258,13 +370,21 @@ public:
 "      font-size: 16px;\n"
 "    }\n"
 "    \n"
+"    /* Log text styling */\n"
+"    QTextEdit#logDisplay {\n"
+"      background-color: black;\n"
+"      color: white; \n"
+"      font-family: monospace;\n"
+"    }\n"
+"    \n"
 "    /* Stream header labels - hide them */\n"
 "    QLabel.stream-header {\n"
 "      max-height: 0px;\n"
 "      padding: 0px;\n"
 "      margin: 0px;\n"
 "      border: none;\n"
-"      font-size: 0px;\n"
+"      "
+                        "font-size: 0px;\n"
 "      color: transparent;\n"
 "    }\n"
 "   ", nullptr));
@@ -284,12 +404,20 @@ public:
 #endif // QT_CONFIG(tooltip)
         statusIndicator->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "QFrame { border-radius: 4px; background-color: red; }", nullptr));
         videoWidget->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "background-color: black;", nullptr));
+        statusPage->setStyleSheet(QCoreApplication::translate("RtspPlayerWidget", "background-color: black;", nullptr));
+        statusLabel->setText(QCoreApplication::translate("RtspPlayerWidget", "Not Connected", nullptr));
 #if QT_CONFIG(tooltip)
         toggleControlsButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Hide Controls", nullptr));
 #endif // QT_CONFIG(tooltip)
 #if QT_CONFIG(tooltip)
         toggleViewButton->setToolTip(QCoreApplication::translate("RtspPlayerWidget", "Show Logs", nullptr));
 #endif // QT_CONFIG(tooltip)
+        backToVideoBtn->setText(QCoreApplication::translate("RtspPlayerWidget", "Back to Video", nullptr));
+        debugCheckbox->setText(QCoreApplication::translate("RtspPlayerWidget", "Debug", nullptr));
+        infoCheckbox->setText(QCoreApplication::translate("RtspPlayerWidget", "Info", nullptr));
+        warningCheckbox->setText(QCoreApplication::translate("RtspPlayerWidget", "Warning", nullptr));
+        errorCheckbox->setText(QCoreApplication::translate("RtspPlayerWidget", "Error", nullptr));
+        clearButton->setText(QCoreApplication::translate("RtspPlayerWidget", "Clear", nullptr));
     } // retranslateUi
 
 };

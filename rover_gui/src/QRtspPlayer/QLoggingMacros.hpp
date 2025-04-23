@@ -18,10 +18,11 @@ inline void log_to_ui(const char* level, const char* component, const T& message
     QLogManager::getInstance().logMessage(QString(level), QString(component), msgStr, QString(target));
 }
 
+// Modified debug macro to only send debug messages to the UI log, not to ROS/console
 #define LOG_DEBUG_TARGET(component, message, target) \
-    RCLCPP_DEBUG(rclcpp::get_logger(component), "%s", to_std_string(message).c_str()); \
     log_to_ui("DEBUG", component, message, target)
 
+// Other log levels still send to both ROS and UI
 #define LOG_INFO_TARGET(component, message, target) \
     RCLCPP_INFO(rclcpp::get_logger(component), "%s", to_std_string(message).c_str()); \
     log_to_ui("INFO", component, message, target)

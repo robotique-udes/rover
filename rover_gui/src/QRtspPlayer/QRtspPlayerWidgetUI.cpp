@@ -1,111 +1,58 @@
 #include "QRtspPlayer/QRtspPlayerWidgetHeader.hpp"
 #include "QLoggingMacros.hpp"
 #include <QStyle>
-#include <QToolButton>
 #include <QPainter>
-#include <QComboBox>
+#include <QMessageBox>
 
 void RtspPlayerWidget::setupUI(void)
 {
     // Load the UI directly from the .ui file
     this->_ui.setupUi(this);
     
-    // Create missing elements and setup stacked widgets
-    this->setupVideoStack();
-    this->setupCustomControls();
-    this->setupLogView();
+    // Store references to UI elements we'll need to access later
+    this->storeUIReferences();
+    
+    // Connect signals for UI elements
+    this->connectUISignals();
+    
+    // Initialize UI state
+    this->initializeUIState();
 }
 
-void RtspPlayerWidget::setupVideoStack(void)
+void RtspPlayerWidget::storeUIReferences(void)
 {
-    // Create video stacked widget to handle status display
-    if (this->_ui.videoWidget) {
-        // Get the parent layout of the video widget
-        QVBoxLayout* parentLayout = qobject_cast<QVBoxLayout*>(this->layout());
-        int videoWidgetIndex = -1;
-        
-        // Find the index of the video widget in the layout
-        for (int i = 0; i < parentLayout->count(); i++) {
-            if (parentLayout->itemAt(i)->widget() == this->_ui.videoWidget) {
-                videoWidgetIndex = i;
-                break;
-            }
-        }
-        
-        // Create stacked widget for video display
-        if (videoWidgetIndex >= 0) {
-            // Get the original video widget
-            QWidget* originalVideo = this->_ui.videoWidget;
-            parentLayout->removeWidget(originalVideo);
-            
-            // Create a new stacked widget
-            this->_videoStack = new QStackedWidget(this);
-            this->_videoStack->addWidget(originalVideo);
-            
-            // Create status page
-            this->_statusPage = new QWidget();
-            this->_statusPage->setStyleSheet("background-color: black;");
-            
-            QVBoxLayout* statusLayout = new QVBoxLayout(this->_statusPage);
-            statusLayout->setAlignment(Qt::AlignCenter);
-            
-            this->_statusLabel = new QLabel("Not Connected");
-            this->_statusLabel->setObjectName("statusLabel"); // Use the style from the UI file
-            this->_statusLabel->setAlignment(Qt::AlignCenter);
-            
-            statusLayout->addWidget(this->_statusLabel);
-            this->_videoStack->addWidget(this->_statusPage);
-            
-            // Insert the stacked widget back at the same position
-            parentLayout->insertWidget(videoWidgetIndex, this->_videoStack);
-        }
-    }
+    // Main stacked widget (for video/logs switch)
+    this->_stackedWidget = this->findChild<QStackedWidget*>("mainStackedWidget");
     
-    // Create main application stacked widget for video/logs
-    this->_stackedWidget = new QStackedWidget(this);
-    QLayout* mainLayout = this->layout();
+    // Video widgets
+    this->_videoWidget = this->findChild<QWidget*>("videoWidget");
+    this->_videoStack = this->findChild<QStackedWidget*>("videoStack");
+    this->_statusPage = this->findChild<QWidget*>("statusPage");
+    this->_statusLabel = this->findChild<QLabel*>("statusLabel");
     
-    // Move all widgets from the main layout to the stacked widget
-    QWidget* mainPage = new QWidget();
-    QVBoxLayout* mainPageLayout = new QVBoxLayout(mainPage);
-    mainPageLayout->setContentsMargins(0, 0, 0, 0);
-    mainPageLayout->setSpacing(0);
-    
-    // Move all items from the main layout to the main page layout
-    while (mainLayout->count() > 0) {
-        QLayoutItem* item = mainLayout->takeAt(0);
-        if (item->widget()) {
-            mainPageLayout->addWidget(item->widget());
-        } else if (item->layout()) {
-            mainPageLayout->addLayout(item->layout());
-        }
-        // Don't delete the item as we're moving it
-    }
-    
-    // Add the main page to the stacked widget
-    this->_stackedWidget->addWidget(mainPage);
-    
-    // Add the stacked widget to the main layout
-    mainLayout->addWidget(this->_stackedWidget);
-    
-    // Store reference to the video widget
-    this->_videoWidget = this->_ui.videoWidget;
-}
-
-void RtspPlayerWidget::setupCustomControls(void)
-{
-    // Store references to UI elements we need to access later
-    this->_playPauseButton = this->_ui.playPauseButton;
-    this->_arucoButton = this->_ui.arucoButton;
-    this->_arucoIdsTextBox = this->_ui.arucoIdsTextBox;
-    this->_screenshotButton = this->_ui.screenshotButton;
-    this->_recordButton = this->_ui.recordButton;
-    this->_toggleControlsButton = this->_ui.toggleControlsButton;
-    this->_toggleViewButton = this->_ui.toggleViewButton;
-    this->_controlsContainer = this->_ui.controlsContainer;
+    // Control buttons
+    this->_playPauseButton = this->findChild<QPushButton*>("playPauseButton");
+    this->_arucoButton = this->findChild<QPushButton*>("arucoButton");
+    this->_arucoIdsTextBox = this->findChild<QLineEdit*>("arucoIdsTextBox");
+    this->_screenshotButton = this->findChild<QToolButton*>("screenshotButton");
+    this->_recordButton = this->findChild<QToolButton*>("recordButton");
+    this->_toggleControlsButton = this->findChild<QPushButton*>("toggleControlsButton");
+    this->_toggleViewButton = this->findChild<QPushButton*>("toggleViewButton");
+    this->_controlsContainer = this->findChild<QWidget*>("controlsContainer");
     this->_streamSelector = this->findChild<QComboBox*>("streamSelector");
     
-    // Connect UI signals
+    // Log view widgets
+    this->_logWidget = this->findChild<QWidget*>("logWidget");
+    this->_logDisplay = this->findChild<QTextEdit*>("logDisplay");
+    this->_debugCheckbox = this->findChild<QCheckBox*>("debugCheckbox");
+    this->_infoCheckbox = this->findChild<QCheckBox*>("infoCheckbox");
+    this->_warningCheckbox = this->findChild<QCheckBox*>("warningCheckbox");
+    this->_errorCheckbox = this->findChild<QCheckBox*>("errorCheckbox");
+    this->_clearButton = this->findChild<QPushButton*>("clearButton");
+}
+
+void RtspPlayerWidget::connectUISignals(void)
+{
     // Connect play/pause button signal
     connect(this->_playPauseButton, &QPushButton::clicked, this, [this]() {
         if (this->_playPauseButton->isChecked()) {
@@ -121,104 +68,26 @@ void RtspPlayerWidget::setupCustomControls(void)
         }
     });
     
-    // Connect other button signals - only if they exist
-    if (this->_arucoButton)
-        connect(this->_arucoButton, &QPushButton::clicked, this, &RtspPlayerWidget::onArucoButtonClicked);
+    // Connect other button signals
+    connect(this->_arucoButton, &QPushButton::clicked, this, &RtspPlayerWidget::onArucoButtonClicked);
+    connect(this->_screenshotButton, &QToolButton::clicked, this, &RtspPlayerWidget::onScreenshotButtonClicked);
+    connect(this->_recordButton, &QToolButton::toggled, this, &RtspPlayerWidget::onRecordButtonToggled);
     
-    if (this->_screenshotButton)
-        connect(this->_screenshotButton, &QToolButton::clicked, this, &RtspPlayerWidget::onScreenshotButtonClicked);
+    // View toggling
+    connect(this->_toggleViewButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
+    connect(this->findChild<QPushButton*>("backToVideoBtn"), &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
     
-    if (this->_recordButton)
-        connect(this->_recordButton, &QToolButton::toggled, this, &RtspPlayerWidget::onRecordButtonToggled);
+    // Controls visibility
+    connect(this->_toggleControlsButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleControls);
     
-    if (this->_toggleViewButton)
-        connect(this->_toggleViewButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
+    // Stream selector
+    connect(this->_streamSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this, &RtspPlayerWidget::onStreamSelected);
     
-    if (this->_toggleControlsButton)
-        connect(this->_toggleControlsButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleControls);
-        
-    // Connect stream selector
-    if (this->_streamSelector)
-        connect(this->_streamSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
-                this, &RtspPlayerWidget::onStreamSelected);
-}
-
-void RtspPlayerWidget::onStreamSelected(int index)
-{
-    // Handle stream selection
-    if (index <= 0) {
-        // "None" selected - clear URL
-        this->_ui.rtspUrlInput->setText("");
-    } else if (_predefinedStreams.size() >= static_cast<size_t>(index)) {
-        // A predefined stream was selected (index-1 because index 0 is "None")
-        int predefinedIndex = index - 1;
-        this->_ui.rtspUrlInput->setText(_predefinedStreams[predefinedIndex].url);
-    }
-}
-
-void RtspPlayerWidget::addPredefinedStream(const QString& name, const QString& url)
-{
-    // Add to our internal list
-    PredefinedStream stream;
-    stream.name = name;
-    stream.url = url;
-    _predefinedStreams.push_back(stream);
-    
-    // Add to dropdown if it exists
-    if (_streamSelector) {
-        _streamSelector->addItem(name);
-    }
-}
-
-void RtspPlayerWidget::setupLogView(void)
-{
-    // Create log view widget
-    this->_logWidget = new QWidget();
-    this->_logLayout = new QVBoxLayout(this->_logWidget);
-    this->_logLayout->setContentsMargins(3, 3, 3, 3);
-    
-    // Create log control bar
-    this->_logControlLayout = new QHBoxLayout();
-    this->_logControlLayout->setContentsMargins(0, 0, 0, 3);
-    this->_logControlLayout->setSpacing(6);
-    
-    QPushButton* backToVideoBtn = new QPushButton("Back to Video", this->_logWidget);
-    this->_debugCheckbox = new QCheckBox("Debug", this->_logWidget);
-    this->_infoCheckbox = new QCheckBox("Info", this->_logWidget);
-    this->_warningCheckbox = new QCheckBox("Warning", this->_logWidget);
-    this->_errorCheckbox = new QCheckBox("Error", this->_logWidget);
-    this->_clearButton = new QPushButton("Clear", this->_logWidget);
-    
-    // Set default states
-    this->_debugCheckbox->setChecked(false);
-    this->_infoCheckbox->setChecked(true);
-    this->_warningCheckbox->setChecked(true);
-    this->_errorCheckbox->setChecked(true);
-    
-    // Arrange log controls
-    this->_logControlLayout->addWidget(backToVideoBtn);
-    this->_logControlLayout->addStretch();
-    this->_logControlLayout->addWidget(this->_debugCheckbox);
-    this->_logControlLayout->addWidget(this->_infoCheckbox);
-    this->_logControlLayout->addWidget(this->_warningCheckbox);
-    this->_logControlLayout->addWidget(this->_errorCheckbox);
-    this->_logControlLayout->addWidget(this->_clearButton);
-    
-    // Create log display
-    this->_logDisplay = new QTextEdit(this->_logWidget);
-    this->_logDisplay->setReadOnly(true);
-    this->_logDisplay->setLineWrapMode(QTextEdit::NoWrap);
-    this->_logDisplay->setStyleSheet("background-color: black; color: white; font-family: monospace;");
-    
-    // Add to layout
-    this->_logLayout->addLayout(this->_logControlLayout);
-    this->_logLayout->addWidget(this->_logDisplay);
-    
-    // Add to main stacked widget
-    this->_stackedWidget->addWidget(this->_logWidget);
+    // URL input validation
+    connect(this->_ui.rtspUrlInput, &QLineEdit::textChanged, this, &RtspPlayerWidget::onUrlTextChanged);
     
     // Connect log filter signals
-    connect(backToVideoBtn, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
     connect(this->_debugCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleDebug);
     connect(this->_infoCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleInfo);
     connect(this->_warningCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleWarning);
@@ -228,23 +97,35 @@ void RtspPlayerWidget::setupLogView(void)
     // Connect to log manager
     connect(&QLogManager::getInstance(), &QLogManager::newLogMessage, 
             this, &RtspPlayerWidget::onNewLogMessage);
-    
-    // Initial log message
-    this->_logDisplay->append("Log initialized for RTSP player " + this->_widgetId);
 }
 
-void RtspPlayerWidget::updateStatusText(const QString& text_)
+void RtspPlayerWidget::initializeUIState(void)
 {
-    if (!this->_statusLabel || !this->_videoStack)
-    {
-        return;
-    }
-    this->_statusLabel->setText(text_);
-    this->_videoStack->setCurrentIndex(text_.isEmpty() ? 0 : 1);
+    // Set initial state for video stack and status display
+    this->updateStatusText("Not Connected");
+    
+    // Set initial controls visibility
+    this->_controlsVisible = true;
+    
+    // Initialize log filter settings in QLogManager to match checkboxes
+    QLogManager::getInstance().setShowDebug(false, this->_widgetId);
+    QLogManager::getInstance().setShowInfo(true, this->_widgetId);
+    QLogManager::getInstance().setShowWarning(true, this->_widgetId);
+    QLogManager::getInstance().setShowError(true, this->_widgetId);
+    
+    // Initial log message - use INFO level instead of DEBUG
+    LOG_INFO_TARGET("RtspPlayer", "Log initialized for RTSP player " + this->_widgetId, this->_widgetId.toUtf8().constData());
+    this->_logDisplay->append("Log initialized for RTSP player " + this->_widgetId);
+    
+    // Initialize active state for stream-dependent controls
+    this->_arucoButton->setEnabled(false);
+    this->_screenshotButton->setEnabled(false);
+    this->_recordButton->setEnabled(false);
 }
 
 void RtspPlayerWidget::onToggleView(void)
 {
+    // Switch between video view (index 0) and log view (index 1)
     int currentIndex = this->_stackedWidget->currentIndex();
     int newIndex = (currentIndex == 0) ? 1 : 0;
     this->_stackedWidget->setCurrentIndex(newIndex);
@@ -278,7 +159,44 @@ void RtspPlayerWidget::setControlsVisible(bool visible_)
     emit this->controlsVisibilityChanged(visible_);
 }
 
-// Button handler implementations
+void RtspPlayerWidget::updateStatusText(const QString& text_)
+{
+    if (!this->_statusLabel || !this->_videoStack)
+    {
+        return;
+    }
+    this->_statusLabel->setText(text_);
+    this->_videoStack->setCurrentIndex(text_.isEmpty() ? 0 : 1);
+}
+
+void RtspPlayerWidget::onStreamSelected(int index)
+{
+    // Handle stream selection
+    if (index <= 0) {
+        // "None" selected - clear URL
+        this->_ui.rtspUrlInput->setText("");
+    } else if (_predefinedStreams.size() >= static_cast<size_t>(index)) {
+        // A predefined stream was selected (index-1 because index 0 is "None")
+        int predefinedIndex = index - 1;
+        this->_ui.rtspUrlInput->setText(_predefinedStreams[predefinedIndex].url);
+    }
+}
+
+void RtspPlayerWidget::addPredefinedStream(const QString& name, const QString& url)
+{
+    // Add to our internal list
+    PredefinedStream stream;
+    stream.name = name;
+    stream.url = url;
+    _predefinedStreams.push_back(stream);
+    
+    // Add to dropdown if it exists
+    if (_streamSelector) {
+        _streamSelector->addItem(name);
+    }
+}
+
+// Add implementations for screenshot and record button handlers
 void RtspPlayerWidget::onScreenshotButtonClicked()
 {
     if (_state != PlayerState::Streaming)
@@ -287,7 +205,11 @@ void RtspPlayerWidget::onScreenshotButtonClicked()
     }
     
     LOG_INFO_TARGET("RtspPlayer", "Taking screenshot", this->_widgetId.toUtf8().constData());
-    // Implementation for screenshot functionality goes here
+    
+    // Simple placeholder implementation
+    QMessageBox::information(this, "Screenshot", 
+                           "Screenshot functionality would capture the current frame.\n\n"
+                           "This is a placeholder implementation.");
 }
 
 void RtspPlayerWidget::onRecordButtonToggled(bool checked)
@@ -300,15 +222,15 @@ void RtspPlayerWidget::onRecordButtonToggled(bool checked)
     if (checked)
     {
         LOG_INFO_TARGET("RtspPlayer", "Starting recording", this->_widgetId.toUtf8().constData());
+        
         // Set the recording active icon
-        _ui.recordButton->setIcon(QIcon(":/icons/record_on.png"));
-        // Implementation for record start goes here
+        _recordButton->setIcon(QIcon(":/icons/record_on.png"));
     }
     else
     {
         LOG_INFO_TARGET("RtspPlayer", "Stopping recording", this->_widgetId.toUtf8().constData());
+        
         // Set the recording inactive icon
-        _ui.recordButton->setIcon(QIcon(":/icons/record_off.png"));
-        // Implementation for record stop goes here
+        _recordButton->setIcon(QIcon(":/icons/record_off.png"));
     }
 }
