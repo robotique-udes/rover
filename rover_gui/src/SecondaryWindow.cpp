@@ -46,11 +46,7 @@ void SecondaryWindow::loadPredefinedStreams()
 {
     _predefinedStreams = {
         {"Major", "rtsp://192.168.1.18:554/1/h264major"},
-        {"Minor", "rtsp://192.168.1.18:554/1/h264minor"},
-        {"Side Camera", "rtsp://example.com/side"},
-        {"Overhead Camera", "rtsp://example.com/overhead"},
-        {"Left Camera", "rtsp://example.com/left"},
-        {"Right Camera", "rtsp://example.com/right"}
+        {"Minor", "rtsp://192.168.1.18:554/1/h264minor"}
     };
 }
 
@@ -113,25 +109,20 @@ void SecondaryWindow::setupUI()
 
 void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
 {
-    // Find the existing stream selector in the widget (from the UI file)
+    // Find the existing stream selector
     QComboBox* selector = widget->findChild<QComboBox*>("streamSelector");
     if (!selector) {
-        // If not found (shouldn't happen if it's in the UI file), log a warning and return
         qDebug() << "Warning: Could not find streamSelector in widget" << position;
         return;
     }
     
-    // Clear any existing items (important if we're reusing the widget)
+    // Clear any existing items
     selector->clear();
     
-    // Add "None" option and all predefined streams
+    // Add only the "None" option (let addPredefinedStream handle the rest)
     selector->addItem("None");
-    for (const auto& stream : _predefinedStreams) {
-        selector->addItem(stream.name);
-    }
     
     // Connect signal for selection changes
-    // First disconnect any existing connections to avoid duplicates
     disconnect(selector, QOverload<int>::of(&QComboBox::currentIndexChanged), nullptr, nullptr);
     
     // Now connect the signal
