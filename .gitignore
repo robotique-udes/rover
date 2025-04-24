@@ -1,6 +1,9 @@
 .vscode
 *~
 *.bkp
+
+screenshots/
+recordings/
 rover_gui/ui/include/UI_*
 build/
 install/

@@ -19,6 +19,7 @@
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>joy</depend>
+  <depend>Eigen</depend>
   <depend>rover_msgs</depend>
 
   <exec_depend>ros2launch</exec_depend>

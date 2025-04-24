@@ -1,6 +1,7 @@
 #ifndef SECONDARY_WINDOW_HPP
 #define SECONDARY_WINDOW_HPP
 
+#include "QVideoPlayer/QVideoManagerWidget.hpp"
 #include <QMainWindow>
 #include <QGridLayout>
 #include <QPushButton>
