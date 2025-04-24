@@ -1,9 +1,10 @@
-#ifndef __ARUCO_DETECTION_NODE_HPP__
-#define __ARUCO_DETECTION_NODE_HPP__
+#ifndef ARUCO_DETECTION_NODE_HPP
+#define ARUCO_DETECTION_NODE_HPP
 
 #include "detection.hpp"
 #include "rover_msgs/msg/aruco.hpp"
 #include "rover_msgs/srv/aruco_detection.hpp"
+#include <opencv2/core/utils/logger.hpp>
 
 class ArucoDetectionNode : public rclcpp::Node
 {
@@ -11,6 +12,7 @@ class ArucoDetectionNode : public rclcpp::Node
     static constexpr uint64_t DELAY_PUBLISHER_MS = 1'000UL;
     static constexpr uint64_t DELAY_DETECTION_MS = 200UL;
     static constexpr uint8_t ALLOWED_ERROR_FRAME = 50U;
+    static constexpr cv::utils::logging::LogLevel OPENCV_LOG_LEVEL = cv::utils::logging::LOG_LEVEL_SILENT;
 
   public:
     ArucoDetectionNode(int argc, char** argv);

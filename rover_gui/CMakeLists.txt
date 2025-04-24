@@ -80,6 +80,15 @@ add_executable(main_gui src/gui.cpp
                         
                    src/QDashboard/QExample.hpp
                    src/QDashboard/QExample.cpp
+
+                   src/QVideoPlayer/QVideoManagerWidget.cpp
+                   src/QVideoPlayer/QVideoManagerWidget.hpp
+                   src/QVideoPlayer/QVideoPlayerWidget.cpp
+                   src/QVideoPlayer/QVideoPlayerWidget.hpp
+                   src/QVideoPlayer/Worker/QPlayerWorker.hpp
+                   src/QVideoPlayer/Worker/QPlayerWorker.cpp
+
+
                 )
 add_dependencies(main_gui run_generate_ui)
 
