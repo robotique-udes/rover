@@ -45,8 +45,8 @@ SecondaryWindow::~SecondaryWindow()
 void SecondaryWindow::loadPredefinedStreams()
 {
     _predefinedStreams = {
-        {"Front Camera", "rtsp://example.com/front"},
-        {"Back Camera", "rtsp://example.com/back"},
+        {"Major", "rtsp://192.168.1.18:554/1/h264major"},
+        {"Minor", "rtsp://192.168.1.18:554/1/h264minor"},
         {"Side Camera", "rtsp://example.com/side"},
         {"Overhead Camera", "rtsp://example.com/overhead"},
         {"Left Camera", "rtsp://example.com/left"},
