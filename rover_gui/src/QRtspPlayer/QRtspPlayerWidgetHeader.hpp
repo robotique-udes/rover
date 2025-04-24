@@ -22,7 +22,11 @@
 #include "QGStreamerWorker.hpp"
 #include "UI_Player.h"
 #include "QLogManager.hpp"
-#include "QArrucoWorker/QPlayerWorker.hpp"
+
+#include "rclcpp/rclcpp.hpp"
+#include "rover_msgs/srv/camera_control.hpp"
+#include "rover_msgs/srv/aruco_detection.hpp"
+#include "rover_msgs/msg/aruco.hpp"
 
 enum class PlayerState {
     NotConnected,  
@@ -61,20 +65,15 @@ public:
     void setControlsVisible(bool visible_);
     bool areControlsVisible(void) const { return _controlsVisible; }
 
-    // Add a predefined stream to the dropdown
     void addPredefinedStream(const QString& name, const QString& url);
-
-    void startArucoDetection(void);
-    void stopArucoDetection(void);
-    void displayDetectedArucos(const std::vector<uint16_t>& ids_);
-    void setArucoDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
-    void arucoStillAliveUpdate(bool urlFound_);
+    
+    void initializeRosServices(std::shared_ptr<rclcpp::Node> node_);
 
 private slots:
    
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
-    void onStreamSelected(int index); // Handler for stream selection
+    void onStreamSelected(int index); 
     
     void onConnectionFailed(void);
     void onFrameReceived(void);
@@ -93,20 +92,17 @@ private slots:
     void onToggleView(void);
     void onToggleControls(void);
     
-    void onScreenshotButtonClicked();
-    void onRecordButtonToggled(bool checked);
-
-    void onArucoButtonClicked(void);
-    void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
-    void onArucoServerInfoFailed(bool success_);
-    void onArucoCameraFailed(bool valid_);
+    void onArucoButtonToggled(bool checked);
+    void handleScreenshotRequest();
+    void handleRecordingRequest(bool checked);
+    void onScreenshotButtonClicked() { handleScreenshotRequest(); }
+    void onRecordButtonToggled(bool checked) { handleRecordingRequest(checked); }
     
 signals:
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
     void streamStateChanged(bool isRunning_, int streamIndex_);
     void controlsVisibilityChanged(bool visible_);
-    void arucoCameraFailure(bool valid_);
 
 private:
     
@@ -114,16 +110,16 @@ private:
     void updateStatusText(const QString& text_);
     void emitStateChanged(void);
     
-    // UI setup methods - simplified for UI definition from .ui file
     void setupUI(void);
     void storeUIReferences(void);
     void connectUISignals(void);
     void initializeUIState(void);
     void connectSignals(void);
     
-    void setArucoButtonStyle(const QString& styleClass_, const QString& bgColor_ = "");
     void tryReconnect(void);
     void cleanupResources(void);
+    
+    void handleArucoDetection(const std::shared_ptr<rover_msgs::msg::Aruco> msg);
 
     QString _widgetId;
     int _streamIndex;
@@ -144,15 +140,14 @@ private:
     int _reconnectAttempts;
     bool _wasEverConnected;
     bool _controlsVisible;
+    bool _arucoDetectionEnabled;
     
-    // Stream selection
     struct PredefinedStream {
         QString name;
         QString url;
     };
     std::vector<PredefinedStream> _predefinedStreams;
 
-    // UI element references - all found from UI file
     QStackedWidget* _stackedWidget = nullptr;
     QWidget* _videoWidget = nullptr;
     QStackedWidget* _videoStack = nullptr;
@@ -160,7 +155,7 @@ private:
     QLabel* _statusLabel = nullptr;
     QPushButton* _playPauseButton = nullptr;
     QPushButton* _toggleControlsButton = nullptr;
-    QPushButton* _toggleViewButton = nullptr; // Added this missing member
+    QPushButton* _toggleViewButton = nullptr;
     QWidget* _controlsContainer = nullptr;
     QToolButton* _screenshotButton = nullptr;
     QToolButton* _recordButton = nullptr;
@@ -176,12 +171,12 @@ private:
     QCheckBox* _errorCheckbox = nullptr;
     QPushButton* _clearButton = nullptr;
     
-    // Aruco detection
-    bool _arucoDetectionEnabled;
-    uint16_t _lastIds[NBR_IDS_TO_DISPLAY];
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _arucoDetectionClient;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread;
-    uint16_t _tag;
+    std::shared_ptr<rclcpp::Node> _rosNode = nullptr;
+    rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr _cameraControlClient = nullptr;
+    rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr _arucoDetectionClient = nullptr;
+    rclcpp::Subscription<rover_msgs::msg::Aruco>::SharedPtr _arucoSubscription = nullptr;
+    bool _isCameraServiceAvailable = false;
+    bool _isArucoServiceAvailable = false;
 };
 
 #endif

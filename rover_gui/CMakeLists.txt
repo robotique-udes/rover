@@ -100,15 +100,13 @@ add_executable(main_gui src/gui.cpp
                         src/QRtspPlayer/QRtspPlayerWidgetHeader.hpp
                         src/QRtspPlayer/QRtspPlayerWidgetCore.cpp
                         src/QRtspPlayer/QRtspPlayerWidgetLogging.cpp
-                        src/QRtspPlayer/QRtspPlayerWidgetArruco.cpp
                         src/QRtspPlayer/QRtspPlayerWidgetStreaming.cpp
                         src/QRtspPlayer/QRtspPlayerWidgetUI.cpp
                         src/QRtspPlayer/QGStreamerWorker.cpp
                         src/QRtspPlayer/QGStreamerWorker.hpp
                         src/QRtspPlayer/QLoggingMacros.hpp
+                        src/QRtspPlayer/QRtspPlayerWidgetServices.cpp
 
-                        src/QArrucoWorker/QPlayerWorker.cpp
-                        src/QArrucoWorker/QPlayerWorker.hpp
                         ${RTSP_RESOURCES}
                         )
 add_dependencies(main_gui run_generate_ui)

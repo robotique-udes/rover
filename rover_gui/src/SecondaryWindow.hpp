@@ -20,7 +20,7 @@ class SecondaryWindow : public QMainWindow
     Q_OBJECT
     
 public:
-    explicit SecondaryWindow();
+    explicit SecondaryWindow(std::shared_ptr<rclcpp::Node> node = nullptr);
     ~SecondaryWindow();
 
 private slots:
@@ -41,6 +41,7 @@ private:
     void loadPredefinedStreams(void);
     void initializeStreams(void);
     void updateLayout(void);
+    void initializeRosServicesForWidgets(void); // New method
     
     // Stream container helpers
     QWidget* createStreamContainer(int streamIndex_);
@@ -57,7 +58,6 @@ private:
     
     // ROS components
     std::shared_ptr<rclcpp::Node> _node;
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _arucoDetectionClient;
 
     // Layout components
     QStackedWidget* _singleStreamStack = nullptr;

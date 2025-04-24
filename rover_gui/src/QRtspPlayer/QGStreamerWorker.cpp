@@ -31,7 +31,7 @@ static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_dat
         if (consecutive_errors_count >= MAX_CONSECUTIVE_ERRORS) {
             LOG_ERROR("GStreamer", "Maximum consecutive errors reached, connection failed");
             emit worker->connectionFailed();
-            consecutive_errors_count = 0; // Reset for next attempt
+            consecutive_errors_count = 0; 
         } else {
             emit worker->errorOccurred(errorMsg);
         }

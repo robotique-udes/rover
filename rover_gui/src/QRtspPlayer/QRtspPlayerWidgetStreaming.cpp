@@ -21,7 +21,6 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl_)
         return;
     }
     
-    // Prevent duplicate stream starts in quick succession
     QDateTime currentTime = QDateTime::currentDateTime();
     if (rtspUrl_ == this->_lastStreamUrl && this->_lastStreamTime.isValid() && 
         this->_lastStreamTime.msecsTo(currentTime) < 500)
@@ -32,26 +31,21 @@ void RtspPlayerWidget::startStream(const QString& rtspUrl_)
     this->_lastStreamUrl = rtspUrl_;
     this->_lastStreamTime = currentTime;
 
-    // Reset attempt counter if this is a fresh connection (not a reconnect)
     if (_state != PlayerState::Reconnecting)
     {
         LOG_INFO_TARGET("RtspPlayer", QString("Starting stream: %1").arg(rtspUrl_), this->_widgetId.toUtf8().constData());
         this->_reconnectAttempts = 0;
     }
 
-    // Update state
     this->setPlayerState(PlayerState::Connecting);
     
-    // Request pipeline start
     emit this->requestStartStream(rtspUrl_);
 }
 
 void RtspPlayerWidget::stopStream(void)
 {
-    // Stop connection timeout if still waiting
     this->_connectionTimeoutTimer->stop();
     
-    // Skip if no active stream or already stopped
     if (_state == PlayerState::NotConnected || _state == PlayerState::Paused)
     {
         return;
@@ -59,19 +53,15 @@ void RtspPlayerWidget::stopStream(void)
 
     LOG_INFO_TARGET("RtspPlayer", "Stopping stream", this->_widgetId.toUtf8().constData());
     
-    // Stop all timers
     this->_frameTimeoutTimer->stop();
     this->_reconnectTimer->stop();
     
-    // Disable streaming-dependent buttons
     this->_arucoButton->setEnabled(false);
     this->_screenshotButton->setEnabled(false);
     this->_recordButton->setEnabled(false);
     
-    // Request pipeline stop
     emit this->requestStopStream();
     
-    // Update state (to Paused if previously connected, otherwise NotConnected)
     if (this->_wasEverConnected)
     {
         this->setPlayerState(PlayerState::Paused);
@@ -103,18 +93,12 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* pipeline_)
         return;
     }
 
-    // Set up video overlay
     gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)this->_ui.videoWidget->winId());
     gst_object_unref(videoSink);
     
-    // Start pipeline playback
     gst_element_set_state(this->_pipeline, GST_STATE_PLAYING);
     LOG_DEBUG_TARGET("RtspPlayer", "Pipeline state set to PLAYING", this->_widgetId.toUtf8().constData());
     
-    // Note: We don't update the state to Streaming here - we wait for actual frames
-    // in onFrameReceived() before considering the stream active
-    
-    // Start timeout for initial frame detection
     this->_frameTimeoutTimer->start(2000);
 }
 
@@ -122,16 +106,13 @@ void RtspPlayerWidget::onErrorOccurred(const QString& error_)
 {
     if (_state == PlayerState::Streaming)
     {
-        // Ignore errors while streaming - the frame timeout will handle connection loss
         return;
     }
     
     if (_state == PlayerState::Reconnecting)
     {
-        // Just log debug info during reconnect attempts
         LOG_DEBUG_TARGET("RtspPlayer", error_, this->_widgetId.toUtf8().constData());
         
-        // Make sure reconnect timer is running
         if (!this->_reconnectTimer->isActive())
         {
             this->_reconnectTimer->start(3000);
@@ -139,7 +120,6 @@ void RtspPlayerWidget::onErrorOccurred(const QString& error_)
     }
     else
     {
-        // Log error and attempt reconnection
         LOG_ERROR_TARGET("RtspPlayer", error_, this->_widgetId.toUtf8().constData());
         this->setPlayerState(PlayerState::ConnectionError);
     }

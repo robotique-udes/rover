@@ -2,64 +2,48 @@
 #include <QLabel>
 #include <QGroupBox>
 
-SecondaryWindow::SecondaryWindow():
+SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> node):
     QMainWindow(nullptr),
     _centralWidget(this),
+    _node(node),
     _currentStreamIndex(0)
 {
-    // Initialize ROS node
-    _node = std::make_shared<rclcpp::Node>("secondary_window_node");
+    if (!_node) {
+        _node = std::make_shared<rclcpp::Node>("secondary_window_node");
+    }
     
-    // Create Aruco detection client
-    _arucoDetectionClient = _node->create_client<rover_msgs::srv::ArucoDetection>("/rover/auxiliary/aruco/manager");
-    
-    // Setup main layout
     _mainLayout = new QVBoxLayout(&_centralWidget);
     
-    // Load predefined streams first
     loadPredefinedStreams();
-  
-    // Create layout stack (to switch between single/multi views)
     _layoutStack = new QStackedWidget();
     
-    // Setup single and multi stream views
     setupSingleStreamView();
     setupMultiStreamView();
     
-    // Add views to layout stack
     _layoutStack->addWidget(_singleStreamView);
     _layoutStack->addWidget(_multiStreamView);
     
-    // Initialize active streams with empty placeholders
     for (int i = 0; i < MAX_STREAMS; i++) {
         ActiveStream stream;
         stream.widget = std::make_unique<RtspPlayerWidget>(nullptr, QString("stream_%1").arg(i));
-        stream.predefinedStreamIndex = -1; // No predefined stream selected
+        stream.headerLabel = std::make_unique<QLabel>();
+        stream.predefinedStreamIndex = -1;
         stream.isRunning = false;
         _activeStreams.push_back(std::move(stream));
     }
-
-    // Set the Aruco manager for each widget
-    for (auto& streamInfo : _activeStreams) {
-        streamInfo.widget->setArucoDetectionManager(_arucoDetectionClient);
-    }
     
-    // Setup the rest of the UI
     setupUI();
-    
-    // Update the layout
+    initializeRosServicesForWidgets();
     updateLayout();
 }
 
 SecondaryWindow::~SecondaryWindow()
 {
-    // Smart pointers will automatically clean up, no manual deletion needed
+   
 }
 
 void SecondaryWindow::loadPredefinedStreams()
 {
-    // Add some sample predefined streams
-    // In a real application, these might be loaded from a configuration file
     _predefinedStreams = {
         {"Front Camera", "rtsp://example.com/front"},
         {"Back Camera", "rtsp://example.com/back"},
@@ -72,7 +56,7 @@ void SecondaryWindow::loadPredefinedStreams()
 
 void SecondaryWindow::setupUI() 
 {
-    // Create control layout with minimal margins
+   
     _controlLayout = new QHBoxLayout();
     _controlLayout->setContentsMargins(3, 0, 3, 0); // Reduced vertical margins
     _controlLayout->setSpacing(2); // Minimal spacing
@@ -119,6 +103,11 @@ void SecondaryWindow::setupUI()
                 
         // Add stream selector to each widget
         addStreamSelector(_activeStreams[i].widget.get(), i);
+        
+        // Add predefined streams to each player widget
+        for (const auto& stream : _predefinedStreams) {
+            _activeStreams[i].widget->addPredefinedStream(stream.name, stream.url);
+        }
     }
 }
 
@@ -295,5 +284,21 @@ void SecondaryWindow::onStreamStateChanged(bool running, int streamIndex)
 {
     if (streamIndex >= 0 && streamIndex < static_cast<int>(_activeStreams.size())) {
         _activeStreams[streamIndex].isRunning = running;
+    }
+}
+
+
+void SecondaryWindow::initializeRosServicesForWidgets()
+{
+    // Initialize ROS services for all active stream widgets
+    for (auto& stream : _activeStreams) {
+        try {
+            if (stream.widget && _node) {
+                stream.widget->initializeRosServices(_node);
+            }
+        }
+        catch (const std::exception& e) {
+            RCLCPP_ERROR(_node->get_logger(), "Failed to initialize ROS services for stream widget: %s", e.what());
+        }
     }
 }
