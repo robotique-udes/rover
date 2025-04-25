@@ -3,6 +3,8 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QDateTime>
+#include <QRegularExpression>
+#include <gst/video/videooverlay.h>
 
 int RtspPlayerWidget::_instanceCounter = 0;
 
@@ -10,9 +12,9 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent_, const QString& widgetId_):
     QWidget(parent_),
     _workerThread(new QThread(this)),
     _gstreamerWorker(new GStreamerWorker()),
-    _reconnectTimer(new QTimer(this)),
-    _frameTimeoutTimer(new QTimer(this)),
-    _connectionTimeoutTimer(new QTimer(this)),
+    _reconnectTimer(this),              // Stack allocation with parent
+    _frameTimeoutTimer(this),           // Stack allocation with parent
+    _connectionTimeoutTimer(this),      // Stack allocation with parent
     _lastStreamUrl(""),
     _lastStreamTime(QDateTime()),
     _pipeline(nullptr),
@@ -27,6 +29,7 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent_, const QString& widgetId_):
     
     this->setupUI();
 
+    // Worker thread setup - still need heap allocation for worker thread handling
     _gstreamerWorker->moveToThread(_workerThread);
     connect(_workerThread, &QThread::finished, _gstreamerWorker, &QObject::deleteLater);
 
@@ -54,13 +57,13 @@ void RtspPlayerWidget::connectSignals(void)
     
     connect(_ui.rtspUrlInput, &QLineEdit::textChanged, this, &RtspPlayerWidget::onUrlTextChanged);
     
-    _frameTimeoutTimer->setSingleShot(true);
-    _reconnectTimer->setSingleShot(true);
-    _connectionTimeoutTimer->setSingleShot(true);
+    _frameTimeoutTimer.setSingleShot(true);
+    _reconnectTimer.setSingleShot(true);
+    _connectionTimeoutTimer.setSingleShot(true);
     
-    connect(_frameTimeoutTimer, &QTimer::timeout, this, &RtspPlayerWidget::onFrameTimeout);
-    connect(_reconnectTimer, &QTimer::timeout, this, &RtspPlayerWidget::onReconnectTimer);
-    connect(_connectionTimeoutTimer, &QTimer::timeout, this, &RtspPlayerWidget::onConnectionTimeout);
+    connect(&_frameTimeoutTimer, &QTimer::timeout, this, &RtspPlayerWidget::onFrameTimeout);
+    connect(&_reconnectTimer, &QTimer::timeout, this, &RtspPlayerWidget::onReconnectTimer);
+    connect(&_connectionTimeoutTimer, &QTimer::timeout, this, &RtspPlayerWidget::onConnectionTimeout);
 }
 
 void RtspPlayerWidget::cleanupResources(void)
@@ -75,6 +78,74 @@ void RtspPlayerWidget::cleanupResources(void)
         {
             this->_workerThread->terminate();
         }
+    }
+}
+
+// Add startStream and stopStream implementations here
+void RtspPlayerWidget::startStream(const QString& rtspUrl_)
+{
+    if (rtspUrl_.isEmpty())
+    {
+        LOG_WARNING_TARGET("RtspPlayer", "Empty RTSP URL provided", this->_widgetId.toUtf8().constData());
+        return;
+    }
+
+    if (!this->validateRtspUrl(rtspUrl_))
+    {
+        QMessageBox::warning(this, "Invalid RTSP URL",
+                           "The URL format is invalid. Please enter a valid RTSP URL.\n\n"
+                           "Format: rtsp://[username:password@]host[:port]/path");
+        return;
+    }
+    
+    QDateTime currentTime = QDateTime::currentDateTime();
+    if (rtspUrl_ == this->_lastStreamUrl && this->_lastStreamTime.isValid() && 
+        this->_lastStreamTime.msecsTo(currentTime) < 500)
+    {
+        return;
+    }
+    
+    this->_lastStreamUrl = rtspUrl_;
+    this->_lastStreamTime = currentTime;
+
+    if (_state != PlayerState::Reconnecting)
+    {
+        LOG_INFO_TARGET("RtspPlayer", QString("Starting stream: %1").arg(rtspUrl_), this->_widgetId.toUtf8().constData());
+        this->_reconnectAttempts = 0;
+    }
+
+    this->setPlayerState(PlayerState::Connecting);
+    
+    emit this->requestStartStream(rtspUrl_);
+}
+
+void RtspPlayerWidget::stopStream(void)
+{
+    this->_connectionTimeoutTimer.stop();
+    
+    if (_state == PlayerState::NotConnected || _state == PlayerState::Paused)
+    {
+        return;
+    }
+
+    LOG_INFO_TARGET("RtspPlayer", "Stopping stream", this->_widgetId.toUtf8().constData());
+    
+    this->_frameTimeoutTimer.stop();
+    this->_reconnectTimer.stop();
+    
+    this->_arucoButton->setEnabled(false);
+    this->_screenshotButton->setEnabled(false);
+    this->_recordButton->setEnabled(false);
+    
+    emit this->requestStopStream();
+    
+    if (this->_wasEverConnected)
+    {
+        this->setPlayerState(PlayerState::Paused);
+    }
+    else
+    {
+        this->setPlayerState(PlayerState::NotConnected);
     }
 }
 
@@ -104,7 +175,7 @@ void RtspPlayerWidget::setPlayerState(PlayerState state_)
             this->_playPauseButton->setChecked(true);
             this->_playPauseButton->setIcon(QIcon(":/icons/stop.png"));
             this->_playPauseButton->setToolTip("Stop");
-            this->_connectionTimeoutTimer->start(8000);
+            this->_connectionTimeoutTimer.start(8000);
             break;
             
         case PlayerState::Streaming:
@@ -115,7 +186,7 @@ void RtspPlayerWidget::setPlayerState(PlayerState state_)
             this->_playPauseButton->setToolTip("Stop");
             this->_wasEverConnected = true;
             this->_arucoButton->setEnabled(true);
-            this->_frameTimeoutTimer->start(2000);
+            this->_frameTimeoutTimer.start(2000);
             break;
             
         case PlayerState::Reconnecting:
@@ -184,7 +255,7 @@ void RtspPlayerWidget::tryReconnect(void)
     {
         LOG_INFO_TARGET("RtspPlayer", QString("Automatic reconnection attempt %1 of %2").arg(_reconnectAttempts).arg(MAX_RECONNECT_ATTEMPTS), _widgetId.toUtf8().constData());
         this->setPlayerState(PlayerState::Reconnecting);
-        this->_reconnectTimer->start(3000);
+        this->_reconnectTimer.start(3000);
     }
     else
     {
@@ -193,6 +264,7 @@ void RtspPlayerWidget::tryReconnect(void)
     }
 }
 
+// Add the missing emitStateChanged function
 void RtspPlayerWidget::emitStateChanged(void)
 {
     emit this->streamStateChanged(_state == PlayerState::Streaming, this->_streamIndex);
@@ -200,8 +272,8 @@ void RtspPlayerWidget::emitStateChanged(void)
 
 void RtspPlayerWidget::onConnectionFailed(void)
 {
-    this->_reconnectTimer->stop();
-    this->_connectionTimeoutTimer->stop();
+    this->_reconnectTimer.stop();
+    this->_connectionTimeoutTimer.stop();
     this->_reconnectAttempts = 0;
     this->setPlayerState(PlayerState::ConnectionFailed);
     LOG_ERROR_TARGET("RtspPlayer", "Connection failed permanently", this->_widgetId.toUtf8().constData());
@@ -209,8 +281,8 @@ void RtspPlayerWidget::onConnectionFailed(void)
 
 void RtspPlayerWidget::onFrameReceived(void)
 {
-    this->_connectionTimeoutTimer->stop();
-    this->_reconnectTimer->stop();
+    this->_connectionTimeoutTimer.stop();
+    this->_reconnectTimer.stop();
     
     if (_state != PlayerState::Streaming)
     {
@@ -232,7 +304,7 @@ void RtspPlayerWidget::onFrameReceived(void)
     }
     else
     {
-        this->_frameTimeoutTimer->start(2000);
+        this->_frameTimeoutTimer.start(2000);
     }
 }
 

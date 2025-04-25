@@ -41,7 +41,7 @@ private:
     void loadPredefinedStreams(void);
     void initializeStreams(void);
     void updateLayout(void);
-    void initializeRosServicesForWidgets(void); // New method
+    void initializeRosServicesForWidgets(void);
     
     // Stream container helpers
     QWidget* createStreamContainer(int streamIndex_);
@@ -49,21 +49,21 @@ private:
     void setupMultiStreamView(void);
     void addStreamSelector(RtspPlayerWidget* widget_, int position_);
     
-    // Core widget components
+    // Core widget components - now stack allocated
     QWidget _centralWidget;
-    QVBoxLayout* _mainLayout = nullptr;
-    QStackedWidget* _layoutStack = nullptr;
-    QWidget* _singleStreamView = nullptr;
-    QWidget* _multiStreamView = nullptr;
+    QVBoxLayout _mainLayout;
+    QStackedWidget _layoutStack;
+    QWidget _singleStreamView;
+    QWidget _multiStreamView;
     
     // ROS components
     std::shared_ptr<rclcpp::Node> _node;
 
-    // Layout components
-    QStackedWidget* _singleStreamStack = nullptr;
-    QGridLayout* _multiStreamGrid = nullptr;
-    QHBoxLayout* _controlLayout = nullptr;
-    QComboBox* _layoutSelector = nullptr;
+    // Layout components - now stack allocated
+    QStackedWidget _singleStreamStack;
+    QGridLayout _multiStreamGrid;
+    QHBoxLayout _controlLayout;
+    QComboBox _layoutSelector;
     
     // Stream configuration
     struct PredefinedStream {
@@ -74,6 +74,8 @@ private:
     
     // Active stream management
     struct ActiveStream {
+        // Note: Using raw pointers here as these are special widgets
+        // that still need to be heap allocated due to how they're used
         std::unique_ptr<RtspPlayerWidget> widget;
         std::unique_ptr<QLabel> headerLabel;
         int predefinedStreamIndex = -1; // -1 = None

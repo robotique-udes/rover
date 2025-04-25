@@ -32,21 +32,12 @@ private:
     QString buildPipelineString(const QString& rtspUrl_) const;
     void cleanupGStreamer();
     
-    // Callback wrappers
-    static GstFlowReturn onNewSampleCallback(GstElement* sink_, gpointer userData_);
-    static void onGstErrorMessage(GstBus* bus_, GstMessage* msg_, gpointer userData_);
-    static void onGstWarningMessage(GstBus* bus_, GstMessage* msg_, gpointer userData_);
-    static void onDecodebinPadAdded(GstElement* decodebin_, GstPad* pad_, gpointer userData_);
+    // Pipeline state - can't convert these to stack allocation because they're C-style pointers
+    GstElement* _pipeline = nullptr;
+    QString _lastUrl;
     
     // Signal handler IDs for proper cleanup
     gulong _newSampleSignalId = 0;
-    gulong _padAddedSignalId = 0;
-    gulong _busErrorSignalId = 0;
-    gulong _busWarningSignalId = 0;
-    
-    // Pipeline state
-    GstElement* _pipeline = nullptr;
-    QString _lastUrl;
     int _consecutiveErrorsCount = 0;
     static constexpr int MAX_CONSECUTIVE_ERRORS = 3;
 };

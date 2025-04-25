@@ -70,7 +70,6 @@ public:
     void initializeRosServices(std::shared_ptr<rclcpp::Node> node_);
 
 private slots:
-   
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
     void onStreamSelected(int index); 
@@ -98,6 +97,9 @@ private slots:
     void onScreenshotButtonClicked() { handleScreenshotRequest(); }
     void onRecordButtonToggled(bool checked) { handleRecordingRequest(checked); }
     
+    // New method to check service availability periodically
+    void checkServiceAvailability();
+    
 signals:
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
@@ -120,21 +122,30 @@ private:
     void cleanupResources(void);
     
     void handleArucoDetection(const std::shared_ptr<rover_msgs::msg::Aruco> msg);
+    
+    // New method to start service availability polling
+    void startServiceAvailabilityPolling();
 
     QString _widgetId;
     int _streamIndex;
     Ui::RtspPlayerWidget _ui;
 
-    QThread* _workerThread;
-    GStreamerWorker* _gstreamerWorker;
+    // These must remain heap-allocated due to threading
+    QThread* _workerThread;                  // Owns GStreamerWorker
+    GStreamerWorker* _gstreamerWorker;       // Moved to worker thread
 
-    QTimer* _reconnectTimer;
-    QTimer* _frameTimeoutTimer;
-    QTimer* _connectionTimeoutTimer;
+    // Stack-allocated timers
+    QTimer _reconnectTimer;
+    QTimer _frameTimeoutTimer;
+    QTimer _connectionTimeoutTimer;
+    
+    // New timer for service availability polling
+    QTimer _servicePollingTimer;
+    bool _servicePollingActive = false;
 
     QString _lastStreamUrl;
     QDateTime _lastStreamTime;
-    GstElement* _pipeline;
+    GstElement* _pipeline;                   // Managed by GStreamer
 
     PlayerState _state;
     int _reconnectAttempts;
@@ -148,6 +159,8 @@ private:
     };
     std::vector<PredefinedStream> _predefinedStreams;
 
+    // These are managed by Qt UI framework (from .ui file)
+    // so we use raw pointers, but don't own them
     QStackedWidget* _stackedWidget = nullptr;
     QWidget* _videoWidget = nullptr;
     QStackedWidget* _videoStack = nullptr;

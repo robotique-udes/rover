@@ -5,79 +5,12 @@
 #include <QRegularExpression>
 #include <gst/video/videooverlay.h>
 
-void RtspPlayerWidget::startStream(const QString& rtspUrl_)
-{
-    if (rtspUrl_.isEmpty())
-    {
-        LOG_WARNING_TARGET("RtspPlayer", "Empty RTSP URL provided", this->_widgetId.toUtf8().constData());
-        return;
-    }
-
-    if (!this->validateRtspUrl(rtspUrl_))
-    {
-        QMessageBox::warning(this, "Invalid RTSP URL",
-                           "The URL format is invalid. Please enter a valid RTSP URL.\n\n"
-                           "Format: rtsp://[username:password@]host[:port]/path");
-        return;
-    }
-    
-    QDateTime currentTime = QDateTime::currentDateTime();
-    if (rtspUrl_ == this->_lastStreamUrl && this->_lastStreamTime.isValid() && 
-        this->_lastStreamTime.msecsTo(currentTime) < 500)
-    {
-        return;
-    }
-    
-    this->_lastStreamUrl = rtspUrl_;
-    this->_lastStreamTime = currentTime;
-
-    if (_state != PlayerState::Reconnecting)
-    {
-        LOG_INFO_TARGET("RtspPlayer", QString("Starting stream: %1").arg(rtspUrl_), this->_widgetId.toUtf8().constData());
-        this->_reconnectAttempts = 0;
-    }
-
-    this->setPlayerState(PlayerState::Connecting);
-    
-    emit this->requestStartStream(rtspUrl_);
-}
-
-void RtspPlayerWidget::stopStream(void)
-{
-    this->_connectionTimeoutTimer->stop();
-    
-    if (_state == PlayerState::NotConnected || _state == PlayerState::Paused)
-    {
-        return;
-    }
-
-    LOG_INFO_TARGET("RtspPlayer", "Stopping stream", this->_widgetId.toUtf8().constData());
-    
-    this->_frameTimeoutTimer->stop();
-    this->_reconnectTimer->stop();
-    
-    this->_arucoButton->setEnabled(false);
-    this->_screenshotButton->setEnabled(false);
-    this->_recordButton->setEnabled(false);
-    
-    emit this->requestStopStream();
-    
-    if (this->_wasEverConnected)
-    {
-        this->setPlayerState(PlayerState::Paused);
-    }
-    else
-    {
-        this->setPlayerState(PlayerState::NotConnected);
-    }
-}
-
 void RtspPlayerWidget::onPipelineStarted(GstElement* pipeline_)
 {
     if (!pipeline_)
     {
         LOG_ERROR_TARGET("RtspPlayer", "Pipeline creation failed", this->_widgetId.toUtf8().constData());
-        this->_connectionTimeoutTimer->stop();
+        this->_connectionTimeoutTimer.stop();
         this->setPlayerState(PlayerState::ConnectionError);
         return;
     }
@@ -88,7 +21,7 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     if (!videoSink)
     {
         LOG_ERROR_TARGET("RtspPlayer", "Failed to find VideoOverlay in pipeline", this->_widgetId.toUtf8().constData());
-        this->_connectionTimeoutTimer->stop();
+        this->_connectionTimeoutTimer.stop();
         this->setPlayerState(PlayerState::ConnectionError);
         return;
     }
@@ -99,7 +32,7 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     gst_element_set_state(this->_pipeline, GST_STATE_PLAYING);
     LOG_DEBUG_TARGET("RtspPlayer", "Pipeline state set to PLAYING", this->_widgetId.toUtf8().constData());
     
-    this->_frameTimeoutTimer->start(2000);
+    this->_frameTimeoutTimer.start(2000);
 }
 
 void RtspPlayerWidget::onErrorOccurred(const QString& error_)
@@ -113,9 +46,9 @@ void RtspPlayerWidget::onErrorOccurred(const QString& error_)
     {
         LOG_DEBUG_TARGET("RtspPlayer", error_, this->_widgetId.toUtf8().constData());
         
-        if (!this->_reconnectTimer->isActive())
+        if (!this->_reconnectTimer.isActive())
         {
-            this->_reconnectTimer->start(3000);
+            this->_reconnectTimer.start(3000);
         }
     }
     else

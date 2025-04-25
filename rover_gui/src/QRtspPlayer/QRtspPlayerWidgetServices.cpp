@@ -27,12 +27,16 @@ void RtspPlayerWidget::initializeRosServices(std::shared_ptr<rclcpp::Node> node_
             LOG_INFO_TARGET("RtspPlayer", "Camera control service connected", this->_widgetId.toUtf8().constData());
         } else {
             LOG_WARNING_TARGET("RtspPlayer", "Camera control service not available", this->_widgetId.toUtf8().constData());
+            // Start polling for service availability
+            startServiceAvailabilityPolling();
         }
         
         if (_isArucoServiceAvailable) {
             LOG_INFO_TARGET("RtspPlayer", "Aruco detection service connected", this->_widgetId.toUtf8().constData());
         } else {
             LOG_WARNING_TARGET("RtspPlayer", "Aruco detection service not available", this->_widgetId.toUtf8().constData());
+            // Start polling for service availability
+            startServiceAvailabilityPolling();
         }
         
        
@@ -44,6 +48,60 @@ void RtspPlayerWidget::initializeRosServices(std::shared_ptr<rclcpp::Node> node_
     }
     catch (const std::exception& e) {
         LOG_ERROR_TARGET("RtspPlayer", "Error initializing ROS services: " + QString(e.what()), this->_widgetId.toUtf8().constData());
+        // Start polling for service availability after error
+        startServiceAvailabilityPolling();
+    }
+}
+
+void RtspPlayerWidget::startServiceAvailabilityPolling()
+{
+    // Only start if not already polling
+    if (!_servicePollingActive) {
+        _servicePollingActive = true;
+        
+        // Connect the service polling timer
+        connect(&_servicePollingTimer, &QTimer::timeout, this, &RtspPlayerWidget::checkServiceAvailability);
+        
+        // Set interval to 5 seconds (not too frequent to avoid performance impact)
+        _servicePollingTimer.setInterval(5000);
+        _servicePollingTimer.start();
+        
+        LOG_INFO_TARGET("RtspPlayer", "Started service availability polling", this->_widgetId.toUtf8().constData());
+    }
+}
+
+void RtspPlayerWidget::checkServiceAvailability()
+{
+    if (!_isCameraServiceAvailable && _cameraControlClient) {
+        bool available = _cameraControlClient->wait_for_service(std::chrono::milliseconds(200));
+        if (available && !_isCameraServiceAvailable) {
+            _isCameraServiceAvailable = true;
+            LOG_INFO_TARGET("RtspPlayer", "Camera control service is now available", this->_widgetId.toUtf8().constData());
+            // Enable camera-related controls if in streaming state
+            if (_state == PlayerState::Streaming) {
+                this->_screenshotButton->setEnabled(true);
+                this->_recordButton->setEnabled(true);
+            }
+        }
+    }
+    
+    if (!_isArucoServiceAvailable && _arucoDetectionClient) {
+        bool available = _arucoDetectionClient->wait_for_service(std::chrono::milliseconds(200));
+        if (available && !_isArucoServiceAvailable) {
+            _isArucoServiceAvailable = true;
+            LOG_INFO_TARGET("RtspPlayer", "Aruco detection service is now available", this->_widgetId.toUtf8().constData());
+            // Enable Aruco controls if in streaming state
+            if (_state == PlayerState::Streaming) {
+                this->_arucoButton->setEnabled(true);
+            }
+        }
+    }
+    
+    // Stop polling if all services are available
+    if (_isCameraServiceAvailable && _isArucoServiceAvailable) {
+        _servicePollingTimer.stop();
+        _servicePollingActive = false;
+        LOG_INFO_TARGET("RtspPlayer", "All services are available, stopping polling", this->_widgetId.toUtf8().constData());
     }
 }
 

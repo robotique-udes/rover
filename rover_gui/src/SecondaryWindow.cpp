@@ -5,24 +5,32 @@
 SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> node):
     QMainWindow(nullptr),
     _centralWidget(this),
-    _node(node),
+    // Order should match declaration order in the header file
+    _mainLayout(&_centralWidget),
+    _layoutStack(),
+    _singleStreamView(),
+    _multiStreamView(),
+    _node(node),                // Move this after widget declarations
+    _singleStreamStack(),
+    _multiStreamGrid(),
+    _controlLayout(),
+    _layoutSelector(),
     _currentStreamIndex(0)
 {
     if (!_node) {
         _node = std::make_shared<rclcpp::Node>("secondary_window_node");
     }
     
-    _mainLayout = new QVBoxLayout(&_centralWidget);
-    
     loadPredefinedStreams();
-    _layoutStack = new QStackedWidget();
     
+    // Setup the layouts and views
     setupSingleStreamView();
     setupMultiStreamView();
     
-    _layoutStack->addWidget(_singleStreamView);
-    _layoutStack->addWidget(_multiStreamView);
+    _layoutStack.addWidget(&_singleStreamView);
+    _layoutStack.addWidget(&_multiStreamView);
     
+    // Initialize streams - must still use heap allocation for these
     for (int i = 0; i < MAX_STREAMS; i++) {
         ActiveStream stream;
         stream.widget = std::make_unique<RtspPlayerWidget>(nullptr, QString("stream_%1").arg(i));
@@ -39,7 +47,7 @@ SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> node):
 
 SecondaryWindow::~SecondaryWindow()
 {
-   
+   // No manual deletion needed for stack-allocated objects
 }
 
 void SecondaryWindow::loadPredefinedStreams()
@@ -52,33 +60,31 @@ void SecondaryWindow::loadPredefinedStreams()
 
 void SecondaryWindow::setupUI() 
 {
-   
-    _controlLayout = new QHBoxLayout();
-    _controlLayout->setContentsMargins(3, 0, 3, 0); // Reduced vertical margins
-    _controlLayout->setSpacing(2); // Minimal spacing
+    // Setup control layout
+    _controlLayout.setContentsMargins(3, 0, 3, 0);
+    _controlLayout.setSpacing(2);
     
     // Create layout selector
-    QLabel* layoutLabel = new QLabel("Layout:");
-    _layoutSelector = new QComboBox();
-    _layoutSelector->addItem("Single Stream");
-    _layoutSelector->addItem("2 Streams");
-    _layoutSelector->addItem("4 Streams");
-    _layoutSelector->addItem("6 Streams");
+    QLabel layoutLabel("Layout:");
+    _layoutSelector.addItem("Single Stream");
+    _layoutSelector.addItem("2 Streams");
+    _layoutSelector.addItem("4 Streams");
+    _layoutSelector.addItem("6 Streams");
     
     // Apply consistent styling to layout selector
-    _layoutSelector->setFixedHeight(26);
-    _layoutSelector->setStyleSheet("QComboBox { border: 1px solid #777777; border-radius: 2px; padding: 0px 2px; }");
+    _layoutSelector.setFixedHeight(26);
+    _layoutSelector.setStyleSheet("QComboBox { border: 1px solid #777777; border-radius: 2px; padding: 0px 2px; }");
     
     // Add widgets to control layout
-    _controlLayout->addWidget(layoutLabel);
-    _controlLayout->addWidget(_layoutSelector);
-    _controlLayout->addStretch();
+    _controlLayout.addWidget(&layoutLabel);
+    _controlLayout.addWidget(&_layoutSelector);
+    _controlLayout.addStretch();
     
     // Add layouts to main layout with minimal spacing
-    _mainLayout->setContentsMargins(0, 0, 0, 0);
-    _mainLayout->setSpacing(0); // Zero spacing to maximize video area
-    _mainLayout->addLayout(_controlLayout);
-    _mainLayout->addWidget(_layoutStack, 1);
+    _mainLayout.setContentsMargins(0, 0, 0, 0);
+    _mainLayout.setSpacing(0);
+    _mainLayout.addLayout(&_controlLayout);
+    _mainLayout.addWidget(&_layoutStack, 1);
     
     // Set central widget
     this->setCentralWidget(&_centralWidget);
@@ -87,10 +93,10 @@ void SecondaryWindow::setupUI()
     this->setWindowTitle("Camera Streams");
     
     // Connect signals
-    connect(_layoutSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), 
+    connect(&_layoutSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), 
             this, &SecondaryWindow::onLayoutChange);
     
-    // Connect signals for active streams and add selectors
+    // Connect signals for active streams
     for (int i = 0; i < static_cast<int>(_activeStreams.size()); i++) {
         connect(_activeStreams[i].widget.get(), &RtspPlayerWidget::streamStateChanged,
                 this, [this, i](bool running, int) { 
@@ -154,51 +160,45 @@ void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
                 }
             });
 }
+
 void SecondaryWindow::setupSingleStreamView()
 {
-    _singleStreamView = new QWidget();
-    QVBoxLayout* layout = new QVBoxLayout(_singleStreamView);
+    QVBoxLayout* layout = new QVBoxLayout(&_singleStreamView);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0); // Zero spacing
+    layout->setSpacing(0);
     
-    // Create stacked widget for streams
-    _singleStreamStack = new QStackedWidget();
-    layout->addWidget(_singleStreamStack);
+    layout->addWidget(&_singleStreamStack);
 }
 
 void SecondaryWindow::setupMultiStreamView()
 {
-    _multiStreamView = new QWidget();
-    QVBoxLayout* layout = new QVBoxLayout(_multiStreamView);
+    QVBoxLayout* layout = new QVBoxLayout(&_multiStreamView);
     layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0); // Zero spacing
+    layout->setSpacing(0);
     
-    // Create grid layout for streams
-    _multiStreamGrid = new QGridLayout();
-    _multiStreamGrid->setSpacing(1); // Minimal spacing between streams
-    layout->addLayout(_multiStreamGrid);
+    layout->addLayout(&_multiStreamGrid);
 }
 
 void SecondaryWindow::onLayoutChange(int /* index_ */)
 {
-    // Update the layout (index parameter not used directly but needed for signal connection)
+    // Update the layout
     updateLayout();
 }
 
 void SecondaryWindow::updateLayout()
 {
     // Determine layout mode
-    int layoutMode = _layoutSelector->currentIndex();
-    _multiStreamGrid->setSpacing(1);
+    int layoutMode = _layoutSelector.currentIndex();
+    _multiStreamGrid.setSpacing(1);
 
     // Clear layouts first
-    while (_singleStreamStack->count() > 0) {
-        QWidget* widget = _singleStreamStack->widget(0);
-        _singleStreamStack->removeWidget(widget);
+    while (_singleStreamStack.count() > 0) {
+        QWidget* widget = _singleStreamStack.widget(0);
+        _singleStreamStack.removeWidget(widget);
     }
     
-    while (_multiStreamGrid->count() > 0) {
-        QLayoutItem* item = _multiStreamGrid->takeAt(0);
+    while (_multiStreamGrid.count() > 0) {
+        QLayoutItem* item = _multiStreamGrid.takeAt(0);
         if (item->widget()) {
             item->widget()->setParent(nullptr);
         }
@@ -221,25 +221,32 @@ void SecondaryWindow::updateLayout()
             // Add single stream to stacked widget
             for (int i = 0; i < numStreams; i++) {
                 // Create a container for header and widget
-                QWidget* container = new QWidget();
-                QVBoxLayout* containerLayout = new QVBoxLayout(container);
-                containerLayout->setContentsMargins(0, 0, 0, 0);
+                QWidget container;
+                QVBoxLayout containerLayout(&container);
+                containerLayout.setContentsMargins(0, 0, 0, 0);
                 
-                // Add header and widget to container - use .get() to get raw pointers
-                containerLayout->addWidget(_activeStreams[i].headerLabel.get());
-                containerLayout->addWidget(_activeStreams[i].widget.get());
+                // Add header and widget to container
+                containerLayout.addWidget(_activeStreams[i].headerLabel.get());
+                containerLayout.addWidget(_activeStreams[i].widget.get());
+                
+                // Need heap allocation for this container as it will be owned by the stack widget
+                QWidget* persistentContainer = new QWidget();
+                QVBoxLayout* persistentLayout = new QVBoxLayout(persistentContainer);
+                persistentLayout->setContentsMargins(0, 0, 0, 0);
+                persistentLayout->addWidget(_activeStreams[i].headerLabel.get());
+                persistentLayout->addWidget(_activeStreams[i].widget.get());
                 
                 // Add container to stacked widget
-                _singleStreamStack->addWidget(container);
+                _singleStreamStack.addWidget(persistentContainer);
             }
             
             // Show the current stream
-            if (_singleStreamStack->count() > 0) {
-                _singleStreamStack->setCurrentIndex(0);
+            if (_singleStreamStack.count() > 0) {
+                _singleStreamStack.setCurrentIndex(0);
             }
             
             // Show single stream view
-            _layoutStack->setCurrentWidget(_singleStreamView);
+            _layoutStack.setCurrentWidget(&_singleStreamView);
             break;
         }
             
@@ -247,25 +254,16 @@ void SecondaryWindow::updateLayout()
         case 2: // 4 Streams
         case 3: // 6 Streams
         {
-            // Fixed: rows variable is used, but we compute it directly
             int cols = 2;
             
             for (int i = 0; i < numStreams; i++) {
-                // Create a container for header and widget
-                QWidget* container = new QWidget();
-                QVBoxLayout* containerLayout = new QVBoxLayout(container);
-                containerLayout->setContentsMargins(0, 0, 0, 0);
-                containerLayout->setSpacing(0);
-                
-                // Add header and widget to container - use .get() to get raw pointers
-                containerLayout->addWidget(_activeStreams[i].widget.get());
-                
-                // Add container to grid layout
+                // Add widget directly to grid layout
                 int row = i / cols;
                 int col = i % cols;
-                _multiStreamGrid->addWidget(_activeStreams[i].widget.get(), row, col);
+                _multiStreamGrid.addWidget(_activeStreams[i].widget.get(), row, col);
             }
-            _layoutStack->setCurrentWidget(_multiStreamView);
+            
+            _layoutStack.setCurrentWidget(&_multiStreamView);
             break;
         }
     }
@@ -277,7 +275,6 @@ void SecondaryWindow::onStreamStateChanged(bool running, int streamIndex)
         _activeStreams[streamIndex].isRunning = running;
     }
 }
-
 
 void SecondaryWindow::initializeRosServicesForWidgets()
 {
