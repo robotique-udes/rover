@@ -39,7 +39,8 @@ find_package(rclcpp REQUIRED)
 include_directories(include)
 add_library(lib_exec src/lib.cpp
               include/rovus_lib/timer.cpp
-              include/rovus_lib/ip_pinging.cpp)
+              include/rovus_lib/ip_pinging.cpp
+              include/rovus_lib/camera_info.cpp)
               
 ament_target_dependencies(lib_exec 
                             ament_index_cpp 
