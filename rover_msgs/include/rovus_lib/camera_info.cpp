@@ -4,11 +4,14 @@ namespace CameraInfo
 {
     bool getNameFromURL(const std::string& url_, std::string& rName_)
     {
-        std::map<std::string, std::string> cameraNameMap;
-        for (const auto& [key, value] : CAMERA_URL_MAP)
-        {
-            cameraNameMap[value] = key;
-        }
+        static std::map<std::string, std::string> cameraNameMap = []() {
+            std::map<std::string, std::string> tempMap;
+            for (const auto& [key, value] : CAMERA_URL_MAP)
+            {
+                tempMap[value] = key;
+            }
+            return tempMap;
+        }();
         
         auto it = cameraNameMap.find(url_);
         if (it != cameraNameMap.end())
