@@ -68,13 +68,16 @@ void QVideoManagerWidget::initWidget(void)
     for (size_t i = 0UL; i < NBR_CAM_TO_TRACK; ++i)
     {
         std::string cameraUrl = "";
-        if (i < CAMERA_NAME_ORDER.size() && CameraInfo::CAMERA_URL_MAP.find(CAMERA_NAME_ORDER[i]) != CameraInfo::CAMERA_URL_MAP.end())
+        if (i < CAMERA_NAME_ORDER.size()
+            && CameraInfo::CAMERA_URL_MAP.find(CAMERA_NAME_ORDER[i]) != CameraInfo::CAMERA_URL_MAP.end())
         {
             cameraUrl = CameraInfo::CAMERA_URL_MAP.at(CAMERA_NAME_ORDER[i]);
         }
         else if (i < CAMERA_NAME_ORDER.size())
         {
-            RCLCPP_WARN(rclcpp::get_logger("GUI"), "Couldn't find url for camera named %s in camera infos.", CAMERA_NAME_ORDER[i]);
+            RCLCPP_WARN(rclcpp::get_logger("GUI"),
+                        "Couldn't find url for camera named %s in camera infos.",
+                        CAMERA_NAME_ORDER[i]);
         }
 
         _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread);

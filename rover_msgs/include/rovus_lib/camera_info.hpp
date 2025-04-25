@@ -13,7 +13,7 @@ namespace CameraInfo
         {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},
         {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
     };
-    
+
     /**
      * @brief Tries to find a name from a camera URL
      *
