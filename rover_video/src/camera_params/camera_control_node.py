@@ -3,13 +3,9 @@
 import rclpy
 from rclpy.node import Node
 from rclpy.callback_groups import ReentrantCallbackGroup
-import sys
-import os
 
-# Import the unified service message
 from rover_msgs.srv import CameraParam
 
-# Import the API file
 from ipcamera_api import (
     CameraController, Scenes, ExposureModes, 
     WhiteBalanceModes, IRModes, FramerateValues,
@@ -20,13 +16,10 @@ class CameraControlNode(Node):
     def __init__(self):
         super().__init__('camera_control_node')
         
-        # Create callback group for services
         callback_group = ReentrantCallbackGroup()
         
-        # No default camera parameters - will be passed in service calls
         self.camera_controller = None
         
-        # Create a single unified service
         self.create_service(
             CameraParam, 'set_camera_param', 
             self.set_camera_param_callback, callback_group=callback_group
@@ -35,14 +28,12 @@ class CameraControlNode(Node):
         self.get_logger().info('Camera control service initialized')
     
     def set_camera_param_callback(self, request, response):
-        # Get camera parameters from the request
         camera_ip = request.camera_ip if hasattr(request, 'camera_ip') else "192.168.1.18"
         camera_port = request.camera_port if hasattr(request, 'camera_port') else 8999
         camera_username = request.camera_username if hasattr(request, 'camera_username') else "admin"
         camera_password = request.camera_password if hasattr(request, 'camera_password') else "admin"
         camera_timeout = request.camera_timeout if hasattr(request, 'camera_timeout') else 5
         
-        # Create a new controller for each request
         try:
             self.camera_controller = CameraController(
                 self, camera_ip, camera_port, camera_username, camera_password, camera_timeout
@@ -53,7 +44,6 @@ class CameraControlNode(Node):
             return response
         
         try:
-            # Handle different parameter types
             if request.parameter_type == "int":
                 result = self._set_int_parameter(request.parameter_name, request.int_value)
                 
@@ -86,7 +76,6 @@ class CameraControlNode(Node):
             response.message = f"Error setting parameter: {str(e)}"
             self.get_logger().error(f"Error in service callback: {str(e)}")
         
-        # Clean up controller
         self.camera_controller = None
             
         return response
@@ -152,7 +141,6 @@ class CameraControlNode(Node):
     def _set_bool_parameter(self, param_name, value):
         if param_name == "wide_dynamic_range":
             if value:
-                # When enabling, we set a default level of 128
                 return self.camera_controller.setWideDynamicRangeLevel(128)
             else:
                 return self.camera_controller.disableWideDynamicRange()
@@ -178,19 +166,16 @@ class CameraControlNode(Node):
                 return self.camera_controller.disableLensShadeCorrection()
         elif param_name == "lens_distortion_correction":
             if value:
-                # When enabling, we set a default level of 128
                 return self.camera_controller.setLensDistortionCorrection(128)
             else:
                 return self.camera_controller.disableLensDistortionCorrection()
         elif param_name == "anti_fog":
             if value:
-                # When enabling, we set a default level of 128
                 return self.camera_controller.setAntiFog(128)
             else:
                 return self.camera_controller.disableAntiFog()
         elif param_name == "ir":
             if value:
-                # When enabling, we set auto mode by default
                 return self.camera_controller.setIRMode(IRModes.AUTO)
             else:
                 return self.camera_controller.disableIR()
@@ -231,17 +216,3 @@ def main(args=None):
 
 if __name__ == '__main__':
     main()
-
-##################### EXAMPLE #######################
-"""
-ros2 service call /rover/video/set_camera_param rover_msgs/srv/CameraParam "{
-  camera_ip: '192.168.1.18',
-  camera_port: 8999,
-  camera_username: 'admin',
-  camera_password: 'admin',
-  camera_timeout: 5,
-  parameter_name: 'resolution',
-  parameter_type: 'string',
-  string_value: '1080p'
-}"
-"""

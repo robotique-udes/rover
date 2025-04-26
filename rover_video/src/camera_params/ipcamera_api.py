@@ -161,26 +161,17 @@ class CameraController:
                     'ForcePersistence': True
                 })
             elif self.ONVIF_PARAMS[param] == 'video':
-                # Ensure the base encoder_config has a Name attribute, needed for the token
                 if not hasattr(encoder_config, 'Name') or encoder_config.Name is None:
-                   # Use the profile token to create a unique name if none exists
                    encoder_config.Name = f"Config_{self.profile.token}"
                 if not hasattr(encoder_config, 'token') or encoder_config.token is None:
-                    # Ensure the config also has the token attribute from the profile
                     encoder_config.token = self.profile.VideoEncoderConfiguration.token
 
-                # Update the specific parameter (e.g., FrameRateLimit, BitrateLimit)
-                # Note: Resolution is handled slightly differently below
                 if param != 'Resolution':
                     setattr(encoder_config.RateControl, param, value)
-                # Handle Resolution separately as it modifies encoder_config.Resolution directly
                 elif param == 'Resolution' and extra:
                      encoder_config.Resolution.Width = extra[0]
                      encoder_config.Resolution.Height = extra[1]
 
-
-                # Prepare the configuration dictionary for the service call
-                # Ensure 'Name' and 'token' are explicitly included at the top level
                 config_dict = {
                     'Name': encoder_config.Name,
                     'token': encoder_config.token,
@@ -200,16 +191,13 @@ class CameraController:
                          'Address': {
                              'Type': encoder_config.Multicast.Address.Type,
                              'IPv4Address': encoder_config.Multicast.Address.IPv4Address,
-                             # Add IPv6Address if needed/available
                           },
                          'Port': encoder_config.Multicast.Port,
                          'TTL': encoder_config.Multicast.TTL,
                          'AutoStart': encoder_config.Multicast.AutoStart
                      },
                     'SessionTimeout': encoder_config.SessionTimeout
-                    # Add other necessary fields from encoder_config if they exist and are required
                 }
-
 
                 self.media_service.SetVideoEncoderConfiguration({
                     'Configuration': config_dict,
