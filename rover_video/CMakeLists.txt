@@ -13,7 +13,6 @@ find_package(rclpy REQUIRED)
 find_package(OpenCV REQUIRED) 
 find_package(rover_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
-find_package(rover_auxiliary REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} 
                      ${rover_msgs_INCLUDE_DIRS} )
@@ -29,13 +28,11 @@ add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
 ament_target_dependencies(media_server
                           rclcpp
                           rover_msgs
-                          rover_auxiliary
                           OpenCV)
 
 ament_target_dependencies(aruco_detection
                           rclcpp
                           rover_msgs
-                          rover_auxiliary
                           rcl_interfaces)
 
 target_link_libraries(media_server ${OpenCV_LIBS})
