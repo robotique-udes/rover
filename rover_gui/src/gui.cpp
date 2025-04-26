@@ -43,7 +43,7 @@ int main(int argc, char* argv[])
 
     QTimer* timer = new QTimer(&app);
     QObject::connect(timer, &QTimer::timeout, []() {
-        QToastNotification::getInstance().notify("Periodic Update", "This is a periodic toast. The description can be quite long and its perfect this way wow very long only shit ye give me some info", QToastNotification::eNotifType::ERROR, 5000);
+        QToastNotification::getInstance().notify("titre ...", "This is a periodic toast. The description can be quite long and its perfect this way wow very long only shit ye give me some info", QToastNotification::eNotifType::INFO, 5000);
     });
     timer->start(15000);
 

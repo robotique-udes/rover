@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>515</width>
-    <height>195</height>
+    <width>534</width>
+    <height>216</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -141,8 +141,8 @@ QStatusBar {
   <widget class="QFrame" name="frame">
    <property name="geometry">
     <rect>
-     <x>0</x>
-     <y>0</y>
+     <x>10</x>
+     <y>10</y>
      <width>511</width>
      <height>191</height>
     </rect>

@@ -33,16 +33,22 @@ void QToastNotification::setupUI()
 
     _progressBarAnim.setTargetObject(_ui.progressBar);
     _progressBarAnim.setPropertyName("value");
-    _shadow.setBlurRadius(10);
+    _shadow.setBlurRadius(40);
     _shadow.setOffset(0, 3);
-    _shadow.setColor(QColor(0, 0, 0, 160));
+    _shadow.setColor(QColor(0, 0, 0, 220));
     _ui.frame->setGraphicsEffect(&_shadow);
     
-    _ui.frame->setStyleSheet("background-color: #4a4e54;"
-                             "border-radius: 15px;"
-                             "border: 1px solid #6c7075;");
+    _ui.frame->setStyleSheet(R"(
+                QFrame {
+                    background-color: #3c3f41;
+                    border-radius: 8px;
+                }
+                QFrame:hover {
+                    background-color: #4d4d4d;
+                }
+            )");
     _ui.closePushButton->setStyleSheet("QPushButton {"
-                                       "    background-color: #4a4e54;"
+                                       "    background-color: transparent;"
                                        "    border-radius: 15px;"
                                        "    border: none;"
                                        "    outline: none;"
@@ -52,7 +58,7 @@ void QToastNotification::setupUI()
                                        "}");
 
     _ui.iconSlot->setStyleSheet("QPushButton {"
-                                "    background-color: #4a4e54;"
+                                "    background-color: transparent;"
                                 "    border-radius: 15px;"
                                 "    border: none;"
                                 "    outline: none;"
@@ -61,7 +67,7 @@ void QToastNotification::setupUI()
                                 "    outline: none;"
                                 "}");
     _ui.textErrorMessage->setStyleSheet("QTextEdit {"
-                                        "    background-color: #4a4e54;"
+                                        "    background-color: transparent;"
                                         "    border-radius: 15px;"
                                         "    border: none;"
                                         "    font-size: 16px;"
@@ -72,7 +78,7 @@ void QToastNotification::setupUI()
                                         "    outline: none;"
                                         "}");
     _ui.titleLineEdit->setStyleSheet("QLineEdit {"
-                                     "    background-color: #4a4e54;"
+                                     "    background-color: transparent;"
                                      "    border-radius: 15px;"
                                      "    border: none;"
                                      "    padding: 5px 10px;"
