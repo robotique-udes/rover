@@ -1,12 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_video)
 
-# Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 20)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rclpy REQUIRED)
@@ -17,7 +15,6 @@ find_package(rcl_interfaces REQUIRED)
 include_directories( ${OpenCV_INCLUDE_DIRS} 
                      ${rover_msgs_INCLUDE_DIRS} )
 
-# C++ executables
 add_executable( media_server src/camera_node.cpp
                 src/video_recording.cpp)
 add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
@@ -38,19 +35,16 @@ ament_target_dependencies(aruco_detection
 target_link_libraries(media_server ${OpenCV_LIBS})
 target_link_libraries(aruco_detection ${OpenCV_LIBS})
 
-# Install C++ executables
 install(TARGETS 
             media_server
             aruco_detection
         DESTINATION lib/${PROJECT_NAME}/)
 
-# Install Python scripts directly (no need for Python package structure)
 install(PROGRAMS
   src/camera_params/camera_control_node.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
-# Install shared files
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()
