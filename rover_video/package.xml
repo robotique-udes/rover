@@ -10,12 +10,19 @@
   <license>MIT</license>
 
   <buildtool_depend>ament_cmake</buildtool_depend>
+  <buildtool_depend>ament_cmake_python</buildtool_depend>
+
+  <depend>rclcpp</depend>
+  <depend>rclpy</depend>
+  <depend>rover_msgs</depend>
+  <depend>opencv2</depend>
+  <depend>rcl_interfaces</depend>
+
+  <exec_depend>python3-requests</exec_depend>
+  <exec_depend>python3-onvif-zeep</exec_depend>
 
   <test_depend>ament_lint_auto</test_depend>
   <test_depend>ament_lint_common</test_depend>
-
-  <depend>rover_msgs</depend>
-  <depend>opencv2</depend>
 
   <export>
     <build_type>ament_cmake</build_type>

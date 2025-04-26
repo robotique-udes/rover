@@ -9,13 +9,16 @@ endif()
 # find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclpy REQUIRED)
 find_package(OpenCV REQUIRED) 
 find_package(rover_msgs REQUIRED)
+find_package(rcl_interfaces REQUIRED)
+find_package(rover_auxiliary REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} 
                      ${rover_msgs_INCLUDE_DIRS} )
 
-
+# C++ executables
 add_executable( media_server src/camera_node.cpp
                 src/video_recording.cpp)
 add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
@@ -26,22 +29,31 @@ add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
 ament_target_dependencies(media_server
                           rclcpp
                           rover_msgs
+                          rover_auxiliary
                           OpenCV)
 
 ament_target_dependencies(aruco_detection
                           rclcpp
                           rover_msgs
+                          rover_auxiliary
                           rcl_interfaces)
-
 
 target_link_libraries(media_server ${OpenCV_LIBS})
 target_link_libraries(aruco_detection ${OpenCV_LIBS})
 
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-
+# Install C++ executables
 install(TARGETS 
             media_server
             aruco_detection
         DESTINATION lib/${PROJECT_NAME}/)
+
+# Install Python scripts directly (no need for Python package structure)
+install(PROGRAMS
+  src/camera_params/camera_control_node.py
+  DESTINATION lib/${PROJECT_NAME}
+)
+
+# Install shared files
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()
