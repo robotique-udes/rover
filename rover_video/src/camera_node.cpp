@@ -10,10 +10,6 @@ int main(int argc, char* argv[])
     return 0;
 }
 
-/**
- * @brief Construct a new CameraNode object
- *
- */
 CameraNode::CameraNode():
     Node("media_server")
 {
@@ -39,12 +35,6 @@ CameraNode::CameraNode():
                                                                   });
 }
 
-/**
- * @brief Decides what to do depending on the oncoming request
- *
- * @param request_
- * @param response_
- */
 void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
                               rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -84,12 +74,6 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
     }
 }
 
-/**
- * @brief Executes the program in order to take a screenshot
- *
- * @param request_
- * @param response_
- */
 void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& request_,
                                 rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -100,12 +84,7 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
     folderPath = this->getFolderPath(eFileFormatNameTypes::SCREENSHOT);
-    auto it = CameraInfo::CameraName.find(cameraURL);
-
-    if (it != CameraInfo::CameraName.end())
-    {
-        currentCamera = it->second;
-    }
+    CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!this->createFolder(folderPath))
     {
@@ -130,12 +109,6 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     }
 }
 
-/**
- * @brief Executes the program in order when a new recording starts
- *
- * @param request_
- * @param response_
- */
 void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                                      rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -146,12 +119,7 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
     folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
-    auto it = CameraInfo::CameraName.find(cameraURL);
-
-    if (it != CameraInfo::CameraName.end())
-    {
-        currentCamera = it->second;
-    }
+    CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!this->createFolder(folderPath))
     {
@@ -176,12 +144,6 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     }
 }
 
-/**
- * @brief Executes the program in order when a recording stops
- *
- * @param request_
- * @param response_
- */
 void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                                     rover_msgs::srv::CameraControl::Response& response_)
 {
@@ -199,11 +161,6 @@ void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Reques
     }
 }
 
-/**
- * @brief Get the time the request was made
- *
- * @return std::string
- */
 std::string CameraNode::getCurrentTime(void)
 {
     std::stringstream current_time_output;
@@ -232,12 +189,7 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     std::string latitude = std::to_string(_lastLatitude);
     std::string longitude = std::to_string(_lastLongitude);
     std::string ID = "UnknownID";
-    auto it = CameraInfo::CameraName.find(camURL_);
-
-    if (it != CameraInfo::CameraName.end())
-    {
-        ID = it->second;
-    }
+    CameraInfo::getNameFromURL(camURL_, ID);
 
     switch (fileType_)
     {

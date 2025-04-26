@@ -1,26 +1,27 @@
-#ifndef __CAMERA__INFO__HPP__
-#define __CAMERA__INFO__HPP__
+#ifndef CAMERA_INFO_HPP
+#define CAMERA_INFO_HPP
 
 #include <map>
 #include <string>
 
 namespace CameraInfo
 {
-    const std::map<std::string, std::string> CameraName = {
-        {"rtsp://rover:roverrover@192.168.144.30:554/1/h264major", "Main"},
-        {"rtsp://rover:roverrover@192.168.144.31:554/1/h264major", "Antenna"},
-        {"rtsp://rover:roverrover@192.168.144.32:554/1/h264major", "Odometry"},
-        {"rtsp://rover:roverrover@192.168.144.35:554/1/h264major", "Gripper1"},
-        {"rtsp://rover:roverrover@192.168.144.36:554/1/h264major", "Gripper2"},
+    const std::map<std::string, std::string> CAMERA_URL_MAP = {
+        {"Main", "rtsp://192.168.144.30:554/1/h264major"},
+        {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
+        {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
+        {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},
+        {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
     };
 
-    const std::map<std::string, std::string> CameraIP = {
-        {"Main", "rtsp://rover:roverrover@192.168.144.30:554/1/h264major"},
-        {"Antenna", "rtsp://rover:roverrover@192.168.144.31:554/1/h264major"},
-        {"Odometry", "rtsp://rover:roverrover@192.168.144.32:554/1/h264major"},
-        {"Gripper1", "rtsp://rover:roverrover@192.168.144.35:554/1/h264major"},
-        {"Gripper2", "rtsp://rover:roverrover@192.168.144.36:554/1/h264major"},
-    };
+    /**
+     * @brief Tries to find a name from a camera URL
+     *
+     * @param url_ URL of the camera
+     * @param rName_ Overwrite value if found
+     * @return Success on camera name found
+     */
+    bool getNameFromURL(const std::string& url_, std::string& rName_);
 }  // namespace CameraInfo
 
-#endif  //__CAMERA__INFO__HPP__
+#endif  // CAMERA_INFO_HPP
