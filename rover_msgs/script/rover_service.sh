@@ -5,15 +5,13 @@ interface_up() {
 }
 
 echo "Starting all rover launchfiles"
+echo "Waiting 2s"
+sleep 2
+echo "Done, starting!"
 
-echo ${HOME}
 source /opt/ros/humble/setup.bash
-source /home/${HOME}/ros2_ws/install/local_setup.bash
-
-sleep 5
-
-export ROS_DOMAIN_ID=69
-ros2 launch rover_helper rover.launch.py &
+source $HOME/ros2_ws/install/local_setup.bash
+ros2 launch rover_msgs rover.launch.py &
 pid1=$!
 
 wait -n

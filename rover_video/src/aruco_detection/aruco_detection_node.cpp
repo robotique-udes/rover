@@ -15,6 +15,8 @@ int main(int argc, char** argv)
 ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
     Node("aruco_detection_node")
 {
+    cv::utils::logging::setLogLevel(OPENCV_LOG_LEVEL);
+
     this->getParams(argc, argv);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
@@ -52,6 +54,8 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
 {
     std::vector<std::vector<uint16_t>> detectedArucos;
     std::vector<std::string> matchingURL;
+    std::vector<bool> isValid;
+    std::vector<bool> camLost;
 
     {
         std::lock_guard<std::mutex> lock(_detectedArucosMutex);
@@ -60,6 +64,8 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
         {
             detectedArucos.push_back(it.second.getValidatedIds());
             matchingURL.push_back(it.second.getCamURL());
+            isValid.push_back(it.second.isValid());
+            camLost.push_back(it.second.getCamLost());
         }
     }
 
@@ -69,9 +75,13 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
     {
         const auto& detection = detectedArucos[i];
         const auto& url = matchingURL[i];
-        msg.valid = true;
         msg.id = detection;
         msg.cam_url = url;
+        msg.valid = isValid.at(i);
+        if (camLost.at(i))
+        {
+            msg.valid = false;
+        }
 
         _publisher->publish(msg);
 
@@ -109,17 +119,8 @@ void ArucoDetectionNode::CB_arucoDetection(void)
 
     for (auto it = _detections.begin(); it != _detections.end();)
     {
-        if (it->second.getErrorFrameCount() > ALLOWED_ERROR_FRAME)
-        {
-            RCLCPP_WARN(this->get_logger(), "Detection at %s has been shutdown", it->second.getCamURL().c_str());
-            it = _detections.erase(it);
-            _nbrOngoingDetection--;
-        }
-        else
-        {
-            it->second.update(_debugMode);
-            ++it;
-        }
+        it->second.update(_debugMode);
+        ++it;
     }
 }
 

@@ -7,9 +7,12 @@ Detection::Detection(std::string cameraURL_, uint8_t detectionTag_):
     _cameraURL = cameraURL_;
 }
 
-std::vector<uint16_t> Detection::detect(bool debugMode_)
+std::optional<std::vector<uint16_t>> Detection::detect(bool debugMode_)
 {
-    _processFrame.updateDetection(debugMode_);
+    if (!(_processFrame.updateDetection(debugMode_).has_value()))
+    {
+        return std::nullopt;
+    }
 
     if (debugMode_)
     {
@@ -23,14 +26,21 @@ std::vector<uint16_t> Detection::detect(bool debugMode_)
         return _processFrame.getIds();
     }
 
-    return {};
+    return std::vector<uint16_t>{};
 }
 
 void Detection::update(bool debugMode_)
 {
     _validatedIds.clear();
-    std::vector<uint16_t> detectedIds = this->detect(debugMode_);
+    std::optional<std::vector<uint16_t>> detectionResult = this->detect(debugMode_);
+    this->setCamLost(!detectionResult.has_value());
 
+    if (this->getCamLost())
+    {
+        return;
+    }
+
+    std::vector<uint16_t> detectedIds = detectionResult.value();
     for (auto it = _validation.begin(); it != _validation.end();)
     {
         uint16_t id = it->first;
@@ -76,11 +86,6 @@ std::vector<uint16_t> Detection::getValidatedIds(void) const
     return _validatedIds;
 }
 
-uint8_t Detection::getErrorFrameCount(void) const
-{
-    return _processFrame.getErrorFrameCount();
-}
-
 std::string Detection::getCamURL(void) const
 {
     return _cameraURL;
@@ -89,4 +94,19 @@ std::string Detection::getCamURL(void) const
 uint8_t Detection::getTag(void) const
 {
     return _tag;
+}
+
+bool Detection::isValid(void) const
+{
+    return _processFrame.isValid();
+}
+
+bool Detection::getCamLost(void) const
+{
+    return _camLost;
+}
+
+void Detection::setCamLost(bool camLost_)
+{
+    _camLost = camLost_;
 }

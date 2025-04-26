@@ -1,37 +1,99 @@
-#ifndef __KEYBINDING__
-#define __KEYBINDING__
+#ifndef __KEYBINDING__HPP__
+#define __KEYBINDING__HPP__
 
-#include "rover_msgs/msg/arm_msg.hpp"
+#include "arm_configuration.hpp"
 
-// Driver
-#define PHIL
-
-namespace KEYBINDING
+enum class eJoyInput
 {
-#if defined(PHIL)
-    constexpr uint8_t DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
+    JOYSTICK_LEFT_FRONT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT,
+    JOYSTICK_LEFT_SIDE = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE,
+    JOYSTICK_LEFT_PUSH = rover_msgs::msg::Joy::JOYSTICK_LEFT_PUSH,
+    JOYSTICK_RIGHT_FRONT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT,
+    JOYSTICK_RIGHT_SIDE = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE,
+    JOYSTICK_RIGHT_PUSH = rover_msgs::msg::Joy::JOYSTICK_RIGHT_PUSH,
+    CROSS_UP = rover_msgs::msg::Joy::CROSS_UP,
+    CROSS_DOWN = rover_msgs::msg::Joy::CROSS_DOWN,
+    CROSS_LEFT = rover_msgs::msg::Joy::CROSS_LEFT,
+    CROSS_RIGHT = rover_msgs::msg::Joy::CROSS_RIGHT,
+    L1 = rover_msgs::msg::Joy::L1,
+    L2 = rover_msgs::msg::Joy::L2,
+    R1 = rover_msgs::msg::Joy::R1,
+    R2 = rover_msgs::msg::Joy::R2,
+    A = rover_msgs::msg::Joy::A,
+    B = rover_msgs::msg::Joy::B,
+    X = rover_msgs::msg::Joy::X,
+    Y = rover_msgs::msg::Joy::Y,
+    EXT0 = rover_msgs::msg::Joy::EXT0,
+    EXT1 = rover_msgs::msg::Joy::EXT1,
+    EXT2 = rover_msgs::msg::Joy::EXT2,
+    eLAST
+};
 
-    constexpr uint8_t JOINT_SELECT_INC = rover_msgs::msg::Joy::CROSS_UP;
-    constexpr uint8_t JOINT_SELECT_DEC = rover_msgs::msg::Joy::CROSS_DOWN;
+enum class eBooleanJoyInputs
+{
+    CROSS_UP = rover_msgs::msg::Joy::CROSS_UP,
+    CROSS_DOWN = rover_msgs::msg::Joy::CROSS_DOWN,
+    CROSS_LEFT = rover_msgs::msg::Joy::CROSS_LEFT,
+    CROSS_RIGHT = rover_msgs::msg::Joy::CROSS_RIGHT,
+    L1 = rover_msgs::msg::Joy::L1,
+    L2 = rover_msgs::msg::Joy::L2,
+    R1 = rover_msgs::msg::Joy::R1,
+    R2 = rover_msgs::msg::Joy::R2,
+    A = rover_msgs::msg::Joy::A,
+    B = rover_msgs::msg::Joy::B,
+    X = rover_msgs::msg::Joy::X,
+    Y = rover_msgs::msg::Joy::Y,
+    EXT0 = rover_msgs::msg::Joy::EXT0,
+    EXT1 = rover_msgs::msg::Joy::EXT1,
+    EXT2 = rover_msgs::msg::Joy::EXT2,
+    eLAST
+};
 
-    constexpr uint8_t JL_FWD = rover_msgs::msg::Joy::CROSS_RIGHT;
-    constexpr uint8_t JL_REV = rover_msgs::msg::Joy::CROSS_LEFT;
+namespace KEYBINDINGS
+{
 
-    constexpr uint8_t J0_FWD = rover_msgs::msg::Joy::B;
-    constexpr uint8_t J0_REV = rover_msgs::msg::Joy::X;
+    constexpr eJoyInput DEADMAN_SWITCH = eJoyInput::L1;
 
-    constexpr uint8_t J1 = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
+    namespace JOINT
+    {
+        constexpr eJoyInput JOINT_SELECT_INC = eJoyInput::CROSS_UP;
+        constexpr eJoyInput JOINT_SELECT_DEC = eJoyInput::CROSS_DOWN;
 
-    constexpr uint8_t J2 = rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT;
+        constexpr eJoyInput JL_RIGHT = eJoyInput::CROSS_RIGHT;
+        constexpr eJoyInput JL_LEFT = eJoyInput::CROSS_LEFT;
 
-    constexpr uint8_t GRIPPER_TILT_FWD = rover_msgs::msg::Joy::Y;
-    constexpr uint8_t GRIPPER_TILT_REV = rover_msgs::msg::Joy::A;
+        constexpr eJoyInput J0 = eJoyInput::eLAST;  // Is set to eLAST since rotating joint is not implemented
 
-    constexpr uint8_t GRIPPER_ROT_FWD = rover_msgs::msg::Joy::R2;
-    constexpr uint8_t GRIPPER_ROT_REV = rover_msgs::msg::Joy::L2;
+        constexpr eJoyInput J1 = eJoyInput::JOYSTICK_LEFT_FRONT;
 
-    constexpr uint8_t GRIPPER_CLOSE = rover_msgs::msg::Joy::CROSS_DOWN;
-#endif  // defined(PHIL)
-}  // namespace KEYBINDING
+        constexpr eJoyInput J2 = eJoyInput::JOYSTICK_RIGHT_FRONT;
 
-#endif  // __KEYBINDING__
+        constexpr eJoyInput WRIST_UP = eJoyInput::L2;
+        constexpr eJoyInput WRIST_DOWN = eJoyInput::R2;
+
+    }  // namespace JOINT
+
+    namespace CARTESIAN
+    {
+        constexpr eJoyInput TOGGLE_CARTESIAN = eJoyInput::Y;
+
+        constexpr eJoyInput X_AXIS_RIGHT = eJoyInput::CROSS_RIGHT;
+        constexpr eJoyInput X_AXIS_LEFT = eJoyInput::CROSS_LEFT;
+
+        constexpr eJoyInput Y_AXIS = eJoyInput::JOYSTICK_RIGHT_FRONT;
+
+        constexpr eJoyInput Z_AXIS = eJoyInput::JOYSTICK_LEFT_FRONT;
+
+        constexpr eJoyInput ACTIVATE_ALPHA = eJoyInput::R1;
+        constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::R2;
+        constexpr eJoyInput ALPHA_NEGATIVE = eJoyInput::L2;
+
+        constexpr eJoyInput RECORD = eJoyInput::A;
+        constexpr eJoyInput CLEAR_POINTS = eJoyInput::X;
+        constexpr eJoyInput CREATE_PLAN = eJoyInput::B;
+
+    }  // namespace CARTESIAN
+
+}  // namespace KEYBINDINGS
+
+#endif

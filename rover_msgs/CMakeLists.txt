@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_msgs)
 
+if(POLICY CMP0148)
+  cmake_policy(SET CMP0148 OLD)
+endif()
+
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/..")
 
 set(ROVER_BASE_EXEC_PATH "${INSTALL_PATH}/rover_gui/lib/rover_gui/main_gui")
@@ -34,7 +38,8 @@ find_package(rclcpp REQUIRED)
 
 include_directories(include)
 add_library(lib_exec src/lib.cpp
-              include/rovus_lib/timer.cpp)
+              include/rovus_lib/timer.cpp
+              include/rovus_lib/ip_pinging.cpp)
               
 ament_target_dependencies(lib_exec 
                             ament_index_cpp 
@@ -84,6 +89,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/RtspStream.srv"
   "srv/CameraControl.srv"
   "srv/ArucoDetection.srv"
+  "srv/DDBControl.srv"
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

@@ -1,5 +1,5 @@
-#ifndef __FRAME_PROCESSING_HPP__
-#define __FRAME_PROCESSING_HPP__
+#ifndef FRAME_PROCESSING_HPP
+#define FRAME_PROCESSING_HPP
 
 #include "image_capture.hpp"
 #include <optional>
@@ -16,7 +16,7 @@ class ProcessFrame
     std::optional<cv::Mat> updateDetection(bool debugMode_);
     std::vector<uint16_t> getIds(void) const;
     bool IdsEmpty(void) const;
-    uint8_t getErrorFrameCount(void) const;
+    bool isValid(void) const;
 
     bool empty = true;
 
@@ -28,7 +28,6 @@ class ProcessFrame
     std::vector<std::vector<cv::Point2f>> _corners;
     cv::Mat _ids;
     cv::Ptr<cv::aruco::DetectorParameters> _detectorParams;
-    uint8_t _errorFrameCount = 0;
 };
 
 #endif
