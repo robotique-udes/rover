@@ -5,6 +5,7 @@
 #include "QNavigation/QNavigation.hpp"
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
+#include "Global/Helpers/QToastNotification.hpp"
 
 #include <QStackedWidget>
 #include <QMainWindow>
@@ -26,6 +27,8 @@ class MainWindow : public QMainWindow
     QSideBar _sideBarWidget;
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
+    QHelper::QNotificationShowHistory _notificationHistoryWidget;
+
     // QFileTransferWidget _fileTransferWidget;
 };
 
