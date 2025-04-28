@@ -259,9 +259,9 @@ namespace QHelper
 
 
         _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
-        const int margin = 5;
-        int endX = _targetScreenRect.right() - width() - margin;
-        int yPos = _targetScreenRect.bottom() - height() - 0.2 * margin;
+        const int margin = 1;
+        int endX = _targetScreenRect.right() - width() - 5*margin;
+        int yPos = _targetScreenRect.bottom() - height() - margin;
 
         move(endX, yPos);
 
@@ -270,6 +270,11 @@ namespace QHelper
         activateWindow();
 
         scrollAreaContainer.setLayout(&scrollAreaLayout);
+
+        scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        scrollAreaContainer.setMinimumWidth(_ui_mainWidget.historyScrollArea->width());
+        scrollAreaLayout.setAlignment(Qt::AlignTop); // This keeps items aligned to top
+
 
     }
 
@@ -308,6 +313,9 @@ namespace QHelper
     QNotificationHistoryData::QNotificationHistoryData(QWidget* parent_,std::string title_, std::string description_, QToastNotification::eNotifType type_)
     {
         _ui_subWidget.setupUi(this);
+        this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        this->setMinimumHeight(200); // or whatever size you want per item
+
         _ui_subWidget.historyTitle->setText(QString::fromStdString(title_));
         _ui_subWidget.historyDescription->setText(QString::fromStdString(description_));
 QIcon icon;
