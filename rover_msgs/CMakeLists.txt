@@ -90,6 +90,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CameraControl.srv"
   "srv/ArucoDetection.srv"
   "srv/DDBControl.srv"
+  "srv/CameraParam.srv"
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
