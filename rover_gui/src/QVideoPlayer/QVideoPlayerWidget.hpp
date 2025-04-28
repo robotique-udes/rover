@@ -53,6 +53,18 @@ class QVideoPlayerWidget : public QWidget
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
 
+    /**
+     * @brief takes a screenshot
+     * 
+     */
+    void handleScreenshot(void);
+
+    /**
+     * @brief Starts and stops the recording
+     * 
+     */
+    void handleRecording(void);
+
   private:
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;

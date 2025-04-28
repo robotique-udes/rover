@@ -234,3 +234,14 @@ void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::C
     //add handling in case the client pointer is invalid, similar to setArduinoClientManager()
     return;
 }
+
+void QVideoPlayerWidget::handleScreenshot(void)
+{
+    return;
+}
+
+void QVideoPlayerWidget::handleRecording(void)
+{
+    
+    return;
+}
