@@ -3,6 +3,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/photo_panoramique.hpp"
 #include "rover_msgs/srv/photo_panoramique.hpp"
+#include "rover_msgs/msg/gps_position.hpp"
 #include <iostream>
 #include <vector>
 #include <sys/stat.h>
@@ -11,6 +12,11 @@
 
 using namespace std;
 using namespace cv;
+
+struct {             
+	float latitude;
+	float longitude; 
+} coordonees_gps; 
 
 class PhotoPanoramique : public rclcpp::Node
 {
@@ -41,10 +47,19 @@ class PhotoPanoramique : public rclcpp::Node
 	 
 	     return pano;
 	}
+	
+    void PositionGPS(const rover_msgs::msg::GpsPosition& gps_message_)
+	    {
+	    
+	    coordonees_gps.latitude = gps_message_.latitude;
+	    coordonees_gps.longitude = gps_message_.longitude;	    
+	    }
 
     rclcpp::Publisher<rover_msgs::msg::PhotoPanoramique>::SharedPtr _pubpanorama;
     rclcpp::TimerBase::SharedPtr _timerPub;
     rclcpp::Service<rover_msgs::srv::PhotoPanoramique>::SharedPtr _srvpanorama;
+    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
+
     
     rover_msgs::msg::PhotoPanoramique _msgPanorama;
     void CB_timer(void);
@@ -63,6 +78,12 @@ PhotoPanoramique::PhotoPanoramique():
     _srvpanorama = this->create_service<rover_msgs::srv::PhotoPanoramique>(
         "/rover/video/panorama",
         std::bind(&PhotoPanoramique::CB_srv, this, std::placeholders::_1, std::placeholders::_2));
+        
+
+    _sub_position = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position", 1, [this](const rover_msgs::msg::GpsPosition& gps_message_)
+                                                                  {
+                                                                      this->PositionGPS(gps_message_);
+                                                                  });
         
 }
 
@@ -85,6 +106,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	  result_name =result_name+".jpg";
 	  
 	  //paramètres pour la lecture de la camera
+	   //string pipeline = "rtspsrc location=" + request->camera_path + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+	   //VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
 	   VideoCapture cap;
 	   string path_camera= request->camera_path;        
 	   int apiID = cv::CAP_ANY; 
@@ -136,18 +159,25 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    //correction du warping
 	    Mat pano_rectangle = warp_correction(pano);
 	    
+	    //obtenir coordonees GPS    
+	    rover_msgs::msg::GpsPosition gps_msg;
+	    PositionGPS(gps_msg); 
+	    float latitude = coordonees_gps.latitude; 
+	    float longitude = coordonees_gps.longitude;
+	    string coord_GPS="latitude: " + to_string(latitude) + ", longitude: " + to_string(longitude);
+	    
 	    //ajout du text
 	    Size dimensions = pano_rectangle.size();
 	    int hauteur = dimensions.height;
-	    string nom_photo = request->nom;
-	    putText(pano_rectangle, "coordonees GPS", Point (10,hauteur-20), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2); // pour un font plus gros et lisible FONT_HERSHEY_SIMPLEX
+	    string nom_photo = request->nom; 
+	    putText(pano_rectangle, coord_GPS, Point (10,hauteur-20), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2); // pour un font plus gros et lisible FONT_HERSHEY_SIMPLEX
 	    putText(pano_rectangle, nom_photo, Point (10,hauteur-50), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(255,0,0), 2);
 		
 		
 	    //creation du dossier du dossier de panoramas 
 	    struct stat fileInfo;
 	    bool dossier_exist = stat("src/rover/rover_video/src/panoramas", &fileInfo) == 0;
-	    	    
+	    
 	    if (!dossier_exist)
 	    {
 	      if (mkdir("src/rover/rover_video/src/panoramas", 0775) == 0)
@@ -168,6 +198,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     
     
 }
+
 
 
 
