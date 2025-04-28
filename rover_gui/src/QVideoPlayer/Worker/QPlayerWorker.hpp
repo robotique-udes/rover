@@ -12,6 +12,7 @@
 
 #include "Global/Workers/QWorker.hpp"
 #include "rover_msgs/srv/aruco_detection.hpp"
+#include "rover_msgs/srv/camera_control.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rovus_lib/timer.hpp"
 

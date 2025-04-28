@@ -5,6 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
+#include "rover_msgs/msg/camera_control.hpp"
 #include "rovus_lib/camera_info.hpp"
 
 #include <QtWidgets/QGridLayout>
@@ -37,6 +38,12 @@ class QVideoManagerWidget : public QWidget
     void initArucoPublisher(void);
     void initArucoClient(void);
 
+    /**
+     * @brief Initialise the CameraControl client and passes it to each widget
+     * 
+     */
+    void initCameraControlClient(void);
+
     std::shared_ptr<rclcpp::Node> _node;
 
     QGridLayout _videoPlayerLayout;
@@ -46,6 +53,8 @@ class QVideoManagerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
     rclcpp::TimerBase::SharedPtr _timer_detectionManagerUpdate;
+
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
 
     std::array<std::shared_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
     std::array<std::string, 6> _cameras_urls = {CameraInfo::CameraIP.at(CAM_1_NAME),

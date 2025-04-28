@@ -15,6 +15,8 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initArucoClient();
     this->initArucoPublisher();
 
+    this->initCameraControlClient();
+
     this->setLayout(&_videoPlayerLayout);
 
     _playerWorkerThread->start();
@@ -124,4 +126,22 @@ void QVideoManagerWidget::initArucoClient(void)
                                                              {
                                                                  this->CB_updateArucoDetectionManager();
                                                              });
+}
+
+void QVideoManagerWidget::initCameraControlClient(void)
+{
+    if (_node)
+    {
+        _client_cameraControlManager = _node->create_client<rover_msgs::srv::CameraControl>("/rover/video/media_server");
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+    }
+
+    for (auto& widget : _videoPlaysWidgets)
+    {
+        widget->setCameraControlClientManager(_client_cameraControlManager);
+    }
+    return;
 }

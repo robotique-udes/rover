@@ -224,3 +224,13 @@ void QVideoPlayerWidget::onArucoCameraFailed(bool valid_)
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
     }
 }
+
+void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_)
+{
+    if (client_)
+    {
+        this->_client_cameraControlManager = client_;
+    }
+    //add handling in case the client pointer is invalid, similar to setArduinoClientManager()
+    return;
+}

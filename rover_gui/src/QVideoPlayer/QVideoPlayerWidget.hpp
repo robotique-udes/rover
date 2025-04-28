@@ -33,6 +33,13 @@ class QVideoPlayerWidget : public QWidget
 
     void handlePlayPauseButton(void);
 
+    /**
+     * @brief Set the camera control client for the widget
+     * 
+     * @param client_ a CameraControl client
+     */
+    void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
+
     std::string getCamURL(void);
     void setCamURL(std::string newCamUrl_);
     void setURLToDefault(void);
@@ -55,6 +62,8 @@ class QVideoPlayerWidget : public QWidget
     uint16_t _tag;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager = nullptr;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager = nullptr;
+    
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
 };
