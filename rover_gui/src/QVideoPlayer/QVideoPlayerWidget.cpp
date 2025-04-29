@@ -265,7 +265,9 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
     {
         if (!success_)
         {
-
+            _ui.ScreenshotButton->setProperty("class","error");
+            _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
+            _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
         }
         emit statusBarUpdate(status_, STATUS_BAR_DISPLAY_TIME);
     }
