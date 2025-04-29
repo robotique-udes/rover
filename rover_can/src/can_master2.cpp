@@ -1,6 +1,5 @@
-#include "rover_can2/constant.hpp"
-
 int main(void)
 {
+    /* TODO */
     return 0;
 }
