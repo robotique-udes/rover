@@ -17,4 +17,4 @@ class QUtilityBarBottom : public QWidget
     Ui::UtilityBarBottom _ui;
 };
 
-#endif //QUTILITY_BAR_BOTTOM_HPP
+#endif  // QUTILITY_BAR_BOTTOM_HPP

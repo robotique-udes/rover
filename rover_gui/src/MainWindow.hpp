@@ -8,7 +8,6 @@
 #include "QUtilityBarBottom/QUtilityBarBottom.hpp"
 #include "Global/Helpers/QToastNotification.hpp"
 
-
 #include <QStackedWidget>
 #include <QMainWindow>
 
@@ -33,7 +32,6 @@ class MainWindow : public QMainWindow
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
-
 
     // QFileTransferWidget _fileTransferWidget;
 };

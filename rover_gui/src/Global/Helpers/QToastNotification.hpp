@@ -21,107 +21,106 @@
 namespace QHelper
 {
 
+    class QToastNotification : public QWidget
+    {
+        Q_OBJECT
 
-  class QToastNotification : public QWidget
-  {
-      Q_OBJECT
+        static constexpr size_t NOTIF_DURATION_MS = 5'000UL;
+        static constexpr size_t HISTORY_MAX_SIZE = 10U;
+        static constexpr size_t MARGIN_NOTIF = 20U; 
 
-      static constexpr uint64_t NOTIF_DURATION_MS = 5'000UL;
-      static constexpr size_t HISTORY_MAX_SIZE = 10U;
+      public:
+        enum class eNotifType : size_t
+        {
+            ERROR = 0U,
+            WARNING = 1U,
+            INFO = 2U
+        };
 
-    public:
-      enum class eNotifType : uint8_t
-      {
-          ERROR = 0u,
-          WARNING = 1u,
-          INFO = 2u
-      };
+        struct sNotificationInfo
+        {
+#warning add time stamp
+            // long long timeStamp;
+            std::string title;
+            std::string description;
+            QToastNotification::eNotifType criticityLevel;
+        };
 
-        struct sNotificationInfo    
-      {
-        #warning add time stamp
-        //long long timeStamp;
-        std::string title;
-        std::string description;
-        QToastNotification::eNotifType criticityLevel;
-      };
+        /**nameenelverspace
+         * @brief Helper to send a notification (non blocking) from any thread.
+         * The notification pops from the bottom right end of the main window.
+         *
+         * @param title_ Notification title
+         * @param description_ Notification description
+         * @param type_ Criticity level setting a corresponding icon to the notification
+         * @param durationMs_ Duration of the notification (5s by default)
+         */
+        void notify(const std::string& title_,
+                    const std::string& description_,
+                    eNotifType type_,
+                    size_t durationMs_ = NOTIF_DURATION_MS);
 
-      QRect targetScreenRect;
-      std::deque<sNotificationInfo> _history; 
+        static QToastNotification& getInstance();
 
+        QRect targetScreenRect;
+        std::deque<sNotificationInfo> history;
 
-      static QToastNotification& getInstance();
+      private:
+        QToastNotification();
+        ~QToastNotification() = default;
+        QToastNotification(const QToastNotification&) = delete;
+        QToastNotification& operator=(const QToastNotification&) = delete;
 
-      void notify(const std::string& title, const std::string& description_, eNotifType type_, int durationMs_ = NOTIF_DURATION_MS);
+        void setupUI();
+        void setupAnimations();
+        void setupScreenRect();
 
-    private:
-      QToastNotification();
-      ~QToastNotification() = default;
+        void hideNotification();
+        void saveNotifInfo(const sNotificationInfo& info_);
 
+        Ui::ToastNotification _ui;
+        QGraphicsDropShadowEffect _shadow;
+        QPropertyAnimation _fadeInAnim;
+        QPropertyAnimation _fadeOutAnim;
+        QPropertyAnimation _slideInAnim;
+        QPropertyAnimation _slideOutAnim;
+        QPropertyAnimation _progressBarAnim;
 
-      void setupUI();
-      void setupAnimations();
-      void setupScreenRect();        const int margin = 1;
+        QTimer _closeTimer;
+    };
 
-      void hideNotification();
+    class QNotificationShowHistory : public QWidget
+    {
+        Q_OBJECT
 
-      void saveNotifInfo(const sNotificationInfo& info_);
+        static constexpr size_t MARGIN = 5;
 
-      QToastNotification(const QToastNotification&) = delete;
-      QToastNotification& operator=(const QToastNotification&) = delete;
+      public:
+        QNotificationShowHistory();
 
-      // Q_DISABLE_COPY(QSingletonToast)
+        void showHistory();
 
-      Ui::ToastNotification _ui;
-      QGraphicsDropShadowEffect _shadow;
-      QPropertyAnimation _fadeInAnim;
-      QPropertyAnimation _fadeOutAnim;
-      QPropertyAnimation _slideInAnim;
-      QPropertyAnimation _slideOutAnim;
-      QPropertyAnimation _progressBarAnim;
+      private:
+        Ui::historyWidget _ui_mainWidget;
 
-      QParallelAnimationGroup _animationGroup;
+        QRect _targetScreenRect;
+        QWidget _scrollAreaContainer;
+        QVBoxLayout _scrollAreaLayout;
+    };
 
-      QTimer _closeTimer;
-  };
+    class QNotificationHistoryData : public QWidget
+    {
+        Q_OBJECT
 
-  class QNotificationShowHistory : public QWidget
-  {
-      Q_OBJECT
+      public:
+        QNotificationHistoryData(std::string title_,
+                                 std::string description_,
+                                 QToastNotification::eNotifType type_);
 
-      static constexpr size_t MARGIN = 1;
-    public:
+      private:
+        Ui::historySubWidget _ui_subWidget;
+    };
 
-      QNotificationShowHistory();
-      ~QNotificationShowHistory();
-
-      void showHistory();
-
-
-    private:
-
-      Ui::historyWidget _ui_mainWidget;
-      //Ui::historySubWidget _ui_subWidget;
-
-      QRect _targetScreenRect;
-      QWidget scrollAreaContainer;
-      QVBoxLayout scrollAreaLayout;
-  };
-
-  class QNotificationHistoryData: public QWidget
-  {
-    Q_OBJECT
-
-    public:
-
-      QNotificationHistoryData(QWidget* parent_, std::string title_, std::string description_, QToastNotification::eNotifType type_);
-      ~QNotificationHistoryData();
-
-    private:
-      Ui::historySubWidget _ui_subWidget;
-  };
-
-
-}  // nameenelverspace QHelper
+}  // namespace QHelper
 
 #endif

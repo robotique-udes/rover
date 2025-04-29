@@ -3,6 +3,7 @@
 
 namespace QHelper
 {
+
     QToastNotification::QToastNotification():
         QWidget(nullptr),
         _shadow(this),
@@ -10,7 +11,7 @@ namespace QHelper
         _fadeOutAnim(this, "windowOpacity"),
         _slideInAnim(this, "pos"),
         _slideOutAnim(this, "pos"),
-        _progressBarAnim()
+        _progressBarAnim(this)
     {
         setupUI();
         setupAnimations();
@@ -34,6 +35,7 @@ namespace QHelper
 
         _progressBarAnim.setTargetObject(_ui.progressBar);
         _progressBarAnim.setPropertyName("value");
+
         _shadow.setBlurRadius(40);
         _shadow.setOffset(0, 3);
         _shadow.setColor(QColor(0, 0, 0, 220));
@@ -46,69 +48,73 @@ namespace QHelper
             }
             QFrame:hover {
                 background-color: #4d4d4d;
-            }
-        )");
-        _ui.closePushButton->setStyleSheet("QPushButton {"
-                                            "    background-color: transparent;"
-                                            "    border-radius: 15px;"
-                                            "    border: none;"
-                                            "    outline: none;"
-                                            "}"
-                                            "QPushButton:focus {"
-                                            "    outline: none;"
-                                            "}");
+            })");
 
-        _ui.iconSlot->setStyleSheet("QPushButton {"
-                                    "    background-color: transparent;"
-                                    "    border-radius: 15px;"
-                                    "    border: none;"
-                                    "    outline: none;"
-                                    "}"
-                                    "QPushButton:focus {"
-                                    "    outline: none;"
-                                    "}");
-        _ui.textErrorMessage->setStyleSheet("QTextEdit {"
-                                            "    background-color: transparent;"
-                                            "    border-radius: 15px;"
-                                            "    border: none;"
-                                            "    font-size: 16px;"
-                                            "    padding: 5px 10px;"
-                                            "}"
-                                            "QTextEdit:focus {"
-                                            "    border: none;"
-                                            "    outline: none;"
-                                            "}");
-        _ui.titleLineEdit->setStyleSheet("QLineEdit {"
-                                            "    background-color: transparent;"
-                                            "    border-radius: 15px;"
-                                            "    border: none;"
-                                            "    padding: 5px 10px;"
-                                            "    font-size: 24px;"
-                                            "    font-weight: bold;"
-                                            "}"
-                                            "QLineEdit:focus {"
-                                            "    border: none;"
-                                            "    outline: none;"
-                                            "}");
+        _ui.closePushButton->setStyleSheet(R"(
+            QPushButton {
+                background-color: transparent;
+                border-radius: 15px;
+                border: none;
+                outline: none;
+            }
+            QPushButton:focus {
+                outline: none;
+            })");
+
+        _ui.iconSlot->setStyleSheet(R"(
+            QPushButton {
+                background-color: transparent;
+                border-radius: 15px;
+                border: none;
+                outline: none;
+            }
+            QPushButton:focus {
+                outline: none;
+            })");
+
+        _ui.textErrorMessage->setStyleSheet(R"(
+            QTextEdit {
+                background-color: transparent;
+                border-radius: 15px;
+                border: none;
+                font-size: 16px;
+                padding: 5px 10px;
+            }
+            QTextEdit:focus {
+                border: none;
+                outline: none;
+            })");
+
+        _ui.titleLineEdit->setStyleSheet(R"(
+        QLineEdit {
+            background-color: transparent;
+            border-radius: 15px;
+            border: none;
+            padding: 5px 10px;
+            font-size: 24px;
+            font-weight: bold;
+        }
+        QLineEdit:focus {
+            border: none;
+            outline: none;
+        })");
 
         _ui.progressBar->setStyleSheet(R"(
-                                QProgressBar {
-                                    border: none;
-                                    background: rgba(50, 50, 58, 180);
-                                    border-radius: 8px;
-                                    height: 6px;
-                                    margin: 0px;
-                            
-    }
+        QProgressBar {
+            border: none;
+            background: rgba(50, 50, 58, 180);
+            border-radius: 8px;
+            height: 6px;
+            margin: 0px;
+        }
+        QProgressBar::chunk {
+            background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                stop:0 #00c6ff, stop:1 #0072ff);
+            border-radius: 8px;
+            margin: 0px;
+            min-width: 4px;
+        })");
 
-                                QProgressBar::chunk {
-                                    background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                                                                    stop:0 #00c6ff, stop:1 #0072ff);
-                                    border-radius: 8px;
-                                    margin: 0px;
-                                    min-width: 4px; /* <- important! ensures chunk stays visible */
-                                }
-                                )");
     }
 
     void QToastNotification::setupAnimations()
@@ -142,7 +148,7 @@ namespace QHelper
 
         if (screens.size() >= 2)
         {
-            targetScreen = screens[1];
+            targetScreen = screens[0];
         }
         else
         {
@@ -152,9 +158,11 @@ namespace QHelper
         targetScreenRect = targetScreen->availableGeometry();
     }
 
-    void QToastNotification::notify(const std::string& title_, const std::string& description_, eNotifType type_, int durationMs_)
+    void QToastNotification::notify(const std::string& title_,
+                                    const std::string& description_,
+                                    eNotifType type_,
+                                    size_t durationMs_)
     {
-        
         _fadeInAnim.stop();
         _fadeOutAnim.stop();
         _slideInAnim.stop();
@@ -162,6 +170,7 @@ namespace QHelper
         _progressBarAnim.stop();
 
         QIcon icon;
+
         switch (type_)
         {
             case eNotifType::INFO:
@@ -177,7 +186,7 @@ namespace QHelper
                 break;
 
             default:
-                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);  // Optional fallback
+                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);
                 break;
         }
 
@@ -186,28 +195,26 @@ namespace QHelper
         _ui.textErrorMessage->setText(QString::fromStdString(description_));
         _ui.titleLineEdit->setText(QString::fromStdString(title_));
 
-        adjustSize();
+        this->adjustSize();
 
-        const int margin = 20;
-        int startX = targetScreenRect.right() + margin;
-        int endX = targetScreenRect.right() - width() - margin;
-        int yPos = targetScreenRect.bottom() - height() - 2 * margin;
+        size_t startX = targetScreenRect.right() + MARGIN_NOTIF;
+        size_t endX = targetScreenRect.right() - width() - MARGIN_NOTIF;
+        size_t Y = targetScreenRect.bottom() - height() - 2 * MARGIN_NOTIF;
 
-        _slideInAnim.setStartValue(QPoint(startX, yPos));
-        _slideInAnim.setEndValue(QPoint(endX, yPos));
+        _slideInAnim.setStartValue(QPoint(startX, Y));
+        _slideInAnim.setEndValue(QPoint(endX, Y));
 
-        _slideOutAnim.setStartValue(QPoint(endX, yPos));
-        _slideOutAnim.setEndValue(QPoint(startX, yPos));
+        _slideOutAnim.setStartValue(QPoint(endX, Y));
+        _slideOutAnim.setEndValue(QPoint(startX, Y));
 
-        _progressBarAnim.setDuration(durationMs_);
-
-        move(startX, yPos);
+        move(startX, Y);
         setWindowOpacity(0.0);
         _ui.progressBar->setValue(100);
 
-        show();
-        raise();
-        activateWindow();
+        this->show();
+        this->raise();
+
+        _progressBarAnim.setDuration(durationMs_);
 
         _fadeInAnim.start();
         _slideInAnim.start();
@@ -217,7 +224,7 @@ namespace QHelper
 
         #warning add time stamp here
 
-        sNotificationInfo data = {title_,description_,type_};
+        sNotificationInfo data = {title_, description_, type_};
         this->saveNotifInfo(data);
     }
 
@@ -234,101 +241,97 @@ namespace QHelper
 
     void QToastNotification::saveNotifInfo(const sNotificationInfo& info_)
     {
-        _history.push_back(info_);
+        history.push_back(info_);
 
-        if(_history.size()>= HISTORY_MAX_SIZE)
+        if (history.size() >= HISTORY_MAX_SIZE)
         {
-            _history.pop_front();
+            history.pop_front();
         }
     }
 
     QNotificationShowHistory::QNotificationShowHistory()
     {
-
         setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
         setAttribute(Qt::WA_TranslucentBackground);
-        setAttribute(Qt::WA_ShowWithoutActivating);
+        
         _ui_mainWidget.setupUi(this);
 
-        scrollAreaContainer.setLayout(&scrollAreaLayout);
-
-        scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        scrollAreaContainer.setMinimumWidth(_ui_mainWidget.historyScrollArea->width());
-        scrollAreaLayout.setAlignment(Qt::AlignTop); // This keeps items aligned to top
+        _scrollAreaContainer.setLayout(&_scrollAreaLayout);
+        _scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
+        _scrollAreaContainer.setMinimumWidth(_ui_mainWidget.historyScrollArea->width());
+        
+        _scrollAreaLayout.setAlignment(Qt::AlignTop);
+        
         this->move(-100, height());
-         _ui_mainWidget.historyScrollArea->setVisible(false);
-        
-        
+
+        _ui_mainWidget.historyScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        _ui_mainWidget.historyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        _ui_mainWidget.historyScrollArea->setVisible(false);
+
         _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
-        }
-
-
-
-    QNotificationShowHistory::~QNotificationShowHistory()
-    {
-
-        
-
     }
 
     void QNotificationShowHistory::showHistory()
     {
-        qDebug("Ok signal recieved");
-        if(_ui_mainWidget.historyScrollArea->isVisible())
+        if (_ui_mainWidget.historyScrollArea->isVisible())
         {
-                    qDebug("visible");
+            for (size_t i = 0; i < static_cast<size_t>(_scrollAreaLayout.count()); ++i)
+            {
+                QWidget* widget = _scrollAreaLayout.itemAt(i)->widget();
+                if (widget)
+                {
+                    delete widget;
+                }
+            }
 
-             for (int i = 0; i < scrollAreaLayout.count(); ++i) 
-            {
-            QWidget *widget = scrollAreaLayout.itemAt(i)->widget();
-            if (widget != nullptr) 
-            {
-                delete widget; // Delete the widget to free memory
-            }
-            }
-            _ui_mainWidget.historyScrollArea->setWidget(nullptr); // Remove content widget
+            _ui_mainWidget.historyScrollArea->setWidget(nullptr);
             _ui_mainWidget.historyScrollArea->setVisible(false);
 
-            int offScreenX = _targetScreenRect.right() + 100;  // Move far off-screen horizontally
-            int offScreenY = _targetScreenRect.bottom() + 100; // Move off-screen vertically
+            size_t offScreenX = _targetScreenRect.right() + 100;
+            size_t offScreenY = _targetScreenRect.bottom() + 100;
             this->move(offScreenX, offScreenY);
             this->hide();
         }
-        
-        
-        else 
+
+        else
         {
-                                qDebug("invisible");
-            for (int i = 0; i < QToastNotification::getInstance()._history.size(); ++i) 
+            for (size_t i = 0; i < QToastNotification::getInstance().history.size(); ++i)
             {
-            QToastNotification::sNotificationInfo data = QToastNotification::getInstance()._history.at(i);
-            QNotificationHistoryData* dataWidget = new QNotificationHistoryData(&scrollAreaContainer,data.title,data.description,data.criticityLevel );
-            scrollAreaLayout.addWidget(dataWidget);
+                QToastNotification::sNotificationInfo data = QToastNotification::getInstance().history.at(i);
+                QNotificationHistoryData* dataWidget
+                    = new QNotificationHistoryData(data.title, data.description, data.criticityLevel);
+                
+                if(dataWidget)
+                {
+                _scrollAreaLayout.addWidget(dataWidget);
+                }
             }
 
-            _ui_mainWidget.historyScrollArea->setWidget(&scrollAreaContainer);
-            int endX = _targetScreenRect.right() - width() - 5*MARGIN;
-            int yPos = _targetScreenRect.bottom() - height() - 30*MARGIN;
+            _ui_mainWidget.historyScrollArea->setWidget(&_scrollAreaContainer);
+            size_t X = _targetScreenRect.right() - width() - MARGIN;
+            size_t Y = _targetScreenRect.bottom() - height() - 8 * MARGIN;
 
-            this->move(endX, yPos);
-            
+            this->move(X, Y);
             _ui_mainWidget.historyScrollArea->setVisible(true);            
+            this->show();
             this->raise();
             this->activateWindow();
-            this->show();
-        } // Set contentWidget as the widget of the scroll area
+        }
     }
 
-
-    QNotificationHistoryData::QNotificationHistoryData(QWidget* parent_,std::string title_, std::string description_, QToastNotification::eNotifType type_)
+    QNotificationHistoryData::QNotificationHistoryData(std::string title_,
+                                                       std::string description_,
+                                                       QToastNotification::eNotifType type_)
     {
         _ui_subWidget.setupUi(this);
         this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        this->setMinimumHeight(200); // or whatever size you want per item
+        this->setMinimumHeight(170);
 
         _ui_subWidget.historyTitle->setText(QString::fromStdString(title_));
         _ui_subWidget.historyDescription->setText(QString::fromStdString(description_));
-QIcon icon;
+
+        QIcon icon;
+
         switch (type_)
         {
             case QToastNotification::eNotifType::INFO:
@@ -344,15 +347,12 @@ QIcon icon;
                 break;
 
             default:
-                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);  // Optional fallback
+                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);
                 break;
         }
 
         _ui_subWidget.historyIcon->setIcon(icon);
-        _ui_subWidget.historyIcon->setIconSize(QSize(40, 40));    }
-    QNotificationHistoryData::~QNotificationHistoryData()
-    {
-
+        _ui_subWidget.historyIcon->setIconSize(QSize(40, 40));
     }
 
 }  // namespace QHelper

@@ -35,7 +35,9 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
 
-
     connect(&_sideBarWidget, &QSideBar::switchPage, &_stackedWidget, &QStackedWidget::setCurrentIndex);
-    connect(&_bottomUtilityBar, &QUtilityBarBottom::seeHistory, &_notificationHistoryWidget, &QHelper::QNotificationShowHistory::showHistory);
+    connect(&_bottomUtilityBar,
+            &QUtilityBarBottom::seeHistory,
+            &_notificationHistoryWidget,
+            &QHelper::QNotificationShowHistory::showHistory);
 }
