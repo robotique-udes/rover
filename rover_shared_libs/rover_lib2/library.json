@@ -1,0 +1,16 @@
+{
+    "name": "rover_lib2",
+    "version": "2.0.0",
+    "description": "Robotique UdeS's rover team main library",
+    "keywords": "rover, RobotiqueUdeS, UdeS",
+    "authors": [
+        {
+            "name": "Philippe Michaud",
+            "email": "micp1402@usherbrooke.ca",
+            "maintainer": true
+        }
+    ],
+    "dependencies": {},
+    "frameworks": "*",
+    "platforms": "*"
+}

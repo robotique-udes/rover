@@ -1,0 +1,2 @@
+float frequency;
+float dutyCycle;
