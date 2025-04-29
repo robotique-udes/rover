@@ -38,19 +38,21 @@ class QPlayerWorker : public QWorker
     void updateDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
     void updateDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
 
-    void takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl,
-                               std::string camera_URL_);
+    void takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+                               std::string camera_URL_, uint16_t tag_);
 
   signals:
     void detectionHandledSuccessfully(bool success_, uint16_t tag_);
     void urlFoundInDetection(std::vector<std::string> urls_found);
     void arucoServerInfoFailed(bool success);
+    void screenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
 
   private:
-    void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl,
-                                std::string camera_URL_);
+    void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+                                std::string camera_URL_, uint16_t tag_);
 
     RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
+    RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCallCamera;
 };
 
 #endif  // VIDEO_WORKER_HPP

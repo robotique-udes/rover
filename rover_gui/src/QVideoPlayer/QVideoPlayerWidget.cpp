@@ -242,7 +242,7 @@ void QVideoPlayerWidget::handleScreenshot(void)
 {
     if (_playerWorkerThread.get() != nullptr)
     {
-        _playerWorkerThread->takeScreenshotManager(_client_cameraControlManager, _camURL);
+        _playerWorkerThread->takeScreenshotManager(_client_cameraControlManager, _camURL, _tag);
     }
     else
     {
