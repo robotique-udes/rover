@@ -5,9 +5,12 @@
 MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     QMainWindow(nullptr),
     _centralWidget(this),
-    _layout(&_centralWidget),
+    _hBoxContainer(this),
+    _layout(this),
+    _verticalLayout(this),
     _stackedWidget(this),
     _sideBarWidget(this),
+    _bottomUtilityBar(this),
     _dashboardWidget(guiNode_, this),
     _navigationWidget(guiNode_, this)
 
@@ -22,7 +25,17 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _layout.addWidget(&_sideBarWidget);
     _layout.addWidget(&_stackedWidget);
 
+    _hBoxContainer.setLayout(&_layout);
+
+    _verticalLayout.addWidget(&_hBoxContainer);
+    _verticalLayout.addWidget(&_bottomUtilityBar);
+
+    _bottomUtilityBar.setFixedHeight(30);
+
     setCentralWidget(&_centralWidget);
+    _centralWidget.setLayout(&_verticalLayout);
+
 
     connect(&_sideBarWidget, &QSideBar::switchPage, &_stackedWidget, &QStackedWidget::setCurrentIndex);
+    connect(&_bottomUtilityBar, &QUtilityBarBottom::seeHistory, &_notificationHistoryWidget, &QHelper::QNotificationShowHistory::showHistory);
 }

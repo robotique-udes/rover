@@ -98,7 +98,8 @@ namespace QHelper
                                     border-radius: 8px;
                                     height: 6px;
                                     margin: 0px;
-                                }
+                            
+    }
 
                                 QProgressBar::chunk {
                                     background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
@@ -247,36 +248,21 @@ namespace QHelper
         setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
         setAttribute(Qt::WA_TranslucentBackground);
         setAttribute(Qt::WA_ShowWithoutActivating);
-
         _ui_mainWidget.setupUi(this);
-
-
-        connect(_ui_mainWidget.notificationHistory_PB, &QPushButton::clicked, this, [this]() {
-    // Toggle visibility of historyScrollArea
-        bool isVisible = _ui_mainWidget.historyScrollArea->isVisible();
-        this->showHistory(isVisible);  // Set opposite visibility
-        });
-
-
-        _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
-        const int margin = 1;
-        int endX = _targetScreenRect.right() - width() - 5*margin;
-        int yPos = _targetScreenRect.bottom() - height() - margin;
-
-        move(endX, yPos);
-
-        show();
-        raise();
-        activateWindow();
 
         scrollAreaContainer.setLayout(&scrollAreaLayout);
 
         scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
         scrollAreaContainer.setMinimumWidth(_ui_mainWidget.historyScrollArea->width());
         scrollAreaLayout.setAlignment(Qt::AlignTop); // This keeps items aligned to top
+        this->move(-100, height());
+         _ui_mainWidget.historyScrollArea->setVisible(false);
+        
+        
+        _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
+        }
 
 
-    }
 
     QNotificationShowHistory::~QNotificationShowHistory()
     {
@@ -285,27 +271,51 @@ namespace QHelper
 
     }
 
-    void QNotificationShowHistory::showHistory(const bool isVisible_)
+    void QNotificationShowHistory::showHistory()
     {
-        _ui_mainWidget.historyScrollArea->setVisible(!isVisible_);  // Set opposite visibility
+        qDebug("Ok signal recieved");
         if(_ui_mainWidget.historyScrollArea->isVisible())
         {
-        for (int i = 0; i < QToastNotification::getInstance()._history.size(); ++i) {
-        QToastNotification::sNotificationInfo data = QToastNotification::getInstance()._history.at(i);
-        QNotificationHistoryData* dataWidget = new QNotificationHistoryData(&scrollAreaContainer,data.title,data.description,data.criticityLevel );
-        scrollAreaLayout.addWidget(dataWidget);
-        }
-        _ui_mainWidget.historyScrollArea->setWidget(&scrollAreaContainer); 
-        }
-        
-        else
-        {
-                 for (int i = 0; i < scrollAreaLayout.count(); ++i) {
-                QWidget* widget = scrollAreaLayout.itemAt(i)->widget();
-                if (widget)
-                    widget->deleteLater();  // Clean up widget to prevent memory leaks
+                    qDebug("visible");
+
+             for (int i = 0; i < scrollAreaLayout.count(); ++i) 
+            {
+            QWidget *widget = scrollAreaLayout.itemAt(i)->widget();
+            if (widget != nullptr) 
+            {
+                delete widget; // Delete the widget to free memory
+            }
             }
             _ui_mainWidget.historyScrollArea->setWidget(nullptr); // Remove content widget
+            _ui_mainWidget.historyScrollArea->setVisible(false);
+
+            int offScreenX = _targetScreenRect.right() + 100;  // Move far off-screen horizontally
+            int offScreenY = _targetScreenRect.bottom() + 100; // Move off-screen vertically
+            this->move(offScreenX, offScreenY);
+            this->hide();
+        }
+        
+        
+        else 
+        {
+                                qDebug("invisible");
+            for (int i = 0; i < QToastNotification::getInstance()._history.size(); ++i) 
+            {
+            QToastNotification::sNotificationInfo data = QToastNotification::getInstance()._history.at(i);
+            QNotificationHistoryData* dataWidget = new QNotificationHistoryData(&scrollAreaContainer,data.title,data.description,data.criticityLevel );
+            scrollAreaLayout.addWidget(dataWidget);
+            }
+
+            _ui_mainWidget.historyScrollArea->setWidget(&scrollAreaContainer);
+            int endX = _targetScreenRect.right() - width() - 5*MARGIN;
+            int yPos = _targetScreenRect.bottom() - height() - 30*MARGIN;
+
+            this->move(endX, yPos);
+            
+            _ui_mainWidget.historyScrollArea->setVisible(true);            
+            this->raise();
+            this->activateWindow();
+            this->show();
         } // Set contentWidget as the widget of the scroll area
     }
 

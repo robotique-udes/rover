@@ -6,35 +6,19 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>418</width>
-    <height>984</height>
+    <width>436</width>
+    <height>944</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
-  <widget class="QPushButton" name="notificationHistory_PB">
-   <property name="geometry">
-    <rect>
-     <x>240</x>
-     <y>950</y>
-     <width>171</width>
-     <height>31</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string>Notification History</string>
-   </property>
-   <property name="checkable">
-    <bool>true</bool>
-   </property>
-  </widget>
   <widget class="QScrollArea" name="historyScrollArea">
    <property name="geometry">
     <rect>
      <x>0</x>
      <y>10</y>
-     <width>411</width>
+     <width>431</width>
      <height>931</height>
     </rect>
    </property>
@@ -46,7 +30,7 @@
      <rect>
       <x>0</x>
       <y>0</y>
-      <width>409</width>
+      <width>429</width>
       <height>929</height>
      </rect>
     </property>

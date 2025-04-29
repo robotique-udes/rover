@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>UtilityBarBottom</class>
+ <widget class="QWidget" name="UtilityBarBottom">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1841</width>
+    <height>32</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <widget class="QFrame" name="bottomFrame">
+   <property name="geometry">
+    <rect>
+     <x>10</x>
+     <y>0</y>
+     <width>1831</width>
+     <height>31</height>
+    </rect>
+   </property>
+   <property name="frameShape">
+    <enum>QFrame::StyledPanel</enum>
+   </property>
+   <property name="frameShadow">
+    <enum>QFrame::Raised</enum>
+   </property>
+   <widget class="QPushButton" name="notificationHistory_PB">
+    <property name="geometry">
+     <rect>
+      <x>1630</x>
+      <y>0</y>
+      <width>191</width>
+      <height>31</height>
+     </rect>
+    </property>
+    <property name="text">
+     <string>Notification History</string>
+    </property>
+    <property name="checkable">
+     <bool>true</bool>
+    </property>
+   </widget>
+  </widget>
+ </widget>
+ <resources/>
+ <connections/>
+</ui>

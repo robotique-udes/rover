@@ -5,7 +5,9 @@
 #include "QNavigation/QNavigation.hpp"
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
+#include "QUtilityBarBottom/QUtilityBarBottom.hpp"
 #include "Global/Helpers/QToastNotification.hpp"
+
 
 #include <QStackedWidget>
 #include <QMainWindow>
@@ -21,13 +23,17 @@ class MainWindow : public QMainWindow
 
   private:
     QWidget _centralWidget;
+    QWidget _hBoxContainer;
     QHBoxLayout _layout;
+    QVBoxLayout _verticalLayout;
     QStackedWidget _stackedWidget;
 
     QSideBar _sideBarWidget;
+    QUtilityBarBottom _bottomUtilityBar;
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
+
 
     // QFileTransferWidget _fileTransferWidget;
 };

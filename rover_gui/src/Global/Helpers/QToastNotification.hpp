@@ -53,7 +53,7 @@ namespace QHelper
       static QToastNotification& getInstance();
 
       void notify(const std::string& title, const std::string& description_, eNotifType type_, int durationMs_ = NOTIF_DURATION_MS);
-      
+
     private:
       QToastNotification();
       ~QToastNotification() = default;
@@ -61,7 +61,8 @@ namespace QHelper
 
       void setupUI();
       void setupAnimations();
-      void setupScreenRect();
+      void setupScreenRect();        const int margin = 1;
+
       void hideNotification();
 
       void saveNotifInfo(const sNotificationInfo& info_);
@@ -88,14 +89,17 @@ namespace QHelper
   {
       Q_OBJECT
 
+      static constexpr size_t MARGIN = 1;
     public:
 
       QNotificationShowHistory();
       ~QNotificationShowHistory();
 
+      void showHistory();
+
+
     private:
 
-      void showHistory(const bool isVisible_);
       Ui::historyWidget _ui_mainWidget;
       //Ui::historySubWidget _ui_subWidget;
 
