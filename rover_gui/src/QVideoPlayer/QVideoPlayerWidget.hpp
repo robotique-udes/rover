@@ -35,7 +35,7 @@ class QVideoPlayerWidget : public QWidget
 
     /**
      * @brief Set the camera control client for the widget
-     * 
+     *
      * @param client_ a CameraControl client
      */
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
@@ -55,13 +55,13 @@ class QVideoPlayerWidget : public QWidget
 
     /**
      * @brief takes a screenshot
-     * 
+     *
      */
     void handleScreenshot(void);
 
     /**
      * @brief Starts and stops the recording
-     * 
+     *
      */
     void handleRecording(void);
 
@@ -75,7 +75,6 @@ class QVideoPlayerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager = nullptr;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager = nullptr;
-    
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
 };

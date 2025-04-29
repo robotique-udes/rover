@@ -133,3 +133,35 @@ void QPlayerWorker::updateDetectionInternal(
     emit arucoServerInfoFailed(success);
     emit urlFoundInDetection(liveURLs);
 }
+
+void QPlayerWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+                                          std::string camera_URL_)
+{
+    this->addTask(
+        [this, client_CameraControl_, camera_URL_](void)
+        {
+            takeScreenshotInternal(client_CameraControl_, camera_URL_);
+        });
+}
+
+void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl,
+                                           std::string camera_URL_)
+{
+    bool success = false;
+
+    auto request = std::make_shared<rover_msgs::srv::CameraControl::Request>();
+
+    request->command = rover_msgs::srv::CameraControl::Request::TAKE_PICTURE;
+
+    request->camera_url = camera_URL_;
+
+    if (!client_CameraControl)
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "ERROR: couldn't take screenshot \ncamera control client is invalid");
+        return;
+    }
+
+    auto result = client_CameraControl->async_send_request(request);
+
+    
+}

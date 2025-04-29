@@ -39,7 +39,7 @@ class QVideoManagerWidget : public QWidget
 
     /**
      * @brief Initialise the CameraControl client and passes it to each widget
-     * 
+     *
      */
     void initCameraControlClient(void);
 

@@ -27,6 +27,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::setURLToDefault);
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
 
+    connect(_ui.ScreenshotButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleScreenshot);
+    connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
+
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
 
@@ -231,17 +234,25 @@ void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::C
     {
         this->_client_cameraControlManager = client_;
     }
-    //add handling in case the client pointer is invalid, similar to setArduinoClientManager()
+    // add handling in case the client pointer is invalid, similar to setArduinoClientManager()
     return;
 }
 
 void QVideoPlayerWidget::handleScreenshot(void)
 {
+    if (_playerWorkerThread.get() != nullptr)
+    {
+        _playerWorkerThread->takeScreenshotManager(_client_cameraControlManager, _camURL);
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+    }
     return;
 }
 
 void QVideoPlayerWidget::handleRecording(void)
 {
-    
+    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Recording button pushed!");
     return;
 }
