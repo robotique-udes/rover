@@ -192,5 +192,5 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
         }
     }
 
-
+    emit screenshotHandledSuccessfully(success, status, tag_);
 }

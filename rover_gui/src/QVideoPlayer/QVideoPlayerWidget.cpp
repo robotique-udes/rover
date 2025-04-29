@@ -28,6 +28,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
 
     connect(_ui.ScreenshotButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleScreenshot);
+    connect(_playerWorkerThread.get(), &QPlayerWorker::screenshotHandledSuccessfully, this, &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
+
     connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
@@ -254,5 +256,18 @@ void QVideoPlayerWidget::handleScreenshot(void)
 void QVideoPlayerWidget::handleRecording(void)
 {
     RCLCPP_INFO(rclcpp::get_logger("GUI"), "Recording button pushed!");
+    return;
+}
+
+void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
+{
+    if (tag_ == _tag)
+    {
+        if (!success_)
+        {
+
+        }
+        emit statusBarUpdate(status_, STATUS_BAR_DISPLAY_TIME);
+    }
     return;
 }
