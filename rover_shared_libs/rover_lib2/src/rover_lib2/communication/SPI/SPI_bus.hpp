@@ -7,7 +7,6 @@
 #include <driver/spi_master.h>
 #include <driver/gpio.h>
 
-
 DEFINE_LOG_NODE(SPIBus, Logger::eNodeState::OFF)
 
 class SPIBus

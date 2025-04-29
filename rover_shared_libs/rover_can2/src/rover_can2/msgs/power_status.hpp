@@ -129,7 +129,7 @@ namespace RoverCan2::Msgs
     {
         return _data;
     }
-    
+
     const PowerStatus::sMsgData& PowerStatus::getData(void) const
     {
         return static_cast<const PowerStatus::sMsgData&>(_data);

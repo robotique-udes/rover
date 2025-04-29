@@ -143,7 +143,7 @@ namespace RoverCan2::Msgs
     {
         return _data;
     }
-    
+
     const TestMsg::sMsgData& TestMsg::getData(void) const
     {
         return static_cast<const TestMsg::sMsgData&>(_data);

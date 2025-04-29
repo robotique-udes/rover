@@ -143,7 +143,7 @@ namespace RoverCan2::Msgs
     {
         return _data;
     }
-    
+
     const PwmStatus::sMsgData& PwmStatus::getData(void) const
     {
         return static_cast<const PwmStatus::sMsgData&>(_data);

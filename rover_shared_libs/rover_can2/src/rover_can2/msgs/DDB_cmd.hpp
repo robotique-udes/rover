@@ -34,7 +34,12 @@ namespace RoverCan2::Msgs
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
-            = {eMsgContentID::B_0_CH_2_ON_STATE, eMsgContentID::B_0_CH_3_ON_STATE, eMsgContentID::B_1_CH_0_ON_STATE, eMsgContentID::B_1_CH_1_ON_STATE, eMsgContentID::B_1_CH_2_ON_STATE, eMsgContentID::B_1_CH_3_ON_STATE};
+            = {eMsgContentID::B_0_CH_2_ON_STATE,
+               eMsgContentID::B_0_CH_3_ON_STATE,
+               eMsgContentID::B_1_CH_0_ON_STATE,
+               eMsgContentID::B_1_CH_1_ON_STATE,
+               eMsgContentID::B_1_CH_2_ON_STATE,
+               eMsgContentID::B_1_CH_3_ON_STATE};
 
       public:
         DdbCmd();
@@ -199,7 +204,7 @@ namespace RoverCan2::Msgs
     {
         return _data;
     }
-    
+
     const DdbCmd::sMsgData& DdbCmd::getData(void) const
     {
         return static_cast<const DdbCmd::sMsgData&>(_data);

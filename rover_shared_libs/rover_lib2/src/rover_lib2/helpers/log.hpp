@@ -137,7 +137,7 @@ namespace Logger
 
 /**
  * @brief Default node for debug purposes
- * 
+ *
  */
 DEFINE_LOG_NODE(Debug, Logger::eNodeState::ON);
 
