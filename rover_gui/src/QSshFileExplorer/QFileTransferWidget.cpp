@@ -4,7 +4,10 @@
 QFileTransferWidget::QFileTransferWidget(QWidget* parent_):
     _mainLayout(this),
     _splitter(parent_),
-    _localFileSystem(QHelper::getCurrentUserName(), "localhost", "/home/" + QHelper::getCurrentUserName(), &_splitter),
+    _localFileSystem(QHelper::getCurrentUserName(),
+                     "localhost",
+                     QStandardPaths::writableLocation(QStandardPaths::HomeLocation).toStdString(),
+                     &_splitter),
     _roverFileSystem("rover", "192.168.144.20", "/home/rover", &_splitter)
 {
     _localFileSystem.getUI().cb_showHiddenFile->setChecked(false);
