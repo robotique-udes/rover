@@ -180,9 +180,10 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    //creation du dossier du dossier de panoramas 
 	    struct stat fileInfo;
 	    bool dossier_exist = stat("src/rover/rover_video/src/panoramas", &fileInfo) == 0;
-	    
+
 	    if (!dossier_exist)
 	    {
+	    cout << "dossier pas encore cree" << endl;
 	      if (mkdir("src/rover/rover_video/src/panoramas", 0775) == 0)
 		 {
 		  cout << "Succesfully created the folder."<< endl;
