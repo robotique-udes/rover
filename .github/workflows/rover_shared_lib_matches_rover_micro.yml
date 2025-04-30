@@ -34,6 +34,7 @@ jobs:
           )
 
           overall_success=true
+          diff_output=""
 
           for micro_folder in "${!folder_pairs[@]}"; do
             rover_folder="${folder_pairs[$micro_folder]}"
@@ -68,12 +69,14 @@ jobs:
                 
                 if [ ! -f "$file2" ]; then
                     echo -e "\e[0;31m[FAILED]\e[0m Corresponding file $file2 not found for $file"
+                    diff_output+="\nMissing file: $file2 (expected from $file)"
                     differences_found=true
                     continue
                 fi
                 
-                if ! diff -u "$file" "$file2" > /dev/null; then
+                if ! diff_output_single=$(diff -u "$file" "$file2"); then
                     echo -e "\e[0;31m[FAILED]\e[0m Differences found in $rel_path"
+                    diff_output+="\n\nDifferences in $rel_path:\n$diff_output_single"
                     differences_found=true
                 else
                     echo -e "\e[0;32m[OK]\e[0m $rel_path matches"
@@ -90,6 +93,9 @@ jobs:
             echo -e "\e[0;32m=== [SUCCESS] All shared libraries match exactly ===\e[0m"
             exit 0
           else
-            echo -e "\e[0;31m=== [FAILED] Differences found in shared libraries in pull request. Please merge library modifications in rover_micro first ===\e[0m"
+            echo -e "\e[0;31m=== [FAILED] Differences found in shared libraries ===\e[0m"
+            echo -e "\n\e[1mDetailed differences:\e[0m"
+            echo -e "$diff_output"
+            echo -e "\n\e[0;31m=== Please merge library modifications in rover_micro first ===\e[0m"
             exit 1
           fi
