@@ -317,7 +317,8 @@ void QSshWorker::downloadFileInternal(IN const std::string& rUsername_,
         {
             localFile.write(reinterpret_cast<const char*>(buffer), nbytes);
 
-            totalBytesRead += static_cast<uint64_t>(CONSTRAIN(nbytes, 0, sizeof(buffer)));
+            totalBytesRead
+                += static_cast<uint64_t>(CONSTRAIN(nbytes, static_cast<ssize_t>(0), static_cast<ssize_t>(sizeof(buffer))));
             progress = 100.0f * static_cast<float>(totalBytesRead) / static_cast<float>(fileSize);
             if (totalBytesRead != 0 && fileSize != 0)
             {

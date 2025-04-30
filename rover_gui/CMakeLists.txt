@@ -35,6 +35,8 @@ add_custom_command(
     COMMENT "Generating UI files..."
 )
 
+add_subdirectory(../rover_shared_libs/ .build)
+
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
 add_executable(main_gui src/gui.cpp
@@ -87,20 +89,19 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/QVideoPlayerWidget.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
-
-
                 )
-add_dependencies(main_gui run_generate_ui)
 
-target_link_libraries(main_gui 
-                      Qt6::Widgets
-                      Qt6::Gui
-                      ${LIBSSH_LIBRARY})
-
+add_dependencies(main_gui 
+                  run_generate_ui)
 ament_target_dependencies(main_gui
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
+                            rclcpp
+                            rover_msgs
+                            rcl_interfaces)
+target_link_libraries(main_gui 
+                        Qt6::Widgets
+                        Qt6::Gui
+                        ${LIBSSH_LIBRARY}
+                        rover_shared_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
