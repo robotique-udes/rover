@@ -1,4 +1,4 @@
-name: rover_shared_lib Matches Copy In rover_micro
+name: Libs in rover_shared_lib matches copy in rover_micro
 
 on:
   pull_request:
