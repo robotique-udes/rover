@@ -10,6 +10,7 @@
 
 #include <QStackedWidget>
 #include <QMainWindow>
+#include <QShortcut>
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -21,11 +22,14 @@ class MainWindow : public QMainWindow
     explicit MainWindow(std::shared_ptr<rclcpp::Node> guiNode_);
 
   private:
+    void closeEvent(QCloseEvent* event_) override;
+
     QWidget _centralWidget;
     QWidget _hBoxContainer;
     QHBoxLayout _layout;
     QVBoxLayout _verticalLayout;
     QStackedWidget _stackedWidget;
+    QShortcut _closeShortCut;
 
     QSideBar _sideBarWidget;
     QUtilityBarBottom _bottomUtilityBar;

@@ -1,4 +1,6 @@
 #include <QMessageBox>
+#include <QStandardPaths>
+#include <QDir>
 
 #include "rovus_lib/macros.h"
 
@@ -80,5 +82,12 @@ namespace QHelper
      * @return std::string
      */
     std::string getFileExtension(const std::string& filename_);
+
+    /**
+     * @brief Gets the username of the one executing the app
+     *
+     * @return std::string
+     */
+    std::string getCurrentUserName(void);
 
 }  // namespace QHelper

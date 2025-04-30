@@ -7,6 +7,7 @@
 #include <QLabel>
 #include "Global/Helpers/QToastNotification.hpp"
 #include <QStackedWidget>
+#include <QShortcut>
 
 class SecondaryWindow : public QMainWindow
 {
@@ -16,9 +17,12 @@ class SecondaryWindow : public QMainWindow
     explicit SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_);
 
   private:
+    void closeEvent(QCloseEvent* event_) override;
+
     QWidget _centralWidget;
     QVBoxLayout _layout;
     QStackedWidget _stackedWidget;
+    QShortcut _closeShortCut;
 
     QVideoManagerWidget _videoPlayerWidget;
 };

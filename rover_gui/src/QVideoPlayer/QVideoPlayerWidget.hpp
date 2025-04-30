@@ -18,7 +18,6 @@ class QVideoPlayerWidget : public QWidget
 
   public:
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                       QWidget* parent_,
                        std::string url_,
                        uint16_t tag_,
                        std::shared_ptr<QPlayerWorker> worker_);
@@ -54,7 +53,7 @@ class QVideoPlayerWidget : public QWidget
     std::string _defaultCamUrl = "";
     uint16_t _tag;
 
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager = nullptr;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
 };

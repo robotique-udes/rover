@@ -1,5 +1,7 @@
 #include "MainWindow.hpp"
 
+#include "Global/Constant/Keybinding.hpp"
+
 #include <QStackedWidget>
 
 MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
@@ -9,6 +11,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _layout(this),
     _verticalLayout(this),
     _stackedWidget(this),
+    _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
     _sideBarWidget(this),
     _bottomUtilityBar(this),
     _dashboardWidget(guiNode_, this),
@@ -40,4 +43,14 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
             &QUtilityBarBottom::seeHistory,
             &_notificationHistoryWidget,
             &QHelper::QNotificationShowHistory::showHistory);
+    connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
+}
+
+void MainWindow::closeEvent(QCloseEvent* event_)
+{
+    if (event_)
+    {
+        event_->accept();
+    }
+    QApplication::closeAllWindows();
 }
