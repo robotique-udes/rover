@@ -28,6 +28,7 @@ echo -e "\e[0;32m[OK]\e[0m"
 echo "=== Installing dep from pip ... ==="
 pip install --upgrade setuptools==58.2.0
 pip install --upgrade empy==3.3.4
+pip install python-can
 echo -e "\e[0;32m[OK]\e[0m"
 
 echo -e "=== \e[0;32m[SUCCESS]\e[0m Depedencies updated ==="
