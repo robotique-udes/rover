@@ -8,7 +8,7 @@
 #include <vector>
 #include <sys/stat.h>
 
-
+//cam: 192.168.144.30
 
 using namespace std;
 using namespace cv;
@@ -184,11 +184,13 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    if (!dossier_exist)
 	    {
 	    cout << "dossier pas encore cree" << endl;
-	      if (mkdir("src/rover/rover_video/src/panoramas", 0775) == 0)
-		 {
-		  cout << "Succesfully created the folder."<< endl;
-		 }
+	    
+	    if (mkdir("src/rover/rover_video/src/panoramas", 0775)==0){ 
+	    	cout << "Succesfully created the folder."<< endl;
+	     }else{
+	     	cout << "Failed to create folder" << endl;
 	     }
+	    }
 			
 	    string nom_fichier_panorama =  "src/rover/rover_video/src/panoramas/" + result_name;
 				
