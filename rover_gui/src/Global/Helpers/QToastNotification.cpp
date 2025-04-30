@@ -3,7 +3,6 @@
 
 namespace QHelper
 {
-
     QToastNotification::QToastNotification():
         QWidget(nullptr),
         _shadow(this),
@@ -86,34 +85,34 @@ namespace QHelper
             })");
 
         _ui.titleLineEdit->setStyleSheet(R"(
-        QLineEdit {
-            background-color: transparent;
-            border-radius: 15px;
-            border: none;
-            padding: 5px 10px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        QLineEdit:focus {
-            border: none;
-            outline: none;
-        })");
+            QLineEdit {
+                background-color: transparent;
+                border-radius: 15px;
+                border: none;
+                padding: 5px 10px;
+                font-size: 24px;
+                font-weight: bold;
+            }
+            QLineEdit:focus {
+                border: none;
+                outline: none;
+            })");
 
         _ui.progressBar->setStyleSheet(R"(
-        QProgressBar {
-            border: none;
-            background: rgba(50, 50, 58, 180);
-            border-radius: 8px;
-            height: 6px;
-            margin: 0px;
-        }
-        QProgressBar::chunk {
-            background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
-                stop:0 #00c6ff, stop:1 #0072ff);
-            border-radius: 8px;
-            margin: 0px;
-            min-width: 4px;
-        })");
+            QProgressBar {
+                border: none;
+                background: rgba(50, 50, 58, 180);
+                border-radius: 8px;
+                height: 6px;
+                margin: 0px;
+            }
+            QProgressBar::chunk {
+                background-color: qlineargradient(x1:0, y1:0, x2:1, y2:0,
+                    stop:0 #00c6ff, stop:1 #0072ff);
+                border-radius: 8px;
+                margin: 0px;
+                min-width: 4px;
+            })");
     }
 
     void QToastNotification::setupAnimations()
@@ -201,7 +200,6 @@ namespace QHelper
         size_t startY = targetScreenRect.bottom() - height() + 2 * MARGIN_NOTIF;
         size_t endY = targetScreenRect.bottom() - height() - 2 * MARGIN_NOTIF;
 
-
         _slideInAnim.setStartValue(QPoint(X, startY));
         _slideInAnim.setEndValue(QPoint(X, endY));
 
@@ -255,26 +253,26 @@ namespace QHelper
         setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
         setAttribute(Qt::WA_TranslucentBackground);
 
-        _ui_mainWidget.setupUi(this);
+        _ui.setupUi(this);
 
         _scrollAreaContainer.setLayout(&_scrollAreaLayout);
         _scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        _scrollAreaContainer.setMinimumWidth(_ui_mainWidget.historyScrollArea->width());
+        _scrollAreaContainer.setMinimumWidth(_ui.historyScrollArea->width());
 
         _scrollAreaLayout.setAlignment(Qt::AlignTop);
 
         this->move(-100, height());
 
-        _ui_mainWidget.historyScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        _ui_mainWidget.historyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        _ui_mainWidget.historyScrollArea->setVisible(false);
+        _ui.historyScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        _ui.historyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
+        _ui.historyScrollArea->setVisible(false);
 
         _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
     }
 
     void QNotificationShowHistory::showHistory()
     {
-        if (_ui_mainWidget.historyScrollArea->isVisible())
+        if (_ui.historyScrollArea->isVisible())
         {
             while (_scrollAreaLayout.count() > 0)
             {
@@ -289,8 +287,8 @@ namespace QHelper
                 }
             }
 
-            _ui_mainWidget.historyScrollArea->setWidget(nullptr);
-            _ui_mainWidget.historyScrollArea->setVisible(false);
+            _ui.historyScrollArea->setWidget(nullptr);
+            _ui.historyScrollArea->setVisible(false);
 
             size_t offScreenX = _targetScreenRect.right() + 100;
             size_t offScreenY = _targetScreenRect.bottom() + 100;
@@ -312,12 +310,12 @@ namespace QHelper
                 }
             }
 
-            _ui_mainWidget.historyScrollArea->setWidget(&_scrollAreaContainer);
+            _ui.historyScrollArea->setWidget(&_scrollAreaContainer);
             size_t X = _targetScreenRect.right() - width() - MARGIN;
             size_t Y = _targetScreenRect.bottom() - height() - 8 * MARGIN;
 
             this->move(X, Y);
-            _ui_mainWidget.historyScrollArea->setVisible(true);
+            _ui.historyScrollArea->setVisible(true);
             this->show();
             this->raise();
             this->activateWindow();
@@ -329,14 +327,14 @@ namespace QHelper
                                                        QString description_,
                                                        QToastNotification::eNotifType type_)
     {
-        _ui_subWidget.setupUi(this);
+        _ui.setupUi(this);
         this->setStyle();
         this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
         this->setMinimumHeight(170);
 
-        _ui_subWidget.historyTitle->setText(title_);
-        _ui_subWidget.historyDescription->setText(description_);
-        _ui_subWidget.timestamp->setText(timeStamp_.toString("HH:mm:ss"));
+        _ui.historyTitle->setText(title_);
+        _ui.historyDescription->setText(description_);
+        _ui.timestamp->setText(timeStamp_.toString("HH:mm:ss"));
 
         QIcon icon;
 
@@ -363,36 +361,36 @@ namespace QHelper
                 break;
         }
 
-        _ui_subWidget.historyIcon->setIcon(icon);
-        _ui_subWidget.historyIcon->setIconSize(QSize(40, 40));
+        _ui.historyIcon->setIcon(icon);
+        _ui.historyIcon->setIconSize(QSize(40, 40));
     }
 
     void QNotificationHistoryData::setStyle()
     {
-        _ui_subWidget.timestamp->setStyleSheet(R"(
-        QLineEdit {
-            background-color: transparent;
-            border-radius: 15px;
-            border: none;
-            padding: 5px 10px;
-            font-size: 14px;
-            font-weight: bold;
-        }
-        QLineEdit:focus {
-            border: none;
-            outline: none;
-        })");
+        _ui.timestamp->setStyleSheet(R"(
+            QLineEdit {
+                background-color: transparent;
+                border-radius: 15px;
+                border: none;
+                padding: 5px 10px;
+                font-size: 14px;
+                font-weight: bold;
+            }
+            QLineEdit:focus {
+                border: none;
+                outline: none;
+            })");
 
-        _ui_subWidget.historyFrame->setStyleSheet(R"(
-        QFrame {
-            background-color: #3c3f41;
-            border-radius: 8px;
-        }
-        QFrame:hover {
-            background-color: #4d4d4d;
-        })");
+        _ui.historyFrame->setStyleSheet(R"(
+            QFrame {
+                background-color: #3c3f41;
+                border-radius: 8px;
+            }
+            QFrame:hover {
+                background-color: #4d4d4d;
+            })");
 
-        _ui_subWidget.historyIcon->setStyleSheet(R"(
+        _ui.historyIcon->setStyleSheet(R"(
             QPushButton {
                 background-color: transparent;
                 border-radius: 15px;
@@ -403,7 +401,7 @@ namespace QHelper
                 outline: none;
             })");
 
-        _ui_subWidget.historyDescription->setStyleSheet(R"(
+        _ui.historyDescription->setStyleSheet(R"(
             QTextEdit {
                 background-color: transparent;
                 border-radius: 15px;
@@ -416,19 +414,18 @@ namespace QHelper
                 outline: none;
             })");
 
-        _ui_subWidget.historyTitle->setStyleSheet(R"(
-        QLineEdit {
-            background-color: transparent;
-            border-radius: 15px;
-            border: none;
-            padding: 5px 10px;
-            font-size: 24px;
-            font-weight: bold;
-        }
-        QLineEdit:focus {
-            border: none;
-            outline: none;
-        })");
+        _ui.historyTitle->setStyleSheet(R"(
+            QLineEdit {
+                background-color: transparent;
+                border-radius: 15px;
+                border: none;
+                padding: 5px 10px;
+                font-size: 24px;
+                font-weight: bold;
+            }
+            QLineEdit:focus {
+                border: none;
+                outline: none;
+            })");
     }
-
 }  // namespace QHelper

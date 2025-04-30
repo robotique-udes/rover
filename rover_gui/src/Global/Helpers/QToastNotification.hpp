@@ -99,7 +99,7 @@ namespace QHelper
         void showHistory();
 
       private:
-        Ui::historyWidget _ui_mainWidget;
+        Ui::historyWidget _ui;
 
         QRect _targetScreenRect;
         QWidget _scrollAreaContainer;
@@ -115,7 +115,7 @@ namespace QHelper
 
       private:
         void setStyle();
-        Ui::historySubWidget _ui_subWidget;
+        Ui::historySubWidget _ui;
     };
 
 }  // namespace QHelper

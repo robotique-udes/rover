@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow
     QNavigation _navigationWidget;
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
 
-    // QFileTransferWidget _fileTransferWidget;
+    QFileTransferWidget _fileTransferWidget;
 };
 
 #endif  // MAIN_WINDOWS_HPP
