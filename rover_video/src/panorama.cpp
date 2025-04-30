@@ -164,9 +164,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    //correction du warping
 	    Mat pano_rectangle = warp_correction(pano);
 	    
-	    //obtenir coordonees GPS    
-	    rover_msgs::msg::GpsPosition gps_msg;
-	    PositionGPS(gps_msg); 
+	    //obtenir coordonees GPS
 	    float latitude = coordonees_gps.latitude; 
 	    float longitude = coordonees_gps.longitude;
 	    string coord_GPS="latitude: " + to_string(latitude) + ", longitude: " + to_string(longitude);
