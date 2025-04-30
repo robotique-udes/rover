@@ -47,7 +47,7 @@ class QVideoPlayerWidget : public QWidget
 
   signals:
     void arucoCameraFailure(bool valid_);
-    void statusBarUpdate(std::string message_, size_t duration_);
+    //void statusBarUpdate(std::string message_, size_t duration_);
 
   private slots:
     void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
@@ -67,13 +67,22 @@ class QVideoPlayerWidget : public QWidget
     void handleRecording(void);
 
     /**
-     * @brief Display screenshot status to Qstatusbar
+     * @brief Change screenshot button style
      * 
      * @param success_ true or false
      * @param status_ if success -> filepath, else -> reason for failure
      * @param tag_ widget number
      */
     void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+
+    /**
+     * @brief Change recording button style
+     * 
+     * @param success_ true or false
+     * @param status_ if success -> filepath, else ->reason for failure
+     * @param tag_ widget number
+     */
+    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;

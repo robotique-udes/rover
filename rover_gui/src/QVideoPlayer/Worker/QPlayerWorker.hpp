@@ -41,15 +41,28 @@ class QPlayerWorker : public QWorker
     void takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                std::string camera_URL_, uint16_t tag_);
 
+    void startRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+                               std::string camera_URL_, uint16_t tag_);
+
+    void stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+                               std::string camera_URL_, uint16_t tag_);
   signals:
     void detectionHandledSuccessfully(bool success_, uint16_t tag_);
     void urlFoundInDetection(std::vector<std::string> urls_found);
     void arucoServerInfoFailed(bool success);
     void screenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void startRecordingHandledSuccessfully(bool success, std::string status, uint16_t tag_);
+    void stopRecordingHandledSuccessfully(bool success, std::string status, uint16_t tag_);
 
   private:
     void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                 std::string camera_URL_, uint16_t tag_);
+
+    void startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+                                std::string camera_URL_, uint16_t tag_);  
+
+    void stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+                                std::string camera_URL_, uint16_t tag_);                          
 
     RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
     RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCallCamera;

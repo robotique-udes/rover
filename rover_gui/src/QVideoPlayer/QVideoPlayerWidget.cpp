@@ -253,7 +253,21 @@ void QVideoPlayerWidget::handleScreenshot(void)
 
 void QVideoPlayerWidget::handleRecording(void)
 {
-    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Recording button pushed!");
+    if (_playerWorkerThread.get() != nullptr)
+    {
+        if (_ui.startRecordingButton->isChecked())
+        {
+            _playerWorkerThread->stopRecordingManager(_client_cameraControlManager, _camURL, _tag);
+        }
+        else
+        {
+            _playerWorkerThread->startRecordingManager(_client_cameraControlManager, _camURL, _tag);
+        }
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+    }
     return;
 }
 
@@ -267,7 +281,32 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
             _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
             _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
         }
-        emit statusBarUpdate(status_, STATUS_BAR_DISPLAY_TIME);
+        else
+        {
+            _ui.ScreenshotButton->setProperty("class","error");
+            _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
+            _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
+            //reset after 2s
+        }
+    }
+    return;
+}
+
+void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+{
+    if (tag_ == _tag)
+    {
+        if (!success_)
+        {
+            _ui.ScreenshotButton->setProperty("class","error");
+            _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
+            _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
+            //reset after 2 seconds
+        }
+        else
+        {
+            
+        }
     }
     return;
 }

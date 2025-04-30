@@ -52,7 +52,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="view-refresh"/>
+          <iconset theme="view-refresh">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -142,7 +143,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="camera-photo"/>
+          <iconset theme="camera-photo">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
@@ -151,7 +153,7 @@
           </size>
          </property>
          <property name="checkable">
-          <bool>true</bool>
+          <bool>false</bool>
          </property>
         </widget>
        </item>
@@ -167,7 +169,8 @@
           <string/>
          </property>
          <property name="icon">
-          <iconset theme="media-record"/>
+          <iconset theme="media-record">
+           <normaloff>.</normaloff>.</iconset>
          </property>
          <property name="iconSize">
           <size>
