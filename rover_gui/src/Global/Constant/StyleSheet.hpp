@@ -4,7 +4,9 @@
 
 // Here some style presets can be added for different app themes
 
-constexpr const char* STATUS_STYLE = R"(
+namespace Constants::Style
+{
+    constexpr const char* STATUS_STYLE = R"(
 
 .success {
     background-color: #81c784;
@@ -31,7 +33,7 @@ constexpr const char* STATUS_STYLE = R"(
 }
 )";
 
-constexpr const char* STYLE_DARK_MODE = R"(
+    constexpr const char* STYLE_DARK_MODE = R"(
 QWidget {
      background-color: #2e2e2e;
     color: #ffffff;
@@ -163,14 +165,18 @@ QStatusBar {
     color: #ffffff;
 }
 
+SideBar { 
+    border: 2px solid black;
+}
+
 .normal {
     background-color: #3c3f41;
     border: 1px solid #4b4e52;
     border-radius: 5px;
     padding: 5px 10px;
 }
-)"
+)";
 
-                                        "SideBar { border: 2px solid black; }";
+    constexpr const char* STYLE_LIGHT_MODE = "";
 
-constexpr const char* STYLE_LIGHT_MODE = "";
+}  // namespace Constants::Style
