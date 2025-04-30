@@ -16,6 +16,7 @@
 #include <QApplication>
 #include <QGraphicsDropShadowEffect>
 #include <QStyle>
+#include <QDateTime>
 #include <deque>
 
 namespace QHelper
@@ -26,23 +27,23 @@ namespace QHelper
         Q_OBJECT
 
         static constexpr size_t NOTIF_DURATION_MS = 5'000UL;
-        static constexpr size_t HISTORY_MAX_SIZE = 10U;
-        static constexpr size_t MARGIN_NOTIF = 20U; 
+        static constexpr size_t HISTORY_MAX_SIZE = 50U;
+        static constexpr size_t MARGIN_NOTIF = 20U;
 
       public:
         enum class eNotifType : size_t
         {
             ERROR = 0U,
             WARNING = 1U,
-            INFO = 2U
+            INFO = 2U,
+            SUCCESS = 3U
         };
 
         struct sNotificationInfo
         {
-#warning add time stamp
-            // long long timeStamp;
-            std::string title;
-            std::string description;
+            QTime timeStamp;
+            QString title;
+            QString description;
             QToastNotification::eNotifType criticityLevel;
         };
 
@@ -55,10 +56,7 @@ namespace QHelper
          * @param type_ Criticity level setting a corresponding icon to the notification
          * @param durationMs_ Duration of the notification (5s by default)
          */
-        void notify(const std::string& title_,
-                    const std::string& description_,
-                    eNotifType type_,
-                    size_t durationMs_ = NOTIF_DURATION_MS);
+        void notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_ = NOTIF_DURATION_MS);
 
         static QToastNotification& getInstance();
 
@@ -113,11 +111,10 @@ namespace QHelper
         Q_OBJECT
 
       public:
-        QNotificationHistoryData(std::string title_,
-                                 std::string description_,
-                                 QToastNotification::eNotifType type_);
+        QNotificationHistoryData(QTime timeStamp_, QString title_, QString description_, QToastNotification::eNotifType type_);
 
       private:
+        void setStyle();
         Ui::historySubWidget _ui_subWidget;
     };
 

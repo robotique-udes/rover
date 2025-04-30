@@ -61,21 +61,10 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
                      QStringList() << "-c"
                                    << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
 
-#warning enelver
-
-    QTimer* timer = new QTimer(&app);
-    QObject::connect(timer,
-                     &QTimer::timeout,
-                     []()
-                     {
-                         QHelper::QToastNotification::getInstance().notify(
-                             "titre ...",
-                             "This is a periodic toast. The description can be quite long and its perfect this way wow very long "
-                             "only shit ye give me some info",
-                             QHelper::QToastNotification::eNotifType::INFO,
-                             5000);
-                     });
-    timer->start(15000);
+    QHelper::QToastNotification::getInstance().notify("GUI Ready",
+                                                      "GUI setup was successful!",
+                                                      QHelper::QToastNotification::eNotifType::SUCCESS,
+                                                      3000);
 
     int ret = app.exec();
     rosProcess.terminate();

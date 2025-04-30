@@ -12,7 +12,7 @@ QUtilityBarBottom::QUtilityBarBottom(QWidget* parent_):
             border-radius: 5px;
             border: none;
         })");
-                      
+
     connect(_ui.notificationHistory_PB,
             &QPushButton::clicked,
             this,
@@ -20,6 +20,6 @@ QUtilityBarBottom::QUtilityBarBottom(QWidget* parent_):
             {
                 emit seeHistory();
             });
-    
+
     this->raise();
 }
