@@ -2,11 +2,9 @@
 #include <QStyle>
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                                       QWidget* parent_,
                                        std::string url_,
                                        uint16_t tag_,
                                        std::shared_ptr<QPlayerWorker> worker_):
-    QWidget(parent_),
     _node(guiNode_),
     _camURL(url_),
     _tag(tag_),
@@ -180,7 +178,7 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
 {
     if (!success_)
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
         _ui.arucoPushButton->setEnabled(false);
     }
     else

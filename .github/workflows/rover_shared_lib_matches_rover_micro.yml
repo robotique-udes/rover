@@ -1,0 +1,95 @@
+name: Libs in rover_shared_lib matches copy in rover_micro
+
+on:
+  pull_request:
+    branches:
+      - release/**
+  push:
+    branches:
+      - release/**
+
+jobs:
+  Comparing-libs:
+    runs-on: ubuntu-22.04
+
+    steps:
+      - name: Checkout rover repo
+        uses: actions/checkout@v4
+        with:
+          path: rover
+
+      - name: Checkout rover_micro repo
+        uses: actions/checkout@v4
+        with:
+          repository: 'robotique-udes/rover_micro'
+          path: rover_micro
+
+      - name: Diff Check
+        run: |
+          echo "=== Comparing shared libraries between rover and rover_micro repositories... ==="
+          
+          declare -A folder_pairs=(
+            ["rover_micro/lib/rover_can2"]="rover/rover_shared_libs/rover_can2"
+            ["rover_micro/lib/rover_lib2"]="rover/rover_shared_libs/rover_lib2"
+          )
+
+          overall_success=true
+
+          for micro_folder in "${!folder_pairs[@]}"; do
+            rover_folder="${folder_pairs[$micro_folder]}"
+            folder_name=$(basename "$micro_folder")
+            
+            echo ""
+            echo "=== Checking $folder_name libraries ==="
+            echo ""
+            echo "=== Checking folder existence... ==="
+            
+            if [ ! -d "$micro_folder" ]; then
+              echo -e "\e[0;31m[FAILED]\e[0m $micro_folder does not exist"
+              overall_success=false
+              continue
+            else
+              echo -e "\e[0;32m[OK]\e[0m $micro_folder exists"
+            fi
+            
+            if [ ! -d "$rover_folder" ]; then
+              echo -e "\e[0;31m[FAILED]\e[0m $rover_folder does not exist"
+              overall_success=false
+              continue
+            else
+              echo -e "\e[0;32m[OK]\e[0m $rover_folder exists"
+            fi
+
+            echo "=== Comparing files... ==="
+            
+            while IFS= read -r -d '' file; do
+                rel_path="${file#$micro_folder/}"
+                file2="$rover_folder/$rel_path"
+                
+                if [ ! -f "$file2" ]; then
+                    echo -e "\e[0;31m[FAILED]\e[0m Corresponding file $file2 not found for $file"
+                    overall_success=false
+                    continue
+                fi
+                
+                if ! diff_output=$(diff -u --color=always "$file" "$file2"); then
+                    echo -e "\e[0;31m[FAILED]\e[0m Differences found in $rel_path"
+                    echo -e "\e[0;33m--- $file\e[0m"
+                    echo -e "\e[0;33m+++ $file2\e[0m"
+                    echo "$diff_output" | tail -n +3  # Skip the first two lines of diff output
+                    overall_success=false
+                else
+                    echo -e "\e[0;32m[OK]\e[0m $rel_path matches"
+                fi
+            done < <(find "$micro_folder" -type f -print0)
+          done
+
+          echo ""
+          if [ "$overall_success" = true ]; then
+            echo -e "\e[0;32m=== [SUCCESS] All shared libraries matches ===\e[0m"
+            exit 0
+          else
+            echo -e "\e[0;31m=== [FAILED] Differences found in shared libraries ===\e[0m"
+            echo -e "\e[0;31m=== Please merge library modifications in rover_micro first ===\e[0m"
+            exit 1
+          fi

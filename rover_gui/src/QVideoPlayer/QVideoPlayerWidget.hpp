@@ -19,7 +19,6 @@ class QVideoPlayerWidget : public QWidget
 
   public:
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                       QWidget* parent_,
                        std::string url_,
                        uint16_t tag_,
                        std::shared_ptr<QPlayerWorker> worker_);

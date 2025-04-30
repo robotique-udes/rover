@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(rover_arm)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 23)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -18,19 +18,18 @@ find_package (Eigen3 REQUIRED)
 
 include_directories(
   include
-  ${rover_msgs_INCLUDE_DIRS}
   ${EIGEN3_INCLUDE_DIRS}
 )
 
+add_subdirectory(../rover_shared_libs/ .build)
+
 add_executable(teleop src/teleop.cpp)
-
-target_link_libraries(teleop Eigen3::Eigen)
-
 ament_target_dependencies(teleop
                           rclcpp
                           std_msgs
                           rover_msgs
                           Eigen3)
+target_link_libraries(teleop Eigen3::Eigen rover_shared_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})

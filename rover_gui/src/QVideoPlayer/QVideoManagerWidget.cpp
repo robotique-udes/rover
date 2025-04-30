@@ -6,7 +6,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _node(guiNode_),
     _videoPlayerLayout(this),
     _playerWorkerThread(std::make_shared<QPlayerWorker>())
-
 {
     this->initWidget();
 
@@ -41,7 +40,7 @@ void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
 
     for (auto& widget : _videoPlaysWidgets)
     {
-        if (widget != nullptr && widget->getCamURL() == url)
+        if (widget && widget->getCamURL() == url)
         {
             widget->displayDetectedArucos(detectedIds);
             emit widget->arucoCameraFailure(msg_.valid);
@@ -56,7 +55,7 @@ void QVideoManagerWidget::onArucoDetectionIsLive(std::vector<std::string> liveUr
         bool urlFound = false;
         for (const auto& url : liveUrlList_)
         {
-            if (widget->getCamURL() == url)
+            if (widget && widget->getCamURL() == url)
             {
                 urlFound = true;
                 break;
@@ -70,21 +69,33 @@ void QVideoManagerWidget::initWidget(void)
 {
     for (size_t i = 0UL; i < NBR_CAM_TO_TRACK; ++i)
     {
-        std::shared_ptr<QVideoPlayerWidget> widget
-            = std::make_shared<QVideoPlayerWidget>(_node, this, _cameras_urls[i], i, _playerWorkerThread);
+        std::string cameraUrl = "";
+        if (i < CAMERA_NAME_ORDER.size()
+            && CameraInfo::CAMERA_URL_MAP.find(CAMERA_NAME_ORDER[i]) != CameraInfo::CAMERA_URL_MAP.end())
+        {
+            cameraUrl = CameraInfo::CAMERA_URL_MAP.at(CAMERA_NAME_ORDER[i]);
+        }
+        else if (i < CAMERA_NAME_ORDER.size())
+        {
+            RCLCPP_WARN(rclcpp::get_logger("GUI"),
+                        "Couldn't find url for camera named %s in camera infos.",
+                        CAMERA_NAME_ORDER[i]);
+        }
 
-        widget->setObjectName(QString("camera%1_widget").arg(i + 1));
-
-        _videoPlaysWidgets[i] = widget;
+        _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread);
+        _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
     uint16_t index = 0;
     for (auto& widget : _videoPlaysWidgets)
     {
-        int row = index / 3;
-        int col = index % 3;
-        _videoPlayerLayout.addWidget(widget.get(), row, col);
-        index++;
+        if (widget)
+        {
+            int row = index / 3;
+            int col = index % 3;
+            _videoPlayerLayout.addWidget(widget.get(), row, col);
+            index++;
+        }
     }
 }
 
@@ -118,7 +129,10 @@ void QVideoManagerWidget::initArucoClient(void)
 
     for (auto& widget : _videoPlaysWidgets)
     {
-        widget->setArucoClientManager(_client_arucoDetectionManager);
+        if (widget)
+        {
+            widget->setArucoClientManager(_client_arucoDetectionManager);
+        }
     }
 
     _timer_detectionManagerUpdate = _node->create_wall_timer(std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
@@ -127,6 +141,7 @@ void QVideoManagerWidget::initArucoClient(void)
                                                                  this->CB_updateArucoDetectionManager();
                                                              });
 }
+
 
 void QVideoManagerWidget::initCameraControlClient(void)
 {

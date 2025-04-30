@@ -16,12 +16,13 @@ class QVideoManagerWidget : public QWidget
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
-    static constexpr const char* CAM_1_NAME = "Main";
-    static constexpr const char* CAM_2_NAME = "Antenna";
-    static constexpr const char* CAM_3_NAME = "Odometry";
-    static constexpr const char* CAM_4_NAME = "Gripper1";
-    static constexpr const char* CAM_5_NAME = "Gripper2";
-    static constexpr const char* CAM_6_NAME = "";
+    static constexpr std::array<const char*, 5> CAMERA_NAME_ORDER = {
+        "Main",
+        "Antenna",
+        "Front-Side",
+        "Arm-Top",
+        "Arm-Side",
+    };
 
   public:
     QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
@@ -55,13 +56,7 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
 
-    std::array<std::shared_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
-    std::array<std::string, 6> _cameras_urls = {CameraInfo::CameraIP.at(CAM_1_NAME),
-                                                CameraInfo::CameraIP.at(CAM_2_NAME),
-                                                CameraInfo::CameraIP.at(CAM_3_NAME),
-                                                CameraInfo::CameraIP.at(CAM_4_NAME),
-                                                CameraInfo::CameraIP.at(CAM_5_NAME),
-                                                ""};
+    std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };
 
 #endif  // QVIDEO_PLAYER_HPP
