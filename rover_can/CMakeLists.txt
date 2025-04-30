@@ -15,6 +15,7 @@ find_package(rover_msgs REQUIRED)
 
 include_directories(
   include
+  ${CMAKE_SOURCE_DIR}/../rover_shared_libs/
 )
 
 add_subdirectory(../rover_shared_libs/ .build)

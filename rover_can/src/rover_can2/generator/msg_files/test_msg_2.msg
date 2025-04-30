@@ -1,2 +1,0 @@
-float cmd;
-bool closeLoop;
