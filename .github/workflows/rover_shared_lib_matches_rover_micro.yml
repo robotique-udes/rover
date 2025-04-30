@@ -9,7 +9,7 @@ on:
       - release/**
 
 jobs:
-  compare_libs:
+  Comparing-libs:
     runs-on: ubuntu-22.04
 
     steps:
@@ -26,7 +26,7 @@ jobs:
 
       - name: Diff Check
         run: |
-          echo "=== Comparing shared libraries between repositories... ==="
+          echo "=== Comparing shared libraries between rover and rover_micro repositories... ==="
           
           declare -A folder_pairs=(
             ["rover_micro/lib/rover_can2"]="rover/rover_shared_libs/rover_can2"
@@ -41,6 +41,7 @@ jobs:
             
             echo ""
             echo "=== Checking $folder_name libraries ==="
+            echo ""
             echo "=== Checking folder existence... ==="
             
             if [ ! -d "$micro_folder" ]; then
@@ -85,7 +86,7 @@ jobs:
 
           echo ""
           if [ "$overall_success" = true ]; then
-            echo -e "\e[0;32m=== [SUCCESS] All shared libraries match exactly ===\e[0m"
+            echo -e "\e[0;32m=== [SUCCESS] All shared libraries matches ===\e[0m"
             exit 0
           else
             echo -e "\e[0;31m=== [FAILED] Differences found in shared libraries ===\e[0m"
