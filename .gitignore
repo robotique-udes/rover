@@ -1,4 +1,7 @@
 .vscode
 *~
 *.bkp
+
+screenshots/
+recordings/
 rover_gui/ui/include/UI_*

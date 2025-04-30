@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(rover_can)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 23)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -15,30 +15,23 @@ find_package(rover_msgs REQUIRED)
 
 include_directories(
   include
-  src
-  ${rover_msgs_INCLUDE_DIRS}
 )
 
-file(GLOB_RECURSE ROVER_CAN_HEADERS
-    src/rover_can2/*.hpp 
-    src/rover_can2/msgs/*.hpp 
-    src/rover_can2/drivers/*.hpp
-    src/rover_lib2/helpers/*.hpp
-    src/rover_lib2/*.hpp)
+add_subdirectory(../rover_shared_libs/ .build)
 
 add_executable(can_master src/can_master.cpp)
-add_executable(can_master_new src/can_master_new.cpp
-                          ${ROVER_CAN_HEADERS})
-
 ament_target_dependencies(can_master
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+target_link_libraries(can_master rover_shared_libs)
 
-ament_target_dependencies(can_master_new
+add_executable(can_master2 src/can_master2.cpp)
+ament_target_dependencies(can_master2
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+target_link_libraries(can_master2 rover_shared_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
@@ -46,7 +39,7 @@ install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
           can_master
-          can_master_new
+          can_master2
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

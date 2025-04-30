@@ -10,6 +10,7 @@
 
 constexpr char WM_CLASS[] = "Rover Base";
 
+int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_);
 void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_);
 void nodeThreadFunc(std::shared_ptr<rclcpp::Node> node);
 void forwardPrints(QProcess& process_);
@@ -20,13 +21,34 @@ int main(int argc, char* argv[])
     std::shared_ptr<rclcpp::Node> guiNode = std::make_shared<rclcpp::Node>("gui_node");
     std::thread rosThread(nodeThreadFunc, guiNode);
 
-    QApplication app(argc, argv);
+    int ret = guiMain(argc, argv, guiNode);
+
+    rclcpp::shutdown();
+    if (rosThread.joinable())
+    {
+        rosThread.join();
+    }
+    return ret;
+}
+
+/**
+ * @brief Using a "2nd" main function to encapsulate all Qt elements in its own scope to make sure all destructors are called
+ * after exiting the UI app independently of ros execution.
+ *
+ * @param argc_
+ * @param argv_
+ * @param guiNode_
+ * @return int
+ */
+int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
+{
+    QApplication app(argc_, argv_);
     app.setApplicationName(WM_CLASS);
     QApplication::setStyle("Fusion");
-    app.setStyleSheet(STYLE_DARK_MODE);
+    app.setStyleSheet(Constants::Style::STYLE_DARK_MODE + QString(Constants::Style::STATUS_STYLE));
 
-    MainWindow mainWindow(guiNode);
-    SecondaryWindow secondaryWindow;
+    MainWindow mainWindow(guiNode_);
+    SecondaryWindow secondaryWindow(guiNode_);
     displayWindows(mainWindow, secondaryWindow);
 
     QProcess rosProcess;
@@ -46,14 +68,6 @@ int main(int argc, char* argv[])
         rosProcess.kill();
     }
 
-    rclcpp::shutdown();
-
-    if (rosThread.joinable())
-    {
-        rosThread.join();
-    }
-
-    rclcpp::shutdown();
     return ret;
 }
 

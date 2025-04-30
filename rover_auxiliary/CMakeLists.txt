@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(rover_auxiliary)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 23)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -14,53 +14,34 @@ find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 
-include_directories(
-  include
-  ${rover_msgs_INCLUDE_DIRS}
-)
+add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-add_executable(light_control src/light_control.cpp)
-add_executable(compass_calibrator src/compass_calibrator.cpp)
 add_executable(goal_manager src/goal_manager.cpp)
-add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
-                src/aruco_detection/detection.cpp
-                src/aruco_detection/process_frame.cpp
-                src/aruco_detection/image_capture.cpp)
-
-ament_target_dependencies(light_control
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
-
 ament_target_dependencies(goal_manager
                           rclcpp
                           rover_msgs
                           rcl_interfaces
                           ament_index_cpp)
+target_link_libraries(goal_manager rover_shared_libs)
 
-ament_target_dependencies(compass_calibrator
+
+add_executable(ddb_control src/DDB/ddb_control.cpp)
+ament_target_dependencies(ddb_control
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+target_link_libraries(ddb_control rover_shared_libs)
 
-ament_target_dependencies(aruco_detection
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
-
-target_link_libraries(aruco_detection ${OpenCV_LIBS})
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          light_control
-          compass_calibrator
           goal_manager
-          aruco_detection
+          ddb_control
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()
