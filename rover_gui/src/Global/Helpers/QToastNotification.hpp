@@ -1,13 +1,11 @@
 #ifndef QTOASTNOTIFICATION
 #define QTOASTNOTIFICATION
 
-// ROS
 #include "rclcpp/rclcpp.hpp"
-// QT
-
 #include "UI_ToastNotification.h"
 #include "UI_OpenNotifications.h"
 #include "UI_NotificationHistory.h"
+
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include <QPropertyAnimation>
@@ -48,7 +46,7 @@ namespace QHelper
         };
 
         /**nameenelverspace
-         * @brief Helper to send a notification (non blocking) from any thread.
+         * @brief Helper to send a notification (non blocking).
          * The notification pops from the bottom right end of the main window.
          *
          * @param title_ Notification title

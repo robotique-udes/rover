@@ -255,6 +255,9 @@ p, li { white-space: pre-wrap; }
     <property name="text">
      <string>Title (name of the error/warning/info)</string>
     </property>
+    <property name="readOnly">
+     <bool>true</bool>
+    </property>
    </widget>
    <zorder>closePushButton</zorder>
    <zorder>progressBar</zorder>

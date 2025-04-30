@@ -95,10 +95,6 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
             mainWindow_.show();
             secondWindow_.setGeometry(screenGeometry.x() + screenWidth / 2, screenGeometry.y(), screenWidth / 2, screenHeight);
             secondWindow_.show();
-            QTimer::singleShot(1000,
-                               []
-                               {
-                               });
             break;
         }
 
@@ -107,10 +103,6 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
             secondWindow_.setGeometry(screens[1]->geometry());
             mainWindow_.showMaximized();
             secondWindow_.showMaximized();
-            QTimer::singleShot(1000,
-                               []
-                               {
-                               });
             break;
     }
 }
