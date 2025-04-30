@@ -1,6 +1,16 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
+#include <rclcpp/logger.hpp>
+#include <rclcpp/logging.hpp>
+#include <string>
+
+// Always activate Logger in ROS
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#define VERBOSE
+#define NODE_BYPASS_SEVERITY_LEVEL Logger::eSeverityLevels::WARN
+#endif  // defined (__linux__) &&!defined(VERBOSE)
+
 #if defined(VERBOSE)
 
 #if !defined(GLOBAL_SEVERITY_LEVEL)
@@ -16,6 +26,7 @@
 #include <Arduino.h>
 #elif defined(__linux__)
 #include <cstdarg>
+#include <cstdio>
 #endif  // defined(ARDUINO_ESP32S3_DEV)
 
 #include "rover_lib2/helpers/time.hpp"
@@ -93,6 +104,37 @@ namespace Logger
                 loggerStream.vprintf(format, args);
                 va_end(args);
                 loggerStream.printf("\n%s", COLOR_RESET);
+
+// If ROS
+#elif defined(__linux__) && defined(RCLCPP_DEBUG)
+                (void)severityIndex;
+
+                std::string loggerName;
+                loggerName.append(std::string("LIB(") + fileName + ":" + std::to_string(lineNb) + ")");
+
+                va_list args;
+                va_start(args, format);
+                if constexpr (SEVERITY == eSeverityLevels::DEBUG_)
+                {
+                    RCLCPP_DEBUG(rclcpp::get_logger(loggerName), format, args);
+                }
+                else if constexpr (SEVERITY == eSeverityLevels::INFO)
+                {
+                    RCLCPP_INFO(rclcpp::get_logger(loggerName), format, args);
+                }
+                else if constexpr (SEVERITY == eSeverityLevels::WARN)
+                {
+                    RCLCPP_WARN(rclcpp::get_logger(loggerName), format, args);
+                }
+                else if constexpr (SEVERITY == eSeverityLevels::ERROR)
+                {
+                    RCLCPP_ERROR(rclcpp::get_logger(loggerName), format, args);
+                }
+                else if constexpr (SEVERITY == eSeverityLevels::FATAL)
+                {
+                    RCLCPP_FATAL(rclcpp::get_logger(loggerName), format, args);
+                }
+                va_end(args);
 
 #elif defined(__linux__)
                 printf("%s[%lu][%s]%s:%d: ",

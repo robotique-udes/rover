@@ -6,5 +6,6 @@
 #if defined(ARDUINO_ESP32S3_DEV)
 #include "rover_can2/drivers/driver_esp32.hpp"
 #endif  // defined(ARDUINO_ESP32S3_DEV)
+#include "rover_can2/drivers/driver_mock.hpp"
 
 #endif  // ROVER_CAN_HPP

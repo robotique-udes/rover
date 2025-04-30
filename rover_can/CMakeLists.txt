@@ -13,33 +13,22 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 
-include_directories(
-  include
-)
-
 add_subdirectory(../rover_shared_libs/ .build)
 
-add_executable(can_master src/can_master.cpp)
+add_executable(can_master src/can_master.cpp
+                          src/CanMaster/MasterDevice.cpp
+                          src/CanMaster/Devices/CameraMain.cpp)
 ament_target_dependencies(can_master
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+target_include_directories(can_master PRIVATE src)
 target_link_libraries(can_master rover_shared_libs)
 
-add_executable(can_master2 src/can_master2.cpp)
-ament_target_dependencies(can_master2
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
-target_link_libraries(can_master2 rover_shared_libs)
-
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
-# install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
           can_master
-          can_master2
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
