@@ -3,6 +3,7 @@
 
 #include "rover_can2/constant.hpp"
 #include "rover_lib2/helpers/macros.hpp"
+#include "rover_lib2/helpers/log.hpp"
 
 #if defined(ARDUINO_ESP32S3_DEV)
 #include "hal/twai_types.h"
