@@ -1,33 +1,32 @@
-#ifndef QNAVIGATION_HPP
-#define QNAVIGATION_HPP
+#ifndef __QNAVIGATION_HPP__
+#define __QNAVIGATION_HPP__
 
 #include "rclcpp/rclcpp.hpp"
+#include "rover_msgs/msg/gps.hpp"
+#include "UI_Navigation.h"
 
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QLabel>
-#include <QtWidgets/QWidget>
+#include <QWidget>
+#include <QWebChannel>
+#include <QThread>
+#include <QMetaObject>
 
 class QNavigation : public QWidget
 {
     Q_OBJECT
-
   public:
-    QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
-        QWidget(parent_),
-        _node(guiNode_),
-        _navigationLayout(this),
-        _navigationLabel(this)
-    {
-        _navigationLabel.setAlignment(Qt::AlignCenter);
-        _navigationLayout.addWidget(&_navigationLabel);
+    QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent = nullptr);
+    ~QNavigation();
 
-        this->setLayout(&_navigationLayout);
-    }
+  signals:
+    void gpsCallback(double latitude, double longitude, double heading);
 
   private:
+    QWebChannel* webChannel;
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
+
     std::shared_ptr<rclcpp::Node> _node;
-    QGridLayout _navigationLayout;
-    QLabel _navigationLabel;
+    Ui::Navigation* ui;
+
 };
 
 #endif  // QNAVIGATION_HPP
