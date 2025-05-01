@@ -60,6 +60,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/CompassCalibration.srv"
   "srv/DDBControl.srv"
   "srv/DriveTrainArbitration.srv"
+  "srv/Empty.srv"
   "srv/JoyDemuxSetState.srv"
   "srv/LightControl.srv"
   "srv/NewGpsGoal.srv"

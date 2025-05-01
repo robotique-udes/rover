@@ -1,8 +1,15 @@
 
 #include "CanMaster/Devices/CameraMain.hpp"
+#include "rover_can2/constant.hpp"
+#include "rover_lib2/helpers/macros.hpp"
 
+#include <memory>
 #include <rover_can2/rover_can2.hpp>
 #include <rclcpp/rclcpp.hpp>
+
+#include <rover_msgs/msg/can_device_status.hpp>
+#include <rover_msgs/srv/detail/empty__struct.hpp>
+#include <rover_msgs/srv/empty.hpp>
 
 DEFINE_LOG_NODE(Main, Logger::eNodeState::ON);
 
@@ -12,6 +19,14 @@ class CanMasterNode : public rclcpp::Node
     CanMasterNode():
         Node("CanMasterNode")
     {
+        _pub_CanDeviceErrorState = this->create_publisher<rover_msgs::msg::CanDeviceStatus>("/rover/can/devices_status", 1);
+        _srv_canDeviceErrorStateRequest = this->create_service<rover_msgs::srv::Empty>(
+            "/rover/can/request_error_state",
+            [this](rover_msgs::srv::Empty::Request::SharedPtr request_, rover_msgs::srv::Empty::Response::SharedPtr response_)
+            {
+                this->CB_ROS_canDeviceErrorStateRequest(request_, response_);
+            });
+
         _timerUpdateCan = this->create_wall_timer(std::chrono::milliseconds(1),
                                                   [this](void)
                                                   {
@@ -37,15 +52,56 @@ class CanMasterNode : public rclcpp::Node
         _canManager.update();
     }
 
+    void CB_ROS_canDeviceErrorStateRequest(rover_msgs::srv::Empty::Request::SharedPtr,
+                                           rover_msgs::srv::Empty::Response::SharedPtr response_)
+    {
+        bool success = _canManager.sendErrorStateRequest();
+        if (!response_)
+        {
+            RCLCPP_ERROR(this->get_logger(),
+                         "Received srv call with nullptr response. Request is still sent but response won't be populated");
+            return;
+        }
+
+        response_->success = success;
+        response_->message = std::string("ErrorState request succesfully sent on CanBus network, response from all devices can "
+                                         "be retrieved on /rover/can/devices_status topic");
+    }
+
+    void CB_CAN_errorStateRecv(RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& canMsg_)
+    {
+        rover_msgs::msg::CanDeviceStatus rosMsg;
+        rosMsg.id = TO_UNDERLYING(deviceId_);
+
+        if (canMsg_.getData().error)
+        {
+            rosMsg.error_state = rover_msgs::msg::CanDeviceStatus::STATUS_ERROR;
+        }
+        else
+        {
+            rosMsg.error_state = rover_msgs::msg::CanDeviceStatus::STATUS_OK;
+        }
+
+        _pub_CanDeviceErrorState->publish(rosMsg);
+    }
+
     bool _nodeAttachedToDevices = false;
 
     rclcpp::TimerBase::SharedPtr _timerUpdateCan;
+    rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanDeviceErrorState;
+    rclcpp::Service<rover_msgs::srv::Empty>::SharedPtr _srv_canDeviceErrorStateRequest;
 
     // CanDevices
     CameraMain cameraMain;
 
     RoverCan2::Drivers::DriverMock __canDriver;
-    RoverCan2::Manager<RoverCan2::Drivers::DriverMock, CameraMain&> _canManager = RoverCan2::Manager(__canDriver, cameraMain);
+    RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverMock, CameraMain&> _canManager = RoverCan2::ManagerMaster(
+        __canDriver,
+        [this](RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& msg_)
+        {
+            this->CB_CAN_errorStateRecv(deviceId_, msg_);
+        },
+        cameraMain);
 
     std::array<MasterDevice*, 1U> _deviceArray = {&cameraMain};
 };

@@ -1,10 +1,6 @@
 #ifndef LOG_HPP
 #define LOG_HPP
 
-#include <rclcpp/logger.hpp>
-#include <rclcpp/logging.hpp>
-#include <string>
-
 // Always activate Logger in ROS
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
 #define VERBOSE
@@ -24,9 +20,17 @@
 #if defined(ARDUINO_ESP32S3_DEV)
 #include <Stream.h>
 #include <Arduino.h>
+
+#elif defined(__linux__) && defined(RCLCPP_DEBUG)
+#include <rclcpp/logger.hpp>
+#include <rclcpp/logging.hpp>
+#include <rcutils/logging_macros.h>
+#include <string>
+
 #elif defined(__linux__)
 #include <cstdarg>
 #include <cstdio>
+
 #endif  // defined(ARDUINO_ESP32S3_DEV)
 
 #include "rover_lib2/helpers/time.hpp"
@@ -111,30 +115,35 @@ namespace Logger
 
                 std::string loggerName;
                 loggerName.append(std::string("LIB(") + fileName + ":" + std::to_string(lineNb) + ")");
+                auto logger = rclcpp::get_logger(loggerName);
 
                 va_list args;
                 va_start(args, format);
+
+                static thread_local char buffer[2048];
+                vsnprintf(buffer, sizeof(buffer), format, args);
+                va_end(args);
+
                 if constexpr (SEVERITY == eSeverityLevels::DEBUG_)
                 {
-                    RCLCPP_DEBUG(rclcpp::get_logger(loggerName), format, args);
+                    RCLCPP_DEBUG(logger, "%s", buffer);
                 }
                 else if constexpr (SEVERITY == eSeverityLevels::INFO)
                 {
-                    RCLCPP_INFO(rclcpp::get_logger(loggerName), format, args);
+                    RCLCPP_INFO(logger, "%s", buffer);
                 }
                 else if constexpr (SEVERITY == eSeverityLevels::WARN)
                 {
-                    RCLCPP_WARN(rclcpp::get_logger(loggerName), format, args);
+                    RCLCPP_WARN(logger, "%s", buffer);
                 }
                 else if constexpr (SEVERITY == eSeverityLevels::ERROR)
                 {
-                    RCLCPP_ERROR(rclcpp::get_logger(loggerName), format, args);
+                    RCLCPP_ERROR(logger, "%s", buffer);
                 }
                 else if constexpr (SEVERITY == eSeverityLevels::FATAL)
                 {
-                    RCLCPP_FATAL(rclcpp::get_logger(loggerName), format, args);
+                    RCLCPP_FATAL(logger, "%s", buffer);
                 }
-                va_end(args);
 
 #elif defined(__linux__)
                 printf("%s[%lu][%s]%s:%d: ",
