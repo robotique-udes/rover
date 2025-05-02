@@ -10,32 +10,53 @@
     <height>654</height>
    </rect>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout"> <!-- Changed to QHBoxLayout -->
+  <layout class="QHBoxLayout" name="horizontalLayout">
    <item>
     <widget class="QWebEngineView" name="webViewContainer" native="true"/>
    </item>
    <item>
-    <layout class="QVBoxLayout" name="inputLayout"> <!-- New QVBoxLayout for inputs and button -->
+    <layout class="QVBoxLayout" name="inputLayout">
      <item>
-      <widget class="QLineEdit" name="inputName">
-       <property name="text">
-        <string>Waypoint Name</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="nameLayout">
+       <item>
+        <widget class="QLabel" name="labelName">
+         <property name="text">
+          <string>Waypoint Name:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="inputName"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="inputLatitude">
-       <property name="text">
-        <string>Input Latitude</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="latitudeLayout">
+       <item>
+        <widget class="QLabel" name="labelLatitude">
+         <property name="text">
+          <string>Latitude:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="inputLatitude"/>
+       </item>
+      </layout>
      </item>
      <item>
-      <widget class="QLineEdit" name="inputLongitude">
-       <property name="text">
-        <string>Input Longitude</string>
-       </property>
-      </widget>
+      <layout class="QHBoxLayout" name="longitudeLayout">
+       <item>
+        <widget class="QLabel" name="labelLongitude">
+         <property name="text">
+          <string>Longitude:</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QLineEdit" name="inputLongitude"/>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QPushButton" name="setGoalButton">
