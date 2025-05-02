@@ -18,7 +18,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                                                                [this](rover_msgs::msg::Gps::SharedPtr msg)
                                                                {
                                                                    QMetaObject::invokeMethod(this,
-                                                                                             "updatePosition",
+                                                                                             "gpsCallback",
                                                                                              Qt::QueuedConnection,
                                                                                              Q_ARG(double, msg->latitude),
                                                                                              Q_ARG(double, msg->longitude),

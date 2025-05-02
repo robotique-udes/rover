@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
   <title>Cesium Map Viewer</title>
@@ -7,7 +8,9 @@
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
   <style>
-    html, body, #cesiumContainer {
+    html,
+    body,
+    #cesiumContainer {
       margin: 0;
       padding: 0;
       width: 100%;
@@ -16,16 +19,13 @@
     }
   </style>
 </head>
+
 <body>
   <div id="cesiumContainer"></div>
 
   <script>
     // Initialize the Cesium viewer
-    const viewer = new Cesium.Viewer('cesiumContainer', {
-      // Use Cesium World Terrain correctly for version 1.114
-      terrainProvider: new Cesium.createWorldTerrainAsync(),
-      shouldAnimate: true
-    });
+    const viewer = new Cesium.Viewer('cesiumContainer');
 
     let entity = viewer.entities.add({
       name: "Live Position",
@@ -34,27 +34,27 @@
     });
 
     // WebChannel: receives data from C++/Qt
-    new QWebChannel(qt.webChannelTransport, function(channel) {
+    new QWebChannel(qt.webChannelTransport, function (channel) {
       const bridge = channel.objects.bridge;
 
-      bridge.updatePosition.connect(function(lat, lon, heading) {
+      bridge.gpsCallback.connect(function (lat, lon, heading) {
         console.log("Received from Qt:", lat, lon, heading);
 
         const position = Cesium.Cartesian3.fromDegrees(lon, lat);
         entity.position = position;
 
-        // Update camera view
-        viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1500.0),
-          orientation: {
-            heading: Cesium.Math.toRadians(heading),
-            pitch: Cesium.Math.toRadians(-30.0),
-            roll: 0.0
-          },
-          duration: 1.5
-        });
+        //     viewer.camera.flyTo({
+        //       destination: Cesium.Cartesian3.fromDegrees(lon, lat, -1500.0),
+        //       orientation: {
+        //         heading: Cesium.Math.toRadians(heading),
+        //         pitch: Cesium.Math.toRadians(-30.0),
+        //         roll: 0.0
+        //       },
+        //       duration: 1.5
+        //     });
       });
     });
   </script>
 </body>
+
 </html>
