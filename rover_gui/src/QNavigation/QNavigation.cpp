@@ -37,7 +37,8 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
             {
                 double lat = ui->inputLatitude->text().toDouble();
                 double lon = ui->inputLongitude->text().toDouble();
-                emit sendGoal(lat, lon);  // Emit signal here
+                QString name = ui->inputName->text();
+                emit sendGoal(name, lat, lon);  // Emit signal here
             });
 }
 

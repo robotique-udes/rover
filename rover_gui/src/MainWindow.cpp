@@ -29,9 +29,10 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     connect(&_navigationWidget,
             &QNavigation::sendGoal,
             this,
-            [this](double lat, double lon)
+            [this](QString name, double lat, double lon)
             {
-                std::cout << "Received goal coordinates: Lat: " << lat << ", Lon: " << lon << std::endl;
+                std::cout << "Received goal coordinates: " << name.toStdString() << " Lat: " << lat << ", Lon: " << lon
+                          << std::endl;
             });
 }
 

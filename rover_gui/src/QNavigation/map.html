@@ -79,16 +79,28 @@
         }
       });
 
-      bridge.sendGoal.connect(function (lat, lon) {
-        console.log("Received goal from Qt:", lat, lon);
+      bridge.sendGoal.connect(function (name, lat, lon) {
+        console.log("Received goal from Qt:", name, lat, lon);
 
-        // Add a marker for the goal
+        // Add a marker for the goal with the name
         viewer.entities.add({
-          name: "Goal",
+          name: name,
           position: Cesium.Cartesian3.fromDegrees(lon, lat),
           point: {
             pixelSize: 10,
             color: Cesium.Color.BLUE,
+          },
+          label: {
+            text: name,
+            font: '14pt sans-serif',
+            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+            outlineWidth: 2,
+            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+            pixelOffset: new Cesium.Cartesian2(0, -10),
+            fillColor: Cesium.Color.WHITE,
+            outlineColor: Cesium.Color.BLACK,
+            showBackground: true,
+            backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7)
           }
         });
 

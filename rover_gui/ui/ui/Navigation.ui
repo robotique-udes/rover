@@ -17,6 +17,13 @@
    <item>
     <layout class="QVBoxLayout" name="inputLayout"> <!-- New QVBoxLayout for inputs and button -->
      <item>
+      <widget class="QLineEdit" name="inputName">
+       <property name="text">
+        <string>Waypoint Name</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QLineEdit" name="inputLatitude">
        <property name="text">
         <string>Input Latitude</string>
