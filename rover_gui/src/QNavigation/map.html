@@ -24,7 +24,6 @@
   <div id="cesiumContainer"></div>
 
   <script>
-
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyODRhYTgwMi1hNzk2LTRiMTgtYjc3Yy1mMTY2ZTQ0ZmU5N2UiLCJpZCI6Mjk4ODk2LCJpYXQiOjE3NDYxNDc2NjB9.GetTldL9Qxi4_Qyw8fPEGdkAH-1veIPLdltlKYF-VVw';
     // Initialize the Cesium viewer
     const viewer = new Cesium.Viewer("cesiumContainer", {
@@ -36,9 +35,17 @@
       mapMode2D: Cesium.MapMode2D.ROTATE, // Allow rotation but keep top-down
     });
 
+    let currentPosition = {
+      latitude: 40.0,
+      longitude: -75.0
+    };
+
+    let pathEntity = null;
+    let waypointEntities = [];
+
     let entity = viewer.entities.add({
       name: "Live Position Arrow",
-      position: Cesium.Cartesian3.fromDegrees(-75.0, 40.0, 20), // Add small height offset (e.g., 2m)
+      position: Cesium.Cartesian3.fromDegrees(-75.0, 40.0, 20), // Add small height offset
       billboard: {
         image: 'qrc:/arrow.png',
         width: 30,
@@ -46,19 +53,73 @@
         alignedAxis: Cesium.Cartesian3.UNIT_Z,
         rotation: 0,
         color: Cesium.Color.RED,
-        // heightReference: Cesium.HeightReference.CLAMP_TO_GROUND, // Sticks to terrain
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM // Ensures arrow sits on surface
       }
     });
 
+    // Function to calculate and draw the path
+    function drawPath(startLat, startLon, endLat, endLon) {
+      // If there's an existing path, remove it
+      if (pathEntity) {
+        viewer.entities.remove(pathEntity);
+      }
+
+      // Create the path entity
+      pathEntity = viewer.entities.add({
+        name: "Path to Waypoint",
+        polyline: {
+          positions: Cesium.Cartesian3.fromDegreesArray([
+            startLon, startLat,
+            endLon, endLat
+          ]),
+          width: 3,
+          material: new Cesium.PolylineOutlineMaterialProperty({
+            color: Cesium.Color.YELLOW,
+            outlineWidth: 1,
+            outlineColor: Cesium.Color.BLACK
+          }),
+          clampToGround: true
+        }
+      });
+
+      // Calculate and show distance
+      const distance = calculateHaversineDistance(startLat, startLon, endLat, endLon);
+      
+      // Send the distance back to C++
+      bridge.pathDistanceCalculated(distance);
+      
+      return distance;
+    }
+
+    // Haversine formula to calculate great-circle distance between two points
+    function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+      const R = 6371000; // Earth radius in meters
+      const dLat = (lat2 - lat1) * Math.PI / 180;
+      const dLon = (lon2 - lon1) * Math.PI / 180;
+      
+      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
+                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
+                Math.sin(dLon/2) * Math.sin(dLon/2);
+                
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
+      const distance = R * c; // Distance in meters
+      
+      return distance;
+    }
+
     // WebChannel: receives data from C++/Qt
     new QWebChannel(qt.webChannelTransport, function (channel) {
       const bridge = channel.objects.bridge;
+      window.bridge = bridge; // Make bridge accessible globally
 
       let viewInitialized = false;
 
       bridge.gpsCallback.connect(function (lat, lon, heading) {
         console.log("Received from Qt:", lat, lon, heading);
+
+        // Update the current position
+        currentPosition.latitude = lat;
+        currentPosition.longitude = lon;
 
         const position = Cesium.Cartesian3.fromDegrees(lon, lat);
 
@@ -83,7 +144,8 @@
         console.log("Received goal from Qt:", name, lat, lon);
 
         // Add a marker for the goal with the name
-        viewer.entities.add({
+        const waypointEntity = viewer.entities.add({
+          id: `waypoint_${waypointEntities.length}`,
           name: name,
           position: Cesium.Cartesian3.fromDegrees(lon, lat),
           point: {
@@ -101,8 +163,21 @@
             outlineColor: Cesium.Color.BLACK,
             showBackground: true,
             backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7)
+          },
+          // Store coordinates for later use
+          properties: {
+            waypointName: name,
+            latitude: lat,
+            longitude: lon
           }
         });
+
+        // Add the entity to our waypoint tracking array
+        waypointEntities.push(waypointEntity);
+
+        // Draw the path from current position to the waypoint
+        const distance = drawPath(currentPosition.latitude, currentPosition.longitude, lat, lon);
+        console.log(`Path distance: ${distance.toFixed(2)} meters`);
 
         // Optionally fly to it
         viewer.camera.flyTo({
@@ -110,7 +185,12 @@
         });
       });
 
+      // Add function to manually calculate path
+      bridge.calculatePath.connect(function (destLat, destLon) {
+        const distance = drawPath(currentPosition.latitude, currentPosition.longitude, destLat, destLon);
+        console.log(`Path distance (manual): ${distance.toFixed(2)} meters`);
     });
+  });
   </script>
 </body>
 
