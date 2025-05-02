@@ -4,13 +4,15 @@
 
 void RtspPlayerWidget::onNewLogMessage(const QString& message_, const QString& target_)
 {
-    if (target_ == this->_widgetId)
+    if (target_ == this->_widgetId && this->_logDisplay)
     {
         this->_logDisplay->append(message_);
         
         // Auto-scroll to bottom
         QScrollBar* scrollBar = this->_logDisplay->verticalScrollBar();
-        scrollBar->setValue(scrollBar->maximum());
+        if (scrollBar) {
+            scrollBar->setValue(scrollBar->maximum());
+        }
     }
 }
 

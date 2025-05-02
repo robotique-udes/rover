@@ -1,34 +1,22 @@
 #include "SecondaryWindow.hpp"
+#include "UI_SecondaryWindow.h" // Include the generated UI header
 #include <QLabel>
 #include <QGroupBox>
 
 SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> node):
     QMainWindow(nullptr),
-    _centralWidget(this),
-    // Order should match declaration order in the header file
-    _mainLayout(&_centralWidget),
-    _layoutStack(),
-    _singleStreamView(),
-    _multiStreamView(),
-    _node(node),                // Move this after widget declarations
-    _singleStreamStack(),
-    _multiStreamGrid(),
-    _controlLayout(),
-    _layoutSelector(),
+    _ui(new Ui::SecondaryWindow),  // Create the UI
+    _node(node),
+    _cameraSettings(new CameraSettings(this)),  // Create the camera settings dialog
     _currentStreamIndex(0)
 {
     if (!_node) {
         _node = std::make_shared<rclcpp::Node>("secondary_window_node");
     }
     
+    _ui->setupUi(this);  // Set up the UI
+    
     loadPredefinedStreams();
-    
-    // Setup the layouts and views
-    setupSingleStreamView();
-    setupMultiStreamView();
-    
-    _layoutStack.addWidget(&_singleStreamView);
-    _layoutStack.addWidget(&_multiStreamView);
     
     // Initialize streams - must still use heap allocation for these
     for (int i = 0; i < MAX_STREAMS; i++) {
@@ -47,7 +35,7 @@ SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> node):
 
 SecondaryWindow::~SecondaryWindow()
 {
-   // No manual deletion needed for stack-allocated objects
+    delete _ui;  // Clean up the UI
 }
 
 void SecondaryWindow::loadPredefinedStreams()
@@ -56,46 +44,29 @@ void SecondaryWindow::loadPredefinedStreams()
         {"Major", "rtsp://192.168.1.18:554/1/h264major"},
         {"Minor", "rtsp://192.168.1.18:554/1/h264minor"}
     };
+    
+    // Extract IPs for camera settings
+    std::vector<QString> cameraIps;
+    for (const auto& stream : _predefinedStreams) {
+        QString ip = extractIpFromUrl(stream.url);
+        if (!ip.isEmpty() && std::find(cameraIps.begin(), cameraIps.end(), ip) == cameraIps.end()) {
+            cameraIps.push_back(ip);
+        }
+    }
+    
+    // Load IPs to camera settings
+    _cameraSettings->loadPredefinedIPs(cameraIps);
 }
 
-void SecondaryWindow::setupUI() 
+void SecondaryWindow::setupUI()
 {
-    // Setup control layout
-    _controlLayout.setContentsMargins(3, 0, 3, 0);
-    _controlLayout.setSpacing(2);
-    
-    // Create layout selector
-    QLabel layoutLabel("Layout:");
-    _layoutSelector.addItem("Single Stream");
-    _layoutSelector.addItem("2 Streams");
-    _layoutSelector.addItem("4 Streams");
-    _layoutSelector.addItem("6 Streams");
-    
-    // Apply consistent styling to layout selector
-    _layoutSelector.setFixedHeight(26);
-    _layoutSelector.setStyleSheet("QComboBox { border: 1px solid #777777; border-radius: 2px; padding: 0px 2px; }");
-    
-    // Add widgets to control layout
-    _controlLayout.addWidget(&layoutLabel);
-    _controlLayout.addWidget(&_layoutSelector);
-    _controlLayout.addStretch();
-    
-    // Add layouts to main layout with minimal spacing
-    _mainLayout.setContentsMargins(0, 0, 0, 0);
-    _mainLayout.setSpacing(0);
-    _mainLayout.addLayout(&_controlLayout);
-    _mainLayout.addWidget(&_layoutStack, 1);
-    
-    // Set central widget
-    this->setCentralWidget(&_centralWidget);
-    
-    // Set main window title
-    this->setWindowTitle("Camera Streams");
-    
     // Connect signals
-    connect(&_layoutSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), 
+    connect(_ui->layoutSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), 
             this, &SecondaryWindow::onLayoutChange);
     
+    connect(_ui->cameraSettingsButton, &QPushButton::clicked,
+        this, &SecondaryWindow::showCameraSettings);
+
     // Connect signals for active streams
     for (int i = 0; i < static_cast<int>(_activeStreams.size()); i++) {
         connect(_activeStreams[i].widget.get(), &RtspPlayerWidget::streamStateChanged,
@@ -161,49 +132,27 @@ void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
             });
 }
 
-void SecondaryWindow::setupSingleStreamView()
-{
-    QVBoxLayout* layout = new QVBoxLayout(&_singleStreamView);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    
-    layout->addWidget(&_singleStreamStack);
-}
-
-void SecondaryWindow::setupMultiStreamView()
-{
-    QVBoxLayout* layout = new QVBoxLayout(&_multiStreamView);
-    layout->setContentsMargins(0, 0, 0, 0);
-    layout->setSpacing(0);
-    
-    layout->addLayout(&_multiStreamGrid);
-}
-
-void SecondaryWindow::onLayoutChange(int /* index_ */)
-{
-    // Update the layout
-    updateLayout();
-}
-
 void SecondaryWindow::updateLayout()
 {
     // Determine layout mode
-    int layoutMode = _layoutSelector.currentIndex();
-    _multiStreamGrid.setSpacing(1);
-
+    int layoutMode = _ui->layoutSelector->currentIndex();
+    
     // Clear layouts first
-    while (_singleStreamStack.count() > 0) {
-        QWidget* widget = _singleStreamStack.widget(0);
-        _singleStreamStack.removeWidget(widget);
+    while (_ui->singleStreamStack->count() > 0) {
+        QWidget* widget = _ui->singleStreamStack->widget(0);
+        _ui->singleStreamStack->removeWidget(widget);
     }
     
-    while (_multiStreamGrid.count() > 0) {
-        QLayoutItem* item = _multiStreamGrid.takeAt(0);
+    while (_ui->multiStreamGrid->count() > 0) {
+        QLayoutItem* item = _ui->multiStreamGrid->takeAt(0);
         if (item->widget()) {
             item->widget()->setParent(nullptr);
         }
         delete item;
     }
+    
+    // Set grid spacing
+    _ui->multiStreamGrid->setSpacing(1);
     
     // Determine number of streams for this layout
     int numStreams = 0;
@@ -220,15 +169,6 @@ void SecondaryWindow::updateLayout()
         {
             // Add single stream to stacked widget
             for (int i = 0; i < numStreams; i++) {
-                // Create a container for header and widget
-                QWidget container;
-                QVBoxLayout containerLayout(&container);
-                containerLayout.setContentsMargins(0, 0, 0, 0);
-                
-                // Add header and widget to container
-                containerLayout.addWidget(_activeStreams[i].headerLabel.get());
-                containerLayout.addWidget(_activeStreams[i].widget.get());
-                
                 // Need heap allocation for this container as it will be owned by the stack widget
                 QWidget* persistentContainer = new QWidget();
                 QVBoxLayout* persistentLayout = new QVBoxLayout(persistentContainer);
@@ -237,16 +177,16 @@ void SecondaryWindow::updateLayout()
                 persistentLayout->addWidget(_activeStreams[i].widget.get());
                 
                 // Add container to stacked widget
-                _singleStreamStack.addWidget(persistentContainer);
+                _ui->singleStreamStack->addWidget(persistentContainer);
             }
             
             // Show the current stream
-            if (_singleStreamStack.count() > 0) {
-                _singleStreamStack.setCurrentIndex(0);
+            if (_ui->singleStreamStack->count() > 0) {
+                _ui->singleStreamStack->setCurrentIndex(0);
             }
             
             // Show single stream view
-            _layoutStack.setCurrentWidget(&_singleStreamView);
+            _ui->layoutStack->setCurrentWidget(_ui->singleStreamView);
             break;
         }
             
@@ -260,13 +200,19 @@ void SecondaryWindow::updateLayout()
                 // Add widget directly to grid layout
                 int row = i / cols;
                 int col = i % cols;
-                _multiStreamGrid.addWidget(_activeStreams[i].widget.get(), row, col);
+                _ui->multiStreamGrid->addWidget(_activeStreams[i].widget.get(), row, col);
             }
             
-            _layoutStack.setCurrentWidget(&_multiStreamView);
+            _ui->layoutStack->setCurrentWidget(_ui->multiStreamView);
             break;
         }
     }
+}
+
+void SecondaryWindow::onLayoutChange(int /* index_ */)
+{
+    // Update the layout
+    updateLayout();
 }
 
 void SecondaryWindow::onStreamStateChanged(bool running, int streamIndex)
@@ -289,4 +235,34 @@ void SecondaryWindow::initializeRosServicesForWidgets()
             RCLCPP_ERROR(_node->get_logger(), "Failed to initialize ROS services for stream widget: %s", e.what());
         }
     }
+}
+
+void SecondaryWindow::showCameraSettings()
+{
+    // Check if we have an active stream to get its URL
+    QString currentStreamUrl;
+    if (_currentStreamIndex >= 0 && _currentStreamIndex < static_cast<int>(_activeStreams.size())) {
+        auto& stream = _activeStreams[_currentStreamIndex];
+        if (stream.isRunning) {
+            QLineEdit* urlInput = stream.widget->findChild<QLineEdit*>("rtspUrlInput");
+            if (urlInput) {
+                currentStreamUrl = urlInput->text();
+            }
+        }
+    }
+    
+    // Show the camera settings dialog with the current stream URL
+    _cameraSettings->showSettings(currentStreamUrl);
+}
+
+// Helper function to extract IP from URL
+QString SecondaryWindow::extractIpFromUrl(const QString& url)
+{
+    // Simple regex to extract IP address from RTSP URL
+    QRegularExpression regex("rtsp://([^:/]+)");
+    QRegularExpressionMatch match = regex.match(url);
+    if (match.hasMatch()) {
+        return match.captured(1);
+    }
+    return QString();
 }

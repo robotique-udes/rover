@@ -40,11 +40,6 @@ install(TARGETS
             aruco_detection
         DESTINATION lib/${PROJECT_NAME}/)
 
-install(PROGRAMS
-  src/camera_params/camera_control_node.py
-  DESTINATION lib/${PROJECT_NAME}
-)
-
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()

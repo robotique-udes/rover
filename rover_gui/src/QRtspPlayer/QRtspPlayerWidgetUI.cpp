@@ -6,7 +6,6 @@
 
 void RtspPlayerWidget::setupUI(void)
 {
-    this->_ui.setupUi(this);
     this->storeUIReferences();
     this->connectUISignals();
     this->initializeUIState();
@@ -14,72 +13,106 @@ void RtspPlayerWidget::setupUI(void)
 
 void RtspPlayerWidget::storeUIReferences(void)
 {
-    this->_stackedWidget = this->findChild<QStackedWidget*>("mainStackedWidget");
-    
-    // Video widgets
-    this->_videoWidget = this->findChild<QWidget*>("videoWidget");
-    this->_videoStack = this->findChild<QStackedWidget*>("videoStack");
-    this->_statusPage = this->findChild<QWidget*>("statusPage");
-    this->_statusLabel = this->findChild<QLabel*>("statusLabel");
+    _stackedWidget = _ui->mainStackedWidget;
+    _videoWidget = _ui->videoWidget;
+    _videoStack = _ui->videoStack;
+    _statusPage = _ui->statusPage;
+    _statusLabel = _ui->statusLabel;
     
     // Control buttons
-    this->_playPauseButton = this->findChild<QPushButton*>("playPauseButton");
-    this->_arucoButton = this->findChild<QPushButton*>("arucoButton");
-    this->_arucoIdsTextBox = this->findChild<QLineEdit*>("arucoIdsTextBox");
-    this->_screenshotButton = this->findChild<QToolButton*>("screenshotButton");
-    this->_recordButton = this->findChild<QToolButton*>("recordButton");
-    this->_toggleControlsButton = this->findChild<QPushButton*>("toggleControlsButton");
-    this->_toggleViewButton = this->findChild<QPushButton*>("toggleViewButton");
-    this->_controlsContainer = this->findChild<QWidget*>("controlsContainer");
-    this->_streamSelector = this->findChild<QComboBox*>("streamSelector");
+    _playPauseButton = _ui->playPauseButton;
+    _arucoButton = _ui->arucoButton;
+    _arucoIdsTextBox = _ui->arucoIdsTextBox;
+    _screenshotButton = _ui->screenshotButton;
+    _recordButton = _ui->recordButton;
+    _toggleControlsButton = _ui->toggleControlsButton;
+    _toggleViewButton = _ui->toggleViewButton;
+    _controlsContainer = _ui->controlsContainer;
+    _streamSelector = _ui->streamSelector;
+    _rtspUrlInput = _ui->rtspUrlInput;
     
     // Log view widgets
-    this->_logWidget = this->findChild<QWidget*>("logWidget");
-    this->_logDisplay = this->findChild<QTextEdit*>("logDisplay");
-    this->_debugCheckbox = this->findChild<QCheckBox*>("debugCheckbox");
-    this->_infoCheckbox = this->findChild<QCheckBox*>("infoCheckbox");
-    this->_warningCheckbox = this->findChild<QCheckBox*>("warningCheckbox");
-    this->_errorCheckbox = this->findChild<QCheckBox*>("errorCheckbox");
-    this->_clearButton = this->findChild<QPushButton*>("clearButton");
+    _logWidget = _ui->logWidget;
+    _logDisplay = _ui->logDisplay;
+    _debugCheckbox = _ui->debugCheckbox;
+    _infoCheckbox = _ui->infoCheckbox;
+    _warningCheckbox = _ui->warningCheckbox;
+    _errorCheckbox = _ui->errorCheckbox;
+    _clearButton = _ui->clearButton;
 }
 
 void RtspPlayerWidget::connectUISignals(void)
 {
+    if (this->_playPauseButton) {
+        connect(this->_playPauseButton, &QPushButton::clicked, this, [this]() {
+            if (this->_playPauseButton->isChecked()) {
+                if (this->_rtspUrlInput) {
+                    this->startStream(this->_rtspUrlInput->text());
+                }
+                this->_playPauseButton->setIcon(QIcon(":/icons/stop.png"));
+                this->_playPauseButton->setToolTip("Stop");
+            } else {
+                this->stopStream();
+                this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
+                this->_playPauseButton->setToolTip("Play");
+            }
+        });
+    }
     
-    connect(this->_playPauseButton, &QPushButton::clicked, this, [this]() {
-        if (this->_playPauseButton->isChecked()) {
-          
-            this->startStream(this->_ui.rtspUrlInput->text());
-            this->_playPauseButton->setIcon(QIcon(":/icons/stop.png"));
-            this->_playPauseButton->setToolTip("Stop");
-        } else {
-         
-            this->stopStream();
-            this->_playPauseButton->setIcon(QIcon(":/icons/play.png"));
-            this->_playPauseButton->setToolTip("Play");
-        }
-    });
+    // Connect the rest of the signals with similar safety checks
+    if (this->_arucoButton) {
+        connect(this->_arucoButton, &QPushButton::toggled, this, &RtspPlayerWidget::onArucoButtonToggled);
+    }
     
-    connect(this->_arucoButton, &QPushButton::toggled, this, &RtspPlayerWidget::onArucoButtonToggled);
+    if (this->_screenshotButton) {
+        connect(this->_screenshotButton, &QToolButton::clicked, this, &RtspPlayerWidget::onScreenshotButtonClicked);
+    }
     
-    connect(this->_screenshotButton, &QToolButton::clicked, this, &RtspPlayerWidget::onScreenshotButtonClicked);
-    connect(this->_recordButton, &QToolButton::toggled, this, &RtspPlayerWidget::onRecordButtonToggled);
+    if (this->_recordButton) {
+        connect(this->_recordButton, &QToolButton::toggled, this, &RtspPlayerWidget::onRecordButtonToggled);
+    }
     
-    connect(this->_toggleViewButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
-    connect(this->findChild<QPushButton*>("backToVideoBtn"), &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
+    if (this->_toggleViewButton) {
+        connect(this->_toggleViewButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
+    }
     
-    connect(this->_toggleControlsButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleControls);
+    QPushButton* backToVideoBtn = this->findChild<QPushButton*>("backToVideoBtn");
+    if (backToVideoBtn) {
+        connect(backToVideoBtn, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleView);
+    }
     
-    connect(this->_streamSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
-            this, &RtspPlayerWidget::onStreamSelected);
+    if (this->_toggleControlsButton) {
+        connect(this->_toggleControlsButton, &QPushButton::clicked, this, &RtspPlayerWidget::onToggleControls);
+    }
     
-    connect(this->_ui.rtspUrlInput, &QLineEdit::textChanged, this, &RtspPlayerWidget::onUrlTextChanged);
+    if (this->_streamSelector) {
+        connect(this->_streamSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
+                this, &RtspPlayerWidget::onStreamSelected);
+    }
     
-    connect(this->_debugCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleDebug);
-    connect(this->_infoCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleInfo);
-    connect(this->_warningCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleWarning);
-    connect(this->_errorCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleError);
-    connect(this->_clearButton, &QPushButton::clicked, this, &RtspPlayerWidget::onClearLogs);
+    if (this->_rtspUrlInput) {
+        connect(this->_rtspUrlInput, &QLineEdit::textChanged, this, &RtspPlayerWidget::onUrlTextChanged);
+    }
+    
+    if (this->_debugCheckbox) {
+        connect(this->_debugCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleDebug);
+    }
+    
+    if (this->_infoCheckbox) {
+        connect(this->_infoCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleInfo);
+    }
+    
+    if (this->_warningCheckbox) {
+        connect(this->_warningCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleWarning);
+    }
+    
+    if (this->_errorCheckbox) {
+        connect(this->_errorCheckbox, &QCheckBox::toggled, this, &RtspPlayerWidget::onToggleError);
+    }
+    
+    if (this->_clearButton) {
+        connect(this->_clearButton, &QPushButton::clicked, this, &RtspPlayerWidget::onClearLogs);
+    }
     
     connect(&QLogManager::getInstance(), &QLogManager::newLogMessage, 
             this, &RtspPlayerWidget::onNewLogMessage);
@@ -91,19 +124,38 @@ void RtspPlayerWidget::initializeUIState(void)
     
     this->_controlsVisible = true;
     
-    QLogManager::getInstance().setShowDebug(false, this->_widgetId);
-    QLogManager::getInstance().setShowInfo(true, this->_widgetId);
-    QLogManager::getInstance().setShowWarning(true, this->_widgetId);
-    QLogManager::getInstance().setShowError(true, this->_widgetId);
+    // Make sure QLogManager is initialized before using it
+    QLogManager& logManager = QLogManager::getInstance();
+    logManager.setShowDebug(false, this->_widgetId);
+    logManager.setShowInfo(true, this->_widgetId);
+    logManager.setShowWarning(true, this->_widgetId);
+    logManager.setShowError(true, this->_widgetId);
     
-    LOG_INFO_TARGET("RtspPlayer", "Log initialized for RTSP player " + this->_widgetId, this->_widgetId.toUtf8().constData());
-    this->_logDisplay->append("Log initialized for RTSP player " + this->_widgetId);
+    // Only add the log message if logDisplay exists
+    if (this->_logDisplay) {
+        this->_logDisplay->append("Log initialized for RTSP player " + this->_widgetId);
+    }
     
-    this->_arucoButton->setEnabled(false);
-    this->_arucoButton->setCheckable(true);
-    this->_arucoIdsTextBox->setText("Ids: ");
-    this->_screenshotButton->setEnabled(false);
-    this->_recordButton->setEnabled(false);
+    // Now log info in a way that won't try to use the log UI widget
+    qDebug() << "Log initialized for RTSP player" << this->_widgetId;
+    
+    // Initialize button states only if they exist
+    if (this->_arucoButton) {
+        this->_arucoButton->setEnabled(false);
+        this->_arucoButton->setCheckable(true);
+    }
+    
+    if (this->_arucoIdsTextBox) {
+        this->_arucoIdsTextBox->setText("Ids: ");
+    }
+    
+    if (this->_screenshotButton) {
+        this->_screenshotButton->setEnabled(false);
+    }
+    
+    if (this->_recordButton) {
+        this->_recordButton->setEnabled(false);
+    }
 }
 
 void RtspPlayerWidget::onToggleView(void)
@@ -152,14 +204,11 @@ void RtspPlayerWidget::updateStatusText(const QString& text_)
 
 void RtspPlayerWidget::onStreamSelected(int index)
 {
-   
     if (index <= 0) {
-
-        this->_ui.rtspUrlInput->setText("");
+        this->_rtspUrlInput->setText("");
     } else if (_predefinedStreams.size() >= static_cast<size_t>(index)) {
-      
         int predefinedIndex = index - 1;
-        this->_ui.rtspUrlInput->setText(_predefinedStreams[predefinedIndex].url);
+        this->_rtspUrlInput->setText(_predefinedStreams[predefinedIndex].url);
     }
 }
 

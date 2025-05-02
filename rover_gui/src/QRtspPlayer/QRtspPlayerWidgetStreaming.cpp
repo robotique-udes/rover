@@ -26,7 +26,7 @@ void RtspPlayerWidget::onPipelineStarted(GstElement* pipeline_)
         return;
     }
 
-    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)this->_ui.videoWidget->winId());
+    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)this->_videoWidget->winId());
     gst_object_unref(videoSink);
     
     gst_element_set_state(this->_pipeline, GST_STATE_PLAYING);
@@ -81,12 +81,12 @@ void RtspPlayerWidget::updateUrlValidationUI(bool isValid_)
 {
     if (isValid_)
     {
-        this->_ui.rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #5cb85c; }");
-        this->_ui.rtspUrlInput->setToolTip("Valid RTSP URL");
+        this->_rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #5cb85c; }");
+        this->_rtspUrlInput->setToolTip("Valid RTSP URL");
     }
     else
     {
-        this->_ui.rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #d9534f; }");
-        this->_ui.rtspUrlInput->setToolTip("Invalid RTSP URL format.\nExpected: rtsp://[username:password@]host[:port]/path");
+        this->_rtspUrlInput->setStyleSheet("QLineEdit { border: 1px solid #d9534f; }");
+        this->_rtspUrlInput->setToolTip("Invalid RTSP URL format.\nExpected: rtsp://[username:password@]host[:port]/path");
     }
 }

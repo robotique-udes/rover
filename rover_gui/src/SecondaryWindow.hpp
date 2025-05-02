@@ -3,17 +3,17 @@
 
 #include "QVideoPlayer/QVideoManagerWidget.hpp"
 #include <QMainWindow>
-#include <QGridLayout>
 #include <QPushButton>
 #include <QComboBox>
 #include <QLabel>
-#include <QStackedWidget>
-#include <QMap>
-#include <QLineEdit>
-#include <QDialog>
 #include <memory>
 #include <vector>
 #include "QRtspPlayer/QRtspPlayerWidgetHeader.hpp"
+#include "CameraSettings.hpp" // New include for the camera settings
+
+namespace Ui {
+    class SecondaryWindow; // Forward declaration of the UI class
+}
 
 class SecondaryWindow : public QMainWindow
 {
@@ -26,44 +26,26 @@ public:
 private slots:
     void onLayoutChange(int index_);
     void onStreamStateChanged(bool running_, int streamIndex_);
+    void showCameraSettings(); 
 
 private:
-    // Layout types
-    enum class LayoutMode {
-        SingleStream = 0,
-        TwoStreams = 1,
-        FourStreams = 2,
-        SixStreams = 3
-    };
-    
     // UI setup methods
     void setupUI(void);
     void loadPredefinedStreams(void);
     void initializeStreams(void);
     void updateLayout(void);
     void initializeRosServicesForWidgets(void);
+    QString extractIpFromUrl(const QString& url);
     
     // Stream container helpers
     QWidget* createStreamContainer(int streamIndex_);
-    void setupSingleStreamView(void);
-    void setupMultiStreamView(void);
     void addStreamSelector(RtspPlayerWidget* widget_, int position_);
     
-    // Core widget components - now stack allocated
-    QWidget _centralWidget;
-    QVBoxLayout _mainLayout;
-    QStackedWidget _layoutStack;
-    QWidget _singleStreamView;
-    QWidget _multiStreamView;
+    // UI member
+    Ui::SecondaryWindow* _ui;
     
     // ROS components
     std::shared_ptr<rclcpp::Node> _node;
-
-    // Layout components - now stack allocated
-    QStackedWidget _singleStreamStack;
-    QGridLayout _multiStreamGrid;
-    QHBoxLayout _controlLayout;
-    QComboBox _layoutSelector;
     
     // Stream configuration
     struct PredefinedStream {
@@ -74,14 +56,15 @@ private:
     
     // Active stream management
     struct ActiveStream {
-        // Note: Using raw pointers here as these are special widgets
-        // that still need to be heap allocated due to how they're used
         std::unique_ptr<RtspPlayerWidget> widget;
         std::unique_ptr<QLabel> headerLabel;
         int predefinedStreamIndex = -1; // -1 = None
         bool isRunning = false;
     };
     std::vector<ActiveStream> _activeStreams;
+    
+    // Camera settings dialog
+    CameraSettings* _cameraSettings;
     
     // Configuration
     static constexpr int MAX_STREAMS = 6;

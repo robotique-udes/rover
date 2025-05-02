@@ -195,7 +195,6 @@ public:
         statusPage->setObjectName(QString::fromUtf8("statusPage"));
         statusLayout = new QVBoxLayout(statusPage);
         statusLayout->setObjectName(QString::fromUtf8("statusLayout"));
-        statusLayout->setAlignment(Qt::AlignCenter);
         statusLabel = new QLabel(statusPage);
         statusLabel->setObjectName(QString::fromUtf8("statusLabel"));
         statusLabel->setAlignment(Qt::AlignCenter);
@@ -293,8 +292,8 @@ public:
 
         logDisplay = new QTextEdit(logWidget);
         logDisplay->setObjectName(QString::fromUtf8("logDisplay"));
-        logDisplay->setReadOnly(true);
         logDisplay->setLineWrapMode(QTextEdit::NoWrap);
+        logDisplay->setReadOnly(true);
 
         logLayout->addWidget(logDisplay);
 
@@ -334,7 +333,8 @@ public:
 "    /* Control buttons - consistent sizing and reduced padding for larger icons */\n"
 "    QPushButton#arucoButton, QPushButton#toggleViewButton, \n"
 "    QPushButton#toggleControlsButton, QToolButton#screenshotButton, \n"
-"    QToolButton#recordButton, QPushButton#playPauseButton {\n"
+"    QToolButton#recordButton, QPushButton#playPauseButton,\n"
+"    QPushButton#cameraSettingsButton {\n"
 "      min-width: 26px;\n"
 "      max-width: 26px;\n"
 "      min-height: 26px;\n"
@@ -344,9 +344,9 @@ public:
 "      padding: 0px;\n"
 "    }\n"
 "    \n"
-"    /* Aruco IDs text box */\n"
-"    Q"
-                        "LineEdit#arucoIdsTextBox {\n"
+""
+                        "    /* Aruco IDs text box */\n"
+"    QLineEdit#arucoIdsTextBox {\n"
 "      min-width: 40px;\n"
 "      max-width: 60px;\n"
 "      color: #e0e0e0;\n"
@@ -381,10 +381,10 @@ public:
 "    QLabel.stream-header {\n"
 "      max-height: 0px;\n"
 "      padding: 0px;\n"
-"      margin: 0px;\n"
+"      margin: 0"
+                        "px;\n"
 "      border: none;\n"
-"      "
-                        "font-size: 0px;\n"
+"      font-size: 0px;\n"
 "      color: transparent;\n"
 "    }\n"
 "   ", nullptr));

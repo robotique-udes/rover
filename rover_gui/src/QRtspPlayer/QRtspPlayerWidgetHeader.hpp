@@ -21,6 +21,7 @@
 
 #include "QGStreamerWorker.hpp"
 #include "UI_Player.h"
+#include "UI_CameraSettings.h"
 #include "QLogManager.hpp"
 
 #include "rclcpp/rclcpp.hpp"
@@ -37,6 +38,11 @@ enum class PlayerState {
     ConnectionError, 
     ConnectionFailed 
 };
+
+namespace Ui {
+    class RtspPlayerWidget;     // Main player UI
+    class CameraSettingsWidget; // Camera settings UI
+}
 
 class RtspPlayerWidget : public QWidget
 {
@@ -128,7 +134,8 @@ private:
 
     QString _widgetId;
     int _streamIndex;
-    Ui::RtspPlayerWidget _ui;
+    Ui::RtspPlayerWidget* _ui;
+    QWidget* _cameraSettingsWidget;
 
     // These must remain heap-allocated due to threading
     QThread* _workerThread;                  // Owns GStreamerWorker
@@ -175,7 +182,8 @@ private:
     QPushButton* _arucoButton = nullptr;
     QLineEdit* _arucoIdsTextBox = nullptr;
     QComboBox* _streamSelector = nullptr;
-    
+    QLineEdit* _rtspUrlInput = nullptr;
+
     QWidget* _logWidget = nullptr;
     QTextEdit* _logDisplay = nullptr;
     QCheckBox* _debugCheckbox = nullptr;
@@ -183,13 +191,16 @@ private:
     QCheckBox* _warningCheckbox = nullptr;
     QCheckBox* _errorCheckbox = nullptr;
     QPushButton* _clearButton = nullptr;
-    
+
     std::shared_ptr<rclcpp::Node> _rosNode = nullptr;
     rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr _cameraControlClient = nullptr;
     rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr _arucoDetectionClient = nullptr;
     rclcpp::Subscription<rover_msgs::msg::Aruco>::SharedPtr _arucoSubscription = nullptr;
     bool _isCameraServiceAvailable = false;
     bool _isArucoServiceAvailable = false;
+
+    // Camera controller - static singleton instance
+    //static std::unique_ptr<CameraController> _cameraController;
 };
 
-#endif
+#endif  // RTSPPLAYERWIDGET_HPP

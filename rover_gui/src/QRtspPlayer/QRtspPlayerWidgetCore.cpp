@@ -10,6 +10,7 @@ int RtspPlayerWidget::_instanceCounter = 0;
 
 RtspPlayerWidget::RtspPlayerWidget(QWidget* parent_, const QString& widgetId_):
     QWidget(parent_),
+    _ui(new Ui::RtspPlayerWidget),
     _workerThread(new QThread(this)),
     _gstreamerWorker(new GStreamerWorker()),
     _reconnectTimer(this),              // Stack allocation with parent
@@ -27,9 +28,13 @@ RtspPlayerWidget::RtspPlayerWidget(QWidget* parent_, const QString& widgetId_):
     _widgetId = widgetId_.isEmpty() ? QString("rtsp_player_%1").arg(++_instanceCounter) : widgetId_;
     _streamIndex = _instanceCounter - 1;
     
-    this->setupUI();
+    // Set up the main player UI
+    _ui->setupUi(this);
 
-    // Worker thread setup - still need heap allocation for worker thread handling
+    // Additional UI setup
+    this->setupUI();
+    
+    // Worker thread setup - this section was missing in my previous code
     _gstreamerWorker->moveToThread(_workerThread);
     connect(_workerThread, &QThread::finished, _gstreamerWorker, &QObject::deleteLater);
 
@@ -54,8 +59,9 @@ void RtspPlayerWidget::connectSignals(void)
     connect(_gstreamerWorker, &GStreamerWorker::errorOccurred, this, &RtspPlayerWidget::onErrorOccurred);
     connect(_gstreamerWorker, &GStreamerWorker::connectionFailed, this, &RtspPlayerWidget::onConnectionFailed);
     connect(_gstreamerWorker, &GStreamerWorker::frameReceived, this, &RtspPlayerWidget::onFrameReceived);
-    
-    connect(_ui.rtspUrlInput, &QLineEdit::textChanged, this, &RtspPlayerWidget::onUrlTextChanged);
+    connect(_rtspUrlInput, &QLineEdit::textChanged, this, &RtspPlayerWidget::onUrlTextChanged);
+
+    //connect(_ui.rtspUrlInput, &QLineEdit::textChanged, this, &RtspPlayerWidget::onUrlTextChanged);
     
     _frameTimeoutTimer.setSingleShot(true);
     _reconnectTimer.setSingleShot(true);
@@ -79,6 +85,8 @@ void RtspPlayerWidget::cleanupResources(void)
             this->_workerThread->terminate();
         }
     }
+
+    delete _ui;
 }
 
 // Add startStream and stopStream implementations here
@@ -334,9 +342,9 @@ void RtspPlayerWidget::onReconnectTimer(void)
 {
     if (_state == PlayerState::Reconnecting)
     {
-        if (!this->_ui.rtspUrlInput->text().isEmpty())
+        if (!this->_rtspUrlInput->text().isEmpty())
         {
-            this->startStream(this->_ui.rtspUrlInput->text());
+            this->startStream(this->_rtspUrlInput->text());
         }
     }
 }
@@ -362,8 +370,8 @@ void RtspPlayerWidget::onUrlTextChanged(const QString& text_)
 {
     if (text_.isEmpty())
     {
-        this->_ui.rtspUrlInput->setStyleSheet("");
-        this->_ui.rtspUrlInput->setToolTip("Enter RTSP URL...");
+        this->_rtspUrlInput->setStyleSheet("");
+        this->_rtspUrlInput->setToolTip("Enter RTSP URL...");
     }
     else
     {

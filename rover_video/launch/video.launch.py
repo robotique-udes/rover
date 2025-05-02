@@ -18,16 +18,8 @@ def generate_launch_description():
         executable="aruco_detection",
         name="aruco_detection"
     )
-    
-    node_camera_control = Node(
-        package="rover_video",
-        namespace="/rover/video",
-        executable="camera_control_node.py",
-        name="camera_control"
-    )
 
     ld.add_action(node_camera_node)
     ld.add_action(node_aruco)
-    ld.add_action(node_camera_control)
-
+    
     return ld

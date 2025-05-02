@@ -31,7 +31,8 @@
     /* Control buttons - consistent sizing and reduced padding for larger icons */
     QPushButton#arucoButton, QPushButton#toggleViewButton, 
     QPushButton#toggleControlsButton, QToolButton#screenshotButton, 
-    QToolButton#recordButton, QPushButton#playPauseButton {
+    QToolButton#recordButton, QPushButton#playPauseButton,
+    QPushButton#cameraSettingsButton {
       min-width: 26px;
       max-width: 26px;
       min-height: 26px;
@@ -101,13 +102,10 @@
     <number>0</number>
    </property>
    <item>
-    <!-- Main stacked widget for switching between video and logs -->
     <widget class="QStackedWidget" name="mainStackedWidget">
      <property name="currentIndex">
       <number>0</number>
      </property>
-     
-     <!-- Page 1: Video Page -->
      <widget class="QWidget" name="videoPage">
       <layout class="QVBoxLayout" name="videoPageLayout">
        <property name="spacing">
@@ -125,7 +123,6 @@
        <property name="bottomMargin">
         <number>0</number>
        </property>
-       
        <item>
         <widget class="QWidget" name="controlsContainer" native="true">
          <layout class="QVBoxLayout" name="controlsLayout">
@@ -378,12 +375,10 @@
         </widget>
        </item>
        <item>
-        <!-- Video stack - for showing video or status message -->
         <widget class="QStackedWidget" name="videoStack">
          <property name="currentIndex">
           <number>0</number>
          </property>
-         <!-- Video widget -->
          <widget class="QWidget" name="videoWidget">
           <property name="sizePolicy">
            <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
@@ -395,15 +390,11 @@
            <string>background-color: black;</string>
           </property>
          </widget>
-         <!-- Status page -->
          <widget class="QWidget" name="statusPage">
           <property name="styleSheet">
            <string>background-color: black;</string>
           </property>
           <layout class="QVBoxLayout" name="statusLayout">
-           <property name="alignment">
-            <set>Qt::AlignCenter</set>
-           </property>
            <item>
             <widget class="QLabel" name="statusLabel">
              <property name="text">
@@ -510,8 +501,6 @@
        </item>
       </layout>
      </widget>
-     
-     <!-- Page 2: Logs Page -->
      <widget class="QWidget" name="logWidget">
       <layout class="QVBoxLayout" name="logLayout">
        <property name="spacing">
@@ -617,11 +606,11 @@
        </item>
        <item>
         <widget class="QTextEdit" name="logDisplay">
-         <property name="readOnly">
-          <bool>true</bool>
-         </property>
          <property name="lineWrapMode">
           <enum>QTextEdit::NoWrap</enum>
+         </property>
+         <property name="readOnly">
+          <bool>true</bool>
          </property>
         </widget>
        </item>
