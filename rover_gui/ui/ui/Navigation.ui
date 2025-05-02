@@ -6,13 +6,38 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>800</width>
-    <height>600</height>
+    <width>1122</width>
+    <height>654</height>
    </rect>
   </property>
-  <layout class="QVBoxLayout" name="verticalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout"> <!-- Changed to QHBoxLayout -->
    <item>
-    <widget class="QWebEngineView" name="webViewContainer"/>
+    <widget class="QWebEngineView" name="webViewContainer" native="true"/>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="inputLayout"> <!-- New QVBoxLayout for inputs and button -->
+     <item>
+      <widget class="QLineEdit" name="inputLatitude">
+       <property name="text">
+        <string>Input Latitude</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QLineEdit" name="inputLongitude">
+       <property name="text">
+        <string>Input Longitude</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="setGoalButton">
+       <property name="text">
+        <string>Set Goal</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
    </item>
   </layout>
  </widget>

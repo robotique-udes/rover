@@ -19,9 +19,14 @@ class QNavigation : public QWidget
 
   signals:
     void gpsCallback(double latitude, double longitude, double heading);
+    void sendGoal(double latitude, double longitude);
 
   private:
     QWebChannel* webChannel;
+    QLineEdit* _lineEditLatitude;
+    QLineEdit* _lineEditLongitude;
+    QPushButton* _pushButtonSetGoal;
+    
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
     std::shared_ptr<rclcpp::Node> _node;

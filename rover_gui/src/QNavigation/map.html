@@ -78,6 +78,26 @@
           viewInitialized = true;
         }
       });
+
+      bridge.sendGoal.connect(function (lat, lon) {
+        console.log("Received goal from Qt:", lat, lon);
+
+        // Add a marker for the goal
+        viewer.entities.add({
+          name: "Goal",
+          position: Cesium.Cartesian3.fromDegrees(lon, lat),
+          point: {
+            pixelSize: 10,
+            color: Cesium.Color.BLUE,
+          }
+        });
+
+        // Optionally fly to it
+        viewer.camera.flyTo({
+          destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
+        });
+      });
+
     });
   </script>
 </body>

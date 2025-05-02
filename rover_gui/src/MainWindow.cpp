@@ -25,6 +25,14 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
 
     connect(&_sideBarWidget, &QSideBar::switchPage, &_stackedWidget, &QStackedWidget::setCurrentIndex);
     connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
+
+    connect(&_navigationWidget,
+            &QNavigation::sendGoal,
+            this,
+            [this](double lat, double lon)
+            {
+                std::cout << "Received goal coordinates: Lat: " << lat << ", Lon: " << lon << std::endl;
+            });
 }
 
 void MainWindow::closeEvent(QCloseEvent* event_)
