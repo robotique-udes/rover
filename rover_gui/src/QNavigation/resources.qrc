@@ -2,5 +2,6 @@
 <RCC>
     <qresource prefix="/">
         <file>map.html</file>
+        <file>arrow.png</file>
     </qresource>
 </RCC>

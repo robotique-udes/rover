@@ -24,13 +24,29 @@
   <div id="cesiumContainer"></div>
 
   <script>
+
+    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyODRhYTgwMi1hNzk2LTRiMTgtYjc3Yy1mMTY2ZTQ0ZmU5N2UiLCJpZCI6Mjk4ODk2LCJpYXQiOjE3NDYxNDc2NjB9.GetTldL9Qxi4_Qyw8fPEGdkAH-1veIPLdltlKYF-VVw';
     // Initialize the Cesium viewer
-    const viewer = new Cesium.Viewer('cesiumContainer');
+    const viewer = new Cesium.Viewer("cesiumContainer", {
+      terrain: Cesium.Terrain.fromWorldTerrain({
+        requestWaterMask: true,
+        requestVertexNormals: true,
+      }),
+    });
 
     let entity = viewer.entities.add({
-      name: "Live Position",
-      position: Cesium.Cartesian3.fromDegrees(-75.0, 40.0),
-      point: { pixelSize: 10, color: Cesium.Color.RED }
+      name: "Live Position Arrow",
+      position: Cesium.Cartesian3.fromDegrees(-75.0, 40.0, 20), // Add small height offset (e.g., 2m)
+      billboard: {
+        image: 'qrc:/arrow.png',
+        width: 30,
+        height: 30,
+        alignedAxis: Cesium.Cartesian3.UNIT_Z,
+        rotation: 0,
+        color: Cesium.Color.RED,
+        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND, // Sticks to terrain
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM // Ensures arrow sits on surface
+      }
     });
 
     // WebChannel: receives data from C++/Qt
@@ -43,15 +59,15 @@
         const position = Cesium.Cartesian3.fromDegrees(lon, lat);
         entity.position = position;
 
-        //     viewer.camera.flyTo({
-        //       destination: Cesium.Cartesian3.fromDegrees(lon, lat, -1500.0),
-        //       orientation: {
-        //         heading: Cesium.Math.toRadians(heading),
-        //         pitch: Cesium.Math.toRadians(-30.0),
-        //         roll: 0.0
-        //       },
-        //       duration: 1.5
-        //     });
+        // viewer.camera.flyTo({
+        //   destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1500.0),
+        //   orientation: {
+        //     heading: Cesium.Math.toRadians(heading),
+        //     pitch: Cesium.Math.toRadians(-30.0),
+        //     roll: 0.0
+        //   },
+        //   duration: 1.5
+        // });
       });
     });
   </script>
