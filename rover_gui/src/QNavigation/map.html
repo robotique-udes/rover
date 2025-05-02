@@ -32,6 +32,8 @@
         requestWaterMask: true,
         requestVertexNormals: true,
       }),
+      sceneMode: Cesium.SceneMode.SCENE2D, // 2D mode gives a top-down view
+      mapMode2D: Cesium.MapMode2D.ROTATE, // Allow rotation but keep top-down
     });
 
     let entity = viewer.entities.add({
@@ -44,7 +46,7 @@
         alignedAxis: Cesium.Cartesian3.UNIT_Z,
         rotation: 0,
         color: Cesium.Color.RED,
-        heightReference: Cesium.HeightReference.CLAMP_TO_GROUND, // Sticks to terrain
+        // heightReference: Cesium.HeightReference.CLAMP_TO_GROUND, // Sticks to terrain
         verticalOrigin: Cesium.VerticalOrigin.BOTTOM // Ensures arrow sits on surface
       }
     });
@@ -53,21 +55,26 @@
     new QWebChannel(qt.webChannelTransport, function (channel) {
       const bridge = channel.objects.bridge;
 
+      let viewInitialized = false;
+
       bridge.gpsCallback.connect(function (lat, lon, heading) {
         console.log("Received from Qt:", lat, lon, heading);
 
         const position = Cesium.Cartesian3.fromDegrees(lon, lat);
         entity.position = position;
 
-        // viewer.camera.flyTo({
-        //   destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1500.0),
-        //   orientation: {
-        //     heading: Cesium.Math.toRadians(heading),
-        //     pitch: Cesium.Math.toRadians(-30.0),
-        //     roll: 0.0
-        //   },
-        //   duration: 1.5
-        // });
+        if (!viewInitialized) {
+          // Set a static view around the first point
+          viewer.camera.setView({
+            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0), // Adjust zoom level
+            orientation: {
+              heading: 0.0,
+              pitch: -90.0, // Look straight down
+              roll: 0.0
+            }
+          });
+          viewInitialized = true;
+        }
       });
     });
   </script>

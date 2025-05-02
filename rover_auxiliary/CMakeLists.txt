@@ -34,6 +34,9 @@ ament_target_dependencies(ddb_control
                           rcl_interfaces)
 target_link_libraries(ddb_control rover_shared_libs)
 
+add_executable(gps_publisher src/gps_pub.cpp)
+ament_target_dependencies(gps_publisher rclcpp rover_msgs)
+
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
@@ -42,6 +45,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS
           goal_manager
           ddb_control
+          gps_publisher
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()
