@@ -24,7 +24,7 @@ private:
     msg.heading_track = 0.0;
     msg.speed = 0.0;
     msg.satellite = 8;
-    msg.heading = 0.0;
+    msg.heading = M_PI;
 
     publisher_->publish(msg);
     RCLCPP_INFO(this->get_logger(), "Published GPS: lat = %.4f", latitude_);

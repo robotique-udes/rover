@@ -61,7 +61,9 @@
         console.log("Received from Qt:", lat, lon, heading);
 
         const position = Cesium.Cartesian3.fromDegrees(lon, lat);
+
         entity.position = position;
+        entity.billboard.rotation = -heading;
 
         if (!viewInitialized) {
           // Set a static view around the first point
