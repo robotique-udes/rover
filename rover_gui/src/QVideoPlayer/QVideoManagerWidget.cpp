@@ -142,7 +142,6 @@ void QVideoManagerWidget::initArucoClient(void)
                                                              });
 }
 
-
 void QVideoManagerWidget::initCameraControlClient(void)
 {
     if (_node)

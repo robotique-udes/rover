@@ -26,9 +26,22 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
 
     connect(_ui.ScreenshotButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleScreenshot);
-    connect(_playerWorkerThread.get(), &QPlayerWorker::screenshotHandledSuccessfully, this, &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
+    connect(_playerWorkerThread.get(),
+            &QPlayerWorker::screenshotHandledSuccessfully,
+            this,
+            &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
 
     connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
+
+    connect(_playerWorkerThread.get(),
+    &QPlayerWorker::startRecordingHandledSuccessfully,
+    this,
+    &QVideoPlayerWidget::onStartRecordingHandledSuccessfully);
+
+    connect(_playerWorkerThread.get(),
+    &QPlayerWorker::stopRecordingHandledSuccessfully,
+    this,
+    &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
@@ -257,11 +270,11 @@ void QVideoPlayerWidget::handleRecording(void)
     {
         if (_ui.startRecordingButton->isChecked())
         {
-            _playerWorkerThread->stopRecordingManager(_client_cameraControlManager, _camURL, _tag);
+            _playerWorkerThread->startRecordingManager(_client_cameraControlManager, _camURL, _tag);
         }
         else
         {
-            _playerWorkerThread->startRecordingManager(_client_cameraControlManager, _camURL, _tag);
+            _playerWorkerThread->stopRecordingManager(_client_cameraControlManager, _camURL, _tag);
         }
     }
     else
@@ -273,39 +286,91 @@ void QVideoPlayerWidget::handleRecording(void)
 
 void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
 {
+
     if (tag_ == _tag)
     {
         if (!success_)
         {
-            _ui.ScreenshotButton->setProperty("class","error");
+            _ui.ScreenshotButton->setProperty("class", "error");
             _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
             _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
+
         }
         else
         {
-            _ui.ScreenshotButton->setProperty("class","error");
+            _ui.ScreenshotButton->setProperty("class", "success");
             _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
             _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-            //reset after 2s
+
         }
+
+        QTimer::singleShot(STYLE_RESET_TIME,
+                           this,
+                           [this]()
+                           {
+                               _ui.ScreenshotButton->setProperty("class", "");
+                               _ui.ScreenshotButton->style()->unpolish(_ui.startRecordingButton);
+                               _ui.ScreenshotButton->style()->polish(_ui.startRecordingButton);
+                           });
     }
     return;
 }
 
-void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
 {
     if (tag_ == _tag)
     {
         if (!success_)
         {
-            _ui.ScreenshotButton->setProperty("class","error");
-            _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
-            _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-            //reset after 2 seconds
+            _ui.startRecordingButton->setProperty("class", "error");
+            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
+            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
+
+            // reset after timer
+            QTimer::singleShot(STYLE_RESET_TIME,
+                               this,
+                               [this]()
+                               {
+                                   _ui.startRecordingButton->setProperty("class", "");
+                                   _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
+                                   _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
+                               });
         }
         else
         {
-            
+            _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
+            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
+            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
+        }
+    }
+    return;
+}
+
+void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
+{
+    if (tag_ == _tag)
+    {
+        if (!success_)
+        {
+            _ui.startRecordingButton->setProperty("class", "error");
+            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
+            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
+
+            // reset after timer
+            QTimer::singleShot(STYLE_RESET_TIME,
+                               this,
+                               [this]()
+                               {
+                                   _ui.startRecordingButton->setProperty("class", "");
+                                   _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
+                                   _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
+                               });
+        }
+        else
+        {
+            _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
+            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
+            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
         }
     }
     return;
