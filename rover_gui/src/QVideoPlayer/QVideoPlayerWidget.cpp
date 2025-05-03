@@ -308,7 +308,7 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
                            this,
                            [this]()
                            {
-                               _ui.ScreenshotButton->setProperty("class", "");
+                               _ui.ScreenshotButton->setProperty("class", "normal");
                                _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
                                _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
                            });
@@ -341,6 +341,9 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
             _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
             _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
+
+            _ui.rtspTextBox->setReadOnly(true);
+            _ui.rtspTextBox->setToolTip("To change the rtsp URL first stop the recording");
         }
     }
     return;
@@ -371,6 +374,9 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
             _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
             _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
+
+            _ui.rtspTextBox->setReadOnly(false);
+            _ui.rtspTextBox->setToolTip("");
         }
     }
     return;
