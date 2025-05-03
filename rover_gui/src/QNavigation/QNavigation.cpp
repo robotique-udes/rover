@@ -1,5 +1,6 @@
 #include "QNavigation.hpp"
 #include <QMessageBox>
+#include <QDebug>
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -172,5 +173,9 @@ void QNavigation::onClearWaypointsClicked()
         ui->inputLatitude->clear();
         ui->inputLongitude->clear();
         ui->distanceLabel->setText("N/A");
+        
+        // Tell the JavaScript side to clear waypoints from the map
+        qDebug() << "Emitting clearWaypoints signal";
+        emit clearWaypoints();
     }
 }

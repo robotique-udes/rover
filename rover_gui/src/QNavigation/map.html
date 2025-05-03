@@ -41,6 +41,41 @@
     let pathEntity = null;
     let waypointEntities = [];
     let waypointCounter = 1;
+    
+    function clearAllWaypoints() {
+      // Get a copy of all entities in the collection
+      const entities = viewer.entities.values.slice();
+      
+      // Loop through all entities and remove waypoints
+      for (let i = 0; i < entities.length; i++) {
+        const entity = entities[i];
+        
+        // Check if this is a waypoint entity (has a name that starts with "Waypoint" or is in our list)
+        const isWaypoint = entity.id && (
+          entity.id.startsWith('waypoint_') || 
+          waypointEntities.includes(entity) ||
+          (entity.name && entity.name.toString().includes('Waypoint'))
+        );
+        
+        if (isWaypoint) {
+          viewer.entities.remove(entity);
+          console.log("Removed entity:", entity.id || entity.name);
+        }
+      }
+      
+      // Also remove path entity if it exists
+      if (pathEntity) {
+        viewer.entities.remove(pathEntity);
+        pathEntity = null;
+        console.log("Removed path entity");
+      }
+      
+      // Reset waypoint tracking
+      waypointEntities = [];
+      waypointCounter = 1;
+      
+      console.log("Map waypoints cleared - entities remaining:", viewer.entities.values.length);
+    }
 
     const entity = viewer.entities.add({
       name: "Live Position Arrow",
@@ -123,10 +158,12 @@
         properties: {
           waypointName: waypointName,
           latitude: lat,
-          longitude: lon
+          longitude: lon,
+          isWaypoint: true  // Add a flag to identify this as a waypoint
         }
       });
 
+      console.log("Added waypoint entity:", waypointEntity.id);
       waypointEntities.push(waypointEntity);
       return waypointEntity;
     }
@@ -203,6 +240,13 @@
       bridge.calculatePath.connect(function (destLat, destLon) {
         const distance = drawPath(currentPosition.latitude, currentPosition.longitude, destLat, destLon);
         console.log(`Path distance (manual): ${distance.toFixed(2)} meters`);
+      });
+      
+      // Connect clearWaypoints signal
+      bridge.clearWaypoints.connect(function() {
+        console.log("clearWaypoints signal received!");
+        clearAllWaypoints();
+        console.log("Waypoints cleared from map");
       });
 
       // Signal that the JavaScript side is ready

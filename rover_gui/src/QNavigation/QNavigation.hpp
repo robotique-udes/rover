@@ -30,6 +30,7 @@ class QNavigation : public QWidget
     void sendGoal(QString waypointName, double latitude, double longitude);
     void calculatePath(double latitude, double longitude);
     void jsReady();
+    void clearWaypoints();
 
   public slots:
     void pathDistanceCalculated(double distanceMeters);
