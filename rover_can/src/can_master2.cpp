@@ -24,6 +24,7 @@ class CanMaster2 : public rclcpp::Node
         canMsg_.setMsgID(RoverCan2::Constant::eMsgId::CAM_POSITION_CMD);
 
         timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&CanMaster2::timerCallback, this));
+        updateTimer_ = this->create_wall_timer(std::chrono::nanoseconds(1000), std::bind(&CanMaster2::updateCallback, this));
     }
 
   private:
@@ -32,8 +33,14 @@ class CanMaster2 : public rclcpp::Node
         canDriver_._sendMsg(canMsg_);
     }
 
+    void updateCallback()
+    {
+        canDriver_.__update();
+    }
+
     RoverCan2::CanMsg canMsg_;
     rclcpp::TimerBase::SharedPtr timer_;
+    rclcpp::TimerBase::SharedPtr updateTimer_;
     RoverCan2::Drivers::DriverLinux canDriver_;
 };
 

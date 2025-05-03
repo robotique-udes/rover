@@ -4,6 +4,7 @@
 #include "rover_can2/drivers/driver_base.hpp"
 #include "rover_lib2/helpers/log.hpp"
 
+#include <fcntl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
 #include <sys/socket.h>
@@ -47,6 +48,12 @@ namespace RoverCan2::Drivers
             }
         }
 
+        void __update(void)
+        {
+            RoverCan2::CanMsg outMsg;
+            receiveMsg(outMsg);
+        }
+
         bool _sendMsg(const CanMsg& msg_)
         {
             struct can_frame frame{};
@@ -66,9 +73,32 @@ namespace RoverCan2::Drivers
             return true;
         }
 
-        std::optional<CanMsg> getMsg(void)
+        bool receiveMsg(RoverCan2::CanMsg& outMsg)
         {
-            return static_cast<Impl_T*>(this)->_getMsg();
+            int flags = fcntl(socket_fd, F_GETFL, 0);
+            fcntl(socket_fd, F_SETFL, flags | O_NONBLOCK);
+
+            struct can_frame frame;
+            ssize_t nbytes = read(socket_fd, &frame, sizeof(frame));
+
+            if (nbytes < 0)
+            {
+                LOG_ERROR(Logger::Nodes::DriverLinux, "CAN read error");
+                return false;
+            }
+            else if (static_cast<size_t>(nbytes) < sizeof(struct can_frame))
+            {
+                LOG_ERROR(Logger::Nodes::DriverLinux, "Incomplete CAN frame");
+                return false;
+            }
+
+            // Construct a RoverCan2::CanMsg from the raw frame
+            outMsg = RoverCan2::CanMsg(static_cast<RoverCan2::Constant::eDeviceId>(frame.can_id), frame.data, frame.can_dlc);
+
+            _sendMsg(outMsg);
+
+            LOG_INFO(Logger::Nodes::DriverLinux, "Received CAN ID: %u, Length: %u", frame.can_id, frame.can_dlc);
+            return true;
         }
 
       private:
