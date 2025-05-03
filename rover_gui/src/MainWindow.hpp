@@ -5,6 +5,7 @@
 #include "QNavigation/QNavigation.hpp"
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
+#include "QDeviceStatus/QDeviceStatus.hpp"
 
 #include <QStackedWidget>
 #include <QMainWindow>
@@ -31,6 +32,7 @@ class MainWindow : public QMainWindow
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
     QFileTransferWidget _fileTransferWidget;
+    QDeviceStatus _deviceStatusWidget;
 };
 
 #endif  // MAIN_WINDOWS_HPP

@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <ui version="4.0">
- <class>StatusPage</class>
- <widget class="QWidget" name="StatusPage">
+ <class>DeviceStatus</class>
+ <widget class="QWidget" name="DeviceStatus">
   <property name="geometry">
    <rect>
     <x>0</x>
@@ -69,7 +69,7 @@
     </widget>
    </item>
    <item>
-    <layout class="QHBoxLayout" name="DeviceStatus">
+    <layout class="QHBoxLayout" name="DeviceStatusWidget">
      <item>
       <widget class="QGroupBox" name="StatusReport">
        <property name="title">

@@ -1,4 +1,5 @@
-#ifndef __QDEVICESTATUS_HPP__
+//#ifndef __QDEVICESTATUS_HPP__
+#pragma once
 
 // ROS
 #include "rclcpp/rclcpp.hpp"
@@ -9,17 +10,17 @@
 #include <QtWidgets/QWidget>
 #include "UI_DeviceStatus.h"
 
-class DeviceStatus : public QWidget
+class QDeviceStatus : public QWidget
    {
+
+        Q_OBJECT
+
    public:
-   DeviceStatus(QWidget* parent_): QWidget(parent)
-   	{
-   		_ui.setupUi(this);
-   	}
-   	~DeviceStatus();
+   QDeviceStatus(QWidget* parent_ = nullptr);
+   	~QDeviceStatus();
 
    private:
    	Ui::DeviceStatus _ui;
    };
 
-#endif // __QDEVICESTATUS_HPP__
+//#endif // __QDEVICESTATUS_HPP__

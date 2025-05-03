@@ -83,6 +83,9 @@ add_executable(main_gui src/gui.cpp
                    src/QDashboard/QExample.hpp
                    src/QDashboard/QExample.cpp
 
+                   src/QDeviceStatus/QDeviceStatus.hpp
+                   src/QDeviceStatus/QDeviceStatus.cpp
+
                    src/QVideoPlayer/QVideoManagerWidget.cpp
                    src/QVideoPlayer/QVideoManagerWidget.hpp
                    src/QVideoPlayer/QVideoPlayerWidget.cpp
