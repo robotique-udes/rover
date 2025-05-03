@@ -3,8 +3,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "UI_ToastNotification.h"
-#include "UI_OpenNotifications.h"
+#include "UI_notificationHistoryPanel.h"
 #include "UI_NotificationHistory.h"
+
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
@@ -15,6 +16,7 @@
 #include <QGraphicsDropShadowEffect>
 #include <QStyle>
 #include <QDateTime>
+#include <QScrollBar>
 #include <deque>
 #include <qscrollarea.h>
 
@@ -98,11 +100,9 @@ namespace QHelper
         void showHistory();
 
       private:
-        QScrollArea _scrollArea;
         QRect _targetScreenRect;
-        QWidget _scrollAreaContainer;
-        QVBoxLayout _scrollAreaLayout;
-        QHBoxLayout _mainLayout;
+        Ui::historyPanel _ui;
+
     };
 
     class QNotificationHistoryData : public QWidget

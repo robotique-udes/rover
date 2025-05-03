@@ -250,37 +250,21 @@ namespace QHelper
         }
     }
 
-    QNotificationShowHistory::QNotificationShowHistory():_scrollArea(this),_mainLayout(this)
+    QNotificationShowHistory::QNotificationShowHistory()
     {
-        _scrollAreaContainer.setLayout(&_scrollAreaLayout);
-        _scrollArea.setWidgetResizable(true);
-
-        _scrollArea.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        _scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-        //_scrollAreaContainer.setMinimumWidth(_ui.historyScrollArea->width());
-
-        _scrollAreaLayout.setAlignment(Qt::AlignTop);
-
-        _scrollArea.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        _scrollArea.setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-
-        _mainLayout.addWidget(&_scrollArea);
-        setLayout(&_mainLayout);
-
+        _ui.setupUi(this);
         _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
+        _ui.scrollArea->setVisible(false);
         this->hide();
-        _scrollAreaContainer.setMinimumSize(400, 400); 
-        #warning enlever
-        this->setMinimumSize(400, 300);
     }
 
     void QNotificationShowHistory::showHistory()
     {
-        if (_scrollArea.isVisible())
+        if (_ui.scrollArea->isVisible())
         {
-            while (_scrollAreaLayout.count() > 0)
+            while (_ui.verticalLayout->count() > 1)
             {
-                QLayoutItem* item = _scrollAreaLayout.takeAt(0);
+                QLayoutItem* item = _ui.verticalLayout->takeAt(1);
                 if (item && item->widget())
                 {
                     delete item->widget();
@@ -290,8 +274,7 @@ namespace QHelper
                     delete item;
                 }
             }
-
-            _scrollArea.setWidget(nullptr);
+            _ui.scrollArea->setVisible(false);
             this->hide();
         }
 
@@ -305,13 +288,12 @@ namespace QHelper
 
                 if (dataWidget)
                 {
-                    _scrollAreaLayout.addWidget(dataWidget);
+                    _ui.verticalLayout->addWidget(dataWidget);
                 }
             }
-
-            _scrollArea.setWidget(&_scrollAreaContainer);
-            _scrollAreaContainer.setLayout(&_scrollAreaLayout);
             // Notify layout system
+            _ui.scrollArea->verticalScrollBar()->setValue(_ui.scrollArea->verticalScrollBar()->maximum());           
+            _ui.scrollArea->setVisible(true);
             this->show();
             this->raise();
             this->activateWindow();
