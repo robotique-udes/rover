@@ -149,6 +149,7 @@
           const waypoint = addWaypoint(lat, lon, name);
 
           if (window.bridge && window.bridge.waypointCreated) {
+            // Notify Qt/C++ side of the new waypoint
             window.bridge.waypointCreated(name, lat, lon);
           }
         }
@@ -204,6 +205,7 @@
         console.log(`Path distance (manual): ${distance.toFixed(2)} meters`);
       });
 
+      // Signal that the JavaScript side is ready
       if (bridge.jsReady) {
         bridge.jsReady();
       }

@@ -29,12 +29,14 @@ class QNavigation : public QWidget
     void gpsCallback(double latitude, double longitude, double heading);
     void sendGoal(QString waypointName, double latitude, double longitude);
     void calculatePath(double latitude, double longitude);
+    void jsReady();
 
   public slots:
     void pathDistanceCalculated(double distanceMeters);
     void onCalculatePathClicked();
     void onWaypointSelected(QListWidgetItem* item);
     void onClearWaypointsClicked();
+    void waypointCreated(QString name, double latitude, double longitude);
 
   private:
     void addWaypointToList(const QString& name, double latitude, double longitude);

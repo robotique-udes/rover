@@ -95,6 +95,12 @@ void QNavigation::pathDistanceCalculated(double distanceMeters)
     ui->distanceLabel->setText(distanceText);
 }
 
+void QNavigation::waypointCreated(QString name, double latitude, double longitude)
+{
+    // This slot will be called from JavaScript when a waypoint is created by double-clicking
+    addWaypointToList(name, latitude, longitude);
+}
+
 void QNavigation::onCalculatePathClicked()
 {
     // Check if a waypoint is selected in the list
