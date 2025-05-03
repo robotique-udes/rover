@@ -45,6 +45,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Gps.msg"
   "msg/GpsPosition.msg"
   "msg/CameraControl.msg"
+  "msg/CameraList.msg"
   "msg/LightControl.msg"
   "msg/ScienceControl.msg"
   "msg/ArmMsg.msg"

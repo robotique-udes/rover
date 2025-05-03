@@ -8,12 +8,15 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/gps_position.hpp"
 #include "rover_msgs/srv/camera_control.hpp"
+#include "rover_msgs/msg/camera_list.hpp"
 
 #include <sys/stat.h>
 #include <cstdlib>
 
 class CameraNode : public rclcpp::Node
 {
+    static constexpr uint64_t DELAY_PUBLISHER_MS = 10'000UL;
+
     enum class eFileFormatNameTypes : size_t
     {
         SCREENSHOT,
@@ -33,6 +36,7 @@ class CameraNode : public rclcpp::Node
                              rover_msgs::srv::CameraControl::Response& response_);
     void stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                             rover_msgs::srv::CameraControl::Response& response_);
+    void CB_url_publisher (void);
 
     std::string getCurrentTime(void);
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
@@ -49,7 +53,9 @@ class CameraNode : public rclcpp::Node
     void requestShutdown(std::string camURL_);
 
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
+    rclcpp::Publisher<rover_msgs::msg::CameraList>::SharedPtr _pub_urls;
     rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
+    rclcpp::TimerBase::SharedPtr _timer_pub;
 
     float _lastLatitude = 0.0;
     float _lastLongitude = 0.0;

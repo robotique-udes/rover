@@ -26,6 +26,14 @@ CameraNode::CameraNode():
             this->controlIPCam(*request_, *response_);
         });
 
+    _pub_urls = this->create_publisher<rover_msgs::msg::CameraList>("/rover/video/recording_list", 1);
+
+    _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
+                                               [this](void)
+                                               {
+                                                   this->CB_url_publisher();
+                                               });
+
     _sub_position
         = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
                                                                   1,
@@ -377,20 +385,22 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
  */
 bool CameraNode::stopRecording(std::string cameraURL_)
 {
-    std::lock_guard<std::mutex> lock(_recordingMapMutex);
-
-    if (_recordingMap.find(cameraURL_) == _recordingMap.end())
     {
-        return false;
-    }
+        std::lock_guard<std::mutex> lock(_recordingMapMutex);
 
-    _recordingMap.erase(cameraURL_);
-    if (_recordingMap.empty())
-    {
-        _watchDogStop.store(true);
-        _recordingCv.notify_one();
-    }
+        if (_recordingMap.find(cameraURL_) == _recordingMap.end())
+        {
+            return false;
+        }
 
+        _recordingMap.erase(cameraURL_);
+        if (_recordingMap.empty())
+        {
+            _watchDogStop.store(true);
+            _recordingCv.notify_one();
+        }
+    }
+    CB_url_publisher();
     return true;
 }
 
@@ -405,42 +415,45 @@ bool CameraNode::stopRecording(std::string cameraURL_)
  */
 bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_)
 {
-    std::lock_guard<std::mutex> lock(_recordingMapMutex);
-    if (_recordingMap.find(cameraURL_) != _recordingMap.end())  // check if recording doesn't already exist
     {
-        Recording& rRecording = _recordingMap.at(cameraURL_);
-        RCLCPP_WARN(LOGGER, "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
-        return false;
-    }
-    else
-    {
-        _recordingMap.emplace(cameraURL_,
-                              Recording(videoFolderPath_,
-                                        filename_,
-                                        cameraURL_,
-                                        LOGGER,
-                                        [this](std::string url_)
-                                        {
-                                            this->requestShutdown(url_);
-                                        }));
-
-        if (!_videoThread.joinable())
+        std::lock_guard<std::mutex> lock(_recordingMapMutex);
+        if (_recordingMap.find(cameraURL_) != _recordingMap.end())  // check if recording doesn't already exist
         {
-            startWatchDog();
-        }
-
-        // Access the recording using at() to safely get the reference
-        Recording& rRecording = _recordingMap.at(cameraURL_);
-
-        if (rRecording.startRecording())
-        {
-            return true;
+            Recording& rRecording = _recordingMap.at(cameraURL_);
+            RCLCPP_WARN(LOGGER, "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
+            return false;
         }
         else
         {
-            return false;
+            _recordingMap.emplace(cameraURL_,
+                                Recording(videoFolderPath_,
+                                            filename_,
+                                            cameraURL_,
+                                            LOGGER,
+                                            [this](std::string url_)
+                                            {
+                                                this->requestShutdown(url_);
+                                            }));
+
+            if (!_videoThread.joinable())
+            {
+                startWatchDog();
+            }
+
+            // Access the recording using at() to safely get the reference
+            Recording& rRecording = _recordingMap.at(cameraURL_);
+
+            if (rRecording.startRecording())
+            {
+                return true;
+            }
+            else
+            {
+                return false;
+            }
         }
     }
+    CB_url_publisher();
 }
 
 /**
@@ -527,7 +540,27 @@ void CameraNode::videoWatchDogFunction(void)
 
             _recordingShutdownRequestSet.clear();
         }
+
+        lock.unlock();
+        CB_url_publisher();
+        lock.lock();
     }
     RCLCPP_DEBUG(LOGGER, "Stopping video watchdog");
     return;
+}
+
+void CameraNode::CB_url_publisher(void)
+{
+    rover_msgs::msg::CameraList msg;
+
+    {
+        std::lock_guard<std::mutex> lock(_recordingMapMutex);
+
+        for (const auto& recording : _recordingMap)
+        {
+            msg.urls.push_back(recording.second.getURL());
+        }
+    }
+
+    _pub_urls->publish(msg);
 }
