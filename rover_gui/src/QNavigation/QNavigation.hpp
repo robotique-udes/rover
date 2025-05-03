@@ -31,12 +31,14 @@ class QNavigation : public QWidget
     void calculatePath(double latitude, double longitude);
     void jsReady();
     void clearWaypoints();
+    void clearPath();
 
   public slots:
     void pathDistanceCalculated(double distanceMeters);
     void onCalculatePathClicked();
     void onWaypointSelected(QListWidgetItem* item);
     void onClearWaypointsClicked();
+    void onClearPathClicked();
     void waypointCreated(QString name, double latitude, double longitude);
 
   private:
@@ -47,6 +49,7 @@ class QNavigation : public QWidget
     QLineEdit* _lineEditLongitude;
     QPushButton* _pushButtonSetGoal;
     QPushButton* _pushButtonCalculatePath;
+    // QPushButton* clearPathButton;
     QLabel* _labelDistance;
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
