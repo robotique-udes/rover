@@ -16,6 +16,7 @@
 #include <QStyle>
 #include <QDateTime>
 #include <deque>
+#include <qscrollarea.h>
 
 namespace QHelper
 {
@@ -97,11 +98,11 @@ namespace QHelper
         void showHistory();
 
       private:
-        Ui::historyWidget _ui;
-
+        QScrollArea _scrollArea;
         QRect _targetScreenRect;
         QWidget _scrollAreaContainer;
         QVBoxLayout _scrollAreaLayout;
+        QHBoxLayout _mainLayout;
     };
 
     class QNotificationHistoryData : public QWidget

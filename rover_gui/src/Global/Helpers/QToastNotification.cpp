@@ -1,5 +1,6 @@
 #include "QToastNotification.hpp"
 #include <QScreen>
+#include <qsizepolicy.h>
 
 namespace QHelper
 {
@@ -210,8 +211,9 @@ namespace QHelper
         setWindowOpacity(0.0);
         _ui.progressBar->setValue(100);
 
-        this->show();
         this->raise();
+        this->show();
+
 
         _progressBarAnim.setDuration(durationMs_);
 
@@ -248,31 +250,33 @@ namespace QHelper
         }
     }
 
-    QNotificationShowHistory::QNotificationShowHistory()
+    QNotificationShowHistory::QNotificationShowHistory():_scrollArea(this),_mainLayout(this)
     {
-        setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
-        setAttribute(Qt::WA_TranslucentBackground);
-
-        _ui.setupUi(this);
-
         _scrollAreaContainer.setLayout(&_scrollAreaLayout);
-        _scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        _scrollAreaContainer.setMinimumWidth(_ui.historyScrollArea->width());
+        _scrollArea.setWidgetResizable(true);
+
+        _scrollArea.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        _scrollAreaContainer.setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+        //_scrollAreaContainer.setMinimumWidth(_ui.historyScrollArea->width());
 
         _scrollAreaLayout.setAlignment(Qt::AlignTop);
 
-        this->move(-100, height());
+        _scrollArea.setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
+        _scrollArea.setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
 
-        _ui.historyScrollArea->setHorizontalScrollBarPolicy(Qt::ScrollBarAlwaysOff);
-        _ui.historyScrollArea->setVerticalScrollBarPolicy(Qt::ScrollBarAsNeeded);
-        _ui.historyScrollArea->setVisible(false);
+        _mainLayout.addWidget(&_scrollArea);
+        setLayout(&_mainLayout);
 
         _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
+        this->hide();
+        _scrollAreaContainer.setMinimumSize(400, 400); 
+        #warning enlever
+        this->setMinimumSize(400, 300);
     }
 
     void QNotificationShowHistory::showHistory()
     {
-        if (_ui.historyScrollArea->isVisible())
+        if (_scrollArea.isVisible())
         {
             while (_scrollAreaLayout.count() > 0)
             {
@@ -287,12 +291,7 @@ namespace QHelper
                 }
             }
 
-            _ui.historyScrollArea->setWidget(nullptr);
-            _ui.historyScrollArea->setVisible(false);
-
-            size_t offScreenX = _targetScreenRect.right() + 100;
-            size_t offScreenY = _targetScreenRect.bottom() + 100;
-            this->move(offScreenX, offScreenY);
+            _scrollArea.setWidget(nullptr);
             this->hide();
         }
 
@@ -310,12 +309,9 @@ namespace QHelper
                 }
             }
 
-            _ui.historyScrollArea->setWidget(&_scrollAreaContainer);
-            size_t X = _targetScreenRect.right() - width() - MARGIN;
-            size_t Y = _targetScreenRect.bottom() - height() - 8 * MARGIN;
-
-            this->move(X, Y);
-            _ui.historyScrollArea->setVisible(true);
+            _scrollArea.setWidget(&_scrollAreaContainer);
+            _scrollAreaContainer.setLayout(&_scrollAreaLayout);
+            // Notify layout system
             this->show();
             this->raise();
             this->activateWindow();
@@ -330,7 +326,6 @@ namespace QHelper
         _ui.setupUi(this);
         this->setStyle();
         this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Fixed);
-        this->setMinimumHeight(170);
 
         _ui.historyTitle->setText(title_);
         _ui.historyDescription->setText(description_);
@@ -428,4 +423,4 @@ namespace QHelper
                 outline: none;
             })");
     }
-}  // namespace QHelper
+}  

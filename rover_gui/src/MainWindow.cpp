@@ -8,8 +8,8 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     QMainWindow(nullptr),
     _centralWidget(this),
     _hBoxContainer(this),
-    _layout(this),
-    _verticalLayout(this),
+    _layout(&_hBoxContainer),
+    _verticalLayout(&_centralWidget),
     _stackedWidget(this),
     _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
     _sideBarWidget(this),
@@ -25,16 +25,15 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
 
     _layout.addWidget(&_sideBarWidget);
     _layout.addWidget(&_stackedWidget);
+    _layout.addWidget(&_notificationHistoryWidget);
 
     _hBoxContainer.setLayout(&_layout);
 
     _verticalLayout.addWidget(&_hBoxContainer);
     _verticalLayout.addWidget(&_bottomUtilityBar);
 
-    _bottomUtilityBar.setFixedHeight(30);
-
-    setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
+    setCentralWidget(&_centralWidget);
 
     connect(&_sideBarWidget, &QSideBar::switchPage, &_stackedWidget, &QStackedWidget::setCurrentIndex);
     connect(&_bottomUtilityBar,
