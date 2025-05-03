@@ -9,6 +9,7 @@
 #include <sys/socket.h>
 #include <net/if.h>
 #include <sys/ioctl.h>
+#include <unistd.h>
 
 DEFINE_LOG_NODE(DriverLinux, Logger::eNodeState::ON);
 
@@ -36,9 +37,7 @@ namespace RoverCan2::Drivers
                 return;
             }
 
-            struct sockaddr_can addr
-            {
-            };
+            struct sockaddr_can addr{};
             addr.can_family = AF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
 
@@ -46,6 +45,25 @@ namespace RoverCan2::Drivers
             {
                 throw std::runtime_error("Failed to bind CAN socket");
             }
+        }
+
+        bool _sendMsg(const CanMsg& msg_)
+        {
+            struct can_frame frame{};
+            frame.can_id = static_cast<uint32_t>(msg_.getCanID());
+            frame.can_dlc = msg_.dataLength;
+
+            std::memcpy(frame.data, msg_.msgData.data(), frame.can_dlc);
+
+            int bytes_sent = write(socket_fd, &frame, sizeof(struct can_frame));
+            if (bytes_sent != sizeof(struct can_frame))
+            {
+                LOG_ERROR(Logger::Nodes::DriverLinux, "Failed to send CAN message");
+                return false;
+            }
+
+            LOG_INFO(Logger::Nodes::DriverLinux, "Sent CAN message with ID: " + std::to_string(frame.can_id));
+            return true;
         }
 
       private:
