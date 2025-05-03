@@ -309,8 +309,8 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
                            [this]()
                            {
                                _ui.ScreenshotButton->setProperty("class", "");
-                               _ui.ScreenshotButton->style()->unpolish(_ui.startRecordingButton);
-                               _ui.ScreenshotButton->style()->polish(_ui.startRecordingButton);
+                               _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
+                               _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
                            });
     }
     return;
@@ -323,8 +323,8 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
         if (!success_)
         {
             _ui.startRecordingButton->setProperty("class", "error");
-            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
-            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
+            _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
+            _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
 
             // reset after timer
             QTimer::singleShot(STYLE_RESET_TIME,
@@ -339,8 +339,8 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
         else
         {
             _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
-            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
+            _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
+            _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
         }
     }
     return;
@@ -369,8 +369,8 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
         else
         {
             _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
-            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
-            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
+            _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
+            _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
         }
     }
     return;
