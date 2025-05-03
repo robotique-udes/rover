@@ -7,6 +7,8 @@
   <script src="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js"></script>
   <link href="https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Widgets/widgets.css" rel="stylesheet">
   <script type="text/javascript" src="qrc:///qtwebchannel/qwebchannel.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/sweetalert2@11"></script>
+
   <style>
     html,
     body,
@@ -25,27 +27,24 @@
 
   <script>
     Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyODRhYTgwMi1hNzk2LTRiMTgtYjc3Yy1mMTY2ZTQ0ZmU5N2UiLCJpZCI6Mjk4ODk2LCJpYXQiOjE3NDYxNDc2NjB9.GetTldL9Qxi4_Qyw8fPEGdkAH-1veIPLdltlKYF-VVw';
-    // Initialize the Cesium viewer
+
     const viewer = new Cesium.Viewer("cesiumContainer", {
       terrain: Cesium.Terrain.fromWorldTerrain({
         requestWaterMask: true,
         requestVertexNormals: true,
       }),
-      sceneMode: Cesium.SceneMode.SCENE2D, // 2D mode gives a top-down view
-      mapMode2D: Cesium.MapMode2D.ROTATE, // Allow rotation but keep top-down
+      sceneMode: Cesium.SceneMode.SCENE2D,
+      mapMode2D: Cesium.MapMode2D.ROTATE,
     });
 
-    let currentPosition = {
-      latitude: 40.0,
-      longitude: -75.0
-    };
-
+    let currentPosition = { latitude: 40.0, longitude: -75.0 };
     let pathEntity = null;
     let waypointEntities = [];
+    let waypointCounter = 1;
 
-    let entity = viewer.entities.add({
+    const entity = viewer.entities.add({
       name: "Live Position Arrow",
-      position: Cesium.Cartesian3.fromDegrees(-75.0, 40.0, 20), // Add small height offset
+      position: Cesium.Cartesian3.fromDegrees(-75.0, 40.0, 20),
       billboard: {
         image: 'qrc:/arrow.png',
         width: 30,
@@ -53,18 +52,13 @@
         alignedAxis: Cesium.Cartesian3.UNIT_Z,
         rotation: 0,
         color: Cesium.Color.RED,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM // Ensures arrow sits on surface
+        verticalOrigin: Cesium.VerticalOrigin.BOTTOM
       }
     });
 
-    // Function to calculate and draw the path
     function drawPath(startLat, startLon, endLat, endLon) {
-      // If there's an existing path, remove it
-      if (pathEntity) {
-        viewer.entities.remove(pathEntity);
-      }
+      if (pathEntity) viewer.entities.remove(pathEntity);
 
-      // Create the path entity
       pathEntity = viewer.entities.add({
         name: "Path to Waypoint",
         polyline: {
@@ -82,57 +76,115 @@
         }
       });
 
-      // Calculate and show distance
       const distance = calculateHaversineDistance(startLat, startLon, endLat, endLon);
-      
-      // Send the distance back to C++
-      bridge.pathDistanceCalculated(distance);
-      
+
+      if (window.bridge) {
+        window.bridge.pathDistanceCalculated(distance);
+      }
+
       return distance;
     }
 
-    // Haversine formula to calculate great-circle distance between two points
     function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
-      const R = 6371000; // Earth radius in meters
+      const R = 6371000;
       const dLat = (lat2 - lat1) * Math.PI / 180;
       const dLon = (lon2 - lon1) * Math.PI / 180;
-      
-      const a = Math.sin(dLat/2) * Math.sin(dLat/2) +
-                Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) * 
-                Math.sin(dLon/2) * Math.sin(dLon/2);
-                
-      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1-a));
-      const distance = R * c; // Distance in meters
-      
-      return distance;
+
+      const a = Math.sin(dLat / 2) ** 2 +
+        Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+        Math.sin(dLon / 2) ** 2;
+
+      const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+      return R * c;
     }
 
-    // WebChannel: receives data from C++/Qt
+    function addWaypoint(lat, lon, name) {
+      const waypointName = name || `Waypoint ${waypointCounter++}`;
+      const waypointEntity = viewer.entities.add({
+        id: `waypoint_${waypointEntities.length}`,
+        name: waypointName,
+        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        point: {
+          pixelSize: 10,
+          color: Cesium.Color.BLUE,
+        },
+        label: {
+          text: waypointName,
+          font: '14pt sans-serif',
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          outlineWidth: 2,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, -10),
+          fillColor: Cesium.Color.WHITE,
+          outlineColor: Cesium.Color.BLACK,
+          showBackground: true,
+          backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7)
+        },
+        properties: {
+          waypointName: waypointName,
+          latitude: lat,
+          longitude: lon
+        }
+      });
+
+      waypointEntities.push(waypointEntity);
+      return waypointEntity;
+    }
+
+    function showWaypointDialog(lat, lon) {
+      Swal.fire({
+        title: 'Add Waypoint',
+        input: 'text',
+        inputLabel: 'Waypoint Name',
+        inputValue: `Waypoint ${waypointCounter}`,
+        showCancelButton: true,
+        confirmButtonText: 'Add',
+        cancelButtonText: 'Cancel',
+        inputValidator: (value) => {
+          if (!value) return 'Please enter a name';
+        }
+      }).then((result) => {
+        if (result.isConfirmed) {
+          const name = result.value;
+          const waypoint = addWaypoint(lat, lon, name);
+
+          if (window.bridge && window.bridge.waypointCreated) {
+            window.bridge.waypointCreated(name, lat, lon);
+          }
+        }
+      });
+    }
+
+    viewer.screenSpaceEventHandler.setInputAction(function (click) {
+      const cartesian = viewer.camera.pickEllipsoid(click.position, viewer.scene.globe.ellipsoid);
+      if (cartesian) {
+        const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        const lat = Cesium.Math.toDegrees(cartographic.latitude);
+        const lon = Cesium.Math.toDegrees(cartographic.longitude);
+        showWaypointDialog(lat, lon);
+      }
+    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
     new QWebChannel(qt.webChannelTransport, function (channel) {
       const bridge = channel.objects.bridge;
-      window.bridge = bridge; // Make bridge accessible globally
+      window.bridge = bridge;
 
       let viewInitialized = false;
 
       bridge.gpsCallback.connect(function (lat, lon, heading) {
-        console.log("Received from Qt:", lat, lon, heading);
-
-        // Update the current position
         currentPosition.latitude = lat;
         currentPosition.longitude = lon;
 
         const position = Cesium.Cartesian3.fromDegrees(lon, lat);
-
         entity.position = position;
         entity.billboard.rotation = -heading;
 
         if (!viewInitialized) {
-          // Set a static view around the first point
           viewer.camera.setView({
-            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0), // Adjust zoom level
+            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
             orientation: {
               heading: 0.0,
-              pitch: -90.0, // Look straight down
+              pitch: -90.0,
               roll: 0.0
             }
           });
@@ -141,56 +193,21 @@
       });
 
       bridge.sendGoal.connect(function (name, lat, lon) {
-        console.log("Received goal from Qt:", name, lat, lon);
-
-        // Add a marker for the goal with the name
-        const waypointEntity = viewer.entities.add({
-          id: `waypoint_${waypointEntities.length}`,
-          name: name,
-          position: Cesium.Cartesian3.fromDegrees(lon, lat),
-          point: {
-            pixelSize: 10,
-            color: Cesium.Color.BLUE,
-          },
-          label: {
-            text: name,
-            font: '14pt sans-serif',
-            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-            outlineWidth: 2,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            pixelOffset: new Cesium.Cartesian2(0, -10),
-            fillColor: Cesium.Color.WHITE,
-            outlineColor: Cesium.Color.BLACK,
-            showBackground: true,
-            backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7)
-          },
-          // Store coordinates for later use
-          properties: {
-            waypointName: name,
-            latitude: lat,
-            longitude: lon
-          }
-        });
-
-        // Add the entity to our waypoint tracking array
-        waypointEntities.push(waypointEntity);
-
-        // Draw the path from current position to the waypoint
-        const distance = drawPath(currentPosition.latitude, currentPosition.longitude, lat, lon);
-        console.log(`Path distance: ${distance.toFixed(2)} meters`);
-
-        // Optionally fly to it
+        addWaypoint(lat, lon, name);
         viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
         });
       });
 
-      // Add function to manually calculate path
       bridge.calculatePath.connect(function (destLat, destLon) {
         const distance = drawPath(currentPosition.latitude, currentPosition.longitude, destLat, destLon);
         console.log(`Path distance (manual): ${distance.toFixed(2)} meters`);
+      });
+
+      if (bridge.jsReady) {
+        bridge.jsReady();
+      }
     });
-  });
   </script>
 </body>
 
