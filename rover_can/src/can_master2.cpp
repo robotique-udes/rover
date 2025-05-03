@@ -14,18 +14,14 @@ class CanMaster2 : public rclcpp::Node
     CanMaster2():
         Node("can_master2")
     {
-        // Timer to show activity (optional)
         canDriver_.__init();
 
-        // Prepare angle value to send
         float angle = 69.0f;
         std::array<uint8_t, 8> data = {};
-        std::memcpy(data.data() + 2, &angle, sizeof(float)); // Store at index 2 (after MSG_ID and MSG_CONTENT_ID)
+        std::memcpy(data.data() + 2, &angle, sizeof(float));
 
-        // Set up message
         canMsg_ = RoverCan2::CanMsg(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_FRONT, data.data(), 6);
         canMsg_.setMsgID(RoverCan2::Constant::eMsgId::CAM_POSITION_CMD);
-        canMsg_.setMsgContentID(0); // Set if needed
 
         timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&CanMaster2::timerCallback, this));
     }

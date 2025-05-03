@@ -66,6 +66,11 @@ namespace RoverCan2::Drivers
             return true;
         }
 
+        std::optional<CanMsg> getMsg(void)
+        {
+            return static_cast<Impl_T*>(this)->_getMsg();
+        }
+
       private:
         int socket_fd = -1;
     };
