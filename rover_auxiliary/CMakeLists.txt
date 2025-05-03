@@ -27,7 +27,7 @@ ament_target_dependencies(goal_manager
 target_link_libraries(goal_manager rover_shared_libs)
 
 
-add_executable(ddb_control src/DDB/ddb_control.cpp)
+add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 ament_target_dependencies(ddb_control
                           rclcpp
                           rover_msgs
