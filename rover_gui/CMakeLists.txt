@@ -106,6 +106,12 @@ target_link_libraries(main_gui
                         ${LIBSSH_LIBRARY}
                         rover_shared_libs)
 
+                        
+set(RESOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/ressources/ressources.qrc)
+qt_add_resources(RESOURCES ${RESOURCE_FILE})
+target_sources(main_gui PRIVATE ${RESOURCES})
+                      
+
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})

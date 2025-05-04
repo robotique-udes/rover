@@ -25,6 +25,9 @@
         <height>511</height>
        </rect>
       </property>
+      <property name="styleSheet">
+       <string notr="true">background-image: url(:/rovUS/images/rover.png);</string>
+      </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
       </property>
@@ -32,7 +35,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="../../../../../../UI_images.qrc">:/newPrefix/Downloads/-P6XYYcJ.jpeg</pixmap>
+       <pixmap resource="../../src/ressources/ressources.qrc">:/rovUS/images/rover.png</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -47,8 +50,8 @@
      <widget class="QPushButton" name="test">
       <property name="geometry">
        <rect>
-        <x>230</x>
-        <y>70</y>
+        <x>220</x>
+        <y>190</y>
         <width>80</width>
         <height>23</height>
        </rect>
@@ -85,8 +88,7 @@
   </layout>
  </widget>
  <resources>
-  <include location="../../../../../../UI_images.qrc"/>
-  <include location="../../../../../../../../../../UI_images.qrc"/>
+  <include location="../../src/ressources/ressources.qrc"/>
  </resources>
  <connections/>
 </ui>
