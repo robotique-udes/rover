@@ -2,6 +2,7 @@
 #define __ICON_MANAGER_HPP__
 
 #include <QIcon>
+#include <unordered_map>
 
 /**
  * @brief Singleton to manage icons from certain extension

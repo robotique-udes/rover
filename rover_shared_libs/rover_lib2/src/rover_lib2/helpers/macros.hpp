@@ -21,6 +21,7 @@ constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 
 #define IN
 #define OUT
+#define INOUT
 
 // Necessary for following macros because VSCode's Microsoft CPP language server doesn't work with template and throws a bunch of
 // false positive errors

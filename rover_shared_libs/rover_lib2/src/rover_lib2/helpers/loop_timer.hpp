@@ -18,14 +18,14 @@ template<typename ClockT, ClockT (*CLOCK_FUNC)(void)>
 class LoopTimer
 {
   public:
-    LoopTimer(ClockT interval_):
+    LoopTimer(ClockT interval_): 
         _interval(interval_),
         _nextTriggerTime(CLOCK_FUNC()),
         _overrunFalsePositiveLatch(false)
     {
     }
 
-    bool isReady()
+    virtual bool isReady()
     {
         const ClockT currentTime = CLOCK_FUNC();
         if (currentTime < _nextTriggerTime)
@@ -71,7 +71,7 @@ class LoopTimer
         return _interval;
     }
 
-  private:
+  protected:
     ClockT _interval;
     ClockT _nextTriggerTime;
     bool _overrunFalsePositiveLatch;

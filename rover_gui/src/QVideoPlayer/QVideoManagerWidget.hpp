@@ -5,7 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
-#include "rovus_lib/camera_info.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
