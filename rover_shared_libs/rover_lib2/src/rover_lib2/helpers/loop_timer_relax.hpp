@@ -22,21 +22,21 @@ class LoopTimerRelax : public LoopTimer<ClockT, CLOCK_FUNC>
     bool isReady() override
     {
         const ClockT currentTime = CLOCK_FUNC();
-        if (currentTime < _nextTriggerTime)
+        if (currentTime < this->_nextTriggerTime)
         {
             return false;
         }
 
-        _nextTriggerTime += _interval;
-        if (currentTime >= _nextTriggerTime)
+        this->_nextTriggerTime += this->_interval;
+        if (currentTime >= this->_nextTriggerTime)
         {
-            if (currentTime >= _nextTriggerTime + _interval)
+            if (currentTime >= this->_nextTriggerTime + this->_interval)
             {
-                _nextTriggerTime = currentTime + _interval;
+                this->_nextTriggerTime = currentTime + this->_interval;
             }
             else
             {
-                _nextTriggerTime += _interval;
+                this->_nextTriggerTime += this->_interval;
             }
         }
 
