@@ -142,4 +142,6 @@ constexpr T ROUND_DOWN(T value_)
     (((float)(x) - (float)(in_min)) * ((float)(out_max) - (float)(out_min)) / ((float)(in_max) - (float)(in_min)) \
      + (float)(out_min))
 
+#define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
+
 #endif  // MACROS_HPP
