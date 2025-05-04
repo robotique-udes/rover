@@ -12,10 +12,8 @@
 #include <QPushButton>
 #include <QLineEdit>
 #include <vector>
-#include <unordered_map>
-#include <QVariant>
 
-// Forward declaration for CameraController
+// Forward declaration for ParameterHandler
 namespace camera {
     enum class FramerateValues;
     enum class ShutterValues;
@@ -25,7 +23,7 @@ namespace camera {
     enum class WhiteBalanceModes;
     enum class IRModes;
 }
-class CameraController;
+class ParameterHandler;
 
 namespace Ui {
     class CameraSettingsWidget;
@@ -40,27 +38,18 @@ public:
     ~CameraSettings();
 
     void loadPredefinedIPs(const std::vector<QString>& ips);
-    bool isSettingsModified() const { return _isModified; }
     void showSettings(const QString& streamUrl = QString());
 
 private slots:
     void applyCameraSettings();
     void resetCameraDefaults();
     void onExposureModeChanged(int index);
-    void onSettingChanged();
 
 private:
-    // Parameter tracking structure
-    struct ParameterState {
-        bool modified = false;
-        QVariant value;
-    };
-
     void setupUI();
     void connectSignals();
     void setupCameraSettingsConnections();
     void connectSliderAndSpinBox(const QString& baseName);
-    void connectCheckBoxToControls(const QString& checkBoxName, const QStringList& controlNames);
     void loadCameraSettings(const QString& ip);
     void applyCameraBasicSettings(const QString& ip);
     void applyCameraImageEnhancementSettings(const QString& ip);
@@ -71,15 +60,11 @@ private:
     QString extractIpFromUrl(const QString& url);
 
     Ui::CameraSettingsWidget* _ui;
-    bool _isModified;
     QString _currentIp;
     QString _streamUrl;
     
-    // Parameter states tracking
-    std::unordered_map<QString, ParameterState> _parameterStates;
-
     // Camera controller - static singleton instance
-    static std::unique_ptr<CameraController> _cameraController;
+    static std::unique_ptr<ParameterHandler> _cameraController;
 };
 
 #endif // CAMERA_SETTINGS_HPP

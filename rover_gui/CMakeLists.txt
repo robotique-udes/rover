@@ -16,7 +16,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 
-# Add Python and pybind11 requirements for IPCameraAPI
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 find_package(pybind11 REQUIRED)
 
@@ -26,6 +25,10 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
+
+set(PYTHON_MODULE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}/python_modules")
+# Pass this path to the C++ code as a compile definition
+add_compile_definitions(PYTHON_MODULE_PATH="${PYTHON_MODULE_INSTALL_DIR}")
 
 include_directories(
   src
@@ -51,24 +54,20 @@ add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
 # Copy Python module to build directory to ensure it's findable at runtime
 add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/ipcamera_api.py
+    OUTPUT ${CMAKE_BINARY_DIR}/python_modules/ipcamera_api.py
+    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/python_modules
     COMMAND ${CMAKE_COMMAND} -E copy
             ${CMAKE_SOURCE_DIR}/src/Global/Helpers/ipcamera_api.py
-            ${CMAKE_BINARY_DIR}/ipcamera_api.py
+            ${CMAKE_BINARY_DIR}/python_modules/ipcamera_api.py
     DEPENDS ${CMAKE_SOURCE_DIR}/src/Global/Helpers/ipcamera_api.py
     COMMENT "Copying ipcamera_api.py to build directory"
 )
-add_custom_target(copy_python_module ALL DEPENDS ${CMAKE_BINARY_DIR}/ipcamera_api.py)
+add_custom_target(copy_python_module ALL DEPENDS ${CMAKE_BINARY_DIR}/python_modules/ipcamera_api.py)
 
 # First create the IPCamera library
 add_library(ipcamera_api
     src/Global/Helpers/IPCameraAPI.hpp
     src/Global/Helpers/IPCameraAPI.cpp
-)
-
-# Add ROS2 dependencies to the camera API library
-ament_target_dependencies(ipcamera_api
-    rclcpp
 )
 
 target_link_libraries(ipcamera_api

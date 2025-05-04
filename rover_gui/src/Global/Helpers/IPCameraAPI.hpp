@@ -9,7 +9,6 @@
 #include <memory>
 #include <unordered_map>
 #include <mutex>
-#include <rclcpp/logger.hpp>
 
 #define slots Q_SLOTS 
 namespace py = pybind11;
@@ -98,7 +97,7 @@ enum class AEGains {
 } // namespace camera
 
 // Use the same visibility attribute as pybind11 to avoid warnings
-class PYBIND11_EXPORT CameraController {
+class PYBIND11_EXPORT ParameterHandler {
 private:
     // Connection parameters
     int default_port;
@@ -111,11 +110,10 @@ private:
     };
     
     std::unordered_map<std::string, CameraConnection> connectionCache;
-    rclcpp::Logger logger;
     std::mutex cacheMutex;
     
     // Python module reference 
-    py::module ipcamera_api_module;
+    py::object ipcamera_api_module;
     
     // Get or create a controller for the given IP
     PyObjectWrapper* getOrCreateController(const std::string& ip);
@@ -124,16 +122,15 @@ private:
     py::object getPythonEnum(const std::string& enum_class, int value);
 
 public:
-    // Constructor with optional node name for logger and connection parameters
-    explicit CameraController(
-        const std::string& node_name = "camera_controller",
-        int port = 80,
+    // Constructor with connection parameters
+    explicit ParameterHandler(
         const std::string& username = "admin", 
-        const std::string& password = "admin"
+        const std::string& password = "admin",
+        int port = 8999
     );
     
     // Destructor
-    ~CameraController();
+    ~ParameterHandler();
     
     // Set Python module path
     static void setPythonModulePath(const std::string& path);
@@ -144,7 +141,7 @@ public:
     bool setSaturation(const std::string& ip, int value);
     bool setSharpness(const std::string& ip, int value);
     bool setResolution(const std::string& ip, const std::string& value);
-    bool setFrameRate(const std::string& ip, camera::FramerateValues value);
+    bool setFrameRate(const std::string& ip, int value);
     bool setBitrate(const std::string& ip, int value);
     
     bool disableWideDynamicRange(const std::string& ip);
@@ -173,14 +170,11 @@ public:
     bool setAntiFog(const std::string& ip, int value);
     bool disableAntiFog(const std::string& ip);
     
-    bool setScene(const std::string& ip, camera::Scenes mode = camera::Scenes::INDOOR);
-    bool setExposureMode(const std::string& ip, camera::ExposureModes mode = camera::ExposureModes::MANUAL);
-    bool setShutterSpeed(const std::string& ip, camera::ShutterValues value = camera::ShutterValues::_1_50);
-    bool setManualACG(const std::string& ip, camera::AEGains value = camera::AEGains::_1X);
-    bool setWhiteBalanceMode(const std::string& ip, camera::WhiteBalanceModes mode = camera::WhiteBalanceModes::AUTO);
-    bool setIRMode(const std::string& ip, camera::IRModes mode = camera::IRModes::AUTO);
+    bool setScene(const std::string& ip, int sceneValue);
+    bool setExposureMode(const std::string& ip, int modeValue);
+    bool setShutterSpeed(const std::string& ip, int valueNum);
+    bool setManualACG(const std::string& ip, int valueNum);
+    bool setWhiteBalanceMode(const std::string& ip, int modeValue);
+    bool setIRMode(const std::string& ip, int modeValue);
     bool disableIR(const std::string& ip);
-    
-    // Method to reset parameters tracking
-    bool resetParameters(const std::string& ip);
 };

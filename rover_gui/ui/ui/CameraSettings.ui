@@ -13,6 +13,9 @@
   <property name="windowTitle">
    <string>Camera Settings</string>
   </property>
+  <property name="styleSheet">
+   <string>QCheckBox { color: white; }</string>
+  </property>
   <layout class="QVBoxLayout" name="settingsLayout">
     <property name="spacing">
       <number>6</number>
@@ -111,7 +114,7 @@
                 <layout class="QGridLayout" name="basicSettingsLayout">
                   <!-- Brightness -->
                   <item row="0" column="0">
-                    <widget class="QLabel" name="brightnessLabel">
+                    <widget class="QCheckBox" name="brightnessCheckbox">
                       <property name="text">
                         <string>Brightness:</string>
                       </property>
@@ -149,7 +152,7 @@
                   
                   <!-- Contrast -->
                   <item row="1" column="0">
-                    <widget class="QLabel" name="contrastLabel">
+                    <widget class="QCheckBox" name="contrastCheckbox">
                       <property name="text">
                         <string>Contrast:</string>
                       </property>
@@ -187,7 +190,7 @@
                   
                   <!-- Saturation -->
                   <item row="2" column="0">
-                    <widget class="QLabel" name="saturationLabel">
+                    <widget class="QCheckBox" name="saturationCheckbox">
                       <property name="text">
                         <string>Saturation:</string>
                       </property>
@@ -225,7 +228,7 @@
                   
                   <!-- Sharpness -->
                   <item row="3" column="0">
-                    <widget class="QLabel" name="sharpnessLabel">
+                    <widget class="QCheckBox" name="sharpnessCheckbox">
                       <property name="text">
                         <string>Sharpness:</string>
                       </property>
@@ -263,7 +266,7 @@
                   
                   <!-- Bitrate -->
                   <item row="4" column="0">
-                    <widget class="QLabel" name="bitrateLabel">
+                    <widget class="QCheckBox" name="bitrateCheckbox">
                       <property name="text">
                         <string>Bitrate (kbps):</string>
                       </property>
@@ -310,7 +313,7 @@
                   
                   <!-- Resolution -->
                   <item row="5" column="0">
-                    <widget class="QLabel" name="resolutionLabel">
+                    <widget class="QCheckBox" name="resolutionCheckbox">
                       <property name="text">
                         <string>Resolution:</string>
                       </property>
@@ -320,7 +323,17 @@
                     <widget class="QComboBox" name="resolutionComboBox">
                       <item>
                         <property name="text">
+                          <string>2048x1536</string>
+                        </property>
+                      </item>
+                      <item>
+                        <property name="text">
                           <string>1920x1080</string>
+                        </property>
+                      </item>
+                      <item>
+                        <property name="text">
+                          <string>1280x960</string>
                         </property>
                       </item>
                       <item>
@@ -330,7 +343,12 @@
                       </item>
                       <item>
                         <property name="text">
-                          <string>800x600</string>
+                          <string>720x576</string>
+                        </property>
+                      </item>
+                      <item>
+                        <property name="text">
+                          <string>720x480</string>
                         </property>
                       </item>
                       <item>
@@ -343,7 +361,7 @@
                   
                   <!-- Framerate -->
                   <item row="6" column="0">
-                    <widget class="QLabel" name="framerateLabel">
+                    <widget class="QCheckBox" name="framerateCheckbox">
                       <property name="text">
                         <string>Framerate:</string>
                       </property>
@@ -401,24 +419,21 @@
                 <layout class="QGridLayout" name="imageEnhancementLayout">
                   <!-- Wide Dynamic Range -->
                   <item row="0" column="0">
-                    <widget class="QLabel" name="wdrLabel">
+                    <widget class="QCheckBox" name="wdrCheckBox">
                       <property name="text">
-                        <string>Wide Dynamic Range:</string>
+                        <string>Wide Dynamic Range</string>
                       </property>
                     </widget>
                   </item>
                   <item row="0" column="1">
-                    <widget class="QCheckBox" name="wdrCheckBox">
+                    <widget class="QLabel" name="wdrLevelLabel">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Level:</string>
                       </property>
                     </widget>
                   </item>
                   <item row="0" column="2">
                     <widget class="QSlider" name="wdrLevelSlider">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <property name="minimum">
                         <number>0</number>
                       </property>
@@ -432,9 +447,6 @@
                   </item>
                   <item row="0" column="3">
                     <widget class="QSpinBox" name="wdrLevelSpinBox">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <property name="minimum">
                         <number>0</number>
                       </property>
@@ -445,41 +457,31 @@
                   </item>
                   
                   <!-- Backlight -->
-                  <item row="1" column="0">
-                    <widget class="QLabel" name="backlightLabel">
-                      <property name="text">
-                        <string>Backlight Compensation:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="1" column="1" colspan="3">
+                  <item row="1" column="0" colspan="4">
                     <widget class="QCheckBox" name="backlightCheckBox">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Backlight Compensation</string>
                       </property>
                     </widget>
                   </item>
                   
                   <!-- Anti-Fog -->
                   <item row="2" column="0">
-                    <widget class="QLabel" name="antiFogLabel">
+                    <widget class="QCheckBox" name="antiFogCheckBox">
                       <property name="text">
-                        <string>Anti-Fog:</string>
+                        <string>Anti-Fog</string>
                       </property>
                     </widget>
                   </item>
                   <item row="2" column="1">
-                    <widget class="QCheckBox" name="antiFogCheckBox">
+                    <widget class="QLabel" name="antiFogLevelLabel">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Level:</string>
                       </property>
                     </widget>
                   </item>
                   <item row="2" column="2">
                     <widget class="QSlider" name="antiFogLevelSlider">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <property name="minimum">
                         <number>0</number>
                       </property>
@@ -493,9 +495,6 @@
                   </item>
                   <item row="2" column="3">
                     <widget class="QSpinBox" name="antiFogLevelSpinBox">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <property name="minimum">
                         <number>0</number>
                       </property>
@@ -506,17 +505,10 @@
                   </item>
                   
                   <!-- Digital Image Stabilizer -->
-                  <item row="3" column="0">
-                    <widget class="QLabel" name="imageStabilizerLabel">
-                      <property name="text">
-                        <string>Digital Image Stabilizer:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="3" column="1" colspan="3">
+                  <item row="3" column="0" colspan="4">
                     <widget class="QCheckBox" name="imageStabilizerCheckBox">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Digital Image Stabilizer</string>
                       </property>
                     </widget>
                   </item>
@@ -532,89 +524,58 @@
                 </property>
                 <layout class="QGridLayout" name="imageCorrectionLayout">
                   <!-- Horizontal Mirror -->
-                  <item row="0" column="0">
-                    <widget class="QLabel" name="horizontalMirrorLabel">
-                      <property name="text">
-                        <string>Horizontal Mirror:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="1">
+                  <item row="0" column="0" colspan="2">
                     <widget class="QCheckBox" name="horizontalMirrorCheckBox">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Horizontal Mirror</string>
                       </property>
                     </widget>
                   </item>
                   
                   <!-- Vertical Mirror -->
-                  <item row="1" column="0">
-                    <widget class="QLabel" name="verticalMirrorLabel">
-                      <property name="text">
-                        <string>Vertical Mirror:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="1" column="1">
+                  <item row="1" column="0" colspan="2">
                     <widget class="QCheckBox" name="verticalMirrorCheckBox">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Vertical Mirror</string>
                       </property>
                     </widget>
                   </item>
                   
                   <!-- Anti-False Color -->
-                  <item row="2" column="0">
-                    <widget class="QLabel" name="antiFalseColorLabel">
-                      <property name="text">
-                        <string>Anti-False Color:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="1">
+                  <item row="2" column="0" colspan="2">
                     <widget class="QCheckBox" name="antiFalseColorCheckBox">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Anti-False Color</string>
                       </property>
                     </widget>
                   </item>
                   
                   <!-- Lens Shade Correction -->
-                  <item row="3" column="0">
-                    <widget class="QLabel" name="lensShadeCorrectionLabel">
-                      <property name="text">
-                        <string>Lens Shade Correction:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="3" column="1">
+                  <item row="3" column="0" colspan="2">
                     <widget class="QCheckBox" name="lensShadeCorrectionCheckBox">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Lens Shade Correction</string>
                       </property>
                     </widget>
                   </item>
                   
                   <!-- Lens Distortion Correction -->
                   <item row="4" column="0">
-                    <widget class="QLabel" name="lensDistortionCorrectionLabel">
+                    <widget class="QCheckBox" name="lensDistortionCorrectionCheckBox">
                       <property name="text">
-                        <string>Lens Distortion Correction:</string>
+                        <string>Lens Distortion Correction</string>
                       </property>
                     </widget>
                   </item>
                   <item row="4" column="1">
-                    <widget class="QCheckBox" name="lensDistortionCorrectionCheckBox">
+                    <widget class="QLabel" name="lensDistortionCorrectionLevelLabel">
                       <property name="text">
-                        <string>Enable</string>
+                        <string>Level:</string>
                       </property>
                     </widget>
                   </item>
                   <item row="4" column="2">
                     <widget class="QSlider" name="lensDistortionCorrectionSlider">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <property name="minimum">
                         <number>0</number>
                       </property>
@@ -628,9 +589,6 @@
                   </item>
                   <item row="4" column="3">
                     <widget class="QSpinBox" name="lensDistortionCorrectionSpinBox">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <property name="minimum">
                         <number>0</number>
                       </property>
@@ -652,7 +610,7 @@
                 <layout class="QGridLayout" name="exposureSettingsLayout">
                   <!-- Scene -->
                   <item row="0" column="0">
-                    <widget class="QLabel" name="sceneLabel">
+                    <widget class="QCheckBox" name="sceneCheckbox">
                       <property name="text">
                         <string>Scene:</string>
                       </property>
@@ -675,7 +633,7 @@
                   
                   <!-- Exposure Mode -->
                   <item row="1" column="0">
-                    <widget class="QLabel" name="exposureModeLabel">
+                    <widget class="QCheckBox" name="exposureModeCheckbox">
                       <property name="text">
                         <string>Exposure Mode:</string>
                       </property>
@@ -703,7 +661,7 @@
                   
                   <!-- Shutter Speed -->
                   <item row="2" column="0">
-                    <widget class="QLabel" name="shutterSpeedLabel">
+                    <widget class="QCheckBox" name="shutterSpeedCheckbox">
                       <property name="text">
                         <string>Shutter Speed:</string>
                       </property>
@@ -711,9 +669,6 @@
                   </item>
                   <item row="2" column="1" colspan="3">
                     <widget class="QComboBox" name="shutterSpeedComboBox">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <item>
                         <property name="text">
                           <string>1/8000</string>
@@ -784,7 +739,7 @@
                   
                   <!-- Manual Gain -->
                   <item row="3" column="0">
-                    <widget class="QLabel" name="manualGainLabel">
+                    <widget class="QCheckBox" name="manualGainCheckbox">
                       <property name="text">
                         <string>Manual Gain:</string>
                       </property>
@@ -792,9 +747,6 @@
                   </item>
                   <item row="3" column="1" colspan="3">
                     <widget class="QComboBox" name="manualGainComboBox">
-                      <property name="enabled">
-                        <bool>false</bool>
-                      </property>
                       <item>
                         <property name="text">
                           <string>1x</string>
@@ -845,7 +797,7 @@
                 <layout class="QGridLayout" name="whiteBalanceIRLayout">
                   <!-- White Balance Mode -->
                   <item row="0" column="0">
-                    <widget class="QLabel" name="whiteBalanceModeLabel">
+                    <widget class="QCheckBox" name="whiteBalanceModeCheckbox">
                       <property name="text">
                         <string>White Balance Mode:</string>
                       </property>
@@ -883,7 +835,7 @@
                   
                   <!-- IR Mode -->
                   <item row="1" column="0">
-                    <widget class="QLabel" name="irModeLabel">
+                    <widget class="QCheckBox" name="irModeCheckbox">
                       <property name="text">
                         <string>IR Mode:</string>
                       </property>
