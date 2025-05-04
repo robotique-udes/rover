@@ -3,12 +3,14 @@
 
 // ROS
 #include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps.hpp"
+#include "rover_msgs/msg/can_device_status.hpp"
 
 // QT
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include "UI_DeviceStatus.h"
+
+#include <unordered_map>
 
 class QDeviceStatus : public QWidget
    {
@@ -23,7 +25,11 @@ class QDeviceStatus : public QWidget
       int heightForWidth(int width_) const override;
 
    private:
+      void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
+
    	Ui::DeviceStatus _ui;
+      rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
+      std::unordered_map<uint16_t, rover_msgs::msg::CanDeviceStatus> _deviceStatusInfo;
    };
 
 //#endif // __QDEVICESTATUS_HPP__

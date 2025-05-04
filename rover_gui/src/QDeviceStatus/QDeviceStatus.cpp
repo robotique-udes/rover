@@ -4,6 +4,14 @@ QDeviceStatus::QDeviceStatus(QWidget* parent_) : QWidget(parent_)
 {
 	_ui.setupUi(this);
 
+	_sub_deviceStatus = rclcpp::create_subscription<rover_msgs::msg::CanDeviceStatus>(
+		"/rover/can/devices_status",
+		10,
+		[this](const rover_msgs::msg::CanDeviceStatus::SharedPtr msg) {
+			this->callbackDeviceInfos(*msg);
+		}
+	);
+
 
     // Set the QSizePolicy to ensure aspect ratio resizing
     QSizePolicy sp = this->sizePolicy();
@@ -25,4 +33,9 @@ int QDeviceStatus::heightForWidth(int width_) const
     // Calculate height based on width, keeping the same aspect ratio
     int height = width_ * originalHeight / originalWidth;
     return height;
+}
+
+void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_)
+{
+	_deviceStatusInfo[msg_.id] = msg_;
 }
