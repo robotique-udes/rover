@@ -25,7 +25,7 @@ class LoopTimer
     {
     }
 
-    virtual bool isReady()
+    bool isReady()
     {
         const ClockT currentTime = CLOCK_FUNC();
         if (currentTime < _nextTriggerTime)
@@ -71,7 +71,7 @@ class LoopTimer
         return _interval;
     }
 
-  protected:
+  private:
     ClockT _interval;
     ClockT _nextTriggerTime;
     bool _overrunFalsePositiveLatch;

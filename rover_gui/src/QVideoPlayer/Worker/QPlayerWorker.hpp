@@ -13,7 +13,7 @@
 #include "Global/Workers/QWorker.hpp"
 #include "rover_msgs/srv/aruco_detection.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "rover_lib2/helpers/loop_timer_relax.hpp"
+#include "rover_lib2/helpers/loop_timer.hpp"
 #include "rover_lib2/helpers/time.hpp"
 
 class QPlayerWorker : public QWorker
@@ -45,7 +45,7 @@ class QPlayerWorker : public QWorker
 
   private:
     //RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
-    LoopTimerRelax<uint64_t,  Time::millis> _timer_serviceCall;
+    LoopTimer<uint64_t,  Time::millis> _timer_serviceCall;
 };
 
 #endif  // VIDEO_WORKER_HPP
