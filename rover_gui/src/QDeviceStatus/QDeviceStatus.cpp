@@ -1,18 +1,25 @@
 #include "QDeviceStatus.hpp"
 
-QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_ , QWidget* parent_) : QWidget(parent_), _node(guiNode_)
+QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+    QWidget(parent_),
+    _node(guiNode_)
 {
-	_ui.setupUi(this);
-    connect(_ui.test, &QPushButton::clicked, this, &QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId::MASTER_COMPUTER_UNIT));
+    _ui.setupUi(this);
+    connect(_ui.test,
+            &QPushButton::clicked,
+            this,
+            [this]()
+            {
+                this->setStatusReport(RoverCan2::Constant::eDeviceId::MASTER_COMPUTER_UNIT);
+            });
 
-	_sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
-		"/rover/can/devices_status",
-		10,
-		[this](const rover_msgs::msg::CanDeviceStatus::SharedPtr msg) {
-			this->callbackDeviceInfos(*msg);
-		}
-	);
-
+    _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
+        "/rover/can/devices_status",
+        10,
+        [this](const rover_msgs::msg::CanDeviceStatus::SharedPtr msg)
+        {
+            this->callbackDeviceInfos(*msg);
+        });
 
     // Set the QSizePolicy to ensure aspect ratio resizing
     QSizePolicy sp = this->sizePolicy();
@@ -21,8 +28,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_ , QWidget* p
     sp.setHeightForWidth(true);  // Enable height for width
     this->setSizePolicy(sp);
 }
-
-
 
 int QDeviceStatus::heightForWidth(int width_) const
 {
@@ -38,7 +43,7 @@ int QDeviceStatus::heightForWidth(int width_) const
 
 void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_)
 {
-	_deviceStatusInfo[msg_.id] = msg_;
+    _deviceStatusInfo[msg_.id] = msg_;
 }
 
 void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId id_)
@@ -46,25 +51,26 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId id_)
     uint16_t deviceID = TO_UNDERLYING(id_);
 
     auto label = _ui.StatusReport->findChild<QLabel*>("StatusInfo");
-    if (!label) {
+    if (!label)
+    {
         RCLCPP_ERROR(_node->get_logger(), "StatusInfo not found!");
         return;
     }
 
-
     // Look up device info
     auto it = _deviceStatusInfo.find(deviceID);
-    if (it != _deviceStatusInfo.end()) {
+    if (it != _deviceStatusInfo.end())
+    {
         const auto& deviceStatus = it->second;
 
         // Compose your status string however you like
-        QString statusText = QString("ID: %1\nStatus: %2")
-                             .arg(deviceStatus.id)
-                             .arg(this->setErrorMsg(deviceStatus.error_state));
+        QString statusText = QString("ID: %1\nStatus: %2").arg(deviceStatus.id).arg(this->setErrorMsg(deviceStatus.error_state));
 
         // Set label text
         label->setText(statusText);
-    } else {
+    }
+    else
+    {
         label->setText("Device not found.");
     }
 }
