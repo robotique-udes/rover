@@ -13,7 +13,7 @@ QDeviceStatus::QDeviceStatus(QWidget* parent_) : QWidget(parent_)
     this->setSizePolicy(sp);
 }
 
-/*
+
 
 int QDeviceStatus::heightForWidth(int width_) const
 {
@@ -25,4 +25,4 @@ int QDeviceStatus::heightForWidth(int width_) const
     // Calculate height based on width, keeping the same aspect ratio
     int height = width_ * originalHeight / originalWidth;
     return height;
-}*/
+}

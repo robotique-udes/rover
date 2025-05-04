@@ -13,14 +13,14 @@
 class QDeviceStatus : public QWidget
    {
 
-        Q_OBJECT
+      Q_OBJECT
 
    public:
       QDeviceStatus(QWidget* parent_ = nullptr);
    	~QDeviceStatus() = default;
 
-   /*protected:
-      int heightForWidth(int width_) const override;*/
+   protected:
+      int heightForWidth(int width_) const override;
 
    private:
    	Ui::DeviceStatus _ui;
