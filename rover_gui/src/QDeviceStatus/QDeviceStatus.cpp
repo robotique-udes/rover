@@ -1,10 +1,10 @@
 #include "QDeviceStatus.hpp"
 
-QDeviceStatus::QDeviceStatus(QWidget* parent_) : QWidget(parent_)
+QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_ , QWidget* parent_) : QWidget(parent_), _node(guiNode_)
 {
 	_ui.setupUi(this);
 
-	_sub_deviceStatus = rclcpp::create_subscription<rover_msgs::msg::CanDeviceStatus>(
+	_sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
 		"/rover/can/devices_status",
 		10,
 		[this](const rover_msgs::msg::CanDeviceStatus::SharedPtr msg) {

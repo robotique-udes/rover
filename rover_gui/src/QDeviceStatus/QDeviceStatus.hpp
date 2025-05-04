@@ -18,7 +18,7 @@ class QDeviceStatus : public QWidget
       Q_OBJECT
 
    public:
-      QDeviceStatus(QWidget* parent_ = nullptr);
+      QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
    	~QDeviceStatus() = default;
 
    protected:
@@ -27,6 +27,7 @@ class QDeviceStatus : public QWidget
    private:
       void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
 
+      std::shared_ptr<rclcpp::Node> _node;
    	Ui::DeviceStatus _ui;
       rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
       std::unordered_map<uint16_t, rover_msgs::msg::CanDeviceStatus> _deviceStatusInfo;
