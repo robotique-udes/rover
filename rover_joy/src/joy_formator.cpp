@@ -1,7 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_lib2/helpers/macros.hpp"
-//#include "rovus_lib/rovus_exceptions.h"
+#include "rover_lib2/helpers/assert.hpp"
 #include "sensor_msgs/msg/joy.hpp"
 
 // =============================================================================
@@ -118,14 +118,9 @@ class JoyFormator : public rclcpp::Node
 int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
-    try
-    {
-        rclcpp::spin(std::make_shared<JoyFormator>());
-    }
-    catch (const std::exception& e)
-    {
-        RCLCPP_FATAL(rclcpp::get_logger("Dead Node"), "Killing node on exception: %s", e.what());
-    }
+
+    rclcpp::spin(std::make_shared<JoyFormator>());    
+
     rclcpp::shutdown();
     return 0;
 }
@@ -315,8 +310,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
                      "controller_type parameter doesn't correspond to any keybinding. \"%s\" entered, possible"
                      " entry are: \"DS4\", \"PS4\"",
                      controller_type_name.c_str());
-        //throw ExeptBadLaunchParameters("Wrong controller_type");
-        throw std::runtime_error("Wrong controller_type");
+        ASSERT_COND_MSG(false, "Bad launch parameters: Wrong controller_type");
     }
 }
 
