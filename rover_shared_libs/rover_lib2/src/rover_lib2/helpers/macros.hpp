@@ -150,6 +150,11 @@ constexpr T ROUND_DOWN(T value_)
 
 #define SIGN(VAR) ((float)VAR > 0.0f ? 1.0f : -1.0f)
 
+#define GET_WORSE_OF(A, B) (A == true && B == true)
+
+// Removes unused argument warning
+#define REMOVE_UNUSED(x) (void)(x)
+
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
 #define GET_PACKAGE_SOURCE_DIR(package_name) \
     (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
