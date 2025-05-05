@@ -11,12 +11,13 @@
 #include <fcntl.h>
 #include <unistd.h>
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+
+//#if defined(__linux__) && defined(RCLCPP_DEBUG)
 namespace RoverLib2
 {
     bool isIPReachable(const std::string& ip_, size_t port_, size_t timeoutMs_ = 500U);
 }
-#endif // defined(__linux__) && defined(RCLCPP_DEBUG)
+//#endif // defined(__linux__) && defined(RCLCPP_DEBUG)
 
 
 #endif  // IP_PINGING
