@@ -9,7 +9,7 @@
 #include "rover_msgs/srv/new_gps_goal.hpp"
 #include <ament_index_cpp/get_package_share_directory.hpp>
 
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 #include "rovus_lib/rovus_exceptions.h"
 
 constexpr char FILE_NAME_ROUTE_DUMP[] = "route_dump.log";
