@@ -1,7 +1,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/joy.hpp"
-#include "rovus_lib/macros.h"
-#include "rovus_lib/rovus_exceptions.h"
+#include "rover_lib2/helpers/macros.hpp"
+//#include "rovus_lib/rovus_exceptions.h"
 #include "sensor_msgs/msg/joy.hpp"
 
 // =============================================================================
@@ -177,7 +177,7 @@ void JoyFormator::callbackPubJoy()
     // Sending zeros as safety if no new msg received in timeout
     if (!connected())
     {
-        RCLCPP_WARN_THROTTLE(LOGGER, CLOCK, 5000, "Controller deconnected!");
+        RCLCPP_WARN_THROTTLE(this->get_logger(), *this->get_clock(), 5000, "Controller deconnected!");
 
         executeCustomSteps(&formatted_joy_msg);
         _pub_joy_formatted->publish(formatted_joy_msg);
@@ -214,7 +214,7 @@ void JoyFormator::callbackPubJoy()
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT]
         = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_front), -1.0f, 1.0f)));
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE]
-        = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_side), -1.0f, 1.0)));
+        = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_side), -1.0f, 1.0f)));
 
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(float,
                                                                CONSTRAIN(getJoyValue<float>(Keybinding::l2), -1.0f, 1.0f),
@@ -245,7 +245,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
 {
     if (controller_type_name == std::string("DS4") || controller_type_name == std::string("PS4"))
     {
-        RCLCPP_INFO(LOGGER, "Selected DS4 for keybinding mapping");
+        RCLCPP_INFO(this->get_logger(), "Selected DS4 for keybinding mapping");
 
         _controller_config.buttons[Keybinding::a] = 0;
         _controller_config.buttons[Keybinding::b] = 1;
@@ -271,12 +271,12 @@ void JoyFormator::setControllerType(std::string controller_type_name)
         _controller_config.trigger_range_max = -1.0f;
 
         _controller_config.joystick_dead_zone = 0.075f;  // Change this value if you start getting stick drift again
-        RCLCPP_INFO_ONCE(LOGGER, "DS4 custom deadzone set to %f", _controller_config.joystick_dead_zone);
+        RCLCPP_INFO_ONCE(this->get_logger(), "DS4 custom deadzone set to %f", _controller_config.joystick_dead_zone);
     }
     else if (controller_type_name == std::string("Logitech") || controller_type_name == std::string("Logitech Generic"))
     {
-        RCLCPP_INFO_ONCE(LOGGER, "Selected Logitech Generic Controller for keybinding mapping");
-        RCLCPP_WARN_ONCE(LOGGER,
+        RCLCPP_INFO_ONCE(this->get_logger(), "Selected Logitech Generic Controller for keybinding mapping");
+        RCLCPP_WARN_ONCE(this->get_logger(),
                          "**Logitech controllers are discouraged**\n"
                          "When logitech controllers disconnects and reconnects, all their joystick values are "
                          "set to 1.0 instead of 0.0. This node tries to handle this behavior but cannot "
@@ -313,7 +313,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
     }
     else
     {
-        RCLCPP_ERROR(LOGGER,
+        RCLCPP_ERROR(this->get_logger(),
                      "controller_type parameter doesn't correspond to any keybinding. \"%s\" entered, possible"
                      " entry are: \"DS4\", \"PS4\"",
                      controller_type_name.c_str());
@@ -405,13 +405,13 @@ void JoyFormator::customStepsLogitech(rover_msgs::msg::Joy* formatted_joy)
     {
         _controller_reset_needed = false;
 
-        RCLCPP_INFO(LOGGER, "Controller ready!");
+        RCLCPP_INFO(this->get_logger(), "Controller ready!");
     }
 
     if (_controller_reset_needed)
     {
-        RCLCPP_WARN_THROTTLE(LOGGER,
-                             CLOCK,
+        RCLCPP_WARN_THROTTLE(this->get_logger(),
+                             *this->get_clock(),
                              5000,
                              "\nLogitech controller disconnection detected!\n"
                              "**LET GO OF DEADMAN SWITCH**\n"

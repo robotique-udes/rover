@@ -2,8 +2,8 @@
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/srv/joy_demux_set_state.hpp"
-#include "rovus_lib/macros.h"
-#include "rovus_lib/rovus_exceptions.h"
+#include "rover_lib2/helpers/macros.hpp"
+//#include "rovus_lib2/helpers/rovus_exceptions.h"
 
 using namespace std::chrono_literals;
 
@@ -112,7 +112,7 @@ void JoyDemux::callbackJoy(const rover_msgs::msg::Joy& msg, int8_t controller_ty
     }
     else
     {
-        RCLCPP_WARN(LOGGER, "Wrong \"controller_type\" argument: %i?", controller_type);
+        RCLCPP_WARN(this->get_logger(), "Wrong \"controller_type\" argument: %i?", controller_type);
     }
 
     this->redirectMsg(dest, msg);
@@ -180,11 +180,11 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
     {
         if (_dest_secondary == dest)
         {
-            RCLCPP_WARN(LOGGER, "Secondary joy topic already redirect to this topic");
+            RCLCPP_WARN(this->get_logger(), "Secondary joy topic already redirect to this topic");
 
             if (request->force)
             {
-                RCLCPP_WARN(LOGGER, "Secondary joy destination was set to \"none\"");
+                RCLCPP_WARN(this->get_logger(), "Secondary joy destination was set to \"none\"");
                 _dest_secondary = eDemuxDestination::none;
             }
             else
@@ -200,11 +200,11 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
     {
         if (_dest_main == dest)
         {
-            RCLCPP_WARN(LOGGER, "Main joy topic already redirect to this topic");
+            RCLCPP_WARN(this->get_logger(), "Main joy topic already redirect to this topic");
 
             if (request->force)
             {
-                RCLCPP_WARN(LOGGER, "Secondary joy can't overwrite main joy");
+                RCLCPP_WARN(this->get_logger(), "Secondary joy can't overwrite main joy");
             }
             response->success = false;
             return;
@@ -214,7 +214,7 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
     }
     else
     {
-        RCLCPP_ERROR(LOGGER, "How did we get here? 0_0");
+        RCLCPP_ERROR(this->get_logger(), "How did we get here? 0_0");
     }
 
     response->success = true;
