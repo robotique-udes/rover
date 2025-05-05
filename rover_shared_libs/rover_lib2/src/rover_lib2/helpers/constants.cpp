@@ -1,6 +1,6 @@
 #include "constants.hpp"
 
-namespace CameraInfo
+namespace Constants::CameraInfo
 {
     bool getNameFromURL(const std::string& url_, std::string& rName_)
     {

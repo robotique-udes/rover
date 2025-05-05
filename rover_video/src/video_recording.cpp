@@ -166,9 +166,9 @@ bool Recording::startRecording(void)
 
     _frameWidth = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_WIDTH)));
     _frameHeight = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_HEIGHT)));
-    _fps = static_cast<double>(_cap.get(cv::CAP_PROP_FPS));
+    _fps = _cap.get(cv::CAP_PROP_FPS);
 
-    _fps = CONSTRAIN(_fps, 0.0F, 30.0F);
+    _fps = CONSTRAIN(_fps, 0.0, 30.0);
 
     RCLCPP_DEBUG(rLogger, "fps set to %f", _fps);
 

@@ -3,7 +3,6 @@
 
 #include "keybinding.hpp"
 
-#include "rovus_lib/timer.hpp"
 #include "rovus_lib/macros.h"
 
 #include <stdint.h>

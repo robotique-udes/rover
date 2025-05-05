@@ -4,6 +4,10 @@
 #include <cmath>
 #include <type_traits>
 
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#include <ament_index_cpp/get_package_prefix.hpp>
+#endif // defined(__linux__) && defined(RCLCPP_DEBUG)
+
 template<typename ENUM_T>
 constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 {
@@ -143,5 +147,10 @@ constexpr T ROUND_DOWN(T value_)
      + (float)(out_min))
 
 #define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
+
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#define GET_PACKAGE_SOURCE_DIR(package_name) \
+    (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
+#endif  // defined(_linux_) && defined(RCLCPP_DEBUG
 
 #endif  // MACROS_HPP
