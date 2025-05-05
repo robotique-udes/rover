@@ -2,6 +2,7 @@
 #define MASTER_DEVICE_HPP
 
 #include <rclcpp/rclcpp.hpp>
+#include <rover_can2/constant.hpp>
 
 /**
  * @brief Interface for all CanDevice managed by can master
@@ -25,9 +26,16 @@ class MasterDevice
      */
     virtual void rosElementClean(void) = 0;
 
-    std::shared_ptr<rclcpp::Node> _rosNode;
+    virtual std::vector<RoverCan2::Constant::eDeviceId> getManagedDevicesIds(void) = 0;
+
+    std::shared_ptr<rclcpp::Node> getAttachedNode(void)
+    {
+        return _rosNode;
+    }
 
   private:
+    std::shared_ptr<rclcpp::Node> _rosNode;
+
     void detachNode(void);
 };
 

@@ -12,6 +12,7 @@
 
 #elif defined(__linux__)
 #include <cstdarg>
+#include <string>
 #endif  // defined(ARDUINO_ESP32S3_DEV)
 
 DEFINE_LOG_NODE(ASSERTS, Logger::eNodeState::ON);

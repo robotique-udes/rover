@@ -15,9 +15,8 @@ find_package(rover_msgs REQUIRED)
 
 add_subdirectory(../rover_shared_libs/ .build)
 
-add_executable(can_master src/can_master.cpp
-                          src/CanMaster/MasterDevice.cpp
-                          src/CanMaster/Devices/CameraMain.cpp)
+file(GLOB_RECURSE SOURCES_CAN_MASTER CONFIGURE_DEPENDS src/CanMaster/*.cpp)
+add_executable(can_master ${SOURCES_CAN_MASTER})
 ament_target_dependencies(can_master
                           rclcpp
                           rover_msgs
