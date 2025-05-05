@@ -3,7 +3,6 @@
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/srv/joy_demux_set_state.hpp"
 #include "rover_lib2/helpers/macros.hpp"
-//#include "rovus_lib2/helpers/rovus_exceptions.h"
 
 using namespace std::chrono_literals;
 
@@ -56,14 +55,7 @@ int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
 
-    try
-    {
-        rclcpp::spin(std::make_shared<JoyDemux>());
-    }
-    catch (const std::exception& e)
-    {
-        RCLCPP_FATAL(rclcpp::get_logger("Dead Node"), "Killing node on exception: %s", e.what());
-    }
+    rclcpp::spin(std::make_shared<JoyDemux>());
 
     rclcpp::shutdown();
     return 0;
