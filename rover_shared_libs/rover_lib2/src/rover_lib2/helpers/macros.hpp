@@ -148,6 +148,8 @@ constexpr T ROUND_DOWN(T value_)
 
 #define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
 
+#define SIGN(VAR) ((float)VAR > 0.0f ? 1.0f : -1.0f)
+
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
 #define GET_PACKAGE_SOURCE_DIR(package_name) \
     (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)

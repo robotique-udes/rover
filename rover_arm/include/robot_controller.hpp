@@ -4,8 +4,9 @@
 #include "keybinding.hpp"
 #include "joy_manager.hpp"
 
-#include "rovus_lib/timer.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/time.hpp"
+#include "rover_lib2/helpers/loop_timer.hpp"
+#include "rover_lib2/helpers/macros.hpp"
 
 #include <stdint.h>
 #include <vector>

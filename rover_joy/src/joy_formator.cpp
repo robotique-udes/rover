@@ -72,12 +72,12 @@ class JoyFormator : public rclcpp::Node
         sControllerConfig()
         {
             custom_steps = NULL;
-            FOR_ALL(buttons)
+            for(uint8_t i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
             {
                 buttons[i] = -1;
             }
 
-            FOR_ALL(axes)
+            for(uint8_t i = 0; i < (sizeof(axes) / sizeof(axes[0])); i++)
             {
                 axes[i] = -1;
             }
@@ -216,14 +216,12 @@ void JoyFormator::callbackPubJoy()
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE]
         = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_side), -1.0f, 1.0f)));
 
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(float,
-                                                               CONSTRAIN(getJoyValue<float>(Keybinding::l2), -1.0f, 1.0f),
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(CONSTRAIN(getJoyValue<float>(Keybinding::l2), -1.0f, 1.0f),
                                                                _controller_config.trigger_range_min,
                                                                _controller_config.trigger_range_max,
                                                                0.0f,
                                                                1.0f);
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(float,
-                                                               CONSTRAIN(getJoyValue<float>(Keybinding::r2), -1.0f, 1.0f),
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(CONSTRAIN(getJoyValue<float>(Keybinding::r2), -1.0f, 1.0f),
                                                                _controller_config.trigger_range_min,
                                                                _controller_config.trigger_range_max,
                                                                0.0f,
@@ -342,7 +340,7 @@ float JoyFormator::applyJoystickDeadZone(float value_)
 {
     if (!IN_ERROR(value_, _controller_config.joystick_dead_zone, 0.0f))
     {
-        return SIGN(value_) * MAP(float, abs(value_), _controller_config.joystick_dead_zone, 1.0f, 0.0f, 1.0f);
+        return SIGN(value_) * MAP(abs(value_), _controller_config.joystick_dead_zone, 1.0f, 0.0f, 1.0f);
     }
     else
     {
