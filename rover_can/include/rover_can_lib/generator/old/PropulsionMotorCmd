@@ -1,3 +1,0 @@
-bool enable;
-float targetSpeed;
-bool closeLoop;

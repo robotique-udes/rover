@@ -1,8 +1,9 @@
 #ifndef IMAGE_CAPTURE_HPP
 #define IMAGE_CAPTURE_HPP
 
-#include "rovus_lib/timer.hpp"
-#include "rovus_lib/ip_pinging.hpp"
+#include "rover_lib2/helpers/time.hpp"
+#include "rover_lib2/helpers/loop_timer.hpp"
+#include "rover_lib2/helpers/ip_pinging.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
@@ -35,7 +36,7 @@ class ImageCapture
     bool _isValid;
     std::string _cameraURL;
     cv::VideoCapture _cap;
-    RoverLib::Timer<uint64_t, RoverLib::millis> _timer_cameraPinningRetries;
+    LoopTimer<uint64_t, Time::millis> _timer_cameraPinningRetries;
     bool _firstTryPinningCam = true;
 
     // The the max rate (fps) must be paired with the detection delay

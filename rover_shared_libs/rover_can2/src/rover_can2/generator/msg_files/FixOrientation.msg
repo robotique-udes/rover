@@ -1,0 +1,2 @@
+float yaw;
+float pitch;
