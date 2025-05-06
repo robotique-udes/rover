@@ -1,4 +1,4 @@
-#include "Camera.hpp"
+#include "camera.hpp"
 
 Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsgCam_):
     Device(IdCan_,
@@ -11,8 +11,8 @@ Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsg
 void Camera::rosElementInit()
 {
     _pub_powerStatus = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_POWER_STATUS_TOPIC, 1);
-    _sub_powerStatus = this->getAttachedNode()->create_subscription<rover_msgs::msg::CameraControl>(
-        CAMERA_CONTROL_TOPIC,
+    _sub_powerCmd = this->getAttachedNode()->create_subscription<rover_msgs::msg::CameraControl>(
+        CAMERA_POWER_CONTROL_TOPIC,
         1,
         [this](const rover_msgs::msg::CameraControl& rosMsg_)
         {
@@ -27,9 +27,9 @@ void Camera::rosElementClean()
         _pub_powerStatus.reset();
     }
 
-    if (_sub_powerStatus)
+    if (_sub_powerCmd)
     {
-        _sub_powerStatus.reset();
+        _sub_powerCmd.reset();
     }
 
     if (_timerCanSendPowerCmd)
@@ -63,11 +63,12 @@ void Camera::CB_ROS_powerCmd(const rover_msgs::msg::CameraControl& rosMsg_)
 
     if (!_timerCanSendPowerCmd && this->getAttachedNode())
     {
-        _timerCanSendPowerCmd = this->getAttachedNode()->create_wall_timer(std::chrono::milliseconds(500),
-                                                                           [this](void)
-                                                                           {
-                                                                               this->CB_sendCanPowerCmd();
-                                                                           });
+        _timerCanSendPowerCmd
+            = this->getAttachedNode()->create_wall_timer(std::chrono::milliseconds(CAMERA_POWER_STATUS_PUB_PERIOD_MS),
+                                                         [this](void)
+                                                         {
+                                                             this->CB_sendCanPowerCmd();
+                                                         });
     }
 }
 

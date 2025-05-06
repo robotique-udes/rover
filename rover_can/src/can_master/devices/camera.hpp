@@ -1,7 +1,7 @@
 #ifndef CAMERA_MAIN_HPP
 #define CAMERA_MAIN_HPP
 
-#include "CanMaster/MasterDevice.hpp"
+#include "can_master/master_device.hpp"
 
 #include <rover_can2/rover_can2.hpp>
 
@@ -15,7 +15,10 @@ class Camera : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::Po
                public MasterDevice
 {
     static constexpr const char* CAMERA_POWER_STATUS_TOPIC = "/rover/cameras/power_status";
-    static constexpr const char* CAMERA_CONTROL_TOPIC = "/rover/cameras/status_infos";
+    static constexpr float CAMERA_POWER_STATUS_PUB_FREQ = 2.0F;
+    static constexpr uint32_t CAMERA_POWER_STATUS_PUB_PERIOD_MS
+        = static_cast<uint32_t>(ROUND(1'000.0F / CAMERA_POWER_STATUS_PUB_FREQ));
+    static constexpr const char* CAMERA_POWER_CONTROL_TOPIC = "/rover/cameras/status_infos";
 
   public:
     Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsgCam_);
@@ -33,7 +36,7 @@ class Camera : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::Po
     RoverCan2::Msgs::PowerCmd _nextCanMsg;
 
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_powerStatus;
-    rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_powerStatus;
+    rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_powerCmd;
     rclcpp::TimerBase::SharedPtr _timerCanSendPowerCmd;
 };
 

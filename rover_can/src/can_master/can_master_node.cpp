@@ -12,15 +12,15 @@ int main(int argc_, char* argv_[])
 CanMasterNode::CanMasterNode():
     Node("CanMasterNode")
 {
-    _pub_CanDeviceErrorState = this->create_publisher<rover_msgs::msg::CanDeviceStatus>(CAN_DEVICE_STATUS_TOPIC, 1);
+    _pub_canDeviceErrorState = this->create_publisher<rover_msgs::msg::CanDeviceStatus>(TOPIC_NAME_CAN_DEVICE_STATUS, 1);
     _srv_canDeviceErrorStateRequest = this->create_service<rover_msgs::srv::Empty>(
-        ERROR_STATE_SRV_NAME,
+        SERVICE_NAME_ERROR_STATE,
         [this](rover_msgs::srv::Empty::Request::SharedPtr request_, rover_msgs::srv::Empty::Response::SharedPtr response_)
         {
             this->CB_ROS_canDeviceErrorStateRequest(request_, response_);
         });
 
-    _timerUpdateCan = this->create_wall_timer(std::chrono::milliseconds(1),
+    _timerUpdateCan = this->create_wall_timer(std::chrono::milliseconds(CAN_DRIVER_UPDATE_PERIOD_MS),
                                               [this](void)
                                               {
                                                   this->CB_updateCan();
@@ -51,7 +51,8 @@ void CanMasterNode::CB_ROS_canDeviceErrorStateRequest(rover_msgs::srv::Empty::Re
     if (!response_)
     {
         RCLCPP_ERROR(this->get_logger(),
-                     "Received srv call with nullptr response. Request is still sent but response won't be populated");
+                     "Received srv call with nullptr response. Request on CAN will still be sent but service call response won't "
+                     "be populated");
         return;
     }
 
@@ -74,5 +75,5 @@ void CanMasterNode::CB_CAN_errorStateRecv(RoverCan2::Constant::eDeviceId deviceI
         rosMsg.error_state = rover_msgs::msg::CanDeviceStatus::STATUS_OK;
     }
 
-    _pub_CanDeviceErrorState->publish(rosMsg);
+    _pub_canDeviceErrorState->publish(rosMsg);
 }

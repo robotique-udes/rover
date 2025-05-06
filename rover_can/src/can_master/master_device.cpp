@@ -1,4 +1,4 @@
-#include "MasterDevice.hpp"
+#include "master_device.hpp"
 #include "rover_can2/constant.hpp"
 #include "rover_lib2/helpers/macros.hpp"
 

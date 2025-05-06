@@ -1,33 +1,30 @@
 #ifndef CAN_MASTER_NODE_HPP
 #define CAN_MASTER_NODE_HPP
 
-#include "CanMaster/Devices/PropulsionMotors.hpp"
-#include "SharedMsg.hpp"
+#include "can_master/devices/camera.hpp"
+#include "can_master/devices/propulsion_motors.hpp"
 
-#include "CanMaster/Devices/Camera.hpp"
-#include "rover_can2/constant.hpp"
+#include <rover_msgs/msg/can_device_status.hpp>
+#include <rover_msgs/srv/empty.hpp>
 
 #include <rover_can2/rover_can2.hpp>
 #include <rclcpp/rclcpp.hpp>
 
-#include <rover_msgs/msg/can_device_status.hpp>
-#include <rover_msgs/msg/detail/propulsion_motor__struct.hpp>
-#include <rover_msgs/srv/empty.hpp>
-
 DEFINE_LOG_NODE(Main, Logger::eNodeState::ON);
 
 /**
- * @brief TODO when adding new device:
- * 1. Create device as member obejct.
+ * @brief TODO when adding new devices:
+ * 1. Create device as member object
  * 2. Add the device type to _canManager template list
- * 3. Add reference to device object to _canManager constructor arguments
- * 4. Add pointer to device object to _deviceArray
+ * 3. Add device object reference to _canManager constructor arguments
+ * 4. Add device object pointer to _deviceArray
  */
 
 class CanMasterNode : public rclcpp::Node
 {
-    static constexpr const char* CAN_DEVICE_STATUS_TOPIC = "/rover/can/devices_status";
-    static constexpr const char* ERROR_STATE_SRV_NAME = "/rover/can/request_error_state";
+    static constexpr const char* TOPIC_NAME_CAN_DEVICE_STATUS = "/rover/can/devices_status";
+    static constexpr const char* SERVICE_NAME_ERROR_STATE = "/rover/can/request_error_state";
+    static constexpr const uint32_t CAN_DRIVER_UPDATE_PERIOD_MS = 1U;
 
   public:
     CanMasterNode();
@@ -41,7 +38,7 @@ class CanMasterNode : public rclcpp::Node
     bool _nodeAttachedToDevices = false;
 
     rclcpp::TimerBase::SharedPtr _timerUpdateCan;
-    rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanDeviceErrorState;
+    rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_canDeviceErrorState;
     rclcpp::Service<rover_msgs::srv::Empty>::SharedPtr _srv_canDeviceErrorStateRequest;
 
     // Shared ROS Messages
@@ -50,18 +47,17 @@ class CanMasterNode : public rclcpp::Node
 
     // CanDevices
     PropulsionMotor motorFL = PropulsionMotor(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR,
-                                                rover_msgs::msg::PropulsionMotor::FRONT_LEFT,
-                                                _propMotorMsg);
+                                              rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT,
+                                              _propMotorMsg);
     PropulsionMotor motorFR = PropulsionMotor(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR,
-                                                rover_msgs::msg::PropulsionMotor::FRONT_RIGHT,
-                                                _propMotorMsg);
-
+                                              rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT,
+                                              _propMotorMsg);
     PropulsionMotor motorRL = PropulsionMotor(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR,
-                                                rover_msgs::msg::PropulsionMotor::REAR_LEFT,
-                                                _propMotorMsg);
+                                              rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT,
+                                              _propMotorMsg);
     PropulsionMotor motorRR = PropulsionMotor(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR,
-                                                rover_msgs::msg::PropulsionMotor::REAR_RIGHT,
-                                                _propMotorMsg);
+                                              rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT,
+                                              _propMotorMsg);
 
     Camera cameraMain = Camera(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN, rover_msgs::msg::CameraControl::ID_CAM_MAIN);
     Camera cameraAntenna

@@ -15,7 +15,7 @@ find_package(rover_msgs REQUIRED)
 
 add_subdirectory(../rover_shared_libs/ .build)
 
-file(GLOB_RECURSE SOURCES_CAN_MASTER CONFIGURE_DEPENDS src/CanMaster/*.cpp)
+file(GLOB_RECURSE SOURCES_CAN_MASTER CONFIGURE_DEPENDS src/can_master/*.cpp)
 add_executable(can_master ${SOURCES_CAN_MASTER})
 ament_target_dependencies(can_master
                           rclcpp

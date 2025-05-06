@@ -3,6 +3,7 @@
 
 #include <rover_lib2/helpers/assert.hpp>
 #include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/thread_safe_access.hpp>
 
 #include <rclcpp/rclcpp.hpp>
 
@@ -11,44 +12,32 @@
 
 namespace CanMaster
 {
-    template<typename T>
-    class LockedAccess
-    {
-      public:
-        LockedAccess(std::mutex& mtx_, T& data_):
-            _lock(mtx_),
-            _data(data_)
-        {
-        }
-
-        T& getThreadSafeAccess(void)
-        {
-            return _data;
-        }
-
-      private:
-        std::lock_guard<std::mutex> _lock;
-        T& _data;
-    };
-
     template<typename MsgT>
     class SharedRosMsg
     {
       public:
         /**
-         * @brief Attach a new publisher on this message, only if its not already attached
+         * @brief Attach a new publisher on this message, only if its not already attached (the fastest rate will be applied to
+         * all passed publishers)
          *
-         * @param pub_
-
+         * @param pNode_ Pointer to a valid rclcpp::node, must be valid the first time the method is called and always be the same
+         * node afterwards (or nullptr)
+         * @param wpPub_ Weak pointer to a valid rclcpp::publisher, if multiple publisher on same topic only one will be kept.
+         * @param rate_ Publishing rate at wish all publishers will publish. If multiple rate are passed only the fastest will be
+         * applied
          */
         bool attachNewPub(std::shared_ptr<rclcpp::Node> pNode_, std::weak_ptr<rclcpp::Publisher<MsgT>> wpPub_, float rate_)
         {
-            rate_ = CONSTRAIN(rate_, 0.0F, 1000.0F);
-
             ASSERT_COND_MSG((!_node && pNode_) || (pNode_ && _node && pNode_ == _node),
                             "A valid node must be passed and it must always be the same one");
             _node = pNode_;
 
+            if (rate_ < 0.0F || rate_ > 1000.0F)
+            {
+                RCLCPP_WARN(_node->get_logger(), "Expected publish rate be in range [0, 1000]. Value asked by user: %.2f", rate_);
+            }
+
+            rate_ = CONSTRAIN(rate_, 0.0F, 1000.0F);
             if (_node || rate_ > _rate)
             {
                 _rate = rate_;
@@ -66,7 +55,6 @@ namespace CanMaster
                                                   });
             }
 
-            this->removeNullPub();
             std::string newPubTopicName = "";
             if (wpPub_.expired())
             {
@@ -78,6 +66,7 @@ namespace CanMaster
                 newPubTopicName = spPub->get_topic_name();
             }
 
+            this->removeNullPub();
             const auto& it = std::find_if(_pubList.begin(),
                                           _pubList.end(),
                                           [&](std::weak_ptr<rclcpp::Publisher<MsgT>> wpPub)
@@ -129,15 +118,15 @@ namespace CanMaster
             }
         }
 
-        LockedAccess<MsgT> get()
+        ThreadSafeAccess<MsgT> get()
         {
-            return LockedAccess<MsgT>(_msgMutex, _msg);
+            return ThreadSafeAccess<MsgT>(_msgMutex, _msg);
         }
 
       private:
         void publish(void)
         {
-            LockedAccess<MsgT> msgLocked = get();
+            ThreadSafeAccess<MsgT> msgLocked = this->get();
             MsgT msg = msgLocked.getThreadSafeAccess();
             for (auto& wpPub : _pubList)
             {
@@ -154,6 +143,10 @@ namespace CanMaster
             }
         }
 
+        /**
+         * @brief Parse the list of publisher and removes them if they're not valid anymore
+         *
+         */
         void removeNullPub(void)
         {
             _pubList.erase(std::remove_if(_pubList.begin(),

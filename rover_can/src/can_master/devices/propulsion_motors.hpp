@@ -1,8 +1,8 @@
 #ifndef PROPULSION_MOTORS_HPP
 #define PROPULSION_MOTORS_HPP
 
-#include "CanMaster/MasterDevice.hpp"
-#include "CanMaster/SharedMsg.hpp"
+#include "can_master/master_device.hpp"
+#include "can_master/shared_msg.hpp"
 
 #include <rover_can2/msgs/prop_speed_cmd.hpp>
 #include <rover_can2/msgs/prop_speed_status.hpp>
