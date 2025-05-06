@@ -3,7 +3,6 @@
 
 #if defined(__linux__)
 #include <cstdint>
-#include <thread>
 #elif defined(ARDUINO_ESP32S3_DEV)
 #include "esp_timer.h"
 #endif  // defined(__linux__)

@@ -310,7 +310,7 @@ void JoyFormator::setControllerType(std::string controller_type_name)
                      "controller_type parameter doesn't correspond to any keybinding. \"%s\" entered, possible"
                      " entry are: \"DS4\", \"PS4\"",
                      controller_type_name.c_str());
-        ASSERT_COND_MSG(false, "Bad launch parameters: Wrong controller_type");
+        ASSERT_MSG("Bad launch parameters: Wrong controller_type");
     }
 }
 
