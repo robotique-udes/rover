@@ -25,4 +25,4 @@ namespace Constants::CameraInfo
             return false;
         }
     }
-}  // namespace CameraInfo
+}  // namespace Constants::CameraInfo

@@ -12,7 +12,6 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-
 namespace QHelper
 {
 

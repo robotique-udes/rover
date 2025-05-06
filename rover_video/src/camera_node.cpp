@@ -511,7 +511,9 @@ void CameraNode::videoWatchDogFunction(void)
                 {
                     if (!_recordingMap.erase(url))
                     {
-                        RCLCPP_ERROR(this->get_logger(), "Shutdown request for %s could not be processed, please try again", url.c_str());
+                        RCLCPP_ERROR(this->get_logger(),
+                                     "Shutdown request for %s could not be processed, please try again",
+                                     url.c_str());
                     }
 
                     if (_recordingMap.empty())
@@ -521,7 +523,9 @@ void CameraNode::videoWatchDogFunction(void)
                 }
                 else
                 {
-                    RCLCPP_ERROR(this->get_logger(), "Shutdown requested for %s but no recordings found, no action done", url.c_str());
+                    RCLCPP_ERROR(this->get_logger(),
+                                 "Shutdown requested for %s but no recordings found, no action done",
+                                 url.c_str());
                 }
             }
 

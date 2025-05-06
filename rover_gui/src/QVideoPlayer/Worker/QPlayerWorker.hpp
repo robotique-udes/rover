@@ -44,8 +44,8 @@ class QPlayerWorker : public QWorker
     void arucoServerInfoFailed(bool success);
 
   private:
-    //RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
-    LoopTimer<uint64_t,  Time::millis> _timer_serviceCall;
+    // RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
+    LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
 };
 
 #endif  // VIDEO_WORKER_HPP

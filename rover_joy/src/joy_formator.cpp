@@ -72,12 +72,12 @@ class JoyFormator : public rclcpp::Node
         sControllerConfig()
         {
             custom_steps = NULL;
-            for(uint8_t i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
+            for (uint8_t i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
             {
                 buttons[i] = -1;
             }
 
-            for(uint8_t i = 0; i < (sizeof(axes) / sizeof(axes[0])); i++)
+            for (uint8_t i = 0; i < (sizeof(axes) / sizeof(axes[0])); i++)
             {
                 axes[i] = -1;
             }
@@ -119,7 +119,7 @@ int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
 
-    rclcpp::spin(std::make_shared<JoyFormator>());    
+    rclcpp::spin(std::make_shared<JoyFormator>());
 
     rclcpp::shutdown();
     return 0;

@@ -18,7 +18,7 @@ template<typename ClockT, ClockT (*CLOCK_FUNC)(void)>
 class LoopTimer
 {
   public:
-    LoopTimer(ClockT interval_): 
+    LoopTimer(ClockT interval_):
         _interval(interval_),
         _nextTriggerTime(CLOCK_FUNC()),
         _overrunFalsePositiveLatch(false)
