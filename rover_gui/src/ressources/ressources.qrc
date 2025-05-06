@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="rovUS">
     <file>images/rover.png</file>
+    <file>images/rover2.jpeg</file>
   </qresource>
 </RCC>

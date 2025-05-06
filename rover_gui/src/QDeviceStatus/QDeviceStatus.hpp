@@ -4,9 +4,9 @@
 // ROS
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/can_device_status.hpp"
-#include "rover_can2/src/rover_can2/constant.hpp"
-#include "rover_lib2/src/rover_lib2/helpers/macros.hpp"
-//include "rover_shared_libs/rovus_lib/src/rovus_lib/macros.h"
+#include "rover_can2/constant.hpp"
+#include "rover_lib2/helpers/macros.hpp"
+
 
 
 // QT
@@ -36,6 +36,7 @@ class QDeviceStatus : public QWidget
     Ui::DeviceStatus _ui;
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
     std::unordered_map<uint16_t, rover_msgs::msg::CanDeviceStatus> _deviceStatusInfo;
+    uint16_t _currentStatusID = 0U;
 };
 
 #endif  // __QDEVICESTATUS_HPP__

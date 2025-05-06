@@ -5,12 +5,21 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _node(guiNode_)
 {
     _ui.setupUi(this);
+    
     connect(_ui.test,
             &QPushButton::clicked,
             this,
             [this]()
             {
-                this->setStatusReport(RoverCan2::Constant::eDeviceId::MASTER_COMPUTER_UNIT);
+                this->setStatusReport(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR);
+            });
+
+    connect(_ui.test_2,
+            &QPushButton::clicked,
+            this,
+            [this]()
+            {
+                this->setStatusReport(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR);
             });
 
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
@@ -22,11 +31,11 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
         });
 
     // Set the QSizePolicy to ensure aspect ratio resizing
-    QSizePolicy sp = this->sizePolicy();
-    sp.setHorizontalPolicy(QSizePolicy::Preferred);
-    sp.setVerticalPolicy(QSizePolicy::Preferred);
-    sp.setHeightForWidth(true);  // Enable height for width
-    this->setSizePolicy(sp);
+    // QSizePolicy sp = this->sizePolicy();
+    // sp.setHorizontalPolicy(QSizePolicy::Preferred);
+    // sp.setVerticalPolicy(QSizePolicy::Preferred);
+    // sp.setHeightForWidth(true);  // Enable height for width
+    // this->setSizePolicy(sp);
 }
 
 int QDeviceStatus::heightForWidth(int width_) const
@@ -44,14 +53,19 @@ int QDeviceStatus::heightForWidth(int width_) const
 void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_)
 {
     _deviceStatusInfo[msg_.id] = msg_;
+
+    if (_currentStatusID == msg_.id)
+    {
+        this->setStatusReport(static_cast<RoverCan2::Constant::eDeviceId>(msg_.id));
+    }
 }
 
 void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId id_)
 {
     uint16_t deviceID = TO_UNDERLYING(id_);
 
-    auto label = _ui.StatusReport->findChild<QLabel*>("StatusInfo");
-    if (!label)
+    auto groupBoxLabel = _ui.StatusReport->findChild<QLabel*>("StatusInfo");
+    if (!groupBoxLabel)
     {
         RCLCPP_ERROR(_node->get_logger(), "StatusInfo not found!");
         return;
@@ -63,15 +77,26 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId id_)
     {
         const auto& deviceStatus = it->second;
 
-        // Compose your status string however you like
-        QString statusText = QString("ID: %1\nStatus: %2").arg(deviceStatus.id).arg(this->setErrorMsg(deviceStatus.error_state));
+        groupBoxLabel->setTextFormat(Qt::RichText);
+        // Set QString to same as UI_DeviceStatus.h
+        QString statusText = QString("<html><head/><body>"
+                                     "<p>Device ID: %1</p>"
+                                     "<p>Status: %2</p>"
+                                     "<p>Watchdog: %3</p>"
+                                     "</body></html>")
+                                 .arg(deviceStatus.id)
+                                 .arg(this->setErrorMsg(deviceStatus.error_state))
+                                 .arg(deviceStatus.watchdog_ok ? "Still active" : "Not active");
 
         // Set label text
-        label->setText(statusText);
+        groupBoxLabel->setText(statusText);
+        _currentStatusID = deviceStatus.id;
     }
     else
     {
-        label->setText("Device not found.");
+        groupBoxLabel->setText("Device not found.");
+        _currentStatusID = deviceID;
+        RCLCPP_ERROR(_node->get_logger(), "Device ID %d not found in device status info.", deviceID);
     }
 }
 
@@ -80,15 +105,15 @@ QString QDeviceStatus::setErrorMsg(uint8_t errorCode_)
     switch (errorCode_)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            return "OK";
+            return "Device is currently OK";
             break;
 
         case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            return "Warning";
+            return "Device is currently in warning";
             break;
 
         case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            return "Error";
+            return "Device is currently in Error";
             break;
 
         default:

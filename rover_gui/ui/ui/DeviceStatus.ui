@@ -6,8 +6,8 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>548</width>
-    <height>527</height>
+    <width>1268</width>
+    <height>881</height>
    </rect>
   </property>
   <property name="windowTitle">
@@ -19,14 +19,14 @@
      <widget class="QLabel" name="RoverImage">
       <property name="geometry">
        <rect>
-        <x>0</x>
-        <y>0</y>
-        <width>351</width>
-        <height>511</height>
+        <x>120</x>
+        <y>90</y>
+        <width>581</width>
+        <height>741</height>
        </rect>
       </property>
       <property name="styleSheet">
-       <string notr="true">background-image: url(:/rovUS/images/rover.png);</string>
+       <string notr="true"/>
       </property>
       <property name="frameShape">
        <enum>QFrame::NoFrame</enum>
@@ -35,7 +35,7 @@
        <string/>
       </property>
       <property name="pixmap">
-       <pixmap resource="../../src/ressources/ressources.qrc">:/rovUS/images/rover.png</pixmap>
+       <pixmap resource="../../src/ressources/ressources.qrc">:/rovUS/images/rover2.jpeg</pixmap>
       </property>
       <property name="scaledContents">
        <bool>true</bool>
@@ -50,14 +50,36 @@
      <widget class="QPushButton" name="test">
       <property name="geometry">
        <rect>
-        <x>220</x>
-        <y>190</y>
+        <x>530</x>
+        <y>360</y>
         <width>80</width>
         <height>23</height>
        </rect>
       </property>
       <property name="text">
        <string>test</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="test_2">
+      <property name="geometry">
+       <rect>
+        <x>210</x>
+        <y>360</y>
+        <width>80</width>
+        <height>23</height>
+       </rect>
+      </property>
+      <property name="text">
+       <string>test2</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -85,7 +107,7 @@
         <item>
          <widget class="QLabel" name="StatusInfo">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device ID: 69&lt;/p&gt;&lt;p&gt;Status: OK&lt;/p&gt;&lt;p&gt;Watchdog: Still active&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Device ID: 69&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Status: OK&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Watchdog: Still active&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="scaledContents">
            <bool>false</bool>
