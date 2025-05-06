@@ -1,39 +1,36 @@
-#ifndef PWM_CMD_HPP
-#define PWM_CMD_HPP
+#ifndef PROP_SPEED_CMD_HPP
+#define PROP_SPEED_CMD_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
 
-DEFINE_LOG_NODE(PwmCmd_msg, Logger::eNodeState::OFF)
+DEFINE_LOG_NODE(PropSpeedCmd_msg, Logger::eNodeState::OFF)
 
 namespace RoverCan2::Msgs
 {
-    class PwmCmd : public Msg<PwmCmd>
+    class PropSpeedCmd : public Msg<PropSpeedCmd>
     {
       public:
         enum class eMsgContentID : uint8_t
         {
-            FREQUENCY,
-            DUTY_CYCLE,
+            TARGET_SPEED,
             eLAST,
         };
 
       private:
         struct sMsgData
         {
-            float frequency;
-            float dutyCycle;
+            float target_speed;
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
-            = {eMsgContentID::FREQUENCY, eMsgContentID::DUTY_CYCLE};
+            = {eMsgContentID::TARGET_SPEED};
 
       public:
-        PwmCmd():
-            Msg(Constant::eMsgId::PWM_CMD)
+        PropSpeedCmd():
+            Msg(Constant::eMsgId::PROP_SPEED_CMD)
         {
-            _data.frequency = static_cast<decltype(_data.frequency)>(0);
-            _data.dutyCycle = static_cast<decltype(_data.dutyCycle)>(0);
+            _data.target_speed = static_cast<decltype(_data.target_speed)>(0);
         }
 
         eLoadMsgCode _loadMsg(const CanMsg& msg_)
@@ -51,7 +48,7 @@ namespace RoverCan2::Msgs
             eMsgContentID msgContentId = static_cast<eMsgContentID>(msg_.getMsgContentID());
             if (!VALID_MSG_IDS.contains(msgContentId))
             {
-                LOG_DEBUG(Logger::Nodes::PwmCmd_msg,
+                LOG_DEBUG(Logger::Nodes::PropSpeedCmd_msg,
                           "Mismatch between received message and local message definition. Received msgContentId: (%u), "
                           "expected lower than (%u) and none zero",
                           TO_UNDERLYING(msgContentId),
@@ -62,17 +59,10 @@ namespace RoverCan2::Msgs
             bool success = false;
             switch (msgContentId)
             {
-                case eMsgContentID::FREQUENCY:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.frequency);
-                    LOG_DEBUG(Logger::Nodes::PwmCmd_msg,
-                              "switch (msgContentId) case eMsgContentID::FREQUENCY: %s",
-                              success ? "success" : "failed");
-                    break;
-
-                case eMsgContentID::DUTY_CYCLE:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.dutyCycle);
-                    LOG_DEBUG(Logger::Nodes::PwmCmd_msg,
-                              "switch (msgContentId) case eMsgContentID::DUTY_CYCLE: %s",
+                case eMsgContentID::TARGET_SPEED:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.target_speed);
+                    LOG_DEBUG(Logger::Nodes::PropSpeedCmd_msg,
+                              "switch (msgContentId) case eMsgContentID::TARGET_SPEED: %s",
                               success ? "success" : "failed");
                     break;
 
@@ -107,12 +97,8 @@ namespace RoverCan2::Msgs
             CanMsg msg_;
             switch (static_cast<eMsgContentID>(msgContentId_))
             {
-                case eMsgContentID::FREQUENCY:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.frequency, msg_);
-                    break;
-
-                case eMsgContentID::DUTY_CYCLE:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.dutyCycle, msg_);
+                case eMsgContentID::TARGET_SPEED:
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.target_speed, msg_);
                     break;
 
                 case eMsgContentID::eLAST:
@@ -143,4 +129,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // PWM_CMD_HPP
+#endif  // PROP_SPEED_CMD_HPP

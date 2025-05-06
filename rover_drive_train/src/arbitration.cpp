@@ -51,12 +51,10 @@ class Arbitration : public rclcpp::Node
 Arbitration::Arbitration():
     Node("arbitration")
 {
-    for (size_t i = 0; i < _zeroCmd.enable.size(); ++i)
+    for (size_t i = 0; i < rover_msgs::msg::PropulsionMotor::MOTOR_MAX; ++i)
     {
-        _zeroCmd.enable[i] = false;
         _zeroCmd.target_speed[i] = 0.0;
         _zeroCmd.current_speed[i] = 0.0;
-        _zeroCmd.close_loop[i] = false;
     }
 
     _subBaseHr = this->create_subscription<std_msgs::msg::Empty>("/base/heartbeat",

@@ -1,3 +1,2 @@
 float latitude;
 float longitude;
-uint8_t fix;
