@@ -6,6 +6,7 @@
 #include "rover_can_lib/msgs/error_state.hpp"
 #include "rover_msgs/msg/can_device_status.hpp"
 #include "rover_lib2/helpers/time.hpp"
+#include "rover_lib2/helpers/loop_timer.hpp"
 #include "rover_lib2/helpers/chrono.hpp"
 
 class CanMaster;
