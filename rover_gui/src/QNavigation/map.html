@@ -37,20 +37,16 @@
       mapMode2D: Cesium.MapMode2D.ROTATE,
     });
 
-    let currentPosition = { latitude: 40.0, longitude: -75.0 };
+    let currentPosition = { latitude: 0.0, longitude: 0.0 };
     let pathEntity = null;
     let waypointEntities = [];
     let waypointCounter = 1;
 
     function clearAllWaypoints() {
-      // Get a copy of all entities in the collection
       const entities = viewer.entities.values.slice();
 
-      // Loop through all entities and remove waypoints
       for (let i = 0; i < entities.length; i++) {
         const entity = entities[i];
-
-        // Check if this is a waypoint entity (has a name that starts with "Waypoint" or is in our list)
         const isWaypoint = entity.id && (
           entity.id.startsWith('waypoint_') ||
           waypointEntities.includes(entity) ||
@@ -63,23 +59,40 @@
         }
       }
 
-      // Also remove path entity if it exists
       if (pathEntity) {
         viewer.entities.remove(pathEntity);
         pathEntity = null;
         console.log("Removed path entity");
       }
 
-      // Reset waypoint tracking
       waypointEntities = [];
       waypointCounter = 1;
 
       console.log("Map waypoints cleared - entities remaining:", viewer.entities.values.length);
     }
 
+    function deleteWaypoint(waypointId) {
+      const entity = viewer.entities.getById(waypointId);
+
+      if (entity) {
+        viewer.entities.remove(entity);
+        console.log("Removed waypoint entity:", waypointId);
+
+        const index = waypointEntities.findIndex(wp => wp.id === waypointId);
+        if (index !== -1) {
+          waypointEntities.splice(index, 1);
+        }
+
+        return true;
+      } else {
+        console.warn("Waypoint entity not found:", waypointId);
+        return false;
+      }
+    }
+
     const entity = viewer.entities.add({
       name: "Live Position Arrow",
-      position: Cesium.Cartesian3.fromDegrees(-75.0, 40.0, 20),
+      position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
       billboard: {
         image: 'qrc:/arrow.png',
         width: 30,
@@ -133,10 +146,12 @@
       return R * c;
     }
 
-    function addWaypoint(lat, lon, name) {
+    function addWaypoint(lat, lon, name, waypointId) {
       const waypointName = name || `Waypoint ${waypointCounter++}`;
+      const id = waypointId || `waypoint_${Date.now()}`;
+
       const waypointEntity = viewer.entities.add({
-        id: `waypoint_${waypointEntities.length}`,
+        id: id,
         name: waypointName,
         position: Cesium.Cartesian3.fromDegrees(lon, lat),
         point: {
@@ -159,7 +174,7 @@
           waypointName: waypointName,
           latitude: lat,
           longitude: lon,
-          isWaypoint: true  // Add a flag to identify this as a waypoint
+          isWaypoint: true
         }
       });
 
@@ -183,11 +198,11 @@
       }).then((result) => {
         if (result.isConfirmed) {
           const name = result.value;
-          const waypoint = addWaypoint(lat, lon, name);
+          const id = `waypoint_${Date.now()}`;
+          const waypoint = addWaypoint(lat, lon, name, id);
 
           if (window.bridge && window.bridge.waypointCreated) {
-            // Notify Qt/C++ side of the new waypoint
-            window.bridge.waypointCreated(name, lat, lon);
+            window.bridge.waypointCreated(name, lat, lon, id);
           }
         }
       });
@@ -240,7 +255,8 @@
       });
 
       bridge.sendGoal.connect(function (name, lat, lon) {
-        addWaypoint(lat, lon, name);
+        const id = `waypoint_${Date.now()}`;
+        addWaypoint(lat, lon, name, id);
         viewer.camera.flyTo({
           destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
         });
@@ -251,14 +267,18 @@
         console.log(`Path distance (manual): ${distance.toFixed(2)} meters`);
       });
 
-      // Connect clearWaypoints signal
       bridge.clearWaypoints.connect(function () {
         console.log("clearWaypoints signal received!");
         clearAllWaypoints();
         console.log("Waypoints cleared from map");
       });
 
-      // Signal that the JavaScript side is ready
+      bridge.deleteWaypoint.connect(function (waypointId) {
+        console.log("deleteWaypoint signal received for:", waypointId);
+        const result = deleteWaypoint(waypointId);
+        console.log("Waypoint deletion result:", result);
+      });
+
       if (bridge.jsReady) {
         bridge.jsReady();
       }

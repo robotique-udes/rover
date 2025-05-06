@@ -10,56 +10,60 @@
 #include <QThread>
 #include <QMetaObject>
 #include <QListWidgetItem>
+#include <QMessageBox>
+#include <QDebug>
+#include <QUuid>
 
-// Structure to store waypoint information
 struct Waypoint {
     QString name;
     double latitude;
     double longitude;
+    QString id; 
 };
 
 class QNavigation : public QWidget
 {
     Q_OBJECT
   public:
-    QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent = nullptr);
+    QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
     ~QNavigation();
 
   signals:
-    void gpsCallback(double latitude, double longitude, double heading);
-    void sendGoal(QString waypointName, double latitude, double longitude);
-    void calculatePath(double latitude, double longitude);
-    void jsReady();
-    void clearWaypoints();
-    void clearPath();
+    void gpsCallback(double latitude_, double longitude_, double heading_);
+    void sendGoal(QString waypointName_, double latitude_, double longitude_);
+    void calculatePath(double latitude_, double longitude_);
+    void jsReady(void);
+    void clearWaypoints(void);
+    void clearPath(void);
+    void deleteWaypoint(QString waypointId_);
 
   public slots:
-    void pathDistanceCalculated(double distanceMeters);
-    void onCalculatePathClicked();
-    void onWaypointSelected(QListWidgetItem* item);
-    void onClearWaypointsClicked();
-    void onClearPathClicked();
-    void waypointCreated(QString name, double latitude, double longitude);
+    void pathDistanceCalculated(double distance_);
+    void onCalculatePathClicked(void);
+    void onWaypointSelected(QListWidgetItem* item_);
+    void onClearWaypointsClicked(void);
+    void onClearPathClicked(void);
+    void onDeleteWaypointClicked(void);
+    void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
 
   private:
-    void addWaypointToList(const QString& name, double latitude, double longitude);
+    void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
     
-    QWebChannel* webChannel;
+    QWebChannel* _webChannel;
     QLineEdit* _lineEditLatitude;
     QLineEdit* _lineEditLongitude;
     QPushButton* _pushButtonSetGoal;
     QPushButton* _pushButtonCalculatePath;
-    // QPushButton* clearPathButton;
     QLabel* _labelDistance;
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
     std::shared_ptr<rclcpp::Node> _node;
-    Ui::Navigation* ui;
+    Ui::Navigation* _ui;
 
-    double _currentLat = 0.0;
-    double _currentLon = 0.0;
-    double _currentHeading = 0.0;
+    double _currentLat = 0.0F;
+    double _currentLon = 0.0F;
+    double _currentHeading = 0.0F;
     
     QList<Waypoint> _waypoints;
 };

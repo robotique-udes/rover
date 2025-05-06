@@ -91,11 +91,22 @@
          </widget>
         </item>
         <item>
-         <widget class="QPushButton" name="clearWaypointsButton">
-          <property name="text">
-           <string>Clear Waypoints</string>
-          </property>
-         </widget>
+         <layout class="QHBoxLayout" name="waypointButtonsLayout">
+          <item>
+           <widget class="QPushButton" name="deleteWaypointButton">
+            <property name="text">
+             <string>Delete Waypoint</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clearWaypointsButton">
+            <property name="text">
+             <string>Clear All Waypoints</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
         </item>
        </layout>
       </widget>
@@ -134,7 +145,7 @@
         <item>
          <widget class="QPushButton" name="clearPathButton">
           <property name="text">
-           <string>Clear Calculated path</string>
+           <string>Clear Calculated Path</string>
           </property>
          </widget>
         </item>
