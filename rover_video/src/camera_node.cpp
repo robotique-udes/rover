@@ -504,46 +504,46 @@ void CameraNode::videoWatchDogFunction(void)
     RCLCPP_DEBUG(LOGGER, "Starting video watchdog");
     while (!_watchDogStop.load())
     {
-        std::unique_lock<std::mutex> lock(_recordingMapMutex);
-        _recordingCv.wait(lock,
-                          [this]
-                          {
-                              return (_watchDogStop.load() || !_recordingShutdownRequestSet.empty());
-                          });
+        {
+            std::unique_lock<std::mutex> lock(_recordingMapMutex);
+            _recordingCv.wait(lock,
+                            [this]
+                            {
+                                return (_watchDogStop.load() || !_recordingShutdownRequestSet.empty());
+                            });
 
-        if (_watchDogStop)
-        {
-            break;
-        }
-        else
-        {
-            for (std::string url : _recordingShutdownRequestSet)
+            if (_watchDogStop)
             {
-                RCLCPP_WARN(LOGGER, "Processing Shutdown for %s", url.c_str());
-                if (_recordingMap.find(url) != _recordingMap.end())
+                break;
+            }
+            else
+            {
+                for (std::string url : _recordingShutdownRequestSet)
                 {
-                    if (!_recordingMap.erase(url))
+                    RCLCPP_WARN(LOGGER, "Processing Shutdown for %s", url.c_str());
+                    if (_recordingMap.find(url) != _recordingMap.end())
                     {
-                        RCLCPP_ERROR(LOGGER, "Shutdown request for %s could not be processed, please try again", url.c_str());
-                    }
+                        if (!_recordingMap.erase(url))
+                        {
+                            RCLCPP_ERROR(LOGGER, "Shutdown request for %s could not be processed, please try again", url.c_str());
+                        }
 
-                    if (_recordingMap.empty())
+                        if (_recordingMap.empty())
+                        {
+                            _watchDogStop.store(true);
+                        }
+                    }
+                    else
                     {
-                        _watchDogStop.store(true);
+                        RCLCPP_ERROR(LOGGER, "Shutdown requested for %s but no recordings found, no action done", url.c_str());
                     }
                 }
-                else
-                {
-                    RCLCPP_ERROR(LOGGER, "Shutdown requested for %s but no recordings found, no action done", url.c_str());
-                }
+
+                _recordingShutdownRequestSet.clear();
             }
 
-            _recordingShutdownRequestSet.clear();
         }
-
-        lock.unlock();
         CB_url_publisher();
-        lock.lock();
     }
     RCLCPP_DEBUG(LOGGER, "Stopping video watchdog");
     return;
