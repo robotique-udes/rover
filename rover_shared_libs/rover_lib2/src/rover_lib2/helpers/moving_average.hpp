@@ -2,9 +2,7 @@
 #define __MOVING_AVERAGE_HPP__
 
 // #include "rover_helper/helpers.hpp"
-#include <stdint.h>
-
-#warning TODO test
+#include <cstdint>
 
 template<class T, uint16_t COEFF_NB>
 class MovingAverage
