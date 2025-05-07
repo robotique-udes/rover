@@ -46,6 +46,8 @@ class QVideoPlayerWidget : public QWidget
     void setURLToDefault(void);
     void updateCamURL(void);
 
+    void CB_cameraListUpdate(std::vector<std::string> urls_);
+
   signals:
     void arucoCameraFailure(bool valid_);
     // void statusBarUpdate(std::string message_, size_t duration_);

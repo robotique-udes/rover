@@ -5,6 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
+#include "rover_msgs/msg/camera_list.hpp"
 #include "rovus_lib/camera_info.hpp"
 
 #include <QtWidgets/QGridLayout>
@@ -32,10 +33,10 @@ class QVideoManagerWidget : public QWidget
 
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
-
+    
   private:
     void initWidget(void);
-    void initArucoPublisher(void);
+    void initArucoPublisher(void);            
     void initArucoClient(void);
 
     /**
@@ -43,6 +44,8 @@ class QVideoManagerWidget : public QWidget
      *
      */
     void initCameraControlClient(void);
+
+    void initCameraControlPublisher(void);
 
     std::shared_ptr<rclcpp::Node> _node;
 
@@ -55,6 +58,7 @@ class QVideoManagerWidget : public QWidget
     rclcpp::TimerBase::SharedPtr _timer_detectionManagerUpdate;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
+    std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraList>> _sub_cameraList;
 
     std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };

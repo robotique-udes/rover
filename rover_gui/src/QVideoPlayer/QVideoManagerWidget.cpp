@@ -15,6 +15,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initArucoPublisher();
 
     this->initCameraControlClient();
+    this->initCameraControlPublisher();
 
     this->setLayout(&_videoPlayerLayout);
 
@@ -158,4 +159,14 @@ void QVideoManagerWidget::initCameraControlClient(void)
         widget->setCameraControlClientManager(_client_cameraControlManager);
     }
     return;
+}
+
+void QVideoManagerWidget::initCameraControlPublisher(void)
+{
+    _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>("/rover/video/recording_list", 1, [this](const rover_msgs::msg::CameraList msg){
+        for (auto& widget : _videoPlaysWidgets)
+        {
+            widget->CB_cameraListUpdate(msg.urls);
+        }
+    });
 }

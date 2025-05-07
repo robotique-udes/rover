@@ -342,8 +342,6 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
             _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
 
-            _ui.rtspTextBox->setReadOnly(true);
-            _ui.rtspTextBox->setToolTip("To change the rtsp URL first stop the recording");
         }
     }
     return;
@@ -375,9 +373,36 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
             _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
 
-            _ui.rtspTextBox->setReadOnly(false);
-            _ui.rtspTextBox->setToolTip("");
         }
     }
     return;
+}
+
+void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls)
+{
+    for (const auto& url : urls)
+    {
+        if (url == _camURL)
+        {
+            if (!_ui.startRecordingButton->isChecked())
+            {
+                _ui.startRecordingButton->clicked(true);
+                _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
+                _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
+                _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
+            }
+            return;
+        }
+    }
+
+    //if cam_url wasn't found in vector and we're currently recording
+    if (_ui.startRecordingButton->isChecked())
+    {
+        _ui.startRecordingButton->clicked(false);
+        _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
+        _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
+        _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
+    }
+
+
 }
