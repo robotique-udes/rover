@@ -2,18 +2,17 @@
 #define __CAMERA__NODE__HPP__
 
 #include "video_recording.hpp"
-#include "rovus_lib/camera_info.hpp"
-#include "rovus_lib/macros.h"
 
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps_position.hpp"
-#include "rover_msgs/srv/camera_control.hpp"
+#include <rover_msgs/msg/gps_position.hpp>
+#include <rover_msgs/srv/camera_control.hpp>
 
 #include <sys/stat.h>
 #include <cstdlib>
 
 class CameraNode : public rclcpp::Node
 {
+    static constexpr const char* SERVICE_MEDIA_SERVER_NAME = "/rover/cameras/media_server_control";
+
     enum class eFileFormatNameTypes : size_t
     {
         SCREENSHOT,

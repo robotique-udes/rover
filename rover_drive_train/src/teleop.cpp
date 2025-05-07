@@ -7,6 +7,9 @@
 // Class definition
 class Teleop : public rclcpp::Node
 {
+    static constexpr const char* TOPIC_JOY = "/base/joy/drive_train";
+    static constexpr const char* TOPIC_WHEEL_CMD = "/rover/drive_train/wheels_cmd_telelop";
+
   public:
     Teleop();
 
@@ -111,11 +114,10 @@ Teleop::Teleop():
 {
     this->getParams();
 
-    _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>("/rover/drive_train/joy",
-                                                                        1,
-                                                                        std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+    _sub_joy_formated
+        = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY, 1, std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
 
-    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1);
+    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, 1);
 }
 
 int main(int argc, char* argv[])

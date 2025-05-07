@@ -1,14 +1,13 @@
 #ifndef __DDB_NODE_HPP__
 #define __DDB_NODE_HPP__
 
-#include "rovus_lib/camera_info.hpp"
-#include "rovus_lib/macros.h"
-
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/srv/ddb_control.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/srv/ddb_control.hpp>
 
 class DDBControlNode : public rclcpp::Node
 {
+    static constexpr const char* TOPIC_CONTROL_BANK_0 = "/rover/auxiliary/ddb_control_bank0";
+    static constexpr const char* TOPIC_CONTROL_BANK_1 = "/rover/auxiliary/ddb_control_bank1";
     static constexpr size_t MAX_CHANNELS = 4UL;
 
     enum class eOutputState : uint8_t

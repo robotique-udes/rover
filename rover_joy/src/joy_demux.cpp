@@ -1,9 +1,9 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/srv/joy_demux_set_state.hpp"
-#include "rovus_lib/macros.h"
-#include "rovus_lib/rovus_exceptions.h"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/joy.hpp>
+#include <rover_msgs/msg/joy_demux_status.hpp>
+#include <rover_msgs/srv/joy_demux_set_state.hpp>
+#include <rovus_lib/macros.h>
+#include <rovus_lib/rovus_exceptions.h>
 
 using namespace std::chrono_literals;
 
@@ -86,10 +86,10 @@ JoyDemux::JoyDemux():
                                                                          callbackJoy(msg, eControllerType::secondary);
                                                                      });
 
-    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("/rover/drive_train/joy", 1);
-    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("/rover/arm/joy", 1);
-    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("/base/antenna/joy", 1);
-    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("/joy/demux/status", 1);
+    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", 1);
+    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", 1);
+    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("antenna", 1);
+    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("demux_status", 1);
 
     _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
         "demux_control",
