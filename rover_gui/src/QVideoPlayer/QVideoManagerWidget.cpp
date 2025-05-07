@@ -163,10 +163,13 @@ void QVideoManagerWidget::initCameraControlClient(void)
 
 void QVideoManagerWidget::initCameraControlPublisher(void)
 {
-    _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>("/rover/video/recording_list", 1, [this](const rover_msgs::msg::CameraList msg){
-        for (auto& widget : _videoPlaysWidgets)
-        {
-            widget->CB_cameraListUpdate(msg.urls);
-        }
-    });
+    _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>("/rover/video/recording_list",
+                                                                              1,
+                                                                              [this](const rover_msgs::msg::CameraList msg)
+                                                                              {
+                                                                                  for (auto& widget : _videoPlaysWidgets)
+                                                                                  {
+                                                                                      widget->CB_cameraListUpdate(msg.urls);
+                                                                                  }
+                                                                              });
 }

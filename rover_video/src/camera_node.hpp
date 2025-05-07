@@ -36,7 +36,7 @@ class CameraNode : public rclcpp::Node
                              rover_msgs::srv::CameraControl::Response& response_);
     void stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                             rover_msgs::srv::CameraControl::Response& response_);
-    void CB_url_publisher (void);
+    void CB_url_publisher(void);
 
     std::string getCurrentTime(void);
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);

@@ -29,10 +29,10 @@ CameraNode::CameraNode():
     _pub_urls = this->create_publisher<rover_msgs::msg::CameraList>("/rover/video/recording_list", 1);
 
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
-                                               [this](void)
-                                               {
-                                                   this->CB_url_publisher();
-                                               });
+                                         [this](void)
+                                         {
+                                             this->CB_url_publisher();
+                                         });
 
     _sub_position
         = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
@@ -426,7 +426,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
         else
         {
             _recordingMap.emplace(cameraURL_,
-                                Recording(videoFolderPath_,
+                                  Recording(videoFolderPath_,
                                             filename_,
                                             cameraURL_,
                                             LOGGER,
@@ -507,10 +507,10 @@ void CameraNode::videoWatchDogFunction(void)
         {
             std::unique_lock<std::mutex> lock(_recordingMapMutex);
             _recordingCv.wait(lock,
-                            [this]
-                            {
-                                return (_watchDogStop.load() || !_recordingShutdownRequestSet.empty());
-                            });
+                              [this]
+                              {
+                                  return (_watchDogStop.load() || !_recordingShutdownRequestSet.empty());
+                              });
 
             if (_watchDogStop)
             {
@@ -541,7 +541,6 @@ void CameraNode::videoWatchDogFunction(void)
 
                 _recordingShutdownRequestSet.clear();
             }
-
         }
         CB_url_publisher();
     }

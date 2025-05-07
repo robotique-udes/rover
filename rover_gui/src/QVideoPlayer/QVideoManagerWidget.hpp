@@ -33,10 +33,10 @@ class QVideoManagerWidget : public QWidget
 
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
-    
+
   private:
     void initWidget(void);
-    void initArucoPublisher(void);            
+    void initArucoPublisher(void);
     void initArucoClient(void);
 
     /**

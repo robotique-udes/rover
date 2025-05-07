@@ -34,14 +34,14 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
 
     connect(_playerWorkerThread.get(),
-    &QPlayerWorker::startRecordingHandledSuccessfully,
-    this,
-    &QVideoPlayerWidget::onStartRecordingHandledSuccessfully);
+            &QPlayerWorker::startRecordingHandledSuccessfully,
+            this,
+            &QVideoPlayerWidget::onStartRecordingHandledSuccessfully);
 
     connect(_playerWorkerThread.get(),
-    &QPlayerWorker::stopRecordingHandledSuccessfully,
-    this,
-    &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
+            &QPlayerWorker::stopRecordingHandledSuccessfully,
+            this,
+            &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
@@ -286,7 +286,6 @@ void QVideoPlayerWidget::handleRecording(void)
 
 void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
 {
-
     if (tag_ == _tag)
     {
         if (!success_)
@@ -294,14 +293,12 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
             _ui.ScreenshotButton->setProperty("class", "error");
             _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
             _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-
         }
         else
         {
             _ui.ScreenshotButton->setProperty("class", "success");
             _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
             _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-
         }
 
         QTimer::singleShot(STYLE_RESET_TIME,
@@ -341,7 +338,6 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
             _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
             _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-
         }
     }
     return;
@@ -372,7 +368,6 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
             _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
             _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-
         }
     }
     return;
@@ -395,7 +390,7 @@ void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls)
         }
     }
 
-    //if cam_url wasn't found in vector and we're currently recording
+    // if cam_url wasn't found in vector and we're currently recording
     if (_ui.startRecordingButton->isChecked())
     {
         _ui.startRecordingButton->clicked(false);

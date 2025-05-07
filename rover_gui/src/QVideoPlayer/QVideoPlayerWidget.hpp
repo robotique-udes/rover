@@ -94,7 +94,7 @@ class QVideoPlayerWidget : public QWidget
      * @param status_ if success -> filepath, else ->reason for failure
      * @param tag_ widget number
      */
-    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);    
+    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;
