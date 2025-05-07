@@ -52,8 +52,8 @@
        <rect>
         <x>530</x>
         <y>360</y>
-        <width>50</width>
-        <height>50</height>
+        <width>55</width>
+        <height>55</height>
        </rect>
       </property>
       <property name="sizePolicy">
@@ -64,21 +64,25 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>50</width>
-        <height>50</height>
+        <width>55</width>
+        <height>55</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>50</width>
-        <height>50</height>
+        <width>55</width>
+        <height>55</height>
        </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
       </property>
       <property name="styleSheet">
        <string notr="true">QPushButton {
-    background-color: green;
-    border-radius: 25px;
-    border: none;
+    background-color: #3c3f41;
+    border: 1px solid #4b4e52;
+    border-radius: 5px;
+    padding: 5px 10px;
 }</string>
       </property>
       <property name="text">
@@ -99,8 +103,8 @@
        <rect>
         <x>240</x>
         <y>360</y>
-        <width>50</width>
-        <height>50</height>
+        <width>55</width>
+        <height>55</height>
        </rect>
       </property>
       <property name="sizePolicy">
@@ -111,21 +115,22 @@
       </property>
       <property name="minimumSize">
        <size>
-        <width>50</width>
-        <height>50</height>
+        <width>55</width>
+        <height>55</height>
        </size>
       </property>
       <property name="maximumSize">
        <size>
-        <width>50</width>
-        <height>50</height>
+        <width>55</width>
+        <height>55</height>
        </size>
       </property>
       <property name="styleSheet">
        <string notr="true">QPushButton {
-    background-color: green;
-    border-radius: 25px;
-    border: none;
+    background-color: #3c3f41;
+    border: 1px solid #4b4e52;
+    border-radius: 5px;
+    padding: 5px 10px;
 }</string>
       </property>
       <property name="text">
@@ -157,7 +162,7 @@
         <item>
          <widget class="QLabel" name="StatusInfo">
           <property name="text">
-           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Device ID: 69&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Status: OK&lt;/span&gt;&lt;/p&gt;&lt;p&gt;&lt;span style=&quot; font-size:16pt;&quot;&gt;Watchdog: Still active&lt;/span&gt;&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Device ID: 69&lt;/p&gt;&lt;p&gt;Status: OK&lt;/p&gt;&lt;p&gt;Watchdog: Still active&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
           </property>
           <property name="scaledContents">
            <bool>false</bool>
