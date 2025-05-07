@@ -1,6 +1,6 @@
 #include "camera_node.hpp"
 
-#include "rovus_lib/camera_info.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -69,7 +69,7 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
             break;
 
         default:
-            RCLCPP_WARN(LOGGER, "Invalid command.");
+            RCLCPP_WARN(this->get_logger(), "Invalid command.");
             response_.success = false;
             response_.status = "Invalid command.";
             break;
@@ -86,11 +86,11 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
     folderPath = this->getFolderPath(eFileFormatNameTypes::SCREENSHOT);
-    CameraInfo::getNameFromURL(cameraURL, currentCamera);
+    Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER,
+        RCLCPP_ERROR(this->get_logger(),
                      "Failed to create screenshots folder or it already exists at %s for camera: %s",
                      folderPath.c_str(),
                      currentCamera.c_str());
@@ -121,11 +121,11 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
     folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
-    CameraInfo::getNameFromURL(cameraURL, currentCamera);
+    Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!this->createFolder(folderPath))
     {
-        RCLCPP_ERROR(LOGGER,
+        RCLCPP_ERROR(this->get_logger(),
                      "Failed to create recordings folder or it already exists at %s for camera: %s",
                      folderPath.c_str(),
                      currentCamera.c_str());
@@ -191,7 +191,7 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     std::string latitude = std::to_string(_lastLatitude);
     std::string longitude = std::to_string(_lastLongitude);
     std::string ID = "UnknownID";
-    CameraInfo::getNameFromURL(camURL_, ID);
+    Constants::CameraInfo::getNameFromURL(camURL_, ID);
 
     switch (fileType_)
     {
@@ -279,17 +279,17 @@ bool CameraNode::createFolder(const std::string& path_)
     {
         if (mkdir(path_.c_str(), 0775) == 0)
         {
-            RCLCPP_INFO(LOGGER, "Succesfully created the folder.");
+            RCLCPP_INFO(this->get_logger(), "Succesfully created the folder.");
             return true;
         }
         else
         {
-            RCLCPP_INFO(LOGGER, "Couldn't create the folder.");
+            RCLCPP_INFO(this->get_logger(), "Couldn't create the folder.");
             return false;
         }
     }
 
-    RCLCPP_DEBUG(LOGGER, "Directory already exists: %s", path_.c_str());
+    RCLCPP_DEBUG(this->get_logger(), "Directory already exists: %s", path_.c_str());
     return true;
 }
 
@@ -306,7 +306,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
 {
     std::string captureName = screenshotFolderPath_ + "/" + filename_;
 
-    RCLCPP_INFO(LOGGER, "Attempting to capture screenshot from camera: %s", cameraURL_.c_str());
+    RCLCPP_INFO(this->get_logger(), "Attempting to capture screenshot from camera: %s", cameraURL_.c_str());
 
     // The URL format will depend on the camera model and configuration
     // std::string camera_url = "rtsp://usual:usualusual@192.168.144.30:554/1/h264major";
@@ -320,7 +320,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
 
         // Save the last frame from recording as picture:
         cv::imwrite(captureName, rRecording.getFrame());
-        RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
+        RCLCPP_INFO(this->get_logger(), "Screenshot saved successfully as: %s", captureName.c_str());
 
         // Display the frame for debug
         // cv::imshow("IP Camera Screenshot", rRecording.getFrame());
@@ -337,7 +337,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
 
         if (!cap.isOpened())
         {
-            RCLCPP_ERROR(LOGGER, "Failed to open camera stream.");
+            RCLCPP_ERROR(this->get_logger(), "Failed to open camera stream.");
             return false;
         }
 
@@ -349,7 +349,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
         {
             // Save the frame as a sceenshot:
             cv::imwrite(captureName, frame);
-            RCLCPP_INFO(LOGGER, "Screenshot saved successfully as: %s", captureName.c_str());
+            RCLCPP_INFO(this->get_logger(), "Screenshot saved successfully as: %s", captureName.c_str());
 
             // Display the frame for debug
             // cv::imshow("IP Camera Screenshot", frame);
@@ -358,7 +358,7 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
         }
         else
         {
-            RCLCPP_ERROR(LOGGER, "Failed to capture frame from camera.");
+            RCLCPP_ERROR(this->get_logger(), "Failed to capture frame from camera.");
             cap.release();
             return false;
         }
@@ -411,7 +411,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
     if (_recordingMap.find(cameraURL_) != _recordingMap.end())  // check if recording doesn't already exist
     {
         Recording& rRecording = _recordingMap.at(cameraURL_);
-        RCLCPP_WARN(LOGGER, "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
+        RCLCPP_WARN(this->get_logger(), "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
         return false;
     }
     else
@@ -420,7 +420,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
                               Recording(videoFolderPath_,
                                         filename_,
                                         cameraURL_,
-                                        LOGGER,
+                                        this->get_logger(),
                                         [this](std::string url_)
                                         {
                                             this->requestShutdown(url_);
@@ -463,7 +463,7 @@ void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_messag
  */
 void CameraNode::requestShutdown(std::string camURL_)
 {
-    RCLCPP_WARN(LOGGER, "Received shutdown request for %s", camURL_.c_str());
+    RCLCPP_WARN(this->get_logger(), "Received shutdown request for %s", camURL_.c_str());
 
     {
         std::unique_lock<std::mutex> lock(_recordingMapMutex);
@@ -490,7 +490,7 @@ bool CameraNode::startWatchDog(void)
  */
 void CameraNode::videoWatchDogFunction(void)
 {
-    RCLCPP_DEBUG(LOGGER, "Starting video watchdog");
+    RCLCPP_DEBUG(this->get_logger(), "Starting video watchdog");
     while (!_watchDogStop.load())
     {
         std::unique_lock<std::mutex> lock(_recordingMapMutex);
@@ -508,12 +508,14 @@ void CameraNode::videoWatchDogFunction(void)
         {
             for (std::string url : _recordingShutdownRequestSet)
             {
-                RCLCPP_WARN(LOGGER, "Processing Shutdown for %s", url.c_str());
+                RCLCPP_WARN(this->get_logger(), "Processing Shutdown for %s", url.c_str());
                 if (_recordingMap.find(url) != _recordingMap.end())
                 {
                     if (!_recordingMap.erase(url))
                     {
-                        RCLCPP_ERROR(LOGGER, "Shutdown request for %s could not be processed, please try again", url.c_str());
+                        RCLCPP_ERROR(this->get_logger(),
+                                     "Shutdown request for %s could not be processed, please try again",
+                                     url.c_str());
                     }
 
                     if (_recordingMap.empty())
@@ -523,13 +525,15 @@ void CameraNode::videoWatchDogFunction(void)
                 }
                 else
                 {
-                    RCLCPP_ERROR(LOGGER, "Shutdown requested for %s but no recordings found, no action done", url.c_str());
+                    RCLCPP_ERROR(this->get_logger(),
+                                 "Shutdown requested for %s but no recordings found, no action done",
+                                 url.c_str());
                 }
             }
 
             _recordingShutdownRequestSet.clear();
         }
     }
-    RCLCPP_DEBUG(LOGGER, "Stopping video watchdog");
+    RCLCPP_DEBUG(this->get_logger(), "Stopping video watchdog");
     return;
 }

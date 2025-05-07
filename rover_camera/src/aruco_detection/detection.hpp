@@ -2,7 +2,7 @@
 #define DETECTION_HPP
 
 #include "process_frame.hpp"
-#include "rovus_lib/moving_average.hpp"
+#include "rover_lib2/helpers/moving_average.hpp"
 #include <unordered_map>
 
 #define COEFF_NB_ARUCO 10

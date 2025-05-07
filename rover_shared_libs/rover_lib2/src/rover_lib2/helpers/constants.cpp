@@ -1,13 +1,13 @@
-#include "camera_info.hpp"
+#include "constants.hpp"
 
-namespace CameraInfo
+namespace Constants::CameraInfo
 {
     bool getNameFromURL(const std::string& url_, std::string& rName_)
     {
         static std::map<std::string, std::string> cameraNameMap = []()
         {
             std::map<std::string, std::string> tempMap;
-            for (const auto& [key, value] : CAMERA_URL_MAP)
+            for (const auto& [key, value] : Constants::CameraInfo::CAMERA_URL_MAP)
             {
                 tempMap[value] = key;
             }
@@ -25,4 +25,4 @@ namespace CameraInfo
             return false;
         }
     }
-}  // namespace CameraInfo
+}  // namespace Constants::CameraInfo

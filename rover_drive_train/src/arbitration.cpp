@@ -6,7 +6,7 @@
 #include "std_msgs/msg/empty.hpp"
 
 #include "rover_msgs/srv/drive_train_arbitration.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 
 class Arbitration : public rclcpp::Node
 {

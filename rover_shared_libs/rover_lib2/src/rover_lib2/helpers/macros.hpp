@@ -4,6 +4,10 @@
 #include <cmath>
 #include <type_traits>
 
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#include <ament_index_cpp/get_package_prefix.hpp>
+#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+
 template<typename ENUM_T>
 constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 {
@@ -21,6 +25,7 @@ constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 
 #define IN
 #define OUT
+#define INOUT
 
 // Necessary for following macros because VSCode's Microsoft CPP language server doesn't work with template and throws a bunch of
 // false positive errors
@@ -140,5 +145,19 @@ constexpr T ROUND_DOWN(T value_)
 #define MAP(x, in_min, in_max, out_min, out_max)                                                                  \
     (((float)(x) - (float)(in_min)) * ((float)(out_max) - (float)(out_min)) / ((float)(in_max) - (float)(in_min)) \
      + (float)(out_min))
+
+#define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
+
+#define SIGN(VAR) ((float)VAR > 0.0f ? 1.0f : -1.0f)
+
+#define GET_WORSE_OF(A, B) (A == true && B == true)
+
+// Removes unused argument warning
+#define REMOVE_UNUSED(x) (void)(x)
+
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#define GET_PACKAGE_SOURCE_DIR(package_name) \
+    (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
+#endif  // defined(_linux_) && defined(RCLCPP_DEBUG
 
 #endif  // MACROS_HPP

@@ -1,10 +1,10 @@
-#ifndef CAMERA_INFO_HPP
-#define CAMERA_INFO_HPP
+#ifndef CONSTANTS_HPP
+#define CONSTANTS_HPP
 
 #include <map>
 #include <string>
 
-namespace CameraInfo
+namespace Constants::CameraInfo
 {
     const std::map<std::string, std::string> CAMERA_URL_MAP = {
         {"Main", "rtsp://192.168.144.30:554/1/h264major"},
@@ -22,6 +22,6 @@ namespace CameraInfo
      * @return Success on camera name found
      */
     bool getNameFromURL(const std::string& url_, std::string& rName_);
-}  // namespace CameraInfo
+}  // namespace Constants::CameraInfo
 
-#endif  // CAMERA_INFO_HPP
+#endif  // CONSTANTS_HPP

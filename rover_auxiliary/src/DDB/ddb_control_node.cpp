@@ -1,6 +1,6 @@
 #include "ddb_control_node.hpp"
 
-#include "rovus_lib/macros.h"
+#include <rover_lib2/helpers/macros.hpp>
 
 int main(int argc, char** argv)
 {
