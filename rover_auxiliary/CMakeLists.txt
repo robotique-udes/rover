@@ -26,7 +26,6 @@ ament_target_dependencies(goal_manager
                           ament_index_cpp)
 target_link_libraries(goal_manager rover_shared_libs)
 
-
 add_executable(ddb_control src/DDB/ddb_control.cpp)
 ament_target_dependencies(ddb_control
                           rclcpp
@@ -41,7 +40,6 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS
           goal_manager
           ddb_control
-          gps_publisher
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

@@ -1,4 +1,4 @@
-cmake_minimum_required(VERSION 3.16)
+cmake_minimum_required(VERSION 3.8)
 project(rover_gui)
 
 if(NOT CMAKE_CXX_STANDARD)
@@ -16,28 +16,22 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChanne
 
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
-set(CMAKE_AUTOUIC ON)
 
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
-
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
-    COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Generating UI files..."
-)
-add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
-
-if(EXISTS ${CMAKE_SOURCE_DIR}/../rover_shared_libs/CMakeLists.txt)
-  add_subdirectory(${CMAKE_SOURCE_DIR}/../rover_shared_libs .build)
-endif()
 
 include_directories(
   src
   ui/include
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
+)
+
+add_custom_command(
+    OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
+    COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
+    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
+    COMMENT "Generating UI files..."
 )
 
 add_executable(main_gui)
@@ -98,7 +92,7 @@ target_sources(main_gui PRIVATE
   src/QNavigation/resources.qrc 
 )
 
-add_dependencies(main_gui run_generate_ui)
+add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui
   rclcpp
