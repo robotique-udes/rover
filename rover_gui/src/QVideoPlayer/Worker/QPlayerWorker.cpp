@@ -41,7 +41,7 @@ void QPlayerWorker::manageDetectionInternal(
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
     {
-        if (_timer_serviceCall.isDone())
+        if (_timer_serviceCall.isReady())
         {
             service_call_interrupted = true;
             break;
@@ -107,7 +107,7 @@ void QPlayerWorker::updateDetectionInternal(
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
     {
-        if (_timer_serviceCall.isDone())
+        if (_timer_serviceCall.isReady())
         {
             service_call_interrupt = true;
             break;

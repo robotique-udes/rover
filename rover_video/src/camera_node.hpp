@@ -2,12 +2,13 @@
 #define __CAMERA__NODE__HPP__
 
 #include "video_recording.hpp"
-#include "rovus_lib/camera_info.hpp"
-#include "rovus_lib/macros.h"
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/gps_position.hpp"
 #include "rover_msgs/srv/camera_control.hpp"
+
+#include "rover_lib2/helpers/macros.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 
 #include <sys/stat.h>
 #include <cstdlib>

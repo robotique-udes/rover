@@ -3,7 +3,7 @@
 
 #include "Global/Workers/QWorker.hpp"
 #include "QSshFileExplorer/QFileItem.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 
 class QSshFileExplorerWidget;
 

@@ -2,7 +2,7 @@
 #define __VIDEO__RECORDING__HPP__
 
 #include "rclcpp/rclcpp.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 
 #include "opencv2/core.hpp"
 #include "opencv2/highgui.hpp"
