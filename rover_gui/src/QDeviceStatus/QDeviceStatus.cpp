@@ -8,6 +8,10 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearrightMotor;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss;
 
     for (auto it = _deviceButtons.begin(); it != _deviceButtons.end(); ++it)
     {
@@ -129,32 +133,6 @@ QString QDeviceStatus::setErrorMsg(uint8_t errorCode_)
 
 void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
 {
-    QString color;
-    
-    QString style_success = QString("QPushButton {"
-                                    "background-color: #81c784;"
-                                    "color: black;"
-                                    "border: 1px solid #388e3c;"
-                                    "border-radius: 5px;"
-                                    "padding: 5px 10px;"
-                                    "}");
-
-    QString style_warning = QString("QPushButton {"
-                                    "background-color: #ffb74d;"
-                                    "color: black;"
-                                    "border: 1px solid #e65100;"
-                                    "border-radius: 5px;"
-                                    "padding: 5px 10px;"
-                                    "}");
-
-    QString style_error = QString("QPushButton {"
-                                  "background-color: #e57373;"
-                                  "color: black;"
-                                  "border: 1px solid #b71c1c;"
-                                  "border-radius: 5px;"
-                                  "padding: 5px 10px;"
-                                  "}");
-
     QString style_default = QString("QPushButton {"
                                     "background-color: #3c3f41;"
                                     "border: 1px solid #4b4e52;"
@@ -162,24 +140,31 @@ void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_ms
                                     "padding: 5px 10px;"
                                     "}");
 
-    switch (deviceStatus_.error_state)
-    {
-        case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            button_->setStyleSheet(style_success);
-            break;
-        case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            button_->setStyleSheet(style_warning);
-            break;
-        case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            button_->setStyleSheet(style_error);
-            break;
-        default:
-            button_->setStyleSheet(style_default);
-            break;
-    }
-
     if (!deviceStatus_.watchdog_ok)
     {
         button_->setStyleSheet(style_default);
+        return;
     }
+
+    QString className;
+    switch (deviceStatus_.error_state)
+    {
+        case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
+            className = "success";
+            break;
+        case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
+            className = "warning";
+            break;
+        case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
+            className = "error";
+            break;
+        default:
+            button_->setStyleSheet(style_default);
+            return;
+    }
+
+    button_->setProperty("class", className);
+    button_->style()->unpolish(button_);
+    button_->style()->polish(button_);
+
 }

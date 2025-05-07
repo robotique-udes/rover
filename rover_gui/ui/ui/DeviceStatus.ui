@@ -50,8 +50,8 @@
      <widget class="QPushButton" name="frontrightMotor">
       <property name="geometry">
        <rect>
-        <x>530</x>
-        <y>360</y>
+        <x>520</x>
+        <y>350</y>
         <width>55</width>
         <height>55</height>
        </rect>
@@ -102,7 +102,7 @@
       <property name="geometry">
        <rect>
         <x>240</x>
-        <y>360</y>
+        <y>350</y>
         <width>55</width>
         <height>55</height>
        </rect>
@@ -135,6 +135,204 @@
       </property>
       <property name="text">
        <string>FL_M</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="rearleftMotor">
+      <property name="geometry">
+       <rect>
+        <x>240</x>
+        <y>570</y>
+        <width>55</width>
+        <height>55</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>55</width>
+        <height>55</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>55</width>
+        <height>55</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #3c3f41;
+    border: 1px solid #4b4e52;
+    border-radius: 5px;
+    padding: 5px 10px;
+}</string>
+      </property>
+      <property name="text">
+       <string>RL_M</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="rearrightMotor">
+      <property name="geometry">
+       <rect>
+        <x>520</x>
+        <y>570</y>
+        <width>55</width>
+        <height>55</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>55</width>
+        <height>55</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>55</width>
+        <height>55</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #3c3f41;
+    border: 1px solid #4b4e52;
+    border-radius: 5px;
+    padding: 5px 10px;
+}</string>
+      </property>
+      <property name="text">
+       <string>RR_M</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="ddbController">
+      <property name="geometry">
+       <rect>
+        <x>329</x>
+        <y>540</y>
+        <width>161</width>
+        <height>45</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>45</width>
+        <height>45</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>3000</width>
+        <height>3000</height>
+       </size>
+      </property>
+      <property name="autoFillBackground">
+       <bool>false</bool>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #3c3f41;
+    border: 1px solid #4b4e52;
+    border-radius: 5px;
+    padding: 5px 10px;
+}</string>
+      </property>
+      <property name="text">
+       <string>DDB</string>
+      </property>
+      <property name="checkable">
+       <bool>false</bool>
+      </property>
+      <property name="autoDefault">
+       <bool>false</bool>
+      </property>
+      <property name="flat">
+       <bool>false</bool>
+      </property>
+     </widget>
+     <widget class="QPushButton" name="gnss">
+      <property name="geometry">
+       <rect>
+        <x>300</x>
+        <y>610</y>
+        <width>55</width>
+        <height>55</height>
+       </rect>
+      </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>55</width>
+        <height>55</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>55</width>
+        <height>55</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: #3c3f41;
+    border: 1px solid #4b4e52;
+    border-radius: 5px;
+    padding: 5px 10px;
+}</string>
+      </property>
+      <property name="text">
+       <string>GNSS</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
