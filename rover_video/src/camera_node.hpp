@@ -15,7 +15,7 @@
 
 class CameraNode : public rclcpp::Node
 {
-    static constexpr uint64_t DELAY_PUBLISHER_MS = 10'000UL;
+    static constexpr uint64_t DELAY_PUBLISHER_MS = 200UL;
 
     enum class eFileFormatNameTypes : size_t
     {
