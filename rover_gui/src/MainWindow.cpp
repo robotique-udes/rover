@@ -31,8 +31,6 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
             this,
             [this](QString name, double lat, double lon)
             {
-                std::cout << "Received goal coordinates: " << name.toStdString() << " Lat: " << lat << ", Lon: " << lon
-                          << std::endl;
             });
 }
 

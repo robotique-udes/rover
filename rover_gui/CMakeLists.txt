@@ -35,64 +35,63 @@ add_custom_command(
     COMMENT "Generating UI files..."
 )
 
-add_executable(main_gui)
+add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
-target_sources(main_gui PRIVATE
-  src/gui.cpp
 
-  src/MainWindow.hpp
-  src/MainWindow.cpp
+# add_executable(main_gui)
 
-  src/SecondaryWindow.hpp
-  src/SecondaryWindow.cpp
-
-  src/Global/Constant/StyleSheet.hpp
-  src/Global/Helpers/QHelpers.hpp
-  src/Global/Helpers/QHelpers.cpp
-  src/Global/Workers/QWorker.hpp
-  src/Global/Workers/QWorker.cpp
-  src/Global/QTmpFolderManager.hpp
-  src/Global/QTmpFolderManager.cpp
-
-  src/QSshFileExplorer/Worker/LibSshSupportModule.hpp
-  src/QSshFileExplorer/Worker/LibSshSupportModule.cpp
-  src/QSshFileExplorer/Worker/QSshWorker.hpp
-  src/QSshFileExplorer/Worker/QSshWorker.cpp
-  src/QSshFileExplorer/QDownloadedFileManager.hpp
-  src/QSshFileExplorer/QDownloadedFileManager.cpp
-  src/QSshFileExplorer/QFileItem.hpp
-  src/QSshFileExplorer/QFileItem.cpp
-  src/QSshFileExplorer/QFileTransferWidget.hpp
-  src/QSshFileExplorer/QFileTransferWidget.cpp
-  src/QSshFileExplorer/QIconManager.hpp
-  src/QSshFileExplorer/QIconManager.cpp
-  src/QSshFileExplorer/QSshFileExplorerWidget.hpp
-  src/QSshFileExplorer/QSshFileExplorerWidget.cpp
-  src/QSshFileExplorer/QTreeViewExplorer.hpp
-  src/QSshFileExplorer/QTreeViewExplorer.cpp
-
-  src/QSideBar/QSideBar.hpp
-  src/QSideBar/QSideBar.cpp
-
-  src/QDashboard/QDashboard.hpp
-  src/QDashboard/QDashboard.cpp
-
-  src/QNavigation/QNavigation.hpp
-  src/QNavigation/QNavigation.cpp
-
-  src/QDashboard/QExample.hpp
-  src/QDashboard/QExample.cpp
-
-  src/QVideoPlayer/QVideoManagerWidget.cpp
-  src/QVideoPlayer/QVideoManagerWidget.hpp
-  src/QVideoPlayer/QVideoPlayerWidget.cpp
-  src/QVideoPlayer/QVideoPlayerWidget.hpp
-  src/QVideoPlayer/Worker/QPlayerWorker.hpp
-  src/QVideoPlayer/Worker/QPlayerWorker.cpp
-
-  src/QNavigation/resources.qrc 
-)
-
+add_executable(main_gui src/gui.cpp
+                  src/MainWindow.hpp
+                  src/MainWindow.cpp
+                  
+                  src/SecondaryWindow.hpp
+                  src/SecondaryWindow.cpp
+                  
+                  src/Global/Constant/StyleSheet.hpp
+                  src/Global/Helpers/QHelpers.hpp
+                  src/Global/Helpers/QHelpers.cpp
+                  src/Global/Workers/QWorker.hpp
+                  src/Global/Workers/QWorker.cpp
+                  src/Global/QTmpFolderManager.hpp
+                  src/Global/QTmpFolderManager.cpp
+                  
+                  src/QSshFileExplorer/Worker/LibSshSupportModule.hpp
+                  src/QSshFileExplorer/Worker/LibSshSupportModule.cpp
+                  src/QSshFileExplorer/Worker/QSshWorker.hpp
+                  src/QSshFileExplorer/Worker/QSshWorker.cpp
+                  src/QSshFileExplorer/QDownloadedFileManager.hpp
+                  src/QSshFileExplorer/QDownloadedFileManager.cpp
+                  src/QSshFileExplorer/QFileItem.hpp
+                  src/QSshFileExplorer/QFileItem.cpp
+                  src/QSshFileExplorer/QFileTransferWidget.hpp
+                  src/QSshFileExplorer/QFileTransferWidget.cpp
+                  src/QSshFileExplorer/QIconManager.hpp
+                  src/QSshFileExplorer/QIconManager.cpp
+                  src/QSshFileExplorer/QSshFileExplorerWidget.hpp
+                  src/QSshFileExplorer/QSshFileExplorerWidget.cpp
+                  src/QSshFileExplorer/QTreeViewExplorer.hpp
+                  src/QSshFileExplorer/QTreeViewExplorer.cpp
+                  
+                  src/QSideBar/QSideBar.hpp
+                  src/QSideBar/QSideBar.cpp
+                  
+                  src/QDashboard/QDashboard.hpp
+                  src/QDashboard/QDashboard.cpp
+                  
+                  src/QNavigation/QNavigation.hpp
+                  src/QNavigation/QNavigation.cpp
+                  
+                  src/QDashboard/QExample.hpp
+                  src/QDashboard/QExample.cpp
+                  
+                  src/QVideoPlayer/QVideoManagerWidget.cpp
+                  src/QVideoPlayer/QVideoManagerWidget.hpp
+                  src/QVideoPlayer/QVideoPlayerWidget.cpp
+                  src/QVideoPlayer/QVideoPlayerWidget.hpp
+                  src/QVideoPlayer/Worker/QPlayerWorker.hpp
+                  src/QVideoPlayer/Worker/QPlayerWorker.cpp
+                  src/QNavigation/resources.qrc )
+                  
 add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui
