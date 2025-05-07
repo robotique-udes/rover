@@ -5,22 +5,23 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _node(guiNode_)
 {
     _ui.setupUi(this);
-    
-    connect(_ui.test,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                this->setStatusReport(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR);
-            });
 
-    connect(_ui.test_2,
-            &QPushButton::clicked,
-            this,
-            [this]()
-            {
-                this->setStatusReport(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR);
-            });
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
+
+    for (auto it = _deviceButtons.begin(); it != _deviceButtons.end(); ++it)
+    {
+        uint16_t deviceID = it.key();
+        QPushButton* button = it.value();
+
+        connect(button,
+                &QPushButton::clicked,
+                this,
+                [this, deviceID]()
+                {
+                    this->setStatusReport(deviceID);
+                });
+    }
 
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
@@ -56,14 +57,18 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
 
     if (_currentStatusID == msg_.id)
     {
-        this->setStatusReport(static_cast<RoverCan2::Constant::eDeviceId>(msg_.id));
+        this->setStatusReport(msg_.id);
+    }
+
+    auto buttonIt = _deviceButtons.find(msg_.id);
+    if (buttonIt != _deviceButtons.end())
+    {
+        this->updateDeviceButtonColor(buttonIt.value(), msg_);
     }
 }
 
-void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId id_)
+void QDeviceStatus::setStatusReport(uint16_t id_)
 {
-    uint16_t deviceID = TO_UNDERLYING(id_);
-
     auto groupBoxLabel = _ui.StatusReport->findChild<QLabel*>("StatusInfo");
     if (!groupBoxLabel)
     {
@@ -72,7 +77,7 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId id_)
     }
 
     // Look up device info
-    auto it = _deviceStatusInfo.find(deviceID);
+    auto it = _deviceStatusInfo.find(id_);
     if (it != _deviceStatusInfo.end())
     {
         const auto& deviceStatus = it->second;
@@ -95,8 +100,8 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId id_)
     else
     {
         groupBoxLabel->setText("Device not found.");
-        _currentStatusID = deviceID;
-        RCLCPP_ERROR(_node->get_logger(), "Device ID %d not found in device status info.", deviceID);
+        _currentStatusID = id_;
+        RCLCPP_ERROR(_node->get_logger(), "Device ID %d not found in device status info.", id_);
     }
 }
 
@@ -113,11 +118,68 @@ QString QDeviceStatus::setErrorMsg(uint8_t errorCode_)
             break;
 
         case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            return "Device is currently in Error";
+            return "Device is currently in error";
             break;
 
         default:
             return "Unknown";
             break;
+    }
+}
+
+void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
+{
+    QString color;
+    
+    QString style_success = QString("QPushButton {"
+                                    "background-color: #81c784;"
+                                    "color: black;"
+                                    "border: 1px solid #388e3c;"
+                                    "border-radius: 5px;"
+                                    "padding: 5px 10px;"
+                                    "}");
+
+    QString style_warning = QString("QPushButton {"
+                                    "background-color: #ffb74d;"
+                                    "color: black;"
+                                    "border: 1px solid #e65100;"
+                                    "border-radius: 5px;"
+                                    "padding: 5px 10px;"
+                                    "}");
+
+    QString style_error = QString("QPushButton {"
+                                  "background-color: #e57373;"
+                                  "color: black;"
+                                  "border: 1px solid #b71c1c;"
+                                  "border-radius: 5px;"
+                                  "padding: 5px 10px;"
+                                  "}");
+
+    QString style_default = QString("QPushButton {"
+                                    "background-color: #3c3f41;"
+                                    "border: 1px solid #4b4e52;"
+                                    "border-radius: 5px;"
+                                    "padding: 5px 10px;"
+                                    "}");
+
+    switch (deviceStatus_.error_state)
+    {
+        case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
+            button_->setStyleSheet(style_success);
+            break;
+        case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
+            button_->setStyleSheet(style_warning);
+            break;
+        case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
+            button_->setStyleSheet(style_error);
+            break;
+        default:
+            button_->setStyleSheet(style_default);
+            break;
+    }
+
+    if (!deviceStatus_.watchdog_ok)
+    {
+        button_->setStyleSheet(style_default);
     }
 }

@@ -47,17 +47,42 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="test">
+     <widget class="QPushButton" name="frontrightMotor">
       <property name="geometry">
        <rect>
         <x>530</x>
         <y>360</y>
-        <width>80</width>
-        <height>23</height>
+        <width>50</width>
+        <height>50</height>
        </rect>
       </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>50</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: green;
+    border-radius: 25px;
+    border: none;
+}</string>
+      </property>
       <property name="text">
-       <string>test</string>
+       <string>FR_M</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
@@ -69,17 +94,42 @@
        <bool>false</bool>
       </property>
      </widget>
-     <widget class="QPushButton" name="test_2">
+     <widget class="QPushButton" name="frontleftMotor">
       <property name="geometry">
        <rect>
-        <x>210</x>
+        <x>240</x>
         <y>360</y>
-        <width>80</width>
-        <height>23</height>
+        <width>50</width>
+        <height>50</height>
        </rect>
       </property>
+      <property name="sizePolicy">
+       <sizepolicy hsizetype="Fixed" vsizetype="Fixed">
+        <horstretch>0</horstretch>
+        <verstretch>0</verstretch>
+       </sizepolicy>
+      </property>
+      <property name="minimumSize">
+       <size>
+        <width>50</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="maximumSize">
+       <size>
+        <width>50</width>
+        <height>50</height>
+       </size>
+      </property>
+      <property name="styleSheet">
+       <string notr="true">QPushButton {
+    background-color: green;
+    border-radius: 25px;
+    border: none;
+}</string>
+      </property>
       <property name="text">
-       <string>test2</string>
+       <string>FL_M</string>
       </property>
       <property name="checkable">
        <bool>false</bool>
