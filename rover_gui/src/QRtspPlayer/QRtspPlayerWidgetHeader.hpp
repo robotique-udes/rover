@@ -40,8 +40,8 @@ enum class PlayerState {
 };
 
 namespace Ui {
-    class RtspPlayerWidget;     // Main player UI
-    class CameraSettingsWidget; // Camera settings UI
+    class RtspPlayerWidget;     
+    class CameraSettingsWidget; 
 }
 
 class RtspPlayerWidget : public QWidget
@@ -103,7 +103,6 @@ private slots:
     void onScreenshotButtonClicked() { handleScreenshotRequest(); }
     void onRecordButtonToggled(bool checked) { handleRecordingRequest(checked); }
     
-    // New method to check service availability periodically
     void checkServiceAvailability();
     
 signals:
@@ -129,7 +128,6 @@ private:
     
     void handleArucoDetection(const std::shared_ptr<rover_msgs::msg::Aruco> msg);
     
-    // New method to start service availability polling
     void startServiceAvailabilityPolling();
 
     QString _widgetId;
@@ -138,21 +136,19 @@ private:
     QWidget* _cameraSettingsWidget;
 
     // These must remain heap-allocated due to threading
-    QThread* _workerThread;                  // Owns GStreamerWorker
-    GStreamerWorker* _gstreamerWorker;       // Moved to worker thread
+    QThread* _workerThread;                  
+    GStreamerWorker* _gstreamerWorker;       
 
-    // Stack-allocated timers
     QTimer _reconnectTimer;
     QTimer _frameTimeoutTimer;
     QTimer _connectionTimeoutTimer;
     
-    // New timer for service availability polling
     QTimer _servicePollingTimer;
     bool _servicePollingActive = false;
 
     QString _lastStreamUrl;
     QDateTime _lastStreamTime;
-    GstElement* _pipeline;                   // Managed by GStreamer
+    GstElement* _pipeline;                   
 
     PlayerState _state;
     int _reconnectAttempts;
@@ -167,7 +163,6 @@ private:
     std::vector<PredefinedStream> _predefinedStreams;
 
     // These are managed by Qt UI framework (from .ui file)
-    // so we use raw pointers, but don't own them
     QStackedWidget* _stackedWidget = nullptr;
     QWidget* _videoWidget = nullptr;
     QStackedWidget* _videoStack = nullptr;
@@ -198,9 +193,6 @@ private:
     rclcpp::Subscription<rover_msgs::msg::Aruco>::SharedPtr _arucoSubscription = nullptr;
     bool _isCameraServiceAvailable = false;
     bool _isArucoServiceAvailable = false;
-
-    // Camera controller - static singleton instance
-    //static std::unique_ptr<CameraController> _cameraController;
 };
 
-#endif  // RTSPPLAYERWIDGET_HPP
+#endif  

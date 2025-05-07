@@ -158,7 +158,6 @@ void SecondaryWindow::updateLayout()
     int numStreams = 0;
     switch (layoutMode) {
         case 0: numStreams = 1; break; // Single stream
-        case 1: numStreams = 2; break; // 2 streams
         case 2: numStreams = 4; break; // 4 streams
         case 3: numStreams = 6; break; // 6 streams
     }
@@ -190,7 +189,6 @@ void SecondaryWindow::updateLayout()
             break;
         }
             
-        case 1: // 2 Streams
         case 2: // 4 Streams
         case 3: // 6 Streams
         {

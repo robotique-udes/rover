@@ -58,8 +58,7 @@ void RtspPlayerWidget::connectUISignals(void)
             }
         });
     }
-    
-    // Connect the rest of the signals with similar safety checks
+
     if (this->_arucoButton) {
         connect(this->_arucoButton, &QPushButton::toggled, this, &RtspPlayerWidget::onArucoButtonToggled);
     }
@@ -130,14 +129,6 @@ void RtspPlayerWidget::initializeUIState(void)
     logManager.setShowInfo(true, this->_widgetId);
     logManager.setShowWarning(true, this->_widgetId);
     logManager.setShowError(true, this->_widgetId);
-    
-    // Only add the log message if logDisplay exists
-    if (this->_logDisplay) {
-        this->_logDisplay->append("Log initialized for RTSP player " + this->_widgetId);
-    }
-    
-    // Now log info in a way that won't try to use the log UI widget
-    qDebug() << "Log initialized for RTSP player" << this->_widgetId;
     
     // Initialize button states only if they exist
     if (this->_arucoButton) {

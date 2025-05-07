@@ -6,7 +6,6 @@
 #include <gst/video/videooverlay.h>
 #include <QUrl>
 
-// Maximum number of errors before considering the connection failed
 static const int MAX_CONSECUTIVE_ERRORS = 3;
 static int consecutive_errors_count = 0;
 
@@ -25,7 +24,6 @@ static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_dat
 
     if (worker)
     {
-        // Count consecutive errors
         consecutive_errors_count++;
         
         if (consecutive_errors_count >= MAX_CONSECUTIVE_ERRORS) {
