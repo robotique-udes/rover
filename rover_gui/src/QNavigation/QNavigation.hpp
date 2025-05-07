@@ -15,11 +15,12 @@
 #include <QUuid>
 #include <QtCore>
 
-struct Waypoint {
+struct Waypoint
+{
     QString name;
     double latitude;
     double longitude;
-    QString id; 
+    QString id;
 };
 
 class QNavigation : public QWidget
@@ -49,13 +50,13 @@ class QNavigation : public QWidget
 
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
-    
+
     QWebChannel* _webChannel;
     QLineEdit* _lineEditLatitude;
     QLineEdit* _lineEditLongitude;
     QPushButton* _pushButtonSetGoal;
     QPushButton* _pushButtonCalculatePath;
-    QLabel* _labelDistance; 
+    QLabel* _labelDistance;
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
@@ -65,7 +66,7 @@ class QNavigation : public QWidget
     double _currentLat = 0.0F;
     double _currentLon = 0.0F;
     double _currentHeading = 0.0F;
-    
+
     QList<Waypoint> _waypoints;
 };
 

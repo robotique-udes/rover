@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.16)
 project(rover_gui)
 
-# Use C++23 if not already set
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 23)
 endif()
@@ -10,22 +9,18 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-# Required ROS 2 and Qt packages
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel)
 
-# Auto compilation of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON)
 set(CMAKE_AUTOUIC ON)
 
-# Optional ssh settings
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 
-# UI generation (optional if you're using .ui + script approach)
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
     COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
@@ -34,12 +29,10 @@ add_custom_command(
 )
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
-# Add shared libs if used
 if(EXISTS ${CMAKE_SOURCE_DIR}/../rover_shared_libs/CMakeLists.txt)
   add_subdirectory(${CMAKE_SOURCE_DIR}/../rover_shared_libs .build)
 endif()
 
-# Include paths
 include_directories(
   src
   ui/include
@@ -47,7 +40,6 @@ include_directories(
   ${LIBSSH_INCLUDE_DIR}
 )
 
-# Executable sources
 add_executable(main_gui)
 
 target_sources(main_gui PRIVATE
@@ -106,13 +98,6 @@ target_sources(main_gui PRIVATE
   src/QNavigation/resources.qrc 
 )
 
-# set(UI_RESOURCES
-#     src/resources.qrc
-# )
-
-# qt6_add_resources(GENERATED_RESOURCES ${UI_RESOURCES})
-# target_sources(main_gui PRIVATE ${GENERATED_RESOURCES})
-
 add_dependencies(main_gui run_generate_ui)
 
 ament_target_dependencies(main_gui
@@ -131,7 +116,6 @@ target_link_libraries(main_gui
   rover_shared_libs
 )
 
-# Install
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS main_gui
