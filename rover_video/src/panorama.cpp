@@ -111,10 +111,11 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	  //paramètres pour la lecture de la camera
 	   string path_camera= request->camera_id;
 	   //string pipeline = "rtspsrc location=‘rtsp://" + request->camera_id + "’/1/h264major’ latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
-	   //string pipeline = "rtspsrc location=‘rtsp://192.168.144.30:554/1/h264major’ latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
+	   //string pipeline = "rtspsrc location=rtsp://192.168.144.30:554/1/h264major latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
 	   
 	   //VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
 	   VideoCapture cap;
+	   //int apiID = cv::CAP_GSTREAMER;
 	   int apiID = cv::CAP_ANY;
 	   cap.open(path_camera, apiID);
 	   
@@ -179,21 +180,30 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 		
 	    //creation du dossier du dossier de panoramas 
 	    struct stat fileInfo;
-	    bool dossier_exist = stat("src/rover/rover_video/src/panoramas", &fileInfo) == 0;
+	    string nom_fichier_panorama;
+	    bool dossier_exist = stat("ros2_ws/src/rover/rover_video/src/panoramas", &fileInfo) == 0;
 
 	    if (!dossier_exist)
 	    {
 	    cout << "dossier pas encore cree" << endl;
 	    
-	    if (mkdir("src/rover/rover_video/src/panoramas", 0775)==0){ 
+	    if (mkdir("ros2_ws/src/rover/rover_video/src/panoramas", 0775)==0){ 
 	    	cout << "Succesfully created the folder."<< endl;
+	    	nom_fichier_panorama =  "ros2_ws/src/rover/rover_video/src/panoramas/" + result_name;
+	    	
+	     }else if(mkdir("src/rover/rover_video/src/panoramas", 0775)==0){ 
+	     	nom_fichier_panorama =  "src/rover/rover_video/src/panoramas/" + result_name;
+	     	
 	     }else{
 	     	cout << "Failed to create folder" << endl;
+	     	nom_fichier_panorama = result_name;
+	     	imwrite(result_name,pano_rectangle);//enregistre quand meme mais potentielement hors folder
 	     }
+	    }else{
+	     nom_fichier_panorama =  "ros2_ws/src/rover/rover_video/src/panoramas/" + result_name;
 	    }
-			
-	    string nom_fichier_panorama =  "src/rover/rover_video/src/panoramas/" + result_name;
-				
+	    
+						
 	    //enregistrement de la panoramique
     	    imwrite(nom_fichier_panorama, pano_rectangle);
     
