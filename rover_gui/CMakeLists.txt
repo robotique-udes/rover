@@ -103,7 +103,7 @@ target_sources(main_gui PRIVATE
   src/QVideoPlayer/Worker/QPlayerWorker.hpp
   src/QVideoPlayer/Worker/QPlayerWorker.cpp
 
-  src/QNavigation/resources.qrc  # If you embed HTML/JS/CSS as a resource
+  src/QNavigation/resources.qrc 
 )
 
 # set(UI_RESOURCES

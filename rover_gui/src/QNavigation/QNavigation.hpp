@@ -13,6 +13,7 @@
 #include <QMessageBox>
 #include <QDebug>
 #include <QUuid>
+#include <QtCore>
 
 struct Waypoint {
     QString name;
@@ -54,7 +55,7 @@ class QNavigation : public QWidget
     QLineEdit* _lineEditLongitude;
     QPushButton* _pushButtonSetGoal;
     QPushButton* _pushButtonCalculatePath;
-    QLabel* _labelDistance;
+    QLabel* _labelDistance; 
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 

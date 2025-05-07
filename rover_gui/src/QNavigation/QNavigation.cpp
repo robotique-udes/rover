@@ -1,11 +1,19 @@
 #include "QNavigation.hpp"
 
+void MessageHandler(QtMsgType type, const QMessageLogContext& context, const QString& msg)
+{
+    Q_UNUSED(type)
+    Q_UNUSED(context)
+    Q_UNUSED(msg)
+}
+
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
 {
     _ui = new Ui::Navigation();
     _ui->setupUi(this);
+    qInstallMessageHandler(MessageHandler);
 
     _ui->webViewContainer->load(QUrl("qrc:/map.html"));
     _ui->webViewContainer->setMinimumSize(1200, 1000);
@@ -93,6 +101,8 @@ void QNavigation::waypointCreated(QString name_, double latitude_, double longit
 
     addWaypointToList(name_, latitude_, longitude_, id_);
 }
+
+// void QNavigation::
 
 void QNavigation::onCalculatePathClicked()
 {
