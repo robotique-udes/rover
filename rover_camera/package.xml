@@ -1,9 +1,9 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rover_video</name>
+  <name>rover_camera</name>
   <version>0.0.0</version>
-  <description>rover_video package controls the various webcams on the rover like turning them on/off. It also allows the user to take
+  <description>rover_camera package controls the various webcams on the rover like turning them on/off. It also allows the user to take
     video recordings and screenshots
   </description>
   <maintainer email="anibal.arango@usherbrooke.ca">anibal</maintainer>

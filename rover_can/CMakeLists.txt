@@ -13,6 +13,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 
+include_directories(
+  include
+  ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
+)
+
 add_subdirectory(../rover_shared_libs/ .build)
 
 file(GLOB_RECURSE SOURCES_CAN_MASTER CONFIGURE_DEPENDS src/can_master/*.cpp)
