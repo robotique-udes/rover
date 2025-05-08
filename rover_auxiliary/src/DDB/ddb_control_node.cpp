@@ -41,6 +41,14 @@ DDBControlNode::DDBControlNode():
             }
             this->callbackDdbControlBank1(*request_, *response_);
         });
+
+    _pub_DDB_status = this->create_publisher<rover_msgs::msg::DDBControl>("/rover/auxiliary/ddb_status", 1);
+
+    _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
+    [this](void)
+    {
+        this->callbackDdbStatus();
+    });
 }
 
 /**
@@ -280,4 +288,18 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
             response_.status = msg;
         }
     }
+}
+
+void DDBControlNode::callbackDdbStatus(void)
+{
+    rover_msgs::msg::DDBControl msg;
+
+    for (size_t i = 0; i < MAX_CHANNELS; i++)
+    {
+        msg.outputstate.push_back(static_cast<uint8_t>(_channelInfo[i].state));
+        msg.dutycycle.push_back(_channelInfo[i].dutyCycle);
+        msg.frequency.push_back(_channelInfo[i].frequency);
+    }
+
+    _pub_DDB_status->publish(msg);
 }

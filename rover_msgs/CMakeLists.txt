@@ -44,7 +44,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/CameraControl.msg"
   "msg/CanDeviceStatus.msg"  
   "msg/Compass.msg"
-  "msg/DDB_control"
+  "msg/DDBControl.msg"
   "msg/DevicePower.msg"
   "msg/DrivetrainArbitration.msg"
   "msg/Gps.msg"

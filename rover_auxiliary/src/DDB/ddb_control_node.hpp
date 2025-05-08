@@ -6,10 +6,12 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/srv/ddb_control.hpp"
+#include "rover_msgs/msg/ddb_control.hpp"
 
 class DDBControlNode : public rclcpp::Node
 {
     static constexpr size_t MAX_CHANNELS = 4UL;
+    static constexpr uint64_t DELAY_PUBLISHER_MS = 100UL;
 
     enum class eOutputState : uint8_t
     {
@@ -37,12 +39,17 @@ class DDBControlNode : public rclcpp::Node
     void setStateLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
     void setValuesLogic(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
+    void callbackDdbStatus(void);
+
     bool setChannelOutput(uint8_t channelID_, eOutputState desiredState_);
     bool setPWMValues(float dutyCycle_, float frequency_, uint8_t channelID_);
     bool valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank0;
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank1;
+    rclcpp::Publisher<rover_msgs::msg::DDBControl>::SharedPtr _pub_DDB_status;
+
+    rclcpp::TimerBase::SharedPtr _timer_pub;
 
     sChannelInfo _channelInfo[MAX_CHANNELS] = {};
 };
