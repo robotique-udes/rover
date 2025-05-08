@@ -104,7 +104,7 @@ void QVideoManagerWidget::initArucoPublisher(void)
 {
     if (_node)
     {
-        _sub_arucoDetection = _node->create_subscription<rover_msgs::msg::Aruco>("/rover/video/aruco",
+        _sub_arucoDetection = _node->create_subscription<rover_msgs::msg::Aruco>(TOPIC_ARUCO_DETECTIONS,
                                                                                  5,
                                                                                  [this](const rover_msgs::msg::Aruco msg)
                                                                                  {
@@ -121,7 +121,7 @@ void QVideoManagerWidget::initArucoClient(void)
 {
     if (_node)
     {
-        _client_arucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>("/rover/auxiliary/aruco/manager");
+        _client_arucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_ARUCO_NAME);
     }
     else
     {

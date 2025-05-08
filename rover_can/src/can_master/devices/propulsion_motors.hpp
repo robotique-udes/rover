@@ -17,7 +17,7 @@ class PropulsionMotor : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2:
     using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::PropSpeedCmd>,
                                       RoverCan2::SubscriberMember<RoverCan2::Msgs::PropSpeedStatus, PropulsionMotor>>;
 
-    static constexpr const char* PROPULSION_MOTOR_CMD_TOPIC = "/rover/drive_train/wheels_cmd";
+    static constexpr const char* PROPULSION_MOTOR_CMD_TOPIC = "/rover/drive_train/wheels_cmd_out";
     static constexpr const char* PROPULSION_MOTOR_STATUS_TOPIC = "/rover/drive_train/wheels_status";
     static constexpr float PROPULSION_MOTOR_STATUS_PUBLISH_FREQUENCY_HZ = 100.0F;
 

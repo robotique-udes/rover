@@ -19,7 +19,7 @@ ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
 
     this->getParams(argc, argv);
 
-    _publisher = this->create_publisher<rover_msgs::msg::Aruco>("/rover/video/aruco", 10);
+    _publisher = this->create_publisher<rover_msgs::msg::Aruco>(TOPIC_ARUCO_DETECTED, 10);
 
     _timer_publisher = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
                                                [this](void)
@@ -34,7 +34,7 @@ ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
                                                });
 
     _srv_detectionManager = this->create_service<rover_msgs::srv::ArucoDetection>(
-        "/rover/auxiliary/aruco/manager",
+        SERVICE_SERVER_NAME,
         [this](const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
                std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
         {

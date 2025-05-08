@@ -1,5 +1,7 @@
 #include "camera_node.hpp"
 
+#include <rover_lib2/helpers/constants.hpp>
+
 int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
@@ -14,7 +16,7 @@ CameraNode::CameraNode():
     Node("media_server")
 {
     _srv_control = this->create_service<rover_msgs::srv::CameraControl>(
-        "/rover/video/media_server",
+        SERVICE_MEDIA_SERVER_NAME,
         [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request_,
                std::shared_ptr<rover_msgs::srv::CameraControl::Response> response_)
         {
@@ -227,7 +229,7 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
 const std::string CameraNode::getFolderPath(eFileFormatNameTypes fileType_)
 {
     std::string folderPath;
-    std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_video");  // finds the path to our package
+    std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");  // finds the path to our package
     const std::string pathForScreenshots = "/src/screenshots";
     const std::string pathForRecordings = "/src/recordings";
 

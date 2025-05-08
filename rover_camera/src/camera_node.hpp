@@ -17,6 +17,7 @@
 class CameraNode : public rclcpp::Node
 {
     static constexpr uint64_t DELAY_PUBLISHER_MS = 200UL;
+    static constexpr const char* SERVICE_MEDIA_SERVER_NAME = "/rover/cameras/media_server_control";
 
     enum class eFileFormatNameTypes : size_t
     {
