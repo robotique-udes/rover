@@ -147,7 +147,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
 {
     if (_node)
     {
-        _client_cameraControlManager = _node->create_client<rover_msgs::srv::CameraControl>("/rover/video/media_server");
+        _client_cameraControlManager = _node->create_client<rover_msgs::srv::CameraControl>(SERVICE_RECORDING_NAME);
     }
     else
     {
@@ -163,7 +163,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
 
 void QVideoManagerWidget::initCameraControlPublisher(void)
 {
-    _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>("/rover/video/recording_list",
+    _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
                                                                               1,
                                                                               [this](const rover_msgs::msg::CameraList msg)
                                                                               {

@@ -28,7 +28,7 @@ CameraNode::CameraNode():
             this->controlIPCam(*request_, *response_);
         });
 
-    _pub_urls = this->create_publisher<rover_msgs::msg::CameraList>("/rover/video/recording_list", 1);
+    _pub_urls = this->create_publisher<rover_msgs::msg::CameraList>(TOPIC_MEDIA_SERVER_NAME, 1);
 
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
                                          [this](void)
@@ -37,7 +37,7 @@ CameraNode::CameraNode():
                                          });
 
     _sub_position
-        = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
+        = this->create_subscription<rover_msgs::msg::GpsPosition>(TOPIC_GPS_NAME,
                                                                   1,
                                                                   [this](const rover_msgs::msg::GpsPosition& gps_message_)
                                                                   {

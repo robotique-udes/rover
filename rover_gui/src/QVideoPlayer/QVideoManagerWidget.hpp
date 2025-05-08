@@ -17,6 +17,8 @@ class QVideoManagerWidget : public QWidget
 
     static constexpr const char* SERVICE_ARUCO_NAME = "/rover/cameras/aruco_detection_management";
     static constexpr const char* TOPIC_ARUCO_DETECTIONS = "/rover/cameras/aruco_detected";
+    static constexpr const char* SERVICE_RECORDING_NAME = "/rover/cameras/media_server_control";
+    static constexpr const char* TOPIC_RECORDING_INFO = "rover/camera/recordings_info";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
