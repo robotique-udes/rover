@@ -133,4 +133,4 @@ namespace RoverLib2
         return so_error == 0;
     }
 #endif  // defined(__linux__)
-}  // namespace RoverLib2
+} // namespace RoverLib2
