@@ -45,8 +45,7 @@ class DDBControlNode : public rclcpp::Node
     bool valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_);
 
     bool setChannelOutput2(uint8_t channelID_, eOutputState desiredState_);
-    void setStateLogic2(const rover_msgs::srv::DDBControl::Request& request_,
-      rover_msgs::srv::DDBControl::Response& response_);
+    void setStateLogic2(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
 
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank0;
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank1;

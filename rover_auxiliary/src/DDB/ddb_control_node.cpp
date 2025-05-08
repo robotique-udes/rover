@@ -271,6 +271,11 @@ void DDBControlNode::callbackDdbStatus(void)
         msg.frequency.push_back(_channelInfo[i].frequency);
     }
 
+    for (size_t i = 0; i < MAX_CHANNELS; i++)
+    {
+        msg.outputstate.push_back(static_cast<uint8_t>(_channelInfo2[i]));
+    }
+
     _pub_DDB_status->publish(msg);
 }
 
@@ -297,7 +302,7 @@ bool DDBControlNode::setChannelOutput2(uint8_t channelID_, eOutputState desiredS
 }
 
 void DDBControlNode::setStateLogic2(const rover_msgs::srv::DDBControl::Request& request_,
-                                   rover_msgs::srv::DDBControl::Response& response_)
+                                    rover_msgs::srv::DDBControl::Response& response_)
 {
     eOutputState wantedState = static_cast<eOutputState>(request_.output_state);
 
