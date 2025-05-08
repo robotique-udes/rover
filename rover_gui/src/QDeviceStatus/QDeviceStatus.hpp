@@ -11,7 +11,6 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include <QStyle>
-#include "Global/Constant/StyleSheet.hpp"
 #include "UI_DeviceStatus.h"
 
 #include <unordered_map>
