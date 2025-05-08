@@ -552,18 +552,18 @@ void CameraNode::videoWatchDogFunction(void)
     return;
 }
 
-    void CameraNode::CB_url_publisher(void)
+void CameraNode::CB_url_publisher(void)
+{
+    rover_msgs::msg::CameraList msg;
+
     {
-        rover_msgs::msg::CameraList msg;
+        std::lock_guard<std::mutex> lock(_recordingMapMutex);
 
+        for (const auto& recording : _recordingMap)
         {
-            std::lock_guard<std::mutex> lock(_recordingMapMutex);
-
-            for (const auto& recording : _recordingMap)
-            {
-                msg.urls.push_back(recording.second.getURL());
-            }
+            msg.urls.push_back(recording.second.getURL());
         }
-
-        _pub_urls->publish(msg);
     }
+
+    _pub_urls->publish(msg);
+}
