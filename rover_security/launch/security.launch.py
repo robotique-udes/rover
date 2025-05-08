@@ -13,11 +13,11 @@ def generate_launch_description():
                                     remappings=[("security", "raw")])
  
         node_heartbeat_rover = Node (package="rover_security",
-                                    namespace="/rover",
-                                    executable="heartbeat",
-                                    name="heartbeat",
-                                    parameters=[{"heartbeat_frequency": 4}],
-                                    remappings=[("security", "raw")])
+                                     namespace="/rover",
+                                     executable="heartbeat",
+                                     name="heartbeat",
+                                     parameters=[{"heartbeat_frequency": 4}],
+                                     remappings=[("security", "raw")])
         
         ld.add_action(node_heartbeat_base)
         ld.add_action(node_heartbeat_rover)

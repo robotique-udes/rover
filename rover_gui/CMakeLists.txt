@@ -26,6 +26,7 @@ include_directories(
   ui/include
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
 )
 
 add_custom_command(

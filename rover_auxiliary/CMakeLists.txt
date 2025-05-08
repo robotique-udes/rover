@@ -18,15 +18,8 @@ add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-add_executable(goal_manager src/goal_manager.cpp)
-ament_target_dependencies(goal_manager
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces
-                          ament_index_cpp)
-target_link_libraries(goal_manager rover_shared_libs)
+add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 
-add_executable(ddb_control src/DDB/ddb_control.cpp)
 ament_target_dependencies(ddb_control
                           rclcpp
                           rover_msgs
@@ -38,7 +31,6 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          goal_manager
           ddb_control
         DESTINATION lib/${PROJECT_NAME})
   
