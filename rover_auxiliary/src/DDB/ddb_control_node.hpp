@@ -9,6 +9,7 @@ class DDBControlNode : public rclcpp::Node
 {
     static constexpr const char* TOPIC_CONTROL_BANK_0 = "/rover/auxiliary/ddb_control_bank0";
     static constexpr const char* TOPIC_CONTROL_BANK_1 = "/rover/auxiliary/ddb_control_bank1";
+    static constexpr const char* TOPIC_DDB_STATE = "/rover/auxiliary/ddb_outputs_state";
     static constexpr size_t MAX_CHANNELS = 4UL;
     static constexpr uint64_t DELAY_PUBLISHER_MS = 100UL;
 
