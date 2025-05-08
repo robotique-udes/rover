@@ -1,4 +1,5 @@
 // ROS
+#include <chrono>
 #include <rclcpp/rclcpp.hpp>
 
 #include "rover_can2/constant.hpp"
@@ -24,7 +25,7 @@ class CanMaster2 : public rclcpp::Node
         canMsg_.setMsgID(RoverCan2::Constant::eMsgId::CAM_POSITION_CMD);
 
         timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&CanMaster2::timerCallback, this));
-        updateTimer_ = this->create_wall_timer(std::chrono::nanoseconds(1000), std::bind(&CanMaster2::updateCallback, this));
+        updateTimer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&CanMaster2::updateCallback, this));
     }
 
   private:
