@@ -57,7 +57,6 @@ namespace QHelper
     void QToastNotification::QToastNotification::setupUI()
     {
         setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
-        setAttribute(Qt::WA_DeleteOnClose);
         setAttribute(Qt::WA_TranslucentBackground);
         setAttribute(Qt::WA_ShowWithoutActivating);
         _ui.setupUi(this);
