@@ -55,7 +55,7 @@ def generate_launch_description():
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
-                PathJoinSubstitution([FindPackageShare('rover_video'), 'launch', 'video.launch.py'])
+                PathJoinSubstitution([FindPackageShare('rover_camera'), 'launch', 'camera.launch.py'])
             ])
         )
     ])

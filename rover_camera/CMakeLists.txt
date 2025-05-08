@@ -1,5 +1,5 @@
 cmake_minimum_required(VERSION 3.8)
-project(rover_video)
+project(rover_camera)
 
 # Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
