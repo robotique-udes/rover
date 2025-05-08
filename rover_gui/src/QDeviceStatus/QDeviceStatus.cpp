@@ -15,7 +15,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     for (auto it = _deviceButtons.begin(); it != _deviceButtons.end(); ++it)
     {
-        uint16_t deviceID = it.key();
+        uint16_t deviceID = it.key(); 
         QPushButton* button = it.value();
 
         connect(button,
@@ -163,8 +163,14 @@ void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_ms
             return;
     }
 
-    button_->setProperty("class", className);
-    button_->style()->unpolish(button_);
-    button_->style()->polish(button_);
-
+    if (CHECK_POINTER_VALID(button_))
+    {
+        button_->setProperty("class", className);
+        button_->style()->unpolish(button_);
+        button_->style()->polish(button_);
+    }
+    else
+    {
+        assert(false && "Button pointer is not valid");
+    }
 }
