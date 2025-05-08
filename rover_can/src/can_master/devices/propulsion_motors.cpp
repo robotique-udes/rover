@@ -21,9 +21,7 @@ void PropulsionMotor::rosElementInit(void)
 {
     _pub_MotorStatus
         = this->getAttachedNode()->create_publisher<rover_msgs::msg::PropulsionMotor>(PROPULSION_MOTOR_STATUS_TOPIC, 1);
-    ASSERT_COND_MSG(
-        _rosSharedMsg->attachNewPub(this->getAttachedNode(), _pub_MotorStatus, PROPULSION_MOTOR_STATUS_PUBLISH_FREQUENCY_HZ),
-        "Failed to attached publisher to shared propulsion message, implementation error");
+    _rosSharedMsg->attachNewPub(this->getAttachedNode(), _pub_MotorStatus, PROPULSION_MOTOR_STATUS_PUBLISH_FREQUENCY_HZ);
 
     _timerCanSend = this->getAttachedNode()->create_wall_timer(std::chrono::milliseconds(CAN_PUBLISH_PERIOD_MS),
                                                                [this](void)

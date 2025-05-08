@@ -8,6 +8,9 @@
 
 class ArucoDetectionNode : public rclcpp::Node
 {
+    static constexpr const char* SERVICE_SERVER_NAME = "/rover/cameras/aruco_detection_management";
+    static constexpr const char* TOPIC_ARUCO_DETECTED = "/rover/cameras/aruco_detected";
+
     // The detection delay must be paired with the max rate (fps) in the pipeline
     static constexpr uint64_t DELAY_PUBLISHER_MS = 1'000UL;
     static constexpr uint64_t DELAY_DETECTION_MS = 200UL;

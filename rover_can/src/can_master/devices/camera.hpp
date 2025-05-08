@@ -18,7 +18,7 @@ class Camera : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::Po
     static constexpr float CAMERA_POWER_STATUS_PUB_FREQ = 2.0F;
     static constexpr uint32_t CAMERA_POWER_STATUS_PUB_PERIOD_MS
         = static_cast<uint32_t>(ROUND(1'000.0F / CAMERA_POWER_STATUS_PUB_FREQ));
-    static constexpr const char* CAMERA_POWER_CONTROL_TOPIC = "/rover/cameras/status_infos";
+    static constexpr const char* CAMERA_POWER_CONTROL_TOPIC = "/rover/cameras/status";
 
   public:
     Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsgCam_);
