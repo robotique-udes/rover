@@ -43,10 +43,10 @@ DDBControlNode::DDBControlNode():
     _pub_DDB_status = this->create_publisher<rover_msgs::msg::DDBControl>("/rover/auxiliary/ddb_status", 1);
 
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
-    [this](void)
-    {
-        this->callbackDdbStatus();
-    });
+                                         [this](void)
+                                         {
+                                             this->callbackDdbStatus();
+                                         });
 }
 
 void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
@@ -272,4 +272,50 @@ void DDBControlNode::callbackDdbStatus(void)
     }
 
     _pub_DDB_status->publish(msg);
+}
+
+bool DDBControlNode::setChannelOutput2(uint8_t channelID_, eOutputState desiredState_)
+{
+    switch (desiredState_)
+    {
+        case eOutputState::ON:
+            _channelInfo2[channelID_] = eOutputState::ON;
+            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as ON", channelID_);
+            break;
+
+        case eOutputState::OFF:
+            _channelInfo2[channelID_] = eOutputState::OFF;
+            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as OFF", channelID_);
+            break;
+
+        case eOutputState::PWM:
+            _channelInfo2[channelID_] = eOutputState::PWM;
+            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as PWM", channelID_);
+            break;
+    }
+    return true;
+}
+
+void DDBControlNode::setStateLogic2(const rover_msgs::srv::DDBControl::Request& request_,
+                                   rover_msgs::srv::DDBControl::Response& response_)
+{
+    eOutputState wantedState = static_cast<eOutputState>(request_.output_state);
+
+    if (this->setChannelOutput2(request_.channel_id, wantedState))
+    {
+        std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
+        RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
+        response_.success = true;
+        response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
+        response_.status = msg;
+    }
+    else
+    {
+        std::string msg
+            = "Could not set channel #" + std::to_string(request_.channel_id) + " to " + std::to_string(request_.output_state);
+        RCLCPP_ERROR(this->get_logger(), "%s", msg.c_str());
+        response_.success = false;
+        response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
+        response_.status = msg;
+    }
 }

@@ -44,6 +44,10 @@ class DDBControlNode : public rclcpp::Node
     bool setPWMValues(float dutyCycle_, float frequency_, uint8_t channelID_);
     bool valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_);
 
+    bool setChannelOutput2(uint8_t channelID_, eOutputState desiredState_);
+    void setStateLogic2(const rover_msgs::srv::DDBControl::Request& request_,
+      rover_msgs::srv::DDBControl::Response& response_);
+
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank0;
     rclcpp::Service<rover_msgs::srv::DDBControl>::SharedPtr _srv_control_bank1;
     rclcpp::Publisher<rover_msgs::msg::DDBControl>::SharedPtr _pub_DDB_status;
@@ -51,6 +55,7 @@ class DDBControlNode : public rclcpp::Node
     rclcpp::TimerBase::SharedPtr _timer_pub;
 
     sChannelInfo _channelInfo[MAX_CHANNELS] = {};
+    eOutputState _channelInfo2[MAX_CHANNELS] = {};
 };
 
 #endif  // __DDB_NODE_HPP__
