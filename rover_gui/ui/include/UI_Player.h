@@ -81,6 +81,11 @@ public:
         mainStackedWidget->setObjectName(QString::fromUtf8("mainStackedWidget"));
         videoPage = new QWidget();
         videoPage->setObjectName(QString::fromUtf8("videoPage"));
+        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+        sizePolicy.setHorizontalStretch(0);
+        sizePolicy.setVerticalStretch(0);
+        sizePolicy.setHeightForWidth(videoPage->sizePolicy().hasHeightForWidth());
+        videoPage->setSizePolicy(sizePolicy);
         videoPageLayout = new QVBoxLayout(videoPage);
         videoPageLayout->setSpacing(0);
         videoPageLayout->setObjectName(QString::fromUtf8("videoPageLayout"));
@@ -185,9 +190,6 @@ public:
         videoStack->setObjectName(QString::fromUtf8("videoStack"));
         videoWidget = new QWidget();
         videoWidget->setObjectName(QString::fromUtf8("videoWidget"));
-        QSizePolicy sizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-        sizePolicy.setHorizontalStretch(0);
-        sizePolicy.setVerticalStretch(0);
         sizePolicy.setHeightForWidth(videoWidget->sizePolicy().hasHeightForWidth());
         videoWidget->setSizePolicy(sizePolicy);
         videoStack->addWidget(videoWidget);
