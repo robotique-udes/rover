@@ -173,7 +173,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
     {
-        if (_timer_serviceCallCamera.isDone())
+        if (_timer_serviceCallCamera.isReady())
         {
             service_call_interrupt = true;
             break;
@@ -248,7 +248,7 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
     {
-        if (_timer_serviceCallCamera.isDone())
+        if (_timer_serviceCallCamera.isReady())
         {
             service_call_interrupt = true;
             break;
@@ -299,7 +299,7 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(100)) != std::future_status::ready)
     {
-        if (_timer_serviceCallCamera.isDone())
+        if (_timer_serviceCallCamera.isReady())
         {
             service_call_interrupt = true;
             break;

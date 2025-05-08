@@ -544,13 +544,13 @@ void CameraNode::videoWatchDogFunction(void)
                                      url.c_str());
                     }
                 }
-
-                _recordingShutdownRequestSet.clear();
             }
         }
-        RCLCPP_DEBUG(this->get_logger(), "Stopping video watchdog");
-        return;
+        _recordingShutdownRequestSet.clear();
     }
+    RCLCPP_DEBUG(this->get_logger(), "Stopping video watchdog");
+    return;
+}
 
     void CameraNode::CB_url_publisher(void)
     {
