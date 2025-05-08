@@ -14,7 +14,8 @@
 #include "rover_msgs/srv/aruco_detection.hpp"
 #include "rover_msgs/srv/camera_control.hpp"
 #include "rclcpp/rclcpp.hpp"
-#include "rovus_lib/timer.hpp"
+#include "rover_lib2/helpers/loop_timer.hpp"
+#include "rover_lib2/helpers/time.hpp"
 
 class QPlayerWorker : public QWorker
 {
@@ -70,8 +71,8 @@ class QPlayerWorker : public QWorker
                                std::string camera_URL_,
                                uint16_t tag_);
 
-    RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCall;
-    RoverLib::Timer<uint64_t, RoverLib::millis> _timer_serviceCallCamera;
+    LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
+    LoopTimer<uint64_t, Time::millis> _timer_serviceCallCamera;
 };
 
 #endif  // VIDEO_WORKER_HPP

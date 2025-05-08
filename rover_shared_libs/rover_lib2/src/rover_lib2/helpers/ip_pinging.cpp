@@ -1,7 +1,18 @@
 #include "ip_pinging.hpp"
 
-namespace RoverLib
+#if defined(__linux__)
+#include <cstring>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <unistd.h>
+#endif  // defined(__linux__)
+
+namespace RoverLib2
 {
+#if defined(__linux__)
     bool isIPReachable(const std::string& ip_, size_t port_, size_t timeoutMs_)
     {
         size_t start = ip_.find("rtsp://");
@@ -121,4 +132,5 @@ namespace RoverLib
 
         return so_error == 0;
     }
-}  // namespace RoverLib
+#endif  // defined(__linux__)
+}  // namespace RoverLib2

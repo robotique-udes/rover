@@ -72,9 +72,9 @@ void QVideoManagerWidget::initWidget(void)
     {
         std::string cameraUrl = "";
         if (i < CAMERA_NAME_ORDER.size()
-            && CameraInfo::CAMERA_URL_MAP.find(CAMERA_NAME_ORDER[i]) != CameraInfo::CAMERA_URL_MAP.end())
+            && Constants::CameraInfo::CAMERA_URL_MAP.find(CAMERA_NAME_ORDER[i]) != Constants::CameraInfo::CAMERA_URL_MAP.end())
         {
-            cameraUrl = CameraInfo::CAMERA_URL_MAP.at(CAMERA_NAME_ORDER[i]);
+            cameraUrl = Constants::CameraInfo::CAMERA_URL_MAP.at(CAMERA_NAME_ORDER[i]);
         }
         else if (i < CAMERA_NAME_ORDER.size())
         {
