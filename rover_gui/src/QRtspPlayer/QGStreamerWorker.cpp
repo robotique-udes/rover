@@ -127,7 +127,7 @@ QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
     return QString("rtspsrc location=%1 latency=50 timeout=5000000 buffer-mode=none do-retransmission=false drop-on-latency=true ! decodebin "
                    "name=dec "
                    "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
-                   "t. ! queue max-size-buffers=2 leaky=downstream ! ximagesink sync=false "
+                   "t. ! queue max-size-buffers=2 leaky=downstream ! videoscale ! video/x-raw,pixel-aspect-ratio=1/1 ! ximagesink sync=false "
                    "t. ! queue max-size-buffers=2 leaky=downstream ! videoconvert ! appsink name=myappsink sync=false")
         .arg(rtspUrl);
 }
