@@ -1,5 +1,15 @@
 #include "ip_pinging.hpp"
 
+#if defined(__linux__)
+#include <cstring>
+#include <sys/socket.h>
+#include <netinet/in.h>
+#include <arpa/inet.h>
+#include <netdb.h>
+#include <fcntl.h>
+#include <unistd.h>
+#endif  // defined(__linux__)
+
 namespace RoverLib2
 {
 #if defined(__linux__)

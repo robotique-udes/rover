@@ -3,13 +3,6 @@
 
 #if defined(__linux__)
 #include <string>
-#include <cstring>
-#include <sys/socket.h>
-#include <netinet/in.h>
-#include <arpa/inet.h>
-#include <netdb.h>
-#include <fcntl.h>
-#include <unistd.h>
 #endif  // defined(__linux__)
 
 namespace RoverLib2
