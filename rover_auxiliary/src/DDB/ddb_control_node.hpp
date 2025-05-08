@@ -1,8 +1,7 @@
 #ifndef __DDB_NODE_HPP__
 #define __DDB_NODE_HPP__
 
-#include "rovus_lib/camera_info.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/srv/ddb_control.hpp"
