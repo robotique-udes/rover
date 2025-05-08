@@ -1,5 +1,6 @@
 #include "QNavigation.hpp"
 
+// This function is used to silence unnecessary logs from QWebViewContainer
 void messageHandler(QtMsgType type_, const QMessageLogContext& context_, const QString& msg_)
 {
     Q_UNUSED(type_)
