@@ -19,6 +19,14 @@
       height: 100%;
       overflow: hidden;
     }
+
+    .cesium-viewer-bottom {
+      display: none !important;
+    }
+
+    .cesium-infoBox {
+      display: none !important;
+    }
   </style>
 </head>
 
@@ -35,12 +43,30 @@
       }),
       sceneMode: Cesium.SceneMode.SCENE2D,
       mapMode2D: Cesium.MapMode2D.ROTATE,
+      animation: false,        
+      baseLayerPicker: false,  
+      fullscreenButton: false, 
+      vrButton: false,         
+      geocoder: false,         
+      homeButton: false,       
+      infoBox: false,          
+      sceneModePicker: false,  
+      selectionIndicator: false, 
+      timeline: false,         
+      navigationHelpButton: false, 
+      navigationInstructionsInitiallyVisible: false,
+      creditsDisplay: false,  
+      shouldAnimate: true,
     });
+
+    viewer._cesiumWidget._creditContainer.style.display = "none";
 
     let currentPosition = { latitude: 0.0, longitude: 0.0 };
     let pathEntity = null;
     let waypointEntities = [];
     let waypointCounter = 1;
+    let activeWaypoint = null;
+    let pathUpdateInterval = null;
 
     function clearAllWaypoints() {
       const entities = viewer.entities.values.slice();
@@ -95,8 +121,8 @@
       position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
       billboard: {
         image: 'qrc:/arrow.png',
-        width: 30,
-        height: 30,
+        width: 20,
+        height: 20,
         alignedAxis: Cesium.Cartesian3.UNIT_Z,
         rotation: 0,
         color: Cesium.Color.RED,
@@ -131,6 +157,49 @@
       }
 
       return distance;
+    }
+
+    function startDynamicPathUpdates(destLat, destLon, waypointId) {
+      activeWaypoint = {
+        latitude: destLat,
+        longitude: destLon,
+        id: waypointId
+      };
+
+      clearInterval(pathUpdateInterval);
+
+      pathUpdateInterval = setInterval(() => {
+        if (currentPosition && activeWaypoint) {
+          drawPath(
+            currentPosition.latitude,
+            currentPosition.longitude,
+            activeWaypoint.latitude,
+            activeWaypoint.longitude
+          );
+        }
+      }, 1000);
+
+      drawPath(
+        currentPosition.latitude,
+        currentPosition.longitude,
+        destLat,
+        destLon
+      );
+
+      console.log(`Dynamic path updates started to waypoint: ${waypointId}`);
+    }
+
+    function stopDynamicPathUpdates() {
+      clearInterval(pathUpdateInterval);
+      pathUpdateInterval = null;
+      activeWaypoint = null;
+
+      if (pathEntity) {
+        viewer.entities.remove(pathEntity);
+        pathEntity = null;
+      }
+
+      console.log("Dynamic path updates stopped");
     }
 
     function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
@@ -226,11 +295,8 @@
 
       bridge.clearPath.connect(function () {
         console.log("clearPath signal received!");
-        if (pathEntity) {
-          viewer.entities.remove(pathEntity);
-          pathEntity = null;
-          console.log("Path cleared from map");
-        }
+        stopDynamicPathUpdates();
+        console.log("Path cleared from map");
       });
 
       bridge.gpsCallback.connect(function (lat, lon, heading) {
@@ -262,19 +328,25 @@
         });
       });
 
-      bridge.calculatePath.connect(function (destLat, destLon) {
-        const distance = drawPath(currentPosition.latitude, currentPosition.longitude, destLat, destLon);
-        console.log(`Path distance (manual): ${distance.toFixed(2)} meters`);
+      bridge.calculatePath.connect(function (destLat, destLon, waypointId) {
+        startDynamicPathUpdates(destLat, destLon, waypointId);
+        console.log(`Dynamic path updates started to: ${destLat}, ${destLon}`);
       });
 
       bridge.clearWaypoints.connect(function () {
         console.log("clearWaypoints signal received!");
+        stopDynamicPathUpdates();
         clearAllWaypoints();
         console.log("Waypoints cleared from map");
       });
 
       bridge.deleteWaypoint.connect(function (waypointId) {
         console.log("deleteWaypoint signal received for:", waypointId);
+
+        if (activeWaypoint && activeWaypoint.id === waypointId) {
+          stopDynamicPathUpdates();
+        }
+
         const result = deleteWaypoint(waypointId);
         console.log("Waypoint deletion result:", result);
       });

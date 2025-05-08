@@ -25,13 +25,6 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
 
     connect(&_sideBarWidget, &QSideBar::switchPage, &_stackedWidget, &QStackedWidget::setCurrentIndex);
     connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
-
-    connect(&_navigationWidget,
-            &QNavigation::sendGoal,
-            this,
-            [this](QString name, double lat, double lon)
-            {
-            });
 }
 
 void MainWindow::closeEvent(QCloseEvent* event_)

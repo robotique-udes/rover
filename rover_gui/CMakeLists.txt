@@ -111,6 +111,8 @@ target_link_libraries(main_gui
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+# install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
+# install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS main_gui
   DESTINATION lib/${PROJECT_NAME}

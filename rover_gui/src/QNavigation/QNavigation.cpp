@@ -103,8 +103,6 @@ void QNavigation::waypointCreated(QString name_, double latitude_, double longit
     addWaypointToList(name_, latitude_, longitude_, id_);
 }
 
-// void QNavigation::
-
 void QNavigation::onCalculatePathClicked()
 {
     QListWidgetItem* currentItem_ = _ui->waypointList->currentItem();
