@@ -33,7 +33,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _verticalLayout.addWidget(&_bottomUtilityBar);
 
     _centralWidget.setLayout(&_verticalLayout);
-    setCentralWidget(&_centralWidget);
+    this->setCentralWidget(&_centralWidget);
 
     connect(&_sideBarWidget, &QSideBar::switchPage, &_stackedWidget, &QStackedWidget::setCurrentIndex);
     connect(&_bottomUtilityBar,

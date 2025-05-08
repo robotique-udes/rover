@@ -3,7 +3,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "UI_ToastNotification.h"
-#include "UI_notificationHistoryPanel.h"
+#include "UI_NotificationHistoryPanel.h"
 #include "UI_NotificationHistory.h"
 
 #include <QtWidgets/QGridLayout>
