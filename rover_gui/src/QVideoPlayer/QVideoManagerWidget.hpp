@@ -5,7 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
-#include "rovus_lib/camera_info.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
@@ -13,6 +13,9 @@
 class QVideoManagerWidget : public QWidget
 {
     Q_OBJECT
+
+    static constexpr const char* SERVICE_ARUCO_NAME = "/rover/cameras/aruco_detection_management";
+    static constexpr const char* TOPIC_ARUCO_DETECTIONS = "/rover/cameras/aruco_detected";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;

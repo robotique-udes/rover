@@ -77,22 +77,22 @@ def generate_cpp_header(input_file_path):
             enum_class_eMsgContentID_members += f"{' ' * 12}{member_name_capital_snake_case},\n"
             struct_sMsgData_members += f"{' ' * 12}{member}\n"
             valid_msg_ids_member += f"eMsgContentID::{member_name_capital_snake_case}, "
-            constructor_init_to_zero += f"{' ' * 8}_data.{member_name} = static_cast<decltype(_data.{member_name})>(0);\n"
+            constructor_init_to_zero += f"{' ' * 12}_data.{member_name} = static_cast<decltype(_data.{member_name})>(0);\n"
 
             loadMsg_switch_case_gen += \
 f"""\
-{12*' '}case eMsgContentID::{member_name_capital_snake_case}:
-{16*' '}success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.{member_name});
-{16*' '}LOG_DEBUG(Logger::Nodes::{logNodeName},
-{26*' '}"switch (msgContentId) case eMsgContentID::{member_name_capital_snake_case}: %s",
-{26*' '}success ? "success" : "failed");
-{16*' '}break;\n
+{16*' '}case eMsgContentID::{member_name_capital_snake_case}:
+{20*' '}success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.{member_name});
+{20*' '}LOG_DEBUG(Logger::Nodes::{logNodeName},
+{30*' '}"switch (msgContentId) case eMsgContentID::{member_name_capital_snake_case}: %s",
+{30*' '}success ? "success" : "failed");
+{20*' '}break;\n
 """
             getCanMsg_switch_case_gen += \
 f"""\
-{12*' '}case eMsgContentID::{member_name_capital_snake_case}:
-{16*' '}Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.{member_name}, msg_);
-{16*' '}break;\n
+{16*' '}case eMsgContentID::{member_name_capital_snake_case}:
+{20*' '}Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.{member_name}, msg_);
+{20*' '}break;\n
 """
         #end_for
 
@@ -135,104 +135,97 @@ namespace RoverCan2::Msgs
             = {{{valid_msg_ids_member}}};
 
       public:
-        {class_name}();
+        {class_name}():
+            Msg(Constant::eMsgId::{class_name_upper_snake})
+        {{
+{constructor_init_to_zero}
+        }}
 
-        eLoadMsgCode _loadMsg(const CanMsg& msg_);
-        std::optional<CanMsg> _getCanMsg(const uint8_t msgContentId_) const;
-        uint8_t _getMsgContentCount(void) const;
-        sMsgData& data(void);
-        const sMsgData& getData(void) const;
+        eLoadMsgCode _loadMsg(const CanMsg& msg_)
+        {{
+            if (msg_.getMsgID() == Constant::eMsgId::INVALID)
+            {{
+                return eLoadMsgCode::ERROR_INVALID_MSG;
+            }}
+
+            if (msg_.getMsgID() != this->getMsgId())
+            {{
+                return eLoadMsgCode::NOT_CONCERNED;
+            }}
+
+            eMsgContentID msgContentId = static_cast<eMsgContentID>(msg_.getMsgContentID());
+            if (!VALID_MSG_IDS.contains(msgContentId))
+            {{
+                LOG_DEBUG(Logger::Nodes::{logNodeName},
+                          "Mismatch between received message and local message definition. Received msgContentId: (%u), "
+                          "expected lower than (%u) and none zero",
+                          TO_UNDERLYING(msgContentId),
+                          TO_UNDERLYING(eMsgContentID::eLAST));
+                return eLoadMsgCode::ERROR_MISMATCH;
+            }}
+
+            bool success = false;
+            switch (msgContentId)
+            {{
+{loadMsg_switch_case_gen}
+                default:
+                    return eLoadMsgCode::ERROR_IMPLEMENTATION;
+            }}
+
+            if (!success)
+            {{
+                return eLoadMsgCode::ERROR_MISMATCH;
+            }}
+
+            if (Helpers::MSG_CONTENT_IS_LAST_ELEM<eMsgContentID>(msg_))
+            {{
+                return eLoadMsgCode::SUCCESS_COMPLETE;
+            }}
+            else
+            {{
+                return eLoadMsgCode::SUCCESS_INCOMPLETE;
+            }}
+        }}
+
+        std::optional<CanMsg> _getCanMsg(const uint8_t msgContentId_) const
+        {{
+            eMsgContentID msgContentID = static_cast<eMsgContentID>(msgContentId_);
+
+            if (!VALID_MSG_IDS.contains(msgContentID))
+            {{
+                return std::nullopt;
+            }}
+
+            CanMsg msg_;
+            switch (static_cast<eMsgContentID>(msgContentId_))
+            {{
+{getCanMsg_switch_case_gen}
+                case eMsgContentID::eLAST:
+                    return std::nullopt;
+            }}
+
+            return msg_;
+        }}
+
+        uint8_t _getMsgContentCount(void) const
+        {{
+            return TO_UNDERLYING(eMsgContentID::eLAST);
+        }}
+
+        sMsgData& data(void)
+        {{
+            return _data;
+        }}
+
+        const sMsgData& getData(void) const
+        {{
+            return static_cast<const sMsgData&>(_data);
+        }}
 
       private:
         sMsgData _data;
     }};
 
-    {class_name}::{class_name}():
-        Msg(Constant::eMsgId::{class_name_upper_snake})
-    {{
-{constructor_init_to_zero}
-    }}
-
-    eLoadMsgCode {class_name}::_loadMsg(const CanMsg& msg_)
-    {{
-        if (msg_.getMsgID() == Constant::eMsgId::INVALID)
-        {{
-            return eLoadMsgCode::ERROR_INVALID_MSG;
-        }}
-
-        if (msg_.getMsgID() != this->getMsgId())
-        {{
-            return eLoadMsgCode::NOT_CONCERNED;
-        }}
-
-        eMsgContentID msgContentId = static_cast<eMsgContentID>(msg_.getMsgContentID());
-        if (!VALID_MSG_IDS.contains(msgContentId))
-        {{
-            LOG_DEBUG(Logger::Nodes::{logNodeName},
-                      "Mismatch between received message and local message definition. Received msgContentId: (%u), "
-                      "expected lower than (%u) and none zero",
-                      TO_UNDERLYING(msgContentId),
-                      TO_UNDERLYING(eMsgContentID::eLAST));
-            return eLoadMsgCode::ERROR_MISMATCH;
-        }}
-
-        bool success = false;
-        switch (msgContentId)
-        {{
-{loadMsg_switch_case_gen}
-            default:
-                return eLoadMsgCode::ERROR_IMPLEMENTATION;
-        }}
-
-        if (!success)
-        {{
-            return eLoadMsgCode::ERROR_MISMATCH;
-        }}
-
-        if (Helpers::MSG_CONTENT_IS_LAST_ELEM<eMsgContentID>(msg_))
-        {{
-            return eLoadMsgCode::SUCCESS_COMPLETE;
-        }}
-        else
-        {{
-            return eLoadMsgCode::SUCCESS_INCOMPLETE;
-        }}
-    }}
-
-    std::optional<CanMsg> {class_name}::_getCanMsg(const uint8_t msgContentId_) const
-    {{
-        eMsgContentID msgContentID = static_cast<eMsgContentID>(msgContentId_);
-
-        if (!VALID_MSG_IDS.contains(msgContentID))
-        {{
-            return std::nullopt;
-        }}
-
-        CanMsg msg_;
-        switch (static_cast<eMsgContentID>(msgContentId_))
-        {{
-{getCanMsg_switch_case_gen}
-            case eMsgContentID::eLAST:
-                return std::nullopt;
-        }}
-
-        return msg_;
-    }}
-
-    uint8_t {class_name}::_getMsgContentCount(void) const
-    {{
-        return TO_UNDERLYING(eMsgContentID::eLAST);
-    }}
-
-    {class_name}::sMsgData& {class_name}::data(void)
-    {{
-        return _data;
-    }}
-    
-    const {class_name}::sMsgData& {class_name}::getData(void) const
-    {{
-        return static_cast<const {class_name}::sMsgData&>(_data);
-    }}
 }}  // namespace RoverCan2::Msgs
 
 #endif  // {header_guard}

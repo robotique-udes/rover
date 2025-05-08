@@ -3,8 +3,9 @@
 #include "rover_msgs/msg/arm_msg.hpp"
 #include "rover_msgs/msg/joy.hpp"
 
-#include "rovus_lib/timer.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/time.hpp"
+#include "rover_lib2/helpers/loop_timer.hpp"
+#include "rover_lib2/helpers/macros.hpp"
 #include "arm_configuration.hpp"
 #include "keybinding.hpp"
 
@@ -13,6 +14,10 @@
 
 class Teleop : public rclcpp::Node
 {
+    static constexpr const char* TOPIC_JOY_ARM = "/base/joy/arm";
+    static constexpr const char* TOPIC_ARM_STATUS = "/rover/arm/joints_status";
+    static constexpr const char* TOPIC_ARM_CMD = "/rover/arm/joints_cmd";
+
   public:
     enum class eControlMode : size_t
     {
@@ -40,20 +45,20 @@ class Teleop : public rclcpp::Node
         _jointController(_joyManager),
         _cartesianController(_joyManager)
     {
-        _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>("/rover/arm/joy",
+        _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY_ARM,
                                                                      1,
                                                                      [this](const rover_msgs::msg::Joy& joyMsg_)
                                                                      {
                                                                          this->joy_CB(joyMsg_);
                                                                      });
-        _subArmPositions = this->create_subscription<rover_msgs::msg::ArmMsg>("/rover/arm/status/current_positions",
+        _subArmPositions = this->create_subscription<rover_msgs::msg::ArmMsg>(TOPIC_ARM_STATUS,
                                                                               1,
                                                                               [this](const rover_msgs::msg::ArmMsg& armMsg_)
                                                                               {
                                                                                   this->position_CB(armMsg_);
                                                                               });
 
-        _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>("/rover/arm/cmd/goal_speed", 1);
+        _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>(TOPIC_ARM_CMD, 1);
     }
 
     void joy_CB(const rover_msgs::msg::Joy& joyMsg_)
@@ -73,7 +78,7 @@ class Teleop : public rclcpp::Node
                 _controlMode = eControlMode::CARTESIAN;
                 RCLCPP_INFO(this->get_logger(), "Control mode is now CARTESIAN");
             }
-            else if ((_controlMode == eControlMode::CARTESIAN))
+            else if (_controlMode == eControlMode::CARTESIAN)
             {
                 _controlMode = eControlMode::JOINT;
                 RCLCPP_INFO(this->get_logger(), "Control mode is now JOINT");

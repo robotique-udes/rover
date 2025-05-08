@@ -7,6 +7,9 @@
 // Class definition
 class Teleop : public rclcpp::Node
 {
+    static constexpr const char* TOPIC_JOY = "/base/joy/drive_train";
+    static constexpr const char* TOPIC_WHEEL_CMD = "/rover/drive_train/wheels_cmd_telelop";
+
   public:
     Teleop();
 
@@ -15,7 +18,7 @@ class Teleop : public rclcpp::Node
     float _speedFactorCrawler;
     float _speedFactorNormal;
     float _speedFactorTurbo;
-    float _smallestRadius;
+    float _smallestRadius = 0.3f;
 
     float _deadmanSwitch;
 
@@ -53,15 +56,6 @@ class Teleop : public rclcpp::Node
         _modeTankAngularInput = msg->joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE];
         _modeNormalEnable = msg->joy_data[rover_msgs::msg::Joy::R1];
         _modeTurboEnable = msg->joy_data[rover_msgs::msg::Joy::R2];
-        message.enable[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = true;
-        message.enable[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = true;
-        message.enable[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = true;
-        message.enable[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = true;
-
-        message.close_loop[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = false;
-        message.close_loop[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = false;
-        message.close_loop[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = false;
-        message.close_loop[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = false;
 
         if (_deadmanSwitch)
         {
@@ -101,10 +95,10 @@ class Teleop : public rclcpp::Node
                 }
             }
 
-            message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_LEFT] = speedLeftMotor;
-            message.target_speed[rover_msgs::msg::PropulsionMotor::FRONT_RIGHT] = speedRightMotor;
-            message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_LEFT] = speedLeftMotor;
-            message.target_speed[rover_msgs::msg::PropulsionMotor::REAR_RIGHT] = speedRightMotor;
+            message.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT] = speedLeftMotor;
+            message.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT] = speedRightMotor;
+            message.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT] = speedLeftMotor;
+            message.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT] = speedRightMotor;
         }
 
         _pub_teleop_in->publish(message);
@@ -120,11 +114,10 @@ Teleop::Teleop():
 {
     this->getParams();
 
-    _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>("/rover/drive_train/joy",
-                                                                        1,
-                                                                        std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+    _sub_joy_formated
+        = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY, 1, std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
 
-    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/in/teleop", 1);
+    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, 1);
 }
 
 int main(int argc, char* argv[])
