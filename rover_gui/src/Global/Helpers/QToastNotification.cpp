@@ -24,9 +24,40 @@ namespace QHelper
         return instance;
     }
 
-    void QToastNotification::setupUI()
+    void QToastNotification::cleanup()
+    {
+        _closeTimer.stop();
+        _fadeInAnim.stop();
+        _fadeOutAnim.stop();
+        _slideInAnim.stop();
+        _slideOutAnim.stop();
+        _progressBarAnim.stop();
+        hide();
+    }
+
+    QRect QToastNotification::getTargetScreenRect(void)
+    {
+        return _targetScreenRect;
+    }
+
+    std::deque<QToastNotification::sNotificationInfo>& QToastNotification::getHistory(void)
+    {
+        return _history;
+    }
+
+    void QToastNotification::setTargetScreenRect(QRect targetScreenRect_)
+    {
+        _targetScreenRect = targetScreenRect_;
+    }
+    void QToastNotification::setHistory(std::deque<QToastNotification::sNotificationInfo> history_)
+    {
+        _history = history_;
+    }
+
+    void QToastNotification::QToastNotification::setupUI()
     {
         setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
+        setAttribute(Qt::WA_DeleteOnClose);
         setAttribute(Qt::WA_TranslucentBackground);
         setAttribute(Qt::WA_ShowWithoutActivating);
         _ui.setupUi(this);
@@ -134,7 +165,6 @@ namespace QHelper
         _progressBarAnim.setEndValue(0);
 
         connect(&_fadeOutAnim, &QPropertyAnimation::finished, this, &QWidget::hide);
-        connect(&_slideOutAnim, &QPropertyAnimation::finished, this, &QWidget::hide);
 
         _closeTimer.setSingleShot(true);
         connect(&_closeTimer, &QTimer::timeout, this, &QToastNotification::hideNotification);
@@ -154,13 +184,16 @@ namespace QHelper
             targetScreen = QGuiApplication::primaryScreen();
         }
 
-        targetScreenRect = targetScreen->availableGeometry();
+        this->setTargetScreenRect(targetScreen->availableGeometry());
     }
 
     void QToastNotification::notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_)
     {
         _fadeInAnim.stop();
         _fadeOutAnim.stop();
+        _closeTimer.stop();
+        hide();
+
         _slideInAnim.stop();
         _slideOutAnim.stop();
         _progressBarAnim.stop();
@@ -197,9 +230,9 @@ namespace QHelper
 
         this->adjustSize();
 
-        size_t X = targetScreenRect.right() - width() - MARGIN_NOTIF;
-        size_t startY = targetScreenRect.bottom() - height() + 2 * MARGIN_NOTIF;
-        size_t endY = targetScreenRect.bottom() - height() - 2 * MARGIN_NOTIF;
+        size_t X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
+        size_t startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
+        size_t endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
 
         _slideInAnim.setStartValue(QPoint(X, startY));
         _slideInAnim.setEndValue(QPoint(X, endY));
@@ -213,7 +246,6 @@ namespace QHelper
 
         this->raise();
         this->show();
-
 
         _progressBarAnim.setDuration(durationMs_);
 
@@ -242,18 +274,18 @@ namespace QHelper
 
     void QToastNotification::saveNotifInfo(const sNotificationInfo& info_)
     {
-        history.push_back(info_);
+        this->getHistory().push_back(info_);
 
-        if (history.size() >= HISTORY_MAX_SIZE)
+        if (this->getHistory().size() >= HISTORY_MAX_SIZE)
         {
-            history.pop_front();
+            this->getHistory().pop_front();
         }
     }
 
     QNotificationShowHistory::QNotificationShowHistory()
     {
         _ui.setupUi(this);
-        _targetScreenRect = QToastNotification::getInstance().targetScreenRect;
+        _targetScreenRect = QToastNotification::getInstance().getTargetScreenRect();
         _ui.scrollArea->setVisible(false);
         this->hide();
     }
@@ -277,14 +309,13 @@ namespace QHelper
             _ui.scrollArea->setVisible(false);
             this->hide();
         }
-
         else
         {
-            for (size_t i = 0; i < QToastNotification::getInstance().history.size(); ++i)
+            for (size_t i = 0; i < QToastNotification::getInstance().getHistory().size(); ++i)
             {
-                QToastNotification::sNotificationInfo data = QToastNotification::getInstance().history.at(i);
+                QToastNotification::sNotificationInfo data = QToastNotification::getInstance().getHistory().at(i);
                 QNotificationHistoryData* dataWidget
-                    = new QNotificationHistoryData(data.timeStamp, data.title, data.description, data.criticityLevel);
+                    = new QNotificationHistoryData(data.timeStamp, data.title, data.description, data.severityLevel);
 
                 if (dataWidget)
                 {
@@ -292,7 +323,7 @@ namespace QHelper
                 }
             }
             // Notify layout system
-            _ui.scrollArea->verticalScrollBar()->setValue(_ui.scrollArea->verticalScrollBar()->maximum());           
+            _ui.scrollArea->verticalScrollBar()->setValue(_ui.scrollArea->verticalScrollBar()->maximum());
             _ui.scrollArea->setVisible(true);
             this->show();
             this->raise();
@@ -385,6 +416,7 @@ namespace QHelper
                 border: none;
                 font-size: 16px;
                 padding: 5px 10px;
+                font-weight: bold;
             }
             QTextEdit:focus {
                 border: none;
@@ -405,4 +437,4 @@ namespace QHelper
                 outline: none;
             })");
     }
-}  
+}  // namespace QHelper

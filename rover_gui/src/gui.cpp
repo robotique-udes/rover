@@ -66,8 +66,8 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
                                                       QHelper::QToastNotification::eNotifType::SUCCESS,
                                                       3000);
 
-    #warning enlever
-        QTimer* timer = new QTimer(&app);
+#warning enlever
+    QTimer* timer = new QTimer(&app);
     QObject::connect(timer,
                      &QTimer::timeout,
                      []()
@@ -81,9 +81,7 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
                      });
     timer->start(5000);
 
-
     int ret = app.exec();
-
 
     rosProcess.terminate();
     if (!rosProcess.waitForFinished(3000))

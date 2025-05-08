@@ -5,7 +5,6 @@
 #include <QMainWindow>
 #include <QVBoxLayout>
 #include <QLabel>
-#include "Global/Helpers/QToastNotification.hpp"
 #include <QStackedWidget>
 #include <QShortcut>
 

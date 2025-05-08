@@ -43,7 +43,6 @@ add_executable(main_gui src/gui.cpp
                    src/MainWindow.hpp
                    src/MainWindow.cpp
 
-
                    src/SecondaryWindow.hpp
                    src/SecondaryWindow.cpp
 
@@ -51,7 +50,7 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Helpers/QHelpers.hpp
                    src/Global/Helpers/QHelpers.cpp
                    src/Global/Helpers/QToastNotification.cpp
-                    src/Global/Helpers/QToastNotification.hpp
+                   src/Global/Helpers/QToastNotification.hpp
                    src/Global/Workers/QWorker.hpp
                    src/Global/Workers/QWorker.cpp
                    src/Global/QTmpFolderManager.hpp

@@ -6,7 +6,6 @@
 #include "UI_notificationHistoryPanel.h"
 #include "UI_NotificationHistory.h"
 
-
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include <QPropertyAnimation>
@@ -45,28 +44,31 @@ namespace QHelper
             QTime timeStamp;
             QString title;
             QString description;
-            QToastNotification::eNotifType criticityLevel;
+            QToastNotification::eNotifType severityLevel;
         };
 
-        /**nameenelverspace
+        /**
          * @brief Helper to send a notification (non blocking).
          * The notification pops from the bottom right end of the main window.
          *
          * @param title_ Notification title
          * @param description_ Notification description
-         * @param type_ Criticity level setting a corresponding icon to the notification
+         * @param type_ severity level setting a corresponding icon to the notification
          * @param durationMs_ Duration of the notification (5s by default)
          */
         void notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_ = NOTIF_DURATION_MS);
 
         static QToastNotification& getInstance();
+        void cleanup();
 
-        QRect targetScreenRect;
-        std::deque<sNotificationInfo> history;
+        QRect getTargetScreenRect(void);
+        std::deque<sNotificationInfo>& getHistory(void);
+        void setTargetScreenRect(QRect targetScreenRect_);
+        void setHistory(std::deque<sNotificationInfo> history_);
+
 
       private:
         QToastNotification();
-        ~QToastNotification() = default;
         QToastNotification(const QToastNotification&) = delete;
         QToastNotification& operator=(const QToastNotification&) = delete;
 
@@ -77,6 +79,8 @@ namespace QHelper
         void hideNotification();
         void saveNotifInfo(const sNotificationInfo& info_);
 
+        QRect _targetScreenRect;
+        std::deque<sNotificationInfo> _history;
         Ui::ToastNotification _ui;
         QGraphicsDropShadowEffect _shadow;
         QPropertyAnimation _fadeInAnim;
