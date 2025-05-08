@@ -528,8 +528,8 @@ void CameraNode::videoWatchDogFunction(void)
                         if (!_recordingMap.erase(url))
                         {
                             RCLCPP_ERROR(this->get_logger(),
-                                     "Shutdown request for %s could not be processed, please try again",
-                                     url.c_str());
+                                         "Shutdown request for %s could not be processed, please try again",
+                                         url.c_str());
                         }
 
                         if (_recordingMap.empty())
@@ -540,30 +540,30 @@ void CameraNode::videoWatchDogFunction(void)
                     else
                     {
                         RCLCPP_ERROR(this->get_logger(),
-                                 "Shutdown requested for %s but no recordings found, no action done",
-                                 url.c_str());
+                                     "Shutdown requested for %s but no recordings found, no action done",
+                                     url.c_str());
                     }
                 }
 
-            _recordingShutdownRequestSet.clear();
+                _recordingShutdownRequestSet.clear();
+            }
         }
+        RCLCPP_DEBUG(this->get_logger(), "Stopping video watchdog");
+        return;
     }
-    RCLCPP_DEBUG(this->get_logger(), "Stopping video watchdog");
-    return;
-}
 
-void CameraNode::CB_url_publisher(void)
-{
-    rover_msgs::msg::CameraList msg;
-
+    void CameraNode::CB_url_publisher(void)
     {
-        std::lock_guard<std::mutex> lock(_recordingMapMutex);
+        rover_msgs::msg::CameraList msg;
 
-        for (const auto& recording : _recordingMap)
         {
-            msg.urls.push_back(recording.second.getURL());
-        }
-    }
+            std::lock_guard<std::mutex> lock(_recordingMapMutex);
 
-    _pub_urls->publish(msg);
-}
+            for (const auto& recording : _recordingMap)
+            {
+                msg.urls.push_back(recording.second.getURL());
+            }
+        }
+
+        _pub_urls->publish(msg);
+    }
