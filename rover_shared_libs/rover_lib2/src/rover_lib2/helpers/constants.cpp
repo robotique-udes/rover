@@ -2,6 +2,7 @@
 
 namespace Constants::CameraInfo
 {
+#if defined(__linux__)
     bool getNameFromURL(const std::string& url_, std::string& rName_)
     {
         static std::map<std::string, std::string> cameraNameMap = []()
@@ -25,4 +26,5 @@ namespace Constants::CameraInfo
             return false;
         }
     }
+#endif  // defined(__linux__)
 }  // namespace Constants::CameraInfo

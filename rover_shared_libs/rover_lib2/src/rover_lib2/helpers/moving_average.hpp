@@ -1,8 +1,7 @@
 #ifndef __MOVING_AVERAGE_HPP__
 #define __MOVING_AVERAGE_HPP__
 
-// #include "rover_helper/helpers.hpp"
-#include <stdint.h>
+#include <cstdint>
 
 #warning TODO test
 
