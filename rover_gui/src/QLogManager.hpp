@@ -22,13 +22,11 @@ public:
     
     void logMessage(const QString& level, const QString& component, const QString& message, const QString& target = "global");
     
-    // Toggle methods for each log level (globally)
     void setShowDebug(bool show, const QString& target = "global");
     void setShowInfo(bool show, const QString& target = "global");
     void setShowWarning(bool show, const QString& target = "global");
     void setShowError(bool show, const QString& target = "global");
     
-    // Check if a level is currently visible
     bool isLevelVisible(const QString& level, const QString& target = "global") const;
     
 signals:
@@ -41,7 +39,7 @@ private:
     QLogManager(const QLogManager&) = delete;
     QLogManager& operator=(const QLogManager&) = delete;
     
-    QMap<QString, QSet<QString>> _hiddenLevels; // target -> set of hidden levels
+    QMap<QString, QSet<QString>> _hiddenLevels; 
 };
 
-#endif // Q_LOG_MANAGER_HPP
+#endif 

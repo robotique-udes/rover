@@ -14,7 +14,6 @@ QLogManager::QLogManager() : QObject(nullptr)
 
 void QLogManager::logMessage(const QString& level, const QString& component, const QString& message, const QString& target)
 {
-    // Skip if this level is hidden for this target
     if (!isLevelVisible(level, target)) {
         return;
     }
@@ -66,7 +65,6 @@ void QLogManager::setShowError(bool show, const QString& target)
 
 bool QLogManager::isLevelVisible(const QString& level, const QString& target) const
 {
-    // Check if this target has any hidden levels
     if (!_hiddenLevels.contains(target)) {
         return true;
     }

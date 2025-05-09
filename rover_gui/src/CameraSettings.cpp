@@ -53,24 +53,22 @@ void CameraSettings::setupUI()
 {
     setWindowTitle(tr("Camera Settings"));
     setModal(true);
+    
+    connect(_ui->cameraIpSelector, QOverload<int>::of(&QComboBox::currentIndexChanged),
+            [this](int) {
+                _currentIp = _ui->cameraIpSelector->currentText();
+                if (!_currentIp.isEmpty()) {
+                    loadCameraSettings(_currentIp);
+                }
+            });
 }
 
-void CameraSettings::showSettings(const QString& streamUrl)
+void CameraSettings::showSettings()
 {
-    _streamUrl = streamUrl;
-    _currentIp = extractIpFromUrl(streamUrl);
     
-    if (!_currentIp.isEmpty()) {
-        // Check if IP is already in the list
-        int index = _ui->cameraIpSelector->findText(_currentIp);
-        if (index >= 0) {
-            _ui->cameraIpSelector->setCurrentIndex(index);
-        } else {
-            _ui->cameraIpSelector->addItem(_currentIp);
-            _ui->cameraIpSelector->setCurrentText(_currentIp);
-        }
-        
-        // Load settings for this IP
+    QString currentIp = _ui->cameraIpSelector->currentText();
+    if (!currentIp.isEmpty()) {
+        _currentIp = currentIp;
         loadCameraSettings(_currentIp);
     }
     

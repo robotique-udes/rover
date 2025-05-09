@@ -38,7 +38,7 @@ public:
     ~CameraSettings();
 
     void loadPredefinedIPs(const std::vector<QString>& ips);
-    void showSettings(const QString& streamUrl = QString());
+    void showSettings();
 
 private slots:
     void applyCameraSettings();

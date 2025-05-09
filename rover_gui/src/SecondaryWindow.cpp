@@ -1,16 +1,15 @@
 #include "SecondaryWindow.hpp"
-
 #include "Global/Constant/Keybinding.hpp"
 #include "UI_SecondaryWindow.h" 
+
 #include <QLabel>
 #include <QGroupBox>
-
 #include <QStackedWidget>
 #include <QCloseEvent>
 
 SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_):
-    _closeShortCut(Constants::Keybinding::CLOSE_APP, this),  // First (matches line 44)
-    _ui(new Ui::SecondaryWindow),                            // Second (matches line 48)
+    _closeShortCut(Constants::Keybinding::CLOSE_APP, this),  
+    _ui(new Ui::SecondaryWindow),                            
     _node(guiNode_),
     _cameraSettings(new CameraSettings(this)),
     _currentStreamIndex(0)
@@ -19,11 +18,10 @@ if (!_node) {
     _node = std::make_shared<rclcpp::Node>("secondary_window_node");
 }
 
-_ui->setupUi(this);  // Set up the UI
+_ui->setupUi(this); 
 
 loadPredefinedStreams();
 
-// Initialize streams - must still use heap allocation for these
 for (int i = 0; i < MAX_STREAMS; i++) {
     ActiveStream stream;
     stream.widget = std::make_unique<RtspPlayerWidget>(nullptr, QString("stream_%1").arg(i));
@@ -52,7 +50,7 @@ void SecondaryWindow::closeEvent(QCloseEvent* event_)
 
 SecondaryWindow::~SecondaryWindow()
 {
-    delete _ui;  // Clean up the UI
+    delete _ui; 
 }
 
 void SecondaryWindow::loadPredefinedStreams()
@@ -62,7 +60,6 @@ void SecondaryWindow::loadPredefinedStreams()
         {"Minor", "rtsp://192.168.1.18:554/1/h264minor"}
     };
     
-    // Extract IPs for camera settings
     std::vector<QString> cameraIps;
     for (const auto& stream : _predefinedStreams) {
         QString ip = extractIpFromUrl(stream.url);
@@ -71,30 +68,25 @@ void SecondaryWindow::loadPredefinedStreams()
         }
     }
     
-    // Load IPs to camera settings
     _cameraSettings->loadPredefinedIPs(cameraIps);
 }
 
 void SecondaryWindow::setupUI()
 {
-    // Connect signals
     connect(_ui->layoutSelector, QOverload<int>::of(&QComboBox::currentIndexChanged), 
             this, &SecondaryWindow::onLayoutChange);
     
     connect(_ui->cameraSettingsButton, &QPushButton::clicked,
         this, &SecondaryWindow::showCameraSettings);
 
-    // Connect signals for active streams
     for (int i = 0; i < static_cast<int>(_activeStreams.size()); i++) {
         connect(_activeStreams[i].widget.get(), &RtspPlayerWidget::streamStateChanged,
                 this, [this, i](bool running, int) { 
                     this->onStreamStateChanged(running, static_cast<int>(i)); 
                 });
                 
-        // Add stream selector to each widget
         addStreamSelector(_activeStreams[i].widget.get(), i);
         
-        // Add predefined streams to each player widget
         for (const auto& stream : _predefinedStreams) {
             _activeStreams[i].widget->addPredefinedStream(stream.name, stream.url);
         }
@@ -103,46 +95,28 @@ void SecondaryWindow::setupUI()
 
 void SecondaryWindow::addStreamSelector(RtspPlayerWidget* widget, int position)
 {
-    // Find the existing stream selector
     QComboBox* selector = widget->findChild<QComboBox*>("streamSelector");
     if (!selector) {
         qDebug() << "Warning: Could not find streamSelector in widget" << position;
         return;
     }
     
-    // Clear any existing items
     selector->clear();
-    
-    // Add only the "None" option (let addPredefinedStream handle the rest)
-    selector->addItem("None");
-    
-    // Connect signal for selection changes
     disconnect(selector, QOverload<int>::of(&QComboBox::currentIndexChanged), nullptr, nullptr);
     
-    // Now connect the signal
     connect(selector, QOverload<int>::of(&QComboBox::currentIndexChanged),
             [this, position](int index) {
-                // Check if this is a valid position and selection
                 if (position < 0 || position >= MAX_STREAMS) {
                     return;
                 }
                 
-                if (index <= 0) {
-                    // "None" selected - clear the stream
-                    _activeStreams[position].predefinedStreamIndex = -1;
-                    _activeStreams[position].widget->stopStream();
-                    _activeStreams[position].headerLabel->setText("");
-                } else if (index <= static_cast<int>(_predefinedStreams.size())) {
-                    // A predefined stream was selected
-                    int predefinedIndex = index - 1; // -1 because index 0 is "None"
+                if (index >= 0 && index < static_cast<int>(_predefinedStreams.size())) {
+                    int predefinedIndex = index; 
                     
-                    // Update active stream info
                     _activeStreams[position].predefinedStreamIndex = predefinedIndex;
                     
-                    // Find the URL input field by name
                     QLineEdit* urlInput = _activeStreams[position].widget->findChild<QLineEdit*>("rtspUrlInput");
                     if (urlInput) {
-                        // Set URL text
                         urlInput->setText(_predefinedStreams[predefinedIndex].url);
                     }
                 }
@@ -224,9 +198,8 @@ void SecondaryWindow::updateLayout()
     }
 }
 
-void SecondaryWindow::onLayoutChange(int /* index_ */)
+void SecondaryWindow::onLayoutChange(int)
 {
-    // Update the layout
     updateLayout();
 }
 
@@ -239,7 +212,6 @@ void SecondaryWindow::onStreamStateChanged(bool running, int streamIndex)
 
 void SecondaryWindow::initializeRosServicesForWidgets()
 {
-    // Initialize ROS services for all active stream widgets
     for (auto& stream : _activeStreams) {
         try {
             if (stream.widget && _node) {
@@ -254,26 +226,11 @@ void SecondaryWindow::initializeRosServicesForWidgets()
 
 void SecondaryWindow::showCameraSettings()
 {
-    // Check if we have an active stream to get its URL
-    QString currentStreamUrl;
-    if (_currentStreamIndex >= 0 && _currentStreamIndex < static_cast<int>(_activeStreams.size())) {
-        auto& stream = _activeStreams[_currentStreamIndex];
-        if (stream.isRunning) {
-            QLineEdit* urlInput = stream.widget->findChild<QLineEdit*>("rtspUrlInput");
-            if (urlInput) {
-                currentStreamUrl = urlInput->text();
-            }
-        }
-    }
-    
-    // Show the camera settings dialog with the current stream URL
-    _cameraSettings->showSettings(currentStreamUrl);
+    _cameraSettings->showSettings();
 }
 
-// Helper function to extract IP from URL
 QString SecondaryWindow::extractIpFromUrl(const QString& url)
 {
-    // Simple regex to extract IP address from RTSP URL
     QRegularExpression regex("rtsp://([^:/]+)");
     QRegularExpressionMatch match = regex.match(url);
     if (match.hasMatch()) {

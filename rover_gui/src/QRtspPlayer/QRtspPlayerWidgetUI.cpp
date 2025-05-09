@@ -1,5 +1,6 @@
 #include "QRtspPlayer/QRtspPlayerWidgetHeader.hpp"
 #include "QLoggingMacros.hpp"
+
 #include <QStyle>
 #include <QPainter>
 #include <QMessageBox>
