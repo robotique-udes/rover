@@ -22,7 +22,7 @@ class CanMaster2 : public rclcpp::Node
         std::memcpy(data.data() + 2, &angle, sizeof(float));
 
         canMsg_ = RoverCan2::CanMsg(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_FRONT, data.data(), 6);
-        canMsg_.setMsgID(RoverCan2::Constant::eMsgId::CAM_POSITION_CMD);
+        canMsg_.setMsgID(RoverCan2::Constant::eMsgId::TEST_MSG);
 
         timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&CanMaster2::timerCallback, this));
         updateTimer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&CanMaster2::updateCallback, this));

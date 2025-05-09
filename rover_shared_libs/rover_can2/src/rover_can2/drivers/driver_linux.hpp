@@ -111,11 +111,11 @@ namespace RoverCan2::Drivers
             int bytes_sent = write(_socket_fd, &frame, sizeof(struct can_frame));
             if (bytes_sent == sizeof(struct can_frame))
             {
-                LOG_DEBUG(Logger::Nodes::DriverLinux,
-                          "Msg queued for transmission successfully, ID: %u, MsgID: %u, ContentID %u",
-                          canMsg_.getCanID(),
-                          canMsg_.getMsgID(),
-                          canMsg_.getMsgContentID());
+                LOG_INFO(Logger::Nodes::DriverLinux,
+                         "Msg queued for transmission successfully, ID: %u, MsgID: %u, ContentID %u",
+                         canMsg_.getCanID(),
+                         canMsg_.getMsgID(),
+                         canMsg_.getMsgContentID());
                 return true;
             }
             else if (bytes_sent == -1)
@@ -131,8 +131,11 @@ namespace RoverCan2::Drivers
                     case ENOBUFS:
                         LOG_WARN(Logger::Nodes::DriverLinux, "TX buffer full: errno=%d (%s)", errno, strerror(errno));
                         break;
-                    case ENETDOWN:
-                        LOG_ERROR(Logger::Nodes::DriverLinux, "Network is down: errno=%d (%s)", errno, strerror(errno));
+                    case ENXIO:
+                        LOG_ERROR(Logger::Nodes::DriverLinux,
+                                  "Device not found (e.g., CAN adapter unplugged): errno=%d (%s)",
+                                  errno,
+                                  strerror(errno));
                         break;
                     case EAGAIN:
                         LOG_WARN(Logger::Nodes::DriverLinux,
