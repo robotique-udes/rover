@@ -264,17 +264,27 @@ void DDBControlNode::callbackDdbStatus(void)
 {
     rover_msgs::msg::DDBControl msg;
 
-    for (size_t i = 0; i < MAX_CHANNELS; i++)
-    {
-        msg.outputstate.push_back(static_cast<uint8_t>(_channelInfo[i].state));
-        msg.dutycycle.push_back(_channelInfo[i].dutyCycle);
-        msg.frequency.push_back(_channelInfo[i].frequency);
-    }
+    msg.bank0_ch0_onstate = TO_UNDERLYING(_channelInfo[0].state);
+    msg.bank0_ch0_duty = _channelInfo[0].dutyCycle;
+    msg.bank0_ch0_freq = _channelInfo[0].frequency;
 
-    for (size_t i = 0; i < MAX_CHANNELS; i++)
-    {
-        msg.outputstate.push_back(static_cast<uint8_t>(_channelInfo2[i]));
-    }
+    msg.bank0_ch1_onstate = TO_UNDERLYING(_channelInfo[1].state);
+    msg.bank0_ch1_duty = _channelInfo[1].dutyCycle;
+    msg.bank0_ch1_freq = _channelInfo[1].frequency;
+
+    msg.bank0_ch2_onstate = TO_UNDERLYING(_channelInfo[2].state);
+    msg.bank0_ch2_duty = _channelInfo[2].dutyCycle;
+    msg.bank0_ch2_freq = _channelInfo[2].frequency;
+
+    msg.bank0_ch3_onstate = TO_UNDERLYING(_channelInfo[3].state);
+    msg.bank0_ch3_duty = _channelInfo[3].dutyCycle;
+    msg.bank0_ch3_freq = _channelInfo[3].frequency;
+
+    msg.bank1_ch0_onstate = TO_UNDERLYING(_channelInfo2[0]);
+    msg.bank1_ch1_onstate = TO_UNDERLYING(_channelInfo2[1]);
+    msg.bank1_ch2_onstate = TO_UNDERLYING(_channelInfo2[2]);
+    msg.bank1_ch3_onstate = TO_UNDERLYING(_channelInfo2[3]);
+
 
     _pub_DDB_status->publish(msg);
 }
