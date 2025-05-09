@@ -1,6 +1,7 @@
 #ifndef DRIVER_LINUX_HPP
 #define DRIVER_LINUX_HPP
 
+#include "rover_can2/constant.hpp"
 #include "rover_can2/drivers/driver_base.hpp"
 #include "rover_lib2/helpers/log.hpp"
 #include "rover_lib2/helpers/circular_buffer.hpp"
@@ -14,6 +15,16 @@
 #include <net/if.h>
 #include <sys/ioctl.h>
 #include <unistd.h>
+
+/*
+TODO
+
+- Handle deconnection and reconnection of USB to CAN device.
+- Send msg
+- Receive msg
+- get msg in circular buffer
+
+*/
 
 DEFINE_LOG_NODE(DriverLinux, Logger::eNodeState::ON);
 
@@ -54,25 +65,98 @@ namespace RoverCan2::Drivers
             receiveMsg(outMsg);
         }
 
-        bool _sendMsg(const CanMsg& msg_)
+        bool _sendMsg(const CanMsg& canMsg_)
         {
-            struct can_frame frame
+            if (_socket_fd < 0)
             {
-            };
-            frame.can_id = static_cast<uint32_t>(msg_.getCanID());
-            frame.can_dlc = msg_.dataLength;
-
-            std::memcpy(frame.data, msg_.msgData.data(), frame.can_dlc);
-
-            int bytes_sent = write(_socket_fd, &frame, sizeof(struct can_frame));
-            if (bytes_sent != sizeof(struct can_frame))
-            {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Failed to send CAN message");
+                LOG_ERROR(Logger::Nodes::DriverLinux, "Invalid socket file descriptor: %d", _socket_fd);
                 return false;
             }
 
-            LOG_INFO(Logger::Nodes::DriverLinux, "Sent CAN message with ID: %i", frame.can_id);
-            return true;
+            if (_state != eState::RUNNING)
+            {
+                LOG_WARN(Logger::Nodes::DriverLinux,
+                         "Can't send msg, driver is not in a valid state to send messages. Expected state >= %u but current "
+                         "state is: %u. Msg dropped",
+                         TO_UNDERLYING(eState::RUNNING),
+                         TO_UNDERLYING(_state));
+                return false;
+            }
+
+            struct can_frame frame{};
+            frame.can_id = static_cast<uint32_t>(canMsg_.getCanID());
+            frame.can_dlc = canMsg_.dataLength;
+
+            if (frame.can_dlc > Constant::CAN_MAX_DATA_LENGTH)
+            {
+                LOG_ERROR(Logger::Nodes::DriverLinux,
+                          "Implementation error, can msg data size (%u) is bigger than max (%u)",
+                          frame.can_dlc,
+                          Constant::CAN_MAX_DATA_LENGTH);
+
+                return false;
+            }
+            else if (frame.can_dlc < TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA))
+            {
+                LOG_ERROR(Logger::Nodes::DriverLinux,
+                          "Implementation error, can msg data size (%u) is lower than min (%u)",
+                          frame.can_dlc,
+                          TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA));
+
+                return false;
+            }
+
+            std::memcpy(frame.data, canMsg_.msgData.data(), frame.can_dlc);
+
+            int bytes_sent = write(_socket_fd, &frame, sizeof(struct can_frame));
+            if (bytes_sent == sizeof(struct can_frame))
+            {
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
+                          "Msg queued for transmission successfully, ID: %u, MsgID: %u, ContentID %u",
+                          canMsg_.getCanID(),
+                          canMsg_.getMsgID(),
+                          canMsg_.getMsgContentID());
+                return true;
+            }
+            else if (bytes_sent == -1)
+            {
+                switch (errno)
+                {
+                    case EINVAL:
+                        LOG_ERROR(Logger::Nodes::DriverLinux,
+                                  "Invalid CAN frame arguments: errno=%d (%s)",
+                                  errno,
+                                  strerror(errno));
+                        break;
+                    case ENOBUFS:
+                        LOG_WARN(Logger::Nodes::DriverLinux, "TX buffer full: errno=%d (%s)", errno, strerror(errno));
+                        break;
+                    case ENETDOWN:
+                        LOG_ERROR(Logger::Nodes::DriverLinux, "Network is down: errno=%d (%s)", errno, strerror(errno));
+                        break;
+                    case EAGAIN:
+                        LOG_WARN(Logger::Nodes::DriverLinux,
+                                 "Non-blocking socket, no buffer space available: errno=%d (%s)",
+                                 errno,
+                                 strerror(errno));
+                        break;
+                    default:
+                        LOG_ERROR(Logger::Nodes::DriverLinux,
+                                  "Unknown error sending CAN frame: errno=%d (%s)",
+                                  errno,
+                                  strerror(errno));
+                        break;
+                }
+            }
+            else
+            {
+                // Partial frame write (should not happen on RAW CAN)
+                LOG_ERROR(Logger::Nodes::DriverLinux,
+                          "Partial CAN frame sent: %d/%lu bytes",
+                          bytes_sent,
+                          sizeof(struct can_frame));
+            }
+            return false;
         }
 
         bool receiveMsg(RoverCan2::CanMsg& outMsg)
@@ -119,9 +203,7 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
-            struct sockaddr_can addr
-            {
-            };
+            struct sockaddr_can addr{};
             addr.can_family = AF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
 
