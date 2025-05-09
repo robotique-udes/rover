@@ -61,8 +61,9 @@ namespace RoverCan2::Drivers
 
         void __update(void)
         {
-            RoverCan2::CanMsg outMsg;
-            receiveMsg(outMsg);
+            if (_state == eState::UNINSTALLED)
+            {
+            }
         }
 
         bool _sendMsg(const CanMsg& canMsg_)
@@ -190,36 +191,55 @@ namespace RoverCan2::Drivers
             return true;
         }
 
+      private:
         bool createCanSocket()
         {
             if ((_socket_fd = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Impossible to create can socket !");
+                LOG_ERROR(Logger::Nodes::DriverLinux, "Failed to create CAN socket: errno=%d (%s)", errno, strerror(errno));
                 return false;
             }
 
             struct ifreq ifr;
-            std::strncpy(ifr.ifr_name, "canRovus", IFNAMSIZ);
+            std::strncpy(ifr.ifr_name, "canRovus", IFNAMSIZ - 1);
             if (ioctl(_socket_fd, SIOCGIFINDEX, &ifr) < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Failed to get interface index");
+                LOG_ERROR(Logger::Nodes::DriverLinux,
+                          "Failed to get CAN interface index for '%s': errno=%d (%s)",
+                          ifr.ifr_name,
+                          errno,
+                          strerror(errno));
+                cleanupCanSocket();
                 return false;
             }
 
             struct sockaddr_can addr{};
-            addr.can_family = AF_CAN;
+            addr.can_family = PF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
 
             if (bind(_socket_fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Failed to bind CAN socket");
+                LOG_ERROR(Logger::Nodes::DriverLinux,
+                          "Failed to bind CAN socket to interface '%s': errno=%d (%s)",
+                          ifr.ifr_name,
+                          errno,
+                          strerror(errno));
+                cleanupCanSocket();
                 return false;
             }
 
             return true;
         }
 
-      private:
+        void cleanupCanSocket(void)
+        {
+            if (_socket_fd >= 0)
+            {
+                close(_socket_fd);
+                _socket_fd = -1;
+            }
+        }
+
         int _socket_fd = -1;
 
         eState _state;
