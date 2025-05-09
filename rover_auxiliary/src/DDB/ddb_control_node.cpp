@@ -285,7 +285,6 @@ void DDBControlNode::callbackDdbStatus(void)
     msg.bank1_ch2_onstate = TO_UNDERLYING(_channelInfo2[2]);
     msg.bank1_ch3_onstate = TO_UNDERLYING(_channelInfo2[3]);
 
-
     _pub_DDB_status->publish(msg);
 }
 
