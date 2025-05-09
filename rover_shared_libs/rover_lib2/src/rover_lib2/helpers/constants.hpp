@@ -4,6 +4,7 @@
 #if defined(__linux__)
 #include <map>
 #include <string>
+#include <rclcpp/qos.hpp>
 #endif  // defined(__linux__)
 
 namespace Constants::CameraInfo
