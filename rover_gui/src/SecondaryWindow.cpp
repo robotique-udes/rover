@@ -1,26 +1,44 @@
 #include "SecondaryWindow.hpp"
 
 #include "Global/Constant/Keybinding.hpp"
-#include "UI_SecondaryWindow.h" // Include the generated UI header
+#include "UI_SecondaryWindow.h" 
 #include <QLabel>
 #include <QGroupBox>
 
 #include <QStackedWidget>
 #include <QCloseEvent>
 
-//WARNING node became guiNode_ with merge
 SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_):
-    QMainWindow(nullptr),
-    _centralWidget(this),
-    _layout(&_centralWidget),
-    _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
-    _videoPlayerWidget(guiNode_, this)
+    _closeShortCut(Constants::Keybinding::CLOSE_APP, this),  // First (matches line 44)
+    _ui(new Ui::SecondaryWindow),                            // Second (matches line 48)
+    _node(guiNode_),
+    _cameraSettings(new CameraSettings(this)),
+    _currentStreamIndex(0)
 {
-    _layout.addWidget(&_videoPlayerWidget);
-    this->setCentralWidget(&_centralWidget);
+if (!_node) {
+    _node = std::make_shared<rclcpp::Node>("secondary_window_node");
+}
 
-    connect(this, &QWidget::destroyed, qApp, &QCoreApplication::quit);
-    connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
+_ui->setupUi(this);  // Set up the UI
+
+loadPredefinedStreams();
+
+// Initialize streams - must still use heap allocation for these
+for (int i = 0; i < MAX_STREAMS; i++) {
+    ActiveStream stream;
+    stream.widget = std::make_unique<RtspPlayerWidget>(nullptr, QString("stream_%1").arg(i));
+    stream.headerLabel = std::make_unique<QLabel>();
+    stream.predefinedStreamIndex = -1;
+    stream.isRunning = false;
+    _activeStreams.push_back(std::move(stream));
+}
+
+connect(this, &QWidget::destroyed, qApp, &QCoreApplication::quit);
+connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
+
+setupUI();
+initializeRosServicesForWidgets();
+updateLayout();
 }
 
 void SecondaryWindow::closeEvent(QCloseEvent* event_)
@@ -30,34 +48,6 @@ void SecondaryWindow::closeEvent(QCloseEvent* event_)
         event_->accept();
     }
     QApplication::closeAllWindows();
-}
-
-    _ui(new Ui::SecondaryWindow),  // Create the UI
-    _node(node),
-    _cameraSettings(new CameraSettings(this)),  // Create the camera settings dialog
-    _currentStreamIndex(0)
-{
-    if (!_node) {
-        _node = std::make_shared<rclcpp::Node>("secondary_window_node");
-    }
-    
-    _ui->setupUi(this);  // Set up the UI
-    
-    loadPredefinedStreams();
-    
-    // Initialize streams - must still use heap allocation for these
-    for (int i = 0; i < MAX_STREAMS; i++) {
-        ActiveStream stream;
-        stream.widget = std::make_unique<RtspPlayerWidget>(nullptr, QString("stream_%1").arg(i));
-        stream.headerLabel = std::make_unique<QLabel>();
-        stream.predefinedStreamIndex = -1;
-        stream.isRunning = false;
-        _activeStreams.push_back(std::move(stream));
-    }
-    
-    setupUI();
-    initializeRosServicesForWidgets();
-    updateLayout();
 }
 
 SecondaryWindow::~SecondaryWindow()
