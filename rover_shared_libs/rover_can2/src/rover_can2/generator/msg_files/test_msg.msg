@@ -1,0 +1,2 @@
+float cmd;
+bool closeLoop;

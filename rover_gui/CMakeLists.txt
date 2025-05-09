@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(rover_gui)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 23)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -38,6 +38,7 @@ include_directories(
   ${GSTREAMER_INCLUDE_DIRS}
   ${pybind11_INCLUDE_DIRS}
   ${Python3_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
 )
 
 link_directories(${GSTREAMER_LIBRARY_DIRS})
@@ -49,6 +50,8 @@ add_custom_command(
     WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
     COMMENT "Generating UI files..."
 )
+
+add_subdirectory(../rover_shared_libs/ .build)
 
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
@@ -138,22 +141,31 @@ add_executable(main_gui src/gui.cpp
                         src/QRtspPlayer/QGStreamerWorker.hpp
                         src/QRtspPlayer/QLoggingMacros.hpp
                         src/QRtspPlayer/QRtspPlayerWidgetServices.cpp
+                        src/QVideoPlayer/QVideoManagerWidget.cpp
+                        src/QVideoPlayer/QVideoManagerWidget.hpp
+                        src/QVideoPlayer/QVideoPlayerWidget.cpp
+                        src/QVideoPlayer/QVideoPlayerWidget.hpp
+                        src/QVideoPlayer/Worker/QPlayerWorker.hpp
+                        src/QVideoPlayer/Worker/QPlayerWorker.cpp
 
                         ${RTSP_RESOURCES}
                         )
 add_dependencies(main_gui run_generate_ui copy_python_module)
 
-target_link_libraries(main_gui 
-                      Qt6::Widgets
-                      Qt6::Gui
-                      ${LIBSSH_LIBRARY}
-                      ${GSTREAMER_LIBRARIES}
-                      ipcamera_api)  # Link with our IPCamera library
 
+
+target_link_libraries(main_gui 
+                  Qt6::Widgets
+                  Qt6::Gui
+                  ${LIBSSH_LIBRARY}
+                  ${GSTREAMER_LIBRARIES}
+                  ipcamera_api
+                  rover_shared_libs)  # Link with our IPCamera library 
+                                   
 ament_target_dependencies(main_gui
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
+                            rclcpp
+                            rover_msgs
+                            rcl_interfaces)
 
 # Install Python module alongside the executable
 install(FILES src/Global/Helpers/ipcamera_api.py

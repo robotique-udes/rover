@@ -12,8 +12,6 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "rovus_lib/macros.h"
-
 namespace QHelper
 {
 
@@ -148,5 +146,11 @@ namespace QHelper
         }
 
         return fileExtension;
+    }
+
+    std::string getCurrentUserName(void)
+    {
+        QString username = QDir(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).dirName();
+        return username.toStdString();
     }
 }  // namespace QHelper

@@ -1,3 +1,0 @@
-uint8_t cmd;
-uint8_t current_sample;
-bool dig;

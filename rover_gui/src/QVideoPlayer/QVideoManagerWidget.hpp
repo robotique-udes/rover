@@ -5,7 +5,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
-#include "rovus_lib/camera_info.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
@@ -14,14 +14,18 @@ class QVideoManagerWidget : public QWidget
 {
     Q_OBJECT
 
+    static constexpr const char* SERVICE_ARUCO_NAME = "/rover/cameras/aruco_detection_management";
+    static constexpr const char* TOPIC_ARUCO_DETECTIONS = "/rover/cameras/aruco_detected";
+
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
-    static constexpr const char* CAM_1_NAME = "Main";
-    static constexpr const char* CAM_2_NAME = "Antenna";
-    static constexpr const char* CAM_3_NAME = "Odometry";
-    static constexpr const char* CAM_4_NAME = "Gripper1";
-    static constexpr const char* CAM_5_NAME = "Gripper2";
-    static constexpr const char* CAM_6_NAME = "";
+    static constexpr std::array<const char*, 5> CAMERA_NAME_ORDER = {
+        "Main",
+        "Antenna",
+        "Front-Side",
+        "Arm-Top",
+        "Arm-Side",
+    };
 
   public:
     QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
@@ -47,13 +51,7 @@ class QVideoManagerWidget : public QWidget
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
     rclcpp::TimerBase::SharedPtr _timer_detectionManagerUpdate;
 
-    std::array<std::shared_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
-    std::array<std::string, 6> _cameras_urls = {CameraInfo::CameraIP.at(CAM_1_NAME),
-                                                CameraInfo::CameraIP.at(CAM_2_NAME),
-                                                CameraInfo::CameraIP.at(CAM_3_NAME),
-                                                CameraInfo::CameraIP.at(CAM_4_NAME),
-                                                CameraInfo::CameraIP.at(CAM_5_NAME),
-                                                ""};
+    std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };
 
 #endif  // QVIDEO_PLAYER_HPP

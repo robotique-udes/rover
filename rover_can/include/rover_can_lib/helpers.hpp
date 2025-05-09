@@ -9,7 +9,7 @@
 #include "rover_helpers/macros.hpp"
 #elif defined(__linux__)  // defined(ESP32)
 #include "rclcpp/rclcpp.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 #include <linux/can.h>
 #endif  // defined(ESP32)
 

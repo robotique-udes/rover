@@ -14,6 +14,7 @@
 namespace Ui {
     class SecondaryWindow; // Forward declaration of the UI class
 }
+#include <QShortcut>
 
 class SecondaryWindow : public QMainWindow
 {
@@ -31,6 +32,7 @@ private slots:
 private:
     // UI setup methods
     void setupUI(void);
+    void closeEvent(QCloseEvent* event) override;
     void loadPredefinedStreams(void);
     void initializeStreams(void);
     void updateLayout(void);
@@ -39,6 +41,7 @@ private:
     
     // Stream container helpers
     QWidget* createStreamContainer(int streamIndex_);
+    QShortcut _closeShortCut;
     void addStreamSelector(RtspPlayerWidget* widget_, int position_);
     
     // UI member
