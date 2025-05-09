@@ -132,17 +132,17 @@ bool DDBControlNode::setChannelOutput(uint8_t channelID_, eOutputState desiredSt
     {
         case eOutputState::ON:
             _channelInfo[channelID_].state = eOutputState::ON;
-            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as ON", channelID_);
+            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as ON", channelID_);
             break;
 
         case eOutputState::OFF:
             _channelInfo[channelID_].state = eOutputState::OFF;
-            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as OFF", channelID_);
+            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as OFF", channelID_);
             break;
 
         case eOutputState::PWM:
             _channelInfo[channelID_].state = eOutputState::PWM;
-            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as PWM", channelID_);
+            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as PWM", channelID_);
             break;
     }
     return true;
@@ -175,7 +175,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
     if (this->setChannelOutput(request_.channel_id, wantedState))
     {
         std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
-        RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
+        RCLCPP_DEBUG(this->get_logger(), "%s", msg.c_str());
         response_.success = true;
         response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
         response_.status = msg;
@@ -243,7 +243,7 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
         {
             std::string msg = "PWM values changed for channel #" + std::to_string(request_.channel_id) + "\nDuty cycle: "
                               + std::to_string(request_.duty_cycle) + "\nFrequency: " + std::to_string(request_.frequency);
-            RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
+            RCLCPP_DEBUG(this->get_logger(), "%s", msg.c_str());
             response_.success = true;
             response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
             response_.status = msg;
@@ -294,17 +294,17 @@ bool DDBControlNode::setChannelOutput2(uint8_t channelID_, eOutputState desiredS
     {
         case eOutputState::ON:
             _channelInfo2[channelID_] = eOutputState::ON;
-            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as ON", channelID_);
+            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as ON", channelID_);
             break;
 
         case eOutputState::OFF:
             _channelInfo2[channelID_] = eOutputState::OFF;
-            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as OFF", channelID_);
+            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as OFF", channelID_);
             break;
 
         case eOutputState::PWM:
             _channelInfo2[channelID_] = eOutputState::PWM;
-            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as PWM", channelID_);
+            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as PWM", channelID_);
             break;
     }
     return true;
@@ -318,7 +318,7 @@ void DDBControlNode::setStateLogic2(const rover_msgs::srv::DDBControl::Request& 
     if (this->setChannelOutput2(request_.channel_id, wantedState))
     {
         std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
-        RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
+        RCLCPP_DEBUG(this->get_logger(), "%s", msg.c_str());
         response_.success = true;
         response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
         response_.status = msg;
