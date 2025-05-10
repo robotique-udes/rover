@@ -7,29 +7,25 @@
 
 #include <QWidget>
 #include <QWebChannel>
-#include <QThread>
-#include <QMetaObject>
 #include <QListWidgetItem>
+#include <QWebEngineView>
 #include <QMessageBox>
-#include <QDebug>
 #include <QUuid>
-#include <QtCore>
-
-struct Waypoint
-{
-    QString name;
-    double latitude;
-    double longitude;
-    QString id;
-};
 
 class QNavigation : public QWidget
 {
     Q_OBJECT
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
-    ~QNavigation();
 
+    struct Waypoint
+    {
+        QString name;
+        double latitude;
+        double longitude;
+        QString id;
+    };
+    
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
     void sendGoal(QString name, double latitude, double longitude, QString id);
@@ -40,29 +36,25 @@ class QNavigation : public QWidget
     void deleteWaypoint(QString waypointId_);
 
   public slots:
-    void pathDistanceCalculated(double distance_);
+    void pathDistanceCalculated(double distanceMeters_);
+    void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
     void onCalculatePathClicked(void);
     void onWaypointSelected(QListWidgetItem* item_);
     void onClearWaypointsClicked(void);
     void onClearPathClicked(void);
     void onDeleteWaypointClicked(void);
-    void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
-    // void messageHandler(QtMsgType type_, const QMessageLogContext& context_, const QString& msg_);
+    void onSetGoalClicked(void);
+    void onWebViewLoadFinished(bool ok);
+    void onGpsMessage(const rover_msgs::msg::Gps::SharedPtr msg_);
 
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
 
     QWebChannel* _webChannel;
-    QLineEdit _lineEditLatitude;
-    QLineEdit _lineEditLongitude;
-    QPushButton _pushButtonSetGoal;
-    QPushButton _pushButtonCalculatePath;
-    QLabel _labelDistance;
+    std::shared_ptr<rclcpp::Node> _node;
+    Ui::Navigation _ui;
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
-
-    std::shared_ptr<rclcpp::Node> _node;
-    Ui::Navigation* _ui;
 
     double _currentLat = 0.0F;
     double _currentLon = 0.0F;
@@ -70,5 +62,7 @@ class QNavigation : public QWidget
 
     QList<Waypoint> _waypoints;
 };
+
+void messageHandler(QtMsgType type_, const QMessageLogContext& context_, const QString& msg_);
 
 #endif  // QNAVIGATION_HPP

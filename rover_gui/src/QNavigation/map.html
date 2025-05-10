@@ -34,7 +34,7 @@
       left: 50%;
       transform: translate(-50%, -50%);
       background-color: rgba(255, 0, 0, 0.7);
-      color: white;
+      color: gray;
       padding: 20px;
       border-radius: 8px;
       text-align: center;
@@ -54,7 +54,6 @@
   </div>
 
   <script>
-    // Global variables
     let viewer;
     let currentPosition = { latitude: 0.0, longitude: 0.0 };
     let pathEntity = null;
@@ -99,6 +98,7 @@
     }
 
     function setupCesiumMap() {
+      // Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyODRhYTgwMi1hNzk2LTRiMTgtYjc3Yy1mMTY2ZTQ0ZmU5N2UiLCJpZCI6Mjk4ODk2LCJpYXQiOjE3NDYxNDc2NjB9.GetTldL9Qxi4_Qyw8fPEGdkAH-1veIPLdltlKYF-VVw'
       viewer = new Cesium.Viewer("cesiumContainer", {
         terrain: Cesium.Terrain.fromWorldTerrain({
           requestWaterMask: true,
@@ -194,27 +194,62 @@
           
           isAddingWaypoint = true;
           const id = `waypoint_${Date.now()}`;
-          const existingWaypoint = waypointEntities.find(wp => 
-            wp.position.equals(Cesium.Cartesian3.fromDegrees(lon, lat))
+          
+          // Check if waypoint with same name already exists
+          const existingNameWaypoint = waypointEntities.find(wp => 
+            wp.name === name
           );
           
-          if (!existingWaypoint) {
-            addWaypoint(lat, lon, name, id);
-            
-            viewer.camera.flyTo({
-              destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
-              complete: function() {
-                viewer.scene.requestRender();
-                isAddingWaypoint = false;
-              }
+          if (existingNameWaypoint) {
+            // Alert user about duplicate name
+            Swal.fire({
+              title: 'Duplicate Waypoint',
+              text: `A waypoint named "${name}" already exists. Please use a different name.`,
+              icon: 'warning',
+              confirmButtonText: 'OK'
             });
-            
-            // Only notify the bridge if this is a new waypoint
-            if (window.bridge && window.bridge.waypointCreated) {
-              window.bridge.waypointCreated(name, lat, lon, id);
-            }
-          } else {
             isAddingWaypoint = false;
+            return;
+          }
+          
+          // Check if waypoint at same location exists
+          const existingLocationWaypoint = waypointEntities.find(wp => {
+            const wpPosition = wp.position.getValue(Cesium.JulianDate.now());
+            const wpCartographic = Cesium.Cartographic.fromCartesian(wpPosition);
+            const wpLat = Cesium.Math.toDegrees(wpCartographic.latitude);
+            const wpLon = Cesium.Math.toDegrees(wpCartographic.longitude);
+            
+            // Use small epsilon for floating point comparison
+            const epsilon = 0.00001;
+            return Math.abs(wpLat - lat) < epsilon && Math.abs(wpLon - lon) < epsilon;
+          });
+          
+          if (existingLocationWaypoint) {
+            // Alert user about duplicate location
+            Swal.fire({
+              title: 'Duplicate Location',
+              text: `A waypoint already exists at this location. Please choose a different location.`,
+              icon: 'warning',
+              confirmButtonText: 'OK'
+            });
+            isAddingWaypoint = false;
+            return;
+          }
+          
+          // If we get here, waypoint is unique - add it
+          addWaypoint(lat, lon, name, id);
+          
+          viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
+            complete: function() {
+              viewer.scene.requestRender();
+              isAddingWaypoint = false;
+            }
+          });
+          
+          // Notify the bridge about the new waypoint
+          if (window.bridge && window.bridge.waypointCreated) {
+            window.bridge.waypointCreated(name, lat, lon, id);
           }
         });
 
@@ -344,21 +379,15 @@
     }
 
     function addWaypoint(lat, lon, name, waypointId) {
-      // Check if waypoint already exists at this location
-      const existingWaypoint = waypointEntities.find(wp => 
-        Cesium.Cartesian3.equals(
-          wp.position.getValue(),
-          Cesium.Cartesian3.fromDegrees(lon, lat)
-        )
-      );
-      
-      if (existingWaypoint) {
-        console.log("Waypoint already exists at this location:", existingWaypoint.id);
-        return existingWaypoint;
-      }
-
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
+      
+      // Check for duplicate name before adding
+      const existingNameWaypoint = waypointEntities.find(wp => wp.name === waypointName);
+      if (existingNameWaypoint) {
+        console.log("Waypoint with name already exists:", waypointName);
+        return null;
+      }
 
       const waypointEntity = viewer.entities.add({
         id: id,
@@ -399,14 +428,32 @@
         cancelButtonText: 'Cancel',
         inputValidator: (value) => {
           if (!value) return 'Please enter a name';
+          
+          // Check for duplicate name
+          const existingNameWaypoint = waypointEntities.find(wp => wp.name === value);
+          if (existingNameWaypoint) {
+            return 'A waypoint with this name already exists. Please choose a different name.';
+          }
         }
       }).then((result) => {
         if (result.isConfirmed) {
           const name = result.value;
           const id = `waypoint_${Date.now()}`;
+          
+          // Check for duplicate name one more time (just in case)
+          const existingNameWaypoint = waypointEntities.find(wp => wp.name === name);
+          if (existingNameWaypoint) {
+            Swal.fire({
+              title: 'Error',
+              text: 'A waypoint with this name already exists. Please try again with a different name.',
+              icon: 'error'
+            });
+            return;
+          }
+          
           const waypoint = addWaypoint(lat, lon, name, id);
-
-          if (window.bridge && window.bridge.waypointCreated) {
+          
+          if (waypoint && window.bridge && window.bridge.waypointCreated) {
             window.bridge.waypointCreated(name, lat, lon, id);
           }
         }
