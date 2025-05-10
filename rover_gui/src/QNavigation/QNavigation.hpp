@@ -25,7 +25,7 @@ class QNavigation : public QWidget
         double longitude;
         QString id;
     };
-    
+
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
     void sendGoal(QString name, double latitude, double longitude, QString id);
@@ -46,6 +46,7 @@ class QNavigation : public QWidget
     void onSetGoalClicked(void);
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps::SharedPtr msg_);
+    // void messageHandler(QtMsgType, const QMessageLogContext&, const QString&);
 
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
@@ -60,9 +61,11 @@ class QNavigation : public QWidget
     double _currentLon = 0.0F;
     double _currentHeading = 0.0F;
 
+    QtMessageHandler _qtMessageHandler;
+
     QList<Waypoint> _waypoints;
 };
 
-void messageHandler(QtMsgType type_, const QMessageLogContext& context_, const QString& msg_);
+// void messageHandler(QtMsgType, const QMessageLogContext&, const QString&);
 
 #endif  // QNAVIGATION_HPP

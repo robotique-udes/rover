@@ -1,12 +1,6 @@
 #include "QNavigation.hpp"
 
-// This function is used to silence unnecessary logs from QWebViewContainer
-void messageHandler(QtMsgType type_, const QMessageLogContext& context_, const QString& msg_)
-{
-    Q_UNUSED(type_)
-    Q_UNUSED(context_)
-    Q_UNUSED(msg_)
-}
+void messageHandler(QtMsgType, const QMessageLogContext&, const QString&) {};
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -94,6 +88,9 @@ void QNavigation::onSetGoalClicked()
     _ui.inputLatitude->clear();
     _ui.inputLongitude->clear();
 }
+
+// void QNavigation::messageHandler(QtMsgType, const QMessageLogContext&, const QString&) {};
+
 
 void QNavigation::pathDistanceCalculated(double distanceMeters_)
 {
@@ -252,5 +249,7 @@ void QNavigation::onClearPathClicked(void)
 
     emit clearPath();
 }
+
+// void messageHandler(QtMsgType, const QMessageLogContext&, const QString&) {}
 
 #include "QNavigation.moc"
