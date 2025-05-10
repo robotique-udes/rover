@@ -1,4 +1,5 @@
 #include "SecondaryWindow.hpp"
+#include "../../rover_shared_libs/rover_lib2/src/rover_lib2/helpers/constants.hpp"
 #include "Global/Constant/Keybinding.hpp"
 #include "UI_SecondaryWindow.h" 
 
@@ -55,20 +56,18 @@ SecondaryWindow::~SecondaryWindow()
 
 void SecondaryWindow::loadPredefinedStreams()
 {
-    _predefinedStreams = {
-        {"Major", "rtsp://192.168.1.18:554/1/h264major"},
-        {"Minor", "rtsp://192.168.1.18:554/1/h264minor"}
-    };
-    
-    std::vector<QString> cameraIps;
-    for (const auto& stream : _predefinedStreams) {
-        QString ip = extractIpFromUrl(stream.url);
-        if (!ip.isEmpty() && std::find(cameraIps.begin(), cameraIps.end(), ip) == cameraIps.end()) {
-            cameraIps.push_back(ip);
-        }
+    for (const auto& [name, url] : Constants::CameraInfo::CAMERA_URL_MAP) {
+        _predefinedStreams.push_back({QString::fromStdString(name), QString::fromStdString(url)});
     }
     
-    _cameraSettings->loadPredefinedIPs(cameraIps);
+    // Create a vector of just the URLs to pass to loadPredefinedIPs
+    std::vector<QString> urls;
+    for (const auto& stream : _predefinedStreams) {
+        urls.push_back(stream.url);
+    }
+    
+    // Now pass the compatible vector type
+    _cameraSettings->loadPredefinedIPs(urls);
 }
 
 void SecondaryWindow::setupUI()
@@ -227,14 +226,4 @@ void SecondaryWindow::initializeRosServicesForWidgets()
 void SecondaryWindow::showCameraSettings()
 {
     _cameraSettings->showSettings();
-}
-
-QString SecondaryWindow::extractIpFromUrl(const QString& url)
-{
-    QRegularExpression regex("rtsp://([^:/]+)");
-    QRegularExpressionMatch match = regex.match(url);
-    if (match.hasMatch()) {
-        return match.captured(1);
-    }
-    return QString();
 }

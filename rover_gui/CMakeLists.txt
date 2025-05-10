@@ -19,6 +19,8 @@ pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gs
 find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
 find_package(pybind11 REQUIRED)
 
+add_subdirectory(../rover_shared_libs/ .build)
+
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 
@@ -51,7 +53,7 @@ add_custom_command(
     COMMENT "Generating UI files..."
 )
 
-add_subdirectory(../rover_shared_libs/ .build)
+#add_subdirectory(../rover_shared_libs/ .build)
 
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
@@ -77,6 +79,7 @@ target_link_libraries(ipcamera_api
     pybind11::embed
     ${Python3_LIBRARIES}
 )
+
 
 # Then create the main executable
 add_executable(main_gui src/gui.cpp
@@ -160,8 +163,8 @@ target_link_libraries(main_gui
                   ${LIBSSH_LIBRARY}
                   ${GSTREAMER_LIBRARIES}
                   ipcamera_api
-                  rover_shared_libs)  # Link with our IPCamera library 
-                                   
+                  rover_shared_libs)  
+
 ament_target_dependencies(main_gui
                             rclcpp
                             rover_msgs
