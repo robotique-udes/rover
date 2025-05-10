@@ -6,6 +6,11 @@
 #include <string>
 #endif  // defined(__linux__)
 
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#include <rclcpp/qos.hpp>
+#define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
+#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+
 namespace Constants::CameraInfo
 {
 #if defined(__linux__)
@@ -24,7 +29,6 @@ namespace Constants::CameraInfo
      * @param rName_ Overwrite value if found
      * @return Success on camera name found
      */
-
     bool getNameFromURL(const std::string& url_, std::string& rName_);
 #endif  // defined(__linux__)
 }  // namespace Constants::CameraInfo
