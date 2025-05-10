@@ -27,119 +27,253 @@
     .cesium-infoBox {
       display: none !important;
     }
+
+    #connectionError {
+      position: absolute;
+      top: 50%;
+      left: 50%;
+      transform: translate(-50%, -50%);
+      background-color: rgba(255, 0, 0, 0.7);
+      color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      font-family: Arial, sans-serif;
+      font-size: 18px;
+      display: none;
+      z-index: 1000;
+    }
   </style>
 </head>
 
 <body>
   <div id="cesiumContainer"></div>
+  <div id="connectionError">
+    <h2>Not able to connect to internet</h2>
+    <p>Please check your internet connection and try again.</p>
+  </div>
 
   <script>
-    Cesium.Ion.defaultAccessToken = 'eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJqdGkiOiIyODRhYTgwMi1hNzk2LTRiMTgtYjc3Yy1mMTY2ZTQ0ZmU5N2UiLCJpZCI6Mjk4ODk2LCJpYXQiOjE3NDYxNDc2NjB9.GetTldL9Qxi4_Qyw8fPEGdkAH-1veIPLdltlKYF-VVw';
-
-    const viewer = new Cesium.Viewer("cesiumContainer", {
-      terrain: Cesium.Terrain.fromWorldTerrain({
-        requestWaterMask: true,
-        requestVertexNormals: true,
-      }),
-      sceneMode: Cesium.SceneMode.SCENE2D,
-      mapMode2D: Cesium.MapMode2D.ROTATE,
-      animation: false,        
-      baseLayerPicker: false,  
-      fullscreenButton: false, 
-      vrButton: false,         
-      geocoder: false,         
-      homeButton: false,       
-      infoBox: false,          
-      sceneModePicker: false,  
-      selectionIndicator: false, 
-      timeline: false,         
-      navigationHelpButton: false, 
-      navigationInstructionsInitiallyVisible: false,
-      creditsDisplay: false,  
-      shouldAnimate: true,
-    });
-
-    viewer._cesiumWidget._creditContainer.style.display = "none";
-
+    // Global variables
+    let viewer;
     let currentPosition = { latitude: 0.0, longitude: 0.0 };
     let pathEntity = null;
     let waypointEntities = [];
     let waypointCounter = 1;
     let activeWaypoint = null;
     let pathUpdateInterval = null;
+    let entity; // Live position arrow
+    let isAddingWaypoint = false; // Flag to prevent duplicate additions
+
+    function checkConnectivity() {
+      const connectionError = document.getElementById('connectionError');
+
+      if (!navigator.onLine) {
+        connectionError.style.display = 'block';
+        return false;
+      } else {
+        return fetch('https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js', {
+          method: 'HEAD',
+          mode: 'no-cors',
+          cache: 'no-store'
+        })
+          .then(() => {
+            connectionError.style.display = 'none';
+            return true;
+          })
+          .catch(() => {
+            connectionError.style.display = 'block';
+            return false;
+          });
+      }
+    }
+
+    function initializeMap() {
+      checkConnectivity().then(isConnected => {
+        if (isConnected) {
+          setupCesiumMap();
+        } else {
+          console.error("Unable to connect to the internet");
+        }
+      });
+    }
+
+    function setupCesiumMap() {
+      viewer = new Cesium.Viewer("cesiumContainer", {
+        terrain: Cesium.Terrain.fromWorldTerrain({
+          requestWaterMask: true,
+          requestVertexNormals: true,
+        }),
+        sceneMode: Cesium.SceneMode.SCENE2D,
+        mapMode2D: Cesium.MapMode2D.ROTATE,
+        animation: false,
+        baseLayerPicker: false,
+        fullscreenButton: false,
+        vrButton: false,
+        geocoder: false,
+        homeButton: false,
+        infoBox: false,
+        sceneModePicker: false,
+        selectionIndicator: false,
+        timeline: false,
+        navigationHelpButton: false,
+        navigationInstructionsInitiallyVisible: false,
+        creditsDisplay: false,
+        shouldAnimate: true,
+      });
+
+      viewer._cesiumWidget._creditContainer.style.display = "none";
+
+      // Initialize live position arrow
+      entity = viewer.entities.add({
+        name: "Live Position Arrow",
+        position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
+        billboard: {
+          image: 'qrc:/arrow.png',
+          width: 20,
+          height: 20,
+          alignedAxis: Cesium.Cartesian3.UNIT_Z,
+          rotation: 0,
+          color: Cesium.Color.RED,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM
+        }
+      });
+
+      setupEventHandlers();
+      setupBridgeConnection();
+    }
+
+    function setupEventHandlers() {
+      // Double-click to add waypoint
+      viewer.screenSpaceEventHandler.setInputAction(function (click) {
+        const cartesian = viewer.camera.pickEllipsoid(click.position, viewer.scene.globe.ellipsoid);
+        if (cartesian) {
+          const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+          const lat = Cesium.Math.toDegrees(cartographic.latitude);
+          const lon = Cesium.Math.toDegrees(cartographic.longitude);
+          showWaypointDialog(lat, lon);
+        }
+      }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+    }
+
+    function setupBridgeConnection() {
+      new QWebChannel(qt.webChannelTransport, function (channel) {
+        const bridge = channel.objects.bridge;
+        window.bridge = bridge;
+
+        let viewInitialized = false;
+
+        bridge.clearPath.connect(function () {
+          stopDynamicPathUpdates();
+        });
+
+        bridge.gpsCallback.connect(function (lat, lon, heading) {
+          currentPosition.latitude = lat;
+          currentPosition.longitude = lon;
+
+          const position = Cesium.Cartesian3.fromDegrees(lon, lat);
+          entity.position = position;
+          entity.billboard.rotation = -heading;
+
+          if (!viewInitialized) {
+            viewer.camera.setView({
+              destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
+              orientation: {
+                heading: 0.0,
+                pitch: -90.0,
+                roll: 0.0
+              }
+            });
+            viewInitialized = true;
+          }
+        });
+
+        bridge.sendGoal.connect(function (name, lat, lon) {
+          // Check if we're already adding this waypoint
+          if (isAddingWaypoint) return;
+          
+          isAddingWaypoint = true;
+          const id = `waypoint_${Date.now()}`;
+          const existingWaypoint = waypointEntities.find(wp => 
+            wp.position.equals(Cesium.Cartesian3.fromDegrees(lon, lat))
+          );
+          
+          if (!existingWaypoint) {
+            addWaypoint(lat, lon, name, id);
+            
+            viewer.camera.flyTo({
+              destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
+              complete: function() {
+                viewer.scene.requestRender();
+                isAddingWaypoint = false;
+              }
+            });
+            
+            // Only notify the bridge if this is a new waypoint
+            if (window.bridge && window.bridge.waypointCreated) {
+              window.bridge.waypointCreated(name, lat, lon, id);
+            }
+          } else {
+            isAddingWaypoint = false;
+          }
+        });
+
+        bridge.calculatePath.connect(function (destLat, destLon, waypointId) {
+          startDynamicPathUpdates(destLat, destLon, waypointId);
+        });
+
+        bridge.clearWaypoints.connect(function () {
+          stopDynamicPathUpdates();
+          clearAllWaypoints();
+        });
+
+        bridge.deleteWaypoint.connect(function (waypointId) {
+          if (activeWaypoint && activeWaypoint.id === waypointId) {
+            stopDynamicPathUpdates();
+          }
+          deleteWaypoint(waypointId);
+        });
+
+        if (bridge.jsReady) {
+          bridge.jsReady();
+        }
+      });
+    }
 
     function clearAllWaypoints() {
-      const entities = viewer.entities.values.slice();
-
-      for (let i = 0; i < entities.length; i++) {
-        const entity = entities[i];
-        const isWaypoint = entity.id && (
-          entity.id.startsWith('waypoint_') ||
-          waypointEntities.includes(entity) ||
-          (entity.name && entity.name.toString().includes('Waypoint'))
-        );
-
-        if (isWaypoint) {
-          viewer.entities.remove(entity);
-          console.log("Removed entity:", entity.id || entity.name);
-        }
-      }
-
-      if (pathEntity) {
-        viewer.entities.remove(pathEntity);
-        pathEntity = null;
-        console.log("Removed path entity");
-      }
-
+      // Remove all waypoint entities
+      waypointEntities.forEach(waypoint => {
+        viewer.entities.remove(waypoint);
+      });
       waypointEntities = [];
       waypointCounter = 1;
 
-      console.log("Map waypoints cleared - entities remaining:", viewer.entities.values.length);
+      // Remove path if exists
+      if (pathEntity) {
+        viewer.entities.remove(pathEntity);
+        pathEntity = null;
+      }
     }
 
     function deleteWaypoint(waypointId) {
       const entity = viewer.entities.getById(waypointId);
-
       if (entity) {
         viewer.entities.remove(entity);
-        console.log("Removed waypoint entity:", waypointId);
-
-        const index = waypointEntities.findIndex(wp => wp.id === waypointId);
-        if (index !== -1) {
-          waypointEntities.splice(index, 1);
-        }
-
+        waypointEntities = waypointEntities.filter(wp => wp.id !== waypointId);
         return true;
-      } else {
-        console.warn("Waypoint entity not found:", waypointId);
-        return false;
       }
+      return false;
     }
 
-    const entity = viewer.entities.add({
-      name: "Live Position Arrow",
-      position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
-      billboard: {
-        image: 'qrc:/arrow.png',
-        width: 20,
-        height: 20,
-        alignedAxis: Cesium.Cartesian3.UNIT_Z,
-        rotation: 0,
-        color: Cesium.Color.RED,
-        verticalOrigin: Cesium.VerticalOrigin.BOTTOM
-      }
-    });
-
     function drawPath(startLat, startLon, endLat, endLon) {
-      if (pathEntity) viewer.entities.remove(pathEntity);
+      if (pathEntity) {
+        viewer.entities.remove(pathEntity);
+      }
 
       pathEntity = viewer.entities.add({
         name: "Path to Waypoint",
         polyline: {
-          positions: Cesium.Cartesian3.fromDegreesArray([
-            startLon, startLat,
-            endLon, endLat
-          ]),
+          positions: Cesium.Cartesian3.fromDegreesArray([startLon, startLat, endLon, endLat]),
           width: 3,
           material: new Cesium.PolylineOutlineMaterialProperty({
             color: Cesium.Color.YELLOW,
@@ -151,11 +285,9 @@
       });
 
       const distance = calculateHaversineDistance(startLat, startLon, endLat, endLon);
-
       if (window.bridge) {
         window.bridge.pathDistanceCalculated(distance);
       }
-
       return distance;
     }
 
@@ -167,7 +299,6 @@
       };
 
       clearInterval(pathUpdateInterval);
-
       pathUpdateInterval = setInterval(() => {
         if (currentPosition && activeWaypoint) {
           drawPath(
@@ -179,14 +310,13 @@
         }
       }, 1000);
 
+      // Draw initial path
       drawPath(
         currentPosition.latitude,
         currentPosition.longitude,
         destLat,
         destLon
       );
-
-      console.log(`Dynamic path updates started to waypoint: ${waypointId}`);
     }
 
     function stopDynamicPathUpdates() {
@@ -198,8 +328,6 @@
         viewer.entities.remove(pathEntity);
         pathEntity = null;
       }
-
-      console.log("Dynamic path updates stopped");
     }
 
     function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
@@ -216,6 +344,19 @@
     }
 
     function addWaypoint(lat, lon, name, waypointId) {
+      // Check if waypoint already exists at this location
+      const existingWaypoint = waypointEntities.find(wp => 
+        Cesium.Cartesian3.equals(
+          wp.position.getValue(),
+          Cesium.Cartesian3.fromDegrees(lon, lat)
+        )
+      );
+      
+      if (existingWaypoint) {
+        console.log("Waypoint already exists at this location:", existingWaypoint.id);
+        return existingWaypoint;
+      }
+
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
 
@@ -226,6 +367,8 @@
         point: {
           pixelSize: 10,
           color: Cesium.Color.BLUE,
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2
         },
         label: {
           text: waypointName,
@@ -238,16 +381,9 @@
           outlineColor: Cesium.Color.BLACK,
           showBackground: true,
           backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7)
-        },
-        properties: {
-          waypointName: waypointName,
-          latitude: lat,
-          longitude: lon,
-          isWaypoint: true
         }
       });
 
-      console.log("Added waypoint entity:", waypointEntity.id);
       waypointEntities.push(waypointEntity);
       return waypointEntity;
     }
@@ -277,85 +413,12 @@
       });
     }
 
-    viewer.screenSpaceEventHandler.setInputAction(function (click) {
-      const cartesian = viewer.camera.pickEllipsoid(click.position, viewer.scene.globe.ellipsoid);
-      if (cartesian) {
-        const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-        const lat = Cesium.Math.toDegrees(cartographic.latitude);
-        const lon = Cesium.Math.toDegrees(cartographic.longitude);
-        showWaypointDialog(lat, lon);
-      }
-    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-    new QWebChannel(qt.webChannelTransport, function (channel) {
-      const bridge = channel.objects.bridge;
-      window.bridge = bridge;
-
-      let viewInitialized = false;
-
-      bridge.clearPath.connect(function () {
-        console.log("clearPath signal received!");
-        stopDynamicPathUpdates();
-        console.log("Path cleared from map");
-      });
-
-      bridge.gpsCallback.connect(function (lat, lon, heading) {
-        currentPosition.latitude = lat;
-        currentPosition.longitude = lon;
-
-        const position = Cesium.Cartesian3.fromDegrees(lon, lat);
-        entity.position = position;
-        entity.billboard.rotation = -heading;
-
-        if (!viewInitialized) {
-          viewer.camera.setView({
-            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
-            orientation: {
-              heading: 0.0,
-              pitch: -90.0,
-              roll: 0.0
-            }
-          });
-          viewInitialized = true;
-        }
-      });
-
-      bridge.sendGoal.connect(function (name, lat, lon) {
-        const id = `waypoint_${Date.now()}`;
-        addWaypoint(lat, lon, name, id);
-        viewer.camera.flyTo({
-          destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
-        });
-      });
-
-      bridge.calculatePath.connect(function (destLat, destLon, waypointId) {
-        startDynamicPathUpdates(destLat, destLon, waypointId);
-        console.log(`Dynamic path updates started to: ${destLat}, ${destLon}`);
-      });
-
-      bridge.clearWaypoints.connect(function () {
-        console.log("clearWaypoints signal received!");
-        stopDynamicPathUpdates();
-        clearAllWaypoints();
-        console.log("Waypoints cleared from map");
-      });
-
-      bridge.deleteWaypoint.connect(function (waypointId) {
-        console.log("deleteWaypoint signal received for:", waypointId);
-
-        if (activeWaypoint && activeWaypoint.id === waypointId) {
-          stopDynamicPathUpdates();
-        }
-
-        const result = deleteWaypoint(waypointId);
-        console.log("Waypoint deletion result:", result);
-      });
-
-      if (bridge.jsReady) {
-        bridge.jsReady();
-      }
+    // Initialize the map when the page loads
+    window.addEventListener('load', initializeMap);
+    window.addEventListener('online', initializeMap);
+    window.addEventListener('offline', function() {
+      document.getElementById('connectionError').style.display = 'block';
     });
   </script>
 </body>
-
 </html>

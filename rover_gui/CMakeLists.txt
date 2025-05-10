@@ -38,9 +38,6 @@ add_custom_command(
 
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
-
-# add_executable(main_gui)
-
 add_executable(main_gui src/gui.cpp
                   src/MainWindow.hpp
                   src/MainWindow.cpp
@@ -91,7 +88,8 @@ add_executable(main_gui src/gui.cpp
                   src/QVideoPlayer/QVideoPlayerWidget.hpp
                   src/QVideoPlayer/Worker/QPlayerWorker.hpp
                   src/QVideoPlayer/Worker/QPlayerWorker.cpp
-                  src/QNavigation/resources.qrc )
+                  src/QNavigation/resources.qrc 
+                )
                   
 add_subdirectory(../rover_shared_libs/ .build)
 

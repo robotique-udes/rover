@@ -17,12 +17,35 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     qInstallMessageHandler(messageHandler);
 
     _ui->webViewContainer->load(QUrl("qrc:/map.html"));
-    _ui->webViewContainer->setMinimumSize(1200, 1000);
-    _ui->webViewContainer->setMaximumSize(1200, 1000);
+    _ui->webViewContainer->setMinimumSize(1200, 1200);
+    _ui->webViewContainer->setMaximumSize(1200, 1200);
 
     _webChannel = new QWebChannel(this);
     _webChannel->registerObject(QStringLiteral("bridge"), this);
     _ui->webViewContainer->page()->setWebChannel(_webChannel);
+
+    connect(_ui->webViewContainer,
+            &QWebEngineView::loadFinished,
+            this,
+            [this](bool ok)
+            {
+                if (ok)
+                {
+                    QString envPath = QFileInfo(__FILE__).absolutePath() + "/.env";
+                    QFile file(envPath);
+                    file.open(QIODevice::ReadOnly);
+                    while (!file.atEnd())
+                    {
+                        QByteArray line = file.readLine();
+                        if (line.startsWith("CESIUM_TOKEN="))
+                        {
+                            QString token = line.split('=').last().trimmed();
+                            _ui->webViewContainer->page()->runJavaScript("Cesium.Ion.defaultAccessToken = '" + token + "';");
+                            break;
+                        }
+                    }
+                }
+            });
 
     _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
                                                                1,
@@ -55,11 +78,22 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                 double lat_ = _ui->inputLatitude->text().toDouble();
                 double lon_ = _ui->inputLongitude->text().toDouble();
                 QString name_ = _ui->inputName->text();
+                
+                for (const auto& waypoint : _waypoints)
+                {
+                    if (waypoint.name == name_)
+                    {
+                        QMessageBox::warning(this, "Duplicate Name", 
+                            "A waypoint with this name already exists. Please choose a different name.");
+                        return;
+                    }
+                }
+                
                 QString id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
 
                 addWaypointToList(name_, lat_, lon_, id_);
 
-                emit sendGoal(name_, lat_, lon_);
+                emit sendGoal(name_, lat_, lon_, id_);
 
                 _ui->inputName->clear();
                 _ui->inputLatitude->clear();
@@ -95,6 +129,14 @@ void QNavigation::pathDistanceCalculated(double distanceMeters_)
 
 void QNavigation::waypointCreated(QString name_, double latitude_, double longitude_, QString id_)
 {
+    for (const auto& waypoint : _waypoints)
+    {
+        if (waypoint.id == id_ || waypoint.name == name_)
+        {
+            return;
+        }
+    }
+    
     if (id_.isEmpty())
     {
         id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
@@ -103,7 +145,7 @@ void QNavigation::waypointCreated(QString name_, double latitude_, double longit
     addWaypointToList(name_, latitude_, longitude_, id_);
 }
 
-void QNavigation::onCalculatePathClicked()
+void QNavigation::onCalculatePathClicked(void)
 {
     QListWidgetItem* currentItem_ = _ui->waypointList->currentItem();
     if (!currentItem_)
@@ -148,7 +190,7 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
     }
 }
 
-void QNavigation::onDeleteWaypointClicked()
+void QNavigation::onDeleteWaypointClicked(void)
 {
     QListWidgetItem* currentItem_ = _ui->waypointList->currentItem();
     if (!currentItem_)
@@ -178,7 +220,7 @@ void QNavigation::onDeleteWaypointClicked()
     }
 }
 
-void QNavigation::onClearWaypointsClicked()
+void QNavigation::onClearWaypointsClicked(void)
 {
     int result_ = QMessageBox::question(this,
                                         "Clear Waypoints",
@@ -200,7 +242,7 @@ void QNavigation::onClearWaypointsClicked()
     }
 }
 
-void QNavigation::onClearPathClicked()
+void QNavigation::onClearPathClicked(void)
 {
     _ui->distanceLabel->setText("N/A");
 

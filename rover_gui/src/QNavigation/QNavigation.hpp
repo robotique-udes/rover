@@ -1,5 +1,5 @@
-#ifndef __QNAVIGATION_HPP__
-#define __QNAVIGATION_HPP__
+#ifndef QNAVIGATION_HPP
+#define QNAVIGATION_HPP
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/gps.hpp"
@@ -32,7 +32,7 @@ class QNavigation : public QWidget
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
-    void sendGoal(QString waypointName_, double latitude_, double longitude_);
+    void sendGoal(QString name, double latitude, double longitude, QString id);
     void calculatePath(double latitude_, double longitude_);
     void jsReady(void);
     void clearWaypoints(void);
@@ -47,16 +47,17 @@ class QNavigation : public QWidget
     void onClearPathClicked(void);
     void onDeleteWaypointClicked(void);
     void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
+    // void messageHandler(QtMsgType type_, const QMessageLogContext& context_, const QString& msg_);
 
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
 
     QWebChannel* _webChannel;
-    QLineEdit* _lineEditLatitude;
-    QLineEdit* _lineEditLongitude;
-    QPushButton* _pushButtonSetGoal;
-    QPushButton* _pushButtonCalculatePath;
-    QLabel* _labelDistance;
+    QLineEdit _lineEditLatitude;
+    QLineEdit _lineEditLongitude;
+    QPushButton _pushButtonSetGoal;
+    QPushButton _pushButtonCalculatePath;
+    QLabel _labelDistance;
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
