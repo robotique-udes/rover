@@ -264,7 +264,10 @@ void RtspPlayerWidget::handleRecordingRequest(bool checked)
                            "Media Server is not available.\n\n"
                            "Please make sure the ROS node is running.");
         
+        // Block signals to prevent recursive signal-slot call
+        this->_recordButton->blockSignals(true);
         this->_recordButton->setChecked(!checked);
+        this->_recordButton->blockSignals(false);
         return;
     }
 
@@ -272,7 +275,10 @@ void RtspPlayerWidget::handleRecordingRequest(bool checked)
         QMessageBox::warning(this, "Stream Error", 
                            "Cannot " + QString(checked ? "start" : "stop") + " recording without an active stream.");
     
+        // Block signals here too
+        this->_recordButton->blockSignals(true);
         this->_recordButton->setChecked(false);
+        this->_recordButton->blockSignals(false);
         return;
     }
     
@@ -281,14 +287,12 @@ void RtspPlayerWidget::handleRecordingRequest(bool checked)
         request->camera_url = _lastStreamUrl.toStdString();
         
         if (checked) {
-
             request->command = CameraControlServiceType::Request::START_RECORDING;
             request->capture_name = this->_widgetId.toStdString();
             LOG_INFO_TARGET("RtspPlayer", "Starting recording", this->_widgetId.toUtf8().constData());
             
             _recordButton->setIcon(QIcon(":/icons/record_on.png"));
         } else {
-
             request->command = CameraControlServiceType::Request::STOP_RECORDING;
             LOG_INFO_TARGET("RtspPlayer", "Stopping recording", this->_widgetId.toUtf8().constData());
             
