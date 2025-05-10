@@ -8,6 +8,7 @@
 #include <QStackedWidget>
 #include <QCloseEvent>
 
+
 SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _closeShortCut(Constants::Keybinding::CLOSE_APP, this),  
     _ui(new Ui::SecondaryWindow),                            

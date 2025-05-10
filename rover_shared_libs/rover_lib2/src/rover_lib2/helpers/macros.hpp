@@ -53,6 +53,7 @@ namespace RoverLib2
 #define VALIDATE_BASE_TYPE_PACK(BaseT, ...)                                                \
     static_assert((... && std::is_base_of_v<BaseT, std::remove_reference_t<__VA_ARGS__>>), \
                   "All template arguments must be derived from " #BaseT)
+#if !defined(ABS)
 
     template<typename T>
     constexpr T ABS(T var_) noexcept
@@ -66,6 +67,8 @@ namespace RoverLib2
             return ((var_ < static_cast<T>(0)) ? -var_ : var_);
         }
     }
+
+#endif
 
     template<typename T>
     constexpr bool IN_ERROR(T var_, T error_, T goal_)
