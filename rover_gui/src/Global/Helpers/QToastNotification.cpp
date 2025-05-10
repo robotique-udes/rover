@@ -1,6 +1,9 @@
 #include "QToastNotification.hpp"
 #include <QScreen>
+#include <qnamespace.h>
 #include <qsizepolicy.h>
+#include <QApplication>
+#include <qscrollarea.h>
 
 namespace QHelper
 {
@@ -48,7 +51,7 @@ namespace QHelper
         _fadeInAnim.stop();
         _fadeOutAnim.stop();
         _closeTimer.stop();
-        hide();
+        this->hide();
 
         _slideInAnim.stop();
         _slideOutAnim.stop();
@@ -80,7 +83,7 @@ namespace QHelper
         }
 
         _ui.iconSlot->setIcon(icon);
-        _ui.iconSlot->setIconSize(QSize(40, 40));
+        _ui.iconSlot->setIconSize(QSize(32, 32));
         _ui.textErrorMessage->setText(description_);
         _ui.titleLineEdit->setText(title_);
 
@@ -96,8 +99,8 @@ namespace QHelper
         _slideOutAnim.setStartValue(QPoint(X, endY));
         _slideOutAnim.setEndValue(QPoint(X, startY));
 
-        move(X, endY);
-        setWindowOpacity(0.0);
+        this->move(X, endY);
+        this->setWindowOpacity(0.0);
         _ui.progressBar->setValue(100);
 
         this->raise();
@@ -119,9 +122,9 @@ namespace QHelper
 
     void QToastNotification::QToastNotification::setupUI(void)
     {
-        setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
-        setAttribute(Qt::WA_TranslucentBackground);
-        setAttribute(Qt::WA_ShowWithoutActivating);
+        setWindowFlags(Qt::WindowType::FramelessWindowHint | Qt::ToolTip);
+        setAttribute(Qt::WidgetAttribute::WA_TranslucentBackground);
+        setAttribute(Qt::WidgetAttribute::WA_ShowWithoutActivating);
         _ui.setupUi(this);
 
         connect(_ui.closePushButton, &QPushButton::clicked, this, &QToastNotification::hideNotification);
@@ -207,6 +210,8 @@ namespace QHelper
                 margin: 0px;
                 min-width: 4px;
             })");
+
+        _ui.closePushButton->setIconSize(QSize(16, 16));
     }
 
     void QToastNotification::setupAnimations(void)
@@ -301,7 +306,7 @@ namespace QHelper
         this->hide();
     }
 
-    void QNotificationShowHistory::showHistory()
+    void QNotificationShowHistory::showHistory(void)
     {
         if (_ui.scrollArea->isVisible())
         {
@@ -380,7 +385,7 @@ namespace QHelper
         }
 
         _ui.historyIcon->setIcon(icon);
-        _ui.historyIcon->setIconSize(QSize(40, 40));
+        _ui.historyIcon->setIconSize(QSize(32, 32));
     }
 
     void QNotificationHistoryData::setStyle()
@@ -439,7 +444,7 @@ namespace QHelper
                 border-radius: 15px;
                 border: none;
                 padding: 5px 10px;
-                font-size: 24px;
+                font-size: 20px;
                 font-weight: bold;
             }
             QLineEdit:focus {

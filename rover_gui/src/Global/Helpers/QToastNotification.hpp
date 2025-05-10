@@ -7,18 +7,14 @@
 #include "UI_NotificationHistory.h"
 
 #include <mutex>
-#include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include <QPropertyAnimation>
-#include <QParallelAnimationGroup>
 #include <QTimer>
-#include <QApplication>
 #include <QGraphicsDropShadowEffect>
 #include <QStyle>
-#include <QDateTime>
 #include <QScrollBar>
+#include <QDateTime>
 #include <deque>
-#include <qscrollarea.h>
 
 namespace QHelper
 {
@@ -61,6 +57,7 @@ namespace QHelper
                                  const QString& description_,
                                  eNotifType type_,
                                  size_t durationMs_ = NOTIF_DURATION_MS);
+        
         static QToastNotification& getInstance();
 
         QRect getTargetScreenRect(void);
