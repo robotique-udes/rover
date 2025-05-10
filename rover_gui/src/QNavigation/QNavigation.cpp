@@ -1,6 +1,6 @@
 #include "QNavigation.hpp"
 
-void messageHandler(QtMsgType, const QMessageLogContext&, const QString&) {};
+void messageHandler(QtMsgType, const QMessageLogContext&, const QString&){};
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -88,9 +88,6 @@ void QNavigation::onSetGoalClicked()
     _ui.inputLatitude->clear();
     _ui.inputLongitude->clear();
 }
-
-// void QNavigation::messageHandler(QtMsgType, const QMessageLogContext&, const QString&) {};
-
 
 void QNavigation::pathDistanceCalculated(double distanceMeters_)
 {
@@ -249,7 +246,5 @@ void QNavigation::onClearPathClicked(void)
 
     emit clearPath();
 }
-
-// void messageHandler(QtMsgType, const QMessageLogContext&, const QString&) {}
 
 #include "QNavigation.moc"

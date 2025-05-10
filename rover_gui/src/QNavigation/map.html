@@ -87,7 +87,8 @@
   <div id="cesiumContainer"></div>
   <button id="trackingButton" title="Toggle camera tracking">
     <svg id="trackingIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
-      <path d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z"/>
+      <path
+        d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
     </svg>
     <span id="trackingText">Track Position</span>
   </button>
@@ -104,10 +105,10 @@
     let waypointCounter = 1;
     let activeWaypoint = null;
     let pathUpdateInterval = null;
-    let entity; // Live position arrow
-    let isAddingWaypoint = false; // Flag to prevent duplicate additions
-    let cameraTracking = false; // Flag to track camera state
-    let lastHeading = 0; // Store the last known heading
+    let entity; 
+    let isAddingWaypoint = false; 
+    let cameraTracking = false; 
+    let lastHeading = 0; 
 
     function checkConnectivity() {
       const connectionError = document.getElementById('connectionError');
@@ -168,7 +169,6 @@
 
       viewer._cesiumWidget._creditContainer.style.display = "none";
 
-      // Initialize live position arrow
       entity = viewer.entities.add({
         name: "Live Position Arrow",
         position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
@@ -190,8 +190,8 @@
 
     function setupCameraTrackingButton() {
       const trackingButton = document.getElementById('trackingButton');
-      
-      trackingButton.addEventListener('click', function() {
+
+      trackingButton.addEventListener('click', function () {
         toggleCameraTracking();
       });
     }
@@ -200,22 +200,19 @@
       cameraTracking = !cameraTracking;
       const trackingButton = document.getElementById('trackingButton');
       const trackingText = document.getElementById('trackingText');
-      
+
       if (cameraTracking) {
         trackingButton.classList.add('active');
         trackingText.textContent = 'Tracking On';
-        
+
         try {
-          // Immediately move camera to current position
           updateCameraPosition();
-          
-          // Disable camera rotation controls when tracking
+
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
             viewer.scene.screenSpaceCameraController.enableRotate = false;
           }
         } catch (error) {
           console.error("Error enabling tracking:", error);
-          // Revert to non-tracking state if there's an error
           cameraTracking = false;
           trackingButton.classList.remove('active');
           trackingText.textContent = 'Track Position';
@@ -223,8 +220,7 @@
       } else {
         trackingButton.classList.remove('active');
         trackingText.textContent = 'Track Position';
-        
-        // Re-enable camera rotation controls
+
         try {
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
             viewer.scene.screenSpaceCameraController.enableRotate = true;
@@ -233,8 +229,7 @@
           console.error("Error disabling tracking:", error);
         }
       }
-      
-      // Notify the bridge about tracking state change
+
       try {
         if (window.bridge && window.bridge.cameraTrackingChanged) {
           window.bridge.cameraTrackingChanged(cameraTracking);
@@ -246,9 +241,8 @@
 
     function updateCameraPosition() {
       if (!cameraTracking || !viewer || !viewer.camera) return;
-      
+
       try {
-        // Get current camera height with a safe fallback
         let cameraHeight = 1000.0;
         try {
           if (viewer.camera.positionCartographic) {
@@ -257,23 +251,21 @@
         } catch (e) {
           console.warn("Could not get camera height, using default:", e);
         }
-        
-        // Set the camera position to the current GPS position
+
         viewer.camera.setView({
           destination: Cesium.Cartesian3.fromDegrees(
-            currentPosition.longitude, 
-            currentPosition.latitude, 
+            currentPosition.longitude,
+            currentPosition.latitude,
             cameraHeight
           ),
           orientation: {
-            heading: viewer.camera.heading, // Maintain current camera heading
+            heading: viewer.camera.heading,
             pitch: viewer.camera.pitch,
             roll: 0.0
           }
         });
       } catch (error) {
         console.error("Failed to update camera position:", error);
-        // Safe fallback in case of error
         try {
           viewer.camera.flyTo({
             destination: Cesium.Cartesian3.fromDegrees(
@@ -284,7 +276,6 @@
           });
         } catch (flyError) {
           console.error("Even fallback camera update failed:", flyError);
-          // Disable tracking as a last resort
           cameraTracking = false;
           document.getElementById('trackingButton').classList.remove('active');
           document.getElementById('trackingText').textContent = 'Track Position';
@@ -293,13 +284,11 @@
     }
 
     function setupEventHandlers() {
-      // Double click to add waypoint
       viewer.screenSpaceEventHandler.setInputAction(function (click) {
-        // Disable camera tracking when user creates a waypoint
         if (cameraTracking) {
           toggleCameraTracking();
         }
-        
+
         try {
           const cartesian = viewer.camera.pickEllipsoid(click.position, viewer.scene.globe.ellipsoid);
           if (cartesian) {
@@ -312,15 +301,13 @@
           console.error("Error handling double click:", error);
         }
       }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-      
-      // Add handler for left click (panning) to disable tracking
+
       viewer.screenSpaceEventHandler.setInputAction(function () {
         if (cameraTracking) {
           toggleCameraTracking();
         }
       }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
-      
-      // Add handler for mouse wheel (zoom) to disable tracking
+
       viewer.screenSpaceEventHandler.setInputAction(function () {
         if (cameraTracking) {
           toggleCameraTracking();
@@ -340,12 +327,10 @@
         });
 
         bridge.gpsCallback.connect(function (lat, lon, heading) {
-          // Store the new position data
           currentPosition.latitude = lat;
           currentPosition.longitude = lon;
-          lastHeading = -heading; // Store the heading for camera tracking
+          lastHeading = -heading; 
 
-          // Update entity position
           const position = Cesium.Cartesian3.fromDegrees(lon, lat);
           entity.position = position;
           entity.billboard.rotation = -heading;
@@ -365,14 +350,12 @@
               console.error("Error initializing view:", error);
             }
           }
-          
-          // Update camera position if tracking is enabled
+
           if (cameraTracking) {
             try {
               updateCameraPosition();
             } catch (error) {
               console.error("Error updating camera position:", error);
-              // Disable tracking if we encounter an error
               if (cameraTracking) {
                 toggleCameraTracking();
               }
@@ -412,7 +395,6 @@
           });
 
           if (existingLocationWaypoint) {
-            // Alert user about duplicate location
             Swal.fire({
               title: 'Duplicate Location',
               text: `A waypoint already exists at this location. Please choose a different location.`,
@@ -423,10 +405,8 @@
             return;
           }
 
-          // If we get here, waypoint is unique - add it
           addWaypoint(lat, lon, name, id);
 
-          // Temporarily disable tracking during flyTo
           const wasTracking = cameraTracking;
           if (cameraTracking) {
             toggleCameraTracking();
@@ -437,15 +417,13 @@
             complete: function () {
               viewer.scene.requestRender();
               isAddingWaypoint = false;
-              
-              // Re-enable tracking if it was enabled before
+
               if (wasTracking) {
                 toggleCameraTracking();
               }
             }
           });
 
-          // Notify the bridge about the new waypoint
           if (window.bridge && window.bridge.waypointCreated) {
             window.bridge.waypointCreated(name, lat, lon, id);
           }
@@ -467,9 +445,8 @@
           deleteWaypoint(waypointId);
         });
 
-        // Add a new bridge connection for toggling camera tracking
         if (bridge.setCameraTracking) {
-          bridge.setCameraTracking.connect(function(enabled) {
+          bridge.setCameraTracking.connect(function (enabled) {
             if (cameraTracking !== enabled) {
               toggleCameraTracking();
             }
@@ -483,14 +460,12 @@
     }
 
     function clearAllWaypoints() {
-      // Remove all waypoint entities
       waypointEntities.forEach(waypoint => {
         viewer.entities.remove(waypoint);
       });
       waypointEntities = [];
       waypointCounter = 1;
 
-      // Remove path if exists
       if (pathEntity) {
         viewer.entities.remove(pathEntity);
         pathEntity = null;
@@ -552,7 +527,6 @@
         }
       }, 1000);
 
-      // Draw initial path
       drawPath(
         currentPosition.latitude,
         currentPosition.longitude,
@@ -589,7 +563,6 @@
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
 
-      // Check for duplicate name before adding
       const existingNameWaypoint = waypointEntities.find(wp => wp.name === waypointName);
       if (existingNameWaypoint) {
         console.log("Waypoint with name already exists:", waypointName);
@@ -636,7 +609,6 @@
         inputValidator: (value) => {
           if (!value) return 'Please enter a name';
 
-          // Check for duplicate name
           const existingNameWaypoint = waypointEntities.find(wp => wp.name === value);
           if (existingNameWaypoint) {
             return 'A waypoint with this name already exists. Please choose a different name.';
@@ -647,7 +619,6 @@
           const name = result.value;
           const id = `waypoint_${Date.now()}`;
 
-          // Check for duplicate name one more time (just in case)
           const existingNameWaypoint = waypointEntities.find(wp => wp.name === name);
           if (existingNameWaypoint) {
             Swal.fire({
@@ -667,7 +638,6 @@
       });
     }
 
-    // Initialize the map when the page loads
     window.addEventListener('load', initializeMap);
     window.addEventListener('online', initializeMap);
     window.addEventListener('offline', function () {
