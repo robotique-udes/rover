@@ -1,6 +1,7 @@
 #ifndef DRIVER_LINUX_HPP
 #define DRIVER_LINUX_HPP
 
+#include "rover_can2/can_msg.hpp"
 #include "rover_can2/constant.hpp"
 #include "rover_can2/drivers/driver_base.hpp"
 #include "rover_lib2/helpers/log.hpp"
@@ -16,31 +17,22 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-/*
-TODO
-
-- Handle deconnection and reconnection of USB to CAN device.
-- Send msg
-- Receive msg
-- get msg in circular buffer
-
-*/
-
 DEFINE_LOG_NODE(DriverLinux, Logger::eNodeState::ON);
 
 namespace RoverCan2::Drivers
 {
     class DriverLinux : public DriverBase<DriverLinux>
     {
-        enum eState : size_t
+        enum class eState : size_t
         {
             UNINSTALLED,
             RUNNING,
-            INVALID_STATE,
+            TX_QUEUE_FULL
         };
 
       public:
         DriverLinux():
+            _state(eState::UNINSTALLED),
             _recvWatchdog(2ULL * 1'000ULL / static_cast<uint64_t>(Constant::MASTER_HEARTBEAT_RATE_HZ))
         {
         }
@@ -48,32 +40,26 @@ namespace RoverCan2::Drivers
         void __init()
         {
             LOG_INFO(Logger::Nodes::DriverLinux, "Initializing CAN linux driver");
-
-            if (createCanSocket())
-            {
-                _state = eState::RUNNING;
-            }
-            else
-            {
-                _state = eState::UNINSTALLED;
-            }
+            this->createCanSocket();
         }
 
         void __update(void)
         {
-            if (_state == eState::UNINSTALLED)
+            switch (_state)
             {
+                case eState::UNINSTALLED:
+                    createCanSocket();
+                    break;
+                case eState::RUNNING:
+                    [[fallthrough]];
+                case eState::TX_QUEUE_FULL:
+                    this->processNewMessage();
+                    break;
             }
         }
 
         bool _sendMsg(const CanMsg& canMsg_)
         {
-            if (_socket_fd < 0)
-            {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Invalid socket file descriptor: %d", _socket_fd);
-                return false;
-            }
-
             if (_state != eState::RUNNING)
             {
                 LOG_WARN(Logger::Nodes::DriverLinux,
@@ -84,7 +70,15 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
-            struct can_frame frame{};
+            if (_socket_fd < 0)
+            {
+                LOG_ERROR(Logger::Nodes::DriverLinux, "Invalid socket file descriptor: %d", _socket_fd);
+                return false;
+            }
+
+            struct can_frame frame
+            {
+            };
             frame.can_id = static_cast<uint32_t>(canMsg_.getCanID());
             frame.can_dlc = canMsg_.dataLength;
 
@@ -128,15 +122,18 @@ namespace RoverCan2::Drivers
                                   "Invalid CAN frame arguments: errno=%d (%s)",
                                   errno,
                                   strerror(errno));
+                        this->handleDeviceDisconnection();
                         break;
                     case ENOBUFS:
                         LOG_WARN(Logger::Nodes::DriverLinux, "TX buffer full: errno=%d (%s)", errno, strerror(errno));
+                        _state = eState::TX_QUEUE_FULL;
                         break;
                     case ENXIO:
                         LOG_ERROR(Logger::Nodes::DriverLinux,
                                   "Device not found (e.g., CAN adapter unplugged): errno=%d (%s)",
                                   errno,
                                   strerror(errno));
+                        this->handleDeviceDisconnection();
                         break;
                     case EAGAIN:
                         LOG_WARN(Logger::Nodes::DriverLinux,
@@ -149,6 +146,7 @@ namespace RoverCan2::Drivers
                                   "Unknown error sending CAN frame: errno=%d (%s)",
                                   errno,
                                   strerror(errno));
+                        this->handleDeviceDisconnection();
                         break;
                 }
             }
@@ -161,34 +159,6 @@ namespace RoverCan2::Drivers
                           sizeof(struct can_frame));
             }
             return false;
-        }
-
-        bool receiveMsg(RoverCan2::CanMsg& outMsg)
-        {
-            int flags = fcntl(_socket_fd, F_GETFL, 0);
-            fcntl(_socket_fd, F_SETFL, flags | O_NONBLOCK);
-
-            struct can_frame frame;
-            ssize_t nbytes = read(_socket_fd, &frame, sizeof(frame));
-
-            if (nbytes < 0)
-            {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "CAN read error");
-                return false;
-            }
-            else if (static_cast<size_t>(nbytes) < sizeof(struct can_frame))
-            {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Incomplete CAN frame");
-                return false;
-            }
-
-            // Construct a RoverCan2::CanMsg from the raw frame
-            outMsg = RoverCan2::CanMsg(static_cast<RoverCan2::Constant::eDeviceId>(frame.can_id), frame.data, frame.can_dlc);
-
-            _sendMsg(outMsg);
-
-            LOG_INFO(Logger::Nodes::DriverLinux, "Received CAN ID: %u, Length: %u", frame.can_id, frame.can_dlc);
-            return true;
         }
 
       private:
@@ -213,7 +183,9 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
-            struct sockaddr_can addr{};
+            struct sockaddr_can addr
+            {
+            };
             addr.can_family = PF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
 
@@ -228,6 +200,18 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
+            int flags = fcntl(_socket_fd, F_GETFL, 0);
+            if (flags < 0 || fcntl(_socket_fd, F_SETFL, flags | O_NONBLOCK) < 0)
+            {
+                LOG_ERROR(Logger::Nodes::DriverLinux,
+                          "Failed to set CAN socket to non-blocking mode: errno=%d (%s)",
+                          errno,
+                          strerror(errno));
+                cleanupCanSocket();
+                return false;
+            }
+
+            _state = eState::RUNNING;
             return true;
         }
 
@@ -238,6 +222,67 @@ namespace RoverCan2::Drivers
                 close(_socket_fd);
                 _socket_fd = -1;
             }
+        }
+
+        void processNewMessage(void)
+        {
+            struct can_frame frame;
+            ssize_t nbytes = read(_socket_fd, &frame, sizeof(frame));
+
+            if (nbytes == -1)
+            {
+                switch (errno)
+                {
+                    case EAGAIN:
+                        // Non-blocking read: no data available now
+                        LOG_DEBUG(Logger::Nodes::DriverLinux, "No CAN data available (EAGAIN)");
+                        _recvWatchdog.reset();
+                        return;
+                    case EIO:
+                        LOG_ERROR(Logger::Nodes::DriverLinux,
+                                  "CAN I/O error, possible hardware or driver fault : errno=%d (%s)",
+                                  errno,
+                                  strerror(errno));
+                        this->handleDeviceDisconnection();
+                        return;
+                    default:
+                        LOG_ERROR(Logger::Nodes::DriverLinux, "Error receiving CAN frame: errno=%d (%s)", errno, strerror(errno));
+                        return;
+                }
+            }
+            _recvWatchdog.reset();
+
+            RoverCan2::CanMsg msg
+                = RoverCan2::CanMsg(static_cast<RoverCan2::Constant::eDeviceId>(frame.can_id), frame.data, frame.can_dlc);
+
+            if (msg.getMsgID() == RoverCan2::Constant::eMsgId::INVALID)
+            {
+                LOG_WARN(Logger::Nodes::DriverLinux, "Received msg with invalid ID: %u dropping", TO_UNDERLYING(msg.getMsgID()));
+                return;
+            }
+
+            CircularBuffer<CanMsg, 10UL>::eErrorCode status = _msgBuffer.addValue(msg);
+            switch (status)
+            {
+                case decltype(_msgBuffer)::eErrorCode::SUCCESS:
+                    break;
+                case decltype(_msgBuffer)::eErrorCode::SUCCESS_DATA_LOSS:
+                    LOG_WARN(Logger::Nodes::DriverLinux, "Msg buffer full, losing data");
+                    break;
+                case decltype(_msgBuffer)::eErrorCode::ERROR:
+                    LOG_WARN(Logger::Nodes::DriverLinux, "Unknown error");
+                    break;
+            }
+
+            LOG_INFO(Logger::Nodes::DriverLinux, "Received CAN ID: %u, Length: %u", frame.can_id, frame.can_dlc);
+            return;
+        }
+
+        void handleDeviceDisconnection()
+        {
+            LOG_WARN(Logger::Nodes::DriverLinux, "Device likely unplugged, switching to UNINSTALLED state");
+            cleanupCanSocket();
+            _state = eState::UNINSTALLED;
         }
 
         int _socket_fd = -1;
