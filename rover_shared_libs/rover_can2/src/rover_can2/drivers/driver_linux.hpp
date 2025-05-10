@@ -58,11 +58,16 @@ namespace RoverCan2::Drivers
             }
         }
 
+        std::optional<CanMsg> _getMsg(void)
+        {
+            return _msgBuffer.getValue();
+        }
+
         bool _sendMsg(const CanMsg& canMsg_)
         {
             if (_state != eState::RUNNING)
             {
-                LOG_WARN(Logger::Nodes::DriverLinux,
+                LOG_INFO(Logger::Nodes::DriverLinux,
                          "Can't send msg, driver is not in a valid state to send messages. Expected state >= %u but current "
                          "state is: %u. Msg dropped",
                          TO_UNDERLYING(eState::RUNNING),

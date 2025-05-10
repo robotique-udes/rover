@@ -53,7 +53,7 @@ namespace RoverCan2
         {
             if (msg_.getMsgID() == Constant::eMsgId::ERROR_STATE)
             {
-                if (msg_.getCanID() != Constant::eDeviceId::MASTER_COMPUTER_UNIT)
+                if (msg_.getCanID() == Constant::eDeviceId::MASTER_COMPUTER_UNIT)
                 {
                     LOG_WARN(Logger::Nodes::CanManagerMaster,
                              "Received message from another Master, having multiple Can Master will cause undefined behavior");
