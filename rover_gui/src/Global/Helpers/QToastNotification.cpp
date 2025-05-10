@@ -24,17 +24,6 @@ namespace QHelper
         return instance;
     }
 
-    void QToastNotification::cleanup()
-    {
-        _closeTimer.stop();
-        _fadeInAnim.stop();
-        _fadeOutAnim.stop();
-        _slideInAnim.stop();
-        _slideOutAnim.stop();
-        _progressBarAnim.stop();
-        hide();
-    }
-
     QRect QToastNotification::getTargetScreenRect(void)
     {
         return _targetScreenRect;
@@ -54,7 +43,81 @@ namespace QHelper
         _history = history_;
     }
 
-    void QToastNotification::QToastNotification::setupUI()
+    void QToastNotification::notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_)
+    {
+        _fadeInAnim.stop();
+        _fadeOutAnim.stop();
+        _closeTimer.stop();
+        hide();
+
+        _slideInAnim.stop();
+        _slideOutAnim.stop();
+        _progressBarAnim.stop();
+
+        QIcon icon;
+
+        switch (type_)
+        {
+            case QToastNotification::eNotifType::INFO:
+                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
+                break;
+
+            case QToastNotification::eNotifType::WARNING:
+                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning);
+                break;
+
+            case QToastNotification::eNotifType::ERROR:
+                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
+                break;
+
+            case QToastNotification::eNotifType::SUCCESS:
+                icon = QApplication::style()->standardIcon(QStyle::SP_DialogApplyButton);
+                break;
+
+            default:
+                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);
+                break;
+        }
+
+        _ui.iconSlot->setIcon(icon);
+        _ui.iconSlot->setIconSize(QSize(40, 40));
+        _ui.textErrorMessage->setText(description_);
+        _ui.titleLineEdit->setText(title_);
+
+        this->adjustSize();
+
+        size_t X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
+        size_t startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
+        size_t endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
+
+        _slideInAnim.setStartValue(QPoint(X, startY));
+        _slideInAnim.setEndValue(QPoint(X, endY));
+
+        _slideOutAnim.setStartValue(QPoint(X, endY));
+        _slideOutAnim.setEndValue(QPoint(X, startY));
+
+        move(X, endY);
+        setWindowOpacity(0.0);
+        _ui.progressBar->setValue(100);
+
+        this->raise();
+        this->show();
+
+        _progressBarAnim.setDuration(durationMs_);
+
+        _fadeInAnim.start();
+        _slideInAnim.start();
+        _progressBarAnim.start();
+
+        _closeTimer.start(durationMs_);
+
+        QTime currentTime = QTime::currentTime();
+
+        sNotificationInfo data = {currentTime, title_, description_, type_};
+        this->saveNotifInfo(data);
+    }
+
+    void QToastNotification::QToastNotification::setupUI(void)
     {
         setWindowFlags(Qt::FramelessWindowHint | Qt::ToolTip);
         setAttribute(Qt::WA_TranslucentBackground);
@@ -146,7 +209,7 @@ namespace QHelper
             })");
     }
 
-    void QToastNotification::setupAnimations()
+    void QToastNotification::setupAnimations(void)
     {
         _fadeInAnim.setDuration(300);
         _fadeInAnim.setStartValue(0.0);
@@ -169,7 +232,7 @@ namespace QHelper
         connect(&_closeTimer, &QTimer::timeout, this, &QToastNotification::hideNotification);
     }
 
-    void QToastNotification::setupScreenRect()
+    void QToastNotification::setupScreenRect(void)
     {
         QList<QScreen*> screens = QGuiApplication::screens();
         QScreen* targetScreen = nullptr;
@@ -186,81 +249,29 @@ namespace QHelper
         this->setTargetScreenRect(targetScreen->availableGeometry());
     }
 
-    void QToastNotification::notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_)
+    void QToastNotification::notifyFromAnyThread(const QString& title_,
+                                                 const QString& description_,
+                                                 eNotifType type_,
+                                                 size_t durationMs_)
     {
-        _fadeInAnim.stop();
-        _fadeOutAnim.stop();
-        _closeTimer.stop();
-        hide();
-
-        _slideInAnim.stop();
-        _slideOutAnim.stop();
-        _progressBarAnim.stop();
-
-        QIcon icon;
-
-        switch (type_)
+        QCoreApplication* pApp = QApplication::instance();
+        if (pApp)
         {
-            case QToastNotification::eNotifType::INFO:
-                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxInformation);
-                break;
-
-            case QToastNotification::eNotifType::WARNING:
-                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxWarning);
-                break;
-
-            case QToastNotification::eNotifType::ERROR:
-                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxCritical);
-                break;
-
-            case QToastNotification::eNotifType::SUCCESS:
-                icon = QApplication::style()->standardIcon(QStyle::SP_DialogApplyButton);
-                break;
-
-            default:
-                icon = QApplication::style()->standardIcon(QStyle::SP_MessageBoxQuestion);
-                break;
+            QMetaObject::invokeMethod(
+                pApp,
+                [this, title_, description_, type_, durationMs_]()
+                {
+                    notify(title_, description_, type_, durationMs_);
+                },
+                Qt::QueuedConnection);
         }
-
-        _ui.iconSlot->setIcon(icon);
-        _ui.iconSlot->setIconSize(QSize(40, 40));
-        _ui.textErrorMessage->setText(description_);
-        _ui.titleLineEdit->setText(title_);
-
-        this->adjustSize();
-
-        size_t X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
-        size_t startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
-        size_t endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
-
-        _slideInAnim.setStartValue(QPoint(X, startY));
-        _slideInAnim.setEndValue(QPoint(X, endY));
-
-        _slideOutAnim.setStartValue(QPoint(X, endY));
-        _slideOutAnim.setEndValue(QPoint(X, startY));
-
-        move(X, endY);
-        setWindowOpacity(0.0);
-        _ui.progressBar->setValue(100);
-
-        this->raise();
-        this->show();
-
-        _progressBarAnim.setDuration(durationMs_);
-
-        _fadeInAnim.start();
-        _slideInAnim.start();
-        _progressBarAnim.start();
-
-        _closeTimer.start(durationMs_);
-
-        QTime currentTime = QTime::currentTime();
-
-        sNotificationInfo data = {currentTime, title_, description_, type_};
-        this->saveNotifInfo(data);
+        else
+        {
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "QApplication returned null, something is very wrong");
+        }
     }
 
-    void QToastNotification::hideNotification()
+    void QToastNotification::hideNotification(void)
     {
         _fadeInAnim.stop();
         _slideInAnim.stop();
@@ -273,6 +284,7 @@ namespace QHelper
 
     void QToastNotification::saveNotifInfo(const sNotificationInfo& info_)
     {
+        std::lock_guard<std::mutex> lock(_historyMutex);
         this->getHistory().push_back(info_);
 
         if (this->getHistory().size() >= HISTORY_MAX_SIZE)
@@ -281,7 +293,7 @@ namespace QHelper
         }
     }
 
-    QNotificationShowHistory::QNotificationShowHistory()
+    QNotificationShowHistory::QNotificationShowHistory(void)
     {
         _ui.setupUi(this);
         _targetScreenRect = QToastNotification::getInstance().getTargetScreenRect();
@@ -321,7 +333,6 @@ namespace QHelper
                     _ui.verticalLayout->addWidget(dataWidget);
                 }
             }
-            // Notify layout system
             _ui.scrollArea->verticalScrollBar()->setValue(_ui.scrollArea->verticalScrollBar()->maximum());
             _ui.scrollArea->setVisible(true);
             this->show();

@@ -6,6 +6,7 @@
 #include "UI_NotificationHistoryPanel.h"
 #include "UI_NotificationHistory.h"
 
+#include <mutex>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include <QPropertyAnimation>
@@ -56,31 +57,33 @@ namespace QHelper
          * @param type_ severity level setting a corresponding icon to the notification
          * @param durationMs_ Duration of the notification (5s by default)
          */
-        void notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_ = NOTIF_DURATION_MS);
-
+        void notifyFromAnyThread(const QString& title_,
+                                 const QString& description_,
+                                 eNotifType type_,
+                                 size_t durationMs_ = NOTIF_DURATION_MS);
         static QToastNotification& getInstance();
-        void cleanup();
 
         QRect getTargetScreenRect(void);
         std::deque<sNotificationInfo>& getHistory(void);
         void setTargetScreenRect(QRect targetScreenRect_);
         void setHistory(std::deque<sNotificationInfo> history_);
 
-
       private:
+        void notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_ = NOTIF_DURATION_MS);
         QToastNotification();
         QToastNotification(const QToastNotification&) = delete;
         QToastNotification& operator=(const QToastNotification&) = delete;
 
-        void setupUI();
-        void setupAnimations();
-        void setupScreenRect();
+        void setupUI(void);
+        void setupAnimations(void);
+        void setupScreenRect(void);
 
-        void hideNotification();
+        void hideNotification(void);
         void saveNotifInfo(const sNotificationInfo& info_);
 
         QRect _targetScreenRect;
         std::deque<sNotificationInfo> _history;
+        std::mutex _historyMutex;
         Ui::ToastNotification _ui;
         QGraphicsDropShadowEffect _shadow;
         QPropertyAnimation _fadeInAnim;
@@ -88,7 +91,6 @@ namespace QHelper
         QPropertyAnimation _slideInAnim;
         QPropertyAnimation _slideOutAnim;
         QPropertyAnimation _progressBarAnim;
-
         QTimer _closeTimer;
     };
 
@@ -100,13 +102,11 @@ namespace QHelper
 
       public:
         QNotificationShowHistory();
-
-        void showHistory();
+        void showHistory(void);
 
       private:
         QRect _targetScreenRect;
         Ui::historyPanel _ui;
-
     };
 
     class QNotificationHistoryData : public QWidget
@@ -117,7 +117,7 @@ namespace QHelper
         QNotificationHistoryData(QTime timeStamp_, QString title_, QString description_, QToastNotification::eNotifType type_);
 
       private:
-        void setStyle();
+        void setStyle(void);
         Ui::historySubWidget _ui;
     };
 

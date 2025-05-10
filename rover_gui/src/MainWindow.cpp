@@ -49,6 +49,5 @@ void MainWindow::closeEvent(QCloseEvent* event_)
     {
         event_->accept();
     }
-    QHelper::QToastNotification::getInstance().cleanup();
     QApplication::closeAllWindows();
 }
