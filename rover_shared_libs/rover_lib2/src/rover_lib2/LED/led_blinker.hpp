@@ -138,7 +138,8 @@ namespace LED
                 _targetTimeStep = static_cast<uint64_t>(_pattern[_currentStep].durationMs);
                 _chronoStep.restart();
 
-                uint8_t stepIntensity = CONSTRAIN(_pattern[_currentStep].intensity, static_cast<uint8_t>(0), _maxIntensity);
+                uint8_t stepIntensity
+                    = RoverLib2::CONSTRAIN(_pattern[_currentStep].intensity, static_cast<uint8_t>(0), _maxIntensity);
 
                 if (stepIntensity == 0)
                 {
@@ -153,7 +154,7 @@ namespace LED
                 else
                 {
                     _currentLedState = eState::DIMMED;
-                    triggerCtnTarget = CONSTRAIN(stepIntensity, static_cast<uint8_t>(0), INTENSITY_RESOLUTION);
+                    triggerCtnTarget = RoverLib2::CONSTRAIN(stepIntensity, static_cast<uint8_t>(0), INTENSITY_RESOLUTION);
                     triggerCtn = 0UL;
                     _led.write(IO::eIOState::HIGH_);
                 }

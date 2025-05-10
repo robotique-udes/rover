@@ -3,6 +3,7 @@
 #include <rover_msgs/msg/joy_demux_status.hpp>
 #include <rover_msgs/srv/joy_demux_set_state.hpp>
 #include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 using namespace std::chrono_literals;
 
@@ -65,23 +66,23 @@ JoyDemux::JoyDemux():
     Node("joy_demux")
 {
     _sub_main = this->create_subscription<rover_msgs::msg::Joy>("main_joy",
-                                                                1,
+                                                                QOS_DEFAULT,
                                                                 [this](const rover_msgs::msg::Joy msg)
                                                                 {
                                                                     callbackJoy(msg, eControllerType::main);
                                                                 });
 
     _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("secondary_joy",
-                                                                     1,
+                                                                     QOS_DEFAULT,
                                                                      [this](const rover_msgs::msg::Joy msg)
                                                                      {
                                                                          callbackJoy(msg, eControllerType::secondary);
                                                                      });
 
-    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", 1);
-    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", 1);
-    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("antenna", 1);
-    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("demux_status", 1);
+    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", QOS_DEFAULT);
+    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", QOS_DEFAULT);
+    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("antenna", QOS_DEFAULT);
+    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("demux_status", QOS_DEFAULT);
 
     _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
         "demux_control",

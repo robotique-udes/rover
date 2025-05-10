@@ -37,7 +37,7 @@ namespace CanMaster
                 RCLCPP_WARN(_node->get_logger(), "Expected publish rate be in range [0, 1000]. Value asked by user: %.2f", rate_);
             }
 
-            rate_ = CONSTRAIN(rate_, 0.0F, 1000.0F);
+            rate_ = RoverLib2::CONSTRAIN(rate_, 0.0F, 1000.0F);
             if (_node || rate_ > _rate)
             {
                 _rate = rate_;
