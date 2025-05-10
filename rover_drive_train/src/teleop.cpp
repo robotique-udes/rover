@@ -3,6 +3,7 @@
 #include "rover_msgs/msg/joy_demux_status.hpp"
 #include "rover_msgs/msg/propulsion_motor.hpp"
 #include "std_msgs/msg/empty.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 
 // Class definition
 class Teleop : public rclcpp::Node
@@ -115,9 +116,9 @@ Teleop::Teleop():
     this->getParams();
 
     _sub_joy_formated
-        = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY, 1, std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+        = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY, QOS_DEFAULT, std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
 
-    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, 1);
+    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, QOS_DEFAULT);
 }
 
 int main(int argc, char* argv[])
