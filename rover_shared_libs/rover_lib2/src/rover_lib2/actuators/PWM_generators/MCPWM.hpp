@@ -92,7 +92,7 @@ namespace PWMGenerators
 
         void _setDutyCycle(float duty_)
         {
-            _duty = CONSTRAIN(duty_, 0.0F, 100.0F);
+            _duty = RoverLib2::CONSTRAIN(duty_, 0.0F, 100.0F);
             uint32_t activePeriodCtn = _timer.dutyToTickCtn(_duty);
 
             if (!_timer.isEnable())

@@ -48,11 +48,12 @@ namespace PWMGenerators
             _frequency(1.0F),
             _resolutionHz(MAX_TICK_VALUE - 1),  // Fallback values should never trigger
             _timerPeriodTick(MAX_TICK_VALUE),   // Fallback values
-            _groupID(
-                CONSTRAIN(peripheralGroupId_, static_cast<eMCPWMGroupID>(0), static_cast<eMCPWMGroupID>(SOC_MCPWM_GROUPS - 1))),
+            _groupID(RoverLib2::CONSTRAIN(peripheralGroupId_,
+                                          static_cast<eMCPWMGroupID>(0),
+                                          static_cast<eMCPWMGroupID>(SOC_MCPWM_GROUPS - 1))),
             _enabled(false)
         {
-            _frequency = CONSTRAIN(frequency_, 1UL, CLOCK_FREQUENCY_HZ);
+            _frequency = RoverLib2::CONSTRAIN(frequency_, 1UL, CLOCK_FREQUENCY_HZ);
             MCPWMTimer::calculateResTickFromFreq(static_cast<uint32_t>(_frequency), _resolutionHz, _timerPeriodTick);
 
             _frequency = static_cast<float>(_resolutionHz / static_cast<float>(_timerPeriodTick + 1));
@@ -203,7 +204,8 @@ namespace PWMGenerators
         {
             if (frequency_ > MAX_TICK_VALUE)
             {
-                rTickPeriod_ = static_cast<uint32_t>(ROUND(static_cast<float>(CLOCK_FREQUENCY_HZ / frequency_) - 1.0F));
+                rTickPeriod_
+                    = static_cast<uint32_t>(RoverLib2::ROUND(static_cast<float>(CLOCK_FREQUENCY_HZ / frequency_) - 1.0F));
                 if (rTickPeriod_ == 0)
                 {
                     ASSERT_MSG_ARGS("Requested frequency yielded timer period in tick of 0. With selected clock (%u Hz) "
