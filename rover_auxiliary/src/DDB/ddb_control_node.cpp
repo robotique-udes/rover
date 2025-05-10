@@ -1,6 +1,7 @@
 #include "ddb_control_node.hpp"
 
 #include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 int main(int argc, char** argv)
 {
@@ -40,7 +41,7 @@ DDBControlNode::DDBControlNode():
             this->callbackDdbControlBank1(*request_, *response_);
         });
 
-    _pub_DDB_status = this->create_publisher<rover_msgs::msg::DDBControl>(TOPIC_DDB_STATE, 1);
+    _pub_DDB_status = this->create_publisher<rover_msgs::msg::DDBControl>(TOPIC_DDB_STATE, QOS_DEFAULT);
 
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
                                          [this](void)
