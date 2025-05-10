@@ -42,6 +42,8 @@ CameraSettings::CameraSettings(QWidget* parent) :
     connectSignals();
     setupCameraSettingsConnections();
     initCameraController();
+
+    setAttribute(Qt::WA_DeleteOnClose, false);
 }
 
 CameraSettings::~CameraSettings()
@@ -97,9 +99,6 @@ QString CameraSettings::extractIpFromUrl(const QString& url)
 
 void CameraSettings::connectSignals()
 {
-    // Connect back button
-    connect(_ui->backFromSettingsBtn, &QPushButton::clicked, this, &CameraSettings::reject);
-    
     // Connect the apply changes button
     connect(_ui->applyChangesBtn, &QPushButton::clicked, this, &CameraSettings::applyCameraSettings);
     

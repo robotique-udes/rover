@@ -17,861 +17,816 @@
    <string>QCheckBox { color: white; }</string>
   </property>
   <layout class="QVBoxLayout" name="settingsLayout">
-    <property name="spacing">
-      <number>6</number>
-    </property>
-    <property name="leftMargin">
-      <number>6</number>
-    </property>
-    <property name="topMargin">
-      <number>6</number>
-    </property>
-    <property name="rightMargin">
-      <number>6</number>
-    </property>
-    <property name="bottomMargin">
-      <number>6</number>
-    </property>
-    
-    <!-- Header with exit button, camera selection, and apply/reset buttons -->
-    <item>
-      <layout class="QHBoxLayout" name="settingsHeaderLayout">
-        <item>
-          <widget class="QPushButton" name="backFromSettingsBtn">
-            <property name="text">
-              <string>Exit</string>
-            </property>
-          </widget>
-        </item>
-        <item>
-          <widget class="QLabel" name="cameraIpLabel">
-            <property name="text">
-              <string>Camera IP:</string>
-            </property>
-          </widget>
-        </item>
-        <item>
-          <widget class="QComboBox" name="cameraIpSelector">
-            <property name="minimumSize">
-              <size>
-                <width>150</width>
-                <height>26</height>
-              </size>
-            </property>
-            <property name="editable">
-              <bool>true</bool>
-            </property>
-            <property name="placeholderText">
-              <string>Enter IP address...</string>
-            </property>
-          </widget>
-        </item>
-        <item>
-          <spacer name="settingsHeaderSpacer1">
-            <property name="orientation">
-              <enum>Qt::Horizontal</enum>
-            </property>
-            <property name="sizeHint" stdset="0">
-              <size>
-                <width>40</width>
-                <height>20</height>
-              </size>
-            </property>
-          </spacer>
-        </item>
-        <item>
-          <widget class="QPushButton" name="resetDefaultsBtn">
-            <property name="text">
-              <string>Reset to Defaults</string>
-            </property>
-          </widget>
-        </item>
-        <item>
-          <widget class="QPushButton" name="applyChangesBtn">
-            <property name="text">
-              <string>Apply Changes</string>
-            </property>
-          </widget>
-        </item>
-      </layout>
-    </item>
-    
-    <!-- Settings in a scrollable area -->
-    <item>
-      <widget class="QScrollArea" name="settingsScrollArea">
-        <property name="widgetResizable">
-          <bool>true</bool>
-        </property>
-        <widget class="QWidget" name="scrollAreaWidgetContents">
-          <layout class="QVBoxLayout" name="scrollAreaLayout">
-            
-            <!-- Basic Settings Group -->
-            <item>
-              <widget class="QGroupBox" name="basicSettingsGroup">
-                <property name="title">
-                  <string>Basic Settings</string>
-                </property>
-                <layout class="QGridLayout" name="basicSettingsLayout">
-                  <!-- Brightness -->
-                  <item row="0" column="0">
-                    <widget class="QCheckBox" name="brightnessCheckbox">
-                      <property name="text">
-                        <string>Brightness:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="1">
-                    <widget class="QSlider" name="brightnessSlider">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="2">
-                    <widget class="QSpinBox" name="brightnessSpinBox">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Contrast -->
-                  <item row="1" column="0">
-                    <widget class="QCheckBox" name="contrastCheckbox">
-                      <property name="text">
-                        <string>Contrast:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="1" column="1">
-                    <widget class="QSlider" name="contrastSlider">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="1" column="2">
-                    <widget class="QSpinBox" name="contrastSpinBox">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Saturation -->
-                  <item row="2" column="0">
-                    <widget class="QCheckBox" name="saturationCheckbox">
-                      <property name="text">
-                        <string>Saturation:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="1">
-                    <widget class="QSlider" name="saturationSlider">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="2">
-                    <widget class="QSpinBox" name="saturationSpinBox">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Sharpness -->
-                  <item row="3" column="0">
-                    <widget class="QCheckBox" name="sharpnessCheckbox">
-                      <property name="text">
-                        <string>Sharpness:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="3" column="1">
-                    <widget class="QSlider" name="sharpnessSlider">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="3" column="2">
-                    <widget class="QSpinBox" name="sharpnessSpinBox">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="value">
-                        <number>50</number>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Bitrate -->
-                  <item row="4" column="0">
-                    <widget class="QCheckBox" name="bitrateCheckbox">
-                      <property name="text">
-                        <string>Bitrate (kbps):</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="4" column="1">
-                    <widget class="QSlider" name="bitrateSlider">
-                      <property name="minimum">
-                        <number>256</number>
-                      </property>
-                      <property name="maximum">
-                        <number>8192</number>
-                      </property>
-                      <property name="singleStep">
-                        <number>256</number>
-                      </property>
-                      <property name="pageStep">
-                        <number>1024</number>
-                      </property>
-                      <property name="value">
-                        <number>4096</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="4" column="2">
-                    <widget class="QSpinBox" name="bitrateSpinBox">
-                      <property name="minimum">
-                        <number>256</number>
-                      </property>
-                      <property name="maximum">
-                        <number>8192</number>
-                      </property>
-                      <property name="singleStep">
-                        <number>256</number>
-                      </property>
-                      <property name="value">
-                        <number>4096</number>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Resolution -->
-                  <item row="5" column="0">
-                    <widget class="QCheckBox" name="resolutionCheckbox">
-                      <property name="text">
-                        <string>Resolution:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="5" column="1" colspan="2">
-                    <widget class="QComboBox" name="resolutionComboBox">
-                      <item>
-                        <property name="text">
-                          <string>2048x1536</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1920x1080</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1280x960</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1280x720</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>720x576</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>720x480</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>640x480</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                  
-                  <!-- Framerate -->
-                  <item row="6" column="0">
-                    <widget class="QCheckBox" name="framerateCheckbox">
-                      <property name="text">
-                        <string>Framerate:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="6" column="1" colspan="2">
-                    <widget class="QComboBox" name="framerateComboBox">
-                      <item>
-                        <property name="text">
-                          <string>30 fps</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>25 fps</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>20 fps</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>15 fps</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>10 fps</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>5 fps</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>3 fps</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                </layout>
-              </widget>
-            </item>
-            
-            <!-- Image Enhancement Group -->
-            <item>
-              <widget class="QGroupBox" name="imageEnhancementGroup">
-                <property name="title">
-                  <string>Image Enhancement</string>
-                </property>
-                <layout class="QGridLayout" name="imageEnhancementLayout">
-                  <!-- Wide Dynamic Range -->
-                  <item row="0" column="0">
-                    <widget class="QCheckBox" name="wdrCheckBox">
-                      <property name="text">
-                        <string>Wide Dynamic Range</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="1">
-                    <widget class="QLabel" name="wdrLevelLabel">
-                      <property name="text">
-                        <string>Level:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="2">
-                    <widget class="QSlider" name="wdrLevelSlider">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="3">
-                    <widget class="QSpinBox" name="wdrLevelSpinBox">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Backlight -->
-                  <item row="1" column="0" colspan="4">
-                    <widget class="QCheckBox" name="backlightCheckBox">
-                      <property name="text">
-                        <string>Backlight Compensation</string>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Anti-Fog -->
-                  <item row="2" column="0">
-                    <widget class="QCheckBox" name="antiFogCheckBox">
-                      <property name="text">
-                        <string>Anti-Fog</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="1">
-                    <widget class="QLabel" name="antiFogLevelLabel">
-                      <property name="text">
-                        <string>Level:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="2">
-                    <widget class="QSlider" name="antiFogLevelSlider">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="3">
-                    <widget class="QSpinBox" name="antiFogLevelSpinBox">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Digital Image Stabilizer -->
-                  <item row="3" column="0" colspan="4">
-                    <widget class="QCheckBox" name="imageStabilizerCheckBox">
-                      <property name="text">
-                        <string>Digital Image Stabilizer</string>
-                      </property>
-                    </widget>
-                  </item>
-                </layout>
-              </widget>
-            </item>
-            
-            <!-- Image Correction Group -->
-            <item>
-              <widget class="QGroupBox" name="imageCorrectionGroup">
-                <property name="title">
-                  <string>Image Correction</string>
-                </property>
-                <layout class="QGridLayout" name="imageCorrectionLayout">
-                  <!-- Horizontal Mirror -->
-                  <item row="0" column="0" colspan="2">
-                    <widget class="QCheckBox" name="horizontalMirrorCheckBox">
-                      <property name="text">
-                        <string>Horizontal Mirror</string>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Vertical Mirror -->
-                  <item row="1" column="0" colspan="2">
-                    <widget class="QCheckBox" name="verticalMirrorCheckBox">
-                      <property name="text">
-                        <string>Vertical Mirror</string>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Anti-False Color -->
-                  <item row="2" column="0" colspan="2">
-                    <widget class="QCheckBox" name="antiFalseColorCheckBox">
-                      <property name="text">
-                        <string>Anti-False Color</string>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Lens Shade Correction -->
-                  <item row="3" column="0" colspan="2">
-                    <widget class="QCheckBox" name="lensShadeCorrectionCheckBox">
-                      <property name="text">
-                        <string>Lens Shade Correction</string>
-                      </property>
-                    </widget>
-                  </item>
-                  
-                  <!-- Lens Distortion Correction -->
-                  <item row="4" column="0">
-                    <widget class="QCheckBox" name="lensDistortionCorrectionCheckBox">
-                      <property name="text">
-                        <string>Lens Distortion Correction</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="4" column="1">
-                    <widget class="QLabel" name="lensDistortionCorrectionLevelLabel">
-                      <property name="text">
-                        <string>Level:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="4" column="2">
-                    <widget class="QSlider" name="lensDistortionCorrectionSlider">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                      <property name="orientation">
-                        <enum>Qt::Horizontal</enum>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="4" column="3">
-                    <widget class="QSpinBox" name="lensDistortionCorrectionSpinBox">
-                      <property name="minimum">
-                        <number>0</number>
-                      </property>
-                      <property name="maximum">
-                        <number>100</number>
-                      </property>
-                    </widget>
-                  </item>
-                </layout>
-              </widget>
-            </item>
-            
-            <!-- Exposure Settings Group -->
-            <item>
-              <widget class="QGroupBox" name="exposureSettingsGroup">
-                <property name="title">
-                  <string>Exposure Settings</string>
-                </property>
-                <layout class="QGridLayout" name="exposureSettingsLayout">
-                  <!-- Scene -->
-                  <item row="0" column="0">
-                    <widget class="QCheckBox" name="sceneCheckbox">
-                      <property name="text">
-                        <string>Scene:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="1" colspan="3">
-                    <widget class="QComboBox" name="sceneComboBox">
-                      <item>
-                        <property name="text">
-                          <string>Indoor</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Outdoor</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                  
-                  <!-- Exposure Mode -->
-                  <item row="1" column="0">
-                    <widget class="QCheckBox" name="exposureModeCheckbox">
-                      <property name="text">
-                        <string>Exposure Mode:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="1" column="1" colspan="3">
-                    <widget class="QComboBox" name="exposureModeComboBox">
-                      <item>
-                        <property name="text">
-                          <string>Scene</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Manual</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Shutter</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                  
-                  <!-- Shutter Speed -->
-                  <item row="2" column="0">
-                    <widget class="QCheckBox" name="shutterSpeedCheckbox">
-                      <property name="text">
-                        <string>Shutter Speed:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="2" column="1" colspan="3">
-                    <widget class="QComboBox" name="shutterSpeedComboBox">
-                      <item>
-                        <property name="text">
-                          <string>1/8000</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/6000</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/4000</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/2000</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/1000</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/500</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/250</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/100</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/50</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/25</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/10</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1/5</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>1</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                  
-                  <!-- Manual Gain -->
-                  <item row="3" column="0">
-                    <widget class="QCheckBox" name="manualGainCheckbox">
-                      <property name="text">
-                        <string>Manual Gain:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="3" column="1" colspan="3">
-                    <widget class="QComboBox" name="manualGainComboBox">
-                      <item>
-                        <property name="text">
-                          <string>1x</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>2x</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>4x</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>8x</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>16x</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>32x</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>64x</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                </layout>
-              </widget>
-            </item>
-            
-            <!-- White Balance/IR Settings Group -->
-            <item>
-              <widget class="QGroupBox" name="whiteBalanceIRGroup">
-                <property name="title">
-                  <string>White Balance and IR Settings</string>
-                </property>
-                <layout class="QGridLayout" name="whiteBalanceIRLayout">
-                  <!-- White Balance Mode -->
-                  <item row="0" column="0">
-                    <widget class="QCheckBox" name="whiteBalanceModeCheckbox">
-                      <property name="text">
-                        <string>White Balance Mode:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="0" column="1" colspan="3">
-                    <widget class="QComboBox" name="whiteBalanceModeComboBox">
-                      <item>
-                        <property name="text">
-                          <string>Auto</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Manual</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Indoor</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Outdoor</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Sunlight</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                  
-                  <!-- IR Mode -->
-                  <item row="1" column="0">
-                    <widget class="QCheckBox" name="irModeCheckbox">
-                      <property name="text">
-                        <string>IR Mode:</string>
-                      </property>
-                    </widget>
-                  </item>
-                  <item row="1" column="1" colspan="3">
-                    <widget class="QComboBox" name="irModeComboBox">
-                      <item>
-                        <property name="text">
-                          <string>Auto</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Day</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Night</string>
-                        </property>
-                      </item>
-                      <item>
-                        <property name="text">
-                          <string>Disabled</string>
-                        </property>
-                      </item>
-                    </widget>
-                  </item>
-                </layout>
-              </widget>
-            </item>
-          </layout>
-        </widget>
+   <property name="spacing">
+    <number>6</number>
+   </property>
+   <property name="leftMargin">
+    <number>6</number>
+   </property>
+   <property name="topMargin">
+    <number>6</number>
+   </property>
+   <property name="rightMargin">
+    <number>6</number>
+   </property>
+   <property name="bottomMargin">
+    <number>6</number>
+   </property>
+   <item>
+    <layout class="QHBoxLayout" name="settingsHeaderLayout">
+     <item>
+      <widget class="QLabel" name="cameraIpLabel">
+       <property name="text">
+        <string>Camera IP:</string>
+       </property>
       </widget>
-    </item>
+     </item>
+     <item>
+      <widget class="QComboBox" name="cameraIpSelector">
+       <property name="minimumSize">
+        <size>
+         <width>150</width>
+         <height>26</height>
+        </size>
+       </property>
+       <property name="editable">
+        <bool>true</bool>
+       </property>
+       <property name="placeholderText">
+        <string>Enter IP address...</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <spacer name="settingsHeaderSpacer1">
+       <property name="orientation">
+        <enum>Qt::Horizontal</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>40</width>
+         <height>20</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+     <item>
+      <widget class="QPushButton" name="SetDefaultsBtn">
+       <property name="text">
+        <string>Set Defaults</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="resetDefaultsBtn">
+       <property name="text">
+        <string>Reset to Defaults</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="applyChangesBtn">
+       <property name="text">
+        <string>Apply Changes</string>
+       </property>
+      </widget>
+     </item>
+    </layout>
+   </item>
+   <item>
+    <widget class="QScrollArea" name="settingsScrollArea">
+     <property name="widgetResizable">
+      <bool>true</bool>
+     </property>
+     <widget class="QWidget" name="scrollAreaWidgetContents">
+      <property name="geometry">
+       <rect>
+        <x>0</x>
+        <y>0</y>
+        <width>772</width>
+        <height>902</height>
+       </rect>
+      </property>
+      <layout class="QVBoxLayout" name="scrollAreaLayout">
+       <item>
+        <widget class="QGroupBox" name="basicSettingsGroup">
+         <property name="title">
+          <string>Basic Settings</string>
+         </property>
+         <layout class="QGridLayout" name="basicSettingsLayout">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="brightnessCheckbox">
+            <property name="text">
+             <string>Brightness:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QSlider" name="brightnessSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QSpinBox" name="brightnessSpinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="contrastCheckbox">
+            <property name="text">
+             <string>Contrast:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1">
+           <widget class="QSlider" name="contrastSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="2">
+           <widget class="QSpinBox" name="contrastSpinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="saturationCheckbox">
+            <property name="text">
+             <string>Saturation:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QSlider" name="saturationSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QSpinBox" name="saturationSpinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="sharpnessCheckbox">
+            <property name="text">
+             <string>Sharpness:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1">
+           <widget class="QSlider" name="sharpnessSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="2">
+           <widget class="QSpinBox" name="sharpnessSpinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="value">
+             <number>50</number>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="bitrateCheckbox">
+            <property name="text">
+             <string>Bitrate (kbps):</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QSlider" name="bitrateSlider">
+            <property name="minimum">
+             <number>256</number>
+            </property>
+            <property name="maximum">
+             <number>8192</number>
+            </property>
+            <property name="singleStep">
+             <number>256</number>
+            </property>
+            <property name="pageStep">
+             <number>1024</number>
+            </property>
+            <property name="value">
+             <number>4096</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QSpinBox" name="bitrateSpinBox">
+            <property name="minimum">
+             <number>256</number>
+            </property>
+            <property name="maximum">
+             <number>8192</number>
+            </property>
+            <property name="singleStep">
+             <number>256</number>
+            </property>
+            <property name="value">
+             <number>4096</number>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="0">
+           <widget class="QCheckBox" name="resolutionCheckbox">
+            <property name="text">
+             <string>Resolution:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="5" column="1" colspan="2">
+           <widget class="QComboBox" name="resolutionComboBox">
+            <item>
+             <property name="text">
+              <string>2048x1536</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1920x1080</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1280x960</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1280x720</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>720x576</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>720x480</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>640x480</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="6" column="0">
+           <widget class="QCheckBox" name="framerateCheckbox">
+            <property name="text">
+             <string>Framerate:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="6" column="1" colspan="2">
+           <widget class="QComboBox" name="framerateComboBox">
+            <item>
+             <property name="text">
+              <string>30 fps</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>25 fps</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>20 fps</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>15 fps</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>10 fps</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>5 fps</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>3 fps</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="imageEnhancementGroup">
+         <property name="title">
+          <string>Image Enhancement</string>
+         </property>
+         <layout class="QGridLayout" name="imageEnhancementLayout">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="wdrCheckBox">
+            <property name="text">
+             <string>Wide Dynamic Range</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1">
+           <widget class="QLabel" name="wdrLevelLabel">
+            <property name="text">
+             <string>Level:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="2">
+           <widget class="QSlider" name="wdrLevelSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="3">
+           <widget class="QSpinBox" name="wdrLevelSpinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="4">
+           <widget class="QCheckBox" name="backlightCheckBox">
+            <property name="text">
+             <string>Backlight Compensation</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="antiFogCheckBox">
+            <property name="text">
+             <string>Anti-Fog</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1">
+           <widget class="QLabel" name="antiFogLevelLabel">
+            <property name="text">
+             <string>Level:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="2">
+           <widget class="QSlider" name="antiFogLevelSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="3">
+           <widget class="QSpinBox" name="antiFogLevelSpinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="4">
+           <widget class="QCheckBox" name="imageStabilizerCheckBox">
+            <property name="text">
+             <string>Digital Image Stabilizer</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="imageCorrectionGroup">
+         <property name="title">
+          <string>Image Correction</string>
+         </property>
+         <layout class="QGridLayout" name="imageCorrectionLayout">
+          <item row="0" column="0" colspan="2">
+           <widget class="QCheckBox" name="horizontalMirrorCheckBox">
+            <property name="text">
+             <string>Horizontal Mirror</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="0" colspan="2">
+           <widget class="QCheckBox" name="verticalMirrorCheckBox">
+            <property name="text">
+             <string>Vertical Mirror</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="0" colspan="2">
+           <widget class="QCheckBox" name="antiFalseColorCheckBox">
+            <property name="text">
+             <string>Anti-False Color</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="0" colspan="2">
+           <widget class="QCheckBox" name="lensShadeCorrectionCheckBox">
+            <property name="text">
+             <string>Lens Shade Correction</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="0">
+           <widget class="QCheckBox" name="lensDistortionCorrectionCheckBox">
+            <property name="text">
+             <string>Lens Distortion Correction</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="1">
+           <widget class="QLabel" name="lensDistortionCorrectionLevelLabel">
+            <property name="text">
+             <string>Level:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="2">
+           <widget class="QSlider" name="lensDistortionCorrectionSlider">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+            <property name="orientation">
+             <enum>Qt::Horizontal</enum>
+            </property>
+           </widget>
+          </item>
+          <item row="4" column="3">
+           <widget class="QSpinBox" name="lensDistortionCorrectionSpinBox">
+            <property name="minimum">
+             <number>0</number>
+            </property>
+            <property name="maximum">
+             <number>100</number>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="exposureSettingsGroup">
+         <property name="title">
+          <string>Exposure Settings</string>
+         </property>
+         <layout class="QGridLayout" name="exposureSettingsLayout">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="sceneCheckbox">
+            <property name="text">
+             <string>Scene:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="3">
+           <widget class="QComboBox" name="sceneComboBox">
+            <item>
+             <property name="text">
+              <string>Indoor</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Outdoor</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="exposureModeCheckbox">
+            <property name="text">
+             <string>Exposure Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QComboBox" name="exposureModeComboBox">
+            <item>
+             <property name="text">
+              <string>Scene</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Manual</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Shutter</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="2" column="0">
+           <widget class="QCheckBox" name="shutterSpeedCheckbox">
+            <property name="text">
+             <string>Shutter Speed:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="2" column="1" colspan="3">
+           <widget class="QComboBox" name="shutterSpeedComboBox">
+            <item>
+             <property name="text">
+              <string>1/8000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/6000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/4000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/2000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/1000</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/500</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/250</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/100</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/50</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/25</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/10</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1/5</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>1</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="3" column="0">
+           <widget class="QCheckBox" name="manualGainCheckbox">
+            <property name="text">
+             <string>Manual Gain:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="3" column="1" colspan="3">
+           <widget class="QComboBox" name="manualGainComboBox">
+            <item>
+             <property name="text">
+              <string>1x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>2x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>4x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>8x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>16x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>32x</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>64x</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+       <item>
+        <widget class="QGroupBox" name="whiteBalanceIRGroup">
+         <property name="title">
+          <string>White Balance and IR Settings</string>
+         </property>
+         <layout class="QGridLayout" name="whiteBalanceIRLayout">
+          <item row="0" column="0">
+           <widget class="QCheckBox" name="whiteBalanceModeCheckbox">
+            <property name="text">
+             <string>White Balance Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="0" column="1" colspan="3">
+           <widget class="QComboBox" name="whiteBalanceModeComboBox">
+            <item>
+             <property name="text">
+              <string>Auto</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Manual</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Indoor</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Outdoor</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Sunlight</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+          <item row="1" column="0">
+           <widget class="QCheckBox" name="irModeCheckbox">
+            <property name="text">
+             <string>IR Mode:</string>
+            </property>
+           </widget>
+          </item>
+          <item row="1" column="1" colspan="3">
+           <widget class="QComboBox" name="irModeComboBox">
+            <item>
+             <property name="text">
+              <string>Auto</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Day</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Night</string>
+             </property>
+            </item>
+            <item>
+             <property name="text">
+              <string>Disabled</string>
+             </property>
+            </item>
+           </widget>
+          </item>
+         </layout>
+        </widget>
+       </item>
+      </layout>
+     </widget>
+    </widget>
+   </item>
   </layout>
  </widget>
  <resources/>

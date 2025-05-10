@@ -37,6 +37,7 @@ private:
     void initializeStreams(void);
     void updateLayout(void);
     void initializeRosServicesForWidgets(void);
+    QString extractIpFromUrl(const QString& url); 
     
     QWidget* createStreamContainer(int streamIndex_);
     QShortcut _closeShortCut;

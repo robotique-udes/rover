@@ -61,14 +61,18 @@ void SecondaryWindow::loadPredefinedStreams()
         _predefinedStreams.push_back({QString::fromStdString(name), QString::fromStdString(url)});
     }
     
-    // Create a vector of just the URLs to pass to loadPredefinedIPs
-    std::vector<QString> urls;
+    // Create a vector of just the IPs to pass to loadPredefinedIPs
+    std::vector<QString> ips;
     for (const auto& stream : _predefinedStreams) {
-        urls.push_back(stream.url);
+        // Extract IP from URL instead of using the full URL
+        QString ip = extractIpFromUrl(stream.url);
+        if (!ip.isEmpty()) {
+            ips.push_back(ip);
+        }
     }
     
-    // Now pass the compatible vector type
-    _cameraSettings->loadPredefinedIPs(urls);
+    // Now pass the compatible vector type with only IPs
+    _cameraSettings->loadPredefinedIPs(ips);
 }
 
 void SecondaryWindow::setupUI()
@@ -227,4 +231,14 @@ void SecondaryWindow::initializeRosServicesForWidgets()
 void SecondaryWindow::showCameraSettings()
 {
     _cameraSettings->showSettings();
+}
+
+QString SecondaryWindow::extractIpFromUrl(const QString& url)
+{
+    static QRegularExpression ipRegex("rtsp://(?:[^:@]+(?::[^@]+)?@)?([^:/]+)");
+    QRegularExpressionMatch match = ipRegex.match(url);
+    if (match.hasMatch()) {
+        return match.captured(1);
+    }
+    return QString();
 }
