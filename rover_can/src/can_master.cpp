@@ -91,17 +91,17 @@ class CanMaster : public rclcpp::Node
     RoverCanLib::Constant::eInternalErrorCode askStateCanDevices();
 
     int _canSocket;
-    RoverLib::Timer<uint64_t, RoverLib::millis> _timerHeartbeat
-        = RoverLib::Timer<uint64_t, RoverLib::millis>((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
-    RoverLib::Chrono<uint64_t, RoverLib::millis> _chonoCanWatchdog;
+    LoopTimer<uint64_t, Time::millis> _timerHeartbeat
+        = LoopTimer<uint64_t, Time::millis>((uint64_t)(1000.0f / RoverCanLib::Constant::HEARTBEAT_FREQ));
+    Chrono<uint64_t, Time::millis> _chonoCanWatchdog;
     rclcpp::TimerBase::SharedPtr _timerLoop;
     std::unordered_map<size_t, CanDevice> _deviceMap;
     std::unordered_map<size_t, RoverCanLib::Msgs::Msg*> _msgsMap;
 
     // =========================================================================
     //  Device loop timers
-    RoverLib::Timer<unsigned long, RoverLib::millis> _timer_motorCmdSend = RoverLib::Timer<unsigned long, RoverLib::millis>(50);
-    RoverLib::Timer<unsigned long, RoverLib::millis> _timer_armCmdSend = RoverLib::Timer<unsigned long, RoverLib::millis>(50);
+    LoopTimer<unsigned long, Time::millis> _timer_motorCmdSend = LoopTimer<unsigned long, Time::millis>(50);
+    LoopTimer<unsigned long, Time::millis> _timer_armCmdSend = LoopTimer<unsigned long, Time::millis>(50);
     // =========================================================================
 
     // =========================================================================
@@ -372,7 +372,7 @@ void CanMaster::mainLoop()
 
 RoverCanLib::Constant::eInternalErrorCode CanMaster::updateHeartbeat()
 {
-    if (_timerHeartbeat.isDone())
+    if (_timerHeartbeat.isReady())
     {
         RoverCanLib::Msgs::Heartbeat msgHeartbeat;
 
@@ -641,7 +641,7 @@ void CanMaster::CB_Can_Compass(uint16_t id_, const can_frame* frameMsg_)
 //  Sub callbacks
 void CanMaster::CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::SharedPtr rosMsg_)
 {
-    if (!_timer_motorCmdSend.isDone())
+    if (!_timer_motorCmdSend.isReady())
     {
         return;
     }
@@ -685,7 +685,7 @@ void CanMaster::CB_ROS_propulsionMotor(const rover_msgs::msg::PropulsionMotor::S
 
 void CanMaster::CB_ROS_Arm(const rover_msgs::msg::ArmMsg::SharedPtr rosMsg_)
 {
-    if (!_timer_armCmdSend.isDone())
+    if (!_timer_armCmdSend.isReady())
     {
         return;
     }

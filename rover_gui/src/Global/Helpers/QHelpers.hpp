@@ -2,7 +2,7 @@
 #include <QStandardPaths>
 #include <QDir>
 
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 
 namespace QHelper
 {

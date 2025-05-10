@@ -2,7 +2,6 @@
 #define CAN_DRIVER_MOCK_HPP
 
 #include "rover_can2/drivers/driver_base.hpp"
-#include "rover_can2/msgs/test_msg.hpp"
 #include "rover_lib2/helpers/circular_buffer.hpp"
 
 namespace RoverCan2::Drivers

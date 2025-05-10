@@ -1,19 +1,23 @@
 #ifndef ASSERT_HPP
 #define ASSERT_HPP
-#if defined(ARDUINO_ESP32S3_DEV)
+
 #include "rover_lib2/helpers/log.hpp"
+
+#if defined(ARDUINO_ESP32S3_DEV)
 #include "driver/ledc.h"
 #include "soc/mcpwm_periph.h"
 #include "esp_system.h"
 #include "esp_private/periph_ctrl.h"
 #include <cstdarg>
+
 #elif defined(__linux__)
 #include <cstdarg>
-#include <iostream>
+#include <string>
 #endif  // defined(ARDUINO_ESP32S3_DEV)
 
-#if defined(ARDUINO_ESP32S3_DEV)
 DEFINE_LOG_NODE(ASSERTS, Logger::eNodeState::ON);
+
+#if defined(ARDUINO_ESP32S3_DEV)
 namespace
 {
     constexpr void SHUTDOWN_PWM(void)
@@ -107,8 +111,7 @@ namespace
 {
     [[noreturn]] inline void ABORT(const std::string& message)
     {
-        /* TODO Validate Ros Node assert showing*/
-        std::cerr << "Process called abort() because: " << message << std::endl;
+        LOG_FATAL(Logger::Nodes::ASSERTS, message.c_str());
         abort();
     }
 }  // namespace
@@ -152,7 +155,7 @@ namespace
     {                                                                             \
         if (!(condition))                                                         \
         {                                                                         \
-            ABORT(std::string("Assertion failed: ") + #condition + ", " + (msg)); \
+            ABORT(std::string("Assertion failed: ") + #condition + ". " + (msg)); \
         }                                                                         \
     }                                                                             \
     while (0)
@@ -164,7 +167,7 @@ namespace
         {                                                                          \
             char buffer[256];                                                      \
             snprintf(buffer, sizeof(buffer), format, ##__VA_ARGS__);               \
-            ABORT(std::string("Assertion failed: ") + #condition + ", " + buffer); \
+            ABORT(std::string("Assertion failed: ") + #condition + ". " + buffer); \
         }                                                                          \
     }                                                                              \
     while (0)

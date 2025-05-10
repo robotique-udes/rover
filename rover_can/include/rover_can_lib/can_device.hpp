@@ -5,7 +5,9 @@
 #include "rover_can_lib/config.hpp"
 #include "rover_can_lib/msgs/error_state.hpp"
 #include "rover_msgs/msg/can_device_status.hpp"
-#include "rovus_lib/timer.hpp"
+#include "rover_lib2/helpers/time.hpp"
+#include "rover_lib2/helpers/loop_timer.hpp"
+#include "rover_lib2/helpers/chrono.hpp"
 
 class CanMaster;
 
@@ -58,7 +60,7 @@ class CanDevice
     uint16_t _id;
     rclcpp::Publisher<rover_msgs::msg::CanDeviceStatus>::SharedPtr _pub_CanBusState;
     rover_msgs::msg::CanDeviceStatus _msg_canStatus;
-    RoverLib::Chrono<uint64_t, RoverLib::millis> _timerWatchdog;
+    Chrono<uint64_t, Time::millis> _timerWatchdog;
     CanMaster* _canMasterPtr;
     void (CanMaster::*_callback)(uint16_t id_, const can_frame* frameMsg_);
 

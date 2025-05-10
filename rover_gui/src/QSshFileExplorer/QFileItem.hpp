@@ -1,7 +1,7 @@
 #ifndef __Q_FILE_ITEM__
 #define __Q_FILE_ITEM__
 
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 
 #include <QStandardItemModel>
 #include <memory>
