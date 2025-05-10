@@ -38,7 +38,7 @@ class JoyManager
     }
     bool isPressed(eJoyInput joyInput_)
     {
-        return !RoverLib2::IN_ERROR(_joyInputArray[TO_UNDERLYING(joyInput_)], DEADZONE, NEUTRAL);
+        return !IN_ERROR(_joyInputArray[TO_UNDERLYING(joyInput_)], DEADZONE, NEUTRAL);
     }
     bool isTriggered(eJoyInput joyInput_)
     {
