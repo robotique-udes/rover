@@ -10,6 +10,7 @@
 #include "rover_lib2/helpers/watchdog.hpp"
 #include "rover_lib2/helpers/time.hpp"
 
+#include <string>
 #include <thread>
 #include <chrono>
 #include <fcntl.h>
@@ -26,6 +27,8 @@ namespace RoverCan2::Drivers
 {
     class DriverLinux : public DriverBase<DriverLinux>
     {
+        static constexpr auto INTERFACE_STABILIZATION_TIME_MS = 1500;
+
         enum class eState : size_t
         {
             UNINSTALLED,
@@ -34,7 +37,8 @@ namespace RoverCan2::Drivers
         };
 
       public:
-        DriverLinux():
+        DriverLinux(const std::string& interfaceName_ = "canRovus"):
+            _interfaceName(interfaceName_),
             _state(eState::UNINSTALLED),
             _recvWatchdog(2ULL * 1'000ULL / static_cast<uint64_t>(Constant::MASTER_HEARTBEAT_RATE_HZ))
         {
@@ -45,7 +49,7 @@ namespace RoverCan2::Drivers
             cleanupCanSocket();
         }
 
-        // init() might be useless in this case
+        // init() is useless in this case
         void __init()
         {
             LOG_INFO(Logger::Nodes::DriverLinux, "Initializing CAN linux driver");
@@ -92,7 +96,9 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
-            struct can_frame frame{};
+            struct can_frame frame
+            {
+            };
             frame.can_id = static_cast<uint32_t>(canMsg_.getCanID());
             frame.can_dlc = canMsg_.dataLength;
 
@@ -126,7 +132,7 @@ namespace RoverCan2::Drivers
                           canMsg_.getMsgID(),
                           canMsg_.getMsgContentID());
 
-                _state = eState::RUNNING; // if state is TX_QUEUE_FULL, return to RUNNING
+                _state = eState::RUNNING;  // if state is TX_QUEUE_FULL, return to RUNNING
                 return true;
             }
             else if (bytes_sent == -1)
@@ -187,7 +193,7 @@ namespace RoverCan2::Drivers
             }
 
             struct ifreq ifr;
-            std::strncpy(ifr.ifr_name, "canRovus", IFNAMSIZ - 1);
+            std::strncpy(ifr.ifr_name, _interfaceName.c_str(), IFNAMSIZ - 1);
             if (ioctl(_socket_fd, SIOCGIFINDEX, &ifr) < 0)
             {
                 LOG_DEBUG(Logger::Nodes::DriverLinux,
@@ -199,7 +205,9 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
-            struct sockaddr_can addr{};
+            struct sockaddr_can addr
+            {
+            };
             addr.can_family = PF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
 
@@ -226,7 +234,7 @@ namespace RoverCan2::Drivers
             }
 
             // Ugly for now but give time for the CAN interface to stabilize (e.g., after USB-CAN device insertion)
-            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            std::this_thread::sleep_for(std::chrono::milliseconds(INTERFACE_STABILIZATION_TIME_MS));
 
             LOG_INFO(Logger::Nodes::DriverLinux, "CAN socket successfully created");
             _state = eState::RUNNING;
@@ -254,7 +262,7 @@ namespace RoverCan2::Drivers
                     case EAGAIN:
                         // Non-blocking read: no data available now
                         LOG_DEBUG(Logger::Nodes::DriverLinux, "No CAN data available (EAGAIN)");
-                        _recvWatchdog.reset(); // To confirm if we reset watchdog here
+                        _recvWatchdog.reset();
                         return;
                     case EIO:
                         LOG_WARN(Logger::Nodes::DriverLinux,
@@ -304,8 +312,8 @@ namespace RoverCan2::Drivers
 
         int _socket_fd = -1;
 
+        std::string _interfaceName;
         eState _state;
-
         CircularBuffer<CanMsg, 10UL> _msgBuffer;
         Watchdog<uint64_t, Time::millis> _recvWatchdog;
     };
