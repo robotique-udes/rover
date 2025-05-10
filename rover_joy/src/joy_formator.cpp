@@ -204,26 +204,24 @@ void JoyFormator::callbackPubJoy()
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::EXT2] = getJoyValue<bool>(Keybinding::ext2);
 
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT]
-        = applyJoystickDeadZone((RoverLib2::CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_front), -1.0f, 1.0f)));
+        = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_front), -1.0f, 1.0f)));
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE]
-        = applyJoystickDeadZone((RoverLib2::CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_side), -1.0f, 1.0f)));
+        = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_left_side), -1.0f, 1.0f)));
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT]
-        = applyJoystickDeadZone((RoverLib2::CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_front), -1.0f, 1.0f)));
+        = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_front), -1.0f, 1.0f)));
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE]
-        = applyJoystickDeadZone((RoverLib2::CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_side), -1.0f, 1.0f)));
+        = applyJoystickDeadZone((CONSTRAIN(getJoyValue<float>(Keybinding::joystick_right_side), -1.0f, 1.0f)));
 
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2]
-        = MAP(RoverLib2::CONSTRAIN(getJoyValue<float>(Keybinding::l2), -1.0f, 1.0f),
-              _controller_config.trigger_range_min,
-              _controller_config.trigger_range_max,
-              0.0f,
-              1.0f);
-    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2]
-        = MAP(RoverLib2::CONSTRAIN(getJoyValue<float>(Keybinding::r2), -1.0f, 1.0f),
-              _controller_config.trigger_range_min,
-              _controller_config.trigger_range_max,
-              0.0f,
-              1.0f);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::L2] = MAP(CONSTRAIN(getJoyValue<float>(Keybinding::l2), -1.0f, 1.0f),
+                                                               _controller_config.trigger_range_min,
+                                                               _controller_config.trigger_range_max,
+                                                               0.0f,
+                                                               1.0f);
+    formatted_joy_msg.joy_data[rover_msgs::msg::Joy::R2] = MAP(CONSTRAIN(getJoyValue<float>(Keybinding::r2), -1.0f, 1.0f),
+                                                               _controller_config.trigger_range_min,
+                                                               _controller_config.trigger_range_max,
+                                                               0.0f,
+                                                               1.0f);
 
     float cross_temp = getJoyValue<float>(Keybinding::cross_front);
     formatted_joy_msg.joy_data[rover_msgs::msg::Joy::CROSS_UP] = cross_temp > 0.0f ? true : false;    // cross up
@@ -336,7 +334,7 @@ T JoyFormator::getJoyValue(Keybinding::eKeybinding key_)
 
 float JoyFormator::applyJoystickDeadZone(float value_)
 {
-    if (!RoverLib2::IN_ERROR(value_, _controller_config.joystick_dead_zone, 0.0f))
+    if (!IN_ERROR(value_, _controller_config.joystick_dead_zone, 0.0f))
     {
         return SIGN(value_) * MAP(abs(value_), _controller_config.joystick_dead_zone, 1.0f, 0.0f, 1.0f);
     }

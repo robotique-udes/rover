@@ -22,7 +22,7 @@ class PropulsionMotor : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2:
     static constexpr float PROPULSION_MOTOR_STATUS_PUBLISH_FREQUENCY_HZ = 100.0F;
 
     static constexpr float CAN_PUBLISH_FREQUENCY = 20.0F;
-    static constexpr uint32_t CAN_PUBLISH_PERIOD_MS = static_cast<uint32_t>(RoverLib2::ROUND(1'000.0F / CAN_PUBLISH_FREQUENCY));
+    static constexpr uint32_t CAN_PUBLISH_PERIOD_MS = static_cast<uint32_t>(ROUND(1'000.0F / CAN_PUBLISH_FREQUENCY));
 
   public:
     PropulsionMotor(RoverCan2::Constant::eDeviceId deviceId_,

@@ -168,7 +168,7 @@ bool Recording::startRecording(void)
     _frameHeight = static_cast<int>(std::round(_cap.get(cv::CAP_PROP_FRAME_HEIGHT)));
     _fps = _cap.get(cv::CAP_PROP_FPS);
 
-    _fps = RoverLib2::CONSTRAIN(_fps, 0.0, 30.0);
+    _fps = CONSTRAIN(_fps, 0.0, 30.0);
 
     RCLCPP_DEBUG(rLogger, "fps set to %f", _fps);
 
