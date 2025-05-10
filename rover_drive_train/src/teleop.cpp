@@ -115,8 +115,9 @@ Teleop::Teleop():
 {
     this->getParams();
 
-    _sub_joy_formated
-        = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY, QOS_DEFAULT, std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+    _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY,
+                                                                        QOS_DEFAULT,
+                                                                        std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
 
     _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, QOS_DEFAULT);
 }

@@ -1,6 +1,5 @@
 #include <rclcpp/rclcpp.hpp>
 #include <std_msgs/msg/empty.hpp>
-#include <rover_lib2/helpers/constants.hpp>
 
 constexpr const char* HEARTBEAT_DEFAULT_TOPIC_NAME = "heartbeat";
 
@@ -26,7 +25,7 @@ int main(int argc, char* argv[])
     RCLCPP_INFO(node->get_logger(), "Starting heartbeat at %u Hz", heartbeat_frequency);
 
     rclcpp::Publisher<std_msgs::msg::Empty>::SharedPtr pub_heartbeat
-        = node->create_publisher<std_msgs::msg::Empty>(HEARTBEAT_DEFAULT_TOPIC_NAME, QOS_DEFAULT);
+        = node->create_publisher<std_msgs::msg::Empty>(HEARTBEAT_DEFAULT_TOPIC_NAME, 1);
     rclcpp::Rate timer(heartbeat_frequency);
 
     while (rclcpp::ok())

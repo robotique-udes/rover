@@ -9,8 +9,7 @@
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
 #include <rclcpp/qos.hpp>
 #define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
-#endif //defined(__linux__) && defined(RCLCPP_DEBUG)
-
+#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
 
 namespace Constants::CameraInfo
 {
