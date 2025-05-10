@@ -9,6 +9,7 @@
 #include <memory>
 #include <unordered_map>
 #include <mutex>
+#include <chrono>
 
 #define slots Q_SLOTS 
 namespace py = pybind11;
@@ -107,6 +108,8 @@ private:
     // Map of IP addresses to Python controller objects
     struct CameraConnection {
         std::unique_ptr<PyObjectWrapper> controller;
+        bool is_connected = false;
+        std::chrono::system_clock::time_point last_check_time;
     };
     
     std::unordered_map<std::string, CameraConnection> connectionCache;
@@ -134,6 +137,9 @@ public:
     
     // Set Python module path
     static void setPythonModulePath(const std::string& path);
+
+    // Check if camera is reachable
+    bool isCameraReachable(const std::string& ip, bool force_check = false);
 
     // Camera parameter control methods - each takes an IP address
     bool setBrightness(const std::string& ip, int value);

@@ -2,6 +2,7 @@
 #include "Global/Helpers/IPCameraAPI.hpp"
 #include <pybind11/embed.h>
 #include <iostream>
+#include <chrono>
 #include <filesystem>
 
 namespace py = pybind11;
@@ -115,6 +116,8 @@ PyObjectWrapper* ParameterHandler::getOrCreateController(const std::string& ip) 
         // Store the Python controller instance in our cache
         CameraConnection conn;
         conn.controller = std::make_unique<PyObjectWrapper>(controller);
+        conn.is_connected = true;
+        conn.last_check_time = std::chrono::system_clock::now();
         
         connectionCache[ip] = std::move(conn);
         
@@ -122,10 +125,24 @@ PyObjectWrapper* ParameterHandler::getOrCreateController(const std::string& ip) 
     }
     catch (const py::error_already_set& e) {
         std::cerr << "Python error connecting to camera at " << ip << ": " << e.what() << std::endl;
+        
+        // Store the failed connection status
+        CameraConnection conn;
+        conn.is_connected = false;
+        conn.last_check_time = std::chrono::system_clock::now();
+        connectionCache[ip] = std::move(conn);
+        
         return nullptr;
     }
     catch (const std::exception& e) {
         std::cerr << "C++ error connecting to camera at " << ip << ": " << e.what() << std::endl;
+        
+        // Store the failed connection status
+        CameraConnection conn;
+        conn.is_connected = false;
+        conn.last_check_time = std::chrono::system_clock::now();
+        connectionCache[ip] = std::move(conn);
+        
         return nullptr;
     }
 }
@@ -384,4 +401,121 @@ bool ParameterHandler::setIRMode(const std::string& ip, int modeValue) {
 bool ParameterHandler::disableIR(const std::string& ip) {
     auto controller = getOrCreateController(ip);
     return callPythonMethod(controller, ip, "disableIR");
+}
+
+bool ParameterHandler::isCameraReachable(const std::string& ip, bool force_check) {
+    // Thread safety for cache access
+    std::lock_guard<std::mutex> lock(cacheMutex);
+    
+    // Check cache first if we're not forcing a fresh check
+    auto it = connectionCache.find(ip);
+    if (!force_check && it != connectionCache.end()) {
+        // Only use cached result if it's less than 10 seconds old
+        auto now = std::chrono::system_clock::now();
+        auto elapsed = std::chrono::duration_cast<std::chrono::seconds>(now - it->second.last_check_time).count();
+        
+        if (elapsed < 10) {
+            return it->second.is_connected;
+        }
+    }
+    
+    // Attempt to get or create the controller
+    try {
+        // Check if the Python module was successfully loaded
+        if (ipcamera_api_module.is_none()) {
+            std::cerr << "Python module was not loaded. Cannot check connectivity for " << ip << std::endl;
+            return false;
+        }
+        
+        // Create a new connection if needed
+        if (it == connectionCache.end() || !it->second.controller) {
+            // Create an instance of the Python class
+            py::object controller;
+            try {
+                controller = ipcamera_api_module.attr("ParameterHandler")(
+                    ip, default_port, default_username, default_password
+                );
+            }
+            catch (const py::error_already_set& e) {
+                std::cerr << "Python error connecting to camera at " << ip << ": " << e.what() << std::endl;
+                
+                // Update connection status in cache
+                CameraConnection conn;
+                conn.is_connected = false;
+                conn.last_check_time = std::chrono::system_clock::now();
+                connectionCache[ip] = std::move(conn);
+                
+                return false;
+            }
+            
+            // Successfully created controller
+            CameraConnection conn;
+            conn.controller = std::make_unique<PyObjectWrapper>(controller);
+            conn.is_connected = true;
+            conn.last_check_time = std::chrono::system_clock::now();
+            connectionCache[ip] = std::move(conn);
+            
+            return true;
+        }
+        else {
+            // We have an existing controller, try a simple operation to verify connectivity
+            // We'll test with TCP connectivity to common camera ports
+            try {
+                // Use Python's socket module to test connectivity
+                py::module socket = py::module::import("socket");
+                py::object sock = socket.attr("socket")(socket.attr("AF_INET"), socket.attr("SOCK_STREAM"));
+                
+                // Set a short timeout
+                sock.attr("settimeout")(3.0);
+                
+                // Try to connect to either HTTP (80) or RTSP (554) port
+                bool connected = false;
+                try {
+                    sock.attr("connect")(py::make_tuple(ip, 80));
+                    sock.attr("close")();
+                    connected = true;
+                }
+                catch (const py::error_already_set&) {
+                    // Try RTSP port
+                    try {
+                        sock = socket.attr("socket")(socket.attr("AF_INET"), socket.attr("SOCK_STREAM"));
+                        sock.attr("settimeout")(3.0);
+                        sock.attr("connect")(py::make_tuple(ip, 554));
+                        sock.attr("close")();
+                        connected = true;
+                    }
+                    catch (const py::error_already_set&) {
+                        // Both connection attempts failed
+                        connected = false;
+                    }
+                }
+                
+                // Update connection status in cache
+                it->second.is_connected = connected;
+                it->second.last_check_time = std::chrono::system_clock::now();
+                
+                return connected;
+            }
+            catch (const std::exception& e) {
+                std::cerr << "Error checking connectivity for " << ip << ": " << e.what() << std::endl;
+                
+                // Update connection status in cache
+                it->second.is_connected = false;
+                it->second.last_check_time = std::chrono::system_clock::now();
+                
+                return false;
+            }
+        }
+    }
+    catch (const std::exception& e) {
+        std::cerr << "C++ error checking connectivity for " << ip << ": " << e.what() << std::endl;
+        
+        // Update connection status in cache
+        CameraConnection conn;
+        conn.is_connected = false;
+        conn.last_check_time = std::chrono::system_clock::now();
+        connectionCache[ip] = std::move(conn);
+        
+        return false;
+    }
 }

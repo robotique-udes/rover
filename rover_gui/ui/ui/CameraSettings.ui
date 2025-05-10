@@ -71,7 +71,7 @@
       </spacer>
      </item>
      <item>
-      <widget class="QPushButton" name="SetDefaultsBtn">
+      <widget class="QPushButton" name="setDefaultsBtn">
        <property name="text">
         <string>Set Defaults</string>
        </property>

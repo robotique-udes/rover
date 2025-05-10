@@ -104,6 +104,173 @@ void CameraSettings::connectSignals()
     
     // Connect the reset defaults button
     connect(_ui->resetDefaultsBtn, &QPushButton::clicked, this, &CameraSettings::resetCameraDefaults);
+    
+    // Connect the set defaults button
+    connect(_ui->setDefaultsBtn, &QPushButton::clicked, this, &CameraSettings::setCustomDefaults);
+}
+
+void CameraSettings::saveCustomDefaults(const QString& ip)
+{
+    // Create a new defaults object or get existing one
+    CameraDefaults defaults;
+    
+    // Save basic settings
+    defaults.brightness = _ui->brightnessSlider->value();
+    defaults.contrast = _ui->contrastSlider->value();
+    defaults.saturation = _ui->saturationSlider->value();
+    defaults.sharpness = _ui->sharpnessSlider->value();
+    defaults.bitrate = _ui->bitrateSlider->value();
+    defaults.resolutionIndex = _ui->resolutionComboBox->currentIndex();
+    defaults.framerateIndex = _ui->framerateComboBox->currentIndex();
+    
+    // Save enhancement settings
+    defaults.wdrEnabled = _ui->wdrCheckBox->isChecked();
+    defaults.wdrLevel = _ui->wdrLevelSlider->value();
+    defaults.backlightEnabled = _ui->backlightCheckBox->isChecked();
+    defaults.antiFogEnabled = _ui->antiFogCheckBox->isChecked();
+    defaults.antiFogLevel = _ui->antiFogLevelSlider->value();
+    defaults.imageStabilizerEnabled = _ui->imageStabilizerCheckBox->isChecked();
+    
+    // Save correction settings
+    defaults.horizontalMirrorEnabled = _ui->horizontalMirrorCheckBox->isChecked();
+    defaults.verticalMirrorEnabled = _ui->verticalMirrorCheckBox->isChecked();
+    defaults.antiFalseColorEnabled = _ui->antiFalseColorCheckBox->isChecked();
+    defaults.lensShadeCorrectionEnabled = _ui->lensShadeCorrectionCheckBox->isChecked();
+    defaults.lensDistortionCorrectionEnabled = _ui->lensDistortionCorrectionCheckBox->isChecked();
+    defaults.lensDistortionCorrectionLevel = _ui->lensDistortionCorrectionSlider->value();
+    
+    // Save exposure settings
+    defaults.sceneIndex = _ui->sceneComboBox->currentIndex();
+    defaults.exposureModeIndex = _ui->exposureModeComboBox->currentIndex();
+    defaults.shutterSpeedIndex = _ui->shutterSpeedComboBox->currentIndex();
+    defaults.manualGainIndex = _ui->manualGainComboBox->currentIndex();
+    
+    // Save white balance and IR settings
+    defaults.whiteBalanceModeIndex = _ui->whiteBalanceModeComboBox->currentIndex();
+    defaults.irModeIndex = _ui->irModeComboBox->currentIndex();
+    
+    // Save checkbox states
+    defaults.brightnessChecked = _ui->brightnessCheckbox->isChecked();
+    defaults.contrastChecked = _ui->contrastCheckbox->isChecked();
+    defaults.saturationChecked = _ui->saturationCheckbox->isChecked();
+    defaults.sharpnessChecked = _ui->sharpnessCheckbox->isChecked();
+    defaults.bitrateChecked = _ui->bitrateCheckbox->isChecked();
+    defaults.resolutionChecked = _ui->resolutionCheckbox->isChecked();
+    defaults.framerateChecked = _ui->framerateCheckbox->isChecked();
+    defaults.sceneChecked = _ui->sceneCheckbox->isChecked();
+    defaults.exposureModeChecked = _ui->exposureModeCheckbox->isChecked();
+    defaults.shutterSpeedChecked = _ui->shutterSpeedCheckbox->isChecked();
+    defaults.manualGainChecked = _ui->manualGainCheckbox->isChecked();
+    defaults.whiteBalanceModeChecked = _ui->whiteBalanceModeCheckbox->isChecked();
+    defaults.irModeChecked = _ui->irModeCheckbox->isChecked();
+    
+    // Store the custom defaults for this IP
+    _customDefaults[ip] = defaults;
+    
+    LOG_INFO("CameraSettings", "Custom defaults saved for " + ip);
+}
+
+void CameraSettings::loadCustomDefaults(const QString& ip)
+{
+    // Check if custom defaults exist for this IP
+    auto it = _customDefaults.find(ip);
+    if (it == _customDefaults.end()) {
+        // No custom defaults, load factory defaults
+        loadCameraSettings(ip);
+        return;
+    }
+    
+    // Get the custom defaults
+    const CameraDefaults& defaults = it->second;
+    
+    LOG_INFO("CameraSettings", "Loading custom defaults for " + ip);
+    
+    // Apply basic settings
+    _ui->brightnessSlider->setValue(defaults.brightness);
+    _ui->contrastSlider->setValue(defaults.contrast);
+    _ui->saturationSlider->setValue(defaults.saturation);
+    _ui->sharpnessSlider->setValue(defaults.sharpness);
+    _ui->bitrateSlider->setValue(defaults.bitrate);
+    _ui->resolutionComboBox->setCurrentIndex(defaults.resolutionIndex);
+    _ui->framerateComboBox->setCurrentIndex(defaults.framerateIndex);
+    
+    // Apply checkbox states
+    _ui->brightnessCheckbox->setChecked(defaults.brightnessChecked);
+    _ui->contrastCheckbox->setChecked(defaults.contrastChecked);
+    _ui->saturationCheckbox->setChecked(defaults.saturationChecked);
+    _ui->sharpnessCheckbox->setChecked(defaults.sharpnessChecked);
+    _ui->bitrateCheckbox->setChecked(defaults.bitrateChecked);
+    _ui->resolutionCheckbox->setChecked(defaults.resolutionChecked);
+    _ui->framerateCheckbox->setChecked(defaults.framerateChecked);
+    
+    // Apply enhancement settings
+    _ui->wdrCheckBox->setChecked(defaults.wdrEnabled);
+    _ui->wdrLevelSlider->setValue(defaults.wdrLevel);
+    _ui->wdrLevelSlider->setEnabled(defaults.wdrEnabled);
+    _ui->wdrLevelSpinBox->setEnabled(defaults.wdrEnabled);
+    
+    _ui->backlightCheckBox->setChecked(defaults.backlightEnabled);
+    
+    _ui->antiFogCheckBox->setChecked(defaults.antiFogEnabled);
+    _ui->antiFogLevelSlider->setValue(defaults.antiFogLevel);
+    _ui->antiFogLevelSlider->setEnabled(defaults.antiFogEnabled);
+    _ui->antiFogLevelSpinBox->setEnabled(defaults.antiFogEnabled);
+    
+    _ui->imageStabilizerCheckBox->setChecked(defaults.imageStabilizerEnabled);
+    
+    // Apply correction settings
+    _ui->horizontalMirrorCheckBox->setChecked(defaults.horizontalMirrorEnabled);
+    _ui->verticalMirrorCheckBox->setChecked(defaults.verticalMirrorEnabled);
+    _ui->antiFalseColorCheckBox->setChecked(defaults.antiFalseColorEnabled);
+    _ui->lensShadeCorrectionCheckBox->setChecked(defaults.lensShadeCorrectionEnabled);
+    
+    _ui->lensDistortionCorrectionCheckBox->setChecked(defaults.lensDistortionCorrectionEnabled);
+    _ui->lensDistortionCorrectionSlider->setValue(defaults.lensDistortionCorrectionLevel);
+    _ui->lensDistortionCorrectionSlider->setEnabled(defaults.lensDistortionCorrectionEnabled);
+    _ui->lensDistortionCorrectionSpinBox->setEnabled(defaults.lensDistortionCorrectionEnabled);
+    
+    // Apply exposure settings
+    _ui->sceneCheckbox->setChecked(defaults.sceneChecked);
+    _ui->sceneComboBox->setCurrentIndex(defaults.sceneIndex);
+    
+    _ui->exposureModeCheckbox->setChecked(defaults.exposureModeChecked);
+    _ui->exposureModeComboBox->setCurrentIndex(defaults.exposureModeIndex);
+    
+    _ui->shutterSpeedCheckbox->setChecked(defaults.shutterSpeedChecked);
+    _ui->shutterSpeedComboBox->setCurrentIndex(defaults.shutterSpeedIndex);
+    
+    _ui->manualGainCheckbox->setChecked(defaults.manualGainChecked);
+    _ui->manualGainComboBox->setCurrentIndex(defaults.manualGainIndex);
+    
+    // Apply white balance and IR settings
+    _ui->whiteBalanceModeCheckbox->setChecked(defaults.whiteBalanceModeChecked);
+    _ui->whiteBalanceModeComboBox->setCurrentIndex(defaults.whiteBalanceModeIndex);
+    
+    _ui->irModeCheckbox->setChecked(defaults.irModeChecked);
+    _ui->irModeComboBox->setCurrentIndex(defaults.irModeIndex);
+    
+    // Update dependent controls based on exposure mode
+    onExposureModeChanged(_ui->exposureModeComboBox->currentIndex());
+}
+
+void CameraSettings::setCustomDefaults()
+{
+    QString ip = _ui->cameraIpSelector->currentText();
+    if (ip.isEmpty()) {
+        QMessageBox::warning(this, "Invalid IP", "Please enter a valid IP address");
+        return;
+    }
+    
+    // Confirm with user
+    auto response = QMessageBox::question(this, "Set Custom Defaults", 
+                                       "Save current settings as defaults for this camera?",
+                                       QMessageBox::Yes | QMessageBox::No);
+    
+    if (response == QMessageBox::Yes) {
+        saveCustomDefaults(ip);
+        QMessageBox::information(this, "Defaults Saved", 
+                             "Current settings have been saved as defaults for this camera.");
+    }
 }
 
 void CameraSettings::initCameraController()
@@ -190,7 +357,15 @@ void CameraSettings::loadCameraSettings(const QString& ip)
 {
     LOG_INFO("CameraSettings", "Initializing camera settings for " + ip);
     
-    // Initialize all controls with default values
+    // Check if custom defaults exist for this IP
+    auto it = _customDefaults.find(ip);
+    if (it != _customDefaults.end()) {
+        // Use custom defaults
+        loadCustomDefaults(ip);
+        return;
+    }
+    
+    // Initialize all controls with factory default values
     
     // Basic settings
     _ui->brightnessSlider->setValue(50);
@@ -269,8 +444,8 @@ void CameraSettings::resetCameraDefaults()
                                        QMessageBox::Yes | QMessageBox::No);
     
     if (response == QMessageBox::Yes) {
-        // Just reload the settings to default values
-        loadCameraSettings(ip);
+        // Load custom defaults if they exist, otherwise load factory defaults
+        loadCustomDefaults(ip);
     }
 }
 
@@ -278,6 +453,7 @@ void CameraSettings::applyCameraSettings()
 {
     if (!_cameraController) {
         LOG_ERROR("CameraSettings", "Camera controller not initialized");
+        QMessageBox::warning(this, "Error", "Camera controller not initialized");
         return;
     }
     
@@ -286,6 +462,15 @@ void CameraSettings::applyCameraSettings()
         QMessageBox::warning(this, "Invalid IP", "Please enter a valid IP address");
         return;
     }
+    
+    // First, check if the camera is reachable using the API's built-in check
+    if (!_cameraController->isCameraReachable(ip.toStdString(), true)) {
+        QMessageBox::critical(this, "Connection Error", 
+                           "Cannot connect to camera at " + ip + ". Please check that the camera is online and try again.");
+        return;
+    }
+    
+    QApplication::setOverrideCursor(Qt::WaitCursor);
     
     try {
         // Apply basic settings
@@ -303,14 +488,22 @@ void CameraSettings::applyCameraSettings()
         // Apply white balance and IR settings
         applyCameraWhiteBalanceAndIRSettings(ip);
         
+        QApplication::restoreOverrideCursor();
         LOG_INFO("CameraSettings", "Successfully applied camera settings for " + ip);
         QMessageBox::information(this, "Settings Applied", 
                               "Successfully applied camera settings.");
     }
     catch (const std::exception& e) {
+        QApplication::restoreOverrideCursor();
         LOG_ERROR("CameraSettings", "Exception applying camera settings: " + QString(e.what()));
         QMessageBox::critical(this, "Settings Error", 
                            "Error applying camera settings: " + QString(e.what()));
+    }
+    catch (...) {
+        QApplication::restoreOverrideCursor();
+        LOG_ERROR("CameraSettings", "Unknown exception applying camera settings");
+        QMessageBox::critical(this, "Settings Error", 
+                           "Unknown error applying camera settings. The camera may be offline or unreachable.");
     }
 }
 
