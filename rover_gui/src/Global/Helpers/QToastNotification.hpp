@@ -57,7 +57,7 @@ namespace QHelper
                                  const QString& description_,
                                  eNotifType type_,
                                  size_t durationMs_ = NOTIF_DURATION_MS);
-        
+
         static QToastNotification& getInstance();
 
         QRect getTargetScreenRect(void);
