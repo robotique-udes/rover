@@ -9,6 +9,8 @@
 #include "rover_lib2/helpers/watchdog.hpp"
 #include "rover_lib2/helpers/time.hpp"
 
+#include <thread>
+#include <chrono> 
 #include <fcntl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
@@ -67,17 +69,17 @@ namespace RoverCan2::Drivers
         {
             if (_state != eState::RUNNING)
             {
-                LOG_INFO(Logger::Nodes::DriverLinux,
-                         "Can't send msg, driver is not in a valid state to send messages. Expected state >= %u but current "
-                         "state is: %u. Msg dropped",
-                         TO_UNDERLYING(eState::RUNNING),
-                         TO_UNDERLYING(_state));
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
+                          "Can't send msg, driver is not in a valid state to send messages. Expected state >= %u but current "
+                          "state is: %u. Msg dropped",
+                          TO_UNDERLYING(eState::RUNNING),
+                          TO_UNDERLYING(_state));
                 return false;
             }
 
             if (_socket_fd < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Invalid socket file descriptor: %d", _socket_fd);
+                LOG_DEBUG(Logger::Nodes::DriverLinux, "Invalid socket file descriptor: %d", _socket_fd);
                 return false;
             }
 
@@ -89,7 +91,7 @@ namespace RoverCan2::Drivers
 
             if (frame.can_dlc > Constant::CAN_MAX_DATA_LENGTH)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux,
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
                           "Implementation error, can msg data size (%u) is bigger than max (%u)",
                           frame.can_dlc,
                           Constant::CAN_MAX_DATA_LENGTH);
@@ -98,7 +100,7 @@ namespace RoverCan2::Drivers
             }
             else if (frame.can_dlc < TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA))
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux,
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
                           "Implementation error, can msg data size (%u) is lower than min (%u)",
                           frame.can_dlc,
                           TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA));
@@ -111,11 +113,11 @@ namespace RoverCan2::Drivers
             int bytes_sent = write(_socket_fd, &frame, sizeof(struct can_frame));
             if (bytes_sent == sizeof(struct can_frame))
             {
-                LOG_INFO(Logger::Nodes::DriverLinux,
-                         "Msg queued for transmission successfully, ID: %u, MsgID: %u, ContentID %u",
-                         canMsg_.getCanID(),
-                         canMsg_.getMsgID(),
-                         canMsg_.getMsgContentID());
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
+                          "Msg queued for transmission successfully, ID: %u, MsgID: %u, ContentID %u",
+                          canMsg_.getCanID(),
+                          canMsg_.getMsgID(),
+                          canMsg_.getMsgContentID());
                 return true;
             }
             else if (bytes_sent == -1)
@@ -123,7 +125,7 @@ namespace RoverCan2::Drivers
                 switch (errno)
                 {
                     case EINVAL:
-                        LOG_ERROR(Logger::Nodes::DriverLinux,
+                        LOG_DEBUG(Logger::Nodes::DriverLinux,
                                   "Invalid CAN frame arguments: errno=%d (%s)",
                                   errno,
                                   strerror(errno));
@@ -134,20 +136,20 @@ namespace RoverCan2::Drivers
                         _state = eState::TX_QUEUE_FULL;
                         break;
                     case ENXIO:
-                        LOG_ERROR(Logger::Nodes::DriverLinux,
+                        LOG_DEBUG(Logger::Nodes::DriverLinux,
                                   "Device not found (e.g., CAN adapter unplugged): errno=%d (%s)",
                                   errno,
                                   strerror(errno));
                         this->handleDeviceDisconnection();
                         break;
                     case EAGAIN:
-                        LOG_WARN(Logger::Nodes::DriverLinux,
-                                 "Non-blocking socket, no buffer space available: errno=%d (%s)",
-                                 errno,
-                                 strerror(errno));
+                        LOG_DEBUG(Logger::Nodes::DriverLinux,
+                                  "Non-blocking socket, no buffer space available: errno=%d (%s)",
+                                  errno,
+                                  strerror(errno));
                         break;
                     default:
-                        LOG_ERROR(Logger::Nodes::DriverLinux,
+                        LOG_DEBUG(Logger::Nodes::DriverLinux,
                                   "Unknown error sending CAN frame: errno=%d (%s)",
                                   errno,
                                   strerror(errno));
@@ -158,7 +160,7 @@ namespace RoverCan2::Drivers
             else
             {
                 // Partial frame write (should not happen on RAW CAN)
-                LOG_ERROR(Logger::Nodes::DriverLinux,
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
                           "Partial CAN frame sent: %d/%lu bytes",
                           bytes_sent,
                           sizeof(struct can_frame));
@@ -171,7 +173,7 @@ namespace RoverCan2::Drivers
         {
             if ((_socket_fd = socket(PF_CAN, SOCK_RAW, CAN_RAW)) < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux, "Failed to create CAN socket: errno=%d (%s)", errno, strerror(errno));
+                LOG_DEBUG(Logger::Nodes::DriverLinux, "Failed to create CAN socket: errno=%d (%s)", errno, strerror(errno));
                 return false;
             }
 
@@ -179,7 +181,7 @@ namespace RoverCan2::Drivers
             std::strncpy(ifr.ifr_name, "canRovus", IFNAMSIZ - 1);
             if (ioctl(_socket_fd, SIOCGIFINDEX, &ifr) < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux,
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
                           "Failed to get CAN interface index for '%s': errno=%d (%s)",
                           ifr.ifr_name,
                           errno,
@@ -196,7 +198,7 @@ namespace RoverCan2::Drivers
 
             if (bind(_socket_fd, reinterpret_cast<struct sockaddr*>(&addr), sizeof(addr)) < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux,
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
                           "Failed to bind CAN socket to interface '%s': errno=%d (%s)",
                           ifr.ifr_name,
                           errno,
@@ -208,7 +210,7 @@ namespace RoverCan2::Drivers
             int flags = fcntl(_socket_fd, F_GETFL, 0);
             if (flags < 0 || fcntl(_socket_fd, F_SETFL, flags | O_NONBLOCK) < 0)
             {
-                LOG_ERROR(Logger::Nodes::DriverLinux,
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
                           "Failed to set CAN socket to non-blocking mode: errno=%d (%s)",
                           errno,
                           strerror(errno));
@@ -216,6 +218,8 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
+            std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+            LOG_INFO(Logger::Nodes::DriverLinux, "CAN socket successfully created");
             _state = eState::RUNNING;
             return true;
         }
@@ -244,14 +248,14 @@ namespace RoverCan2::Drivers
                         _recvWatchdog.reset();
                         return;
                     case EIO:
-                        LOG_ERROR(Logger::Nodes::DriverLinux,
-                                  "CAN I/O error, possible hardware or driver fault : errno=%d (%s)",
-                                  errno,
-                                  strerror(errno));
+                        LOG_WARN(Logger::Nodes::DriverLinux,
+                                 "CAN I/O error, possible hardware or driver fault : errno=%d (%s)",
+                                 errno,
+                                 strerror(errno));
                         this->handleDeviceDisconnection();
                         return;
                     default:
-                        LOG_ERROR(Logger::Nodes::DriverLinux, "Error receiving CAN frame: errno=%d (%s)", errno, strerror(errno));
+                        LOG_DEBUG(Logger::Nodes::DriverLinux, "Error receiving CAN frame: errno=%d (%s)", errno, strerror(errno));
                         return;
                 }
             }
@@ -279,13 +283,13 @@ namespace RoverCan2::Drivers
                     break;
             }
 
-            LOG_INFO(Logger::Nodes::DriverLinux, "Received CAN ID: %u, Length: %u", frame.can_id, frame.can_dlc);
+            LOG_DEBUG(Logger::Nodes::DriverLinux, "Received CAN ID: %u, Length: %u", frame.can_id, frame.can_dlc);
             return;
         }
 
         void handleDeviceDisconnection()
         {
-            LOG_WARN(Logger::Nodes::DriverLinux, "Device likely unplugged, switching to UNINSTALLED state");
+            LOG_WARN(Logger::Nodes::DriverLinux, "USB to CAN device likely unplugged, trying to reconnect ..");
             cleanupCanSocket();
             _state = eState::UNINSTALLED;
         }
