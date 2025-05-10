@@ -39,14 +39,6 @@ DDBControlNode::DDBControlNode():
             }
             this->callbackDdbControlBank1(*request_, *response_);
         });
-
-    _pub_DDB_status = this->create_publisher<rover_msgs::msg::DDBControl>(TOPIC_DDB_STATE, 1);
-
-    _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
-                                         [this](void)
-                                         {
-                                             this->callbackDdbStatus();
-                                         });
 }
 
 void DDBControlNode::callbackDdbControlBank0(const rover_msgs::srv::DDBControl::Request& request_,
@@ -132,17 +124,17 @@ bool DDBControlNode::setChannelOutput(uint8_t channelID_, eOutputState desiredSt
     {
         case eOutputState::ON:
             _channelInfo[channelID_].state = eOutputState::ON;
-            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as ON", channelID_);
+            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as ON", channelID_);
             break;
 
         case eOutputState::OFF:
             _channelInfo[channelID_].state = eOutputState::OFF;
-            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as OFF", channelID_);
+            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as OFF", channelID_);
             break;
 
         case eOutputState::PWM:
             _channelInfo[channelID_].state = eOutputState::PWM;
-            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as PWM", channelID_);
+            RCLCPP_INFO(this->get_logger(), "Set channel #%d output as PWM", channelID_);
             break;
     }
     return true;
@@ -175,7 +167,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
     if (this->setChannelOutput(request_.channel_id, wantedState))
     {
         std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
-        RCLCPP_DEBUG(this->get_logger(), "%s", msg.c_str());
+        RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
         response_.success = true;
         response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
         response_.status = msg;
@@ -243,7 +235,7 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
         {
             std::string msg = "PWM values changed for channel #" + std::to_string(request_.channel_id) + "\nDuty cycle: "
                               + std::to_string(request_.duty_cycle) + "\nFrequency: " + std::to_string(request_.frequency);
-            RCLCPP_DEBUG(this->get_logger(), "%s", msg.c_str());
+            RCLCPP_INFO(this->get_logger(), "%s", msg.c_str());
             response_.success = true;
             response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
             response_.status = msg;
@@ -257,79 +249,5 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
             response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
             response_.status = msg;
         }
-    }
-}
-
-void DDBControlNode::callbackDdbStatus(void)
-{
-    rover_msgs::msg::DDBControl msg;
-
-    msg.bank0_ch0_onstate = TO_UNDERLYING(_channelInfo[0].state);
-    msg.bank0_ch0_duty = _channelInfo[0].dutyCycle;
-    msg.bank0_ch0_freq = _channelInfo[0].frequency;
-
-    msg.bank0_ch1_onstate = TO_UNDERLYING(_channelInfo[1].state);
-    msg.bank0_ch1_duty = _channelInfo[1].dutyCycle;
-    msg.bank0_ch1_freq = _channelInfo[1].frequency;
-
-    msg.bank0_ch2_onstate = TO_UNDERLYING(_channelInfo[2].state);
-    msg.bank0_ch2_duty = _channelInfo[2].dutyCycle;
-    msg.bank0_ch2_freq = _channelInfo[2].frequency;
-
-    msg.bank0_ch3_onstate = TO_UNDERLYING(_channelInfo[3].state);
-    msg.bank0_ch3_duty = _channelInfo[3].dutyCycle;
-    msg.bank0_ch3_freq = _channelInfo[3].frequency;
-
-    msg.bank1_ch0_onstate = TO_UNDERLYING(_channelInfo2[0]);
-    msg.bank1_ch1_onstate = TO_UNDERLYING(_channelInfo2[1]);
-    msg.bank1_ch2_onstate = TO_UNDERLYING(_channelInfo2[2]);
-    msg.bank1_ch3_onstate = TO_UNDERLYING(_channelInfo2[3]);
-
-    _pub_DDB_status->publish(msg);
-}
-
-bool DDBControlNode::setChannelOutput2(uint8_t channelID_, eOutputState desiredState_)
-{
-    switch (desiredState_)
-    {
-        case eOutputState::ON:
-            _channelInfo2[channelID_] = eOutputState::ON;
-            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as ON", channelID_);
-            break;
-
-        case eOutputState::OFF:
-            _channelInfo2[channelID_] = eOutputState::OFF;
-            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as OFF", channelID_);
-            break;
-
-        case eOutputState::PWM:
-            _channelInfo2[channelID_] = eOutputState::PWM;
-            RCLCPP_DEBUG(this->get_logger(), "Set channel #%d output as PWM", channelID_);
-            break;
-    }
-    return true;
-}
-
-void DDBControlNode::setStateLogic2(const rover_msgs::srv::DDBControl::Request& request_,
-                                    rover_msgs::srv::DDBControl::Response& response_)
-{
-    eOutputState wantedState = static_cast<eOutputState>(request_.output_state);
-
-    if (this->setChannelOutput2(request_.channel_id, wantedState))
-    {
-        std::string msg = "Channel #" + std::to_string(request_.channel_id) + " set to " + std::to_string(request_.output_state);
-        RCLCPP_DEBUG(this->get_logger(), "%s", msg.c_str());
-        response_.success = true;
-        response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
-        response_.status = msg;
-    }
-    else
-    {
-        std::string msg
-            = "Could not set channel #" + std::to_string(request_.channel_id) + " to " + std::to_string(request_.output_state);
-        RCLCPP_ERROR(this->get_logger(), "%s", msg.c_str());
-        response_.success = false;
-        response_.current_output_state = TO_UNDERLYING(_channelInfo[request_.channel_id].state);
-        response_.status = msg;
     }
 }
