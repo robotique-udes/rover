@@ -4,6 +4,7 @@
 #include "rover_can2/can_msg.hpp"
 #include "rover_can2/constant.hpp"
 #include "rover_can2/drivers/driver_base.hpp"
+
 #include "rover_lib2/helpers/log.hpp"
 #include "rover_lib2/helpers/circular_buffer.hpp"
 #include "rover_lib2/helpers/watchdog.hpp"
@@ -39,6 +40,11 @@ namespace RoverCan2::Drivers
         {
         }
 
+        ~DriverLinux()
+        {
+            cleanupCanSocket();
+        }
+
         // init() might be useless in this case
         void __init()
         {
@@ -51,7 +57,7 @@ namespace RoverCan2::Drivers
             if (!_recvWatchdog.isOk())
             {
                 LOG_DEBUG(Logger::Nodes::DriverLinux,
-                         "Receive watchdog timeout: no CAN message received within the expected interval");
+                          "Receive watchdog timeout: no CAN message received within the expected interval");
             }
 
             switch (_state)
@@ -74,13 +80,9 @@ namespace RoverCan2::Drivers
 
         bool _sendMsg(const CanMsg& canMsg_)
         {
-            if (_state != eState::RUNNING)
+            if (_state < eState::RUNNING)
             {
-                LOG_DEBUG(Logger::Nodes::DriverLinux,
-                          "Can't send msg, driver is not in a valid state to send messages. Expected state >= %u but current "
-                          "state is: %u. Msg dropped",
-                          TO_UNDERLYING(eState::RUNNING),
-                          TO_UNDERLYING(_state));
+                LOG_DEBUG(Logger::Nodes::DriverLinux, "Can't send msg, driver not initialized.");
                 return false;
             }
 
@@ -123,6 +125,8 @@ namespace RoverCan2::Drivers
                           canMsg_.getCanID(),
                           canMsg_.getMsgID(),
                           canMsg_.getMsgContentID());
+
+                _state = eState::RUNNING; // if state is TX_QUEUE_FULL, return to RUNNING
                 return true;
             }
             else if (bytes_sent == -1)
@@ -221,7 +225,9 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
+            // Ugly for now but give time for the CAN interface to stabilize (e.g., after USB-CAN device insertion)
             std::this_thread::sleep_for(std::chrono::milliseconds(1500));
+
             LOG_INFO(Logger::Nodes::DriverLinux, "CAN socket successfully created");
             _state = eState::RUNNING;
             return true;
@@ -248,7 +254,7 @@ namespace RoverCan2::Drivers
                     case EAGAIN:
                         // Non-blocking read: no data available now
                         LOG_DEBUG(Logger::Nodes::DriverLinux, "No CAN data available (EAGAIN)");
-                        _recvWatchdog.reset();
+                        _recvWatchdog.reset(); // To confirm if we reset watchdog here
                         return;
                     case EIO:
                         LOG_WARN(Logger::Nodes::DriverLinux,
