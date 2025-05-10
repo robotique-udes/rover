@@ -65,22 +65,6 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
                                                                    "GUI setup was successful!",
                                                                    QHelper::QToastNotification::eNotifType::SUCCESS,
                                                                    3000);
-
-#warning enlever
-    QTimer* timer = new QTimer(&app);
-    QObject::connect(timer,
-                     &QTimer::timeout,
-                     []()
-                     {
-                         QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                             "titre ...",
-                             "This is a periodic toast. The description can be quite long and its perfect this way wow very long "
-                             "only shit ye give me some info",
-                             QHelper::QToastNotification::eNotifType::INFO,
-                             2000);
-                     });
-    timer->start(5000);
-
     int ret = app.exec();
 
     rosProcess.terminate();
