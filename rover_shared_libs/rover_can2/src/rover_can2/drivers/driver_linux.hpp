@@ -10,7 +10,7 @@
 #include "rover_lib2/helpers/time.hpp"
 
 #include <thread>
-#include <chrono> 
+#include <chrono>
 #include <fcntl.h>
 #include <linux/can.h>
 #include <linux/can/raw.h>
@@ -39,6 +39,7 @@ namespace RoverCan2::Drivers
         {
         }
 
+        // init() might be useless in this case
         void __init()
         {
             LOG_INFO(Logger::Nodes::DriverLinux, "Initializing CAN linux driver");
@@ -47,6 +48,12 @@ namespace RoverCan2::Drivers
 
         void __update(void)
         {
+            if (!_recvWatchdog.isOk())
+            {
+                LOG_DEBUG(Logger::Nodes::DriverLinux,
+                         "Receive watchdog timeout: no CAN message received within the expected interval");
+            }
+
             switch (_state)
             {
                 case eState::UNINSTALLED:
@@ -83,9 +90,7 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
-            struct can_frame frame
-            {
-            };
+            struct can_frame frame{};
             frame.can_id = static_cast<uint32_t>(canMsg_.getCanID());
             frame.can_dlc = canMsg_.dataLength;
 
@@ -190,9 +195,7 @@ namespace RoverCan2::Drivers
                 return false;
             }
 
-            struct sockaddr_can addr
-            {
-            };
+            struct sockaddr_can addr{};
             addr.can_family = PF_CAN;
             addr.can_ifindex = ifr.ifr_ifindex;
 
@@ -284,7 +287,6 @@ namespace RoverCan2::Drivers
             }
 
             LOG_DEBUG(Logger::Nodes::DriverLinux, "Received CAN ID: %u, Length: %u", frame.can_id, frame.can_dlc);
-            return;
         }
 
         void handleDeviceDisconnection()
