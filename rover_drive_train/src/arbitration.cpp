@@ -7,6 +7,7 @@
 
 #include "rover_msgs/srv/drive_train_arbitration.hpp"
 #include "rover_lib2/helpers/macros.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 
 class Arbitration : public rclcpp::Node
 {
@@ -66,13 +67,13 @@ Arbitration::Arbitration():
     }
 
     _subBaseHr = this->create_subscription<std_msgs::msg::Empty>(TOPIC_HEARTBEAT_BASE,
-                                                                 1,
+                                                                 QOS_DEFAULT,
                                                                  [this](const std_msgs::msg::Empty msg_)
                                                                  {
                                                                      this->cbHB(msg_, &_baseHBLost, _watchdogBase);
                                                                  });
     _subRoverHr = this->create_subscription<std_msgs::msg::Empty>(TOPIC_HEARTBEAT_ROVER,
-                                                                  1,
+                                                                  QOS_DEFAULT,
                                                                   [this](const std_msgs::msg::Empty msg_)
                                                                   {
                                                                       this->cbHB(msg_, &_roverHBLost, _watchdogRover);
@@ -80,15 +81,15 @@ Arbitration::Arbitration():
 
     _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
         TOPIC_CMD_WHEELS_TELEOP,
-        1,
+        QOS_DEFAULT,
         std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
     _subMotorCmdAuto = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
         TOPIC_CMD_WHEELS_AUTO,
-        1,
+        QOS_DEFAULT,
         std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
 
-    _pubCmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_OUT, 1);
-    _pubArbitrationStatus = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>(TOPIC_ARBITRATION_STATUS, 1);
+    _pubCmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_OUT, QOS_DEFAULT);
+    _pubArbitrationStatus = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>(TOPIC_ARBITRATION_STATUS, QOS_DEFAULT);
 
     _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>(
         SERVICE_ARBITRATION_CONTROL,
