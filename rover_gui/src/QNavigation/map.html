@@ -454,15 +454,57 @@
         }
 
         try {
-          const cartesian = viewer.camera.pickEllipsoid(click.position, viewer.scene.globe.ellipsoid);
-          if (cartesian) {
+          let cartesian;
+          const scene = viewer.scene;
+
+          if (scene.terrainProvider.ready) {
+            cartesian = scene.pickPosition(click.position);
+
+            if (cartesian) {
+              const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+              if (cartographic.height > 10000 || cartographic.height < -1000) {
+                cartesian = undefined;
+              }
+            }
+          }
+
+          if (!Cesium.defined(cartesian)) {
+            const drillPickResult = scene.drillPick(click.position);
+            if (drillPickResult.length > 0) {
+              for (let i = 0; i < drillPickResult.length; i++) {
+                if (Cesium.defined(drillPickResult[i].primitive) &&
+                  Cesium.defined(drillPickResult[i].primitive.position)) {
+                  cartesian = drillPickResult[i].primitive.position;
+                  break;
+                }
+              }
+            }
+          }
+
+          if (!Cesium.defined(cartesian)) {
+            const ray = viewer.camera.getPickRay(click.position);
+            if (Cesium.defined(ray)) {
+              cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+            }
+          }
+
+          if (!Cesium.defined(cartesian)) {
+            cartesian = viewer.camera.pickEllipsoid(
+              click.position,
+              viewer.scene.globe.ellipsoid
+            );
+          }
+
+          if (Cesium.defined(cartesian)) {
             const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
             const lat = Cesium.Math.toDegrees(cartographic.latitude);
             const lon = Cesium.Math.toDegrees(cartographic.longitude);
-            showWaypointDialog(lat, lon);
+
+            setTimeout(() => {
+              showWaypointDialog(lat, lon);
+            }, 50);
           }
         } catch (error) {
-          console.error("Error handling double click:", error);
         }
       }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
