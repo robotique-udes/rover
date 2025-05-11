@@ -21,7 +21,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-DEFINE_LOG_NODE(DriverLinux, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(DriverLinux, Logger::eNodeState::OFF);
 
 namespace RoverCan2::Drivers
 {
