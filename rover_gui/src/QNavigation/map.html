@@ -258,7 +258,6 @@
 
           viewer.camera.changed.removeEventListener(maintainTopDownPerspective);
 
-          // Restore previous camer position if available and not tracking
           if (lastCameraPosition && !cameraTracking) {
             viewer.camera.setView({
               destination: lastCameraPosition.position,

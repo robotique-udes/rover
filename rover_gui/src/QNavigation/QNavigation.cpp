@@ -1,6 +1,6 @@
 #include "QNavigation.hpp"
 
-#include "QHelpers.hpp"
+#include "Global/Helpers/QHelpers.hpp"
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -66,7 +66,7 @@ void QNavigation::onSetGoalClicked()
 {
     if (_ui.inputName->text().isEmpty() || _ui.inputLatitude->text().isEmpty() || _ui.inputLongitude->text().isEmpty())
     {
-        QMessageBox::warning(this, "Input Error", "Please enter waypoint name and coordinates.");
+        QHelper::QPopUp::sendQuestionPopUp("Input Error", "Please enter waypoint name and coordinates.");
         return;
     }
 
@@ -78,9 +78,8 @@ void QNavigation::onSetGoalClicked()
     {
         if (waypoint.name == name_)
         {
-            QMessageBox::warning(this,
-                                 "Duplicate Name",
-                                 "A waypoint with this name already exists. Please choose a different name.");
+            QHelper::QPopUp::sendQuestionPopUp("Duplicate Name",
+                                               "A waypoint with this name already exists. Please choose a different name.");
             return;
         }
     }
@@ -134,7 +133,7 @@ void QNavigation::onCalculatePathClicked(void)
     QListWidgetItem* currentItem_ = _ui.waypointList->currentItem();
     if (!currentItem_)
     {
-        QMessageBox::information(this, "Select Waypoint", "Please select a waypoint from the list first.");
+        QHelper::QPopUp::sendQuestionPopUp("Select Waypoint", "Please select a waypoint from the list first.");
         return;
     }
 
@@ -184,7 +183,7 @@ void QNavigation::onDeleteWaypointClicked(void)
     QListWidgetItem* currentItem_ = _ui.waypointList->currentItem();
     if (!currentItem_)
     {
-        QMessageBox::information(this, "Select Waypoint", "Please select a waypoint to delete.");
+        QHelper::QPopUp::sendQuestionPopUp("Select Waypoint", "Please select a waypoint to delete.");
         return;
     }
 
@@ -211,10 +210,9 @@ void QNavigation::onDeleteWaypointClicked(void)
 
 void QNavigation::onClearWaypointsClicked(void)
 {
-    int result_ = QMessageBox::question(this,
-                                        "Clear Waypoints",
-                                        "Are you sure you want to clear all waypoints?",
-                                        QMessageBox::Yes | QMessageBox::No);
+    int result_ = QHelper::QPopUp::sendQuestionPopUp("Clear Waypoints",
+                                                     "Are you sure you want to clear all waypoints?",
+                                                     QMessageBox::Yes | QMessageBox::No);
 
     if (result_ == QMessageBox::Yes)
     {
@@ -253,5 +251,3 @@ void QNavigation::onClearPathClicked(void)
 
     emit this->clearPath();
 }
-
-#include "QNavigation.moc"
