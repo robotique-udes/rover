@@ -234,7 +234,7 @@ namespace RoverCan2::Drivers
                           "Failed to set CAN socket to non-blocking mode: errno=%d (%s)",
                           errno,
                           strerror(errno));
-                cleanupCanSocket();
+                this->cleanupCanSocket();
                 return false;
             }
 
