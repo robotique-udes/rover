@@ -45,7 +45,7 @@ class QNavigation : public QWidget
     void onDeleteWaypointClicked(void);
     void onSetGoalClicked(void);
     void onWebViewLoadFinished(bool ok);
-    void onGpsMessage(const rover_msgs::msg::Gps::SharedPtr msg_);
+    void onGpsMessage(const rover_msgs::msg::Gps& msg_);
 
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
@@ -56,9 +56,9 @@ class QNavigation : public QWidget
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
-    double _currentLat = 0.0F;
-    double _currentLon = 0.0F;
-    double _currentHeading = 0.0F;
+    double _currentLat = 0.0;
+    double _currentLon = 0.0;
+    double _currentHeading = 0.0;
 
     QList<Waypoint> _waypoints;
 };

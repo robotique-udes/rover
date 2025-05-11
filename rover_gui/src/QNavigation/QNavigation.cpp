@@ -1,13 +1,16 @@
 #include "QNavigation.hpp"
 
-void messageHandler(QtMsgType, const QMessageLogContext&, const QString&){};
+#include "QHelpers.hpp"
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
 {
     _ui.setupUi(this);
-    qInstallMessageHandler(messageHandler);
+    qInstallMessageHandler(
+        [](QtMsgType, const QMessageLogContext&, const QString&)
+        {
+        });
 
     QString token = qgetenv("CESIUM_TOKEN");
     if (!token.isEmpty())
@@ -16,7 +19,9 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     }
     else
     {
-        RCLCPP_WARN(_node->get_logger(), "CESIUM TOKEN NOT FOUND");
+        RCLCPP_WARN(_node->get_logger(),
+                    "Cesium token not found. This access token is generated with the creation of a Ceisum account. Please refer "
+                    "to documentation for more detailed information");
     }
 
     _ui.webViewContainer->load(QUrl("qrc:/map.html"));
@@ -35,24 +40,26 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
 
-    _gpsSub
-        = _node->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
-                                                           1,
-                                                           std::bind(&QNavigation::onGpsMessage, this, std::placeholders::_1));
+    _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
+                                                               1,
+                                                               [this](const rover_msgs::msg::Gps& gpsMsg_)
+                                                               {
+                                                                   this->onGpsMessage(gpsMsg_);
+                                                               });
 }
 
-void QNavigation::onGpsMessage(const rover_msgs::msg::Gps::SharedPtr msg_)
+void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
-    _currentLat = msg_->latitude;
-    _currentLon = msg_->longitude;
-    _currentHeading = msg_->heading;
+    _currentLat = msg_.latitude;
+    _currentLon = msg_.longitude;
+    _currentHeading = msg_.heading;
 
     QMetaObject::invokeMethod(this,
                               "gpsCallback",
                               Qt::QueuedConnection,
-                              Q_ARG(double, msg_->latitude),
-                              Q_ARG(double, msg_->longitude),
-                              Q_ARG(double, msg_->heading));
+                              Q_ARG(double, msg_.latitude),
+                              Q_ARG(double, msg_.longitude),
+                              Q_ARG(double, msg_.heading));
 }
 
 void QNavigation::onSetGoalClicked()
@@ -80,9 +87,9 @@ void QNavigation::onSetGoalClicked()
 
     QString id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
 
-    addWaypointToList(name_, lat_, lon_, id_);
+    this->addWaypointToList(name_, lat_, lon_, id_);
 
-    emit sendGoal(name_, lat_, lon_, id_);
+    emit this->sendGoal(name_, lat_, lon_, id_);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -92,7 +99,7 @@ void QNavigation::onSetGoalClicked()
 void QNavigation::pathDistanceCalculated(double distanceMeters_)
 {
     QString distanceText_;
-    if (distanceMeters_ >= 1000)
+    if (distanceMeters_ >= 1000.0)
     {
         distanceText_ = QString("%1 km").arg(distanceMeters_ / 1000.0, 0, 'f', 2);
     }
@@ -119,7 +126,7 @@ void QNavigation::waypointCreated(QString name_, double latitude_, double longit
         id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
     }
 
-    addWaypointToList(name_, latitude_, longitude_, id_);
+    this->addWaypointToList(name_, latitude_, longitude_, id_);
 }
 
 void QNavigation::onCalculatePathClicked(void)
@@ -136,7 +143,7 @@ void QNavigation::onCalculatePathClicked(void)
     {
         const Waypoint& waypoint_ = _waypoints.at(index_);
 
-        emit calculatePath(waypoint_.latitude, waypoint_.longitude);
+        emit this->calculatePath(waypoint_.latitude, waypoint_.longitude);
     }
 }
 
@@ -188,7 +195,7 @@ void QNavigation::onDeleteWaypointClicked(void)
 
         delete _ui.waypointList->takeItem(index_);
 
-        emit deleteWaypoint(waypointId_);
+        emit this->deleteWaypoint(waypointId_);
 
         _waypoints.removeAt(index_);
 
@@ -198,7 +205,7 @@ void QNavigation::onDeleteWaypointClicked(void)
 
         _ui.distanceLabel->setText("N/A");
 
-        emit clearPath();
+        emit this->clearPath();
     }
 }
 
@@ -219,24 +226,24 @@ void QNavigation::onClearWaypointsClicked(void)
         _ui.inputLongitude->clear();
         _ui.distanceLabel->setText("N/A");
 
-        qDebug() << "Emitting clearWaypoints signal";
-        emit clearWaypoints();
+        emit this->clearWaypoints();
     }
 }
 
-void QNavigation::onWebViewLoadFinished(bool ok)
+void QNavigation::onWebViewLoadFinished(bool ok_)
 {
-    if (ok)
+    if (!ok_)
     {
-        QString token = qgetenv("CESIUM_TOKEN");
-        if (!token.isEmpty())
-        {
-            _ui.webViewContainer->page()->runJavaScript("Cesium.Ion.defaultAccessToken = '" + token + "';");
-        }
-        else
-        {
-            RCLCPP_WARN(_node->get_logger(), "CESIUM TOKEN NOT FOUND");
-        }
+        return;
+    }
+    QString token = qgetenv("CESIUM_TOKEN");
+    if (!token.isEmpty())
+    {
+        _ui.webViewContainer->page()->runJavaScript("Cesium.Ion.defaultAccessToken = '" + token + "';");
+    }
+    else
+    {
+        RCLCPP_WARN(_node->get_logger(), "CESIUM TOKEN NOT FOUND");
     }
 }
 
@@ -244,7 +251,7 @@ void QNavigation::onClearPathClicked(void)
 {
     _ui.distanceLabel->setText("N/A");
 
-    emit clearPath();
+    emit this->clearPath();
 }
 
 #include "QNavigation.moc"

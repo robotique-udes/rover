@@ -33,8 +33,8 @@
       top: 50%;
       left: 50%;
       transform: translate(-50%, -50%);
-      background-color: rgba(255, 0, 0, 0.7);
-      color: gray;
+      background-color: rgba(134, 15, 15, 0.7);
+      color: rgb(58, 58, 58);
       padding: 20px;
       border-radius: 8px;
       text-align: center;
@@ -44,12 +44,17 @@
       z-index: 1000;
     }
 
-    /* Tracking Button Styles */
-    #trackingButton {
+    #controlButtons {
       position: absolute;
       top: 10px;
       right: 10px;
       z-index: 1000;
+      display: flex;
+      flex-direction: column;
+      gap: 10px;
+    }
+
+    .controlButton {
       background-color: rgba(42, 42, 42, 0.8);
       color: white;
       border: none;
@@ -63,19 +68,19 @@
       transition: background-color 0.3s ease;
     }
 
-    #trackingButton:hover {
+    .controlButton:hover {
       background-color: rgba(62, 62, 62, 0.9);
     }
 
-    #trackingButton.active {
+    .controlButton.active {
       background-color: rgba(76, 175, 80, 0.8);
     }
 
-    #trackingButton.active:hover {
+    .controlButton.active:hover {
       background-color: rgba(76, 175, 80, 0.9);
     }
 
-    #trackingIcon {
+    .buttonIcon {
       margin-right: 5px;
       width: 16px;
       height: 16px;
@@ -85,13 +90,22 @@
 
 <body>
   <div id="cesiumContainer"></div>
-  <button id="trackingButton" title="Toggle camera tracking">
-    <svg id="trackingIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
-      <path
-        d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
-    </svg>
-    <span id="trackingText">Track Position</span>
-  </button>
+  <div id="controlButtons">
+    <button id="topDownButton" class="controlButton" title="Lock to top-down view">
+      <svg class="buttonIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+        <path d="M12 8l-6 6 1.41 1.41L12 10.83l4.59 4.58L18 14z" />
+        <path d="M12 16l-6-6 1.41-1.41L12 13.17l4.59-4.58L18 10z" style="opacity:0" />
+      </svg>
+      <span id="topDownText">Top-Down View</span>
+    </button>
+    <button id="trackingButton" class="controlButton" title="Toggle camera tracking">
+      <svg class="buttonIcon" xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="white">
+        <path
+          d="M12 8c-2.21 0-4 1.79-4 4s1.79 4 4 4 4-1.79 4-4-1.79-4-4-4zm8.94 3c-.46-4.17-3.77-7.48-7.94-7.94V1h-2v2.06C6.83 3.52 3.52 6.83 3.06 11H1v2h2.06c.46 4.17 3.77 7.48 7.94 7.94V23h2v-2.06c4.17-.46 7.48-3.77 7.94-7.94H23v-2h-2.06zM12 19c-3.87 0-7-3.13-7-7s3.13-7 7-7 7 3.13 7 7-3.13 7-7 7z" />
+      </svg>
+      <span id="trackingText">Track Position</span>
+    </button>
+  </div>
   <div id="connectionError">
     <h2>Not able to connect to internet</h2>
     <p>Please check your internet connection and try again.</p>
@@ -105,10 +119,12 @@
     let waypointCounter = 1;
     let activeWaypoint = null;
     let pathUpdateInterval = null;
-    let entity; 
-    let isAddingWaypoint = false; 
-    let cameraTracking = false; 
-    let lastHeading = 0; 
+    let entity;
+    let isAddingWaypoint = false;
+    let cameraTracking = false;
+    let isTopDownView = false;
+    let lastHeading = 0;
+    let lastCameraPosition = null;
 
     function checkConnectivity() {
       const connectionError = document.getElementById('connectionError');
@@ -149,8 +165,6 @@
           requestWaterMask: true,
           requestVertexNormals: true,
         }),
-        sceneMode: Cesium.SceneMode.SCENE2D,
-        mapMode2D: Cesium.MapMode2D.ROTATE,
         animation: false,
         baseLayerPicker: false,
         fullscreenButton: false,
@@ -184,16 +198,165 @@
       });
 
       setupEventHandlers();
-      setupCameraTrackingButton();
+      setupControlButtons();
       setupBridgeConnection();
     }
 
-    function setupCameraTrackingButton() {
+    function setupControlButtons() {
       const trackingButton = document.getElementById('trackingButton');
+      const topDownButton = document.getElementById('topDownButton');
 
       trackingButton.addEventListener('click', function () {
         toggleCameraTracking();
       });
+
+      topDownButton.addEventListener('click', function () {
+        toggleTopDownView();
+      });
+    }
+
+    function toggleTopDownView() {
+      isTopDownView = !isTopDownView;
+      const topDownButton = document.getElementById('topDownButton');
+      const topDownText = document.getElementById('topDownText');
+
+      if (isTopDownView) {
+        if (!cameraTracking) {
+          lastCameraPosition = {
+            position: viewer.camera.position.clone(),
+            heading: viewer.camera.heading,
+            pitch: viewer.camera.pitch,
+            roll: viewer.camera.roll
+          };
+        }
+
+        topDownButton.classList.add('active');
+        topDownText.textContent = 'Exit Top-Down';
+
+        try {
+          setTopDownView();
+
+          if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
+            viewer.scene.screenSpaceCameraController.enableTilt = false;
+          }
+
+          viewer.camera.changed.addEventListener(maintainTopDownPerspective);
+        } catch (error) {
+          console.error("Error enabling top-down view:", error);
+          isTopDownView = false;
+          topDownButton.classList.remove('active');
+          topDownText.textContent = 'Top-Down View';
+        }
+      } else {
+        topDownButton.classList.remove('active');
+        topDownText.textContent = 'Top-Down View';
+
+        try {
+          if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
+            viewer.scene.screenSpaceCameraController.enableTilt = true;
+          }
+
+          viewer.camera.changed.removeEventListener(maintainTopDownPerspective);
+
+          // Restore previous camer position if available and not tracking
+          if (lastCameraPosition && !cameraTracking) {
+            viewer.camera.setView({
+              destination: lastCameraPosition.position,
+              orientation: {
+                heading: lastCameraPosition.heading,
+                pitch: lastCameraPosition.pitch,
+                roll: lastCameraPosition.roll
+              }
+            });
+          }
+        } catch (error) {
+          console.error("Error disabling top-down view:", error);
+        }
+      }
+
+      try {
+        if (window.bridge && window.bridge.topDownViewChanged) {
+          window.bridge.topDownViewChanged(isTopDownView);
+        }
+      } catch (error) {
+        console.error("Error notifying bridge about top-down state:", error);
+      }
+    }
+
+    function setTopDownView() {
+      if (!isTopDownView || !viewer || !viewer.camera) return;
+
+      try {
+        let cameraHeight = 1000.0;
+        try {
+          if (viewer.camera.positionCartographic) {
+            cameraHeight = Math.max(viewer.camera.positionCartographic.height, 1000.0);
+          }
+        } catch (e) {
+          console.warn("Could not get camera height, using default:", e);
+        }
+
+        const targetLongitude = cameraTracking ? currentPosition.longitude : viewer.camera.positionCartographic.longitude * 180.0 / Math.PI;
+        const targetLatitude = cameraTracking ? currentPosition.latitude : viewer.camera.positionCartographic.latitude * 180.0 / Math.PI;
+
+        isAdjustingCamera = true;
+        viewer.camera.setView({
+          destination: Cesium.Cartesian3.fromDegrees(
+            targetLongitude,
+            targetLatitude,
+            cameraHeight
+          ),
+          orientation: {
+            heading: viewer.camera.heading,
+            pitch: -Math.PI / 2,
+            roll: 0.0
+          }
+        });
+        isAdjustingCamera = false;
+      } catch (error) {
+        console.error("Failed to update camera to top-down view:", error);
+        try {
+          isAdjustingCamera = true;
+          viewer.camera.flyTo({
+            destination: Cesium.Cartesian3.fromDegrees(
+              currentPosition.longitude,
+              currentPosition.latitude,
+              1000.0
+            ),
+            orientation: {
+              heading: viewer.camera.heading,
+              pitch: -Math.PI / 2,
+              roll: 0.0
+            }
+          });
+          isAdjustingCamera = false;
+        } catch (flyError) {
+          console.error("Even fallback camera update failed:", flyError);
+          isTopDownView = false;
+          document.getElementById('topDownButton').classList.remove('active');
+          document.getElementById('topDownText').textContent = 'Top-Down View';
+        }
+      }
+    }
+
+    function maintainTopDownPerspective() {
+      if (!isTopDownView || isAdjustingCamera) return;
+
+      const currentPitch = viewer.camera.pitch;
+      const desiredPitch = -Math.PI / 2;
+      const pitchThreshold = 0.01;
+
+      if (Math.abs(currentPitch - desiredPitch) > pitchThreshold) {
+        isAdjustingCamera = true;
+        viewer.camera.setView({
+          orientation: {
+            heading: viewer.camera.heading,
+            pitch: desiredPitch,
+            roll: 0.0
+          }
+        });
+        isAdjustingCamera = false;
+      }
     }
 
     function toggleCameraTracking() {
@@ -209,7 +372,8 @@
           updateCameraPosition();
 
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
-            viewer.scene.screenSpaceCameraController.enableRotate = false;
+            viewer.scene.screenSpaceCameraController.enableRotate = !isTopDownView;
+            viewer.scene.screenSpaceCameraController.enableTilt = !isTopDownView;
           }
         } catch (error) {
           console.error("Error enabling tracking:", error);
@@ -223,7 +387,8 @@
 
         try {
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
-            viewer.scene.screenSpaceCameraController.enableRotate = true;
+            viewer.scene.screenSpaceCameraController.enableRotate = !isTopDownView;
+            viewer.scene.screenSpaceCameraController.enableTilt = !isTopDownView;
           }
         } catch (error) {
           console.error("Error disabling tracking:", error);
@@ -252,17 +417,17 @@
           console.warn("Could not get camera height, using default:", e);
         }
 
+        const orientation = isTopDownView
+          ? { heading: viewer.camera.heading, pitch: -Math.PI / 2, roll: 0.0 }
+          : { heading: viewer.camera.heading, pitch: viewer.camera.pitch, roll: 0.0 };
+
         viewer.camera.setView({
           destination: Cesium.Cartesian3.fromDegrees(
             currentPosition.longitude,
             currentPosition.latitude,
             cameraHeight
           ),
-          orientation: {
-            heading: viewer.camera.heading,
-            pitch: viewer.camera.pitch,
-            roll: 0.0
-          }
+          orientation: orientation
         });
       } catch (error) {
         console.error("Failed to update camera position:", error);
@@ -329,7 +494,7 @@
         bridge.gpsCallback.connect(function (lat, lon, heading) {
           currentPosition.latitude = lat;
           currentPosition.longitude = lon;
-          lastHeading = -heading; 
+          lastHeading = -heading;
 
           const position = Cesium.Cartesian3.fromDegrees(lon, lat);
           entity.position = position;
@@ -359,6 +524,14 @@
               if (cameraTracking) {
                 toggleCameraTracking();
               }
+            }
+          }
+
+          if (isTopDownView) {
+            try {
+              setTopDownView();
+            } catch (error) {
+              console.error("Error updating top-down view:", error);
             }
           }
         });
@@ -408,8 +581,14 @@
           addWaypoint(lat, lon, name, id);
 
           const wasTracking = cameraTracking;
+          const wasTopDown = isTopDownView;
+
           if (cameraTracking) {
             toggleCameraTracking();
+          }
+
+          if (isTopDownView) {
+            toggleTopDownView();
           }
 
           viewer.camera.flyTo({
@@ -420,6 +599,10 @@
 
               if (wasTracking) {
                 toggleCameraTracking();
+              }
+
+              if (wasTopDown) {
+                toggleTopDownView();
               }
             }
           });
@@ -449,6 +632,14 @@
           bridge.setCameraTracking.connect(function (enabled) {
             if (cameraTracking !== enabled) {
               toggleCameraTracking();
+            }
+          });
+        }
+
+        if (bridge.setTopDownView) {
+          bridge.setTopDownView.connect(function (enabled) {
+            if (isTopDownView !== enabled) {
+              toggleTopDownView();
             }
           });
         }
@@ -577,7 +768,9 @@
           pixelSize: 10,
           color: Cesium.Color.BLUE,
           outlineColor: Cesium.Color.WHITE,
-          outlineWidth: 2
+          outlineWidth: 2,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY
         },
         label: {
           text: waypointName,
@@ -589,9 +782,23 @@
           fillColor: Cesium.Color.WHITE,
           outlineColor: Cesium.Color.BLACK,
           showBackground: true,
-          backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7)
+          backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY
         }
       });
+
+      if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
+        waypointEntity._visualizers.forEach(visualizer => {
+          if (visualizer && visualizer.visualizersByDisplayID) {
+            for (const displayID in visualizer.visualizersByDisplayID) {
+              if (visualizer.visualizersByDisplayID[displayID]) {
+                visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
+              }
+            }
+          }
+        });
+      }
 
       waypointEntities.push(waypointEntity);
       return waypointEntity;
