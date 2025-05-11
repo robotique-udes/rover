@@ -2,6 +2,7 @@
 #define QSIDE_BAR_HPP
 
 #include "UI_SideBar.h"
+
 class QSideBar : public QWidget
 {
     Q_OBJECT
