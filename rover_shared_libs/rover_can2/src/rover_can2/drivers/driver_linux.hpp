@@ -143,7 +143,7 @@ namespace RoverCan2::Drivers
             return true;
         }
 
-        bool configureInterface()
+        bool configureInterface(void)
         {
             struct ifreq ifr;
             std::memset(&ifr, 0, sizeof(ifr));
@@ -177,7 +177,7 @@ namespace RoverCan2::Drivers
             return true;
         }
 
-        bool setSocketOptions()
+        bool setSocketOptions(void)
         {
             // Set non-blocking mode
             int flags = fcntl(_socket_fd, F_GETFL, 0);
