@@ -2,9 +2,7 @@
 #include "QToastNotification.hpp"
 #include "QNotificationHistoryData.hpp"
 #include <QScreen>
-#include <QNamespace>
-#include <QSizepolicy>
-#include <QScrollarea>
+#include <QScrollArea>
 
 namespace QHelper
 {
