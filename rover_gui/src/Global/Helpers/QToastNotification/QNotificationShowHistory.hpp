@@ -27,4 +27,4 @@ namespace QHelper
     };
 }  // namespace QHelper
 
-#endif //QNOTIFICATION_SHOW_HISTORY
+#endif  // QNOTIFICATION_SHOW_HISTORY

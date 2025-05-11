@@ -6,7 +6,7 @@
 
 namespace QHelper
 {
-    
+
     QNotificationHistoryData::QNotificationHistoryData(QTime timeStamp_,
                                                        QString title_,
                                                        QString description_,
