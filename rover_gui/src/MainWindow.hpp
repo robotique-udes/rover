@@ -5,6 +5,7 @@
 #include "QNavigation/QNavigation.hpp"
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
+#include "QTopUtilityBar/QTopUtilityBar.hpp"
 
 #include <QStackedWidget>
 #include <QMainWindow>
@@ -28,6 +29,7 @@ class MainWindow : public QMainWindow
     QShortcut _closeShortCut;
 
     QSideBar _sideBarWidget;
+    QTopUtilityBar _topUtilityBar;
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
     QFileTransferWidget _fileTransferWidget;

@@ -11,6 +11,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _stackedWidget(this),
     _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
     _sideBarWidget(this),
+    _topUtilityBar(this),
     _dashboardWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
     _fileTransferWidget(this)

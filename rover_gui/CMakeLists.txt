@@ -74,6 +74,9 @@ add_executable(main_gui src/gui.cpp
                         
                    src/QSideBar/QSideBar.hpp
                    src/QSideBar/QSideBar.cpp
+
+                   src/QTopUtilityBar/QTopUtilityBar.hpp
+                   src/QTopUtilityBar/QTopUtilityBar.cpp
                         
                    src/QDashboard/QDashboard.hpp
                    src/QDashboard/QDashboard.cpp
