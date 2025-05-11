@@ -25,8 +25,8 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     }
 
     _ui.webViewContainer->load(QUrl("qrc:/map.html"));
-    _ui.webViewContainer->setMinimumSize(1200, 1000);
-    _ui.webViewContainer->setMaximumSize(1200, 1000);
+    _ui.webViewContainer->setMinimumSize(1200, 900);
+    _ui.webViewContainer->setMaximumSize(1200, 900);
 
     _webChannel = new QWebChannel(this);
     _webChannel->registerObject(QStringLiteral("bridge"), this);
