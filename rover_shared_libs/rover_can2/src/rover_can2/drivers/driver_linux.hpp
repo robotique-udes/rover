@@ -311,7 +311,7 @@ namespace RoverCan2::Drivers
         void handleDeviceDisconnection(void)
         {
             LOG_WARN(Logger::Nodes::DriverLinux, "USB to CAN device likely unplugged, trying to reconnect ..");
-            cleanupCanSocket();
+            this->cleanupCanSocket();
             _state = eState::UNINSTALLED;
         }
 
