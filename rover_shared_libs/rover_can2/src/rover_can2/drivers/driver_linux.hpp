@@ -21,7 +21,7 @@
 #include <sys/ioctl.h>
 #include <unistd.h>
 
-DEFINE_LOG_NODE(DriverLinux, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(DriverLinux, Logger::eNodeState::OFF);
 
 namespace RoverCan2::Drivers
 {
@@ -376,7 +376,7 @@ namespace RoverCan2::Drivers
                 {
                     _watchdogTriggered = true;
                     LOG_WARN(Logger::Nodes::DriverLinux,
-                              "Receive watchdog timeout: no CAN message received within the expected interval");
+                             "Receive watchdog timeout: no CAN message received within the expected interval");
                 }
             }
             else
