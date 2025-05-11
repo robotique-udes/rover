@@ -3,20 +3,20 @@
 
 #include "video_recording.hpp"
 
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps_position.hpp"
-#include "rover_msgs/srv/camera_control.hpp"
-#include "rover_msgs/msg/camera_list.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/gps_position.hpp>
+#include <rover_msgs/srv/camera_control.hpp>
+#include <rover_msgs/msg/camera_list.hpp>
 
-#include "rover_lib2/helpers/macros.hpp"
-#include "rover_lib2/helpers/constants.hpp"
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 #include <sys/stat.h>
 #include <cstdlib>
 
 class CameraNode : public rclcpp::Node
 {
-    static constexpr uint64_t DELAY_PUBLISHER_MS = 200UL;
+    static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
     static constexpr const char* SERVICE_MEDIA_SERVER_NAME = "/rover/cameras/media_server_control";
     static constexpr const char* TOPIC_MEDIA_SERVER_NAME = "/rover/camera/recordings_info";
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";

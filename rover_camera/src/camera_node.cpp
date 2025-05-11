@@ -30,7 +30,7 @@ CameraNode::CameraNode():
 
     _pub_urls = this->create_publisher<rover_msgs::msg::CameraList>(TOPIC_MEDIA_SERVER_NAME, 1);
 
-    _timer_pub = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
+    _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                          [this](void)
                                          {
                                              this->CB_url_publisher();
@@ -419,7 +419,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
 {
     {
         std::lock_guard<std::mutex> lock(_recordingMapMutex);
-        if (_recordingMap.find(cameraURL_) != _recordingMap.end())  // check if recording doesn't already exist
+        if (_recordingMap.find(cameraURL_) != _recordingMap.end())
         {
             Recording& rRecording = _recordingMap.at(cameraURL_);
             RCLCPP_WARN(this->get_logger(), "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
@@ -442,17 +442,9 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
                 startWatchDog();
             }
 
-            // Access the recording using at() to safely get the reference
             Recording& rRecording = _recordingMap.at(cameraURL_);
 
-            if (rRecording.startRecording())
-            {
-                return true;
-            }
-            else
-            {
-                return false;
-            }
+            return rRecording.startRecording();
         }
     }
     CB_url_publisher();

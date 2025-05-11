@@ -247,8 +247,13 @@ void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::C
     {
         this->_client_cameraControlManager = client_;
     }
-    // add handling in case the client pointer is invalid, similar to setArduinoClientManager()
-    return;
+    else
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access aruco detection manager client");
+        _ui.ScreenshotButton->setProperty("class", "error");
+        _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
+        _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
+    }
 }
 
 void QVideoPlayerWidget::handleScreenshot(void)

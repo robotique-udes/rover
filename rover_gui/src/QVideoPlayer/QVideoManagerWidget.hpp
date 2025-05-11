@@ -44,10 +44,6 @@ class QVideoManagerWidget : public QWidget
     void initArucoPublisher(void);
     void initArucoClient(void);
 
-    /**
-     * @brief Initialise the CameraControl client and passes it to each widget
-     *
-     */
     void initCameraControlClient(void);
 
     void initCameraControlPublisher(void);

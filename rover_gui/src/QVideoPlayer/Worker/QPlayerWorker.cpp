@@ -154,9 +154,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
     std::string status;
 
     auto request = std::make_shared<rover_msgs::srv::CameraControl::Request>();
-
     request->command = rover_msgs::srv::CameraControl::Request::TAKE_PICTURE;
-
     request->camera_url = camera_URL_;
 
     if (!client_CameraControl_)
@@ -206,7 +204,6 @@ void QPlayerWorker::startRecordingManager(std::shared_ptr<rclcpp::Client<rover_m
         {
             startRecordingInternal(client_CameraControl_, camera_URL_, tag_);
         });
-    return;
 }
 
 void QPlayerWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
@@ -218,7 +215,6 @@ void QPlayerWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_ms
         {
             stopRecordingInternal(client_CameraControl_, camera_URL_, tag_);
         });
-    return;
 }
 
 void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
