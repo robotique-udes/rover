@@ -8,11 +8,35 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(ament_cmake_python REQUIRED)
 find_package(rclpy REQUIRED)
+find_package(rclcpp REQUIRED)
+find_package(rover_msgs REQUIRED)
 
 install(PROGRAMS
   scripts/arm_sim.py
   DESTINATION lib/${PROJECT_NAME}
 )
+
+add_executable(gps_test src/gps_test_pub.cpp)
+add_executable(battery_test src/battery_test_pub.cpp)
+add_executable(connection_speed_test src/connection_speed_test_pub.cpp)
+
+install(TARGETS
+        battery_test
+        connection_speed_test
+          gps_test
+        DESTINATION lib/${PROJECT_NAME})
+
+ament_target_dependencies(gps_test
+                          rclcpp
+                          rover_msgs)
+
+ament_target_dependencies(battery_test
+                          rclcpp
+                          rover_msgs)
+
+ament_target_dependencies(connection_speed_test
+                          rclcpp
+                          rover_msgs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
