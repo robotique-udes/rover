@@ -1,9 +1,9 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/srv/joy_demux_set_state.hpp"
-#include "rovus_lib/macros.h"
-#include "rovus_lib/rovus_exceptions.h"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/joy.hpp>
+#include <rover_msgs/msg/joy_demux_status.hpp>
+#include <rover_msgs/srv/joy_demux_set_state.hpp>
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 using namespace std::chrono_literals;
 
@@ -56,14 +56,7 @@ int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
 
-    try
-    {
-        rclcpp::spin(std::make_shared<JoyDemux>());
-    }
-    catch (const std::exception& e)
-    {
-        RCLCPP_FATAL(rclcpp::get_logger("Dead Node"), "Killing node on exception: %s", e.what());
-    }
+    rclcpp::spin(std::make_shared<JoyDemux>());
 
     rclcpp::shutdown();
     return 0;
@@ -73,23 +66,23 @@ JoyDemux::JoyDemux():
     Node("joy_demux")
 {
     _sub_main = this->create_subscription<rover_msgs::msg::Joy>("main_joy",
-                                                                1,
+                                                                QOS_DEFAULT,
                                                                 [this](const rover_msgs::msg::Joy msg)
                                                                 {
                                                                     callbackJoy(msg, eControllerType::main);
                                                                 });
 
     _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("secondary_joy",
-                                                                     1,
+                                                                     QOS_DEFAULT,
                                                                      [this](const rover_msgs::msg::Joy msg)
                                                                      {
                                                                          callbackJoy(msg, eControllerType::secondary);
                                                                      });
 
-    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("/rover/drive_train/joy", 1);
-    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("/rover/arm/joy", 1);
-    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("/base/antenna/joy", 1);
-    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("/joy/demux/status", 1);
+    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", QOS_DEFAULT);
+    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", QOS_DEFAULT);
+    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("antenna", QOS_DEFAULT);
+    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("demux_status", QOS_DEFAULT);
 
     _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
         "demux_control",
@@ -112,7 +105,7 @@ void JoyDemux::callbackJoy(const rover_msgs::msg::Joy& msg, int8_t controller_ty
     }
     else
     {
-        RCLCPP_WARN(LOGGER, "Wrong \"controller_type\" argument: %i?", controller_type);
+        RCLCPP_WARN(this->get_logger(), "Wrong \"controller_type\" argument: %i?", controller_type);
     }
 
     this->redirectMsg(dest, msg);
@@ -180,11 +173,11 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
     {
         if (_dest_secondary == dest)
         {
-            RCLCPP_WARN(LOGGER, "Secondary joy topic already redirect to this topic");
+            RCLCPP_WARN(this->get_logger(), "Secondary joy topic already redirect to this topic");
 
             if (request->force)
             {
-                RCLCPP_WARN(LOGGER, "Secondary joy destination was set to \"none\"");
+                RCLCPP_WARN(this->get_logger(), "Secondary joy destination was set to \"none\"");
                 _dest_secondary = eDemuxDestination::none;
             }
             else
@@ -200,11 +193,11 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
     {
         if (_dest_main == dest)
         {
-            RCLCPP_WARN(LOGGER, "Main joy topic already redirect to this topic");
+            RCLCPP_WARN(this->get_logger(), "Main joy topic already redirect to this topic");
 
             if (request->force)
             {
-                RCLCPP_WARN(LOGGER, "Secondary joy can't overwrite main joy");
+                RCLCPP_WARN(this->get_logger(), "Secondary joy can't overwrite main joy");
             }
             response->success = false;
             return;
@@ -214,7 +207,7 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
     }
     else
     {
-        RCLCPP_ERROR(LOGGER, "How did we get here? 0_0");
+        RCLCPP_ERROR(this->get_logger(), "How did we get here? 0_0");
     }
 
     response->success = true;

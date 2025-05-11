@@ -6,10 +6,19 @@
 #include "std_msgs/msg/empty.hpp"
 
 #include "rover_msgs/srv/drive_train_arbitration.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 
 class Arbitration : public rclcpp::Node
 {
+    static constexpr const char* TOPIC_HEARTBEAT_BASE = "/base/heartbeat";
+    static constexpr const char* TOPIC_HEARTBEAT_ROVER = "/rover/heartbeat";
+    static constexpr const char* TOPIC_CMD_WHEELS_AUTO = "/rover/drive_train/wheels_cmd_auto";
+    static constexpr const char* TOPIC_CMD_WHEELS_TELEOP = "/rover/drive_train/wheels_cmd_telelop";
+    static constexpr const char* TOPIC_CMD_WHEELS_OUT = "/rover/drive_train/wheels_cmd_out";
+    static constexpr const char* SERVICE_ARBITRATION_CONTROL = "/rover/drive_train/demux_control";
+    static constexpr const char* TOPIC_ARBITRATION_STATUS = "/rover/drive_train/demux_status";
+
   public:
     Arbitration();
     ~Arbitration() {}
@@ -51,42 +60,39 @@ class Arbitration : public rclcpp::Node
 Arbitration::Arbitration():
     Node("arbitration")
 {
-    for (size_t i = 0; i < _zeroCmd.enable.size(); ++i)
+    for (size_t i = 0; i < rover_msgs::msg::PropulsionMotor::MOTOR_MAX; ++i)
     {
-        _zeroCmd.enable[i] = false;
         _zeroCmd.target_speed[i] = 0.0;
         _zeroCmd.current_speed[i] = 0.0;
-        _zeroCmd.close_loop[i] = false;
     }
 
-    _subBaseHr = this->create_subscription<std_msgs::msg::Empty>("/base/heartbeat",
-                                                                 1,
+    _subBaseHr = this->create_subscription<std_msgs::msg::Empty>(TOPIC_HEARTBEAT_BASE,
+                                                                 QOS_DEFAULT,
                                                                  [this](const std_msgs::msg::Empty msg_)
                                                                  {
                                                                      this->cbHB(msg_, &_baseHBLost, _watchdogBase);
                                                                  });
-    _subRoverHr = this->create_subscription<std_msgs::msg::Empty>("/rover/heartbeat",
-                                                                  1,
+    _subRoverHr = this->create_subscription<std_msgs::msg::Empty>(TOPIC_HEARTBEAT_ROVER,
+                                                                  QOS_DEFAULT,
                                                                   [this](const std_msgs::msg::Empty msg_)
                                                                   {
                                                                       this->cbHB(msg_, &_roverHBLost, _watchdogRover);
                                                                   });
 
     _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
-        "/rover/drive_train/cmd/in/teleop",
-        1,
+        TOPIC_CMD_WHEELS_TELEOP,
+        QOS_DEFAULT,
         std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
     _subMotorCmdAuto = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
-        "/rover/drive_train/cmd/in/teleop",
-        1,
+        TOPIC_CMD_WHEELS_AUTO,
+        QOS_DEFAULT,
         std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
 
-    _pubCmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>("/rover/drive_train/cmd/out/motors", 1);
-    _pubArbitrationStatus
-        = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>("/rover/drive_train/arbitration/status", 1);
+    _pubCmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_OUT, QOS_DEFAULT);
+    _pubArbitrationStatus = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>(TOPIC_ARBITRATION_STATUS, QOS_DEFAULT);
 
     _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>(
-        "/rover/drive_train/set_arbitration",
+        SERVICE_ARBITRATION_CONTROL,
         std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
 
     _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500),
