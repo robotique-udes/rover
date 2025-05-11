@@ -12,7 +12,6 @@
 #include <QTimer>
 #include <QGraphicsDropShadowEffect>
 #include <QStyle>
-#include <QScrollBar>
 #include <QDateTime>
 #include <deque>
 
@@ -90,34 +89,6 @@ namespace QHelper
         QPropertyAnimation _progressBarAnim;
         QTimer _closeTimer;
     };
-
-    class QNotificationShowHistory : public QWidget
-    {
-        Q_OBJECT
-
-        static constexpr size_t MARGIN = 5;
-
-      public:
-        QNotificationShowHistory();
-        void showHistory(void);
-
-      private:
-        QRect _targetScreenRect;
-        Ui::historyPanel _ui;
-    };
-
-    class QNotificationHistoryData : public QWidget
-    {
-        Q_OBJECT
-
-      public:
-        QNotificationHistoryData(QTime timeStamp_, QString title_, QString description_, QToastNotification::eNotifType type_);
-
-      private:
-        void setStyle(void);
-        Ui::historySubWidget _ui;
-    };
-
 }  // namespace QHelper
 
 #endif

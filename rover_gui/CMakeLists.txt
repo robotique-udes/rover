@@ -49,8 +49,14 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Constant/StyleSheet.hpp
                    src/Global/Helpers/QHelpers.hpp
                    src/Global/Helpers/QHelpers.cpp
-                   src/Global/Helpers/QToastNotification.cpp
-                   src/Global/Helpers/QToastNotification.hpp
+
+                   src/Global/Helpers/QToastNotification/QToastNotification.cpp
+                   src/Global/Helpers/QToastNotification/QToastNotification.hpp
+                   src/Global/Helpers/QToastNotification/QNotificationHistoryData.cpp
+                   src/Global/Helpers/QToastNotification/QNotificationHistoryData.hpp
+                   src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
+                   src/Global/Helpers/QToastNotification/QNotificationShowHistory.hpp
+                   
                    src/Global/Workers/QWorker.hpp
                    src/Global/Workers/QWorker.cpp
                    src/Global/QTmpFolderManager.hpp

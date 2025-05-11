@@ -1,4 +1,6 @@
 #include "Global/Constant/StyleSheet.hpp"
+#include "Global/Helpers/QToastNotification/QToastNotification.hpp"
+
 #include "MainWindow.hpp"
 #include "SecondaryWindow.hpp"
 

@@ -1,5 +1,4 @@
 #include "QExample.hpp"
-#include "Global/Helpers/QToastNotification.hpp"
 
 QExample::QExample(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
