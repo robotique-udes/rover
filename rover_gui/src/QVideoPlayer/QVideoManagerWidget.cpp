@@ -154,6 +154,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
     }
 
+    assert(_node != nullptr);
     for (auto& widget : _videoPlaysWidgets)
     {
         widget->setCameraControlClientManager(_client_cameraControlManager);

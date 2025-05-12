@@ -8,6 +8,7 @@
 #include <QTimer>
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
+#include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 
 class QVideoPlayerWidget : public QWidget
 {
