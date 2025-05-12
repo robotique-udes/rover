@@ -27,7 +27,6 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
 
   public:
     Gnss(RoverCan2::Constant::eDeviceId deviceId_,
-         uint8_t rosGnssDataMsgId_,
          std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::Gps>> rosSharedMsg_);
 
   private:
@@ -38,9 +37,7 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
     void CB_CAN_FixHeading(const RoverCan2::Msgs::FixHeading& canMsg_);
     void CB_CAN_FixInfo(const RoverCan2::Msgs::FixInfo& canMsg_);
     void CB_CAN_FixPosition(const RoverCan2::Msgs::FixPosition& canMsg_);
-
-    const uint8_t _rosGnssDataMsgId;
-
+    
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::Gps>> _rosSharedMsg;
 
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr _pub_GnssData;
