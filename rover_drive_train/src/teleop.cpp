@@ -16,10 +16,7 @@ class Teleop : public rclcpp::Node
 
   private:
     // Private members
-    float _speedFactorCrawler;
-    float _speedFactorNormal;
-    float _speedFactorTurbo;
-    float _smallestRadius = 0.3f;
+
 
     float _deadmanSwitch;
 
@@ -30,21 +27,21 @@ class Teleop : public rclcpp::Node
     float _modeNormalEnable;
     float _modeTurboEnable;
 
-    float _controlMapFactor = 1.0f - _smallestRadius;
+    float _controlMapFactor = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
 
     // Private methods
-    void getParams()
-    {
-        this->declare_parameter("speedFactorCrawler", 0.2f);
-        this->declare_parameter("_speedFactorNormal", 0.5f);
-        this->declare_parameter("_speedFactorTurbo", 1.0f);
-        this->declare_parameter("_smallestRadius", 0.3f);
+    // void getParams()
+    // {
+    //     this->declare_parameter("speedFactorCrawler", 0.2f);
+    //     this->declare_parameter("_speedFactorNormal", 0.5f);
+    //     this->declare_parameter("_speedFactorTurbo", 1.0f);
+    //     this->declare_parameter("_smallestRadius", 0.3f);
 
-        this->get_parameter("speedFactorCrawler", _speedFactorCrawler);
-        this->get_parameter("_speedFactorNormal", _speedFactorNormal);
-        this->get_parameter("_speedFactorTurbo", _speedFactorTurbo);
-        this->get_parameter("_smallestRadius", _smallestRadius);
-    }
+    //     this->get_parameter("speedFactorCrawler", _speedFactorCrawler);
+    //     this->get_parameter("_speedFactorNormal", _speedFactorNormal);
+    //     this->get_parameter("_speedFactorTurbo", _speedFactorTurbo);
+    //     this->get_parameter("_smallestRadius", _smallestRadius);
+    // }
 
     void CB_joy(const rover_msgs::msg::Joy::SharedPtr msg)
     {
@@ -60,15 +57,15 @@ class Teleop : public rclcpp::Node
 
         if (_deadmanSwitch)
         {
-            float speedFactor = _speedFactorCrawler;
+            float speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
 
             if (_modeNormalEnable)
             {
-                speedFactor = _speedFactorNormal;
+                speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             }
             if (_modeTurboEnable > 0.5 && _modeNormalEnable)
             {
-                speedFactor = _speedFactorTurbo;
+                speedFactor = Constants::DriveTrain::_speedFactorTurbo;
             }
 
             float speedLeftMotor = _linearInput * speedFactor;
@@ -113,7 +110,7 @@ class Teleop : public rclcpp::Node
 Teleop::Teleop():
     Node("teleop")
 {
-    this->getParams();
+    //this->getParams();
 
     _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY,
                                                                         QOS_DEFAULT,

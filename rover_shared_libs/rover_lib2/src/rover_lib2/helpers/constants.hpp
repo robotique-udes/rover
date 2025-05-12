@@ -11,26 +11,37 @@
 #define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
 #endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
 
-namespace Constants::CameraInfo
+namespace Constants
 {
+    namespace CameraInfo
+    {
 #if defined(__linux__)
-    const std::map<std::string, std::string> CAMERA_URL_MAP = {
-        {"Main", "rtsp://192.168.144.30:554/1/h264major"},
-        {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
-        {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
-        {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},
-        {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
-    };
+        const std::map<std::string, std::string> CAMERA_URL_MAP = {
+            {"Main", "rtsp://192.168.144.30:554/1/h264major"},
+            {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
+            {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
+            {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},
+            {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
+        };
 
-    /**
-     * @brief Tries to find a name from a camera URL
-     *
-     * @param url_ URL of the camera
-     * @param rName_ Overwrite value if found
-     * @return Success on camera name found
-     */
-    bool getNameFromURL(const std::string& url_, std::string& rName_);
+        /**
+         * @brief Tries to find a name from a camera URL
+         *
+         * @param url_ URL of the camera
+         * @param rName_ Overwrite value if found
+         * @return Success on camera name found
+         */
+        bool getNameFromURL(const std::string& url_, std::string& rName_);
 #endif  // defined(__linux__)
-}  // namespace Constants::CameraInfo
+    }   // namespace CameraInfo
+    namespace DriveTrain
+    {
+        constexpr float _speedFactorCrawler = 0.2f;
+        constexpr float SPEED_FACTOR_NORMAL = 0.5f;
+        constexpr float _speedFactorTurbo = 1.0f;
+        constexpr float SMALLEST_RADIUS = 0.3f;
+    }  // namespace DriveTrain
+
+}  // namespace Constants
 
 #endif  // CONSTANTS_HPP
