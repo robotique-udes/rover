@@ -3,9 +3,11 @@
 
 #include "can_master/devices/camera.hpp"
 #include "can_master/devices/propulsion_motors.hpp"
+#include "can_master/devices/gnss.hpp"
 #include "rover_can2/drivers/driver_linux.hpp"
 
 #include <rover_msgs/msg/can_device_status.hpp>
+#include <rover_msgs/msg/detail/gps__struct.hpp>
 #include <rover_msgs/srv/empty.hpp>
 
 #include <rover_can2/rover_can2.hpp>
@@ -45,6 +47,9 @@ class CanMasterNode : public rclcpp::Node
     // Shared ROS Messages
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::PropulsionMotor>> _propMotorMsg
         = std::make_shared<CanMaster::SharedRosMsg<rover_msgs::msg::PropulsionMotor>>();
+
+    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::Gps>> _GnssDataMsg
+        = std::make_shared<CanMaster::SharedRosMsg<rover_msgs::msg::Gps>>();
 
     // CanDevices
     PropulsionMotor motorFL = PropulsionMotor(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR,
