@@ -26,7 +26,9 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
     static constexpr float GNSS_DATA_PUBLISH_FREQUENCY_HZ = 10.0F;
 
   public:
-    Gnss(RoverCan2::Constant::eDeviceId deviceId_, uint8_t rosGnssDataMsgId_);
+    Gnss(RoverCan2::Constant::eDeviceId deviceId_,
+         uint8_t rosGnssDataMsgId_,
+         std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::Gps>> rosSharedMsg_);
 
   private:
     void rosElementInit(void) override;

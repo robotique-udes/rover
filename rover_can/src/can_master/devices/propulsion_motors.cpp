@@ -1,5 +1,4 @@
 #include "propulsion_motors.hpp"
-#include <rover_msgs/msg/detail/propulsion_motor__struct.hpp>
 #include <rover_lib2/helpers/constants.hpp>
 
 PropulsionMotor::PropulsionMotor(RoverCan2::Constant::eDeviceId deviceId_,
