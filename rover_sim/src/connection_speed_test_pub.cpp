@@ -9,7 +9,7 @@ class ConnectionSpeedPublisher : public rclcpp::Node
         Node("connection_speed_publisher")
     {
         _speed_connection = 1;
-        _connection_quality = 0;
+        _connection_quality = -50;
         _publisher = this->create_publisher<rover_msgs::msg::WifiConnection>("/rover/auxiliary/connection_speed", 10);
         _timer = this->create_wall_timer(std::chrono::seconds(1), std::bind(&ConnectionSpeedPublisher::publish_connection_speed, this));
     }
@@ -23,10 +23,10 @@ class ConnectionSpeedPublisher : public rclcpp::Node
         msg.valid = true;
         _publisher->publish(msg);
         _speed_connection += 1;
-        _connection_quality -= 1;
-        if(_connection_quality <=-180)
+        _connection_quality -= 2;
+        if(_connection_quality <=-90)
         {
-            _connection_quality = 0;
+            _connection_quality = -50;
         }
         if(_speed_connection>=10.9)
         {

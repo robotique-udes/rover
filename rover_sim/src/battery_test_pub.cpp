@@ -21,8 +21,8 @@ class BatteryPublisher : public rclcpp::Node
         msg.pourcentage = _pourcentage;
         msg.valid = true;
         _publisher->publish(msg);
-        _pourcentage -= 1;
-        if(_pourcentage == 0)
+        _pourcentage -= 8;
+        if(_pourcentage >= 100)
         {
             _pourcentage = 100;
         }

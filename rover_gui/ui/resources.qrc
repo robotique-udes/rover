@@ -1,0 +1,15 @@
+<RCC>
+  <qresource prefix="/">
+    <file>icons/BatteryIcon100.svg</file>
+    <file>icons/BatteryIcon75.svg</file>
+    <file>icons/BatteryIcon50.svg</file>
+    <file>icons/BatteryIcon25.svg</file>
+    <file>icons/BatteryIcon0.svg</file>
+    <file>icons/BatteryError.svg</file>
+    <file>icons/RSSI1.svg</file>
+    <file>icons/RSSI2.svg</file>
+    <file>icons/RSSI3.svg</file>
+    <file>icons/RSSI4.svg</file>  
+    <file>icons/RSSIError.svg</file>      
+  </qresource>
+</RCC>

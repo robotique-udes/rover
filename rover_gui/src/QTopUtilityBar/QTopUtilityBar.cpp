@@ -1,6 +1,8 @@
 #include "QTopUtilityBar.hpp"
+#include <cstdint>
 #include <qdatetime.h>
 #include <qglobal.h>
+#include <qpixmap.h>
 #include <qtimezone.h>
 #include <rover_msgs/msg/battery.hpp>
 #include <rover_msgs/msg/detail/wifi_connection__struct.hpp>
@@ -18,7 +20,9 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
     this->initTimerDisplay();
 
     connect(_ui.timeZone_pb, &QPushButton::clicked, this, &QTopUtilityBar::updateTimeZone);
-
+    connect(this, &QTopUtilityBar::updateBatteryUI, this, &QTopUtilityBar::onUpdateBatteryUI);
+    connect(this, &QTopUtilityBar::updateWifiUI, this, &QTopUtilityBar::onUpdateWifiUI);
+    #warning timer update in ROS and should not
 
 }
 
@@ -26,6 +30,15 @@ void QTopUtilityBar::setupUI(void)
 {
     _timeZone = QTimeZone("America/Montreal");
     _ui.timeZone_pb->setText("QC");
+
+    _ui.batteryLabel->setText("-- %");
+    QPixmap pixBattery(":/icons/BatteryError.svg");
+    _ui.batteryIcon->setPixmap(pixBattery.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    _ui.signalQualityLabel->setText("RSSI: ---   ");
+    _ui.connectionSpeedLabel->setText("--.- Mb/s   ");
+    QPixmap pixRSSI(":/icons/RSSIError.svg");
+    _ui.RSSILabel->setPixmap(pixRSSI.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
 }
 
@@ -39,6 +52,17 @@ void QTopUtilityBar::initBatterySubscriber(void)
                                                                                  {
                                                                                      CB_battery(msg);
                                                                                  });
+
+        _timer_batteryPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_BATTERY_PUB_COUNT_MS),
+        [this](void)
+        {
+            size_t count = _node->count_publishers("/rover/auxiliary/battery");
+            if(!count)
+            {
+                QPixmap pix(":/icons/BatteryError.svg");
+                _ui.batteryIcon->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            }
+        });
     }
     else
     {
@@ -56,6 +80,17 @@ void QTopUtilityBar::initWifiConnection(void)
                                                                                  {
                                                                                      CB_wifiConnection(msg);
                                                                                  });
+        
+        _timer_RSSIPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_RSSI_PUB_COUNT_MS),
+        [this](void)
+        {
+            size_t count = _node->count_publishers("/rover/auxiliary/connection_speed");
+            if(!count)
+            {
+                QPixmap pix(":/icons/RSSIError.svg");
+                _ui.RSSILabel->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+            }
+        });
     }
     else
     {
@@ -79,12 +114,14 @@ void QTopUtilityBar::CB_battery(rover_msgs::msg::Battery msg_)
     if(!valid)
     {
         #warning counter to flag after 10 false
+        QPixmap pix(":/icons/BatteryError.svg");
+        _ui.batteryIcon->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Error with battery publisher", "battery publisher is unavailble, please check connection", QHelper::QToastNotification::eNotifType::ERROR);
     }
     else
     {
         //RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Battery percentage: %u", msg_.pourcentage);
-        _ui.batteryLabel->setText(QString::number(static_cast<int>(msg_.pourcentage))+" %");
+        emit this->updateBatteryUI(msg_.pourcentage);
     }
 }
 
@@ -93,15 +130,15 @@ void QTopUtilityBar::CB_wifiConnection(rover_msgs::msg::WifiConnection msg_)
     bool valid = msg_.valid;
     if(!valid)
     {
+        QPixmap pix(":/icons/RSSIError.svg");
+        _ui.RSSILabel->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
         #warning counter to flag after 10 false
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Error with wifi connection publisher", "wifi connection publisher is unavailble, please check connection", QHelper::QToastNotification::eNotifType::ERROR);
     }
     else
     {
-        _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(msg_.rssi))+ "   ");
-        _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(msg_.speed_connection), 'f',1)+" Mb/s   ");
+        emit this->updateWifiUI(msg_.rssi, msg_.speed_connection);
     }
-
 }
 
 void QTopUtilityBar::CB_timerDisplaying(void)
@@ -149,10 +186,67 @@ void QTopUtilityBar::updateTimeZone(void)
     }
 }
 
+void QTopUtilityBar::onUpdateBatteryUI(uint8_t pourcent_)
+{
+    _ui.batteryLabel->setText(QString::number(static_cast<int>(pourcent_))+" %");
+    QPixmap pix;
+
+    if(pourcent_>=85)
+    {
+        pix = QPixmap(":/icons/BatteryIcon100.svg");
+    }
+    else if(pourcent_>=55)
+    {
+        pix = QPixmap(":/icons/BatteryIcon75.svg");
+    }
+    else if(pourcent_>=40)
+    {
+        pix = QPixmap(":/icons/BatteryIcon50.svg");
+    }
+    else if(pourcent_>=20)
+    {
+        pix = QPixmap(":/icons/BatteryIcon25.svg");
+    }
+    else
+    {
+        pix = QPixmap(":/icons/BatteryIcon0.svg");
+    }
+
+    _ui.batteryIcon->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+}
+
+void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
+{
+    _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_))+ "   ");
+    _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_), 'f',1)+" Mb/s   ");
+
+    QPixmap pix;
+
+    if(rssi_<=-85)
+    {
+        pix = QPixmap(":/icons/RSSI1.svg");
+    } 
+    else if(rssi_>-85 && rssi_<=-75)
+    {
+        pix = QPixmap(":/icons/RSSI2.svg");
+    }
+    else if(rssi_>-75 && rssi_<=-65)
+    {
+        qDebug("yess");
+        pix = QPixmap(":/icons/RSSI3.svg");
+    }
+    else
+    {
+        pix = QPixmap(":/icons/RSSI4.svg");
+    }
+
+    _ui.RSSILabel->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    this->repaint();
+}
 
 void QTopUtilityBar::simulateTimerFileReading()
 {
-    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(14,30,0)));
-    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(16,30,0)));
-    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(18,30,0)));
+    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(14,30,0),QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(16,30,0),QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(18,30,0),QTimeZone("America/Edmonton")));
 }
