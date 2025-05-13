@@ -18,14 +18,13 @@ add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
+
 ament_target_dependencies(ddb_control
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
 target_link_libraries(ddb_control rover_shared_libs)
-
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)

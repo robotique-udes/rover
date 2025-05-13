@@ -1,0 +1,181 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>Navigation</class>
+ <widget class="QWidget" name="Navigation">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>1122</width>
+    <height>654</height>
+   </rect>
+  </property>
+  <layout class="QHBoxLayout" name="horizontalLayout">
+   <item>
+    <widget class="QWebEngineView" name="webViewContainer" native="true"/>
+   </item>
+   <item>
+    <layout class="QVBoxLayout" name="inputLayout">
+     <item>
+      <widget class="QGroupBox" name="waypointInputGroup">
+       <property name="title">
+        <string>Add Waypoint</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout">
+        <item>
+         <layout class="QHBoxLayout" name="nameLayout">
+          <item>
+           <widget class="QLabel" name="labelName">
+            <property name="text">
+             <string>Waypoint Name:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="inputName"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="latitudeLayout">
+          <item>
+           <widget class="QLabel" name="labelLatitude">
+            <property name="text">
+             <string>Latitude:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="inputLatitude"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="longitudeLayout">
+          <item>
+           <widget class="QLabel" name="labelLongitude">
+            <property name="text">
+             <string>Longitude:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLineEdit" name="inputLongitude"/>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="setGoalButton">
+          <property name="text">
+           <string>Set Goal</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="waypointListGroup">
+       <property name="title">
+        <string>Waypoints</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_2">
+        <item>
+         <widget class="QListWidget" name="waypointList">
+          <property name="alternatingRowColors">
+           <bool>false</bool>
+          </property>
+          <property name="selectionMode">
+           <enum>QAbstractItemView::SelectionMode::SingleSelection</enum>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="waypointButtonsLayout">
+          <item>
+           <widget class="QPushButton" name="deleteWaypointButton">
+            <property name="text">
+             <string>Delete Waypoint</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QPushButton" name="clearWaypointsButton">
+            <property name="text">
+             <string>Clear All Waypoints</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <widget class="QGroupBox" name="pathGroup">
+       <property name="title">
+        <string>Path Planning</string>
+       </property>
+       <layout class="QVBoxLayout" name="verticalLayout_3">
+        <item>
+         <widget class="QPushButton" name="calculatePathButton">
+          <property name="text">
+           <string>Calculate Path to Selected Waypoint</string>
+          </property>
+         </widget>
+        </item>
+        <item>
+         <layout class="QHBoxLayout" name="distanceLayout">
+          <item>
+           <widget class="QLabel" name="distanceTextLabel">
+            <property name="text">
+             <string>Distance:</string>
+            </property>
+           </widget>
+          </item>
+          <item>
+           <widget class="QLabel" name="distanceLabel">
+            <property name="text">
+             <string>N/A</string>
+            </property>
+           </widget>
+          </item>
+         </layout>
+        </item>
+        <item>
+         <widget class="QPushButton" name="clearPathButton">
+          <property name="text">
+           <string>Clear Calculated Path</string>
+          </property>
+         </widget>
+        </item>
+       </layout>
+      </widget>
+     </item>
+     <item>
+      <spacer name="verticalSpacer">
+       <property name="orientation">
+        <enum>Qt::Orientation::Vertical</enum>
+       </property>
+       <property name="sizeHint" stdset="0">
+        <size>
+         <width>20</width>
+         <height>40</height>
+        </size>
+       </property>
+      </spacer>
+     </item>
+    </layout>
+   </item>
+  </layout>
+ </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QWebEngineView</class>
+   <extends>QWidget</extends>
+   <header>QWebEngineView</header>
+  </customwidget>
+ </customwidgets>
+ <resources/>
+ <connections/>
+</ui>
