@@ -326,7 +326,7 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
             _ui.startRecordingButton->setProperty("class", "error");
             _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Screenshot taken", QString::fromStdString(status_), QHelper::QToastNotification::eNotifType::INFO);
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Screenshot taken", status_, QHelper::QToastNotification::eNotifType::INFO);
 
             // reset after timer
             QTimer::singleShot(STYLE_RESET_TIME,
