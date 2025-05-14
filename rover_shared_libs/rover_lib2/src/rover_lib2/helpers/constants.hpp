@@ -34,14 +34,25 @@ namespace Constants
         bool getNameFromURL(const std::string& url_, std::string& rName_);
 #endif  // defined(__linux__)
     }   // namespace CameraInfo
+
     namespace DriveTrain
     {
-        constexpr float _speedFactorCrawler = 0.2f;
+        constexpr float SPEED_FACTOR_CRAWLER = 0.2f;
         constexpr float SPEED_FACTOR_NORMAL = 0.5f;
-        constexpr float _speedFactorTurbo = 1.0f;
+        constexpr float SPEED_FACTOR_TURBO = 1.0f;
         constexpr float SMALLEST_RADIUS = 0.3f;
     }  // namespace DriveTrain
 
+    namespace KeyBinding
+    {
+        constexpr float DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
+        constexpr float LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
+        constexpr float ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
+        constexpr float MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
+        constexpr float MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
+        constexpr float MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
+
+    }  // namespace KeyBinding
 }  // namespace Constants
 
 #endif  // CONSTANTS_HPP
