@@ -109,8 +109,6 @@ namespace QHelper
         _ui.textErrorMessage->setText(QString::fromStdString(description_));
         _ui.titleLineEdit->setText(QString::fromStdString(title_));
 
-        // this->adjustSize();
-
         size_t X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
         size_t startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
         size_t endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
