@@ -8,6 +8,7 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include "Global/Helpers/QHelpers.hpp"
+#include "Global/QTmpFolderManager.hpp"
 #include "LibSshSupportModule.hpp"
 #include "QSshFileExplorer/QDownloadedFileManager.hpp"
 
@@ -75,7 +76,7 @@ void QSshWorker::transferFile(const std::string& fileName_,
     this->addTask(
         [username = std::move(ownerUsername_),
          hostname = std::move(ownerHostname_),
-         filePath = std::move(ownerFolderPath_ + "/" + fileName_),
+         filePath = ownerFolderPath_ + "/" + fileName_,
          this](void)
         {
             this->downloadFileInternal(username, hostname, filePath);

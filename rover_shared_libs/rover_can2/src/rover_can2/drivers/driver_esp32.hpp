@@ -31,6 +31,9 @@ namespace RoverCan2::Drivers
         static constexpr size_t CAN_DATA_LENGTH = TWAI_FRAME_MAX_DLC;
         static_assert(Constant::CAN_MAX_DATA_LENGTH == CAN_DATA_LENGTH);
 
+        static constexpr uint64_t RECV_WATCHDOG_TIMEOUT_MS
+            = 2ULL * 1'000ULL / static_cast<uint64_t>(Constant::MASTER_HEARTBEAT_RATE_HZ);
+
         enum eState : size_t
         {
             UNINSTALLED,
@@ -50,7 +53,7 @@ namespace RoverCan2::Drivers
             _txQueueLength(static_cast<uint32_t>(txQueueLength_)),
             _state(eState::UNINSTALLED),
             _led(led_),
-            _recvWatchdog(2ULL * 1'000ULL / static_cast<uint64_t>(Constant::MASTER_HEARTBEAT_RATE_HZ))
+            _recvWatchdog(RECV_WATCHDOG_TIMEOUT_MS)
         {
         }
 
