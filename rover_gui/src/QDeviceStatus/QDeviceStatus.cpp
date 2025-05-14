@@ -10,13 +10,13 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearrightMotor;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss;
 
     for (auto it = _deviceButtons.begin(); it != _deviceButtons.end(); ++it)
     {
-        uint16_t deviceID = it.key(); 
+        uint16_t deviceID = it.key();
         QPushButton* button = it.value();
 
         connect(button,
@@ -33,7 +33,13 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
         10,
         [this](const rover_msgs::msg::CanDeviceStatus::SharedPtr msg)
         {
-            this->callbackDeviceInfos(*msg);
+            QMetaObject::invokeMethod(
+                this,
+                [this, msg]()
+                {
+                    this->callbackDeviceInfos(*msg);
+                },
+                Qt::QueuedConnection);
         });
 
     // Set the QSizePolicy to ensure aspect ratio resizing
@@ -164,7 +170,11 @@ void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_ms
             return;
     }
 
-        button_->setProperty("class", className);
-        button_->style()->unpolish(button_);
-        button_->style()->polish(button_);
+    // button_->setProperty("class", className);
+    // button_->style()->unpolish(button_);
+    // button_->style()->polish(button_);
+
+    _ui.frontrightMotor->setProperty("class", className);
+    _ui.frontrightMotor->style()->unpolish(_ui.frontrightMotor);
+    _ui.frontrightMotor->style()->polish(_ui.frontrightMotor);
 }
