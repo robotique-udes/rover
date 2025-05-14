@@ -4,6 +4,7 @@
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
+    _webChannel(this),
     _node(guiNode_)
 {
     _ui.setupUi(this);
@@ -25,12 +26,9 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     }
 
     _ui.webViewContainer->load(QUrl("qrc:/map.html"));
-    _ui.webViewContainer->setMinimumSize(1200, 900);
-    _ui.webViewContainer->setMaximumSize(1200, 900);
 
-    _webChannel = new QWebChannel(this);
-    _webChannel->registerObject(QStringLiteral("bridge"), this);
-    _ui.webViewContainer->page()->setWebChannel(_webChannel);
+    _webChannel.registerObject(QStringLiteral("bridge"), this);
+    _ui.webViewContainer->page()->setWebChannel(&_webChannel);
 
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
@@ -210,9 +208,9 @@ void QNavigation::onDeleteWaypointClicked(void)
 
 void QNavigation::onClearWaypointsClicked(void)
 {
-    int result_ = QHelper::QPopUp::sendQuestionPopUp("Clear Waypoints",
-                                                     "Are you sure you want to clear all waypoints?",
-                                                     QMessageBox::Yes | QMessageBox::No);
+    QMessageBox::StandardButton result_ = QHelper::QPopUp::sendQuestionPopUp("Clear Waypoints",
+                                                                             "Are you sure you want to clear all waypoints?",
+                                                                             QMessageBox::Yes | QMessageBox::No);
 
     if (result_ == QMessageBox::Yes)
     {

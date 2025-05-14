@@ -50,7 +50,7 @@ class QNavigation : public QWidget
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
 
-    QWebChannel* _webChannel;
+    QWebChannel _webChannel;
     std::shared_ptr<rclcpp::Node> _node;
     Ui::Navigation _ui;
 
