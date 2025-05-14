@@ -1,5 +1,7 @@
 #include "QDownloadedFileManager.hpp"
 
+#include "Global/QTmpFolderManager.hpp"
+
 std::unordered_map<decltype(QDownloadedFileManager::sFileInfo::name), decltype(QDownloadedFileManager::sFileInfo::size)>
     QDownloadedFileManager::_availableFileList = {};
 

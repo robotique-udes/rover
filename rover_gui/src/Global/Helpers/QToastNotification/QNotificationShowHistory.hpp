@@ -15,7 +15,7 @@ namespace QHelper
     {
         Q_OBJECT
 
-        static constexpr size_t MARGIN = 5;
+        static constexpr size_t MARGIN = 5UL;
 
       public:
         QNotificationShowHistory();

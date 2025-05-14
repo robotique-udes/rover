@@ -23,8 +23,9 @@ add_executable(connection_speed_test src/connection_speed_test_pub.cpp)
 install(TARGETS
         battery_test
         connection_speed_test
-          gps_test
-        DESTINATION lib/${PROJECT_NAME})
+        gps_test
+        DESTINATION lib/${PROJECT_NAME}
+  )
 
 ament_target_dependencies(gps_test
                           rclcpp

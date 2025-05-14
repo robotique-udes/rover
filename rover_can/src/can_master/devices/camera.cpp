@@ -1,4 +1,5 @@
 #include "camera.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 
 Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsgCam_):
     Device(IdCan_,
@@ -10,10 +11,11 @@ Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsg
 
 void Camera::rosElementInit()
 {
-    _pub_powerStatus = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_POWER_STATUS_TOPIC, 1);
+    _pub_powerStatus
+        = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_POWER_STATUS_TOPIC, QOS_DEFAULT);
     _sub_powerCmd = this->getAttachedNode()->create_subscription<rover_msgs::msg::CameraControl>(
         CAMERA_POWER_CONTROL_TOPIC,
-        1,
+        QOS_DEFAULT,
         [this](const rover_msgs::msg::CameraControl& rosMsg_)
         {
             this->CB_ROS_powerCmd(rosMsg_);

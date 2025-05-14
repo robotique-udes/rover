@@ -6,8 +6,8 @@
 #include "Global/Helpers/QToastNotification/QNotificationShowHistory.hpp"
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
-#include "QTopUtilityBar/QTopUtilityBar.hpp"
 #include "QUtilityBarBottom/QUtilityBarBottom.hpp"
+#include "QTopUtilityBar/QTopUtilityBar.hpp"
 
 #include <QStackedWidget>
 #include <QMainWindow>

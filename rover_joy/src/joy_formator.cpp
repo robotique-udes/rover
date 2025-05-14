@@ -2,6 +2,7 @@
 #include "rover_msgs/msg/joy.hpp"
 #include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/assert.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 #include "sensor_msgs/msg/joy.hpp"
 
 // =============================================================================
@@ -138,9 +139,9 @@ JoyFormator::JoyFormator():
 
     _sub_joy
         = this->create_subscription<sensor_msgs::msg::Joy>("raw/joy",
-                                                           1,
+                                                           QOS_DEFAULT,
                                                            std::bind(&JoyFormator::callbackJoy, this, std::placeholders::_1));
-    _pub_joy_formatted = this->create_publisher<rover_msgs::msg::Joy>("formated/joy", 1);
+    _pub_joy_formatted = this->create_publisher<rover_msgs::msg::Joy>("formated/joy", QOS_DEFAULT);
 
     _timer = this->create_wall_timer(10ms, std::bind(&JoyFormator::callbackPubJoy, this));
 }

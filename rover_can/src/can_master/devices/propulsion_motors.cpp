@@ -1,5 +1,6 @@
 #include "propulsion_motors.hpp"
 #include <rover_msgs/msg/detail/propulsion_motor__struct.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 PropulsionMotor::PropulsionMotor(RoverCan2::Constant::eDeviceId deviceId_,
                                  uint8_t rosPropSpeedMsgId_,
@@ -30,7 +31,7 @@ void PropulsionMotor::rosElementInit(void)
                                                                });
     _sub_MotorStatus = this->getAttachedNode()->create_subscription<rover_msgs::msg::PropulsionMotor>(
         PROPULSION_MOTOR_CMD_TOPIC,
-        1,
+        QOS_DEFAULT,
         [this](const rover_msgs::msg::PropulsionMotor& rosMsg_)
         {
             this->CB_ROS_propSpeedCmd(rosMsg_);

@@ -34,6 +34,7 @@ namespace QHelper
                                                                                 buttons_);
                                           waitForAnswerLoop.quit();
                                       });
+            QObject::connect(pApp, &QCoreApplication::aboutToQuit, &waitForAnswerLoop, &QEventLoop::quit);
             waitForAnswerLoop.exec();
         }
         else
