@@ -164,14 +164,7 @@ void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_ms
             return;
     }
 
-    if (CHECK_POINTER_VALID(button_))
-    {
         button_->setProperty("class", className);
         button_->style()->unpolish(button_);
         button_->style()->polish(button_);
-    }
-    else
-    {
-        assert(false && "Button pointer is not valid");
-    }
 }
