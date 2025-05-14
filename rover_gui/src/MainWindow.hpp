@@ -3,8 +3,10 @@
 
 #include "QDashboard/QDashboard.hpp"
 #include "QNavigation/QNavigation.hpp"
+#include "Global/Helpers/QToastNotification/QNotificationShowHistory.hpp"
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
+#include "QUtilityBarBottom/QUtilityBarBottom.hpp"
 #include "QDeviceStatus/QDeviceStatus.hpp"
 
 #include <QStackedWidget>
@@ -24,13 +26,18 @@ class MainWindow : public QMainWindow
     void closeEvent(QCloseEvent* event_) override;
 
     QWidget _centralWidget;
+    QWidget _hBoxContainer;
     QHBoxLayout _layout;
+    QVBoxLayout _verticalLayout;
     QStackedWidget _stackedWidget;
     QShortcut _closeShortCut;
 
     QSideBar _sideBarWidget;
+    QUtilityBarBottom _bottomUtilityBar;
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
+    QHelper::QNotificationShowHistory _notificationHistoryWidget;
+
     QFileTransferWidget _fileTransferWidget;
     QDeviceStatus _deviceStatusWidget;
 };

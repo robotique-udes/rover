@@ -6,6 +6,7 @@
 #include "rover_lib2/helpers/time.hpp"
 #include "rover_lib2/helpers/loop_timer.hpp"
 #include "rover_lib2/helpers/macros.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 #include "arm_configuration.hpp"
 #include "keybinding.hpp"
 
@@ -46,19 +47,19 @@ class Teleop : public rclcpp::Node
         _cartesianController(_joyManager)
     {
         _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY_ARM,
-                                                                     1,
+                                                                     QOS_DEFAULT,
                                                                      [this](const rover_msgs::msg::Joy& joyMsg_)
                                                                      {
                                                                          this->joy_CB(joyMsg_);
                                                                      });
         _subArmPositions = this->create_subscription<rover_msgs::msg::ArmMsg>(TOPIC_ARM_STATUS,
-                                                                              1,
+                                                                              QOS_DEFAULT,
                                                                               [this](const rover_msgs::msg::ArmMsg& armMsg_)
                                                                               {
                                                                                   this->position_CB(armMsg_);
                                                                               });
 
-        _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>(TOPIC_ARM_CMD, 1);
+        _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>(TOPIC_ARM_CMD, QOS_DEFAULT);
     }
 
     void joy_CB(const rover_msgs::msg::Joy& joyMsg_)

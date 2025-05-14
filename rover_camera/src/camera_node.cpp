@@ -30,7 +30,7 @@ CameraNode::CameraNode():
 
     _sub_position
         = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
-                                                                  1,
+                                                                  QOS_DEFAULT,
                                                                   [this](const rover_msgs::msg::GpsPosition& gps_message_)
                                                                   {
                                                                       this->callbackPosition(gps_message_);
