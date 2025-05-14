@@ -1,4 +1,5 @@
 #include "QDeviceStatus.hpp"
+#include <QStyle>
 
 QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),

@@ -10,7 +10,6 @@
 // QT
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include <QStyle>
 #include "UI_DeviceStatus.h"
 
 #include <unordered_map>
