@@ -6,6 +6,7 @@
 #include <QString>
 #include <memory>
 #include <QComboBox>
+#include "QLoggingMacros.hpp"
 #include <QCheckBox>
 #include <QSlider>
 #include <QSpinBox>

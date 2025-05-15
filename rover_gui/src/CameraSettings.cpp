@@ -1,6 +1,5 @@
 #include "CameraSettings.hpp"
 #include "UI_CameraSettings.h"
-#include "QRtspPlayer/QLoggingMacros.hpp"
 #include "Global/Helpers/IPCameraAPI.hpp"
 #include <QMessageBox>
 #include <QRegularExpression>

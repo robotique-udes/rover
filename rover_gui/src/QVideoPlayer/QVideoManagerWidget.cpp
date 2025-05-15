@@ -82,6 +82,12 @@ void QVideoManagerWidget::initWidget(void)
 
         _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
+        
+        // REMOVED: Don't start streams automatically
+        // if (!cameraUrl.empty())
+        // {
+        //     _videoPlaysWidgets[i]->startStream(QString::fromStdString(cameraUrl));
+        // }
     }
 
     uint16_t index = 0;
