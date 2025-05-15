@@ -139,7 +139,6 @@ void QPlayerWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_m
                                           std::string camera_URL_,
                                           uint16_t tag_)
 {
-    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Manager receveived");
     this->addTask(
         [this, client_CameraControl_, camera_URL_, tag_](void)
         {
@@ -151,7 +150,6 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
                                            std::string camera_URL_,
                                            uint16_t tag_)
 {
-    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Internal received");
     bool success = false;
     std::string status;
 
@@ -175,6 +173,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
     {
         if (_timer_serviceCallCamera.isReady())
         {
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Service request timed out for take screenshot");
             service_call_interrupt = true;
             break;
         }
@@ -182,6 +181,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
 
     if (result.valid())
     {
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Result valid");
         if (!service_call_interrupt)
         {
             std::shared_ptr<rover_msgs::srv::CameraControl::Response> response = result.get();
@@ -248,6 +248,7 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
     {
         if (_timer_serviceCallCamera.isReady())
         {
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Service request timed out for start recording");
             service_call_interrupt = true;
             break;
         }
@@ -285,6 +286,7 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
 
     if (!client_CameraControl_)
     {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Service request timed out");
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "ERROR: couldn't take screenshot \ncamera control client is invalid");
         return;
     }
@@ -300,6 +302,7 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
         if (_timer_serviceCallCamera.isReady())
         {
             service_call_interrupt = true;
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Service request timed out for stop recording");
             break;
         }
     }

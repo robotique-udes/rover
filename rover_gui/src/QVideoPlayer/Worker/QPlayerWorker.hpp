@@ -21,7 +21,7 @@ class QPlayerWorker : public QWorker
 {
     Q_OBJECT
 
-    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 2'000UL;
+    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 5'000UL;
 
   public:
     QPlayerWorker(bool start_ = false, QObject* parent_ = nullptr);
