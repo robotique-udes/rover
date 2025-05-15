@@ -1,6 +1,38 @@
 #include "QDeviceStatus.hpp"
 #include <QStyle>
 
+constexpr const char* STATUS_DEFAULT = "QPushButton {"
+                                       "background-color: #3c3f41;"
+                                       "border: 1px solid #4b4e52;"
+                                       "border-radius: 5px;"
+                                       "padding: 5px 10px;"
+                                       "}";
+
+constexpr const char* STATUS_SUCCESS = "QPushButton {"
+                                       "background-color: #81c784;"
+                                       "color: black;"
+                                       "border: 1px solid #388e3c;"
+                                       "border-radius: 5px;"
+                                       "padding: 5px 10px;"
+                                       "}";
+
+constexpr const char* STATUS_WARNING = "QPushButton {"
+                                       "background-color : #ffb74d;"
+                                       "color: black;"
+                                       "border: 1px solid #e65100;"
+                                       "border-radius : 5px;"
+                                       "padding: 5px 10px;"
+                                       "}";
+
+constexpr const char* STATUS_ERROR = "QPushButton {"
+                                     "background-color : #e57373;"
+                                     "color: black;"
+                                     "border: 1px solid #b71c1c;"
+                                     "border-radius : 5px;"
+                                     "padding: 5px 10px;"
+                                     "}";
+
+                                     
 QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
@@ -140,41 +172,25 @@ QString QDeviceStatus::setErrorMsg(uint8_t errorCode_)
 
 void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
 {
-    QString style_default = QString("QPushButton {"
-                                    "background-color: #3c3f41;"
-                                    "border: 1px solid #4b4e52;"
-                                    "border-radius: 5px;"
-                                    "padding: 5px 10px;"
-                                    "}");
-
     if (!deviceStatus_.watchdog_ok)
     {
-        button_->setStyleSheet(style_default);
+        button_->setStyleSheet(STATUS_DEFAULT);
         return;
     }
 
-    QString className;
     switch (deviceStatus_.error_state)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            className = "success";
+            button_->setStyleSheet(STATUS_SUCCESS);
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            className = "warning";
+            button_->setStyleSheet(STATUS_WARNING);
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            className = "error";
+            button_->setStyleSheet(STATUS_ERROR);
             break;
         default:
-            button_->setStyleSheet(style_default);
+            button_->setStyleSheet(STATUS_DEFAULT);
             return;
     }
-
-    // button_->setProperty("class", className);
-    // button_->style()->unpolish(button_);
-    // button_->style()->polish(button_);
-
-    _ui.frontrightMotor->setProperty("class", className);
-    _ui.frontrightMotor->style()->unpolish(_ui.frontrightMotor);
-    _ui.frontrightMotor->style()->polish(_ui.frontrightMotor);
 }
