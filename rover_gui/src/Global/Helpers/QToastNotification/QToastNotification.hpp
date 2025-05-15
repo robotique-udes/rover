@@ -1,10 +1,7 @@
 #ifndef QTOASTNOTIFICATION
 #define QTOASTNOTIFICATION
 
-#include "rclcpp/rclcpp.hpp"
 #include "UI_ToastNotification.h"
-#include "UI_NotificationHistoryPanel.h"
-#include "UI_NotificationHistory.h"
 
 #include <mutex>
 #include <QtWidgets/QWidget>
@@ -17,7 +14,6 @@
 
 namespace QHelper
 {
-
     class QToastNotification : public QWidget
     {
         Q_OBJECT
@@ -52,8 +48,8 @@ namespace QHelper
          * @param type_ severity level setting a corresponding icon to the notification
          * @param durationMs_ Duration of the notification (5s by default)
          */
-        void notifyFromAnyThread(const QString& title_,
-                                 const QString& description_,
+        void notifyFromAnyThread(const std::string& title_,
+                                 const std::string& description_,
                                  eNotifType type_,
                                  size_t durationMs_ = NOTIF_DURATION_MS);
 
@@ -64,14 +60,22 @@ namespace QHelper
         void setTargetScreenRect(QRect targetScreenRect_);
         void setHistory(std::deque<sNotificationInfo> history_);
 
+      protected:
+        void enterEvent(QEnterEvent* event) override;
+        void leaveEvent(QEvent* event) override;
+
       private:
-        void notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_ = NOTIF_DURATION_MS);
+        void notify(const std::string& title_,
+                    const std::string& description_,
+                    eNotifType type_,
+                    size_t durationMs_ = NOTIF_DURATION_MS);
         QToastNotification();
         QToastNotification(const QToastNotification&) = delete;
         QToastNotification& operator=(const QToastNotification&) = delete;
 
         void setupUI(void);
         void setupAnimations(void);
+        void setupTimerClose(void);
         void setupScreenRect(void);
 
         void hideNotification(void);
@@ -88,6 +92,7 @@ namespace QHelper
         QPropertyAnimation _slideOutAnim;
         QPropertyAnimation _progressBarAnim;
         QTimer _closeTimer;
+        size_t _shownDuration;
     };
 }  // namespace QHelper
 

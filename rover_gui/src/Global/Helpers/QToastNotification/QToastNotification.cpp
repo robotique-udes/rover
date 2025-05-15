@@ -1,7 +1,8 @@
 #include "QToastNotification.hpp"
+
+#include <rclcpp/rclcpp.hpp>
+
 #include <QScreen>
-#include <qnamespace.h>
-#include <qsizepolicy.h>
 #include <QApplication>
 
 namespace QHelper
@@ -13,7 +14,8 @@ namespace QHelper
         _fadeOutAnim(this, "windowOpacity"),
         _slideInAnim(this, "pos"),
         _slideOutAnim(this, "pos"),
-        _progressBarAnim(this)
+        _progressBarAnim(this),
+        _shownDuration(0)
     {
         setupUI();
         setupAnimations();
@@ -40,13 +42,35 @@ namespace QHelper
     {
         _targetScreenRect = targetScreenRect_;
     }
+
     void QToastNotification::setHistory(std::deque<QToastNotification::sNotificationInfo> history_)
     {
         _history = history_;
     }
 
-    void QToastNotification::notify(const QString& title_, const QString& description_, eNotifType type_, size_t durationMs_)
+    void QToastNotification::enterEvent(QEnterEvent* event)
     {
+        _ui.progressBar->setValue(_ui.progressBar->maximum());
+        _progressBarAnim.stop();
+        _closeTimer.disconnect();
+
+        QWidget::enterEvent(event);
+    }
+
+    void QToastNotification::leaveEvent(QEvent* event)
+    {
+        _progressBarAnim.start();
+        this->setupTimerClose();
+        QWidget::leaveEvent(event);
+    }
+
+    void QToastNotification::notify(const std::string& title_,
+                                    const std::string& description_,
+                                    eNotifType type_,
+                                    size_t durationMs_)
+    {
+        _shownDuration = durationMs_;
+
         _fadeInAnim.stop();
         _fadeOutAnim.stop();
         _closeTimer.stop();
@@ -82,11 +106,8 @@ namespace QHelper
         }
 
         _ui.iconSlot->setIcon(icon);
-        _ui.iconSlot->setIconSize(QSize(32, 32));
-        _ui.textErrorMessage->setText(description_);
-        _ui.titleLineEdit->setText(title_);
-
-        this->adjustSize();
+        _ui.textErrorMessage->setText(QString::fromStdString(description_));
+        _ui.titleLineEdit->setText(QString::fromStdString(title_));
 
         size_t X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
         size_t startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
@@ -105,17 +126,17 @@ namespace QHelper
         this->raise();
         this->show();
 
-        _progressBarAnim.setDuration(durationMs_);
+        _progressBarAnim.setDuration(_shownDuration);
 
         _fadeInAnim.start();
         _slideInAnim.start();
         _progressBarAnim.start();
 
-        _closeTimer.start(durationMs_);
+        this->setupTimerClose();
 
         QTime currentTime = QTime::currentTime();
 
-        sNotificationInfo data = {currentTime, title_, description_, type_};
+        sNotificationInfo data = {currentTime, QString::fromStdString(title_), QString::fromStdString(description_), type_};
         this->saveNotifInfo(data);
     }
 
@@ -132,7 +153,7 @@ namespace QHelper
         _progressBarAnim.setPropertyName("value");
 
         _shadow.setBlurRadius(40);
-        _shadow.setOffset(0, 3);
+        _shadow.setOffset(0, 1);
         _shadow.setColor(QColor(0, 0, 0, 220));
         _ui.frame->setGraphicsEffect(&_shadow);
 
@@ -172,7 +193,6 @@ namespace QHelper
                 background-color: transparent;
                 border-radius: 15px;
                 border: none;
-                font-size: 16px;
                 padding: 5px 10px;
             }
             QTextEdit:focus {
@@ -186,7 +206,6 @@ namespace QHelper
                 border-radius: 15px;
                 border: none;
                 padding: 5px 10px;
-                font-size: 24px;
                 font-weight: bold;
             }
             QLineEdit:focus {
@@ -209,8 +228,6 @@ namespace QHelper
                 margin: 0px;
                 min-width: 4px;
             })");
-
-        _ui.closePushButton->setIconSize(QSize(16, 16));
     }
 
     void QToastNotification::setupAnimations(void)
@@ -231,9 +248,14 @@ namespace QHelper
         _progressBarAnim.setEndValue(0);
 
         connect(&_fadeOutAnim, &QPropertyAnimation::finished, this, &QWidget::hide);
+        this->setupTimerClose();
+    }
 
-        _closeTimer.setSingleShot(true);
+    void QToastNotification::setupTimerClose(void)
+    {
         connect(&_closeTimer, &QTimer::timeout, this, &QToastNotification::hideNotification);
+        _closeTimer.setSingleShot(true);
+        _closeTimer.start(_shownDuration);
     }
 
     void QToastNotification::setupScreenRect(void)
@@ -253,8 +275,8 @@ namespace QHelper
         this->setTargetScreenRect(targetScreen->availableGeometry());
     }
 
-    void QToastNotification::notifyFromAnyThread(const QString& title_,
-                                                 const QString& description_,
+    void QToastNotification::notifyFromAnyThread(const std::string& title_,
+                                                 const std::string& description_,
                                                  eNotifType type_,
                                                  size_t durationMs_)
     {
@@ -265,7 +287,7 @@ namespace QHelper
                 pApp,
                 [this, title_, description_, type_, durationMs_]()
                 {
-                    notify(title_, description_, type_, durationMs_);
+                    this->notify(title_, description_, type_, durationMs_);
                 },
                 Qt::QueuedConnection);
         }
