@@ -49,11 +49,11 @@ class QVideoPlayerWidget : public QWidget
     void arucoCameraFailure(bool valid_);
 
   private slots:
-    // Arucuo
+  //Arucuo
     void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
-    // Camera server
+  //Camera server
     void handleScreenshot(void);
     void handleRecording(void);
     void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
