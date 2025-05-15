@@ -7,6 +7,8 @@
 #include "rover_msgs/msg/aruco.hpp"
 #include "rover_msgs/msg/camera_list.hpp"
 #include "rover_lib2/helpers/constants.hpp"
+#include "Worker/QPlayerWorkerVideo.hpp"
+#include "Worker/QPlayerWorker.hpp"
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
@@ -53,7 +55,7 @@ class QVideoManagerWidget : public QWidget
     QGridLayout _videoPlayerLayout;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread2;
+    std::shared_ptr<QPlayerWorkerVideo> _playerWorkerVideoThread;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
