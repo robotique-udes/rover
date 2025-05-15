@@ -1,11 +1,10 @@
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
-#include <rover_msgs/msg/joy.hpp>
-
 #if defined(__linux__)
 #include <map>
 #include <string>
+#include <rover_msgs/msg/joy.hpp>
 #endif  // defined(__linux__)
 
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
