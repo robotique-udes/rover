@@ -16,6 +16,8 @@ namespace QHelper
         _progressBarAnim(this),
         _shownDuration(0)
     {
+        setupUI();
+        setupAnimations();
         setupScreenRect();
     }
     QToastNotification& QToastNotification::getInstance()
