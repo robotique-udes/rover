@@ -1,14 +1,14 @@
 #include "QDeviceStatus.hpp"
 #include <QStyle>
 
-constexpr const char* STATUS_DEFAULT = "QPushButton {"
+constexpr const char* STATUS_DEFAULT = "QLabel {"
                                        "background-color: #3c3f41;"
                                        "border: 1px solid #4b4e52;"
                                        "border-radius: 5px;"
                                        "padding: 5px 10px;"
                                        "}";
 
-constexpr const char* STATUS_SUCCESS = "QPushButton {"
+constexpr const char* STATUS_SUCCESS = "QLabel {"
                                        "background-color: #81c784;"
                                        "color: black;"
                                        "border: 1px solid #388e3c;"
@@ -16,7 +16,7 @@ constexpr const char* STATUS_SUCCESS = "QPushButton {"
                                        "padding: 5px 10px;"
                                        "}";
 
-constexpr const char* STATUS_WARNING = "QPushButton {"
+constexpr const char* STATUS_WARNING = "QLabel {"
                                        "background-color : #ffb74d;"
                                        "color: black;"
                                        "border: 1px solid #e65100;"
@@ -24,7 +24,7 @@ constexpr const char* STATUS_WARNING = "QPushButton {"
                                        "padding: 5px 10px;"
                                        "}";
 
-constexpr const char* STATUS_ERROR = "QPushButton {"
+constexpr const char* STATUS_ERROR = "QLabel {"
                                      "background-color : #e57373;"
                                      "color: black;"
                                      "border: 1px solid #b71c1c;"
@@ -32,33 +32,26 @@ constexpr const char* STATUS_ERROR = "QPushButton {"
                                      "padding: 5px 10px;"
                                      "}";
 
-                                     
 QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
 {
     _ui.setupUi(this);
 
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor_reboot;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController;
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss;
 
-    for (auto it = _deviceButtons.begin(); it != _deviceButtons.end(); ++it)
-    {
-        uint16_t deviceID = it.key();
-        QPushButton* button = it.value();
-
-        connect(button,
-                &QPushButton::clicked,
-                this,
-                [this, deviceID]()
-                {
-                    this->setStatusReport(deviceID);
-                });
-    }
+    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
+    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
+    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
+    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor;
+    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController;
+    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss;
+    _deviceLabels[60000U] = _ui.frontrightmotor_info;
 
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
@@ -74,6 +67,35 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
                 Qt::QueuedConnection);
         });
 
+    _client = _node->create_client<rover_msgs::srv::Empty>("/rover/can/request_error_state");
+    auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
+    this->updateDeviceInfo(request);
+
+    for (auto it = _deviceButtons.begin(); it != _deviceButtons.end(); ++it)
+    {
+        uint16_t deviceID = it.key();
+        QPushButton* button = it.value();
+
+        connect(button,
+                &QPushButton::clicked,
+                this,
+                [this, deviceID]()
+                {
+                    // this->setStatusReport(deviceID);
+                    this->rebootDevice(deviceID);
+                });
+    }
+
+    connect(_ui.pb_serviceCall,
+            &QPushButton::clicked,
+            this,
+            [this]()
+            {
+                auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
+                // this->setStatusReport(deviceID);
+                this->updateDeviceInfo(request);
+            });
+
     // Set the QSizePolicy to ensure aspect ratio resizing
     // QSizePolicy sp = this->sizePolicy();
     // sp.setHorizontalPolicy(QSizePolicy::Preferred);
@@ -82,115 +104,81 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     // this->setSizePolicy(sp);
 }
 
-int QDeviceStatus::heightForWidth(int width_) const
+void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_)
 {
-    // Load the image and get the aspect ratio
-    QPixmap pixmap(":/images/rover.png");  // Path to your image in resources
-    int originalWidth = pixmap.width();
-    int originalHeight = pixmap.height();
-
-    // Calculate height based on width, keeping the same aspect ratio
-    int height = width_ * originalHeight / originalWidth;
-    return height;
+    auto result_future = _client->async_send_request(
+        request_,
+        [this](rclcpp::Client<rover_msgs::srv::Empty>::SharedFuture future)
+        {
+            auto response = future.get();
+            if (response->success)
+            {
+                RCLCPP_INFO(_node->get_logger(), "Service succeeded: %s", response->message.c_str());
+            }
+            else
+            {
+                RCLCPP_WARN(_node->get_logger(), "Service failed: %s", response->message.c_str());
+            }
+        });
 }
 
 void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_)
 {
     _deviceStatusInfo[msg_.id] = msg_;
 
-    if (_currentStatusID == msg_.id)
-    {
-        this->setStatusReport(msg_.id);
-    }
-
-    auto buttonIt = _deviceButtons.find(msg_.id);
-    if (buttonIt != _deviceButtons.end())
-    {
-        this->updateDeviceButtonColor(buttonIt.value(), msg_);
-    }
+    this->updateDevicesColor();
 }
 
-void QDeviceStatus::setStatusReport(uint16_t id_)
+void QDeviceStatus::rebootDevice(uint16_t id_)
 {
-    auto groupBoxLabel = _ui.StatusReport->findChild<QLabel*>("StatusInfo");
-    if (!groupBoxLabel)
-    {
-        RCLCPP_ERROR(_node->get_logger(), "StatusInfo not found!");
-        return;
-    }
-
-    // Look up device info
-    auto it = _deviceStatusInfo.find(id_);
-    if (it != _deviceStatusInfo.end())
-    {
-        const auto& deviceStatus = it->second;
-
-        groupBoxLabel->setTextFormat(Qt::RichText);
-        // Set QString to same as UI_DeviceStatus.h
-        QString statusText = QString("<html><head/><body>"
-                                     "<p>Device ID: %1</p>"
-                                     "<p>Status: %2</p>"
-                                     "<p>Watchdog: %3</p>"
-                                     "</body></html>")
-                                 .arg(deviceStatus.id)
-                                 .arg(this->setErrorMsg(deviceStatus.error_state))
-                                 .arg(deviceStatus.watchdog_ok ? "Still active" : "Not active");
-
-        // Set label text
-        groupBoxLabel->setText(statusText);
-        _currentStatusID = deviceStatus.id;
-    }
-    else
-    {
-        groupBoxLabel->setText("Device not found.");
-        _currentStatusID = id_;
-        RCLCPP_ERROR(_node->get_logger(), "Device ID %d not found in device status info.", id_);
-    }
+    RCLCPP_INFO(_node->get_logger(), "Reboot %d", id_);
 }
 
-QString QDeviceStatus::setErrorMsg(uint8_t errorCode_)
+// int QDeviceStatus::heightForWidth(int width_) const
+// {
+//     // Load the image and get the aspect ratio
+//     QPixmap pixmap(":/images/rover.png");  // Path to your image in resources
+//     int originalWidth = pixmap.width();
+//     int originalHeight = pixmap.height();
+
+//     // Calculate height based on width, keeping the same aspect ratio
+//     int height = width_ * originalHeight / originalWidth;
+//     return height;
+// }
+
+void QDeviceStatus::setStatusReport(uint16_t id_) {}
+
+void QDeviceStatus::updateDevicesColor()
 {
-    switch (errorCode_)
+    for (auto it = _deviceLabels.begin(); it != _deviceLabels.end(); ++it)
     {
-        case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            return "Device is currently OK";
-            break;
+        QLabel* label = it.value();
+        uint16_t deviceID = it.key();
 
-        case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            return "Device is currently in warning";
-            break;
+        auto statusIt = _deviceStatusInfo.find(deviceID);
+        if (statusIt == _deviceStatusInfo.end())
+        {
+            // No status info for this device, set default color
+            label->setStyleSheet(STATUS_DEFAULT);
+            continue;
+        }
 
-        case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            return "Device is currently in error";
-            break;
+        const auto& deviceStatus = statusIt->second;
 
-        default:
-            return "Unknown";
-            break;
-    }
-}
-
-void QDeviceStatus::updateDeviceButtonColor(QPushButton* button_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
-{
-    if (!deviceStatus_.watchdog_ok)
-    {
-        button_->setStyleSheet(STATUS_DEFAULT);
-        return;
-    }
-
-    switch (deviceStatus_.error_state)
-    {
-        case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            button_->setStyleSheet(STATUS_SUCCESS);
-            break;
-        case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            button_->setStyleSheet(STATUS_WARNING);
-            break;
-        case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            button_->setStyleSheet(STATUS_ERROR);
-            break;
-        default:
-            button_->setStyleSheet(STATUS_DEFAULT);
-            return;
+        switch (deviceStatus.error_state)
+        {
+            case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
+                label->setStyleSheet(STATUS_SUCCESS);
+                break;
+            case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
+                label->setStyleSheet(STATUS_WARNING);
+                break;
+            case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
+                label->setStyleSheet(STATUS_ERROR);
+                break;
+            default:
+                label->setStyleSheet(STATUS_DEFAULT);
+                break;
+        }
     }
 }
