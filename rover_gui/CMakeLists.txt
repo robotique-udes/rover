@@ -16,9 +16,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 
-find_package(Python3 COMPONENTS Interpreter Development REQUIRED)
-find_package(pybind11 REQUIRED)
-
 add_subdirectory(../rover_shared_libs/ .build)
 
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
@@ -28,17 +25,12 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
 
-set(PYTHON_MODULE_INSTALL_DIR "${CMAKE_INSTALL_PREFIX}/lib/${PROJECT_NAME}/python_modules")
-# Pass this path to the C++ code as a compile definition
-add_compile_definitions(PYTHON_MODULE_PATH="${PYTHON_MODULE_INSTALL_DIR}")
-
 include_directories(
   src
   ui/include
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
   ${GSTREAMER_INCLUDE_DIRS}
-  ${pybind11_INCLUDE_DIRS}
   ${Python3_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
 )
@@ -53,35 +45,8 @@ add_custom_command(
     COMMENT "Generating UI files..."
 )
 
-#add_subdirectory(../rover_shared_libs/ .build)
-
 add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
-# Copy Python module to build directory to ensure it's findable at runtime
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/python_modules/ipcamera_api.py
-    COMMAND ${CMAKE_COMMAND} -E make_directory ${CMAKE_BINARY_DIR}/python_modules
-    COMMAND ${CMAKE_COMMAND} -E copy
-            ${CMAKE_SOURCE_DIR}/src/Global/Helpers/ipcamera_api.py
-            ${CMAKE_BINARY_DIR}/python_modules/ipcamera_api.py
-    DEPENDS ${CMAKE_SOURCE_DIR}/src/Global/Helpers/ipcamera_api.py
-    COMMENT "Copying ipcamera_api.py to build directory"
-)
-add_custom_target(copy_python_module ALL DEPENDS ${CMAKE_BINARY_DIR}/python_modules/ipcamera_api.py)
-
-# First create the IPCamera library
-add_library(ipcamera_api
-    src/Global/Helpers/IPCameraAPI.hpp
-    src/Global/Helpers/IPCameraAPI.cpp
-)
-
-target_link_libraries(ipcamera_api
-    pybind11::embed
-    ${Python3_LIBRARIES}
-)
-
-
-# Then create the main executable
 add_executable(main_gui src/gui.cpp
 
                         src/MainWindow.hpp
@@ -145,14 +110,11 @@ add_executable(main_gui src/gui.cpp
                         )
 add_dependencies(main_gui run_generate_ui copy_python_module)
 
-
-
 target_link_libraries(main_gui 
                   Qt6::Widgets
                   Qt6::Gui
                   ${LIBSSH_LIBRARY}
                   ${GSTREAMER_LIBRARIES}
-                  ipcamera_api
                   rover_shared_libs)  
 
 ament_target_dependencies(main_gui
@@ -160,15 +122,9 @@ ament_target_dependencies(main_gui
                             rover_msgs
                             rcl_interfaces)
 
-# Install Python module alongside the executable
-install(FILES src/Global/Helpers/ipcamera_api.py
-        DESTINATION lib/${PROJECT_NAME})
-
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
-# install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
-# install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
-install(TARGETS main_gui ipcamera_api  # Install both the executable and the library
+install(TARGETS main_gui  
           DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

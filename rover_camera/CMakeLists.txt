@@ -7,7 +7,6 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
-find_package(rclpy REQUIRED)
 find_package(OpenCV REQUIRED) 
 find_package(rover_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
@@ -39,11 +38,11 @@ target_link_libraries(aruco_detection
                           ${OpenCV_LIBS}
                           rover_shared_libs)
 
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+
 install(TARGETS 
             media_server
             aruco_detection
         DESTINATION lib/${PROJECT_NAME}/)
-
-install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()

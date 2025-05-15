@@ -4,6 +4,8 @@ import logging
 from onvif import ONVIFCamera
 from enum import Enum
 
+logger = logging.getLogger(__name__) 
+
 class Scenes(Enum):
     OUTDOOR = 0
     INDOOR = 2
@@ -110,7 +112,7 @@ class ParameterHandler:
     }
     
     def __init__(self, ip: str, port: int, username: str, password: str):
-        self.logger = logging.getLogger("IPCameraAPI")
+        self.logger = logger
         self.verbose_logging = False
         
         # Configure basic logging if not already configured
