@@ -21,6 +21,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->setLayout(&_videoPlayerLayout);
 
     _playerWorkerThread->start();
+    _playerWorkerThread2->start();
 }
 
 void QVideoManagerWidget::CB_updateArucoDetectionManager()
