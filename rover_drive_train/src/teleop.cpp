@@ -15,31 +15,6 @@ class Teleop : public rclcpp::Node
     Teleop();
 
   private:
-    // Private members
-
-    // float _deadmanSwitch;
-
-    // float _linearInput;
-    // float _angularInput;
-
-    // float _modeTankAngularInput;
-    // float _modeNormalEnable;
-    // float _modeTurboEnable;
-
-    // Private methods
-    // void getParams()
-    // {
-    //     this->declare_parameter("speedFactorCrawler", 0.2f);
-    //     this->declare_parameter("_speedFactorNormal", 0.5f);
-    //     this->declare_parameter("_speedFactorTurbo", 1.0f);
-    //     this->declare_parameter("_smallestRadius", 0.3f);
-
-    //     this->get_parameter("speedFactorCrawler", _speedFactorCrawler);
-    //     this->get_parameter("_speedFactorNormal", _speedFactorNormal);
-    //     this->get_parameter("_speedFactorTurbo", _speedFactorTurbo);
-    //     this->get_parameter("_smallestRadius", _smallestRadius);
-    // }
-
     void CB_joy(const rover_msgs::msg::Joy& msg)
     {
         rover_msgs::msg::PropulsionMotor message;
