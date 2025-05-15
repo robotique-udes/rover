@@ -85,7 +85,8 @@ void QVideoManagerWidget::initWidget(void)
                         CAMERA_NAME_ORDER[i]);
         }
 
-        _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread, _playerWorkerThread2);
+        _videoPlaysWidgets[i]
+            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread, _playerWorkerThread2);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
@@ -156,7 +157,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
     }
 
-    //assert(_node != nullptr);
+    // assert(_node != nullptr);
     for (auto& widget : _videoPlaysWidgets)
     {
         widget->setCameraControlClientManager(_client_cameraControlManager);

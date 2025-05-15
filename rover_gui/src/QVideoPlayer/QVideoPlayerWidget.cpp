@@ -380,7 +380,7 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
                                this,
                                [this]()
                                {
-                                   _ui.startRecordingButton->setProperty("class", "");
+                                   _ui.startRecordingButton->setProperty("class", "normal");
                                    _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
                                    _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
                                });
@@ -425,7 +425,7 @@ void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls)
         _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
         _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
         _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Screenshot taken",
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
                                                                        error_message,
                                                                        QHelper::QToastNotification::eNotifType::WARNING);
     }
