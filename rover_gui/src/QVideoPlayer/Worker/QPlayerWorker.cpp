@@ -139,7 +139,7 @@ void QPlayerWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_m
                                           std::string camera_URL_,
                                           uint16_t tag_)
 {
-    RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Manager receveived");
+    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Manager receveived");
     this->addTask(
         [this, client_CameraControl_, camera_URL_, tag_](void)
         {
@@ -151,7 +151,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
                                            std::string camera_URL_,
                                            uint16_t tag_)
 {
-    RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Internal received");
+    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Internal received");
     bool success = false;
     std::string status;
 

@@ -4,11 +4,13 @@
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
                                        uint16_t tag_,
-                                       std::shared_ptr<QPlayerWorker> worker_):
+                                       std::shared_ptr<QPlayerWorker> worker_,
+                                       std::shared_ptr<QPlayerWorker> worker2_):
     _node(guiNode_),
     _camURL(url_),
     _tag(tag_),
-    _playerWorkerThread(worker_)
+    _playerWorkerThread(worker_),
+    _playerWorkerThread2(worker2_)
 {
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
@@ -258,10 +260,10 @@ void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::C
 void QVideoPlayerWidget::handleScreenshot(void)
 {
     RCLCPP_WARN(rclcpp::get_logger("GUI"), " Button clicked");
-    if (_playerWorkerThread.get() != nullptr)
+    if (_playerWorkerThread2.get() != nullptr)
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), " Worker valid... calling...");
-        _playerWorkerThread->takeScreenshotManager(_client_cameraControlManager, _camURL, _tag);
+        _playerWorkerThread2->takeScreenshotManager(_client_cameraControlManager, _camURL, _tag);
     }
     else
     {
@@ -272,15 +274,15 @@ void QVideoPlayerWidget::handleScreenshot(void)
 
 void QVideoPlayerWidget::handleRecording(void)
 {
-    if (_playerWorkerThread.get() != nullptr)
+    if (_playerWorkerThread2.get() != nullptr)
     {
         if (_ui.startRecordingButton->isChecked())
         {
-            _playerWorkerThread->startRecordingManager(_client_cameraControlManager, _camURL, _tag);
+            _playerWorkerThread2->startRecordingManager(_client_cameraControlManager, _camURL, _tag);
         }
         else
         {
-            _playerWorkerThread->stopRecordingManager(_client_cameraControlManager, _camURL, _tag);
+            _playerWorkerThread2->stopRecordingManager(_client_cameraControlManager, _camURL, _tag);
         }
     }
     else
