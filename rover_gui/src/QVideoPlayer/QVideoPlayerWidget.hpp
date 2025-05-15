@@ -96,7 +96,6 @@ class QVideoPlayerWidget : public QWidget
     void onUrlTextChanged(const QString& text_);
     
     // Log window functionality
-    void onNewLogMessage(const QString& message, const QString& target);
     void clearLogs();
     void toggleLogView(bool show);
 
@@ -107,6 +106,7 @@ class QVideoPlayerWidget : public QWidget
     void initializeUIState(void);
     void emitStateChanged(void);
     void cleanupResources(void);
+    void logToWidget(const QString& level, const QString& message);
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;

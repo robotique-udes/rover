@@ -75,6 +75,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     
     // Log initialization
     RCLCPP_INFO(_node->get_logger(), "VideoPlayer Widget initialized for camera: %s", _camURL.c_str());
+    this->logToWidget("INFO", QString("VideoPlayer Widget initialized for camera: %s").arg(QString::fromStdString(_camURL)));
 }
 
 QVideoPlayerWidget::~QVideoPlayerWidget()
@@ -118,7 +119,7 @@ void QVideoPlayerWidget::setupUI(void)
     // Make sure the logDisplay is properly initialized
     if (_logDisplay) {
         _logDisplay->clear();
-        _logDisplay->append("Log display initialized for camera: " + QString::fromStdString(_camURL));
+        _logDisplay->setStyleSheet("font-family: monospace; color: white; background-color: #222222;");
     }
 }
 
@@ -165,6 +166,20 @@ void QVideoPlayerWidget::storeUIReferences(void)
     _clearButton = this->findChild<QPushButton*>("clearButton");
 }
 
+void QVideoPlayerWidget::logToWidget(const QString& level, const QString& message)
+{
+    if (_logDisplay) {
+        QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz");
+        _logDisplay->append(QString("[%1] [%2] %3").arg(timestamp).arg(level).arg(message));
+        
+        // Auto-scroll to bottom
+        QScrollBar* scrollBar = _logDisplay->verticalScrollBar();
+        if (scrollBar) {
+            scrollBar->setValue(scrollBar->maximum());
+        }
+    }
+}
+
 void QVideoPlayerWidget::connectUISignals(void)
 {
     // Fix play/pause button connection
@@ -189,6 +204,7 @@ void QVideoPlayerWidget::connectUISignals(void)
                 int currentIndex = _stackedWidget->currentIndex();
                 _stackedWidget->setCurrentIndex(currentIndex == 0 ? 1 : 0);
                 RCLCPP_DEBUG(_node->get_logger(), "Toggled view to index: %d", _stackedWidget->currentIndex());
+                this->logToWidget("INFO", "Toggled view to logs");
             }
         });
     }
@@ -211,6 +227,12 @@ void QVideoPlayerWidget::connectUISignals(void)
                 _stackedWidget->setCurrentIndex(0); // Switch to video view
             }
         });
+    }
+    
+    // Connect clear logs button
+    QPushButton* clearLogsBtn = findChild<QPushButton*>("clearLogsBtn");
+    if (clearLogsBtn) {
+        connect(clearLogsBtn, &QPushButton::clicked, this, &QVideoPlayerWidget::clearLogs);
     }
 }
 
@@ -250,12 +272,14 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
     if (rtspUrl_.isEmpty())
     {
         RCLCPP_WARN(_node->get_logger(), "Empty RTSP URL provided");
+        this->logToWidget("WARN", "Empty RTSP URL provided");
         return;
     }
 
     if (!this->validateRtspUrl(rtspUrl_))
     {
         RCLCPP_WARN(_node->get_logger(), "Invalid RTSP URL: %s", rtspUrl_.toStdString().c_str());
+        this->logToWidget("WARN", QString("Invalid RTSP URL: %1").arg(rtspUrl_));
         QMessageBox::warning(this, "Invalid RTSP URL",
                            "The URL format is invalid. Please enter a valid RTSP URL.\n\n"
                            "Format: rtsp://[username:password@]host[:port]/path");
@@ -275,6 +299,7 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
     if (_state != PlayerState::Reconnecting)
     {
         RCLCPP_INFO(_node->get_logger(), "Starting stream: %s", rtspUrl_.toStdString().c_str());
+        this->logToWidget("INFO", QString("Starting stream: %1").arg(rtspUrl_));
         _reconnectAttempts = 0;
     }
 
@@ -294,6 +319,7 @@ void QVideoPlayerWidget::stopStream(void)
     }
 
     RCLCPP_INFO(_node->get_logger(), "Stopping stream: %s", _camURL.c_str());
+    this->logToWidget("INFO", QString("Stopping stream: %1").arg(QString::fromStdString(_camURL)));
     
     _frameTimeoutTimer.stop();
     _reconnectTimer.stop();
@@ -355,6 +381,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
             _frameTimeoutTimer.start(2000);
             if (_screenshotButton) _screenshotButton->setEnabled(true);
             if (_recordButton) _recordButton->setEnabled(true);
+            this->logToWidget("INFO", "Stream connected successfully");
             break;
             
         case PlayerState::Reconnecting:
@@ -366,6 +393,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
             if (_arucoButton && _arucoButton->isChecked())
             {
                 RCLCPP_INFO(_node->get_logger(), "Resetting Aruco button due to stream loss");
+                this->logToWidget("INFO", "Resetting Aruco button due to stream loss");
                 _arucoButton->setChecked(false);
                 _arucoButton->setProperty("class", "normal");
                 _arucoButton->style()->unpolish(_arucoButton);
@@ -394,6 +422,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
                 _playPauseButton->setChecked(false);
                 _playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             }
+            this->logToWidget("ERROR", "Connection error occurred");
             this->tryReconnect();
             break;
             
@@ -406,6 +435,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
             if (_arucoButton) _arucoButton->setEnabled(false);
             if (_screenshotButton) _screenshotButton->setEnabled(false);
             if (_recordButton) _recordButton->setEnabled(false);
+            this->logToWidget("ERROR", "Connection failed permanently");
             break;
     }
     
@@ -431,12 +461,15 @@ void QVideoPlayerWidget::tryReconnect(void)
     {
         RCLCPP_INFO(_node->get_logger(), "Automatic reconnection attempt %d of %d", 
                    _reconnectAttempts, MAX_RECONNECT_ATTEMPTS);
+        this->logToWidget("INFO", QString("Automatic reconnection attempt %1 of %2")
+                         .arg(_reconnectAttempts).arg(MAX_RECONNECT_ATTEMPTS));
         this->setPlayerState(PlayerState::Reconnecting);
         _reconnectTimer.start(3000);
     }
     else
     {
         RCLCPP_ERROR(_node->get_logger(), "Maximum reconnection attempts reached");
+        this->logToWidget("ERROR", "Maximum reconnection attempts reached");
         this->setPlayerState(PlayerState::ConnectionFailed);
     }
 }
@@ -506,25 +539,11 @@ void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 }
 
 // Log-related methods
-void QVideoPlayerWidget::onNewLogMessage(const QString& message, const QString& target)
-{
-    if (target == _widgetId && _logDisplay)
-    {
-        _logDisplay->append(message);
-        
-        // Auto-scroll to bottom
-        QScrollBar* scrollBar = _logDisplay->verticalScrollBar();
-        if (scrollBar) {
-            scrollBar->setValue(scrollBar->maximum());
-        }
-    }
-}
-
 void QVideoPlayerWidget::clearLogs()
 {
     if (_logDisplay) {
         _logDisplay->clear();
-        _logDisplay->append("Logs cleared for Video Player " + _widgetId);
+        this->logToWidget("INFO", "Logs cleared");
     }
 }
 
@@ -541,6 +560,7 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     if (!pipeline_)
     {
         RCLCPP_ERROR(_node->get_logger(), "Pipeline creation failed");
+        this->logToWidget("ERROR", "Pipeline creation failed");
         _connectionTimeoutTimer.stop();
         this->setPlayerState(PlayerState::ConnectionError);
         return;
@@ -552,6 +572,7 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     if (!videoSink)
     {
         RCLCPP_ERROR(_node->get_logger(), "Failed to find VideoOverlay in pipeline");
+        this->logToWidget("ERROR", "Failed to find VideoOverlay in pipeline");
         _connectionTimeoutTimer.stop();
         this->setPlayerState(PlayerState::ConnectionError);
         return;
@@ -562,6 +583,7 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     
     gst_element_set_state(_pipeline, GST_STATE_PLAYING);
     RCLCPP_DEBUG(_node->get_logger(), "Pipeline state set to PLAYING");
+    this->logToWidget("DEBUG", "Pipeline state set to PLAYING");
     
     _frameTimeoutTimer.start(2000);
 }
@@ -576,6 +598,7 @@ void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
     if (_state == PlayerState::Reconnecting)
     {
         RCLCPP_DEBUG(_node->get_logger(), "Stream error: %s", error_.toStdString().c_str());
+        this->logToWidget("DEBUG", "Stream error: " + error_);
         
         if (!_reconnectTimer.isActive())
         {
@@ -585,6 +608,7 @@ void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
     else
     {
         RCLCPP_ERROR(_node->get_logger(), "Stream error: %s", error_.toStdString().c_str());
+        this->logToWidget("ERROR", "Stream error: " + error_);
         this->setPlayerState(PlayerState::ConnectionError);
     }
 }
@@ -596,6 +620,7 @@ void QVideoPlayerWidget::onConnectionFailed(void)
     _reconnectAttempts = 0;
     this->setPlayerState(PlayerState::ConnectionFailed);
     RCLCPP_ERROR(_node->get_logger(), "Connection failed permanently");
+    this->logToWidget("ERROR", "Connection failed permanently");
 }
 
 void QVideoPlayerWidget::onFrameReceived(void)
@@ -608,11 +633,13 @@ void QVideoPlayerWidget::onFrameReceived(void)
         if (_state == PlayerState::Reconnecting)
         {
             RCLCPP_INFO(_node->get_logger(), "Reconnection successful, receiving frames...");
+            this->logToWidget("INFO", "Reconnection successful, receiving frames...");
             _reconnectAttempts = 0;
         }
         else
         {
             RCLCPP_INFO(_node->get_logger(), "Receiving frames...");
+            this->logToWidget("INFO", "Receiving frames...");
         }
         
         this->setPlayerState(PlayerState::Streaming);
@@ -632,6 +659,7 @@ void QVideoPlayerWidget::onFrameTimeout(void)
     if (_state == PlayerState::Streaming)
     {
         RCLCPP_WARN(_node->get_logger(), "Frame timeout - no frames received");
+        this->logToWidget("WARN", "Frame timeout - no frames received");
 
         if (_arucoButton) _arucoButton->setEnabled(false);
         if (_screenshotButton) _screenshotButton->setEnabled(false);
@@ -640,6 +668,7 @@ void QVideoPlayerWidget::onFrameTimeout(void)
         if (_arucoButton && _arucoButton->isChecked())
         {
             RCLCPP_INFO(_node->get_logger(), "Resetting Aruco button due to frame timeout");
+            this->logToWidget("INFO", "Resetting Aruco button due to frame timeout");
             _arucoButton->setChecked(false);
             _arucoButton->setProperty("class", "normal");
             _arucoButton->style()->unpolish(_arucoButton);
@@ -665,10 +694,12 @@ void QVideoPlayerWidget::onReconnectTimer(void)
 void QVideoPlayerWidget::onConnectionTimeout(void)
 {
     RCLCPP_ERROR(_node->get_logger(), "Connection timeout - no response from server");
+    this->logToWidget("ERROR", "Connection timeout - no response from server");
     
     if (_arucoButton && _arucoButton->isChecked())
     {
         RCLCPP_INFO(_node->get_logger(), "Resetting Aruco button due to connection timeout");
+        this->logToWidget("INFO", "Resetting Aruco button due to connection timeout");
         _arucoButton->setChecked(false);
         _arucoButton->setProperty("class", "normal");
         _arucoButton->style()->unpolish(_arucoButton);
@@ -732,6 +763,7 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
     else
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access aruco detection manager client");
+        this->logToWidget("WARN", "Error, couldn't access aruco detection manager client");
         if (_arucoButton) {
             _arucoButton->setProperty("class", "error");
             _arucoButton->style()->unpolish(_arucoButton);
@@ -749,6 +781,7 @@ void QVideoPlayerWidget::startDetection(void)
     else
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        this->logToWidget("ERROR", "Error, couldn't access Video Player worker");
     }
 }
 
@@ -761,6 +794,7 @@ void QVideoPlayerWidget::stopDetection(void)
     else
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        this->logToWidget("ERROR", "Error, couldn't access Video Player worker");
     }
 }
 
@@ -800,6 +834,7 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
     if (!urlFound_ && _arucoButton->isChecked())
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, aruco detection on %s was not found", _camURL.c_str());
+        this->logToWidget("WARN", QString("Error, aruco detection on %1 was not found").arg(QString::fromStdString(_camURL)));
         _arucoButton->setProperty("class", "normal");
         _arucoButton->style()->unpolish(_arucoButton);
         _arucoButton->style()->polish(_arucoButton);
@@ -831,6 +866,7 @@ void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t 
     if (!success_ && _tag == tag_)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, request made on %s regarding aruco detection failed", _camURL.c_str());
+        this->logToWidget("ERROR", QString("Error, request made on %1 regarding aruco detection failed").arg(QString::fromStdString(_camURL)));
         _arucoButton->setProperty("class", "error");
         _arucoButton->style()->unpolish(_arucoButton);
         _arucoButton->style()->polish(_arucoButton);
@@ -844,6 +880,7 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
     if (!success_)
     {
         RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Error, info request to aruco detection manager client failed");
+        this->logToWidget("DEBUG", "Error, info request to aruco detection manager client failed");
         _arucoButton->setEnabled(false);
     }
     else
@@ -874,6 +911,7 @@ void QVideoPlayerWidget::onArucoCameraFailed(bool valid_)
         }
 
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
+        this->logToWidget("ERROR", QString("Error, camera at %1 is not accessible").arg(QString::fromStdString(_camURL)));
         _arucoButton->setProperty("class", "error");
         _arucoButton->style()->unpolish(_arucoButton);
         _arucoButton->style()->polish(_arucoButton);
