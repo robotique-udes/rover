@@ -292,7 +292,6 @@ void QVideoPlayerWidget::handleRecording(void)
 
 void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
 {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Screenshot handled!");
     if (tag_ == _tag)
     {
         if (!success_)

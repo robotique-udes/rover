@@ -181,7 +181,6 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
 
     if (result.valid())
     {
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Result valid");
         if (!service_call_interrupt)
         {
             std::shared_ptr<rover_msgs::srv::CameraControl::Response> response = result.get();
