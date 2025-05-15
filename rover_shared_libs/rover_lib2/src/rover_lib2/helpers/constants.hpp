@@ -1,6 +1,8 @@
 #ifndef CONSTANTS_HPP
 #define CONSTANTS_HPP
 
+#include <rover_msgs/msg/joy.hpp>
+
 #if defined(__linux__)
 #include <map>
 #include <string>
