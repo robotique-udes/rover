@@ -4,9 +4,9 @@
 #include "rclcpp/rclcpp.hpp"
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include <QtWidgets/QCheckBox>  
-#include <QtWidgets/QTextEdit> 
-#include <QThread>  
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QTextEdit>
+#include <QThread>
 #include <QTimer>
 #include <QDateTime>
 #include "UI_VideoPlayer.h"
@@ -94,10 +94,11 @@ class QVideoPlayerWidget : public QWidget
     void onConnectionTimeout(void);
     void onToggleView(void);
     void onUrlTextChanged(const QString& text_);
-    
-    // Log window functionality
+
     void clearLogs();
     void toggleLogView(bool show);
+
+    void onNewLogMessage(const QString& message, const QString& target);
 
   private:
     void setupUI(void);
@@ -106,7 +107,6 @@ class QVideoPlayerWidget : public QWidget
     void initializeUIState(void);
     void emitStateChanged(void);
     void cleanupResources(void);
-    void logToWidget(const QString& level, const QString& message);
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
@@ -153,4 +153,4 @@ class QVideoPlayerWidget : public QWidget
     QCheckBox* _errorCheckbox = nullptr;
 };
 
-#endif  // QVIDEOPLAYERWIDGER_HPP
+#endif

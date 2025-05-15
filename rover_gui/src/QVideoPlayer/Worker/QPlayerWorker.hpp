@@ -47,4 +47,4 @@ class QPlayerWorker : public QWorker
     LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
 };
 
-#endif  // VIDEO_WORKER_HPP
+#endif

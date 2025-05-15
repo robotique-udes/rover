@@ -1,4 +1,5 @@
 #include "QVideoManagerWidget.hpp"
+#include "QLogManager.hpp"
 #include <QString>
 
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
@@ -27,7 +28,7 @@ void QVideoManagerWidget::CB_updateArucoDetectionManager()
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        UI_LOG_ERROR(ARUCO_DETECTION, "Error, couldn't access Video Player worker", "");
     }
 }
 
@@ -75,19 +76,13 @@ void QVideoManagerWidget::initWidget(void)
         }
         else if (i < CAMERA_NAME_ORDER.size())
         {
-            RCLCPP_WARN(rclcpp::get_logger("GUI"),
-                        "Couldn't find url for camera named %s in camera infos.",
-                        CAMERA_NAME_ORDER[i]);
+            UI_LOG_WARNING(GENERAL,
+                           QString("Couldn't find url for camera named %1 in camera infos.").arg(CAMERA_NAME_ORDER[i]),
+                           "");
         }
 
         _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
-        
-        // REMOVED: Don't start streams automatically
-        // if (!cameraUrl.empty())
-        // {
-        //     _videoPlaysWidgets[i]->startStream(QString::fromStdString(cameraUrl));
-        // }
     }
 
     uint16_t index = 0;
@@ -116,7 +111,7 @@ void QVideoManagerWidget::initArucoPublisher(void)
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", "");
     }
 }
 
@@ -128,7 +123,7 @@ void QVideoManagerWidget::initArucoClient(void)
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", "");
     }
 
     for (auto& widget : _videoPlaysWidgets)

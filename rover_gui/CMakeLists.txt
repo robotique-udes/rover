@@ -92,9 +92,6 @@ add_executable(main_gui src/gui.cpp
 
                         src/QLogManager.hpp
                         src/QLogManager.cpp
-
-                        src/CameraSettings.hpp
-                        src/CameraSettings.cpp
                         
                         src/Global/Constant/StyleSheet.hpp
                         src/Global/Helpers/QHelpers.hpp
