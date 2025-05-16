@@ -4,7 +4,7 @@
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
 
-DEFINE_LOG(ArmSpeedCmd_msg, Logger::eNodeState::OFF);
+DEFINE_LOG_NODE(PropSpeedCmd_msg, Logger::eNodeState::OFF)
 
 namespace RoverCan2::Msgs
 {
@@ -23,8 +23,10 @@ namespace RoverCan2::Msgs
             float targetSpeed;
         };
 
-        static constexpr CompileTimeArray<eMsgContenID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
+        static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
             = {eMsgContentID::TARGET_SPEED};
+
+        sMsgData _data;
 
       public:
         ArmSpeedCmd():
@@ -56,11 +58,11 @@ namespace RoverCan2::Msgs
                 return eLoadMsgCode::ERROR_MISMATCH;
             }
 
-            bool succes = false;
+            bool success = false;
             switch (msgContentId)
             {
                 case eMsgContentID::TARGET_SPEED:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.target_speed);
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.targetSpeed);
                     LOG_DEBUG(Logger::Nodes::PropSpeedCmd_msg,
                               "switch (msgContentId) case eMsgContentID::TARGET_SPEED: %s",
                               success ? "success" : "failed");
@@ -69,7 +71,7 @@ namespace RoverCan2::Msgs
                     return eLoadMsgCode::ERROR_IMPLEMENTATION;
             }
 
-            if (!succes)
+            if (!success)
             {
                 return eLoadMsgCode::ERROR_MISMATCH;
             }
@@ -97,7 +99,7 @@ namespace RoverCan2::Msgs
             switch (static_cast<eMsgContentID>(msgContentId_))
             {
                 case eMsgContentID::TARGET_SPEED:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.target_speed, msg_);
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.targetSPeed, msg_);
                     break;
 
                 case eMsgContentID::eLAST:
@@ -105,9 +107,6 @@ namespace RoverCan2::Msgs
             }
 
             return msg_;
-
-          private:
-            sMsgData _data;
         }
         uint8_t _getMsgContentCount(void) const
         {
@@ -123,7 +122,7 @@ namespace RoverCan2::Msgs
         {
             return static_cast<const sMsgData&>(_data);
         }
-    }
+    };
 }  // namespace RoverCan2::Msgs
 
 #endif
