@@ -17,9 +17,6 @@ find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChanne
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 
-add_subdirectory(../rover_shared_libs/ .build)
-
-
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 
@@ -38,7 +35,6 @@ include_directories(
 )
 
 link_directories(${GSTREAMER_LIBRARY_DIRS})
-qt_add_resources(RTSP_RESOURCES src/Global/Constant/resources.qrc)
 
 add_custom_command(
     OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
@@ -118,7 +114,6 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
                    
-                   ${RTSP_RESOURCES}
                 )
                   
 add_subdirectory(../rover_shared_libs/ .build)

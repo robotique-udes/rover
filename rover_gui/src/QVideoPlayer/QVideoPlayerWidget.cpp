@@ -398,7 +398,7 @@ void QVideoPlayerWidget::stopStream(void)
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
-      
+
         this->setPlayerState(PlayerState::NotConnected);
     }
 }
