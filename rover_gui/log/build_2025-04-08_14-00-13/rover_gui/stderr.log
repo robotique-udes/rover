@@ -1,7 +1,0 @@
-[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:21:10:[m[K [01;31m[Kerror: [m[K‘[01m[Kvoid NoAutoCorrectLineEdit::setText(const QString&)[m[K’ marked ‘[01m[Koverride[m[K’, but does not override
-   21 |     void [01;31m[KsetText[m[K(const QString& text) override {
-      |          [01;31m[K^~~~~~~[m[K
-gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:364: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o] Error 1
-gmake[2]: *** Waiting for unfinished jobs....
-gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
-gmake: *** [Makefile:146: all] Error 2

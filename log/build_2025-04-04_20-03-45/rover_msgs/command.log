@@ -1,6 +1,0 @@
-Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_msgs -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_msgs
-Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_msgs -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_msgs
-Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_msgs -- -j2 -l2
-Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_msgs -- -j2 -l2
-Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_msgs
-Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_msgs

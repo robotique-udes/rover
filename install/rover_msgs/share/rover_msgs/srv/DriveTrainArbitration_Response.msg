@@ -1,2 +1,0 @@
-
-rover_msgs/DrivetrainArbitration current_arbitration

@@ -1,9 +1,0 @@
-[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:[m[K In member function ‘[01m[Kvoid RtspPlayerWidget::startStream(const QString&)[m[K’:
-[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:295:9:[m[K [01;31m[Kerror: [m[K‘[01m[KLOG_WARNING_ARGET[m[K’ was not declared in this scope; did you mean ‘[01m[KLOG_WARNING_TARGET[m[K’?
-  295 |         [01;31m[KLOG_WARNING_ARGET[m[K("RtspPlayer", "Empty RTSP URL provided", _widgetId.toUtf8().constData());
-      |         [01;31m[K^~~~~~~~~~~~~~~~~[m[K
-      |         [32m[KLOG_WARNING_TARGET[m[K
-gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:364: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o] Error 1
-gmake[2]: *** Waiting for unfinished jobs....
-gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
-gmake: *** [Makefile:146: all] Error 2

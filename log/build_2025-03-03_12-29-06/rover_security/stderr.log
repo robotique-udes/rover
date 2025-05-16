@@ -1,3 +1,0 @@
-gmake[2]: *** [CMakeFiles/heartbeat.dir/build.make:76: CMakeFiles/heartbeat.dir/src/heartbeat.cpp.o] Interrupt
-gmake[1]: *** [CMakeFiles/Makefile2:137: CMakeFiles/heartbeat.dir/all] Interrupt
-gmake: *** [Makefile:146: all] Interrupt
