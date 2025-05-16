@@ -25,7 +25,7 @@ class QVideoPlayerWidget : public QWidget
     static int _instanceCounter;
 
   public:
-    enum class PlayerState
+    enum class ePlayerState
     {
         NotConnected,
         Connecting,
@@ -52,7 +52,7 @@ class QVideoPlayerWidget : public QWidget
 
     void startStream(const QString& rtspUrl_);
     void stopStream(void);
-    void setPlayerState(PlayerState state_);
+    void setPlayerState(ePlayerState state_);
     void tryReconnect(void);
     void updateStatusText(const QString& text_);
     bool validateRtspUrl(const QString& url_);
@@ -71,14 +71,14 @@ class QVideoPlayerWidget : public QWidget
     }
     bool isStreaming(void) const
     {
-        return _state == PlayerState::Streaming;
+        return _state == ePlayerState::Streaming;
     }
 
   signals:
     void arucoCameraFailure(bool valid_);
     void streamStateChanged(bool isRunning_, int streamIndex_);
     void requestStartStream(const QString& rtspUrl);
-    void requestStopStream();
+    void requestStopStream(void);
 
   private slots:
     void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
@@ -95,7 +95,7 @@ class QVideoPlayerWidget : public QWidget
     void onToggleView(void);
     void onUrlTextChanged(const QString& text_);
 
-    void clearLogs();
+    void clearLogs(void);
     void toggleLogView(bool show);
 
     void onNewLogMessage(const QString& message, const QString& target);
@@ -120,7 +120,7 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
 
-    PlayerState _state = PlayerState::NotConnected;
+    ePlayerState _state = ePlayerState::NotConnected;
     int _reconnectAttempts = 0;
     bool _wasEverConnected = false;
     bool _controlsVisible = true;

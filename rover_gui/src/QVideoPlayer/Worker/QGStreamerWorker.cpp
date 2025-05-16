@@ -6,6 +6,44 @@
 #include <gst/video/videooverlay.h>
 #include <QUrl>
 
+static void glib_log_handler(const gchar* log_domain, GLogLevelFlags log_level, const gchar* message, gpointer user_data)
+{
+    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    QString targetId = worker ? worker->getTargetId() : QString();
+
+    QString domain = log_domain ? log_domain : "GLib";
+    QString msg = QString("%1: %2").arg(domain).arg(message);
+
+    if (log_level & G_LOG_LEVEL_ERROR)
+    {
+        UI_LOG_ERROR_RTSP(msg, targetId);
+    }
+    else if (log_level & G_LOG_LEVEL_CRITICAL)
+    {
+        UI_LOG_ERROR_RTSP(msg, targetId);
+    }
+    else if (log_level & G_LOG_LEVEL_WARNING)
+    {
+        UI_LOG_WARNING_RTSP(msg, targetId);
+    }
+    else if (log_level & G_LOG_LEVEL_MESSAGE)
+    {
+        UI_LOG_INFO_RTSP(msg, targetId);
+    }
+    else if (log_level & G_LOG_LEVEL_INFO)
+    {
+        UI_LOG_INFO_RTSP(msg, targetId);
+    }
+    else if (log_level & G_LOG_LEVEL_DEBUG)
+    {
+        UI_LOG_DEBUG_RTSP(msg, targetId);
+    }
+    else
+    {
+        UI_LOG_DEBUG_RTSP(msg, targetId);
+    }
+}
+
 static const int MAX_CONSECUTIVE_ERRORS = 3;
 static int consecutive_errors_count = 0;
 
@@ -39,9 +77,13 @@ static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_dat
     }
 
     if (err)
+    {
         g_error_free(err);
+    }
     if (debug)
+    {
         g_free(debug);
+    }
 }
 
 static GstFlowReturn on_new_sample(GstElement* sink, gpointer user_data)
@@ -77,9 +119,13 @@ static void on_gst_warning_message(GstBus* bus, GstMessage* msg, gpointer user_d
     UI_LOG_DEBUG_RTSP(QString("%1").arg(err ? err->message : "Unknown Warning"), worker ? worker->getTargetId() : QString());
 
     if (err)
+    {
         g_error_free(err);
+    }
     if (debug)
+    {
         g_free(debug);
+    }
 }
 
 static void on_decodebin_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data)
@@ -120,11 +166,30 @@ GStreamerWorker::GStreamerWorker(QObject* parent):
     QObject(parent)
 {
     gst_init(nullptr, nullptr);
+
+    g_log_set_handler("GLib",
+                      static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION),
+                      glib_log_handler,
+                      this);
+    g_log_set_handler("GLib-GObject",
+                      static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION),
+                      glib_log_handler,
+                      this);
+    g_log_set_handler("GStreamer",
+                      static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION),
+                      glib_log_handler,
+                      this);
+    g_log_set_handler(NULL,
+                      static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION),
+                      glib_log_handler,
+                      this);
+
+    gst_debug_set_default_threshold(GST_LEVEL_ERROR);
 }
 
 GStreamerWorker::~GStreamerWorker()
 {
-    cleanupGStreamer();
+    this->cleanupGStreamer();
 }
 
 QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
@@ -142,7 +207,7 @@ QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
 
 void GStreamerWorker::startPipeline(const QString& rtspUrl)
 {
-    cleanupGStreamer();
+    this->cleanupGStreamer();
 
     _lastUrl = rtspUrl;
 
@@ -154,7 +219,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
         return;
     }
 
-    const QString pipelineDesc = buildPipelineString(rtspUrl);
+    const QString pipelineDesc = this->buildPipelineString(rtspUrl);
     _pipeline = gst_parse_launch(pipelineDesc.toUtf8().constData(), nullptr);
 
     if (!_pipeline)
@@ -224,7 +289,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
 
 void GStreamerWorker::stopPipeline()
 {
-    cleanupGStreamer();
+    this->cleanupGStreamer();
     emit pipelineStopped();
 }
 

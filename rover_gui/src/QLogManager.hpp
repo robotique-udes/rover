@@ -12,7 +12,7 @@ class QLogManager : public QObject
     Q_OBJECT
 
   public:
-    enum LogLevel
+    enum class eLogLevel
     {
         DEBUG,
         INFO,
@@ -20,7 +20,7 @@ class QLogManager : public QObject
         ERROR
     };
 
-    enum LogSource
+    enum class eLogSource
     {
         RTSP_STREAMING,   // RTSP streaming related logs - widget only
         ARUCO_DETECTION,  // Aruco detection related logs - terminal + widget
@@ -29,14 +29,14 @@ class QLogManager : public QObject
         GENERAL           // General logs - terminal + widget
     };
 
-    static QLogManager& getInstance();
+    static QLogManager& getInstance(void);
 
-    void log(LogLevel level, LogSource source, const QString& message, const QString& target = QString());
+    void log(eLogLevel level, eLogSource source, const QString& message, const QString& target = QString());
 
-    void debug(LogSource source, const QString& message, const QString& target = QString());
-    void info(LogSource source, const QString& message, const QString& target = QString());
-    void warning(LogSource source, const QString& message, const QString& target = QString());
-    void error(LogSource source, const QString& message, const QString& target = QString());
+    void debug(eLogSource source, const QString& message, const QString& target = QString());
+    void info(eLogSource source, const QString& message, const QString& target = QString());
+    void warning(eLogSource source, const QString& message, const QString& target = QString());
+    void error(eLogSource source, const QString& message, const QString& target = QString());
 
     void setShowDebug(bool show, const QString& target = QString());
     void setShowInfo(bool show, const QString& target = QString());
@@ -44,7 +44,6 @@ class QLogManager : public QObject
     void setShowError(bool show, const QString& target = QString());
 
   signals:
-
     void newLogMessage(const QString& message, const QString& target);
 
   private:
@@ -54,16 +53,17 @@ class QLogManager : public QObject
     QLogManager(const QLogManager&) = delete;
     QLogManager& operator=(const QLogManager&) = delete;
 
-    QString formatLogMessage(LogLevel level, const QString& message);
+    QString formatLogMessage(eLogLevel level, const QString& message);
 
-    QMap<QString, QSet<LogLevel>> _enabledLevels;
+    QMap<QString, QSet<eLogLevel>> _enabledLevels;
     QMutex _mutex;
 };
 
-#define UI_LOG_DEBUG(source, message, target) QLogManager::getInstance().debug(QLogManager::source, message, target)
-#define UI_LOG_INFO(source, message, target) QLogManager::getInstance().info(QLogManager::source, message, target)
-#define UI_LOG_WARNING(source, message, target) QLogManager::getInstance().warning(QLogManager::source, message, target)
-#define UI_LOG_ERROR(source, message, target) QLogManager::getInstance().error(QLogManager::source, message, target)
+#define UI_LOG_DEBUG(source, message, target) QLogManager::getInstance().debug(QLogManager::eLogSource::source, message, target)
+#define UI_LOG_INFO(source, message, target) QLogManager::getInstance().info(QLogManager::eLogSource::source, message, target)
+#define UI_LOG_WARNING(source, message, target) \
+    QLogManager::getInstance().warning(QLogManager::eLogSource::source, message, target)
+#define UI_LOG_ERROR(source, message, target) QLogManager::getInstance().error(QLogManager::eLogSource::source, message, target)
 
 #define UI_LOG_DEBUG_RTSP(message, target) UI_LOG_DEBUG(RTSP_STREAMING, message, target)
 #define UI_LOG_INFO_RTSP(message, target) UI_LOG_INFO(RTSP_STREAMING, message, target)

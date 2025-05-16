@@ -65,7 +65,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
     _ui.arucoIdsTextBox->setText("Ids: ");
 
-    this->setPlayerState(PlayerState::NotConnected);
+    this->setPlayerState(ePlayerState::NotConnected);
 
     _gstreamerThread->start();
 
@@ -79,7 +79,7 @@ QVideoPlayerWidget::~QVideoPlayerWidget()
     this->cleanupResources();
 }
 
-void QVideoPlayerWidget::cleanupResources()
+void QVideoPlayerWidget::cleanupResources(void)
 {
     this->stopStream();
 
@@ -319,13 +319,21 @@ void QVideoPlayerWidget::initializeUIState(void)
     }
 
     if (_debugCheckbox)
+    {
         _debugCheckbox->setChecked(false);
+    }
     if (_infoCheckbox)
+    {
         _infoCheckbox->setChecked(true);
+    }
     if (_warningCheckbox)
+    {
         _warningCheckbox->setChecked(true);
+    }
     if (_errorCheckbox)
+    {
         _errorCheckbox->setChecked(true);
+    }
 }
 
 void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
@@ -355,13 +363,13 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
     _lastStreamTime = currentTime;
     _camURL = rtspUrl_.toStdString();
 
-    if (_state != PlayerState::Reconnecting)
+    if (_state != ePlayerState::Reconnecting)
     {
         UI_LOG_INFO_RTSP(QString("Starting stream: %1").arg(rtspUrl_), _widgetId);
         _reconnectAttempts = 0;
     }
 
-    this->setPlayerState(PlayerState::Connecting);
+    this->setPlayerState(ePlayerState::Connecting);
 
     emit requestStartStream(rtspUrl_);
 }
@@ -370,7 +378,7 @@ void QVideoPlayerWidget::stopStream(void)
 {
     _connectionTimeoutTimer.stop();
 
-    if (_state == PlayerState::NotConnected || _state == PlayerState::Paused)
+    if (_state == ePlayerState::NotConnected || _state == ePlayerState::Paused)
     {
         return;
     }
@@ -381,41 +389,43 @@ void QVideoPlayerWidget::stopStream(void)
     _reconnectTimer.stop();
 
     if (_arucoButton)
+    {
         _arucoButton->setEnabled(false);
+    }
     if (_screenshotButton)
+    {
         _screenshotButton->setEnabled(false);
+    }
     if (_recordButton)
+    {
         _recordButton->setEnabled(false);
+    }
 
     emit requestStopStream();
 
     if (_wasEverConnected)
     {
-        this->setPlayerState(PlayerState::Paused);
+        this->setPlayerState(ePlayerState::Paused);
     }
     else
     {
-        _ui.arucoPushButton->setProperty("class", "error");
-        _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
-        _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
-
-        this->setPlayerState(PlayerState::NotConnected);
+        this->setPlayerState(ePlayerState::NotConnected);
     }
 }
 
-void QVideoPlayerWidget::setPlayerState(PlayerState state_)
+void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
 {
     if (_state == state_)
     {
         return;
     }
 
-    PlayerState oldState = _state;
+    ePlayerState oldState = _state;
     _state = state_;
 
     switch (_state)
     {
-        case PlayerState::NotConnected:
+        case ePlayerState::NotConnected:
             this->updateStatusText("Not Connected");
             if (_playPauseButton)
             {
@@ -424,7 +434,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
             }
             break;
 
-        case PlayerState::Connecting:
+        case ePlayerState::Connecting:
             this->updateStatusText("Connecting...");
             if (_playPauseButton)
             {
@@ -434,7 +444,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
             _connectionTimeoutTimer.start(8000);
             break;
 
-        case PlayerState::Streaming:
+        case ePlayerState::Streaming:
             this->updateStatusText("");
             if (_playPauseButton)
             {
@@ -443,16 +453,22 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
             }
             _wasEverConnected = true;
             if (_arucoButton)
+            {
                 _arucoButton->setEnabled(true);
+            }
             _frameTimeoutTimer.start(2000);
             if (_screenshotButton)
+            {
                 _screenshotButton->setEnabled(true);
+            }
             if (_recordButton)
+            {
                 _recordButton->setEnabled(true);
+            }
             UI_LOG_INFO_RTSP("Stream connected successfully", _widgetId);
             break;
 
-        case PlayerState::Reconnecting:
+        case ePlayerState::Reconnecting:
             this->updateStatusText(QString("Reconnecting... (%1/%2)").arg(_reconnectAttempts).arg(MAX_RECONNECT_ATTEMPTS));
             if (_playPauseButton)
             {
@@ -467,17 +483,25 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
                 _arucoButton->style()->unpolish(_arucoButton);
                 _arucoButton->style()->polish(_arucoButton);
                 if (_arucoIdsTextBox)
+                {
                     _arucoIdsTextBox->setText("Ids: ");
+                }
             }
             if (_arucoButton)
+            {
                 _arucoButton->setEnabled(false);
+            }
             if (_screenshotButton)
+            {
                 _screenshotButton->setEnabled(false);
+            }
             if (_recordButton)
+            {
                 _recordButton->setEnabled(false);
+            }
             break;
 
-        case PlayerState::Paused:
+        case ePlayerState::Paused:
             this->updateStatusText("Paused");
             if (_playPauseButton)
             {
@@ -485,14 +509,20 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
                 _playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             }
             if (_arucoButton)
+            {
                 _arucoButton->setEnabled(false);
+            }
             if (_screenshotButton)
+            {
                 _screenshotButton->setEnabled(false);
+            }
             if (_recordButton)
+            {
                 _recordButton->setEnabled(false);
+            }
             break;
 
-        case PlayerState::ConnectionError:
+        case ePlayerState::ConnectionError:
             this->updateStatusText("Connection Error");
             if (_playPauseButton)
             {
@@ -503,7 +533,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
             this->tryReconnect();
             break;
 
-        case PlayerState::ConnectionFailed:
+        case ePlayerState::ConnectionFailed:
             this->updateStatusText("Connection Failed");
             if (_playPauseButton)
             {
@@ -511,17 +541,23 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
                 _playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             }
             if (_arucoButton)
+            {
                 _arucoButton->setEnabled(false);
+            }
             if (_screenshotButton)
+            {
                 _screenshotButton->setEnabled(false);
+            }
             if (_recordButton)
+            {
                 _recordButton->setEnabled(false);
+            }
             UI_LOG_ERROR_RTSP("Connection failed permanently", _widgetId);
             break;
     }
 
-    bool wasStreaming = (oldState == PlayerState::Streaming);
-    bool isStreaming = (_state == PlayerState::Streaming);
+    bool wasStreaming = (oldState == ePlayerState::Streaming);
+    bool isStreaming = (_state == ePlayerState::Streaming);
 
     if (wasStreaming != isStreaming)
     {
@@ -531,7 +567,7 @@ void QVideoPlayerWidget::setPlayerState(PlayerState state_)
 
 void QVideoPlayerWidget::tryReconnect(void)
 {
-    if (_state == PlayerState::ConnectionFailed)
+    if (_state == ePlayerState::ConnectionFailed)
     {
         return;
     }
@@ -542,13 +578,13 @@ void QVideoPlayerWidget::tryReconnect(void)
     {
         UI_LOG_INFO_RTSP(QString("Automatic reconnection attempt %1 of %2").arg(_reconnectAttempts).arg(MAX_RECONNECT_ATTEMPTS),
                          _widgetId);
-        this->setPlayerState(PlayerState::Reconnecting);
+        this->setPlayerState(ePlayerState::Reconnecting);
         _reconnectTimer.start(3000);
     }
     else
     {
         UI_LOG_ERROR_RTSP("Maximum reconnection attempts reached", _widgetId);
-        this->setPlayerState(PlayerState::ConnectionFailed);
+        this->setPlayerState(ePlayerState::ConnectionFailed);
     }
 }
 
@@ -570,7 +606,9 @@ bool QVideoPlayerWidget::validateRtspUrl(const QString& url_)
 void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
 {
     if (!_rtspUrlInput)
+    {
         return;
+    }
 
     if (isValid_)
     {
@@ -586,7 +624,7 @@ void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
 
 void QVideoPlayerWidget::emitStateChanged(void)
 {
-    emit streamStateChanged(_state == PlayerState::Streaming, _streamIndex);
+    emit streamStateChanged(_state == ePlayerState::Streaming, _streamIndex);
 }
 
 void QVideoPlayerWidget::onToggleView(void)
@@ -602,7 +640,9 @@ void QVideoPlayerWidget::onToggleView(void)
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
     if (!_rtspUrlInput)
+    {
         return;
+    }
 
     if (text_.isEmpty())
     {
@@ -614,14 +654,14 @@ void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
         bool isValid = this->validateRtspUrl(text_);
         this->updateUrlValidationUI(isValid);
 
-        if (_state == PlayerState::ConnectionFailed && isValid)
+        if (_state == ePlayerState::ConnectionFailed && isValid)
         {
-            this->setPlayerState(PlayerState::NotConnected);
+            this->setPlayerState(ePlayerState::NotConnected);
         }
     }
 }
 
-void QVideoPlayerWidget::clearLogs()
+void QVideoPlayerWidget::clearLogs(void)
 {
     if (_logDisplay)
     {
@@ -644,7 +684,7 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     {
         UI_LOG_ERROR_RTSP("Pipeline creation failed", _widgetId);
         _connectionTimeoutTimer.stop();
-        this->setPlayerState(PlayerState::ConnectionError);
+        this->setPlayerState(ePlayerState::ConnectionError);
         return;
     }
 
@@ -655,7 +695,7 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     {
         UI_LOG_ERROR_RTSP("Failed to find VideoOverlay in pipeline", _widgetId);
         _connectionTimeoutTimer.stop();
-        this->setPlayerState(PlayerState::ConnectionError);
+        this->setPlayerState(ePlayerState::ConnectionError);
         return;
     }
 
@@ -670,12 +710,12 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
 
 void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
 {
-    if (_state == PlayerState::Streaming)
+    if (_state == ePlayerState::Streaming)
     {
         return;
     }
 
-    if (_state == PlayerState::Reconnecting)
+    if (_state == ePlayerState::Reconnecting)
     {
         UI_LOG_DEBUG_RTSP("Stream error: " + error_, _widgetId);
 
@@ -687,7 +727,7 @@ void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
     else
     {
         UI_LOG_ERROR_RTSP("Stream error: " + error_, _widgetId);
-        this->setPlayerState(PlayerState::ConnectionError);
+        this->setPlayerState(ePlayerState::ConnectionError);
     }
 }
 
@@ -696,7 +736,7 @@ void QVideoPlayerWidget::onConnectionFailed(void)
     _reconnectTimer.stop();
     _connectionTimeoutTimer.stop();
     _reconnectAttempts = 0;
-    this->setPlayerState(PlayerState::ConnectionFailed);
+    this->setPlayerState(ePlayerState::ConnectionFailed);
     UI_LOG_ERROR_RTSP("Connection failed permanently", _widgetId);
 }
 
@@ -705,9 +745,9 @@ void QVideoPlayerWidget::onFrameReceived(void)
     _connectionTimeoutTimer.stop();
     _reconnectTimer.stop();
 
-    if (_state != PlayerState::Streaming)
+    if (_state != ePlayerState::Streaming)
     {
-        if (_state == PlayerState::Reconnecting)
+        if (_state == ePlayerState::Reconnecting)
         {
             UI_LOG_INFO_RTSP("Reconnection successful, receiving frames...", _widgetId);
             _reconnectAttempts = 0;
@@ -717,14 +757,20 @@ void QVideoPlayerWidget::onFrameReceived(void)
             UI_LOG_INFO_RTSP("Receiving frames...", _widgetId);
         }
 
-        this->setPlayerState(PlayerState::Streaming);
+        this->setPlayerState(ePlayerState::Streaming);
 
         if (_arucoButton)
+        {
             _arucoButton->setEnabled(true);
+        }
         if (_screenshotButton)
+        {
             _screenshotButton->setEnabled(true);
+        }
         if (_recordButton)
+        {
             _recordButton->setEnabled(true);
+        }
     }
     else
     {
@@ -734,16 +780,22 @@ void QVideoPlayerWidget::onFrameReceived(void)
 
 void QVideoPlayerWidget::onFrameTimeout(void)
 {
-    if (_state == PlayerState::Streaming)
+    if (_state == ePlayerState::Streaming)
     {
         UI_LOG_WARNING_RTSP("Frame timeout - no frames received", _widgetId);
 
         if (_arucoButton)
+        {
             _arucoButton->setEnabled(false);
+        }
         if (_screenshotButton)
+        {
             _screenshotButton->setEnabled(false);
+        }
         if (_recordButton)
+        {
             _recordButton->setEnabled(false);
+        }
 
         if (_arucoButton && _arucoButton->isChecked())
         {
@@ -753,16 +805,18 @@ void QVideoPlayerWidget::onFrameTimeout(void)
             _arucoButton->style()->unpolish(_arucoButton);
             _arucoButton->style()->polish(_arucoButton);
             if (_arucoIdsTextBox)
+            {
                 _arucoIdsTextBox->setText("Ids: ");
+            }
         }
 
-        this->setPlayerState(PlayerState::ConnectionError);
+        this->setPlayerState(ePlayerState::ConnectionError);
     }
 }
 
 void QVideoPlayerWidget::onReconnectTimer(void)
 {
-    if (_state == PlayerState::Reconnecting)
+    if (_state == ePlayerState::Reconnecting)
     {
         if (_rtspUrlInput && !_rtspUrlInput->text().isEmpty())
         {
@@ -783,18 +837,22 @@ void QVideoPlayerWidget::onConnectionTimeout(void)
         _arucoButton->style()->unpolish(_arucoButton);
         _arucoButton->style()->polish(_arucoButton);
         if (_arucoIdsTextBox)
+        {
             _arucoIdsTextBox->setText("Ids: ");
+        }
     }
 
     _reconnectAttempts = 0;
-    this->setPlayerState(PlayerState::ConnectionFailed);
+    this->setPlayerState(ePlayerState::ConnectionFailed);
     emit requestStopStream();
 }
 
 void QVideoPlayerWidget::handlePlayPauseButton(void)
 {
     if (!_playPauseButton)
+    {
         return;
+    }
 
     if (!_playPauseButton->isChecked())
     {
@@ -880,7 +938,9 @@ void QVideoPlayerWidget::stopDetection(void)
 void QVideoPlayerWidget::handleArucoDetection(void)
 {
     if (!_arucoButton)
+    {
         return;
+    }
 
     if (_arucoButton->isChecked())
     {
@@ -916,7 +976,9 @@ void QVideoPlayerWidget::handleArucoDetection(void)
 void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 {
     if (!_arucoButton)
+    {
         return;
+    }
 
     if (!urlFound_ && _arucoButton->isChecked())
     {
@@ -932,7 +994,9 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 {
     if (!_arucoIdsTextBox)
+    {
         return;
+    }
 
     size_t nbr_ids_detected = ids_.size();
 
@@ -960,7 +1024,9 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t tag_)
 {
     if (!_arucoButton)
+    {
         return;
+    }
 
     if (!success_ && _tag == tag_)
     {
@@ -976,7 +1042,9 @@ void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t 
 void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
 {
     if (!_arucoButton)
+    {
         return;
+    }
 
     if (!success_)
     {
@@ -998,7 +1066,9 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
 void QVideoPlayerWidget::onArucoCameraFailed(bool valid_)
 {
     if (!_arucoButton)
+    {
         return;
+    }
 
     if (!valid_)
     {

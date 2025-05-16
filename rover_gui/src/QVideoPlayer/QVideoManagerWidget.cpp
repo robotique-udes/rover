@@ -20,7 +20,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThread->start();
 }
 
-void QVideoManagerWidget::CB_updateArucoDetectionManager()
+void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
 {
     if (_playerWorkerThread.get())
     {
@@ -106,7 +106,7 @@ void QVideoManagerWidget::initArucoPublisher(void)
                                                                                  5,
                                                                                  [this](const rover_msgs::msg::Aruco msg)
                                                                                  {
-                                                                                     CB_displayArucoDetected(msg);
+                                                                                     this->CB_displayArucoDetected(msg);
                                                                                  });
     }
     else
