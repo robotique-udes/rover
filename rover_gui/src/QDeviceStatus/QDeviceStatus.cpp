@@ -39,18 +39,18 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _ui.setupUi(this);
 
     _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor_reboot;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor_reboot;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor_reboot;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor_reboot;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController_reboot;
+    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss_reboot;
 
     _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightmotor_info;
-    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
-    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
-    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor;
-    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController;
-    // _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss;
+    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftmotor_info;
+    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftmotor_info;
+    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightmotor_info;
+    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController_info;
+    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss_info;
 
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
@@ -90,6 +90,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             this,
             [this]()
             {
+                this->setDefaultStyle();
                 auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
                 // this->setStatusReport(deviceID);
                 this->updateDeviceInfo(request);
@@ -118,8 +119,10 @@ void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Req
             }
             else
             {
+                // Reminder to remove this once everything is done
                 _numberOfCalls++;
                 RCLCPP_INFO(_node->get_logger(), "Calls count: %d", _numberOfCalls);
+                //
                 RCLCPP_WARN(_node->get_logger(), "Service failed: %s", response->message.c_str());
             }
         });
@@ -129,18 +132,12 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
 {
     _deviceMessageCount[msg_.id]++;
     RCLCPP_INFO(_node->get_logger(), "Message count for device %d: %d", msg_.id, _deviceMessageCount[msg_.id]);
-
-    if (isDeviceDisconnected(msg_.id))
-    {
-        _deviceLabels[msg_.id]->setStyleSheet(STATUS_DEFAULT);
-    }
-    else
-    {
-        this->updateDevicesColor(msg_.id, msg_);
-    }
+    
+    this->updateRebootCounter(msg_.id);
+    this->updateDeviceColor(msg_.id, msg_);
 }
 
-bool QDeviceStatus::isDeviceDisconnected(uint16_t deviceID_)
+void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
 {
     _numberOfDeviceReboots[deviceID_] = _numberOfCalls - _deviceMessageCount[deviceID_];
     RCLCPP_INFO(_node->get_logger(), "Number of reboots for device %d: %d", deviceID_, _numberOfDeviceReboots[deviceID_]);
@@ -149,18 +146,17 @@ bool QDeviceStatus::isDeviceDisconnected(uint16_t deviceID_)
     {
         _oldDeviceReboots[deviceID_] = _numberOfDeviceReboots[deviceID_];
         RCLCPP_INFO(_node->get_logger(), "Device %d is deconnected", deviceID_);
-        return true;
     }
     else
     {
         RCLCPP_INFO(_node->get_logger(), "Device %d isn't deconnected", deviceID_);
-        return false;
     }
 }
 
-void QDeviceStatus::rebootDevice(uint16_t id_)
+void QDeviceStatus::rebootDevice(uint16_t deviceID_)
 {
-    RCLCPP_INFO(_node->get_logger(), "Reboot %d", id_);
+    RCLCPP_INFO(_node->get_logger(), "Reboot %d", deviceID_);
+    _numberOfDeviceReboots[deviceID_]++;
 }
 
 // int QDeviceStatus::heightForWidth(int width_) const
@@ -209,7 +205,7 @@ std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
     }
 }
 
-void QDeviceStatus::updateDevicesColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus deviceStatus_)
+void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus deviceStatus_)
 {
     auto label = _deviceLabels[deviceID_];
 
@@ -230,4 +226,12 @@ void QDeviceStatus::updateDevicesColor(uint16_t deviceID_, const rover_msgs::msg
     }
 
     RCLCPP_INFO(_node->get_logger(), "Label %d color changed", deviceID_);
+}
+
+void QDeviceStatus::setDefaultStyle()
+{
+    for (auto it = _deviceLabels.begin(); it != _deviceLabels.end(); ++it)
+    {
+        it.value()->setStyleSheet(STATUS_DEFAULT);
+    }
 }
