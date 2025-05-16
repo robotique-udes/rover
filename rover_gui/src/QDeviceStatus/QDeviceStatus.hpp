@@ -29,9 +29,11 @@ class QDeviceStatus : public QWidget
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
     void setStatusReport(uint16_t id_);
-    void updateDevicesColor();
+    void updateDevicesColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus deviceStatus_);
     void updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_);
     void rebootDevice(uint16_t id_);
+    std::string getDeviceName(uint16_t deviceID_);
+    bool isDeviceDisconnected(uint16_t deviceID_);
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::DeviceStatus _ui;
@@ -39,9 +41,14 @@ class QDeviceStatus : public QWidget
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
     rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client;
 
-    std::unordered_map<uint16_t, rover_msgs::msg::CanDeviceStatus> _deviceStatusInfo;
+    std::unordered_map<uint16_t, uint16_t> _deviceMessageCount;
+    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceReboots;
+    std::unordered_map<uint16_t, uint16_t> _oldDeviceReboots;
+
     QMap<uint16_t, QPushButton*> _deviceButtons;
     QMap<uint16_t, QLabel*> _deviceLabels;
+
+    uint16_t _numberOfCalls = 0U;
 };
 
 #endif  // __QDEVICESTATUS_HPP__
