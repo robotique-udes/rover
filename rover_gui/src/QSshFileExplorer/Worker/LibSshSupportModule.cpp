@@ -4,6 +4,7 @@
 #include <QMessageBox>
 
 #include "Global/Helpers/QHelpers.hpp"
+#include "Global/Helpers/QToastNotification/QToastNotification.hpp"
 
 namespace LibSshSupportModule
 {
@@ -104,35 +105,30 @@ namespace LibSshSupportModule
 
         if (success && rHostname_ == "localhost")
         {
-            QMessageBox::StandardButton userSelection = QMessageBox::StandardButton::No;
-            userSelection
-                = QHelper::QPopUp::sendQuestionPopUp("SSH Connection error",
-                                                     "Couldn't connect to this computer. The openssh server might not be running "
-                                                     "on your computer. Do you want to enable it?",
-                                                     (QMessageBox::StandardButton::Yes | QMessageBox::StandardButton::No));
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                "Background task started",
+                "SSH Service is being started in the background, you might get prompted for your password",
+                QHelper::QToastNotification::eNotifType::INFO);
 
-            if (userSelection == QMessageBox::StandardButton::Yes)
+            std::string result;
+            // Using timeout of 10 seconds because the user might be prompted to enter his password
+            if (!QHelper::QTerminalCommand::blockingTerminalCommand("systemctl",
+                                                                    {"start", "ssh"},
+                                                                    result,
+                                                                    std::chrono::seconds(10)))
             {
-                std::string result;
-                // Using timeout of 20 seconds because the user might be prompted to enter his password
-                if (!QHelper::QTerminalCommand::blockingTerminalCommand("systemctl",
-                                                                        {"start", "ssh"},
-                                                                        result,
-                                                                        std::chrono::seconds(20)))
-                {
-                    success = false;
-                }
+                success = false;
             }
         }
         else if (success)
         {
-            QHelper::QPopUp::sendQuestionPopUp(
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread(
                 "SSH Connection error",
                 "Couldn't connect to server " + rUsername_ + "@" + rHostname_
-                    + ". The openssh server might not be running. Enter this command on the server terminal to start "
-                      "it:"
-                    + "\n\nsudo systemctl start ssh"
-                    + "\n\nTo enable it at startup, enter this command:" + "\n\nsudo systemctl enable --now ssh");
+                    + ". The openssh server might not be running. Enter this command on the server terminal to start it: sudo "
+                      "systemctl enable --now ssh",
+                QHelper::QToastNotification::eNotifType::WARNING,
+                5'000);
         }
 
         return success;
