@@ -1,0 +1,29 @@
+{
+  "package_name": "rover_msgs",
+  "non_idl_tuples": [
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/AntennaCmd.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/PropulsionMotor.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/CanDeviceStatus.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/Joy.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/JoyDemuxStatus.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/Gps.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/GpsPosition.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/CameraControl.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/LightControl.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/ScienceControl.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/ArmMsg.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/DrivetrainArbitration.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/Compass.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/CameraAngle.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:msg/Aruco.msg",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/JoyDemuxSetState.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/AntennaArbitration.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/DriveTrainArbitration.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/LightControl.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/CompassCalibration.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/NewGpsGoal.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/PanoControl.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/RtspStream.srv",
+    "/home/chris/ros2_ws/src/rover/rover_msgs:srv/ScreenshotControl.srv"
+  ]
+}

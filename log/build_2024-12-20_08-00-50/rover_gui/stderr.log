@@ -1,0 +1,3 @@
+gmake[2]: *** No rule to make target '/home/chris/ros2_ws/src/rover/rover_gui/src/Global/Constant/icons/play-button.png', needed by 'qrc_resources.cpp'.  Stop.
+gmake[1]: *** [CMakeFiles/Makefile2:166: CMakeFiles/main_gui.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

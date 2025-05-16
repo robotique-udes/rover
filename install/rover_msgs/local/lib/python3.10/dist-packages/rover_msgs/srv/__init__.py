@@ -1,0 +1,9 @@
+from rover_msgs.srv._antenna_arbitration import AntennaArbitration  # noqa: F401
+from rover_msgs.srv._compass_calibration import CompassCalibration  # noqa: F401
+from rover_msgs.srv._drive_train_arbitration import DriveTrainArbitration  # noqa: F401
+from rover_msgs.srv._joy_demux_set_state import JoyDemuxSetState  # noqa: F401
+from rover_msgs.srv._light_control import LightControl  # noqa: F401
+from rover_msgs.srv._new_gps_goal import NewGpsGoal  # noqa: F401
+from rover_msgs.srv._pano_control import PanoControl  # noqa: F401
+from rover_msgs.srv._rtsp_stream import RtspStream  # noqa: F401
+from rover_msgs.srv._screenshot_control import ScreenshotControl  # noqa: F401

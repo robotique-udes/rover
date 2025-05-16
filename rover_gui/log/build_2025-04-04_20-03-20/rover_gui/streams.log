@@ -1,0 +1,51 @@
+[0.005s] Invoking command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_gui -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui
+[0.082s] -- The C compiler identification is GNU 11.4.0
+[0.133s] -- The CXX compiler identification is GNU 11.4.0
+[0.141s] -- Detecting C compiler ABI info
+[0.172s] -- Detecting C compiler ABI info - done
+[0.176s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.176s] -- Detecting C compile features
+[0.177s] -- Detecting C compile features - done
+[0.179s] -- Detecting CXX compiler ABI info
+[0.211s] -- Detecting CXX compiler ABI info - done
+[0.215s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.215s] -- Detecting CXX compile features
+[0.215s] -- Detecting CXX compile features - done
+[0.218s] -- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.284s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.326s] -- Found rclcpp: 16.0.12 (/opt/ros/humble/share/rclcpp/cmake)
+[0.350s] -- Found rosidl_generator_c: 3.1.6 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.353s] -- Found rosidl_adapter: 3.1.6 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.358s] -- Found rosidl_generator_cpp: 3.1.6 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.366s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.374s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.398s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.400s] -- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.438s] -- Found OpenSSL: /usr/lib/aarch64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[0.451s] -- Found FastRTPS: /opt/ros/humble/include  
+[0.468s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.474s] -- Looking for pthread.h
+[0.509s] -- Looking for pthread.h - found
+[0.509s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[0.538s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[0.539s] -- Found Threads: TRUE  
+[0.575s] -- Configuring incomplete, errors occurred!
+[0.575s] See also "/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui/CMakeFiles/CMakeOutput.log".
+[0.576s] [31mCMake Error at CMakeLists.txt:14 (find_package):
+[0.576s]   By not providing "Findrover_msgs.cmake" in CMAKE_MODULE_PATH this project
+[0.576s]   has asked CMake to find a package configuration file provided by
+[0.576s]   "rover_msgs", but CMake did not find one.
+[0.576s] 
+[0.576s]   Could not find a package configuration file provided by "rover_msgs" with
+[0.576s]   any of the following names:
+[0.576s] 
+[0.576s]     rover_msgsConfig.cmake
+[0.576s]     rover_msgs-config.cmake
+[0.576s] 
+[0.576s]   Add the installation prefix of "rover_msgs" to CMAKE_PREFIX_PATH or set
+[0.576s]   "rover_msgs_DIR" to a directory containing one of the above files.  If
+[0.577s]   "rover_msgs" provides a separate development package or SDK, be sure it has
+[0.577s]   been installed.
+[0.577s] 
+[0.577s] [0m
+[0.578s] Invoked command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui' returned '1': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_gui -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui

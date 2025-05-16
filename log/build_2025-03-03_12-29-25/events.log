@@ -1,0 +1,1111 @@
+[0.000000] (-) TimerEvent: {}
+[0.000612] (-) JobUnselected: {'identifier': 'rover_antenna'}
+[0.000795] (-) JobUnselected: {'identifier': 'rover_arm'}
+[0.000827] (-) JobUnselected: {'identifier': 'rover_auxiliary'}
+[0.000852] (-) JobUnselected: {'identifier': 'rover_can'}
+[0.000875] (-) JobUnselected: {'identifier': 'rover_drive_train'}
+[0.000900] (-) JobUnselected: {'identifier': 'rover_gui'}
+[0.000922] (-) JobUnselected: {'identifier': 'rover_joy'}
+[0.000944] (-) JobUnselected: {'identifier': 'rover_security'}
+[0.000966] (-) JobUnselected: {'identifier': 'rover_sim'}
+[0.000990] (rover_msgs) JobQueued: {'identifier': 'rover_msgs', 'dependencies': OrderedDict()}
+[0.001043] (rover_msgs) JobStarted: {'identifier': 'rover_msgs'}
+[0.099573] (-) TimerEvent: {}
+[0.128182] (rover_msgs) JobProgress: {'identifier': 'rover_msgs', 'progress': 'cmake'}
+[0.129005] (rover_msgs) JobProgress: {'identifier': 'rover_msgs', 'progress': 'build'}
+[0.129926] (rover_msgs) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/chris/ros2_ws/src/rover/build/rover_msgs', '--', '-j12', '-l12'], 'cwd': '/home/chris/ros2_ws/src/rover/build/rover_msgs', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'chris'), ('SSH_AGENT_PID', '2583'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/chris/ros2_ws/install/rover_msgs/lib:/home/chris/ros2_ws/install/moveit_visual_tools/lib:/home/chris/ros2_ws/install/micro_ros_agent/lib:/home/chris/ros2_ws/install/micro_ros_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/chris'), ('OLDPWD', '/home/chris'), ('DESKTOP_SESSION', 'ubuntu'), ('NVM_BIN', '/home/chris/.nvm/versions/node/v18.20.0/bin'), ('NVM_INC', '/home/chris/.nvm/versions/node/v18.20.0/include/node'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '2412'), ('SYSTEMD_EXEC_PID', '2681'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator21a9d5db22c73a993ff0b42f64b396873'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '5179'), ('NVM_DIR', '/home/chris/.nvm'), ('COLCON_PREFIX_PATH', '/home/chris/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'chris'), ('JOURNAL_STREAM', '8:21130'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'chris'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/chris/.nvm/versions/node/v18.20.0/bin:/opt/ros/humble/bin:/home/chris/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/chris/.local/bin'), ('SESSION_MANAGER', 'local/chris:@/tmp/.ICE-unix/2659,unix/chris:/tmp/.ICE-unix/2659'), ('INVOCATION_ID', '151282377277484193bb6d51fbdeb473'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_configs_utils:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('TERMINATOR_UUID', 'urn:uuid:c5ceb889-5994-4d28-b93f-d4dbf77a5b4e'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/chris/ros2_ws/src/rover/build/rover_msgs'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('NVM_CD_FLAGS', ''), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/chris/ros2_ws/install/rover_sim/lib/python3.10/site-packages:/home/chris/ros2_ws/install/rover_msgs/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/panorama/lib/python3.10/site-packages:/home/chris/ros2_ws/install/moveit_controller/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/moveit_configs_utils/lib/python3.10/site-packages:/home/chris/ros2_ws/install/micro_ros_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble')]), 'shell': False}
+[0.199715] (-) TimerEvent: {}
+[0.200734] (rover_msgs) StdoutLine: {'line': b'\x1b[35m\x1b[1mConsolidate compiler generated dependencies of target lib_exec\x1b[0m\n'}
+[0.201886] (rover_msgs) StdoutLine: {'line': b'[  1%] \x1b[34m\x1b[1mGenerating C code for ROS interfaces\x1b[0m\n'}
+[0.217052] (rover_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating C++ code for ROS interfaces\x1b[0m\n'}
+[0.217357] (rover_msgs) StdoutLine: {'line': b'[  2%] Built target lib_exec\n'}
+[0.226629] (rover_msgs) StdoutLine: {'line': b'[  2%] Built target ament_cmake_python_copy_rover_msgs\n'}
+[0.299841] (-) TimerEvent: {}
+[0.400121] (-) TimerEvent: {}
+[0.500462] (-) TimerEvent: {}
+[0.600800] (-) TimerEvent: {}
+[0.657967] (rover_msgs) StdoutLine: {'line': b'running egg_info\n'}
+[0.658719] (rover_msgs) StdoutLine: {'line': b'writing rover_msgs.egg-info/PKG-INFO\n'}
+[0.658969] (rover_msgs) StdoutLine: {'line': b'writing dependency_links to rover_msgs.egg-info/dependency_links.txt\n'}
+[0.659187] (rover_msgs) StdoutLine: {'line': b'writing top-level names to rover_msgs.egg-info/top_level.txt\n'}
+[0.662385] (rover_msgs) StdoutLine: {'line': b"reading manifest file 'rover_msgs.egg-info/SOURCES.txt'\n"}
+[0.663077] (rover_msgs) StdoutLine: {'line': b"writing manifest file 'rover_msgs.egg-info/SOURCES.txt'\n"}
+[0.696010] (rover_msgs) StdoutLine: {'line': b'[  2%] Built target ament_cmake_python_build_rover_msgs_egg\n'}
+[0.700908] (-) TimerEvent: {}
+[0.801220] (-) TimerEvent: {}
+[0.901523] (-) TimerEvent: {}
+[1.001845] (-) TimerEvent: {}
+[1.102170] (-) TimerEvent: {}
+[1.202487] (-) TimerEvent: {}
+[1.302777] (-) TimerEvent: {}
+[1.403085] (-) TimerEvent: {}
+[1.503396] (-) TimerEvent: {}
+[1.603710] (-) TimerEvent: {}
+[1.704005] (-) TimerEvent: {}
+[1.804283] (-) TimerEvent: {}
+[1.904598] (-) TimerEvent: {}
+[2.004899] (-) TimerEvent: {}
+[2.105184] (-) TimerEvent: {}
+[2.205492] (-) TimerEvent: {}
+[2.305786] (-) TimerEvent: {}
+[2.406084] (-) TimerEvent: {}
+[2.506347] (-) TimerEvent: {}
+[2.606636] (-) TimerEvent: {}
+[2.706951] (-) TimerEvent: {}
+[2.807447] (-) TimerEvent: {}
+[2.839682] (rover_msgs) StdoutLine: {'line': b'[  2%] Built target rover_msgs__cpp\n'}
+[2.855598] (rover_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating C++ type support for eProsima Fast-RTPS\x1b[0m\n'}
+[2.855804] (rover_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating C++ type support dispatch for ROS interfaces\x1b[0m\n'}
+[2.855899] (rover_msgs) StdoutLine: {'line': b'[  2%] \x1b[34m\x1b[1mGenerating C++ introspection for ROS interfaces\x1b[0m\n'}
+[2.907566] (-) TimerEvent: {}
+[3.010125] (-) TimerEvent: {}
+[3.110671] (-) TimerEvent: {}
+[3.165311] (rover_msgs) StdoutLine: {'line': b'[  2%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/can_device_status__functions.c.o\x1b[0m\n'}
+[3.165623] (rover_msgs) StdoutLine: {'line': b'[  3%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/antenna_cmd__functions.c.o\x1b[0m\n'}
+[3.166383] (rover_msgs) StdoutLine: {'line': b'[  3%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/propulsion_motor__functions.c.o\x1b[0m\n'}
+[3.166643] (rover_msgs) StdoutLine: {'line': b'[  3%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/joy_demux_status__functions.c.o\x1b[0m\n'}
+[3.166816] (rover_msgs) StdoutLine: {'line': b'[  4%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/gps__functions.c.o\x1b[0m\n'}
+[3.166981] (rover_msgs) StdoutLine: {'line': b'[  4%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/gps_position__functions.c.o\x1b[0m\n'}
+[3.167778] (rover_msgs) StdoutLine: {'line': b'[  5%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/joy__functions.c.o\x1b[0m\n'}
+[3.168206] (rover_msgs) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/light_control__functions.c.o\x1b[0m\n'}
+[3.168453] (rover_msgs) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/camera_control__functions.c.o\x1b[0m\n'}
+[3.213140] (-) TimerEvent: {}
+[3.274265] (rover_msgs) StdoutLine: {'line': b'[  6%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/science_control__functions.c.o\x1b[0m\n'}
+[3.274645] (rover_msgs) StdoutLine: {'line': b'[  7%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/compass__functions.c.o\x1b[0m\n'}
+[3.274921] (rover_msgs) StdoutLine: {'line': b'[  8%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/aruco__functions.c.o\x1b[0m\n'}
+[3.276131] (rover_msgs) StdoutLine: {'line': b'[  8%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/camera_angle__functions.c.o\x1b[0m\n'}
+[3.276490] (rover_msgs) StdoutLine: {'line': b'[  8%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/drivetrain_arbitration__functions.c.o\x1b[0m\n'}
+[3.278521] (rover_msgs) StdoutLine: {'line': b'[  8%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/joy_demux_set_state__functions.c.o\x1b[0m\n'}
+[3.279649] (rover_msgs) StdoutLine: {'line': b'[  9%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/antenna_arbitration__functions.c.o\x1b[0m\n'}
+[3.281322] (rover_msgs) StdoutLine: {'line': b'[  9%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/drive_train_arbitration__functions.c.o\x1b[0m\n'}
+[3.281534] (rover_msgs) StdoutLine: {'line': b'[ 10%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/arm_msg__functions.c.o\x1b[0m\n'}
+[3.315126] (-) TimerEvent: {}
+[3.376537] (rover_msgs) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/light_control__functions.c.o\x1b[0m\n'}
+[3.376919] (rover_msgs) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/compass_calibration__functions.c.o\x1b[0m\n'}
+[3.382643] (rover_msgs) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/new_gps_goal__functions.c.o\x1b[0m\n'}
+[3.385737] (rover_msgs) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/rtsp_stream__functions.c.o\x1b[0m\n'}
+[3.392530] (rover_msgs) StdoutLine: {'line': b'[ 12%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/pano_control__functions.c.o\x1b[0m\n'}
+[3.395046] (rover_msgs) StdoutLine: {'line': b'[ 13%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/screenshot_control__functions.c.o\x1b[0m\n'}
+[3.415235] (-) TimerEvent: {}
+[3.510878] (rover_msgs) StdoutLine: {'line': b'[ 13%] \x1b[32m\x1b[1mLinking C shared library librover_msgs__rosidl_generator_c.so\x1b[0m\n'}
+[3.515322] (-) TimerEvent: {}
+[3.582775] (rover_msgs) StdoutLine: {'line': b'[ 13%] Built target rover_msgs__rosidl_generator_c\n'}
+[3.598980] (rover_msgs) StdoutLine: {'line': b'[ 13%] \x1b[34m\x1b[1mGenerating C type support dispatch for ROS interfaces\x1b[0m\n'}
+[3.599331] (rover_msgs) StdoutLine: {'line': b'[ 13%] \x1b[34m\x1b[1mGenerating C introspection for ROS interfaces\x1b[0m\n'}
+[3.599534] (rover_msgs) StdoutLine: {'line': b'[ 13%] \x1b[34m\x1b[1mGenerating C type support for eProsima Fast-RTPS\x1b[0m\n'}
+[3.615435] (-) TimerEvent: {}
+[3.715802] (-) TimerEvent: {}
+[3.816189] (-) TimerEvent: {}
+[3.917135] (-) TimerEvent: {}
+[4.017523] (-) TimerEvent: {}
+[4.117856] (-) TimerEvent: {}
+[4.218187] (-) TimerEvent: {}
+[4.318551] (-) TimerEvent: {}
+[4.418886] (-) TimerEvent: {}
+[4.519284] (-) TimerEvent: {}
+[4.619650] (-) TimerEvent: {}
+[4.720047] (-) TimerEvent: {}
+[4.820387] (-) TimerEvent: {}
+[4.862988] (rover_msgs) StdoutLine: {'line': b'[ 14%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/propulsion_motor__type_support.cpp.o\x1b[0m\n'}
+[4.863358] (rover_msgs) StdoutLine: {'line': b'[ 14%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/can_device_status__type_support.cpp.o\x1b[0m\n'}
+[4.863625] (rover_msgs) StdoutLine: {'line': b'[ 15%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/antenna_cmd__type_support.cpp.o\x1b[0m\n'}
+[4.864835] (rover_msgs) StdoutLine: {'line': b'[ 16%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/joy_demux_status__type_support.cpp.o\x1b[0m\n'}
+[4.868100] (rover_msgs) StdoutLine: {'line': b'[ 16%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/gps__type_support.cpp.o\x1b[0m\n'}
+[4.872274] (rover_msgs) StdoutLine: {'line': b'[ 16%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/joy__type_support.cpp.o\x1b[0m\n'}
+[4.879329] (rover_msgs) StdoutLine: {'line': b'[ 16%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/gps_position__type_support.cpp.o\x1b[0m\n'}
+[4.920489] (-) TimerEvent: {}
+[5.020849] (-) TimerEvent: {}
+[5.121465] (-) TimerEvent: {}
+[5.225126] (-) TimerEvent: {}
+[5.325493] (-) TimerEvent: {}
+[5.426135] (-) TimerEvent: {}
+[5.471799] (rover_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/camera_control__type_support.cpp.o\x1b[0m\n'}
+[5.477898] (rover_msgs) StdoutLine: {'line': b'[ 17%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/light_control__type_support.cpp.o\x1b[0m\n'}
+[5.481973] (rover_msgs) StdoutLine: {'line': b'[ 18%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/science_control__type_support.cpp.o\x1b[0m\n'}
+[5.484187] (rover_msgs) StdoutLine: {'line': b'[ 18%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/arm_msg__type_support.cpp.o\x1b[0m\n'}
+[5.496137] (rover_msgs) StdoutLine: {'line': b'[ 19%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/drivetrain_arbitration__type_support.cpp.o\x1b[0m\n'}
+[5.501991] (rover_msgs) StdoutLine: {'line': b'[ 19%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/compass__type_support.cpp.o\x1b[0m\n'}
+[5.526251] (-) TimerEvent: {}
+[5.530834] (rover_msgs) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/camera_angle__type_support.cpp.o\x1b[0m\n'}
+[5.626358] (-) TimerEvent: {}
+[5.726760] (-) TimerEvent: {}
+[5.827205] (-) TimerEvent: {}
+[5.927858] (-) TimerEvent: {}
+[6.029512] (-) TimerEvent: {}
+[6.118520] (rover_msgs) StdoutLine: {'line': b'[ 20%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/aruco__type_support.cpp.o\x1b[0m\n'}
+[6.129225] (rover_msgs) StdoutLine: {'line': b'[ 21%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/joy_demux_set_state__type_support.cpp.o\x1b[0m\n'}
+[6.129556] (-) TimerEvent: {}
+[6.132408] (rover_msgs) StdoutLine: {'line': b'[ 21%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/antenna_arbitration__type_support.cpp.o\x1b[0m\n'}
+[6.137334] (rover_msgs) StdoutLine: {'line': b'[ 22%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/drive_train_arbitration__type_support.cpp.o\x1b[0m\n'}
+[6.170473] (rover_msgs) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/antenna_cmd__type_support.cpp.o\x1b[0m\n'}
+[6.172205] (rover_msgs) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/light_control__type_support.cpp.o\x1b[0m\n'}
+[6.172436] (rover_msgs) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/compass_calibration__type_support.cpp.o\x1b[0m\n'}
+[6.197280] (rover_msgs) StdoutLine: {'line': b'[ 23%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/propulsion_motor__type_support.cpp.o\x1b[0m\n'}
+[6.231120] (-) TimerEvent: {}
+[6.257189] (rover_msgs) StdoutLine: {'line': b'[ 24%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/can_device_status__type_support.cpp.o\x1b[0m\n'}
+[6.269121] (rover_msgs) StdoutLine: {'line': b'[ 25%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/new_gps_goal__type_support.cpp.o\x1b[0m\n'}
+[6.326723] (rover_msgs) StdoutLine: {'line': b'[ 25%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/joy__type_support.cpp.o\x1b[0m\n'}
+[6.331227] (-) TimerEvent: {}
+[6.391378] (rover_msgs) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/joy_demux_status__type_support.cpp.o\x1b[0m\n'}
+[6.433158] (-) TimerEvent: {}
+[6.470452] (rover_msgs) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/gps__type_support.cpp.o\x1b[0m\n'}
+[6.492612] (rover_msgs) StdoutLine: {'line': b'[ 26%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/antenna_cmd__type_support.cpp.o\x1b[0m\n'}
+[6.533255] (-) TimerEvent: {}
+[6.541314] (rover_msgs) StdoutLine: {'line': b'[ 27%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/gps_position__type_support.cpp.o\x1b[0m\n'}
+[6.608974] (rover_msgs) StdoutLine: {'line': b'[ 27%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/camera_control__type_support.cpp.o\x1b[0m\n'}
+[6.633365] (-) TimerEvent: {}
+[6.685338] (rover_msgs) StdoutLine: {'line': b'[ 27%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/light_control__type_support.cpp.o\x1b[0m\n'}
+[6.733508] (-) TimerEvent: {}
+[6.755160] (rover_msgs) StdoutLine: {'line': b'[ 28%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/science_control__type_support.cpp.o\x1b[0m\n'}
+[6.776345] (rover_msgs) StdoutLine: {'line': b'[ 29%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/propulsion_motor__type_support.cpp.o\x1b[0m\n'}
+[6.777887] (rover_msgs) StdoutLine: {'line': b'[ 29%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/can_device_status__type_support.cpp.o\x1b[0m\n'}
+[6.797295] (rover_msgs) StdoutLine: {'line': b'[ 29%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/arm_msg__type_support.cpp.o\x1b[0m\n'}
+[6.830604] (rover_msgs) StdoutLine: {'line': b'[ 30%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/joy__type_support.cpp.o\x1b[0m\n'}
+[6.833601] (-) TimerEvent: {}
+[6.841982] (rover_msgs) StdoutLine: {'line': b'[ 30%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/joy_demux_status__type_support.cpp.o\x1b[0m\n'}
+[6.844922] (rover_msgs) StdoutLine: {'line': b'[ 30%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/pano_control__type_support.cpp.o\x1b[0m\n'}
+[6.863118] (rover_msgs) StdoutLine: {'line': b'[ 30%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/compass__type_support.cpp.o\x1b[0m\n'}
+[6.863532] (rover_msgs) StdoutLine: {'line': b'[ 31%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/drivetrain_arbitration__type_support.cpp.o\x1b[0m\n'}
+[6.924041] (rover_msgs) StdoutLine: {'line': b'[ 32%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/camera_angle__type_support.cpp.o\x1b[0m\n'}
+[6.935216] (rover_msgs) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/gps__type_support.cpp.o\x1b[0m\n'}
+[6.935555] (-) TimerEvent: {}
+[6.939686] (rover_msgs) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/aruco__type_support.cpp.o\x1b[0m\n'}
+[6.989737] (rover_msgs) StdoutLine: {'line': b'[ 33%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/gps_position__type_support.cpp.o\x1b[0m\n'}
+[7.036899] (-) TimerEvent: {}
+[7.042792] (rover_msgs) StdoutLine: {'line': b'[ 34%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/joy_demux_set_state__type_support.cpp.o\x1b[0m\n'}
+[7.123399] (rover_msgs) StdoutLine: {'line': b'[ 34%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/antenna_arbitration__type_support.cpp.o\x1b[0m\n'}
+[7.138179] (-) TimerEvent: {}
+[7.232811] (rover_msgs) StdoutLine: {'line': b'[ 35%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/drive_train_arbitration__type_support.cpp.o\x1b[0m\n'}
+[7.240213] (-) TimerEvent: {}
+[7.310612] (rover_msgs) StdoutLine: {'line': b'[ 35%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/light_control__type_support.cpp.o\x1b[0m\n'}
+[7.340324] (-) TimerEvent: {}
+[7.411145] (rover_msgs) StdoutLine: {'line': b'[ 36%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/compass_calibration__type_support.cpp.o\x1b[0m\n'}
+[7.440443] (-) TimerEvent: {}
+[7.456482] (rover_msgs) StdoutLine: {'line': b'[ 37%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/antenna_cmd__type_support.cpp.o\x1b[0m\n'}
+[7.485247] (rover_msgs) StdoutLine: {'line': b'[ 37%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/new_gps_goal__type_support.cpp.o\x1b[0m\n'}
+[7.537210] (rover_msgs) StdoutLine: {'line': b'[ 37%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/propulsion_motor__type_support.cpp.o\x1b[0m\n'}
+[7.541658] (-) TimerEvent: {}
+[7.564592] (rover_msgs) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/rtsp_stream__type_support.cpp.o\x1b[0m\n'}
+[7.565394] (rover_msgs) StdoutLine: {'line': b'[ 38%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/pano_control__type_support.cpp.o\x1b[0m\n'}
+[7.641999] (-) TimerEvent: {}
+[7.662233] (rover_msgs) StdoutLine: {'line': b'[ 39%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/rtsp_stream__type_support.cpp.o\x1b[0m\n'}
+[7.694538] (rover_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/antenna_cmd__type_support.c.o\x1b[0m\n'}
+[7.742165] (-) TimerEvent: {}
+[7.746195] (rover_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/screenshot_control__type_support.cpp.o\x1b[0m\n'}
+[7.748836] (rover_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/screenshot_control__type_support.cpp.o\x1b[0m\n'}
+[7.765172] (rover_msgs) StdoutLine: {'line': b'[ 40%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/can_device_status__type_support.cpp.o\x1b[0m\n'}
+[7.768546] (rover_msgs) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/joy__type_support.cpp.o\x1b[0m\n'}
+[7.785883] (rover_msgs) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/propulsion_motor__type_support.c.o\x1b[0m\n'}
+[7.811309] (rover_msgs) StdoutLine: {'line': b'[ 41%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/joy_demux_status__type_support.cpp.o\x1b[0m\n'}
+[7.818708] (rover_msgs) StdoutLine: {'line': b'[ 42%] \x1b[32m\x1b[1mLinking CXX shared library librover_msgs__rosidl_typesupport_c.so\x1b[0m\n'}
+[7.840133] (rover_msgs) StdoutLine: {'line': b'[ 42%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/can_device_status__type_support.c.o\x1b[0m\n'}
+[7.842307] (-) TimerEvent: {}
+[7.881816] (rover_msgs) StdoutLine: {'line': b'[ 43%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/gps__type_support.cpp.o\x1b[0m\n'}
+[7.920379] (rover_msgs) StdoutLine: {'line': b'[ 44%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/joy__type_support.c.o\x1b[0m\n'}
+[7.930265] (rover_msgs) StdoutLine: {'line': b'[ 44%] Built target rover_msgs__rosidl_typesupport_c\n'}
+[7.933991] (rover_msgs) StdoutLine: {'line': b'[ 45%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/camera_control__type_support.cpp.o\x1b[0m\n'}
+[7.942414] (-) TimerEvent: {}
+[7.952280] (rover_msgs) StdoutLine: {'line': b'[ 45%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/gps_position__type_support.cpp.o\x1b[0m\n'}
+[7.996823] (rover_msgs) StdoutLine: {'line': b'[ 45%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/joy_demux_status__type_support.c.o\x1b[0m\n'}
+[8.042530] (-) TimerEvent: {}
+[8.075148] (rover_msgs) StdoutLine: {'line': b'[ 46%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/gps__type_support.c.o\x1b[0m\n'}
+[8.102172] (rover_msgs) StdoutLine: {'line': b'[ 47%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/antenna_cmd__type_support_c.cpp.o\x1b[0m\n'}
+[8.142647] (-) TimerEvent: {}
+[8.153567] (rover_msgs) StdoutLine: {'line': b'[ 47%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/gps_position__type_support.c.o\x1b[0m\n'}
+[8.231713] (rover_msgs) StdoutLine: {'line': b'[ 47%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/propulsion_motor__type_support_c.cpp.o\x1b[0m\n'}
+[8.234154] (rover_msgs) StdoutLine: {'line': b'[ 48%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/camera_control__type_support.c.o\x1b[0m\n'}
+[8.245164] (-) TimerEvent: {}
+[8.320453] (rover_msgs) StdoutLine: {'line': b'[ 48%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/light_control__type_support.c.o\x1b[0m\n'}
+[8.345320] (-) TimerEvent: {}
+[8.397656] (rover_msgs) StdoutLine: {'line': b'[ 49%] \x1b[32m\x1b[1mLinking CXX shared library librover_msgs__rosidl_typesupport_cpp.so\x1b[0m\n'}
+[8.398074] (rover_msgs) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/science_control__type_support.c.o\x1b[0m\n'}
+[8.445427] (-) TimerEvent: {}
+[8.477778] (rover_msgs) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/light_control__type_support.cpp.o\x1b[0m\n'}
+[8.478569] (rover_msgs) StdoutLine: {'line': b'[ 50%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/arm_msg__type_support.c.o\x1b[0m\n'}
+[8.497344] (rover_msgs) StdoutLine: {'line': b'[ 51%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/drivetrain_arbitration__type_support.c.o\x1b[0m\n'}
+[8.531165] (rover_msgs) StdoutLine: {'line': b'[ 51%] Built target rover_msgs__rosidl_typesupport_cpp\n'}
+[8.545547] (-) TimerEvent: {}
+[8.565351] (rover_msgs) StdoutLine: {'line': b'[ 52%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/camera_control__type_support.cpp.o\x1b[0m\n'}
+[8.575487] (rover_msgs) StdoutLine: {'line': b'[ 53%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/science_control__type_support.cpp.o\x1b[0m\n'}
+[8.615991] (rover_msgs) StdoutLine: {'line': b'[ 53%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/compass__type_support.c.o\x1b[0m\n'}
+[8.649163] (-) TimerEvent: {}
+[8.730260] (rover_msgs) StdoutLine: {'line': b'[ 54%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/camera_angle__type_support.c.o\x1b[0m\n'}
+[8.749308] (-) TimerEvent: {}
+[8.806840] (rover_msgs) StdoutLine: {'line': b'[ 54%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/aruco__type_support.c.o\x1b[0m\n'}
+[8.841825] (rover_msgs) StdoutLine: {'line': b'[ 54%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/joy_demux_set_state__type_support.c.o\x1b[0m\n'}
+[8.849452] (-) TimerEvent: {}
+[8.891573] (rover_msgs) StdoutLine: {'line': b'[ 54%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/arm_msg__type_support.cpp.o\x1b[0m\n'}
+[8.895494] (rover_msgs) StdoutLine: {'line': b'[ 55%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/can_device_status__type_support_c.cpp.o\x1b[0m\n'}
+[8.920600] (rover_msgs) StdoutLine: {'line': b'[ 56%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/drivetrain_arbitration__type_support.cpp.o\x1b[0m\n'}
+[8.929655] (rover_msgs) StdoutLine: {'line': b'[ 57%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/drive_train_arbitration__type_support.c.o\x1b[0m\n'}
+[8.930039] (rover_msgs) StdoutLine: {'line': b'[ 57%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/antenna_arbitration__type_support.c.o\x1b[0m\n'}
+[8.949534] (-) TimerEvent: {}
+[8.987004] (rover_msgs) StdoutLine: {'line': b'[ 58%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/compass__type_support.cpp.o\x1b[0m\n'}
+[8.987402] (rover_msgs) StdoutLine: {'line': b'[ 58%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/light_control__type_support.c.o\x1b[0m\n'}
+[8.991669] (rover_msgs) StdoutLine: {'line': b'[ 58%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/camera_angle__type_support.cpp.o\x1b[0m\n'}
+[9.015387] (rover_msgs) StdoutLine: {'line': b'[ 59%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/aruco__type_support.cpp.o\x1b[0m\n'}
+[9.027147] (rover_msgs) StdoutLine: {'line': b'[ 59%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/joy__type_support_c.cpp.o\x1b[0m\n'}
+[9.049660] (-) TimerEvent: {}
+[9.078681] (rover_msgs) StdoutLine: {'line': b'[ 59%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/compass_calibration__type_support.c.o\x1b[0m\n'}
+[9.129464] (rover_msgs) StdoutLine: {'line': b'[ 60%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/new_gps_goal__type_support.c.o\x1b[0m\n'}
+[9.149801] (-) TimerEvent: {}
+[9.165414] (rover_msgs) StdoutLine: {'line': b'[ 60%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/joy_demux_status__type_support_c.cpp.o\x1b[0m\n'}
+[9.230135] (rover_msgs) StdoutLine: {'line': b'[ 60%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/pano_control__type_support.c.o\x1b[0m\n'}
+[9.249948] (-) TimerEvent: {}
+[9.322440] (rover_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/rtsp_stream__type_support.c.o\x1b[0m\n'}
+[9.350078] (-) TimerEvent: {}
+[9.414425] (rover_msgs) StdoutLine: {'line': b'[ 61%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/screenshot_control__type_support.c.o\x1b[0m\n'}
+[9.450145] (-) TimerEvent: {}
+[9.517963] (rover_msgs) StdoutLine: {'line': b'[ 62%] \x1b[32m\x1b[1mLinking C shared library librover_msgs__rosidl_typesupport_introspection_c.so\x1b[0m\n'}
+[9.544647] (rover_msgs) StdoutLine: {'line': b'[ 62%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/light_control__type_support.cpp.o\x1b[0m\n'}
+[9.550480] (-) TimerEvent: {}
+[9.558320] (rover_msgs) StdoutLine: {'line': b'[ 63%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/gps__type_support_c.cpp.o\x1b[0m\n'}
+[9.600144] (rover_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/science_control__type_support.cpp.o\x1b[0m\n'}
+[9.626364] (rover_msgs) StdoutLine: {'line': b'[ 64%] Built target rover_msgs__rosidl_typesupport_introspection_c\n'}
+[9.644936] (rover_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/joy_demux_set_state__type_support.cpp.o\x1b[0m\n'}
+[9.650598] (-) TimerEvent: {}
+[9.751095] (-) TimerEvent: {}
+[9.771036] (rover_msgs) StdoutLine: {'line': b'[ 64%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/gps_position__type_support_c.cpp.o\x1b[0m\n'}
+[9.807604] (rover_msgs) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/camera_control__type_support_c.cpp.o\x1b[0m\n'}
+[9.854155] (rover_msgs) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/arm_msg__type_support.cpp.o\x1b[0m\n'}
+[9.854507] (-) TimerEvent: {}
+[9.946036] (rover_msgs) StdoutLine: {'line': b'[ 65%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/light_control__type_support_c.cpp.o\x1b[0m\n'}
+[9.954640] (-) TimerEvent: {}
+[9.963418] (rover_msgs) StdoutLine: {'line': b'[ 66%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/drivetrain_arbitration__type_support.cpp.o\x1b[0m\n'}
+[9.973584] (rover_msgs) StdoutLine: {'line': b'[ 67%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/science_control__type_support_c.cpp.o\x1b[0m\n'}
+[9.986570] (rover_msgs) StdoutLine: {'line': b'[ 67%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/arm_msg__type_support_c.cpp.o\x1b[0m\n'}
+[10.041321] (rover_msgs) StdoutLine: {'line': b'[ 67%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/compass__type_support.cpp.o\x1b[0m\n'}
+[10.054758] (-) TimerEvent: {}
+[10.155426] (-) TimerEvent: {}
+[10.259340] (-) TimerEvent: {}
+[10.359874] (-) TimerEvent: {}
+[10.385808] (rover_msgs) StdoutLine: {'line': b'[ 68%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/antenna_arbitration__type_support.cpp.o\x1b[0m\n'}
+[10.460001] (-) TimerEvent: {}
+[10.560149] (rover_msgs) StdoutLine: {'line': b'[ 69%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/camera_angle__type_support.cpp.o\x1b[0m\n'}
+[10.560559] (-) TimerEvent: {}
+[10.564009] (rover_msgs) StdoutLine: {'line': b'[ 69%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/aruco__type_support.cpp.o\x1b[0m\n'}
+[10.576894] (rover_msgs) StdoutLine: {'line': b'[ 70%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/drivetrain_arbitration__type_support_c.cpp.o\x1b[0m\n'}
+[10.629399] (rover_msgs) StdoutLine: {'line': b'[ 70%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/joy_demux_set_state__type_support.cpp.o\x1b[0m\n'}
+[10.638149] (rover_msgs) StdoutLine: {'line': b'[ 70%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/drive_train_arbitration__type_support.cpp.o\x1b[0m\n'}
+[10.660691] (-) TimerEvent: {}
+[10.761113] (-) TimerEvent: {}
+[10.767564] (rover_msgs) StdoutLine: {'line': b'[ 71%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/antenna_arbitration__type_support.cpp.o\x1b[0m\n'}
+[10.776295] (rover_msgs) StdoutLine: {'line': b'[ 71%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/drive_train_arbitration__type_support.cpp.o\x1b[0m\n'}
+[10.801690] (rover_msgs) StdoutLine: {'line': b'[ 71%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/compass__type_support_c.cpp.o\x1b[0m\n'}
+[10.857487] (rover_msgs) StdoutLine: {'line': b'[ 72%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/light_control__type_support.cpp.o\x1b[0m\n'}
+[10.864178] (-) TimerEvent: {}
+[10.913587] (rover_msgs) StdoutLine: {'line': b'[ 72%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/compass_calibration__type_support.cpp.o\x1b[0m\n'}
+[10.964295] (-) TimerEvent: {}
+[10.992075] (rover_msgs) StdoutLine: {'line': b'[ 73%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/light_control__type_support.cpp.o\x1b[0m\n'}
+[11.064453] (-) TimerEvent: {}
+[11.165035] (-) TimerEvent: {}
+[11.267279] (-) TimerEvent: {}
+[11.326700] (rover_msgs) StdoutLine: {'line': b'[ 74%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/camera_angle__type_support_c.cpp.o\x1b[0m\n'}
+[11.367436] (-) TimerEvent: {}
+[11.371163] (rover_msgs) StdoutLine: {'line': b'[ 75%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/new_gps_goal__type_support.cpp.o\x1b[0m\n'}
+[11.467584] (-) TimerEvent: {}
+[11.568173] (-) TimerEvent: {}
+[11.580137] (rover_msgs) StdoutLine: {'line': b'[ 75%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/pano_control__type_support.cpp.o\x1b[0m\n'}
+[11.595958] (rover_msgs) StdoutLine: {'line': b'[ 75%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/compass_calibration__type_support.cpp.o\x1b[0m\n'}
+[11.649240] (rover_msgs) StdoutLine: {'line': b'[ 76%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/rtsp_stream__type_support.cpp.o\x1b[0m\n'}
+[11.655592] (rover_msgs) StdoutLine: {'line': b'[ 76%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/aruco__type_support_c.cpp.o\x1b[0m\n'}
+[11.668290] (-) TimerEvent: {}
+[11.736143] (rover_msgs) StdoutLine: {'line': b'[ 77%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/joy_demux_set_state__type_support_c.cpp.o\x1b[0m\n'}
+[11.736523] (rover_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/new_gps_goal__type_support.cpp.o\x1b[0m\n'}
+[11.768435] (-) TimerEvent: {}
+[11.829615] (rover_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/pano_control__type_support.cpp.o\x1b[0m\n'}
+[11.846862] (rover_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/antenna_arbitration__type_support_c.cpp.o\x1b[0m\n'}
+[11.868541] (-) TimerEvent: {}
+[11.941640] (rover_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/screenshot_control__type_support.cpp.o\x1b[0m\n'}
+[11.948353] (rover_msgs) StdoutLine: {'line': b'[ 78%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/drive_train_arbitration__type_support_c.cpp.o\x1b[0m\n'}
+[11.968651] (-) TimerEvent: {}
+[12.072351] (-) TimerEvent: {}
+[12.172831] (-) TimerEvent: {}
+[12.272960] (rover_msgs) StdoutLine: {'line': b'[ 79%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/rtsp_stream__type_support.cpp.o\x1b[0m\n'}
+[12.273320] (-) TimerEvent: {}
+[12.373968] (-) TimerEvent: {}
+[12.445048] (rover_msgs) StdoutLine: {'line': b'[ 79%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/screenshot_control__type_support.cpp.o\x1b[0m\n'}
+[12.455831] (rover_msgs) StdoutLine: {'line': b'[ 80%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/light_control__type_support_c.cpp.o\x1b[0m\n'}
+[12.474025] (-) TimerEvent: {}
+[12.554310] (rover_msgs) StdoutLine: {'line': b'[ 80%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/compass_calibration__type_support_c.cpp.o\x1b[0m\n'}
+[12.574143] (-) TimerEvent: {}
+[12.625310] (rover_msgs) StdoutLine: {'line': b'[ 81%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/new_gps_goal__type_support_c.cpp.o\x1b[0m\n'}
+[12.674274] (-) TimerEvent: {}
+[12.684189] (rover_msgs) StdoutLine: {'line': b'[ 81%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/pano_control__type_support_c.cpp.o\x1b[0m\n'}
+[12.722273] (rover_msgs) StdoutLine: {'line': b'[ 82%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/rtsp_stream__type_support_c.cpp.o\x1b[0m\n'}
+[12.742164] (rover_msgs) StdoutLine: {'line': b'[ 82%] \x1b[32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/screenshot_control__type_support_c.cpp.o\x1b[0m\n'}
+[12.774397] (-) TimerEvent: {}
+[12.874806] (-) TimerEvent: {}
+[12.962010] (rover_msgs) StdoutLine: {'line': b'[ 83%] \x1b[32m\x1b[1mLinking CXX shared library librover_msgs__rosidl_typesupport_fastrtps_cpp.so\x1b[0m\n'}
+[12.974941] (-) TimerEvent: {}
+[13.078187] (-) TimerEvent: {}
+[13.178773] (-) TimerEvent: {}
+[13.222631] (rover_msgs) StdoutLine: {'line': b'[ 83%] Built target rover_msgs__rosidl_typesupport_fastrtps_cpp\n'}
+[13.264943] (rover_msgs) StdoutLine: {'line': b'[ 84%] \x1b[32m\x1b[1mLinking CXX shared library librover_msgs__rosidl_typesupport_introspection_cpp.so\x1b[0m\n'}
+[13.278897] (-) TimerEvent: {}
+[13.379206] (-) TimerEvent: {}
+[13.403841] (rover_msgs) StdoutLine: {'line': b'[ 84%] Built target rover_msgs__rosidl_typesupport_introspection_cpp\n'}
+[13.469420] (rover_msgs) StdoutLine: {'line': b'[ 85%] \x1b[32m\x1b[1mLinking CXX shared library librover_msgs__rosidl_typesupport_fastrtps_c.so\x1b[0m\n'}
+[13.479342] (-) TimerEvent: {}
+[13.579707] (-) TimerEvent: {}
+[13.587538] (rover_msgs) StdoutLine: {'line': b'[ 85%] Built target rover_msgs__rosidl_typesupport_fastrtps_c\n'}
+[13.616761] (rover_msgs) StdoutLine: {'line': b'[ 85%] Built target rover_msgs\n'}
+[13.648482] (rover_msgs) StdoutLine: {'line': b'[ 85%] \x1b[34m\x1b[1mGenerating Python code for ROS interfaces\x1b[0m\n'}
+[13.679837] (-) TimerEvent: {}
+[13.780168] (-) TimerEvent: {}
+[13.880489] (-) TimerEvent: {}
+[13.980897] (-) TimerEvent: {}
+[14.081187] (-) TimerEvent: {}
+[14.181476] (-) TimerEvent: {}
+[14.281770] (-) TimerEvent: {}
+[14.382101] (-) TimerEvent: {}
+[14.482406] (-) TimerEvent: {}
+[14.582701] (-) TimerEvent: {}
+[14.682990] (-) TimerEvent: {}
+[14.783290] (-) TimerEvent: {}
+[14.883593] (-) TimerEvent: {}
+[14.983895] (-) TimerEvent: {}
+[15.084210] (-) TimerEvent: {}
+[15.184501] (-) TimerEvent: {}
+[15.284789] (-) TimerEvent: {}
+[15.385091] (-) TimerEvent: {}
+[15.485380] (-) TimerEvent: {}
+[15.585674] (-) TimerEvent: {}
+[15.685972] (-) TimerEvent: {}
+[15.786268] (-) TimerEvent: {}
+[15.886561] (-) TimerEvent: {}
+[15.986848] (-) TimerEvent: {}
+[16.087135] (-) TimerEvent: {}
+[16.187429] (-) TimerEvent: {}
+[16.287721] (-) TimerEvent: {}
+[16.388013] (-) TimerEvent: {}
+[16.488312] (-) TimerEvent: {}
+[16.588600] (-) TimerEvent: {}
+[16.688891] (-) TimerEvent: {}
+[16.789178] (-) TimerEvent: {}
+[16.889461] (-) TimerEvent: {}
+[16.989751] (-) TimerEvent: {}
+[17.090048] (-) TimerEvent: {}
+[17.190354] (-) TimerEvent: {}
+[17.290646] (-) TimerEvent: {}
+[17.390939] (-) TimerEvent: {}
+[17.491244] (-) TimerEvent: {}
+[17.591537] (-) TimerEvent: {}
+[17.691834] (-) TimerEvent: {}
+[17.792120] (-) TimerEvent: {}
+[17.892407] (-) TimerEvent: {}
+[17.992695] (-) TimerEvent: {}
+[18.092985] (-) TimerEvent: {}
+[18.193291] (-) TimerEvent: {}
+[18.294146] (-) TimerEvent: {}
+[18.353112] (rover_msgs) StdoutLine: {'line': b'[ 85%] Built target rover_msgs__py\n'}
+[18.385047] (rover_msgs) StdoutLine: {'line': b'[ 85%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_propulsion_motor_s.c.o\x1b[0m\n'}
+[18.386346] (rover_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_antenna_cmd_s.c.o\x1b[0m\n'}
+[18.386634] (rover_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_can_device_status_s.c.o\x1b[0m\n'}
+[18.387185] (rover_msgs) StdoutLine: {'line': b'[ 87%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_joy_s.c.o\x1b[0m\n'}
+[18.387877] (rover_msgs) StdoutLine: {'line': b'[ 88%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_joy_demux_status_s.c.o\x1b[0m\n'}
+[18.388215] (rover_msgs) StdoutLine: {'line': b'[ 88%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_gps_s.c.o\x1b[0m\n'}
+[18.389590] (rover_msgs) StdoutLine: {'line': b'[ 89%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_camera_control_s.c.o\x1b[0m\n'}
+[18.389836] (rover_msgs) StdoutLine: {'line': b'[ 89%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_gps_position_s.c.o\x1b[0m\n'}
+[18.390264] (rover_msgs) StdoutLine: {'line': b'[ 90%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_science_control_s.c.o\x1b[0m\n'}
+[18.390507] (rover_msgs) StdoutLine: {'line': b'[ 90%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_arm_msg_s.c.o\x1b[0m\n'}
+[18.394389] (-) TimerEvent: {}
+[18.395644] (rover_msgs) StdoutLine: {'line': b'[ 90%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_light_control_s.c.o\x1b[0m\n'}
+[18.397077] (rover_msgs) StdoutLine: {'line': b'[ 91%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_drivetrain_arbitration_s.c.o\x1b[0m\n'}
+[18.494510] (-) TimerEvent: {}
+[18.598139] (-) TimerEvent: {}
+[18.636127] (rover_msgs) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_camera_angle_s.c.o\x1b[0m\n'}
+[18.638019] (rover_msgs) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_compass_s.c.o\x1b[0m\n'}
+[18.638637] (rover_msgs) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_aruco_s.c.o\x1b[0m\n'}
+[18.639844] (rover_msgs) StdoutLine: {'line': b'[ 92%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_antenna_arbitration_s.c.o\x1b[0m\n'}
+[18.640081] (rover_msgs) StdoutLine: {'line': b'[ 93%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_joy_demux_set_state_s.c.o\x1b[0m\n'}
+[18.641522] (rover_msgs) StdoutLine: {'line': b'[ 94%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_drive_train_arbitration_s.c.o\x1b[0m\n'}
+[18.641838] (rover_msgs) StdoutLine: {'line': b'[ 94%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_light_control_s.c.o\x1b[0m\n'}
+[18.644252] (rover_msgs) StdoutLine: {'line': b'[ 95%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_compass_calibration_s.c.o\x1b[0m\n'}
+[18.647440] (rover_msgs) StdoutLine: {'line': b'[ 95%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_new_gps_goal_s.c.o\x1b[0m\n'}
+[18.652223] (rover_msgs) StdoutLine: {'line': b'[ 95%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_pano_control_s.c.o\x1b[0m\n'}
+[18.653925] (rover_msgs) StdoutLine: {'line': b'[ 96%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_rtsp_stream_s.c.o\x1b[0m\n'}
+[18.678347] (rover_msgs) StdoutLine: {'line': b'[ 96%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_screenshot_control_s.c.o\x1b[0m\n'}
+[18.698944] (-) TimerEvent: {}
+[18.799347] (-) TimerEvent: {}
+[18.900045] (-) TimerEvent: {}
+[18.932995] (rover_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/rover_msgs/librover_msgs__rosidl_generator_py.so\x1b[0m\n'}
+[18.998388] (rover_msgs) StdoutLine: {'line': b'[ 97%] Built target rover_msgs__rosidl_generator_py\n'}
+[19.000100] (-) TimerEvent: {}
+[19.026633] (rover_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_c.c.o\x1b[0m\n'}
+[19.026936] (rover_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o\x1b[0m\n'}
+[19.027135] (rover_msgs) StdoutLine: {'line': b'[ 97%] \x1b[32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_introspection_c.c.o\x1b[0m\n'}
+[19.100265] (-) TimerEvent: {}
+[19.200658] (-) TimerEvent: {}
+[19.296170] (rover_msgs) StdoutLine: {'line': b'[ 98%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so\x1b[0m\n'}
+[19.299270] (rover_msgs) StdoutLine: {'line': b'[ 99%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so\x1b[0m\n'}
+[19.300762] (-) TimerEvent: {}
+[19.307649] (rover_msgs) StdoutLine: {'line': b'[100%] \x1b[32m\x1b[1mLinking C shared library rosidl_generator_py/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so\x1b[0m\n'}
+[19.345804] (rover_msgs) StdoutLine: {'line': b'[100%] Built target rover_msgs__rosidl_typesupport_c__pyext\n'}
+[19.348585] (rover_msgs) StdoutLine: {'line': b'[100%] Built target rover_msgs__rosidl_typesupport_introspection_c__pyext\n'}
+[19.359592] (rover_msgs) StdoutLine: {'line': b'[100%] Built target rover_msgs__rosidl_typesupport_fastrtps_c__pyext\n'}
+[19.377296] (rover_msgs) CommandEnded: {'returncode': 0}
+[19.400900] (-) TimerEvent: {}
+[19.501225] (-) TimerEvent: {}
+[19.601479] (-) TimerEvent: {}
+[19.701749] (-) TimerEvent: {}
+[19.802088] (-) TimerEvent: {}
+[19.902337] (-) TimerEvent: {}
+[20.002618] (-) TimerEvent: {}
+[20.102974] (-) TimerEvent: {}
+[20.173452] (rover_msgs) JobProgress: {'identifier': 'rover_msgs', 'progress': 'install'}
+[20.186242] (rover_msgs) Command: {'cmd': ['/usr/bin/cmake', '--install', '/home/chris/ros2_ws/src/rover/build/rover_msgs'], 'cwd': '/home/chris/ros2_ws/src/rover/build/rover_msgs', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'chris'), ('SSH_AGENT_PID', '2583'), ('XDG_SESSION_TYPE', 'x11'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/chris/ros2_ws/install/rover_msgs/lib:/home/chris/ros2_ws/install/moveit_visual_tools/lib:/home/chris/ros2_ws/install/micro_ros_agent/lib:/home/chris/ros2_ws/install/micro_ros_msgs/lib:/usr/lib/x86_64-linux-gnu/gazebo-11/plugins:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/x86_64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/chris'), ('OLDPWD', '/home/chris'), ('DESKTOP_SESSION', 'ubuntu'), ('NVM_BIN', '/home/chris/.nvm/versions/node/v18.20.0/bin'), ('NVM_INC', '/home/chris/.nvm/versions/node/v18.20.0/include/node'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '2412'), ('SYSTEMD_EXEC_PID', '2681'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator21a9d5db22c73a993ff0b42f64b396873'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '5179'), ('NVM_DIR', '/home/chris/.nvm'), ('COLCON_PREFIX_PATH', '/home/chris/ros2_ws/install'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'chris'), ('JOURNAL_STREAM', '8:21130'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'chris'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('WINDOWPATH', '2'), ('PATH', '/home/chris/.nvm/versions/node/v18.20.0/bin:/opt/ros/humble/bin:/home/chris/.local/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin:/home/chris/.local/bin'), ('SESSION_MANAGER', 'local/chris:@/tmp/.ICE-unix/2659,unix/chris:/tmp/.ICE-unix/2659'), ('INVOCATION_ID', '151282377277484193bb6d51fbdeb473'), ('XDG_MENU_PREFIX', 'gnome-'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/gdm/Xauthority'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('AMENT_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_configs_utils:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('TERMINATOR_UUID', 'urn:uuid:c5ceb889-5994-4d28-b93f-d4dbf77a5b4e'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/chris/ros2_ws/src/rover/build/rover_msgs'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('NVM_CD_FLAGS', ''), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/share/gnome:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/chris/ros2_ws/install/rover_sim/lib/python3.10/site-packages:/home/chris/ros2_ws/install/rover_msgs/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/panorama/lib/python3.10/site-packages:/home/chris/ros2_ws/install/moveit_controller/local/lib/python3.10/dist-packages:/home/chris/ros2_ws/install/moveit_configs_utils/lib/python3.10/site-packages:/home/chris/ros2_ws/install/micro_ros_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble')]), 'shell': False}
+[20.197636] (rover_msgs) StdoutLine: {'line': b'-- Install configuration: ""\n'}
+[20.197963] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/library_path.sh\n'}
+[20.198198] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/library_path.dsv\n'}
+[20.198473] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib\n'}
+[20.198628] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/timer.hpp\n'}
+[20.198892] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/moving_average.hpp\n'}
+[20.199075] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/macros.h\n'}
+[20.199265] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/rovus_exceptions.h\n'}
+[20.199559] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/liblib_exec.a\n'}
+[20.199962] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/rosidl_interfaces/rover_msgs\n'}
+[20.200262] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs\n'}
+[20.200515] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg\n'}
+[20.200715] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail\n'}
+[20.200879] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__functions.h\n'}
+[20.201054] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__functions.h\n'}
+[20.201265] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__functions.h\n'}
+[20.201437] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__functions.c\n'}
+[20.201566] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__functions.h\n'}
+[20.201769] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__type_support.h\n'}
+[20.201990] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__type_support.h\n'}
+[20.202293] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__functions.h\n'}
+[20.202576] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__type_support.h\n'}
+[20.202792] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__type_support.h\n'}
+[20.202982] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__functions.c\n'}
+[20.203132] (-) TimerEvent: {}
+[20.203374] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__functions.h\n'}
+[20.203527] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__struct.h\n'}
+[20.203697] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__struct.h\n'}
+[20.203920] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__functions.c\n'}
+[20.204171] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__functions.h\n'}
+[20.204393] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__functions.c\n'}
+[20.204625] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__struct.h\n'}
+[20.204833] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__type_support.h\n'}
+[20.204998] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__type_support.h\n'}
+[20.205317] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__struct.h\n'}
+[20.205590] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__functions.c\n'}
+[20.205808] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__type_support.h\n'}
+[20.206026] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__struct.h\n'}
+[20.206216] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__functions.h\n'}
+[20.206420] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__struct.h\n'}
+[20.206558] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__functions.h\n'}
+[20.206770] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__type_support.h\n'}
+[20.207044] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__functions.c\n'}
+[20.207314] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__functions.c\n'}
+[20.207504] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__functions.c\n'}
+[20.207754] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__struct.h\n'}
+[20.207940] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__functions.h\n'}
+[20.208188] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__type_support.h\n'}
+[20.208358] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__functions.c\n'}
+[20.208580] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__functions.c\n'}
+[20.208770] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__type_support.h\n'}
+[20.208978] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__type_support.h\n'}
+[20.209247] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__functions.c\n'}
+[20.209482] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__struct.h\n'}
+[20.209697] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__struct.h\n'}
+[20.209863] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__struct.h\n'}
+[20.210148] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__struct.h\n'}
+[20.210362] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__functions.h\n'}
+[20.210526] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__functions.h\n'}
+[20.210747] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__struct.h\n'}
+[20.210961] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__type_support.h\n'}
+[20.211211] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__functions.c\n'}
+[20.211441] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__struct.h\n'}
+[20.211663] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__struct.h\n'}
+[20.211887] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__type_support.h\n'}
+[20.212097] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__functions.c\n'}
+[20.212326] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__struct.h\n'}
+[20.212512] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__functions.h\n'}
+[20.212736] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__type_support.h\n'}
+[20.212929] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__functions.c\n'}
+[20.213165] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__functions.h\n'}
+[20.213453] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__functions.c\n'}
+[20.213678] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__type_support.h\n'}
+[20.213903] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__functions.h\n'}
+[20.214146] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_angle.h\n'}
+[20.214360] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/science_control.h\n'}
+[20.214563] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/light_control.h\n'}
+[20.214721] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/propulsion_motor.h\n'}
+[20.214921] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_generator_c__visibility_control.h\n'}
+[20.215149] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/antenna_cmd.h\n'}
+[20.215359] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/arm_msg.h\n'}
+[20.215529] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps_position.h\n'}
+[20.215724] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps.h\n'}
+[20.215966] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/compass.h\n'}
+[20.216205] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/can_device_status.h\n'}
+[20.216411] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy_demux_status.h\n'}
+[20.216583] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/drivetrain_arbitration.h\n'}
+[20.216736] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy.h\n'}
+[20.216937] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/aruco.h\n'}
+[20.217207] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_control.h\n'}
+[20.217403] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv\n'}
+[20.217533] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/drive_train_arbitration.h\n'}
+[20.217692] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/antenna_arbitration.h\n'}
+[20.217906] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail\n'}
+[20.218070] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__type_support.h\n'}
+[20.218329] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__functions.c\n'}
+[20.218572] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__functions.c\n'}
+[20.218758] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__functions.c\n'}
+[20.218985] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__functions.h\n'}
+[20.219213] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__struct.h\n'}
+[20.219453] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__functions.h\n'}
+[20.219677] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__functions.h\n'}
+[20.219833] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__functions.c\n'}
+[20.220057] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__functions.h\n'}
+[20.220302] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__functions.h\n'}
+[20.220525] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__functions.h\n'}
+[20.220770] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__struct.h\n'}
+[20.220967] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__type_support.h\n'}
+[20.221223] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__functions.c\n'}
+[20.221462] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__functions.h\n'}
+[20.221642] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__functions.h\n'}
+[20.221840] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__functions.c\n'}
+[20.222075] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__functions.h\n'}
+[20.222328] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__type_support.h\n'}
+[20.222526] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__type_support.h\n'}
+[20.222772] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__functions.c\n'}
+[20.222970] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__struct.h\n'}
+[20.223196] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__type_support.h\n'}
+[20.223408] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__type_support.h\n'}
+[20.223627] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__type_support.h\n'}
+[20.223800] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__struct.h\n'}
+[20.224010] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__struct.h\n'}
+[20.224226] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__type_support.h\n'}
+[20.224432] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__struct.h\n'}
+[20.224641] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__functions.c\n'}
+[20.224903] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__struct.h\n'}
+[20.225155] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__struct.h\n'}
+[20.225365] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__type_support.h\n'}
+[20.225565] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__struct.h\n'}
+[20.225776] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__functions.c\n'}
+[20.225964] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/screenshot_control.h\n'}
+[20.226227] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/light_control.h\n'}
+[20.226395] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/joy_demux_set_state.h\n'}
+[20.226594] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/new_gps_goal.h\n'}
+[20.226787] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/compass_calibration.h\n'}
+[20.226990] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/pano_control.h\n'}
+[20.227230] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/rtsp_stream.h\n'}
+[20.227540] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_c.so\n'}
+[20.228744] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_c.so" to ""\n'}
+[20.229032] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs\n'}
+[20.229283] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg\n'}
+[20.229503] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail\n'}
+[20.229697] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_fastrtps_c.h\n'}
+[20.229880] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_fastrtps_c.h\n'}
+[20.230030] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_fastrtps_c.h\n'}
+[20.230262] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_fastrtps_c.h\n'}
+[20.230407] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_fastrtps_c.h\n'}
+[20.230580] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_fastrtps_c.h\n'}
+[20.230745] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_fastrtps_c.h\n'}
+[20.230985] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_fastrtps_c.h\n'}
+[20.231160] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_fastrtps_c.h\n'}
+[20.231357] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_fastrtps_c.h\n'}
+[20.231647] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_fastrtps_c.h\n'}
+[20.231854] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_fastrtps_c.h\n'}
+[20.232079] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_fastrtps_c.h\n'}
+[20.232374] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_fastrtps_c.h\n'}
+[20.232602] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_fastrtps_c.h\n'}
+[20.232824] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h\n'}
+[20.232993] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv\n'}
+[20.233191] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail\n'}
+[20.233280] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_fastrtps_c.h\n'}
+[20.233603] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_fastrtps_c.h\n'}
+[20.233822] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_fastrtps_c.h\n'}
+[20.233988] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_fastrtps_c.h\n'}
+[20.234334] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_fastrtps_c.h\n'}
+[20.234673] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_fastrtps_c.h\n'}
+[20.234927] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_fastrtps_c.h\n'}
+[20.235133] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_fastrtps_c.h\n'}
+[20.235359] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_fastrtps_c.h\n'}
+[20.235734] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_c.so\n'}
+[20.236922] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_c.so" to ""\n'}
+[20.237179] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs\n'}
+[20.237406] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg\n'}
+[20.237525] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail\n'}
+[20.237628] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__type_support.c\n'}
+[20.237767] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_introspection_c.h\n'}
+[20.237890] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_introspection_c.h\n'}
+[20.238005] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__type_support.c\n'}
+[20.238192] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_introspection_c.h\n'}
+[20.238465] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_introspection_c.h\n'}
+[20.238721] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__type_support.c\n'}
+[20.238941] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_introspection_c.h\n'}
+[20.239230] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_introspection_c.h\n'}
+[20.239462] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__type_support.c\n'}
+[20.239695] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_introspection_c.h\n'}
+[20.239914] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__type_support.c\n'}
+[20.240160] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_introspection_c.h\n'}
+[20.240388] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__type_support.c\n'}
+[20.240592] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__type_support.c\n'}
+[20.240821] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__type_support.c\n'}
+[20.241051] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_introspection_c.h\n'}
+[20.241334] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_introspection_c.h\n'}
+[20.241563] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__type_support.c\n'}
+[20.241786] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_introspection_c.h\n'}
+[20.241978] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_introspection_c.h\n'}
+[20.242216] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__type_support.c\n'}
+[20.242506] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__type_support.c\n'}
+[20.242737] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__type_support.c\n'}
+[20.242951] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__type_support.c\n'}
+[20.243198] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_introspection_c.h\n'}
+[20.243511] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_introspection_c.h\n'}
+[20.243769] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__type_support.c\n'}
+[20.243962] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_introspection_c.h\n'}
+[20.244224] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__type_support.c\n'}
+[20.244456] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h\n'}
+[20.244658] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv\n'}
+[20.244810] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail\n'}
+[20.244937] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__type_support.c\n'}
+[20.245055] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__type_support.c\n'}
+[20.245234] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_introspection_c.h\n'}
+[20.245447] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__type_support.c\n'}
+[20.245752] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_introspection_c.h\n'}
+[20.245963] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_introspection_c.h\n'}
+[20.246181] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__type_support.c\n'}
+[20.246451] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__type_support.c\n'}
+[20.246687] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_introspection_c.h\n'}
+[20.246881] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__type_support.c\n'}
+[20.247152] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_introspection_c.h\n'}
+[20.247393] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__type_support.c\n'}
+[20.247587] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_introspection_c.h\n'}
+[20.247804] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_introspection_c.h\n'}
+[20.248028] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_introspection_c.h\n'}
+[20.248296] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__type_support.c\n'}
+[20.248514] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_introspection_c.h\n'}
+[20.248758] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__type_support.c\n'}
+[20.249153] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_c.so\n'}
+[20.250132] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_c.so" to ""\n'}
+[20.250346] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_c.so\n'}
+[20.251172] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_c.so" to ""\n'}
+[20.251402] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs\n'}
+[20.251524] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg\n'}
+[20.251643] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_angle.hpp\n'}
+[20.251735] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy_demux_status.hpp\n'}
+[20.251849] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail\n'}
+[20.251969] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__builder.hpp\n'}
+[20.252161] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__struct.hpp\n'}
+[20.252410] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__traits.hpp\n'}
+[20.252634] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__traits.hpp\n'}
+[20.252882] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__builder.hpp\n'}
+[20.253053] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__struct.hpp\n'}
+[20.253342] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__struct.hpp\n'}
+[20.253560] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__builder.hpp\n'}
+[20.253780] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__builder.hpp\n'}
+[20.253962] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__struct.hpp\n'}
+[20.254194] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__builder.hpp\n'}
+[20.254455] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__builder.hpp\n'}
+[20.254681] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__struct.hpp\n'}
+[20.254906] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__builder.hpp\n'}
+[20.255139] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__builder.hpp\n'}
+[20.255377] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__traits.hpp\n'}
+[20.255559] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__builder.hpp\n'}
+[20.255750] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__struct.hpp\n'}
+[20.255969] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__traits.hpp\n'}
+[20.256271] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__builder.hpp\n'}
+[20.256495] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__traits.hpp\n'}
+[20.256711] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__struct.hpp\n'}
+[20.256947] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__struct.hpp\n'}
+[20.257198] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__struct.hpp\n'}
+[20.257364] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__traits.hpp\n'}
+[20.257497] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__traits.hpp\n'}
+[20.257638] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__builder.hpp\n'}
+[20.257803] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__struct.hpp\n'}
+[20.257968] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__builder.hpp\n'}
+[20.258147] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__struct.hpp\n'}
+[20.258317] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__traits.hpp\n'}
+[20.258482] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__builder.hpp\n'}
+[20.258651] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__struct.hpp\n'}
+[20.258794] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__builder.hpp\n'}
+[20.258954] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__traits.hpp\n'}
+[20.259148] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__traits.hpp\n'}
+[20.259319] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__traits.hpp\n'}
+[20.259482] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__struct.hpp\n'}
+[20.259637] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__traits.hpp\n'}
+[20.259801] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__traits.hpp\n'}
+[20.259960] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__struct.hpp\n'}
+[20.260109] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__traits.hpp\n'}
+[20.260317] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__traits.hpp\n'}
+[20.260482] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__builder.hpp\n'}
+[20.260645] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__struct.hpp\n'}
+[20.260814] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_control.hpp\n'}
+[20.260964] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/can_device_status.hpp\n'}
+[20.261143] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps_position.hpp\n'}
+[20.261295] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy.hpp\n'}
+[20.261463] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps.hpp\n'}
+[20.261609] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/propulsion_motor.hpp\n'}
+[20.261736] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/arm_msg.hpp\n'}
+[20.261855] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/compass.hpp\n'}
+[20.261990] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/science_control.hpp\n'}
+[20.262156] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/drivetrain_arbitration.hpp\n'}
+[20.262303] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/light_control.hpp\n'}
+[20.262451] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/antenna_cmd.hpp\n'}
+[20.262602] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/aruco.hpp\n'}
+[20.262744] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv\n'}
+[20.262844] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/rtsp_stream.hpp\n'}
+[20.262952] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail\n'}
+[20.263057] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__struct.hpp\n'}
+[20.263213] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__builder.hpp\n'}
+[20.263369] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__struct.hpp\n'}
+[20.263545] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__traits.hpp\n'}
+[20.263719] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__struct.hpp\n'}
+[20.263890] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__traits.hpp\n'}
+[20.264057] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__struct.hpp\n'}
+[20.264281] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__traits.hpp\n'}
+[20.264445] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__struct.hpp\n'}
+[20.264603] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__builder.hpp\n'}
+[20.264760] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__traits.hpp\n'}
+[20.264923] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__builder.hpp\n'}
+[20.265065] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__traits.hpp\n'}
+[20.265239] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__struct.hpp\n'}
+[20.265410] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__traits.hpp\n'}
+[20.265576] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__builder.hpp\n'}
+[20.265734] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__struct.hpp\n'}
+[20.265906] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__builder.hpp\n'}
+[20.266071] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__builder.hpp\n'}
+[20.266243] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__traits.hpp\n'}
+[20.266408] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__struct.hpp\n'}
+[20.266582] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__builder.hpp\n'}
+[20.266743] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__builder.hpp\n'}
+[20.266905] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__struct.hpp\n'}
+[20.267082] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__traits.hpp\n'}
+[20.267298] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__builder.hpp\n'}
+[20.267461] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__traits.hpp\n'}
+[20.267611] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/screenshot_control.hpp\n'}
+[20.267777] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/joy_demux_set_state.hpp\n'}
+[20.267937] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/antenna_arbitration.hpp\n'}
+[20.268056] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/new_gps_goal.hpp\n'}
+[20.268185] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/pano_control.hpp\n'}
+[20.268326] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/light_control.hpp\n'}
+[20.268471] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/drive_train_arbitration.hpp\n'}
+[20.268616] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/compass_calibration.hpp\n'}
+[20.268830] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs\n'}
+[20.268940] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg\n'}
+[20.269065] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail\n'}
+[20.269151] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.269263] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.269380] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.269494] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.269648] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/dds_fastrtps\n'}
+[20.269800] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.269980] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.270168] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.270351] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.270489] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.270652] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.270815] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.270978] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.271160] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.271327] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.271491] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.271652] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h\n'}
+[20.271798] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv\n'}
+[20.271903] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail\n'}
+[20.272004] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.272115] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.272308] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.272488] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/dds_fastrtps\n'}
+[20.272624] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.272788] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.272951] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.273129] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.273294] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.273454] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_fastrtps_cpp.hpp\n'}
+[20.273719] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_cpp.so\n'}
+[20.274759] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""\n'}
+[20.274944] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs\n'}
+[20.275067] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg\n'}
+[20.275190] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail\n'}
+[20.275278] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.275363] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__type_support.cpp\n'}
+[20.275503] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.275591] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.275696] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__type_support.cpp\n'}
+[20.275827] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__type_support.cpp\n'}
+[20.275993] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__type_support.cpp\n'}
+[20.276175] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__type_support.cpp\n'}
+[20.276339] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__type_support.cpp\n'}
+[20.276542] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.276703] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.276963] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.277173] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.277340] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.277511] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__type_support.cpp\n'}
+[20.277673] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__type_support.cpp\n'}
+[20.277810] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__type_support.cpp\n'}
+[20.277978] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.278174] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__type_support.cpp\n'}
+[20.278343] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__type_support.cpp\n'}
+[20.278513] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__type_support.cpp\n'}
+[20.278682] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__type_support.cpp\n'}
+[20.278896] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.279050] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.279242] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.279394] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.279621] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.279761] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.279938] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__type_support.cpp\n'}
+[20.280097] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__type_support.cpp\n'}
+[20.280241] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv\n'}
+[20.280360] (rover_msgs) StdoutLine: {'line': b'-- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail\n'}
+[20.280467] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__type_support.cpp\n'}
+[20.280579] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.280686] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__type_support.cpp\n'}
+[20.280854] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.281014] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__type_support.cpp\n'}
+[20.281204] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.281402] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__type_support.cpp\n'}
+[20.281563] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.281722] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.281878] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.282014] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__type_support.cpp\n'}
+[20.282217] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__type_support.cpp\n'}
+[20.282405] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.282589] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.282729] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__type_support.cpp\n'}
+[20.282897] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__type_support.cpp\n'}
+[20.283093] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__type_support.cpp\n'}
+[20.283301] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_introspection_cpp.hpp\n'}
+[20.283552] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_cpp.so\n'}
+[20.284503] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_cpp.so" to ""\n'}
+[20.284662] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_cpp.so\n'}
+[20.285366] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_cpp.so" to ""\n'}
+[20.285513] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/pythonpath.sh\n'}
+[20.285642] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/pythonpath.dsv\n'}
+[20.285847] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info\n'}
+[20.286008] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/dependency_links.txt\n'}
+[20.286240] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/top_level.txt\n'}
+[20.286455] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/SOURCES.txt\n'}
+[20.286598] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/PKG-INFO\n'}
+[20.286713] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs\n'}
+[20.286832] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so\n'}
+[20.287111] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_introspection_c.c\n'}
+[20.287443] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg\n'}
+[20.287566] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_angle_s.c\n'}
+[20.287716] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_arm_msg_s.c\n'}
+[20.287868] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_antenna_cmd.py\n'}
+[20.288021] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_s.c\n'}
+[20.288189] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_control_s.c\n'}
+[20.288340] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_antenna_cmd_s.c\n'}
+[20.288493] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_science_control.py\n'}
+[20.288651] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_compass.py\n'}
+[20.288804] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_arm_msg.py\n'}
+[20.288963] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_propulsion_motor.py\n'}
+[20.289129] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_control.py\n'}
+[20.289283] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_light_control.py\n'}
+[20.289437] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_aruco_s.c\n'}
+[20.289591] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_light_control_s.c\n'}
+[20.289748] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_propulsion_motor_s.c\n'}
+[20.289905] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_compass_s.c\n'}
+[20.290054] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_angle.py\n'}
+[20.290231] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_can_device_status_s.c\n'}
+[20.290384] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_drivetrain_arbitration.py\n'}
+[20.290539] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_drivetrain_arbitration_s.c\n'}
+[20.290688] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_demux_status.py\n'}
+[20.290844] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy.py\n'}
+[20.291006] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps.py\n'}
+[20.291180] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_aruco.py\n'}
+[20.291332] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_position.py\n'}
+[20.291494] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_demux_status_s.c\n'}
+[20.291646] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_s.c\n'}
+[20.291802] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_position_s.c\n'}
+[20.291954] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/__init__.py\n'}
+[20.292117] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_science_control_s.c\n'}
+[20.292278] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_can_device_status.py\n'}
+[20.292436] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/librover_msgs__rosidl_generator_py.so\n'}
+[20.292767] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_fastrtps_c.c\n'}
+[20.293156] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so\n'}
+[20.293402] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so\n'}
+[20.293669] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/__init__.py\n'}
+[20.293796] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv\n'}
+[20.293912] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_drive_train_arbitration.py\n'}
+[20.294055] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_compass_calibration_s.c\n'}
+[20.294246] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_screenshot_control.py\n'}
+[20.294382] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_rtsp_stream_s.c\n'}
+[20.294541] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_joy_demux_set_state_s.c\n'}
+[20.294692] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_compass_calibration.py\n'}
+[20.294849] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_light_control.py\n'}
+[20.295007] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_light_control_s.c\n'}
+[20.295171] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_pano_control_s.c\n'}
+[20.295329] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_joy_demux_set_state.py\n'}
+[20.295495] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_antenna_arbitration_s.c\n'}
+[20.295654] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_new_gps_goal.py\n'}
+[20.295858] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_drive_train_arbitration_s.c\n'}
+[20.296012] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_rtsp_stream.py\n'}
+[20.296187] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_screenshot_control_s.c\n'}
+[20.296340] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_antenna_arbitration.py\n'}
+[20.296498] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_pano_control.py\n'}
+[20.296660] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/__init__.py\n'}
+[20.296810] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_new_gps_goal_s.c\n'}
+[20.296941] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_c.c\n'}
+[20.303211] (-) TimerEvent: {}
+[20.388419] (rover_msgs) StdoutLine: {'line': b"Listing '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs'...\n"}
+[20.388624] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/__init__.py'...\n"}
+[20.388714] (rover_msgs) StdoutLine: {'line': b"Listing '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg'...\n"}
+[20.388795] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/__init__.py'...\n"}
+[20.388873] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_antenna_cmd.py'...\n"}
+[20.388950] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_arm_msg.py'...\n"}
+[20.389025] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_aruco.py'...\n"}
+[20.389116] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_angle.py'...\n"}
+[20.389197] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_control.py'...\n"}
+[20.389272] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_can_device_status.py'...\n"}
+[20.389371] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_compass.py'...\n"}
+[20.389448] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_drivetrain_arbitration.py'...\n"}
+[20.389522] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps.py'...\n"}
+[20.389596] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_position.py'...\n"}
+[20.389670] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy.py'...\n"}
+[20.389744] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_demux_status.py'...\n"}
+[20.389818] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_light_control.py'...\n"}
+[20.389908] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_propulsion_motor.py'...\n"}
+[20.389996] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_science_control.py'...\n"}
+[20.390088] (rover_msgs) StdoutLine: {'line': b"Listing '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv'...\n"}
+[20.390178] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/__init__.py'...\n"}
+[20.390261] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_antenna_arbitration.py'...\n"}
+[20.390343] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_compass_calibration.py'...\n"}
+[20.390424] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_drive_train_arbitration.py'...\n"}
+[20.390505] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_joy_demux_set_state.py'...\n"}
+[20.390587] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_light_control.py'...\n"}
+[20.390668] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_new_gps_goal.py'...\n"}
+[20.390748] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_pano_control.py'...\n"}
+[20.390829] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_rtsp_stream.py'...\n"}
+[20.390909] (rover_msgs) StdoutLine: {'line': b"Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_screenshot_control.py'...\n"}
+[20.394565] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so\n'}
+[20.395236] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-x86_64-linux-gnu.so" to ""\n'}
+[20.395579] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so\n'}
+[20.396282] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-x86_64-linux-gnu.so" to ""\n'}
+[20.396603] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so\n'}
+[20.397299] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-x86_64-linux-gnu.so" to ""\n'}
+[20.397510] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_py.so\n'}
+[20.398270] (rover_msgs) StdoutLine: {'line': b'-- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_py.so" to ""\n'}
+[20.398518] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/AntennaCmd.idl\n'}
+[20.398702] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/PropulsionMotor.idl\n'}
+[20.398864] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CanDeviceStatus.idl\n'}
+[20.398989] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Joy.idl\n'}
+[20.399249] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/JoyDemuxStatus.idl\n'}
+[20.399462] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Gps.idl\n'}
+[20.399712] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/GpsPosition.idl\n'}
+[20.399946] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraControl.idl\n'}
+[20.400147] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/LightControl.idl\n'}
+[20.400382] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ScienceControl.idl\n'}
+[20.400576] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ArmMsg.idl\n'}
+[20.400831] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/DrivetrainArbitration.idl\n'}
+[20.401015] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Compass.idl\n'}
+[20.401202] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraAngle.idl\n'}
+[20.401409] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Aruco.idl\n'}
+[20.401698] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState.idl\n'}
+[20.401924] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration.idl\n'}
+[20.402155] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration.idl\n'}
+[20.402364] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl.idl\n'}
+[20.402599] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration.idl\n'}
+[20.402819] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal.idl\n'}
+[20.403025] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl.idl\n'}
+[20.403251] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream.idl\n'}
+[20.403336] (-) TimerEvent: {}
+[20.403492] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl.idl\n'}
+[20.403769] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/AntennaCmd.msg\n'}
+[20.403956] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/PropulsionMotor.msg\n'}
+[20.404216] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CanDeviceStatus.msg\n'}
+[20.404448] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Joy.msg\n'}
+[20.404670] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/JoyDemuxStatus.msg\n'}
+[20.404882] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Gps.msg\n'}
+[20.405095] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/GpsPosition.msg\n'}
+[20.405335] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraControl.msg\n'}
+[20.405558] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/LightControl.msg\n'}
+[20.405742] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ScienceControl.msg\n'}
+[20.405957] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ArmMsg.msg\n'}
+[20.406235] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/DrivetrainArbitration.msg\n'}
+[20.406454] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Compass.msg\n'}
+[20.406670] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraAngle.msg\n'}
+[20.406887] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Aruco.msg\n'}
+[20.407131] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState.srv\n'}
+[20.407354] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState_Request.msg\n'}
+[20.407560] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState_Response.msg\n'}
+[20.407747] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration.srv\n'}
+[20.407980] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration_Request.msg\n'}
+[20.408243] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration_Response.msg\n'}
+[20.408449] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration.srv\n'}
+[20.408674] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration_Request.msg\n'}
+[20.408917] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration_Response.msg\n'}
+[20.409146] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl.srv\n'}
+[20.409360] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl_Request.msg\n'}
+[20.409578] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl_Response.msg\n'}
+[20.409795] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration.srv\n'}
+[20.410018] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration_Request.msg\n'}
+[20.410262] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration_Response.msg\n'}
+[20.410482] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal.srv\n'}
+[20.410715] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal_Request.msg\n'}
+[20.410917] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal_Response.msg\n'}
+[20.411167] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl.srv\n'}
+[20.411382] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl_Request.msg\n'}
+[20.411616] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl_Response.msg\n'}
+[20.411846] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream.srv\n'}
+[20.412075] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream_Request.msg\n'}
+[20.412311] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream_Response.msg\n'}
+[20.412555] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl.srv\n'}
+[20.412781] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl_Request.msg\n'}
+[20.412999] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl_Response.msg\n'}
+[20.413217] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch\n'}
+[20.413325] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch/terminal_logger.launch.py\n'}
+[20.413484] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch/base.launch.py\n'}
+[20.413623] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch/rover.launch.py\n'}
+[20.414014] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/package_run_dependencies/rover_msgs\n'}
+[20.414420] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/parent_prefix_path/rover_msgs\n'}
+[20.414671] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/ament_prefix_path.sh\n'}
+[20.414893] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/ament_prefix_path.dsv\n'}
+[20.415150] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/path.sh\n'}
+[20.415374] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/path.dsv\n'}
+[20.415590] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.bash\n'}
+[20.415810] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.sh\n'}
+[20.416054] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.zsh\n'}
+[20.416306] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.dsv\n'}
+[20.416517] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/package.dsv\n'}
+[20.416794] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/packages/rover_msgs\n'}
+[20.417103] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/lib_execExport.cmake\n'}
+[20.417344] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/lib_execExport-noconfig.cmake\n'}
+[20.417586] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_cExport.cmake\n'}
+[20.417809] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_cExport-noconfig.cmake\n'}
+[20.418073] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cExport.cmake\n'}
+[20.418317] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake\n'}
+[20.418565] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cExport.cmake\n'}
+[20.418796] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake\n'}
+[20.419056] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cExport.cmake\n'}
+[20.419313] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cExport-noconfig.cmake\n'}
+[20.419553] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_cppExport.cmake\n'}
+[20.419792] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cppExport.cmake\n'}
+[20.420042] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake\n'}
+[20.420323] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cppExport.cmake\n'}
+[20.420557] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake\n'}
+[20.420804] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cppExport.cmake\n'}
+[20.421047] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cppExport-noconfig.cmake\n'}
+[20.421313] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_pyExport.cmake\n'}
+[20.421545] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_pyExport-noconfig.cmake\n'}
+[20.421771] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_targets-extras.cmake\n'}
+[20.422009] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rosidl_cmake-extras.cmake\n'}
+[20.422255] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_include_directories-extras.cmake\n'}
+[20.422481] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_libraries-extras.cmake\n'}
+[20.422710] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake\n'}
+[20.422955] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_dependencies-extras.cmake\n'}
+[20.423212] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake\n'}
+[20.423439] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgsConfig.cmake\n'}
+[20.423594] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgsConfig-version.cmake\n'}
+[20.423804] (rover_msgs) StdoutLine: {'line': b'-- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/package.xml\n'}
+[20.426660] (rover_msgs) CommandEnded: {'returncode': 0}
+[20.503542] (-) TimerEvent: {}
+[20.604084] (-) TimerEvent: {}
+[20.704405] (-) TimerEvent: {}
+[20.804702] (-) TimerEvent: {}
+[20.904990] (-) TimerEvent: {}
+[21.005281] (-) TimerEvent: {}
+[21.105635] (-) TimerEvent: {}
+[21.205914] (-) TimerEvent: {}
+[21.306461] (-) TimerEvent: {}
+[21.406834] (-) TimerEvent: {}
+[21.507177] (-) TimerEvent: {}
+[21.533004] (rover_msgs) JobEnded: {'identifier': 'rover_msgs', 'rc': 0}
+[21.534203] (-) EventReactorShutdown: {}

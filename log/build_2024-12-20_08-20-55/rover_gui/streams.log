@@ -1,0 +1,88 @@
+[0.088s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_gui -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_gui
+[0.155s] -- The C compiler identification is GNU 11.4.0
+[0.222s] -- The CXX compiler identification is GNU 11.4.0
+[0.233s] -- Detecting C compiler ABI info
+[0.311s] -- Detecting C compiler ABI info - done
+[0.319s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.319s] -- Detecting C compile features
+[0.320s] -- Detecting C compile features - done
+[0.323s] -- Detecting CXX compiler ABI info
+[0.415s] -- Detecting CXX compiler ABI info - done
+[0.428s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.428s] -- Detecting CXX compile features
+[0.429s] -- Detecting CXX compile features - done
+[0.435s] -- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.646s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+[0.788s] -- Found rclcpp: 16.0.7 (/opt/ros/humble/share/rclcpp/cmake)
+[0.854s] -- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[0.864s] -- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.876s] -- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[0.899s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.930s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[1.039s] -- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[1.045s] -- Found rmw_fastrtps_cpp: 6.2.5 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[1.161s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[1.191s] -- Found FastRTPS: /opt/ros/humble/include  
+[1.245s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[1.261s] -- Looking for pthread.h
+[1.337s] -- Looking for pthread.h - found
+[1.338s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[1.418s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[1.419s] -- Found Threads: TRUE  
+[1.609s] -- Found rover_msgs: 0.0.0 (/home/chris/ros2_ws/install/rover_msgs/share/rover_msgs/cmake)
+[1.644s] -- Performing Test HAVE_STDATOMIC
+[2.037s] -- Performing Test HAVE_STDATOMIC - Success
+[2.039s] -- Found WrapAtomic: TRUE  
+[2.095s] -- Found OpenGL: /usr/lib/x86_64-linux-gnu/libOpenGL.so   
+[2.095s] -- Found WrapOpenGL: TRUE  
+[2.153s] -- Found XKB: /usr/lib/x86_64-linux-gnu/libxkbcommon.so (found suitable version "1.4.0", minimum required is "0.5.0") 
+[2.157s] -- Found WrapVulkanHeaders: /usr/include  
+[2.200s] -- Found PkgConfig: /usr/bin/pkg-config (found version "0.29.2") 
+[2.201s] -- Checking for modules 'gstreamer-1.0;gstreamer-plugins-base-1.0;gstreamer-video-1.0'
+[2.222s] --   Found gstreamer-1.0, version 1.20.3
+[2.236s] --   Found gstreamer-plugins-base-1.0, version 1.20.1
+[2.251s] --   Found gstreamer-video-1.0, version 1.20.1
+[2.371s] -- Configuring done
+[2.412s] -- Generating done
+[2.417s] -- Build files have been written to: /home/chris/ros2_ws/src/rover/build/rover_gui
+[2.436s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_gui' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_gui -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_gui
+[2.439s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12
+[2.512s] [  6%] [34m[1mGenerating UI files...[0m
+[2.519s] [0;34m=== Generating UI files ... ===[0m
+[2.533s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[2.545s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[2.555s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[2.567s] [  6%] Built target run_generate_ui
+[2.600s] [ 13%] [34m[1mAutomatic MOC for target main_gui[0m
+[2.982s] [ 13%] Built target main_gui_autogen
+[3.006s] [35m[1mConsolidate compiler generated dependencies of target main_gui[0m
+[3.066s] [ 20%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[3.070s] [ 26%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[3.072s] [ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/main_gui.cpp.o[0m
+[3.073s] [ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[3.075s] [ 46%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[10.477s] [ 53%] [32m[1mLinking CXX executable main_gui[0m
+[11.819s] [100%] Built target main_gui
+[11.830s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_gui' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_gui -- -j12 -l12
+[11.895s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_gui
+[11.902s] -- Install configuration: ""
+[11.902s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui//launch
+[11.902s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui//launch/gui.launch.py
+[11.902s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_gui/lib/rover_gui/main_gui
+[11.903s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_gui/lib/rover_gui/main_gui" to ""
+[11.903s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/ament_index/resource_index/package_run_dependencies/rover_gui
+[11.903s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/ament_index/resource_index/parent_prefix_path/rover_gui
+[11.903s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/ament_prefix_path.sh
+[11.904s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/ament_prefix_path.dsv
+[11.904s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/path.sh
+[11.904s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/environment/path.dsv
+[11.904s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.bash
+[11.904s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.sh
+[11.904s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.zsh
+[11.904s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/local_setup.dsv
+[11.904s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/package.dsv
+[11.904s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/ament_index/resource_index/packages/rover_gui
+[11.904s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/cmake/rover_guiConfig.cmake
+[11.905s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/cmake/rover_guiConfig-version.cmake
+[11.905s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_gui/share/rover_gui/package.xml
+[11.906s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_gui' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_gui

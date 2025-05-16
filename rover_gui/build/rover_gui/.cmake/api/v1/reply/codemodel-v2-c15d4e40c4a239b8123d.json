@@ -1,0 +1,97 @@
+{
+	"configurations" : 
+	[
+		{
+			"directories" : 
+			[
+				{
+					"build" : ".",
+					"hasInstallRule" : true,
+					"jsonFile" : "directory-.-5a94dd37979ab25d3de6.json",
+					"minimumCMakeVersion" : 
+					{
+						"string" : "3.16"
+					},
+					"projectIndex" : 0,
+					"source" : ".",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"name" : "",
+			"projects" : 
+			[
+				{
+					"directoryIndexes" : 
+					[
+						0
+					],
+					"name" : "rover_gui",
+					"targetIndexes" : 
+					[
+						0,
+						1,
+						2,
+						3,
+						4
+					]
+				}
+			],
+			"targets" : 
+			[
+				{
+					"directoryIndex" : 0,
+					"id" : "main_gui::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-main_gui-61cc2428ab5141c97d8a.json",
+					"name" : "main_gui",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "main_gui_autogen::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-main_gui_autogen-269d6aa4a1a5b3102e99.json",
+					"name" : "main_gui_autogen",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "rover_gui_uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-rover_gui_uninstall-7dd47a6402f29a21c5b8.json",
+					"name" : "rover_gui_uninstall",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "run_generate_ui::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-run_generate_ui-6b5926288bf979ff45da.json",
+					"name" : "run_generate_ui",
+					"projectIndex" : 0
+				},
+				{
+					"directoryIndex" : 0,
+					"id" : "uninstall::@6890427a1f51a3e7e1df",
+					"jsonFile" : "target-uninstall-8c49f351d8196dec748a.json",
+					"name" : "uninstall",
+					"projectIndex" : 0
+				}
+			]
+		}
+	],
+	"kind" : "codemodel",
+	"paths" : 
+	{
+		"build" : "/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui",
+		"source" : "/home/chris/ros2_ws/src/rover/rover_gui"
+	},
+	"version" : 
+	{
+		"major" : 2,
+		"minor" : 3
+	}
+}

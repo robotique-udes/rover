@@ -1,0 +1,15 @@
+// generated from rosidl_adapter/resource/srv.idl.em
+// with input from rover_msgs/srv/CompassCalibration.srv
+// generated code does not contain a copyright notice
+
+
+module rover_msgs {
+  module srv {
+    struct CompassCalibration_Request {
+      int16 angle_offset;
+    };
+    struct CompassCalibration_Response {
+      boolean success;
+    };
+  };
+};

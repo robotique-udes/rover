@@ -1,0 +1,6 @@
+setup.py
+rover_msgs/__init__.py
+rover_msgs.egg-info/PKG-INFO
+rover_msgs.egg-info/SOURCES.txt
+rover_msgs.egg-info/dependency_links.txt
+rover_msgs.egg-info/top_level.txt

@@ -1,0 +1,46 @@
+[0.830s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_auxiliary': AMENT_PREFIX_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble LD_LIBRARY_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_auxiliary -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_auxiliary
+[0.932s] -- The C compiler identification is GNU 11.4.0
+[1.060s] -- The CXX compiler identification is GNU 11.4.0
+[1.078s] -- Detecting C compiler ABI info
+[1.238s] -- Detecting C compiler ABI info - done
+[1.259s] -- Check for working C compiler: /usr/bin/cc - skipped
+[1.259s] -- Detecting C compile features
+[1.259s] -- Detecting C compile features - done
+[1.263s] -- Detecting CXX compiler ABI info
+[1.459s] -- Detecting CXX compiler ABI info - done
+[1.483s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[1.484s] -- Detecting CXX compile features
+[1.491s] -- Detecting CXX compile features - done
+[1.504s] -- Found ament_cmake: 1.3.6 (/opt/ros/humble/share/ament_cmake/cmake)
+[2.092s] -- Found Python3: /usr/bin/python3.10 (found version "3.10.12") found components: Interpreter 
+[2.518s] -- Found rclcpp: 16.0.7 (/opt/ros/humble/share/rclcpp/cmake)
+[2.842s] -- Found rosidl_generator_c: 3.1.5 (/opt/ros/humble/share/rosidl_generator_c/cmake)
+[2.884s] -- Found rosidl_adapter: 3.1.5 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[2.947s] -- Found rosidl_generator_cpp: 3.1.5 (/opt/ros/humble/share/rosidl_generator_cpp/cmake)
+[3.054s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[3.199s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[3.672s] -- Found rmw_implementation_cmake: 6.1.1 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[3.693s] -- Found rmw_fastrtps_cpp: 6.2.5 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[4.141s] -- Found OpenSSL: /usr/lib/x86_64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[4.267s] -- Found FastRTPS: /opt/ros/humble/include  
+[4.463s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[4.542s] -- Looking for pthread.h
+[4.901s] -- Looking for pthread.h - found
+[4.903s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[5.204s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[5.208s] -- Found Threads: TRUE  
+[5.943s] -- Found rover_msgs: 0.0.0 (/home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake)
+[6.274s] -- Configuring done
+[6.369s] -- Generating done
+[6.372s] -- Build files have been written to: /home/chris/ros2_ws/src/rover/build/rover_auxiliary
+[6.426s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_auxiliary' returned '0': AMENT_PREFIX_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble LD_LIBRARY_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_auxiliary -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_auxiliary
+[6.431s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_auxiliary': AMENT_PREFIX_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs:${AMENT_PREFIX_PATH} CMAKE_PREFIX_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs:/home/chris/ros2_ws/install/rover_security:/home/chris/ros2_ws/install/rover_gui:/home/chris/ros2_ws/install/rover_can:/home/chris/ros2_ws/install/rover_auxiliary:/home/chris/ros2_ws/install/rover_antenna:/home/chris/ros2_ws/install/rover_msgs:/home/chris/ros2_ws/install/moveit_visual_tools:/home/chris/ros2_ws/install/moveit_resources_prbt_support:/home/chris/ros2_ws/install/moveit_controller:/home/chris/ros2_ws/install/fanuc_crx_simulation:/home/chris/ros2_ws/install/moveit_common:/home/chris/ros2_ws/install/micro_ros_setup:/home/chris/ros2_ws/install/micro_ros_agent:/home/chris/ros2_ws/install/micro_ros_msgs:/home/chris/ros2_ws/install/rover_sim:/home/chris/ros2_ws/install/panorama:/home/chris/ros2_ws/install/moveit_configs_utils:/opt/ros/humble LD_LIBRARY_PATH=/home/chris/ros2_ws/src/rover/install/rover_msgs/lib:${LD_LIBRARY_PATH} PYTHONPATH=/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages:${PYTHONPATH} /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_auxiliary -- -j12 -l12
+[6.677s] [ 16%] [32mBuilding CXX object CMakeFiles/compass_calibrator.dir/src/compass_calibrator.cpp.o[0m
+[6.677s] [ 33%] [32mBuilding CXX object CMakeFiles/light_control.dir/src/light_control.cpp.o[0m
+[6.689s] [ 50%] [32mBuilding CXX object CMakeFiles/goal_manager.dir/src/goal_manager.cpp.o[0m
+[25.985s] [ 66%] [32m[1mLinking CXX executable light_control[0m
+[26.098s] [ 83%] [32m[1mLinking CXX executable goal_manager[0m
+[26.790s] [ 83%] Built target light_control
+[26.816s] [ 83%] Built target goal_manager
+[36.348s] [100%] [32m[1mLinking CXX executable compass_calibrator[0m
+[37.006s] [100%] Built target compass_calibrator

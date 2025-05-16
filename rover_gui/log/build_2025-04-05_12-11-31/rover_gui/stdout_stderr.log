@@ -1,0 +1,63 @@
+[  3%] [34m[1mGenerating UI files...[0m
+[0;34m=== Generating UI files ... ===[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Example.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Example.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/MainPage.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_MainPage.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/SideBar.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_SideBar.h[0m
+[  3%] Built target run_generate_ui
+[  7%] [34m[1mAutomatic MOC for target main_gui[0m
+AutoMoc warning
+---------------
+"SRC:/src/gui.cpp"
+includes the moc file "gui.moc", but does not contain a Q_OBJECT, Q_GADGET, Q_NAMESPACE or Q_NAMESPACE_EXPORT macro.
+
+AutoMoc: /home/chris/ros2_ws/src/rover/rover_gui/src/gui.cpp:0:1: note: No relevant classes found. No output generated.
+[  7%] Built target main_gui_autogen
+[35m[1mConsolidate compiler generated dependencies of target main_gui[0m
+[ 11%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/gui.cpp.o[0m
+[ 14%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[ 18%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/SecondaryWindow.cpp.o[0m
+[ 22%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/MainWindow.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QLogManager.cpp.o[0m
+[ 29%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/Helpers/QHelpers.cpp.o[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/Workers/QWorker.cpp.o[0m
+[ 37%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/QTmpFolderManager.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QIconManager.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileItem.cpp.o[0m
+[ 48%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[ 51%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[ 55%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QTreeViewExplorer.cpp.o[0m
+[ 59%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp.o[0m
+[ 62%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/Worker/QSshWorker.cpp.o[0m
+[ 66%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QDownloadedFileManager.cpp.o[0m
+[ 70%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSideBar/QSideBar.cpp.o[0m
+[ 74%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QDashboard/QDashboard.cpp.o[0m
+[ 77%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QNavigation/QNavigation.cpp.o[0m
+[ 81%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QDashboard/QExample.cpp.o[0m
+[ 85%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[ 88%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QGStreamerWorker.cpp.o[0m
+[ 92%] [32mBuilding CXX object CMakeFiles/main_gui.dir/qrc_resources.cpp.o[0m
+[ 96%] [32m[1mLinking CXX executable main_gui[0m
+[100%] Built target main_gui
+-- Install configuration: ""
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui//launch
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui//launch/gui.launch.py
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/lib/rover_gui/main_gui
+-- Set runtime path of "/home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/lib/rover_gui/main_gui" to ""
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/ament_index/resource_index/package_run_dependencies/rover_gui
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/ament_index/resource_index/parent_prefix_path/rover_gui
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/ament_prefix_path.sh
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/ament_prefix_path.dsv
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/path.sh
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/path.dsv
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.bash
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.sh
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.zsh
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.dsv
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/package.dsv
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/ament_index/resource_index/packages/rover_gui
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/cmake/rover_guiConfig.cmake
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/cmake/rover_guiConfig-version.cmake
+-- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/package.xml

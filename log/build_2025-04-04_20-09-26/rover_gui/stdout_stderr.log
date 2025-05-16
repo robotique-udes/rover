@@ -1,0 +1,40 @@
+[  3%] [34m[1mGenerating UI files...[0m
+[0;34m=== Generating UI files ... ===[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Example.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Example.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/MainPage.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_MainPage.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/SideBar.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_SideBar.h[0m
+[  3%] Built target run_generate_ui
+[  7%] [34m[1mAutomatic MOC for target main_gui[0m
+AutoMoc warning
+---------------
+"SRC:/src/gui.cpp"
+includes the moc file "gui.moc", but does not contain a Q_OBJECT, Q_GADGET, Q_NAMESPACE or Q_NAMESPACE_EXPORT macro.
+
+AutoMoc: /home/chris/ros2_ws/src/rover/rover_gui/src/gui.cpp:0:1: note: No relevant classes found. No output generated.
+[  7%] Built target main_gui_autogen
+[ 11%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[ 14%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/gui.cpp.o[0m
+[ 18%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/MainWindow.cpp.o[0m
+[ 22%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/SecondaryWindow.cpp.o[0m
+[ 25%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QLogManager.cpp.o[0m
+[ 29%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/Helpers/QHelpers.cpp.o[0m
+[ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/Workers/QWorker.cpp.o[0m
+[ 37%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/Global/QTmpFolderManager.cpp.o[0m
+[ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QIconManager.cpp.o[0m
+[ 44%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileItem.cpp.o[0m
+[ 48%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[ 51%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[ 55%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QTreeViewExplorer.cpp.o[0m
+[ 59%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp.o[0m
+In file included from [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp:1[m[K:
+[01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QSshFileExplorer/Worker/LibSshSupportModule.hpp:4:10:[m[K [01;31m[Kfatal error: [m[Klibssh/libssh.h: No such file or directory
+    4 | #include [01;31m[K<libssh/libssh.h>[m[K
+      |          [01;31m[K^~~~~~~~~~~~~~~~~[m[K
+compilation terminated.
+gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:266: CMakeFiles/main_gui.dir/src/QSshFileExplorer/Worker/LibSshSupportModule.cpp.o] Error 1
+gmake[2]: *** Waiting for unfinished jobs....
+gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

@@ -1,0 +1,177 @@
+[0.000000] (-) TimerEvent: {}
+[0.000111] (-) JobUnselected: {'identifier': 'rover_antenna'}
+[0.000127] (-) JobUnselected: {'identifier': 'rover_arm'}
+[0.000137] (-) JobUnselected: {'identifier': 'rover_auxiliary'}
+[0.000145] (-) JobUnselected: {'identifier': 'rover_can'}
+[0.000153] (-) JobUnselected: {'identifier': 'rover_drive_train'}
+[0.000161] (-) JobUnselected: {'identifier': 'rover_joy'}
+[0.000167] (-) JobUnselected: {'identifier': 'rover_msgs'}
+[0.000185] (-) JobUnselected: {'identifier': 'rover_security'}
+[0.000192] (-) JobUnselected: {'identifier': 'rover_sim'}
+[0.000201] (rover_gui) JobQueued: {'identifier': 'rover_gui', 'dependencies': OrderedDict([('rover_msgs', '/home/chris/ros2_ws/src/rover/install/rover_msgs')])}
+[0.000210] (rover_gui) JobStarted: {'identifier': 'rover_gui'}
+[0.008632] (rover_gui) JobProgress: {'identifier': 'rover_gui', 'progress': 'cmake'}
+[0.009738] (rover_gui) JobProgress: {'identifier': 'rover_gui', 'progress': 'build'}
+[0.009759] (rover_gui) Command: {'cmd': ['/usr/bin/cmake', '--build', '/home/chris/ros2_ws/src/rover/build/rover_gui', '--', '-j2', '-l2'], 'cwd': '/home/chris/ros2_ws/src/rover/build/rover_gui', 'env': OrderedDict([('GJS_DEBUG_TOPICS', 'JS ERROR;JS LOG'), ('LESSOPEN', '| /usr/bin/lesspipe %s'), ('USER', 'chris'), ('XDG_SESSION_TYPE', 'wayland'), ('SHLVL', '1'), ('LD_LIBRARY_PATH', '/home/chris/ros2_ws/src/rover/install/rover_msgs/lib:/opt/ros/humble/opt/rviz_ogre_vendor/lib:/opt/ros/humble/lib/aarch64-linux-gnu:/opt/ros/humble/lib'), ('HOME', '/home/chris'), ('OLDPWD', '/home/chris'), ('DESKTOP_SESSION', 'ubuntu'), ('GIO_LAUNCHED_DESKTOP_FILE', '/usr/share/applications/terminator.desktop'), ('ROS_PYTHON_VERSION', '3'), ('GNOME_SHELL_SESSION_MODE', 'ubuntu'), ('GTK_MODULES', 'gail:atk-bridge'), ('MANAGERPID', '2402'), ('SYSTEMD_EXEC_PID', '2748'), ('DBUS_SESSION_BUS_ADDRESS', 'unix:path=/run/user/1000/bus'), ('COLORTERM', 'truecolor'), ('TERMINATOR_DBUS_NAME', 'net.tenshu.Terminator25ef4b219e3b005583550f2b0f9f990c3'), ('GIO_LAUNCHED_DESKTOP_FILE_PID', '3256'), ('IM_CONFIG_PHASE', '1'), ('WAYLAND_DISPLAY', 'wayland-0'), ('ROS_DISTRO', 'humble'), ('LOGNAME', 'chris'), ('JOURNAL_STREAM', '8:15177'), ('_', '/usr/bin/colcon'), ('ROS_VERSION', '2'), ('XDG_SESSION_CLASS', 'user'), ('USERNAME', 'chris'), ('TERM', 'xterm-256color'), ('GNOME_DESKTOP_SESSION_ID', 'this-is-deprecated'), ('ROS_LOCALHOST_ONLY', '0'), ('PATH', '/opt/ros/humble/bin:/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/games:/usr/local/games:/snap/bin:/snap/bin'), ('SESSION_MANAGER', 'local/ubuntu:@/tmp/.ICE-unix/2718,unix/ubuntu:/tmp/.ICE-unix/2718'), ('INVOCATION_ID', '381647e181a14066a0a5a6bae0e80777'), ('XDG_MENU_PREFIX', 'gnome-'), ('GNOME_SETUP_DISPLAY', ':1'), ('XDG_RUNTIME_DIR', '/run/user/1000'), ('DISPLAY', ':0'), ('TERMINATOR_DBUS_PATH', '/net/tenshu/Terminator2'), ('LANG', 'en_US.UTF-8'), ('XDG_CURRENT_DESKTOP', 'ubuntu:GNOME'), ('IBUS_DISABLE_SNOOPER', '1'), ('XMODIFIERS', '@im=ibus'), ('XDG_SESSION_DESKTOP', 'ubuntu'), ('XAUTHORITY', '/run/user/1000/.mutter-Xwaylandauth.7PIO42'), ('LS_COLORS', 'rs=0:di=01;34:ln=01;36:mh=00:pi=40;33:so=01;35:do=01;35:bd=40;33;01:cd=40;33;01:or=40;31;01:mi=00:su=37;41:sg=30;43:ca=30;41:tw=30;42:ow=34;42:st=37;44:ex=01;32:*.tar=01;31:*.tgz=01;31:*.arc=01;31:*.arj=01;31:*.taz=01;31:*.lha=01;31:*.lz4=01;31:*.lzh=01;31:*.lzma=01;31:*.tlz=01;31:*.txz=01;31:*.tzo=01;31:*.t7z=01;31:*.zip=01;31:*.z=01;31:*.dz=01;31:*.gz=01;31:*.lrz=01;31:*.lz=01;31:*.lzo=01;31:*.xz=01;31:*.zst=01;31:*.tzst=01;31:*.bz2=01;31:*.bz=01;31:*.tbz=01;31:*.tbz2=01;31:*.tz=01;31:*.deb=01;31:*.rpm=01;31:*.jar=01;31:*.war=01;31:*.ear=01;31:*.sar=01;31:*.rar=01;31:*.alz=01;31:*.ace=01;31:*.zoo=01;31:*.cpio=01;31:*.7z=01;31:*.rz=01;31:*.cab=01;31:*.wim=01;31:*.swm=01;31:*.dwm=01;31:*.esd=01;31:*.jpg=01;35:*.jpeg=01;35:*.mjpg=01;35:*.mjpeg=01;35:*.gif=01;35:*.bmp=01;35:*.pbm=01;35:*.pgm=01;35:*.ppm=01;35:*.tga=01;35:*.xbm=01;35:*.xpm=01;35:*.tif=01;35:*.tiff=01;35:*.png=01;35:*.svg=01;35:*.svgz=01;35:*.mng=01;35:*.pcx=01;35:*.mov=01;35:*.mpg=01;35:*.mpeg=01;35:*.m2v=01;35:*.mkv=01;35:*.webm=01;35:*.webp=01;35:*.ogm=01;35:*.mp4=01;35:*.m4v=01;35:*.mp4v=01;35:*.vob=01;35:*.qt=01;35:*.nuv=01;35:*.wmv=01;35:*.asf=01;35:*.rm=01;35:*.rmvb=01;35:*.flc=01;35:*.avi=01;35:*.fli=01;35:*.flv=01;35:*.gl=01;35:*.dl=01;35:*.xcf=01;35:*.xwd=01;35:*.yuv=01;35:*.cgm=01;35:*.emf=01;35:*.ogv=01;35:*.ogx=01;35:*.aac=00;36:*.au=00;36:*.flac=00;36:*.m4a=00;36:*.mid=00;36:*.midi=00;36:*.mka=00;36:*.mp3=00;36:*.mpc=00;36:*.ogg=00;36:*.ra=00;36:*.wav=00;36:*.oga=00;36:*.opus=00;36:*.spx=00;36:*.xspf=00;36:'), ('SSH_AGENT_LAUNCHER', 'gnome-keyring'), ('SSH_AUTH_SOCK', '/run/user/1000/keyring/ssh'), ('ROS_DOMAIN_ID', '69'), ('AMENT_PREFIX_PATH', '/home/chris/ros2_ws/src/rover/install/rover_msgs:/opt/ros/humble'), ('SHELL', '/bin/bash'), ('TERMINATOR_UUID', 'urn:uuid:6e58df79-d5de-4138-951b-f119f58ac0d9'), ('QT_ACCESSIBILITY', '1'), ('GDMSESSION', 'ubuntu'), ('LESSCLOSE', '/usr/bin/lesspipe %s %s'), ('GJS_DEBUG_OUTPUT', 'stderr'), ('QT_IM_MODULE', 'ibus'), ('PWD', '/home/chris/ros2_ws/src/rover/build/rover_gui'), ('LC_ALL', 'en_US.UTF-8'), ('XDG_CONFIG_DIRS', '/etc/xdg/xdg-ubuntu:/etc/xdg'), ('RCUTILS_COLORIZED_OUTPUT', '1'), ('XDG_DATA_DIRS', '/usr/share/ubuntu:/usr/local/share/:/usr/share/:/var/lib/snapd/desktop'), ('PYTHONPATH', '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages:/opt/ros/humble/lib/python3.10/site-packages:/opt/ros/humble/local/lib/python3.10/dist-packages'), ('COLCON', '1'), ('VTE_VERSION', '6800'), ('CMAKE_PREFIX_PATH', '/home/chris/ros2_ws/src/rover/install/rover_msgs:/opt/ros/humble')]), 'shell': False}
+[0.079222] (rover_gui) StdoutLine: {'line': b'[  3%] \x1b[34m\x1b[1mGenerating UI files...\x1b[0m\n'}
+[0.086167] (rover_gui) StdoutLine: {'line': b'\x1b[0;34m=== Generating UI files ... ===\x1b[0m\n'}
+[0.099691] (-) TimerEvent: {}
+[0.117520] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Example.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Example.h\x1b[0m\n'}
+[0.120942] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h\x1b[0m\n'}
+[0.123276] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/MainPage.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_MainPage.h\x1b[0m\n'}
+[0.126099] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h\x1b[0m\n'}
+[0.130135] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h\x1b[0m\n'}
+[0.132561] (rover_gui) StdoutLine: {'line': b'\x1b[0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/SideBar.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_SideBar.h\x1b[0m\n'}
+[0.135940] (rover_gui) StdoutLine: {'line': b'[  3%] Built target run_generate_ui\n'}
+[0.144599] (rover_gui) StdoutLine: {'line': b'[  7%] \x1b[34m\x1b[1mAutomatic MOC for target main_gui\x1b[0m\n'}
+[0.152661] (rover_gui) StdoutLine: {'line': b'AutoMoc warning\n'}
+[0.152717] (rover_gui) StdoutLine: {'line': b'---------------\n'}
+[0.152743] (rover_gui) StdoutLine: {'line': b'"SRC:/src/gui.cpp"\n'}
+[0.152766] (rover_gui) StdoutLine: {'line': b'includes the moc file "gui.moc", but does not contain a Q_OBJECT, Q_GADGET, Q_NAMESPACE or Q_NAMESPACE_EXPORT macro.\n'}
+[0.152789] (rover_gui) StdoutLine: {'line': b'\n'}
+[0.200159] (-) TimerEvent: {}
+[0.300604] (-) TimerEvent: {}
+[0.400812] (-) TimerEvent: {}
+[0.501763] (-) TimerEvent: {}
+[0.602598] (-) TimerEvent: {}
+[0.703515] (-) TimerEvent: {}
+[0.804366] (-) TimerEvent: {}
+[0.904750] (-) TimerEvent: {}
+[1.005205] (-) TimerEvent: {}
+[1.105955] (-) TimerEvent: {}
+[1.206930] (-) TimerEvent: {}
+[1.307676] (-) TimerEvent: {}
+[1.408225] (-) TimerEvent: {}
+[1.510212] (-) TimerEvent: {}
+[1.528984] (rover_gui) StdoutLine: {'line': b'AutoMoc: /home/chris/ros2_ws/src/rover/rover_gui/src/gui.cpp:0:1: note: No relevant classes found. No output generated.\n'}
+[1.534827] (rover_gui) StdoutLine: {'line': b'[  7%] Built target main_gui_autogen\n'}
+[1.550044] (rover_gui) StdoutLine: {'line': b'\x1b[35m\x1b[1mConsolidate compiler generated dependencies of target main_gui\x1b[0m\n'}
+[1.572816] (rover_gui) StdoutLine: {'line': b'[ 11%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o\x1b[0m\n'}
+[1.573154] (rover_gui) StdoutLine: {'line': b'[ 14%] \x1b[32mBuilding CXX object CMakeFiles/main_gui.dir/src/gui.cpp.o\x1b[0m\n'}
+[1.611205] (-) TimerEvent: {}
+[1.711394] (-) TimerEvent: {}
+[1.812377] (-) TimerEvent: {}
+[1.912646] (-) TimerEvent: {}
+[2.014748] (-) TimerEvent: {}
+[2.115044] (-) TimerEvent: {}
+[2.216192] (-) TimerEvent: {}
+[2.318578] (-) TimerEvent: {}
+[2.418929] (-) TimerEvent: {}
+[2.519223] (-) TimerEvent: {}
+[2.619561] (-) TimerEvent: {}
+[2.719825] (-) TimerEvent: {}
+[2.820092] (-) TimerEvent: {}
+[2.920382] (-) TimerEvent: {}
+[3.022496] (-) TimerEvent: {}
+[3.122816] (-) TimerEvent: {}
+[3.223213] (-) TimerEvent: {}
+[3.323989] (-) TimerEvent: {}
+[3.425571] (-) TimerEvent: {}
+[3.525854] (-) TimerEvent: {}
+[3.628233] (-) TimerEvent: {}
+[3.729063] (-) TimerEvent: {}
+[3.829732] (-) TimerEvent: {}
+[3.929976] (-) TimerEvent: {}
+[4.030230] (-) TimerEvent: {}
+[4.130451] (-) TimerEvent: {}
+[4.230688] (-) TimerEvent: {}
+[4.330921] (-) TimerEvent: {}
+[4.431172] (-) TimerEvent: {}
+[4.531632] (-) TimerEvent: {}
+[4.642436] (-) TimerEvent: {}
+[4.782960] (-) TimerEvent: {}
+[4.933193] (-) TimerEvent: {}
+[5.066499] (-) TimerEvent: {}
+[5.242971] (-) TimerEvent: {}
+[5.432791] (-) TimerEvent: {}
+[5.677096] (-) TimerEvent: {}
+[6.662220] (-) TimerEvent: {}
+[7.837926] (-) TimerEvent: {}
+[8.261195] (-) TimerEvent: {}
+[8.951936] (-) TimerEvent: {}
+[9.454124] (-) TimerEvent: {}
+[10.082443] (-) TimerEvent: {}
+[10.839559] (-) TimerEvent: {}
+[11.321601] (-) TimerEvent: {}
+[12.441030] (-) TimerEvent: {}
+[13.507742] (-) TimerEvent: {}
+[14.406712] (-) TimerEvent: {}
+[15.408573] (-) TimerEvent: {}
+[16.312852] (-) TimerEvent: {}
+[17.225314] (-) TimerEvent: {}
+[18.141913] (-) TimerEvent: {}
+[18.630519] (-) TimerEvent: {}
+[19.381191] (-) TimerEvent: {}
+[20.016660] (-) TimerEvent: {}
+[21.021003] (-) TimerEvent: {}
+[22.205653] (-) TimerEvent: {}
+[24.294533] (-) TimerEvent: {}
+[27.540532] (-) TimerEvent: {}
+[28.457957] (-) TimerEvent: {}
+[29.355959] (-) TimerEvent: {}
+[30.279930] (-) TimerEvent: {}
+[31.718214] (-) TimerEvent: {}
+[32.369453] (-) TimerEvent: {}
+[32.899313] (-) TimerEvent: {}
+[33.474246] (-) TimerEvent: {}
+[34.374490] (-) TimerEvent: {}
+[34.944370] (-) TimerEvent: {}
+[35.434536] (-) TimerEvent: {}
+[36.221684] (-) TimerEvent: {}
+[37.558693] (-) TimerEvent: {}
+[38.874123] (-) TimerEvent: {}
+[39.729177] (-) TimerEvent: {}
+[40.683613] (-) TimerEvent: {}
+[41.289539] (-) TimerEvent: {}
+[42.185274] (-) TimerEvent: {}
+[43.246571] (-) TimerEvent: {}
+[44.403420] (-) TimerEvent: {}
+[44.943576] (-) TimerEvent: {}
+[45.800664] (-) TimerEvent: {}
+[46.427882] (-) TimerEvent: {}
+[47.443112] (-) TimerEvent: {}
+[48.475000] (-) TimerEvent: {}
+[49.341480] (-) TimerEvent: {}
+[50.526227] (-) TimerEvent: {}
+[51.246892] (-) TimerEvent: {}
+[51.615506] (-) TimerEvent: {}
+[52.390046] (-) TimerEvent: {}
+[54.460122] (-) TimerEvent: {}
+[55.448815] (-) TimerEvent: {}
+[56.360019] (-) TimerEvent: {}
+[57.767817] (-) TimerEvent: {}
+[59.350066] (-) TimerEvent: {}
+[60.565358] (-) TimerEvent: {}
+[61.174816] (-) TimerEvent: {}
+[63.534249] (-) TimerEvent: {}
+[66.475161] (-) TimerEvent: {}
+[68.199426] (-) TimerEvent: {}
+[70.274362] (-) TimerEvent: {}
+[72.609855] (-) TimerEvent: {}
+[77.478070] (-) TimerEvent: {}
+[79.735525] (-) TimerEvent: {}
+[81.169264] (-) TimerEvent: {}
+[82.756382] (-) TimerEvent: {}
+[84.490383] (-) TimerEvent: {}
+[86.521106] (-) TimerEvent: {}
+[88.113183] (-) TimerEvent: {}
+[89.699546] (-) TimerEvent: {}
+[91.414830] (-) TimerEvent: {}
+[93.135529] (-) TimerEvent: {}
+[95.203929] (-) TimerEvent: {}
+[98.735587] (-) TimerEvent: {}
+[100.692824] (-) TimerEvent: {}
+[102.541323] (-) TimerEvent: {}
+[104.260339] (-) TimerEvent: {}
+[106.416820] (-) TimerEvent: {}
+[107.716645] (-) TimerEvent: {}
+[109.557390] (-) TimerEvent: {}
+[110.759944] (-) TimerEvent: {}
+[110.869237] (-) TimerEvent: {}
+[110.970417] (-) TimerEvent: {}
+[111.071472] (-) TimerEvent: {}
+[111.171698] (-) TimerEvent: {}
+[111.271989] (-) TimerEvent: {}
+[111.373972] (-) TimerEvent: {}
+[111.477741] (-) TimerEvent: {}
+[111.582607] (-) TimerEvent: {}

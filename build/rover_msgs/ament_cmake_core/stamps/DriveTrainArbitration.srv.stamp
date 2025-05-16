@@ -1,0 +1,3 @@
+rover_msgs/DrivetrainArbitration target_arbitration
+---
+rover_msgs/DrivetrainArbitration current_arbitration

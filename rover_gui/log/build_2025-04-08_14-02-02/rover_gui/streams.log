@@ -1,0 +1,69 @@
+[0.006s] Invoking command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui -- -j4 -l4
+[0.033s] [  3%] [34m[1mGenerating UI files...[0m
+[0.035s] [0;34m=== Generating UI files ... ===[0m
+[0.040s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Example.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Example.h[0m
+[0.043s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[0.046s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/MainPage.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_MainPage.h[0m
+[0.049s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[0.051s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[0.054s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/SideBar.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_SideBar.h[0m
+[0.058s] [  3%] Built target run_generate_ui
+[0.066s] [  7%] [34m[1mAutomatic MOC for target main_gui[0m
+[0.072s] AutoMoc warning
+[0.072s] ---------------
+[0.072s] "SRC:/src/gui.cpp"
+[0.072s] includes the moc file "gui.moc", but does not contain a Q_OBJECT, Q_GADGET, Q_NAMESPACE or Q_NAMESPACE_EXPORT macro.
+[0.072s] 
+[1.566s] AutoMoc: /home/chris/ros2_ws/src/rover/rover_gui/src/gui.cpp:0:1: note: No relevant classes found. No output generated.
+[1.573s] [  7%] Built target main_gui_autogen
+[1.596s] [35m[1mConsolidate compiler generated dependencies of target main_gui[0m
+[1.640s] [ 11%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[1.640s] [ 14%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/gui.cpp.o[0m
+[1.644s] [ 18%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/MainWindow.cpp.o[0m
+[1.647s] [ 22%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/SecondaryWindow.cpp.o[0m
+[3.750s] [ 25%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[4.878s] [ 29%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[5.332s] [ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSideBar/QSideBar.cpp.o[0m
+[5.525s] [ 37%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QDashboard/QDashboard.cpp.o[0m
+[6.408s] [ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QDashboard/QExample.cpp.o[0m
+[6.896s] [ 44%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[11.417s] [ 48%] [32m[1mLinking CXX executable main_gui[0m
+[12.300s] /usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o: in function `RtspPlayerWidget::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)':
+[12.301s] mocs_compilation.cpp:(.text+0x1818): undefined reference to `RtspPlayerWidget::onPipelineStarted(_GstElement*)'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x1834): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x185c): undefined reference to `RtspPlayerWidget::onNewLogMessage(QString const&, QString const&)'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x187c): undefined reference to `RtspPlayerWidget::onToggleDebug(bool)'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x189c): undefined reference to `RtspPlayerWidget::onToggleInfo(bool)'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x18bc): undefined reference to `RtspPlayerWidget::onToggleWarning(bool)'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x18dc): undefined reference to `RtspPlayerWidget::onToggleError(bool)'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x18e8): undefined reference to `RtspPlayerWidget::onClearLogs()'
+[12.301s] /usr/bin/ld: mocs_compilation.cpp:(.text+0x18f4): undefined reference to `RtspPlayerWidget::onToggleView()'
+[12.302s] /usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x28): undefined reference to `RtspPlayerWidget::~RtspPlayerWidget()'
+[12.302s] /usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x30): undefined reference to `RtspPlayerWidget::~RtspPlayerWidget()'
+[12.302s] /usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x1c0): undefined reference to `non-virtual thunk to RtspPlayerWidget::~RtspPlayerWidget()'
+[12.302s] /usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x1c8): undefined reference to `non-virtual thunk to RtspPlayerWidget::~RtspPlayerWidget()'
+[12.306s] /usr/bin/ld: CMakeFiles/main_gui.dir/src/SecondaryWindow.cpp.o: in function `SecondaryWindow::editStream()':
+[12.306s] SecondaryWindow.cpp:(.text+0x2298): undefined reference to `RtspPlayerWidget::stopStream()'
+[12.337s] /usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)::{lambda()#2}::operator()() const':
+[12.337s] QRtspPlayerWidget.cpp:(.text+0x5f8): undefined reference to `RtspPlayerWidget::emitStateChanged()'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x648): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+[12.337s] /usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)::{lambda()#3}::operator()() const':
+[12.337s] QRtspPlayerWidget.cpp:(.text+0xa4c): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0xa60): undefined reference to `RtspPlayerWidget::emitStateChanged()'
+[12.337s] /usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)::{lambda()#4}::operator()() const':
+[12.337s] QRtspPlayerWidget.cpp:(.text+0xba4): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+[12.337s] /usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)':
+[12.337s] QRtspPlayerWidget.cpp:(.text+0x11dc): undefined reference to `RtspPlayerWidget::setupUI()'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1660): undefined reference to `RtspPlayerWidget::onPipelineStarted(_GstElement*)'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1664): undefined reference to `RtspPlayerWidget::onPipelineStarted(_GstElement*)'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x16b0): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x16b4): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1810): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+[12.337s] /usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1a2c): undefined reference to `RtspPlayerWidget::emitStateChanged()'
+[12.337s] /usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::startStream(QString const&)':
+[12.337s] QRtspPlayerWidget.cpp:(.text+0x22e0): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+[12.374s] collect2: error: ld returned 1 exit status
+[12.376s] gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:526: main_gui] Error 1
+[12.376s] gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+[12.376s] gmake: *** [Makefile:146: all] Error 2
+[12.379s] Invoked command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui' returned '2': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui -- -j4 -l4

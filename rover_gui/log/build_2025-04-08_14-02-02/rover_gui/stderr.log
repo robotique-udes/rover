@@ -1,0 +1,38 @@
+/usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o: in function `RtspPlayerWidget::qt_static_metacall(QObject*, QMetaObject::Call, int, void**)':
+mocs_compilation.cpp:(.text+0x1818): undefined reference to `RtspPlayerWidget::onPipelineStarted(_GstElement*)'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x1834): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x185c): undefined reference to `RtspPlayerWidget::onNewLogMessage(QString const&, QString const&)'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x187c): undefined reference to `RtspPlayerWidget::onToggleDebug(bool)'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x189c): undefined reference to `RtspPlayerWidget::onToggleInfo(bool)'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x18bc): undefined reference to `RtspPlayerWidget::onToggleWarning(bool)'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x18dc): undefined reference to `RtspPlayerWidget::onToggleError(bool)'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x18e8): undefined reference to `RtspPlayerWidget::onClearLogs()'
+/usr/bin/ld: mocs_compilation.cpp:(.text+0x18f4): undefined reference to `RtspPlayerWidget::onToggleView()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x28): undefined reference to `RtspPlayerWidget::~RtspPlayerWidget()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x30): undefined reference to `RtspPlayerWidget::~RtspPlayerWidget()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x1c0): undefined reference to `non-virtual thunk to RtspPlayerWidget::~RtspPlayerWidget()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o:(.data.rel.ro._ZTV16RtspPlayerWidget[_ZTV16RtspPlayerWidget]+0x1c8): undefined reference to `non-virtual thunk to RtspPlayerWidget::~RtspPlayerWidget()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/SecondaryWindow.cpp.o: in function `SecondaryWindow::editStream()':
+SecondaryWindow.cpp:(.text+0x2298): undefined reference to `RtspPlayerWidget::stopStream()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)::{lambda()#2}::operator()() const':
+QRtspPlayerWidget.cpp:(.text+0x5f8): undefined reference to `RtspPlayerWidget::emitStateChanged()'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x648): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)::{lambda()#3}::operator()() const':
+QRtspPlayerWidget.cpp:(.text+0xa4c): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0xa60): undefined reference to `RtspPlayerWidget::emitStateChanged()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)::{lambda()#4}::operator()() const':
+QRtspPlayerWidget.cpp:(.text+0xba4): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::RtspPlayerWidget(QWidget*, QString const&)':
+QRtspPlayerWidget.cpp:(.text+0x11dc): undefined reference to `RtspPlayerWidget::setupUI()'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1660): undefined reference to `RtspPlayerWidget::onPipelineStarted(_GstElement*)'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1664): undefined reference to `RtspPlayerWidget::onPipelineStarted(_GstElement*)'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x16b0): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x16b4): undefined reference to `RtspPlayerWidget::onErrorOccurred(QString const&)'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1810): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+/usr/bin/ld: QRtspPlayerWidget.cpp:(.text+0x1a2c): undefined reference to `RtspPlayerWidget::emitStateChanged()'
+/usr/bin/ld: CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o: in function `RtspPlayerWidget::startStream(QString const&)':
+QRtspPlayerWidget.cpp:(.text+0x22e0): undefined reference to `RtspPlayerWidget::updateStatusIndicator(QString const&)'
+collect2: error: ld returned 1 exit status
+gmake[2]: *** [CMakeFiles/main_gui.dir/build.make:526: main_gui] Error 1
+gmake[1]: *** [CMakeFiles/Makefile2:167: CMakeFiles/main_gui.dir/all] Error 2
+gmake: *** [Makefile:146: all] Error 2

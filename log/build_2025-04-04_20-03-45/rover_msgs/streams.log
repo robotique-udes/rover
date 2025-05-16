@@ -1,0 +1,955 @@
+[0.003s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_msgs -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_msgs
+[0.031s] -- The C compiler identification is GNU 11.4.0
+[0.057s] -- The CXX compiler identification is GNU 11.4.0
+[0.060s] -- Detecting C compiler ABI info
+[0.087s] -- Detecting C compiler ABI info - done
+[0.091s] -- Check for working C compiler: /usr/bin/cc - skipped
+[0.091s] -- Detecting C compile features
+[0.091s] -- Detecting C compile features - done
+[0.093s] -- Detecting CXX compiler ABI info
+[0.124s] -- Detecting CXX compiler ABI info - done
+[0.128s] -- Check for working CXX compiler: /usr/bin/c++ - skipped
+[0.128s] -- Detecting CXX compile features
+[0.129s] -- Detecting CXX compile features - done
+[0.130s] -- Found ament_cmake: 1.3.11 (/opt/ros/humble/share/ament_cmake/cmake)
+[0.193s] -- Found Python3: /usr/bin/python3 (found version "3.10.12") found components: Interpreter 
+[0.228s] -- Found ament_index_cpp: 1.4.0 (/opt/ros/humble/share/ament_index_cpp/cmake)
+[0.229s] -- Found rosidl_default_generators: 1.2.0 (/opt/ros/humble/share/rosidl_default_generators/cmake)
+[0.231s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.234s] -- Found rosidl_adapter: 3.1.6 (/opt/ros/humble/share/rosidl_adapter/cmake)
+[0.251s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.267s] -- Found rclcpp: 16.0.12 (/opt/ros/humble/share/rclcpp/cmake)
+[0.288s] -- Found rmw_implementation_cmake: 6.1.2 (/opt/ros/humble/share/rmw_implementation_cmake/cmake)
+[0.289s] -- Found rmw_fastrtps_cpp: 6.2.7 (/opt/ros/humble/share/rmw_fastrtps_cpp/cmake)
+[0.319s] -- Found OpenSSL: /usr/lib/aarch64-linux-gnu/libcrypto.so (found version "3.0.2")  
+[0.331s] -- Found FastRTPS: /opt/ros/humble/include  
+[0.349s] -- Using RMW implementation 'rmw_fastrtps_cpp' as default
+[0.352s] -- Looking for pthread.h
+[0.381s] -- Looking for pthread.h - found
+[0.381s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD
+[0.410s] -- Performing Test CMAKE_HAVE_LIBC_PTHREAD - Success
+[0.410s] -- Found Threads: TRUE  
+[0.612s] -- Found ament_cmake_ros: 0.10.0 (/opt/ros/humble/share/ament_cmake_ros/cmake)
+[0.694s] -- Using all available rosidl_typesupport_c: rosidl_typesupport_fastrtps_c;rosidl_typesupport_introspection_c
+[0.800s] -- Using all available rosidl_typesupport_cpp: rosidl_typesupport_fastrtps_cpp;rosidl_typesupport_introspection_cpp
+[0.810s] -- Found PythonInterp: /usr/bin/python3 (found suitable version "3.10.12", minimum required is "3.6") 
+[0.811s] -- Found python_cmake_module: 0.10.0 (/opt/ros/humble/share/python_cmake_module/cmake)
+[0.824s] -- Found PythonLibs: /usr/lib/aarch64-linux-gnu/libpython3.10.so (found suitable version "3.10.12", minimum required is "3.5") 
+[0.824s] -- Using PYTHON_EXECUTABLE: /usr/bin/python3
+[0.824s] -- Using PYTHON_INCLUDE_DIRS: /usr/include/python3.10
+[0.824s] -- Using PYTHON_LIBRARIES: /usr/lib/aarch64-linux-gnu/libpython3.10.so
+[0.833s] -- Found PythonExtra: .so  
+[0.854s] -- Configuring done
+[0.893s] -- Generating done
+[0.900s] -- Build files have been written to: /home/chris/ros2_ws/src/rover/build/rover_msgs
+[0.906s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake /home/chris/ros2_ws/src/rover/rover_msgs -DCMAKE_INSTALL_PREFIX=/home/chris/ros2_ws/src/rover/install/rover_msgs
+[0.907s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_msgs -- -j2 -l2
+[0.931s] [  0%] [32mBuilding CXX object CMakeFiles/lib_exec.dir/src/lib.cpp.o[0m
+[0.934s] [  0%] [34m[1mGenerating C++ code for ROS interfaces[0m
+[1.100s] [  0%] [32mBuilding CXX object CMakeFiles/lib_exec.dir/include/rovus_lib/timer.cpp.o[0m
+[1.352s] [  1%] [32m[1mLinking CXX static library liblib_exec.a[0m
+[1.366s] [  1%] Built target lib_exec
+[1.370s] [  1%] [34m[1mGenerating C code for ROS interfaces[0m
+[2.126s] [  1%] Built target rover_msgs__cpp
+[2.136s] [  1%] Built target ament_cmake_python_copy_rover_msgs
+[2.142s] [  1%] [34m[1mGenerating C++ type support dispatch for ROS interfaces[0m
+[2.563s] [  2%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/antenna_cmd__functions.c.o[0m
+[2.590s] [  2%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/propulsion_motor__functions.c.o[0m
+[2.612s] [  3%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/can_device_status__functions.c.o[0m
+[2.631s] [  3%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/joy__functions.c.o[0m
+[2.652s] [  4%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/joy_demux_status__functions.c.o[0m
+[2.672s] [  4%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/gps__functions.c.o[0m
+[2.691s] [  4%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/gps_position__functions.c.o[0m
+[2.711s] [  5%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/camera_control__functions.c.o[0m
+[2.722s] [  6%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/antenna_cmd__type_support.cpp.o[0m
+[2.731s] [  6%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/light_control__functions.c.o[0m
+[2.754s] [  7%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/science_control__functions.c.o[0m
+[2.775s] [  7%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/arm_msg__functions.c.o[0m
+[2.797s] [  8%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/drivetrain_arbitration__functions.c.o[0m
+[2.817s] [  8%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/compass__functions.c.o[0m
+[2.838s] [  9%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/camera_angle__functions.c.o[0m
+[2.849s] [  9%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/propulsion_motor__type_support.cpp.o[0m
+[2.859s] [  9%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/msg/detail/aruco__functions.c.o[0m
+[2.879s] [ 10%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/joy_demux_set_state__functions.c.o[0m
+[2.904s] [ 10%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/antenna_arbitration__functions.c.o[0m
+[2.929s] [ 11%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/drive_train_arbitration__functions.c.o[0m
+[2.955s] [ 11%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/light_control__functions.c.o[0m
+[2.959s] [ 12%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/can_device_status__type_support.cpp.o[0m
+[2.980s] [ 12%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/compass_calibration__functions.c.o[0m
+[3.004s] [ 13%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/new_gps_goal__functions.c.o[0m
+[3.031s] [ 13%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/pano_control__functions.c.o[0m
+[3.057s] [ 14%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/rtsp_stream__functions.c.o[0m
+[3.068s] [ 14%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/joy__type_support.cpp.o[0m
+[3.082s] [ 14%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_c.dir/rosidl_generator_c/rover_msgs/srv/detail/screenshot_control__functions.c.o[0m
+[3.110s] [ 15%] [32m[1mLinking C shared library librover_msgs__rosidl_generator_c.so[0m
+[3.130s] [ 15%] Built target rover_msgs__rosidl_generator_c
+[3.133s] [ 16%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/joy_demux_status__type_support.cpp.o[0m
+[3.181s] [ 16%] [34m[1mGenerating C++ type support for eProsima Fast-RTPS[0m
+[3.238s] [ 16%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/gps__type_support.cpp.o[0m
+[3.344s] [ 17%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/gps_position__type_support.cpp.o[0m
+[3.447s] [ 17%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/camera_control__type_support.cpp.o[0m
+[3.551s] [ 18%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/light_control__type_support.cpp.o[0m
+[3.655s] [ 18%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/science_control__type_support.cpp.o[0m
+[3.758s] [ 19%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/arm_msg__type_support.cpp.o[0m
+[3.862s] [ 19%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/drivetrain_arbitration__type_support.cpp.o[0m
+[3.966s] [ 19%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/compass__type_support.cpp.o[0m
+[4.071s] [ 20%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/camera_angle__type_support.cpp.o[0m
+[4.072s] [ 21%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/antenna_cmd__type_support.cpp.o[0m
+[4.178s] [ 21%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/msg/aruco__type_support.cpp.o[0m
+[4.242s] [ 21%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/propulsion_motor__type_support.cpp.o[0m
+[4.285s] [ 22%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/joy_demux_set_state__type_support.cpp.o[0m
+[4.396s] [ 22%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/antenna_arbitration__type_support.cpp.o[0m
+[4.405s] [ 23%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/can_device_status__type_support.cpp.o[0m
+[4.502s] [ 24%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/drive_train_arbitration__type_support.cpp.o[0m
+[4.564s] [ 24%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/joy__type_support.cpp.o[0m
+[4.609s] [ 24%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/light_control__type_support.cpp.o[0m
+[4.715s] [ 25%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/compass_calibration__type_support.cpp.o[0m
+[4.723s] [ 26%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/joy_demux_status__type_support.cpp.o[0m
+[4.821s] [ 26%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/new_gps_goal__type_support.cpp.o[0m
+[4.880s] [ 26%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/gps__type_support.cpp.o[0m
+[4.928s] [ 27%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/pano_control__type_support.cpp.o[0m
+[5.033s] [ 27%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/rtsp_stream__type_support.cpp.o[0m
+[5.037s] [ 27%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/gps_position__type_support.cpp.o[0m
+[5.148s] [ 28%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_cpp.dir/rosidl_typesupport_cpp/rover_msgs/srv/screenshot_control__type_support.cpp.o[0m
+[5.197s] [ 29%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/camera_control__type_support.cpp.o[0m
+[5.254s] [ 29%] [32m[1mLinking CXX shared library librover_msgs__rosidl_typesupport_cpp.so[0m
+[5.274s] [ 29%] Built target rover_msgs__rosidl_typesupport_cpp
+[5.278s] [ 29%] [34m[1mGenerating C++ introspection for ROS interfaces[0m
+[5.356s] [ 29%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/light_control__type_support.cpp.o[0m
+[5.515s] [ 30%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/science_control__type_support.cpp.o[0m
+[5.674s] [ 30%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/arm_msg__type_support.cpp.o[0m
+[5.831s] [ 31%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/drivetrain_arbitration__type_support.cpp.o[0m
+[5.992s] [ 31%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/compass__type_support.cpp.o[0m
+[6.026s] [ 31%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/antenna_cmd__type_support.cpp.o[0m
+[6.167s] [ 32%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/camera_angle__type_support.cpp.o[0m
+[6.193s] [ 33%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/propulsion_motor__type_support.cpp.o[0m
+[6.324s] [ 33%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/msg/detail/dds_fastrtps/aruco__type_support.cpp.o[0m
+[6.347s] [ 33%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/can_device_status__type_support.cpp.o[0m
+[6.496s] [ 34%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/joy__type_support.cpp.o[0m
+[6.505s] [ 35%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/joy_demux_set_state__type_support.cpp.o[0m
+[6.652s] [ 35%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/joy_demux_status__type_support.cpp.o[0m
+[6.678s] [ 35%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/antenna_arbitration__type_support.cpp.o[0m
+[6.801s] [ 36%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/gps__type_support.cpp.o[0m
+[6.846s] [ 37%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/drive_train_arbitration__type_support.cpp.o[0m
+[6.947s] [ 37%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/gps_position__type_support.cpp.o[0m
+[7.009s] [ 37%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/light_control__type_support.cpp.o[0m
+[7.100s] [ 38%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/camera_control__type_support.cpp.o[0m
+[7.174s] [ 38%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/compass_calibration__type_support.cpp.o[0m
+[7.255s] [ 38%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/light_control__type_support.cpp.o[0m
+[7.334s] [ 39%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/new_gps_goal__type_support.cpp.o[0m
+[7.409s] [ 40%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/science_control__type_support.cpp.o[0m
+[7.520s] [ 40%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/pano_control__type_support.cpp.o[0m
+[7.557s] [ 40%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/arm_msg__type_support.cpp.o[0m
+[7.690s] [ 41%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/rtsp_stream__type_support.cpp.o[0m
+[7.711s] [ 42%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/drivetrain_arbitration__type_support.cpp.o[0m
+[7.861s] [ 42%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_cpp.dir/rosidl_typesupport_fastrtps_cpp/rover_msgs/srv/detail/dds_fastrtps/screenshot_control__type_support.cpp.o[0m
+[7.861s] [ 42%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/compass__type_support.cpp.o[0m
+[8.010s] [ 42%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/camera_angle__type_support.cpp.o[0m
+[8.027s] [ 43%] [32m[1mLinking CXX shared library librover_msgs__rosidl_typesupport_fastrtps_cpp.so[0m
+[8.065s] [ 43%] Built target rover_msgs__rosidl_typesupport_fastrtps_cpp
+[8.068s] [ 44%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/msg/detail/aruco__type_support.cpp.o[0m
+[8.234s] [ 44%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/joy_demux_set_state__type_support.cpp.o[0m
+[8.251s] running egg_info
+[8.251s] creating rover_msgs.egg-info
+[8.251s] writing rover_msgs.egg-info/PKG-INFO
+[8.252s] writing dependency_links to rover_msgs.egg-info/dependency_links.txt
+[8.252s] writing top-level names to rover_msgs.egg-info/top_level.txt
+[8.252s] writing manifest file 'rover_msgs.egg-info/SOURCES.txt'
+[8.253s] reading manifest file 'rover_msgs.egg-info/SOURCES.txt'
+[8.253s] writing manifest file 'rover_msgs.egg-info/SOURCES.txt'
+[8.268s] [ 44%] Built target ament_cmake_python_build_rover_msgs_egg
+[8.270s] [ 45%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/antenna_arbitration__type_support.cpp.o[0m
+[8.392s] [ 45%] [34m[1mGenerating C type support for eProsima Fast-RTPS[0m
+[8.420s] [ 45%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/drive_train_arbitration__type_support.cpp.o[0m
+[8.578s] [ 46%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/light_control__type_support.cpp.o[0m
+[8.729s] [ 46%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/compass_calibration__type_support.cpp.o[0m
+[8.884s] [ 47%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/new_gps_goal__type_support.cpp.o[0m
+[9.052s] [ 47%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/pano_control__type_support.cpp.o[0m
+[9.209s] [ 48%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/rtsp_stream__type_support.cpp.o[0m
+[9.267s] [ 49%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/antenna_cmd__type_support_c.cpp.o[0m
+[9.365s] [ 49%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_cpp.dir/rosidl_typesupport_introspection_cpp/rover_msgs/srv/detail/screenshot_control__type_support.cpp.o[0m
+[9.404s] [ 49%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/propulsion_motor__type_support_c.cpp.o[0m
+[9.519s] [ 50%] [32m[1mLinking CXX shared library librover_msgs__rosidl_typesupport_introspection_cpp.so[0m
+[9.542s] [ 51%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/can_device_status__type_support_c.cpp.o[0m
+[9.552s] [ 51%] Built target rover_msgs__rosidl_typesupport_introspection_cpp
+[9.556s] [ 51%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/joy__type_support_c.cpp.o[0m
+[9.682s] [ 52%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/joy_demux_status__type_support_c.cpp.o[0m
+[9.688s] [ 52%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/gps__type_support_c.cpp.o[0m
+[9.818s] [ 53%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/gps_position__type_support_c.cpp.o[0m
+[9.822s] [ 53%] [34m[1mGenerating C introspection for ROS interfaces[0m
+[9.956s] [ 53%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/camera_control__type_support_c.cpp.o[0m
+[10.099s] [ 54%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/light_control__type_support_c.cpp.o[0m
+[10.233s] [ 54%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/science_control__type_support_c.cpp.o[0m
+[10.368s] [ 54%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/arm_msg__type_support_c.cpp.o[0m
+[10.502s] [ 55%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/drivetrain_arbitration__type_support_c.cpp.o[0m
+[10.625s] [ 56%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/antenna_cmd__type_support.c.o[0m
+[10.640s] [ 56%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/compass__type_support_c.cpp.o[0m
+[10.640s] [ 56%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/propulsion_motor__type_support.c.o[0m
+[10.657s] [ 57%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/can_device_status__type_support.c.o[0m
+[10.671s] [ 57%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/joy__type_support.c.o[0m
+[10.685s] [ 57%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/joy_demux_status__type_support.c.o[0m
+[10.700s] [ 58%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/gps__type_support.c.o[0m
+[10.713s] [ 58%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/gps_position__type_support.c.o[0m
+[10.726s] [ 59%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/camera_control__type_support.c.o[0m
+[10.741s] [ 59%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/light_control__type_support.c.o[0m
+[10.755s] [ 60%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/science_control__type_support.c.o[0m
+[10.771s] [ 60%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/arm_msg__type_support.c.o[0m
+[10.780s] [ 61%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/camera_angle__type_support_c.cpp.o[0m
+[10.784s] [ 62%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/drivetrain_arbitration__type_support.c.o[0m
+[10.798s] [ 62%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/compass__type_support.c.o[0m
+[10.811s] [ 63%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/camera_angle__type_support.c.o[0m
+[10.824s] [ 63%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/msg/detail/aruco__type_support.c.o[0m
+[10.840s] [ 64%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/joy_demux_set_state__type_support.c.o[0m
+[10.855s] [ 64%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/antenna_arbitration__type_support.c.o[0m
+[10.870s] [ 64%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/drive_train_arbitration__type_support.c.o[0m
+[10.886s] [ 65%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/light_control__type_support.c.o[0m
+[10.901s] [ 65%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/compass_calibration__type_support.c.o[0m
+[10.916s] [ 66%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/new_gps_goal__type_support.c.o[0m
+[10.918s] [ 66%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/msg/detail/aruco__type_support_c.cpp.o[0m
+[10.934s] [ 66%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/pano_control__type_support.c.o[0m
+[10.949s] [ 67%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/rtsp_stream__type_support.c.o[0m
+[10.964s] [ 67%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c.dir/rosidl_typesupport_introspection_c/rover_msgs/srv/detail/screenshot_control__type_support.c.o[0m
+[10.980s] [ 68%] [32m[1mLinking C shared library librover_msgs__rosidl_typesupport_introspection_c.so[0m
+[10.994s] [ 68%] Built target rover_msgs__rosidl_typesupport_introspection_c
+[10.997s] [ 69%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/joy_demux_set_state__type_support_c.cpp.o[0m
+[11.065s] [ 70%] [34m[1mGenerating C type support dispatch for ROS interfaces[0m
+[11.145s] [ 70%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/antenna_arbitration__type_support_c.cpp.o[0m
+[11.283s] [ 71%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/drive_train_arbitration__type_support_c.cpp.o[0m
+[11.418s] [ 71%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/light_control__type_support_c.cpp.o[0m
+[11.555s] [ 72%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/compass_calibration__type_support_c.cpp.o[0m
+[11.637s] [ 72%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/antenna_cmd__type_support.cpp.o[0m
+[11.652s] [ 73%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/propulsion_motor__type_support.cpp.o[0m
+[11.665s] [ 73%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/can_device_status__type_support.cpp.o[0m
+[11.678s] [ 73%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/joy__type_support.cpp.o[0m
+[11.691s] [ 74%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/joy_demux_status__type_support.cpp.o[0m
+[11.696s] [ 74%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/new_gps_goal__type_support_c.cpp.o[0m
+[11.706s] [ 74%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/gps__type_support.cpp.o[0m
+[11.718s] [ 75%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/gps_position__type_support.cpp.o[0m
+[11.730s] [ 75%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/camera_control__type_support.cpp.o[0m
+[11.743s] [ 76%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/light_control__type_support.cpp.o[0m
+[11.756s] [ 76%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/science_control__type_support.cpp.o[0m
+[11.770s] [ 77%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/arm_msg__type_support.cpp.o[0m
+[11.783s] [ 77%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/drivetrain_arbitration__type_support.cpp.o[0m
+[11.796s] [ 78%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/compass__type_support.cpp.o[0m
+[11.810s] [ 78%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/camera_angle__type_support.cpp.o[0m
+[11.823s] [ 79%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/msg/aruco__type_support.cpp.o[0m
+[11.837s] [ 79%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/joy_demux_set_state__type_support.cpp.o[0m
+[11.842s] [ 80%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/pano_control__type_support_c.cpp.o[0m
+[11.852s] [ 80%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/antenna_arbitration__type_support.cpp.o[0m
+[11.867s] [ 81%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/drive_train_arbitration__type_support.cpp.o[0m
+[11.880s] [ 81%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/light_control__type_support.cpp.o[0m
+[11.893s] [ 82%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/compass_calibration__type_support.cpp.o[0m
+[11.906s] [ 82%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/new_gps_goal__type_support.cpp.o[0m
+[11.920s] [ 83%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/pano_control__type_support.cpp.o[0m
+[11.933s] [ 83%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/rtsp_stream__type_support.cpp.o[0m
+[11.947s] [ 84%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_c.dir/rosidl_typesupport_c/rover_msgs/srv/screenshot_control__type_support.cpp.o[0m
+[11.963s] [ 84%] [32m[1mLinking CXX shared library librover_msgs__rosidl_typesupport_c.so[0m
+[11.983s] [ 84%] Built target rover_msgs__rosidl_typesupport_c
+[11.986s] [ 84%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/rtsp_stream__type_support_c.cpp.o[0m
+[11.986s] [ 84%] [32mBuilding CXX object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c.dir/rosidl_typesupport_fastrtps_c/rover_msgs/srv/detail/screenshot_control__type_support_c.cpp.o[0m
+[12.133s] [ 85%] [32m[1mLinking CXX shared library librover_msgs__rosidl_typesupport_fastrtps_c.so[0m
+[12.167s] [ 85%] Built target rover_msgs__rosidl_typesupport_fastrtps_c
+[12.174s] [ 85%] Built target rover_msgs
+[12.182s] [ 86%] [34m[1mGenerating Python code for ROS interfaces[0m
+[13.791s] [ 86%] Built target rover_msgs__py
+[13.798s] [ 86%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_antenna_cmd_s.c.o[0m
+[13.798s] [ 87%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_propulsion_motor_s.c.o[0m
+[13.858s] [ 87%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_can_device_status_s.c.o[0m
+[13.862s] [ 88%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_joy_s.c.o[0m
+[13.902s] [ 88%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_joy_demux_status_s.c.o[0m
+[13.907s] [ 88%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_gps_s.c.o[0m
+[13.945s] [ 89%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_gps_position_s.c.o[0m
+[13.952s] [ 89%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_camera_control_s.c.o[0m
+[13.990s] [ 90%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_light_control_s.c.o[0m
+[13.997s] [ 90%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_science_control_s.c.o[0m
+[14.033s] [ 91%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_arm_msg_s.c.o[0m
+[14.040s] [ 91%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_drivetrain_arbitration_s.c.o[0m
+[14.078s] [ 92%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_compass_s.c.o[0m
+[14.082s] [ 92%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_camera_angle_s.c.o[0m
+[14.123s] [ 93%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/msg/_aruco_s.c.o[0m
+[14.127s] [ 93%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_joy_demux_set_state_s.c.o[0m
+[14.170s] [ 94%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_antenna_arbitration_s.c.o[0m
+[14.172s] [ 94%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_drive_train_arbitration_s.c.o[0m
+[14.217s] [ 94%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_light_control_s.c.o[0m
+[14.217s] [ 95%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_compass_calibration_s.c.o[0m
+[14.263s] [ 95%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_new_gps_goal_s.c.o[0m
+[14.265s] [ 96%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_pano_control_s.c.o[0m
+[14.313s] [ 96%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_rtsp_stream_s.c.o[0m
+[14.314s] [ 97%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_generator_py.dir/rosidl_generator_py/rover_msgs/srv/_screenshot_control_s.c.o[0m
+[14.366s] [ 97%] [32m[1mLinking C shared library rosidl_generator_py/rover_msgs/librover_msgs__rosidl_generator_py.so[0m
+[14.386s] [ 97%] Built target rover_msgs__rosidl_generator_py
+[14.394s] [ 97%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_fastrtps_c__pyext.dir/rosidl_generator_py/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_fastrtps_c.c.o[0m
+[14.394s] [ 97%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_introspection_c__pyext.dir/rosidl_generator_py/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_introspection_c.c.o[0m
+[14.478s] [ 99%] [32m[1mLinking C shared library rosidl_generator_py/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so[0m
+[14.479s] [ 99%] [32m[1mLinking C shared library rosidl_generator_py/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so[0m
+[14.493s] [ 99%] Built target rover_msgs__rosidl_typesupport_introspection_c__pyext
+[14.493s] [ 99%] Built target rover_msgs__rosidl_typesupport_fastrtps_c__pyext
+[14.500s] [100%] [32mBuilding C object CMakeFiles/rover_msgs__rosidl_typesupport_c__pyext.dir/rosidl_generator_py/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_c.c.o[0m
+[14.579s] [100%] [32m[1mLinking C shared library rosidl_generator_py/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so[0m
+[14.592s] [100%] Built target rover_msgs__rosidl_typesupport_c__pyext
+[14.599s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/build/rover_msgs -- -j2 -l2
+[14.603s] Invoking command in '/home/chris/ros2_ws/src/rover/build/rover_msgs': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_msgs
+[14.606s] -- Install configuration: ""
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/library_path.sh
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/library_path.dsv
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/timer.hpp
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/timer.cpp
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/macros.h
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/rovus_exceptions.h
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rovus_lib/moving_average.hpp
+[14.606s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/liblib_exec.a
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/rosidl_interfaces/rover_msgs
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/new_gps_goal.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/antenna_arbitration.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/light_control.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/joy_demux_set_state.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/pano_control.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/screenshot_control.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__type_support.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__struct.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__functions.c
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__type_support.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__functions.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__functions.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__type_support.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__type_support.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__functions.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__struct.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__functions.c
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__struct.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__functions.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__type_support.h
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__functions.c
+[14.607s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__functions.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__functions.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__functions.c
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__functions.c
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__functions.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__type_support.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__functions.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__functions.c
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__struct.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__struct.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__functions.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__functions.c
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__type_support.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__functions.c
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__struct.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__struct.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__struct.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__functions.c
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__type_support.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__struct.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__type_support.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/compass_calibration.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/rtsp_stream.h
+[14.608s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/drive_train_arbitration.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_control.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/compass.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/light_control.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps_position.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__functions.c
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__type_support.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__functions.c
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__functions.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__functions.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__functions.c
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__struct.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__struct.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__struct.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__functions.c
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__functions.h
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__functions.c
+[14.609s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__functions.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__functions.c
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__struct.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__functions.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__type_support.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__type_support.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__struct.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__type_support.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__functions.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__struct.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__struct.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__type_support.h
+[14.610s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__struct.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__functions.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__functions.c
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__type_support.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/drivetrain_arbitration.h
+[14.611s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/arm_msg.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_generator_c__visibility_control.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/aruco.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/can_device_status.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/science_control.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy_demux_status.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_angle.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/antenna_cmd.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/propulsion_motor.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_c.so
+[14.612s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_c.so" to ""
+[14.612s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs
+[14.612s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv
+[14.612s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg
+[14.612s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_fastrtps_c.h
+[14.612s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_fastrtps_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_typesupport_fastrtps_c__visibility_control.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_c.so
+[14.613s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_c.so" to ""
+[14.613s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs
+[14.613s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv
+[14.613s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_introspection_c.h
+[14.613s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_introspection_c.h
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__type_support.c
+[14.614s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_typesupport_introspection_c__visibility_control.h
+[14.614s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__type_support.c
+[14.614s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__type_support.c
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_introspection_c.h
+[14.615s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_introspection_c.h
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_introspection_c.h
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__type_support.c
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__type_support.c
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_c.so
+[14.616s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_c.so" to ""
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_c.so
+[14.616s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_c.so" to ""
+[14.616s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs
+[14.616s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/screenshot_control.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/light_control.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/pano_control.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/antenna_arbitration.hpp
+[14.616s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__traits.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__type_support.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__type_support.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__builder.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__type_support.hpp
+[14.616s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__type_support.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__type_support.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__builder.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__builder.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__builder.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__struct.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__type_support.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__struct.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__builder.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__type_support.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__struct.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__traits.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__struct.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__type_support.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__builder.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__traits.hpp
+[14.617s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__traits.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__type_support.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__builder.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__traits.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__traits.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__struct.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__struct.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__traits.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__struct.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__builder.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__struct.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__traits.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__builder.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__struct.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__traits.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/new_gps_goal.hpp
+[14.618s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/compass_calibration.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/drive_train_arbitration.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/rtsp_stream.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/joy_demux_set_state.hpp
+[14.619s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/propulsion_motor.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/light_control.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/drivetrain_arbitration.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_generator_cpp__visibility_control.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy_demux_status.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/joy.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps_position.hpp
+[14.619s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__struct.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__type_support.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__builder.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__type_support.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__builder.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__type_support.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__struct.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__type_support.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__builder.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__builder.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__builder.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__struct.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__type_support.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__builder.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__builder.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__type_support.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__type_support.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__traits.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__struct.hpp
+[14.619s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__builder.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__type_support.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__type_support.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__struct.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__type_support.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__traits.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__type_support.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__type_support.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__type_support.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__traits.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__traits.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__builder.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__struct.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__struct.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__builder.hpp
+[14.621s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__type_support.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__builder.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__type_support.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__builder.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__traits.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__builder.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__traits.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__builder.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__builder.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__traits.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__traits.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__struct.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/can_device_status.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_angle.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/gps.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/aruco.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/antenna_cmd.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/camera_control.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/compass.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/arm_msg.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/science_control.hpp
+[14.622s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs
+[14.622s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv
+[14.622s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/dds_fastrtps
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg
+[14.622s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_fastrtps_cpp.hpp
+[14.622s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/dds_fastrtps
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_fastrtps_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/rosidl_typesupport_fastrtps_cpp__visibility_control.h
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_cpp.so
+[14.623s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_fastrtps_cpp.so" to ""
+[14.623s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs
+[14.623s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv
+[14.623s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/drive_train_arbitration__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/antenna_arbitration__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/light_control__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/rtsp_stream__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/compass_calibration__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/pano_control__type_support.cpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/joy_demux_set_state__rosidl_typesupport_introspection_cpp.hpp
+[14.623s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/new_gps_goal__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/srv/detail/screenshot_control__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg
+[14.624s] -- Up-to-date: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/arm_msg__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/science_control__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/can_device_status__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__rosidl_typesupport_introspection_cpp.hpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy_demux_status__type_support.cpp
+[14.624s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/propulsion_motor__rosidl_typesupport_introspection_cpp.hpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/light_control__rosidl_typesupport_introspection_cpp.hpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_angle__rosidl_typesupport_introspection_cpp.hpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/antenna_cmd__type_support.cpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__rosidl_typesupport_introspection_cpp.hpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__rosidl_typesupport_introspection_cpp.hpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/compass__rosidl_typesupport_introspection_cpp.hpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/aruco__type_support.cpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/joy__type_support.cpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/camera_control__type_support.cpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/gps_position__rosidl_typesupport_introspection_cpp.hpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/include/rover_msgs/rover_msgs/msg/detail/drivetrain_arbitration__type_support.cpp
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_cpp.so
+[14.625s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_introspection_cpp.so" to ""
+[14.625s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_cpp.so
+[14.626s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_typesupport_cpp.so" to ""
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/pythonpath.sh
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/pythonpath.dsv
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/PKG-INFO
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/top_level.txt
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/dependency_links.txt
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs-0.0.0-py3.10.egg-info/SOURCES.txt
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_fastrtps_c.c
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_pano_control.py
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_compass_calibration.py
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_drive_train_arbitration_s.c
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_rtsp_stream_s.c
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_drive_train_arbitration.py
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_pano_control_s.c
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_compass_calibration_s.c
+[14.626s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_antenna_arbitration_s.c
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_joy_demux_set_state.py
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_rtsp_stream.py
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_light_control_s.c
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_antenna_arbitration.py
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_screenshot_control.py
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_joy_demux_set_state_s.c
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_light_control.py
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_new_gps_goal.py
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_new_gps_goal_s.c
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/__init__.py
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_screenshot_control_s.c
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/librover_msgs__rosidl_generator_py.so
+[14.627s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_c.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_control_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_demux_status.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_compass_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_drivetrain_arbitration.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_can_device_status_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_science_control_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_arm_msg.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_aruco.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_angle_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_position.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_angle.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_propulsion_motor.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_compass.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_drivetrain_arbitration_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_propulsion_motor_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_light_control_s.c
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_antenna_cmd.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_control.py
+[14.628s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_antenna_cmd_s.c
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps.py
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_science_control.py
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_arm_msg_s.c
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_aruco_s.c
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_light_control.py
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_demux_status_s.c
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_position_s.c
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/__init__.py
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_can_device_status.py
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/_rover_msgs_s.ep.rosidl_typesupport_introspection_c.c
+[14.629s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/__init__.py
+[14.658s] Listing '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/__init__.py'...
+[14.658s] Listing '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/__init__.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_antenna_cmd.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_arm_msg.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_aruco.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_angle.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_camera_control.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_can_device_status.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_compass.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_drivetrain_arbitration.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_gps_position.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_joy_demux_status.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_light_control.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_propulsion_motor.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/msg/_science_control.py'...
+[14.658s] Listing '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/__init__.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_antenna_arbitration.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_compass_calibration.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_drive_train_arbitration.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_joy_demux_set_state.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_light_control.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_new_gps_goal.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_pano_control.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_rtsp_stream.py'...
+[14.658s] Compiling '/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/srv/_screenshot_control.py'...
+[14.660s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so
+[14.660s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_fastrtps_c.cpython-310-aarch64-linux-gnu.so" to ""
+[14.660s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so
+[14.660s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_introspection_c.cpython-310-aarch64-linux-gnu.so" to ""
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so
+[14.661s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/local/lib/python3.10/dist-packages/rover_msgs/rover_msgs_s__rosidl_typesupport_c.cpython-310-aarch64-linux-gnu.so" to ""
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_py.so
+[14.661s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/install/rover_msgs/lib/librover_msgs__rosidl_generator_py.so" to ""
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/AntennaCmd.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/PropulsionMotor.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CanDeviceStatus.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Joy.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/JoyDemuxStatus.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Gps.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/GpsPosition.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraControl.idl
+[14.661s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/LightControl.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ScienceControl.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ArmMsg.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/DrivetrainArbitration.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Compass.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraAngle.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Aruco.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl.idl
+[14.662s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream.idl
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl.idl
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/AntennaCmd.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/PropulsionMotor.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CanDeviceStatus.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Joy.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/JoyDemuxStatus.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Gps.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/GpsPosition.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraControl.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/LightControl.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ScienceControl.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/ArmMsg.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/DrivetrainArbitration.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Compass.msg
+[14.663s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/CameraAngle.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/msg/Aruco.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState.srv
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState_Request.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/JoyDemuxSetState_Response.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration.srv
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration_Request.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/AntennaArbitration_Response.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration.srv
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration_Request.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/DriveTrainArbitration_Response.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl.srv
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl_Request.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/LightControl_Response.msg
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration.srv
+[14.664s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration_Request.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/CompassCalibration_Response.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal.srv
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal_Request.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/NewGpsGoal_Response.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl.srv
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl_Request.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/PanoControl_Response.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream.srv
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream_Request.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/RtspStream_Response.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl.srv
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl_Request.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/srv/ScreenshotControl_Response.msg
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch/terminal_logger.launch.py
+[14.665s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch/rover.launch.py
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs//launch/base.launch.py
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/package_run_dependencies/rover_msgs
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/parent_prefix_path/rover_msgs
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/ament_prefix_path.sh
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/ament_prefix_path.dsv
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/path.sh
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/environment/path.dsv
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.bash
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.sh
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.zsh
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/local_setup.dsv
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/package.dsv
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/ament_index/resource_index/packages/rover_msgs
+[14.666s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/lib_execExport.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/lib_execExport-noconfig.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_cExport.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_cExport-noconfig.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cExport.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cExport-noconfig.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cExport.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cExport-noconfig.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cExport.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cExport-noconfig.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_cppExport.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cppExport.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_typesupport_fastrtps_cppExport-noconfig.cmake
+[14.667s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cppExport.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_introspection_cppExport-noconfig.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cppExport.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgs__rosidl_typesupport_cppExport-noconfig.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_pyExport.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/export_rover_msgs__rosidl_generator_pyExport-noconfig.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_targets-extras.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rosidl_cmake-extras.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_include_directories-extras.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_libraries-extras.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rosidl_cmake_export_typesupport_targets-extras.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/ament_cmake_export_dependencies-extras.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rosidl_cmake_export_typesupport_libraries-extras.cmake
+[14.668s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgsConfig.cmake
+[14.669s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/cmake/rover_msgsConfig-version.cmake
+[14.669s] -- Installing: /home/chris/ros2_ws/src/rover/install/rover_msgs/share/rover_msgs/package.xml
+[14.670s] Invoked command in '/home/chris/ros2_ws/src/rover/build/rover_msgs' returned '0': CMAKE_PREFIX_PATH=/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/build/rover_msgs

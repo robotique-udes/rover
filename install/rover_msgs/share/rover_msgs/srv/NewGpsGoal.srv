@@ -1,0 +1,17 @@
+uint8 GET_ROUTE = 0
+uint8 NEW_ROUTE = 1
+uint8 NEW_GOAL_END_APPEND = 2
+uint8 NEW_GOAL_END_OVERWRITE = 3
+uint8 NEW_WAYPOINT_BEFORE_END = 4
+uint8 NEW_WAYPOINT_INDEX_INSERT = 5
+uint8 NEW_WAYPOINT_INDEX_REPLACE = 6
+uint8 CLEAR_WAYPOINT_INDEX = 7
+uint8 CLEAR_ROUTE = 10
+
+uint8 type
+uint8 index
+rover_msgs/GpsPosition[] waypoints
+---
+bool success
+string status
+rover_msgs/GpsPosition[] route

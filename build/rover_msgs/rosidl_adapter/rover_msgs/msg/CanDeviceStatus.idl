@@ -1,0 +1,21 @@
+// generated from rosidl_adapter/resource/msg.idl.em
+// with input from rover_msgs/msg/CanDeviceStatus.msg
+// generated code does not contain a copyright notice
+
+
+module rover_msgs {
+  module msg {
+    module CanDeviceStatus_Constants {
+      const uint8 STATUS_OK = 0;
+      const uint8 STATUS_WARNING = 1;
+      const uint8 STATUS_ERROR = 2;
+    };
+    struct CanDeviceStatus {
+      uint16 id;
+
+      uint8 error_state;
+
+      boolean watchdog_ok;
+    };
+  };
+};

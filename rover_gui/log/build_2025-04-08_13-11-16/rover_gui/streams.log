@@ -1,0 +1,58 @@
+[0.007s] Invoking command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui -- -j4 -l4
+[0.038s] [  3%] [34m[1mGenerating UI files...[0m
+[0.041s] [0;34m=== Generating UI files ... ===[0m
+[0.052s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Example.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Example.h[0m
+[0.055s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/FileExplorer.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_FileExplorer.h[0m
+[0.058s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/MainPage.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_MainPage.h[0m
+[0.060s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Notification.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Notification.h[0m
+[0.065s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/Player.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_Player.h[0m
+[0.067s] [0;32m[SUCCESS] Compiled /home/chris/ros2_ws/src/rover/rover_gui/ui/ui/SideBar.ui to /home/chris/ros2_ws/src/rover/rover_gui/ui/include/UI_SideBar.h[0m
+[0.071s] [  3%] Built target run_generate_ui
+[0.079s] [  7%] [34m[1mAutomatic MOC for target main_gui[0m
+[0.087s] AutoMoc warning
+[0.087s] ---------------
+[0.087s] "SRC:/src/gui.cpp"
+[0.087s] includes the moc file "gui.moc", but does not contain a Q_OBJECT, Q_GADGET, Q_NAMESPACE or Q_NAMESPACE_EXPORT macro.
+[0.087s] 
+[1.541s] AutoMoc: /home/chris/ros2_ws/src/rover/rover_gui/src/gui.cpp:0:1: note: No relevant classes found. No output generated.
+[1.548s] [  7%] Built target main_gui_autogen
+[1.574s] [35m[1mConsolidate compiler generated dependencies of target main_gui[0m
+[1.616s] [ 14%] [32mBuilding CXX object CMakeFiles/main_gui.dir/main_gui_autogen/mocs_compilation.cpp.o[0m
+[1.616s] [ 14%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/gui.cpp.o[0m
+[1.617s] [ 18%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/MainWindow.cpp.o[0m
+[1.623s] [ 22%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/SecondaryWindow.cpp.o[0m
+[4.104s] [ 25%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QFileTransferWidget.cpp.o[0m
+[5.779s] [ 29%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSshFileExplorer/QSshFileExplorerWidget.cpp.o[0m
+[5.956s] [ 33%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QSideBar/QSideBar.cpp.o[0m
+[6.222s] [ 37%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QDashboard/QDashboard.cpp.o[0m
+[6.988s] [ 40%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QDashboard/QExample.cpp.o[0m
+[7.643s] [ 44%] [32mBuilding CXX object CMakeFiles/main_gui.dir/src/QRtspPlayer/QRtspPlayerWidget.cpp.o[0m
+[10.034s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:[m[K In lambda function:
+[10.034s] [01m[K/home/chris/ros2_ws/src/rover/rover_gui/src/QRtspPlayer/QRtspPlayerWidget.cpp:75:94:[m[K [01;35m[Kwarning: [m[Kunused parameter ‘[01m[Ktext[m[K’ [[01;35m[K]8;;https://gcc.gnu.org/onlinedocs/gcc/Warning-Options.html#index-Wunused-parameter-Wunused-parameter]8;;[m[K]
+[10.034s]    75 |     connect(rtspUrlInput, &QLineEdit::textChanged, this, [this, rtspUrlInput]([01;35m[Kconst QString& text[m[K) {
+[10.034s]       |                                                                               [01;35m[K~~~~~~~~~~~~~~~^~~~[m[K
+[12.179s] [ 48%] [32m[1mLinking CXX executable main_gui[0m
+[13.129s] [100%] Built target main_gui
+[13.135s] Invoked command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/opt/ros/humble /usr/bin/cmake --build /home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui -- -j4 -l4
+[13.141s] Invoking command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui
+[13.145s] -- Install configuration: ""
+[13.145s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui//launch
+[13.145s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui//launch/gui.launch.py
+[13.146s] -- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/lib/rover_gui/main_gui
+[13.149s] -- Set runtime path of "/home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/lib/rover_gui/main_gui" to ""
+[13.149s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/ament_index/resource_index/package_run_dependencies/rover_gui
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/ament_index/resource_index/parent_prefix_path/rover_gui
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/ament_prefix_path.sh
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/ament_prefix_path.dsv
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/path.sh
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/environment/path.dsv
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.bash
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.sh
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.zsh
+[13.150s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/local_setup.dsv
+[13.150s] -- Installing: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/package.dsv
+[13.151s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/ament_index/resource_index/packages/rover_gui
+[13.151s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/cmake/rover_guiConfig.cmake
+[13.151s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/cmake/rover_guiConfig-version.cmake
+[13.151s] -- Up-to-date: /home/chris/ros2_ws/src/rover/rover_gui/install/rover_gui/share/rover_gui/package.xml
+[13.152s] Invoked command in '/home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui' returned '0': CMAKE_PREFIX_PATH=${CMAKE_PREFIX_PATH}:/home/chris/ros2_ws/install/rover_sim:/opt/ros/humble /usr/bin/cmake --install /home/chris/ros2_ws/src/rover/rover_gui/build/rover_gui
