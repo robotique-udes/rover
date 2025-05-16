@@ -1,9 +1,10 @@
 #include "QTopUtilityBar.hpp"
+#include <cstddef>
 #include <cstdint>
 #include <qdatetime.h>
 #include <qglobal.h>
-#include <qpixmap.h>
 #include <qtimezone.h>
+#include <qicon.h>
 #include <rover_msgs/msg/battery.hpp>
 #include <rover_msgs/msg/detail/wifi_connection__struct.hpp>
 #include <rover_msgs/msg/wifi_connection.hpp>
@@ -19,9 +20,9 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
     this->initWifiConnection();
     this->initTimerDisplay();
 
-    connect(_ui.timeZone_pb, &QPushButton::clicked, this, &QTopUtilityBar::updateTimeZone);
     connect(this, &QTopUtilityBar::updateBatteryUI, this, &QTopUtilityBar::onUpdateBatteryUI);
     connect(this, &QTopUtilityBar::updateWifiUI, this, &QTopUtilityBar::onUpdateWifiUI);
+    connect(this, &QTopUtilityBar::updateGNSS, this, &QTopUtilityBar::onUpdateGNSS);
     #warning timer update in ROS and should not
 
 }
@@ -29,16 +30,24 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
 void QTopUtilityBar::setupUI(void)
 {
     _timeZone = QTimeZone("America/Montreal");
-    _ui.timeZone_pb->setText("QC");
 
     _ui.batteryLabel->setText("-- %");
-    QPixmap pixBattery(":/icons/BatteryError.svg");
-    _ui.batteryIcon->setPixmap(pixBattery.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
 
     _ui.signalQualityLabel->setText("RSSI: ---   ");
     _ui.connectionSpeedLabel->setText("--.- Mb/s   ");
-    QPixmap pixRSSI(":/icons/RSSIError.svg");
-    _ui.RSSILabel->setPixmap(pixRSSI.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+
+    _ui.satellitesNbrLabel->setText("Sat: -- ");
+    _ui.GNSSFixLabel->setText("Fix: --.-------");
+    _ui.HeadingLabel->setText("---.--");
+
+    this->setStyleSheet(R"(
+    QPushButton {
+        background-color: transparent;
+        border: none;
+    }
+    )");
+
+    #warning heading
 
 }
 
@@ -56,11 +65,12 @@ void QTopUtilityBar::initBatterySubscriber(void)
         _timer_batteryPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_BATTERY_PUB_COUNT_MS),
         [this](void)
         {
-            size_t count = _node->count_publishers("/rover/auxiliary/battery");
+            size_t count = _node->count_publishers(TOPIC_BATTERY);
             if(!count)
             {
-                QPixmap pix(":/icons/BatteryError.svg");
-                _ui.batteryIcon->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                QIcon icon(":/icons/BatteryError.svg");
+                _ui.batteryIcon->setIcon(icon);
+                #warning replace icon with pixmap....
             }
         });
     }
@@ -84,11 +94,11 @@ void QTopUtilityBar::initWifiConnection(void)
         _timer_RSSIPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_RSSI_PUB_COUNT_MS),
         [this](void)
         {
-            size_t count = _node->count_publishers("/rover/auxiliary/connection_speed");
+            size_t count = _node->count_publishers(TOPIC_WIFI_CONNECTION);
             if(!count)
             {
-                QPixmap pix(":/icons/RSSIError.svg");
-                _ui.RSSILabel->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                QIcon icon(":/icons/ErrorRSSI.svg");
+                _ui.RSSILabel->setIcon(icon);
             }
         });
     }
@@ -97,6 +107,40 @@ void QTopUtilityBar::initWifiConnection(void)
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
     }
 }
+
+void QTopUtilityBar::initGNSS(void)
+{
+    if (_node)
+    {
+        _sub_GNSS = _node->create_subscription<rover_msgs::msg::Gps>(TOPIC_GNSS,
+                                                                                 5,
+                                                                                 [this](const rover_msgs::msg::Gps msg)
+                                                                                 {
+                                                                                     CB_GNSS(msg);
+                                                                                 });
+
+        _timer_GNSSPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_GNSS_PUB_COUNT_MS),
+        [this](void)
+        {
+            size_t count = _node->count_publishers(TOPIC_GNSS);
+            if(!count)
+            {
+                QIcon iconSat(":/icons/GNSSError.svg");
+                QIcon iconHeading(":/icons/HeadingError.svg");
+
+                _ui.satellliteIcon_pb->setIcon(iconSat);
+                _ui.headingIcon_pb->setIcon(iconHeading);
+
+                #warning replace icon with pixmap....
+            }
+        });
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+    }
+}
+
 
 void QTopUtilityBar::initTimerDisplay(void)
 {
@@ -114,8 +158,8 @@ void QTopUtilityBar::CB_battery(rover_msgs::msg::Battery msg_)
     if(!valid)
     {
         #warning counter to flag after 10 false
-        QPixmap pix(":/icons/BatteryError.svg");
-        _ui.batteryIcon->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        QIcon icon(":/icons/BatteryError.svg");
+        _ui.batteryIcon->setIcon(icon);
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Error with battery publisher", "battery publisher is unavailble, please check connection", QHelper::QToastNotification::eNotifType::ERROR);
     }
     else
@@ -130,8 +174,8 @@ void QTopUtilityBar::CB_wifiConnection(rover_msgs::msg::WifiConnection msg_)
     bool valid = msg_.valid;
     if(!valid)
     {
-        QPixmap pix(":/icons/RSSIError.svg");
-        _ui.RSSILabel->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        QIcon icon(":/icons/RSSIError.svg");
+        _ui.RSSILabel->setIcon(icon);
         #warning counter to flag after 10 false
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Error with wifi connection publisher", "wifi connection publisher is unavailble, please check connection", QHelper::QToastNotification::eNotifType::ERROR);
     }
@@ -141,78 +185,93 @@ void QTopUtilityBar::CB_wifiConnection(rover_msgs::msg::WifiConnection msg_)
     }
 }
 
+void QTopUtilityBar::CB_GNSS(rover_msgs::msg::Gps msg_)
+{
+    emit this->updateGNSS(msg_.longitude, msg_.heading,  msg_.satellite);
+    #warning fixx not speed!!
+}
+
+
 void QTopUtilityBar::CB_timerDisplaying(void)
 {
-    QDateTime givenTimeUTC = _timersList.at(0).toUTC();
-    qDebug() << _timersList[0].timeZone().id();
-    QDateTime nowUtc = QDateTime::currentDateTimeUtc().toTimeZone(_timeZone);
+    int secondsBeforeTimeout = -1;
 
-    qint64 secondsDiff = nowUtc.secsTo(givenTimeUTC);
-
-    if(secondsDiff>=0)
+    for(const auto& timers:_timersList)
     {
-        int hours = secondsDiff / 3600;
-        int minutes = (secondsDiff % 3600) / 60;
-        int seconds = secondsDiff % 60;
+        QDateTime givenTimeUTC = timers.toUTC();
+        QDateTime nowUtc = QDateTime::currentDateTimeUtc().toTimeZone(_timeZone);
+
+        int secondsDiff = nowUtc.secsTo(givenTimeUTC);
+
+        if((secondsDiff<secondsBeforeTimeout && secondsDiff>0) || (secondsBeforeTimeout == -1 && secondsDiff>0))
+        {
+            secondsBeforeTimeout = secondsDiff;
+        }
+    }
+
+    if(secondsBeforeTimeout>=0)
+    {
+        int hours = secondsBeforeTimeout / 3600;
+        int minutes = (secondsBeforeTimeout % 3600) / 60;
+        int seconds = secondsBeforeTimeout % 60;
     
+        QString timeString = QString("%1:%2:%3")
+        .arg(hours, 2, 10, QChar('0'))
+        .arg(minutes, 2, 10, QChar('0'))
+        .arg(seconds, 2, 10, QChar('0'));
 
-    QString timeString = QString("%1:%2:%3")
-    .arg(hours, 2, 10, QChar('0'))
-    .arg(minutes, 2, 10, QChar('0'))
-    .arg(seconds, 2, 10, QChar('0'));
+        QDateTime now = QDateTime::currentDateTimeUtc().toTimeZone(_timeZone);
 
-    QDateTime now = QDateTime::currentDateTimeUtc().toTimeZone(_timeZone);
-    qDebug() << "Current Time (" << _timeZone.id() << "): " << now.toString("yyyy-MM-dd hh:mm:ss");
-
-    _ui.timerLabel->setText(timeString);
-    } 
+        _ui.timerLabel->setText(timeString);
+        if(secondsBeforeTimeout<300)
+        {
+            _ui.timerLabel->setStyleSheet("QLabel { color : red; }");
+        }
+        else if(secondsBeforeTimeout<600)
+        {
+            _ui.timerLabel->setStyleSheet("QLabel { color : orange; }");
+        }
+        else
+        {
+            _ui.timerLabel->setStyleSheet("QLabel { color : white; }"); 
+        }
+    }
     else
     {
     _ui.timerLabel->setText("OVER");
+    _ui.timerLabel->setStyleSheet("QLabel { color : red; }");
     }
-}
 
-void QTopUtilityBar::updateTimeZone(void)
-{
-    if(_ui.timeZone_pb->text() == "QC")
-    {
-        _timeZone = QTimeZone("America/Edmonton");
-        _ui.timeZone_pb->setText("AB");
-    }
-    else
-    {
-        _timeZone = QTimeZone("America/Montreal");
-        _ui.timeZone_pb->setText("QC");
-    }
+
 }
 
 void QTopUtilityBar::onUpdateBatteryUI(uint8_t pourcent_)
 {
     _ui.batteryLabel->setText(QString::number(static_cast<int>(pourcent_))+" %");
-    QPixmap pix;
+    QIcon icon;
 
     if(pourcent_>=85)
     {
-        pix = QPixmap(":/icons/BatteryIcon100.svg");
+        icon = QIcon(":/icons/BatteryIcon100.svg");
     }
     else if(pourcent_>=55)
     {
-        pix = QPixmap(":/icons/BatteryIcon75.svg");
+        icon = QIcon(":/icons/BatteryIcon75.svg");
     }
     else if(pourcent_>=40)
     {
-        pix = QPixmap(":/icons/BatteryIcon50.svg");
+        icon = QIcon(":/icons/BatteryIcon50.svg");
     }
     else if(pourcent_>=20)
     {
-        pix = QPixmap(":/icons/BatteryIcon25.svg");
+        icon = QIcon(":/icons/BatteryIcon25.svg");
     }
     else
     {
-        pix = QPixmap(":/icons/BatteryIcon0.svg");
+        icon = QIcon(":/icons/BatteryIcon0.svg");
     }
 
-    _ui.batteryIcon->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    _ui.batteryIcon->setIcon(icon);
 }
 
 void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
@@ -220,33 +279,44 @@ void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
     _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_))+ "   ");
     _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_), 'f',1)+" Mb/s   ");
 
-    QPixmap pix;
+    QIcon icon;
 
     if(rssi_<=-85)
     {
-        pix = QPixmap(":/icons/RSSI1.svg");
+        icon = QIcon(":/icons/1RSSI.svg");
     } 
     else if(rssi_>-85 && rssi_<=-75)
     {
-        pix = QPixmap(":/icons/RSSI2.svg");
+        icon = QIcon(":/icons/2RSSI.svg");
     }
     else if(rssi_>-75 && rssi_<=-65)
     {
         qDebug("yess");
-        pix = QPixmap(":/icons/RSSI3.svg");
+        icon = QIcon(":/icons/3RSSI.svg");
     }
     else
     {
-        pix = QPixmap(":/icons/RSSI4.svg");
+        icon = QIcon(":/icons/4RSSI.svg");
     }
 
-    _ui.RSSILabel->setPixmap(pix.scaled(24, 24, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+    _ui.RSSILabel->setIcon(icon);
+    this->repaint();
+}
+
+void QTopUtilityBar::onUpdateGNSS(float fix_, float heading_, uint8_t satNbr_)
+{
+    _ui.HeadingLabel->setText(QString::number(static_cast<float>(heading_), 'f',2)+ "deg   ");
+    _ui.satellitesNbrLabel->setText(QString::number(static_cast<int>(satNbr_))+"   ");
+    _ui.GNSSFixLabel->setText(QString::number(static_cast<float>(fix_), 'f',6)+"   ");
+
+    _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSIcon.svg"));
+    _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingIcon.svg"));
     this->repaint();
 }
 
 void QTopUtilityBar::simulateTimerFileReading()
 {
-    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(14,30,0),QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(16,30,0),QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025,5,11),QTime(18,30,0),QTimeZone("America/Edmonton")));
+    _timersList.push_back(QDateTime(QDate(2025,5,16),QTime(13,58,0),QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025,5,16),QTime(16,7,0),QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025,5,18),QTime(16,3,0),QTimeZone("America/Edmonton")));
 }

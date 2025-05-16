@@ -12,9 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Svg)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg)
 
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
@@ -106,7 +104,7 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
 
-                   ui/resources.qrc
+                   ui/icons.qrc
                 )
                   
 add_subdirectory(../rover_shared_libs/ .build)
