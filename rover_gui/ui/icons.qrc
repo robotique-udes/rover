@@ -6,11 +6,11 @@
     <file>icons/BatteryIcon25.svg</file>
     <file>icons/BatteryIcon0.svg</file>
     <file>icons/BatteryError.svg</file>
-    <file>icons/1RSSI.svg</file>
-    <file>icons/2RSSI.svg</file>
-    <file>icons/3RSSI.svg</file>
-    <file>icons/4RSSI.svg</file>  
-    <file>icons/ErrorRSSI.svg</file>
+    <file>icons/RSSI_one.png</file>
+    <file>icons/RSSI_two.png</file>
+    <file>icons/RSSI_three.png</file>
+    <file>icons/RSSI_four.png</file>  
+    <file>icons/ErrorRSSI.png</file>
     <file>icons/GNSSIcon.svg</file>
     <file>icons/GNSSError.svg</file>
     <file>icons/HeadingIcon.svg</file>

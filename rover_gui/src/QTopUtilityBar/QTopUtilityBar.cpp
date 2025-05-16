@@ -18,6 +18,7 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
     this->setupUI();
     this->initBatterySubscriber();
     this->initWifiConnection();
+    this->initGNSS();
     this->initTimerDisplay();
 
     connect(this, &QTopUtilityBar::updateBatteryUI, this, &QTopUtilityBar::onUpdateBatteryUI);
@@ -97,7 +98,7 @@ void QTopUtilityBar::initWifiConnection(void)
             size_t count = _node->count_publishers(TOPIC_WIFI_CONNECTION);
             if(!count)
             {
-                QIcon icon(":/icons/ErrorRSSI.svg");
+                QIcon icon(":/icons/ErrorRSSI.png");
                 _ui.RSSILabel->setIcon(icon);
             }
         });
@@ -176,7 +177,6 @@ void QTopUtilityBar::CB_wifiConnection(rover_msgs::msg::WifiConnection msg_)
     {
         QIcon icon(":/icons/RSSIError.svg");
         _ui.RSSILabel->setIcon(icon);
-        #warning counter to flag after 10 false
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Error with wifi connection publisher", "wifi connection publisher is unavailble, please check connection", QHelper::QToastNotification::eNotifType::ERROR);
     }
     else
@@ -283,31 +283,31 @@ void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
 
     if(rssi_<=-85)
     {
-        icon = QIcon(":/icons/1RSSI.svg");
+        icon = QIcon(":/icons/RSSI_one.png");
     } 
     else if(rssi_>-85 && rssi_<=-75)
     {
-        icon = QIcon(":/icons/2RSSI.svg");
+        icon = QIcon(":/icons/RSSI_two.png");
     }
     else if(rssi_>-75 && rssi_<=-65)
     {
         qDebug("yess");
-        icon = QIcon(":/icons/3RSSI.svg");
+        icon = QIcon(":/icons/RSSI_three.png");
     }
     else
     {
-        icon = QIcon(":/icons/4RSSI.svg");
+        icon = QIcon(":/icons/RSSI_four.png");
     }
 
     _ui.RSSILabel->setIcon(icon);
-    this->repaint();
+    this->update();  // Make sure button repaints immediatelyint();
 }
 
 void QTopUtilityBar::onUpdateGNSS(float fix_, float heading_, uint8_t satNbr_)
 {
-    _ui.HeadingLabel->setText(QString::number(static_cast<float>(heading_), 'f',2)+ "deg   ");
+    _ui.HeadingLabel->setText(QString::number(static_cast<float>(heading_), 'f',2)+ " deg   ");
     _ui.satellitesNbrLabel->setText(QString::number(static_cast<int>(satNbr_))+"   ");
-    _ui.GNSSFixLabel->setText(QString::number(static_cast<float>(fix_), 'f',6)+"   ");
+    _ui.GNSSFixLabel->setText("Fix: " + QString::number(static_cast<float>(fix_), 'f',6)+"   ");
 
     _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSIcon.svg"));
     _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingIcon.svg"));
@@ -317,6 +317,6 @@ void QTopUtilityBar::onUpdateGNSS(float fix_, float heading_, uint8_t satNbr_)
 void QTopUtilityBar::simulateTimerFileReading()
 {
     _timersList.push_back(QDateTime(QDate(2025,5,16),QTime(13,58,0),QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025,5,16),QTime(16,7,0),QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025,5,16),QTime(18,36,0),QTimeZone("America/Montreal")));
     _timersList.push_back(QDateTime(QDate(2025,5,18),QTime(16,3,0),QTimeZone("America/Edmonton")));
 }

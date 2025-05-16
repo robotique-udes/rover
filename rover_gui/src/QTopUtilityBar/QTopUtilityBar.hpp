@@ -23,7 +23,7 @@ class QTopUtilityBar : public QWidget
 
     static constexpr const char* TOPIC_BATTERY = "/rover/auxiliary/battery";
     static constexpr const char* TOPIC_WIFI_CONNECTION = "/rover/auxiliary/connection_speed";    
-    static constexpr const char* TOPIC_GNSS = "/rover/auxiliary/GNSS";
+    static constexpr const char* TOPIC_GNSS = "/rover/gps/position";
     #warning mettre bon topic
 
     static constexpr const size_t DELAY_CHECK_BATTERY_PUB_COUNT_MS = 1000UL;
