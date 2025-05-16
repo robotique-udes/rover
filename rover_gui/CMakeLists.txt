@@ -97,7 +97,7 @@ add_executable(main_gui src/gui.cpp
                         
                    src/QNavigation/QNavigation.hpp
                    src/QNavigation/QNavigation.cpp
-                   src/QNavigation/resources.qrc
+                   src/Global/Constant/resources.qrc
                         
                    src/QDashboard/QExample.hpp
                    src/QDashboard/QExample.cpp
