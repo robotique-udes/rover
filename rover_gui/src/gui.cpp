@@ -1,4 +1,6 @@
 #include "Global/Constant/StyleSheet.hpp"
+#include "Global/Helpers/QToastNotification/QToastNotification.hpp"
+
 #include "MainWindow.hpp"
 #include "SecondaryWindow.hpp"
 
@@ -62,6 +64,7 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
                                    << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
 
     int ret = app.exec();
+
     rosProcess.terminate();
     if (!rosProcess.waitForFinished(3000))
     {
