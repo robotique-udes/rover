@@ -159,6 +159,6 @@ namespace LogUtils
     {
         UI_LOG_ERROR(ARUCO_DETECTION, message, target);
     }
-}  
+}  // namespace LogUtils
 
 #endif
