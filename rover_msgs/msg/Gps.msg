@@ -9,3 +9,6 @@ uint8 satellite
 
 # From magnetometer
 float32 heading
+
+# Added
+float32 fix

@@ -24,6 +24,7 @@ class GpsPublisher : public rclcpp::Node
         msg.speed = 0.0;
         msg.satellite = 8;
         msg.heading = M_PI;
+        msg.fix = 1.234567;
 
         publisher_->publish(msg);
         latitude_ += 0.0001;
@@ -41,4 +42,3 @@ int main(int argc, char* argv[])
     rclcpp::shutdown();
     return 0;
 }
-

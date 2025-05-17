@@ -6,7 +6,7 @@
 class BatteryPublisher : public rclcpp::Node
 {
   public:
-  BatteryPublisher():
+    BatteryPublisher():
         Node("battery_publisher")
     {
         _pourcentage = 100;
@@ -22,7 +22,7 @@ class BatteryPublisher : public rclcpp::Node
         msg.valid = true;
         _publisher->publish(msg);
         _pourcentage -= 8;
-        if(_pourcentage >= 100)
+        if (_pourcentage >= 100)
         {
             _pourcentage = 100;
         }
