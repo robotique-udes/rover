@@ -5,12 +5,12 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     QWidget(parent_),
     _node(guiNode_),
     _videoPlayerLayout(this),
-    _playerWorkerThread(std::make_shared<QPlayerWorker>()),
-    _playerWorkerThread2(std::make_shared<QPlayerWorker>())
+    _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
+    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>())
 {
     this->initWidget();
 
-    connect(_playerWorkerThread.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
+    connect(_playerWorkerThreadAruco.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
 
     this->initArucoClient();
     this->initArucoPublisher();
@@ -20,15 +20,15 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     this->setLayout(&_videoPlayerLayout);
 
-    _playerWorkerThread->start();
-    _playerWorkerThread2->start();
+    _playerWorkerThreadAruco->start();
+    _playerWorkerThreadRecording->start();
 }
 
 void QVideoManagerWidget::CB_updateArucoDetectionManager()
 {
-    if (_playerWorkerThread.get())
+    if (_playerWorkerThreadAruco.get())
     {
-        _playerWorkerThread->updateDetectionManager(_client_arucoDetectionManager);
+        _playerWorkerThreadAruco->updateDetectionManager(_client_arucoDetectionManager);
     }
     else
     {
@@ -86,7 +86,7 @@ void QVideoManagerWidget::initWidget(void)
         }
 
         _videoPlaysWidgets[i]
-            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread, _playerWorkerThread2);
+            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
@@ -157,7 +157,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
     }
 
-    // assert(_node != nullptr);
+    assert(_node != nullptr);
     for (auto& widget : _videoPlaysWidgets)
     {
         widget->setCameraControlClientManager(_client_cameraControlManager);

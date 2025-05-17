@@ -3,44 +3,44 @@
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
-                                       uint16_t tag_,
+                                       uint16_t playerIndex_,
                                        std::shared_ptr<QPlayerWorker> worker_,
                                        std::shared_ptr<QPlayerWorker> worker2_):
     _node(guiNode_),
     _camURL(url_),
-    _tag(tag_),
-    _playerWorkerThread(worker_),
-    _playerWorkerThread2(worker2_)
+    _playerIndex(playerIndex_),
+    _playerWorkerThreadAruco(worker_),
+    _playerWorkerThreadRecording(worker2_)
 {
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
-    connect(_playerWorkerThread.get(),
+    connect(_playerWorkerThreadAruco.get(),
             &QPlayerWorker::detectionHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onDetectionHandledSuccessfully);
     connect(_ui.playPauseButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePlayPauseButton);
-    connect(_playerWorkerThread.get(), &QPlayerWorker::arucoServerInfoFailed, this, &QVideoPlayerWidget::onArucoServerInfoFailed);
+    connect(_playerWorkerThreadAruco.get(), &QPlayerWorker::arucoServerInfoFailed, this, &QVideoPlayerWidget::onArucoServerInfoFailed);
 
     connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::updateCamURL);
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::setURLToDefault);
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
 
     connect(_ui.ScreenshotButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleScreenshot);
-    connect(_playerWorkerThread2.get(),
+    connect(_playerWorkerThreadRecording.get(),
             &QPlayerWorker::screenshotHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
 
     connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
 
-    connect(_playerWorkerThread2.get(),
+    connect(_playerWorkerThreadRecording.get(),
             &QPlayerWorker::startRecordingHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onStartRecordingHandledSuccessfully);
 
-    connect(_playerWorkerThread2.get(),
+    connect(_playerWorkerThreadRecording.get(),
             &QPlayerWorker::stopRecordingHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
@@ -68,9 +68,9 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
 
 void QVideoPlayerWidget::startDetection(void)
 {
-    if (_playerWorkerThread.get() != nullptr)
+    if (_playerWorkerThreadAruco.get() != nullptr)
     {
-        _playerWorkerThread->manageDetection(_client_arucoManager, _camURL, _tag, true);
+        _playerWorkerThreadAruco->manageDetection(_client_arucoManager, _camURL, _playerIndex, true);
     }
     else
     {
@@ -80,9 +80,9 @@ void QVideoPlayerWidget::startDetection(void)
 
 void QVideoPlayerWidget::stopDetection(void)
 {
-    if (_playerWorkerThread.get() != nullptr)
+    if (_playerWorkerThreadAruco.get() != nullptr)
     {
-        _playerWorkerThread->manageDetection(_client_arucoManager, _camURL, _tag, false);
+        _playerWorkerThreadAruco->manageDetection(_client_arucoManager, _camURL, _playerIndex, false);
     }
     else
     {
@@ -177,9 +177,9 @@ void QVideoPlayerWidget::updateCamURL()
     _camURL = _ui.rtspTextBox->text().toStdString();
 }
 
-void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t tag_)
+void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex_)
 {
-    if (!success_ && _tag == tag_)
+    if (!success_ && _playerIndex == playerIndex_)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, request made on %s regarding aruco detection failed", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "error");
@@ -259,9 +259,9 @@ void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::C
 
 void QVideoPlayerWidget::handleScreenshot(void)
 {
-    if (_playerWorkerThread2.get() != nullptr)
+    if (_playerWorkerThreadRecording.get() != nullptr)
     {
-        _playerWorkerThread2->takeScreenshotManager(_client_cameraControlManager, _camURL, _tag);
+        _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager, _camURL, _playerIndex);
     }
     else
     {
@@ -272,15 +272,15 @@ void QVideoPlayerWidget::handleScreenshot(void)
 
 void QVideoPlayerWidget::handleRecording(void)
 {
-    if (_playerWorkerThread2.get() != nullptr)
+    if (_playerWorkerThreadRecording.get() != nullptr)
     {
         if (_ui.startRecordingButton->isChecked())
         {
-            _playerWorkerThread2->startRecordingManager(_client_cameraControlManager, _camURL, _tag);
+            _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager, _camURL, _playerIndex);
         }
         else
         {
-            _playerWorkerThread2->stopRecordingManager(_client_cameraControlManager, _camURL, _tag);
+            _playerWorkerThreadRecording->stopRecordingManager(_client_cameraControlManager, _camURL, _playerIndex);
         }
     }
     else
@@ -290,9 +290,9 @@ void QVideoPlayerWidget::handleRecording(void)
     return;
 }
 
-void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
+void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
 {
-    if (tag_ == _tag)
+    if (playerIndex_ == _playerIndex)
     {
         if (!success_)
         {
@@ -325,9 +325,9 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
     return;
 }
 
-void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
+void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
 {
-    if (tag_ == _tag)
+    if (playerIndex_ == _playerIndex)
     {
         if (!success_)
         {
@@ -362,9 +362,9 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
     return;
 }
 
-void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_)
+void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
 {
-    if (tag_ == _tag)
+    if (playerIndex_ == _playerIndex)
     {
         if (!success_)
         {

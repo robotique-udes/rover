@@ -142,7 +142,7 @@ void QPlayerWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_m
     this->addTask(
         [this, client_CameraControl_, camera_URL_, tag_](void)
         {
-            takeScreenshotInternal(client_CameraControl_, camera_URL_, tag_);
+            this->takeScreenshotInternal(client_CameraControl_, camera_URL_, tag_);
         });
 }
 
@@ -203,7 +203,7 @@ void QPlayerWorker::startRecordingManager(std::shared_ptr<rclcpp::Client<rover_m
     this->addTask(
         [this, client_CameraControl_, camera_URL_, tag_](void)
         {
-            startRecordingInternal(client_CameraControl_, camera_URL_, tag_);
+            this->startRecordingInternal(client_CameraControl_, camera_URL_, tag_);
         });
 }
 
@@ -214,7 +214,7 @@ void QPlayerWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_ms
     this->addTask(
         [this, client_CameraControl_, camera_URL_, tag_](void)
         {
-            stopRecordingInternal(client_CameraControl_, camera_URL_, tag_);
+            this->stopRecordingInternal(client_CameraControl_, camera_URL_, tag_);
         });
 }
 

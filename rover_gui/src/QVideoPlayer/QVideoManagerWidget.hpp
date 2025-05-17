@@ -52,8 +52,8 @@ class QVideoManagerWidget : public QWidget
 
     QGridLayout _videoPlayerLayout;
 
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread2;
+    std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
+    std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;

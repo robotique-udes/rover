@@ -66,13 +66,13 @@ class QVideoPlayerWidget : public QWidget
 
     std::string _camURL = "";
     std::string _defaultCamUrl = "";
-    uint16_t _tag;
+    uint16_t _playerIndex;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
 
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread2;
+    std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
+    std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
 };
 
 #endif  // QVIDEOPLAYERWIDGER_HPP
