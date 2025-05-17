@@ -2,7 +2,6 @@
 #include "QLogManager.hpp"
 #include "QVideoPlayer/QVideoPlayerWidget.hpp"
 #include <QString>
-#include <qboxlayout.h>
 #include <rclcpp/logging.hpp>
 
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
@@ -10,11 +9,10 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _node(guiNode_),
     _tabWidget(this),
     _gridContainer(nullptr),
-    _vLayoutContainer(nullptr),
+    _vSubLayoutContainer(nullptr),
     _altLayoutContainer(nullptr),
     _playerWorkerThread(std::make_shared<QPlayerWorker>())
 {
-
     this->initWidget();
 
     connect(_playerWorkerThread.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
@@ -28,8 +26,8 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     _gridContainer.setLayout(&_gridLayout);
     _altLayoutContainer.setLayout(&_altLayout);
-    _vLayoutContainer.setLayout(&_vLayout);
-    _altLayout.addWidget(&_vLayoutContainer);
+    _vSubLayoutContainer.setLayout(&_vSubLayout);
+    _altLayout.addWidget(&_vSubLayoutContainer);
 
     _mainLayout.addWidget(&_tabWidget);
     setLayout(&_mainLayout);
@@ -81,9 +79,9 @@ void QVideoManagerWidget::onArucoDetectionIsLive(std::vector<std::string> liveUr
     }
 }
 
-void QVideoManagerWidget::onTabChanged(int index)
+void QVideoManagerWidget::onTabChanged(uint16_t index)
 {
-    if (index==0)
+    if (index == 0)
     {
         uint16_t index = 0;
         for (auto& widget : _videoPlaysWidgets)
@@ -100,9 +98,9 @@ void QVideoManagerWidget::onTabChanged(int index)
     else
     {
         if (_videoPlaysWidgets[1])
-            _vLayout.addWidget(_videoPlaysWidgets[1].get());
+            _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
         if (_videoPlaysWidgets[2])
-            _vLayout.addWidget(_videoPlaysWidgets[2].get());
+            _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
         if (_videoPlaysWidgets[0])
             _altLayout.addWidget(_videoPlaysWidgets[0].get());
     }

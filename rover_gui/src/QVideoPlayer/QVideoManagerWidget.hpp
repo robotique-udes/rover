@@ -9,8 +9,8 @@
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include <qboxlayout.h>
-#include <qtabwidget.h>
+#include <QBoxLayout>
+#include <QTabWidget>
 
 class QVideoManagerWidget : public QWidget
 {
@@ -37,7 +37,7 @@ class QVideoManagerWidget : public QWidget
 
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
-    void onTabChanged(int index);
+    void onTabChanged(uint16_t index);
 
   private:
     void initWidget(void);
@@ -49,15 +49,14 @@ class QVideoManagerWidget : public QWidget
     std::shared_ptr<rclcpp::Node> _node;
 
     QTabWidget _tabWidget;
-
     QVBoxLayout _mainLayout;
 
     QGridLayout _gridLayout;
     QWidget _gridContainer;
 
     QHBoxLayout _altLayout;
-    QVBoxLayout _vLayout;
-    QWidget _vLayoutContainer;
+    QVBoxLayout _vSubLayout;
+    QWidget _vSubLayoutContainer;
     QWidget _altLayoutContainer;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;
