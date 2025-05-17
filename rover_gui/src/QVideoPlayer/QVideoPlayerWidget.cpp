@@ -21,7 +21,10 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             this,
             &QVideoPlayerWidget::onDetectionHandledSuccessfully);
     connect(_ui.playPauseButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePlayPauseButton);
-    connect(_playerWorkerThreadAruco.get(), &QPlayerWorker::arucoServerInfoFailed, this, &QVideoPlayerWidget::onArucoServerInfoFailed);
+    connect(_playerWorkerThreadAruco.get(),
+            &QPlayerWorker::arucoServerInfoFailed,
+            this,
+            &QVideoPlayerWidget::onArucoServerInfoFailed);
 
     connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::updateCamURL);
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::setURLToDefault);

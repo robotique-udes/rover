@@ -10,7 +10,10 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 {
     this->initWidget();
 
-    connect(_playerWorkerThreadAruco.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
+    connect(_playerWorkerThreadAruco.get(),
+            &QPlayerWorker::urlFoundInDetection,
+            this,
+            &QVideoManagerWidget::onArucoDetectionIsLive);
     connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
 
     this->initArucoClient();
