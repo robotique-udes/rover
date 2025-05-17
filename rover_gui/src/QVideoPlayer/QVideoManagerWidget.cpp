@@ -11,6 +11,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initWidget();
 
     connect(_playerWorkerThreadAruco.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
+    connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
 
     this->initArucoClient();
     this->initArucoPublisher();
@@ -176,4 +177,16 @@ void QVideoManagerWidget::initCameraControlPublisher(void)
                                                                                       widget->CB_cameraListUpdate(msg.urls);
                                                                                   }
                                                                               });
+}
+
+void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
+{
+    if (waiting_)
+    {
+        this->setCursor(Qt::WaitCursor);
+    }
+    else
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }
 }

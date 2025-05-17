@@ -38,6 +38,7 @@ class QVideoManagerWidget : public QWidget
 
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
+    void onSetCursorWaiting(bool waiting_);
 
   private:
     void initWidget(void);

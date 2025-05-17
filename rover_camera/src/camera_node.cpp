@@ -402,7 +402,7 @@ bool CameraNode::stopRecording(std::string cameraURL_)
             _recordingCv.notify_one();
         }
     }
-    CB_url_publisher();
+    this->CB_url_publisher();
     return true;
 }
 

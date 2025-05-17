@@ -21,7 +21,7 @@ class QPlayerWorker : public QWorker
 {
     Q_OBJECT
 
-    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 5'000UL;
+    static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 4'000UL;
 
   public:
     QPlayerWorker(bool start_ = false, QObject* parent_ = nullptr);
@@ -57,6 +57,7 @@ class QPlayerWorker : public QWorker
     void screenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
     void startRecordingHandledSuccessfully(bool success, std::string status, uint16_t tag_);
     void stopRecordingHandledSuccessfully(bool success, std::string status, uint16_t tag_);
+    void setCursorWaiting(bool waiting_);
 
   private:
     void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,

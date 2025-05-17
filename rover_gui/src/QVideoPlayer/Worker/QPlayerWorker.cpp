@@ -150,6 +150,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
                                            std::string camera_URL_,
                                            uint16_t tag_)
 {
+    emit setCursorWaiting(true);
     bool success = false;
     std::string status;
 
@@ -193,6 +194,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
         }
     }
 
+    emit setCursorWaiting(false);
     emit screenshotHandledSuccessfully(success, status, tag_);
 }
 
@@ -222,6 +224,7 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
                                            std::string camera_URL_,
                                            uint16_t tag_)
 {
+    emit setCursorWaiting(true);
     bool success = false;
     std::string status;
 
@@ -267,6 +270,7 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
         }
     }
 
+    emit setCursorWaiting(false);
     emit startRecordingHandledSuccessfully(success, status, tag_);
 }
 
@@ -274,6 +278,7 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
                                           std::string camera_URL_,
                                           uint16_t tag_)
 {
+    emit setCursorWaiting(true);
     bool success = false;
     std::string status;
 
@@ -320,6 +325,7 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
         }
     }
 
+    emit setCursorWaiting(false);
     emit stopRecordingHandledSuccessfully(success, status, tag_);
     return;
 }
