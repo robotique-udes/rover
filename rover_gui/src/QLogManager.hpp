@@ -59,20 +59,76 @@ class QLogManager : public QObject
     QMutex _mutex;
 };
 
-#define UI_LOG_DEBUG(source, message, target) QLogManager::getInstance().debug(QLogManager::eLogSource::source, message, target)
-#define UI_LOG_INFO(source, message, target) QLogManager::getInstance().info(QLogManager::eLogSource::source, message, target)
-#define UI_LOG_WARNING(source, message, target) \
-    QLogManager::getInstance().warning(QLogManager::eLogSource::source, message, target)
-#define UI_LOG_ERROR(source, message, target) QLogManager::getInstance().error(QLogManager::eLogSource::source, message, target)
+namespace LogUtils
+{
 
-#define UI_LOG_DEBUG_RTSP(message, target) UI_LOG_DEBUG(RTSP_STREAMING, message, target)
-#define UI_LOG_INFO_RTSP(message, target) UI_LOG_INFO(RTSP_STREAMING, message, target)
-#define UI_LOG_WARNING_RTSP(message, target) UI_LOG_WARNING(RTSP_STREAMING, message, target)
-#define UI_LOG_ERROR_RTSP(message, target) UI_LOG_ERROR(RTSP_STREAMING, message, target)
+    constexpr QLogManager::eLogSource RTSP_STREAMING = QLogManager::eLogSource::RTSP_STREAMING;
+    constexpr QLogManager::eLogSource ARUCO_DETECTION = QLogManager::eLogSource::ARUCO_DETECTION;
+    constexpr QLogManager::eLogSource SCREENSHOT = QLogManager::eLogSource::SCREENSHOT;
+    constexpr QLogManager::eLogSource RECORDING = QLogManager::eLogSource::RECORDING;
+    constexpr QLogManager::eLogSource GENERAL = QLogManager::eLogSource::GENERAL;
 
-#define UI_LOG_DEBUG_ARUCO(message, target) UI_LOG_DEBUG(ARUCO_DETECTION, message, target)
-#define UI_LOG_INFO_ARUCO(message, target) UI_LOG_INFO(ARUCO_DETECTION, message, target)
-#define UI_LOG_WARNING_ARUCO(message, target) UI_LOG_WARNING(ARUCO_DETECTION, message, target)
-#define UI_LOG_ERROR_ARUCO(message, target) UI_LOG_ERROR(ARUCO_DETECTION, message, target)
+    inline void UI_LOG_DEBUG(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    {
+        QLogManager::getInstance().debug(source, message, target);
+    }
+
+    inline void UI_LOG_INFO(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    {
+        QLogManager::getInstance().info(source, message, target);
+    }
+
+    inline void UI_LOG_WARNING(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    {
+        QLogManager::getInstance().warning(source, message, target);
+    }
+
+    inline void UI_LOG_ERROR(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    {
+        QLogManager::getInstance().error(source, message, target);
+    }
+
+    // Specialized logging functions for RTSP
+    inline void UI_LOG_DEBUG_RTSP(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_DEBUG(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+    }
+
+    inline void UI_LOG_INFO_RTSP(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_INFO(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+    }
+
+    inline void UI_LOG_WARNING_RTSP(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_WARNING(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+    }
+
+    inline void UI_LOG_ERROR_RTSP(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_ERROR(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+    }
+
+    // Specialized logging functions for ARUCO
+    inline void UI_LOG_DEBUG_ARUCO(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_DEBUG(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+    }
+
+    inline void UI_LOG_INFO_ARUCO(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_INFO(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+    }
+
+    inline void UI_LOG_WARNING_ARUCO(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_WARNING(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+    }
+
+    inline void UI_LOG_ERROR_ARUCO(const QString& message, const QString& target = QString())
+    {
+        UI_LOG_ERROR(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+    }
+}  // namespace LogUtils
 
 #endif

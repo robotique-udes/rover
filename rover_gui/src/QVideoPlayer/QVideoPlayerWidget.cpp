@@ -7,6 +7,8 @@
 #include <QRegularExpression>
 #include <gst/video/videooverlay.h>
 
+using namespace LogUtils;
+
 int QVideoPlayerWidget::_instanceCounter = 0;
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,

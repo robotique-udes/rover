@@ -3,6 +3,8 @@
 #include <QDebug>
 #include <rclcpp/rclcpp.hpp>
 
+using namespace LogUtils;
+
 QPlayerWorker::QPlayerWorker(bool start_, QObject* parent_):
     QWorker(start_, parent_),
     _timer_serviceCall(MAX_DELAY_SERVICE_CALL)

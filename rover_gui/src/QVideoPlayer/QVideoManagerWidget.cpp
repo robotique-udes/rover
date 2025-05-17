@@ -2,6 +2,8 @@
 #include "QLogManager.hpp"
 #include <QString>
 
+using namespace LogUtils;
+
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),

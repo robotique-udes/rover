@@ -6,6 +6,11 @@
 #include <gst/video/videooverlay.h>
 #include <QUrl>
 
+using namespace LogUtils;
+
+static constexpr int MAX_CONSECUTIVE_ERRORS = 3;
+static int consecutive_errors_count = 0;
+
 static void glib_log_handler(const gchar* log_domain, GLogLevelFlags log_level, const gchar* message, gpointer user_data)
 {
     auto* worker = static_cast<GStreamerWorker*>(user_data);
@@ -31,9 +36,6 @@ static void glib_log_handler(const gchar* log_domain, GLogLevelFlags log_level, 
         UI_LOG_DEBUG_RTSP(msg, targetId);
     }
 }
-
-static const int MAX_CONSECUTIVE_ERRORS = 3;
-static int consecutive_errors_count = 0;
 
 static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_data)
 {
