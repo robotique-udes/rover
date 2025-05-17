@@ -50,11 +50,13 @@ class QVideoManagerWidget : public QWidget
 
     QTabWidget _tabWidget;
 
-    QGridLayout* _gridLayout;
+    QVBoxLayout _mainLayout;
+
+    QGridLayout _gridLayout;
     QWidget _gridContainer;
 
-    QHBoxLayout* _altLayout;
-    QVBoxLayout* _vLayout;
+    QHBoxLayout _altLayout;
+    QVBoxLayout _vLayout;
     QWidget _vLayoutContainer;
     QWidget _altLayoutContainer;
 

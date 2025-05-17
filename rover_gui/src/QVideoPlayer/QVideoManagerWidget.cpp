@@ -15,10 +15,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThread(std::make_shared<QPlayerWorker>())
 {
 
-    _gridLayout = new QGridLayout();
-    _altLayout = new QHBoxLayout();
-    _vLayout = new QVBoxLayout();
-
     this->initWidget();
 
     connect(_playerWorkerThread.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
@@ -30,15 +26,13 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _tabWidget.addTab(&_gridContainer, "grid");
     _tabWidget.addTab(&_altLayoutContainer, "alt");
 
-    _gridContainer.setLayout(_gridLayout);
-    _altLayoutContainer.setLayout(_altLayout);
-    _vLayoutContainer.setLayout(_vLayout);
-    _altLayout->addWidget(&_vLayoutContainer);
+    _gridContainer.setLayout(&_gridLayout);
+    _altLayoutContainer.setLayout(&_altLayout);
+    _vLayoutContainer.setLayout(&_vLayout);
+    _altLayout.addWidget(&_vLayoutContainer);
 
-    QVBoxLayout* mainLayout = new QVBoxLayout(this);
-
-    mainLayout->addWidget(&_tabWidget);
-    setLayout(mainLayout);
+    _mainLayout.addWidget(&_tabWidget);
+    setLayout(&_mainLayout);
 
     _playerWorkerThread->start();
 }
@@ -98,7 +92,7 @@ void QVideoManagerWidget::onTabChanged(int index)
             {
                 int row = index / 3;
                 int col = index % 3;
-                _gridLayout->addWidget(widget.get(), row, col);
+                _gridLayout.addWidget(widget.get(), row, col);
                 index++;
             }
         }
@@ -106,13 +100,11 @@ void QVideoManagerWidget::onTabChanged(int index)
     else
     {
         if (_videoPlaysWidgets[1])
-            _vLayout->addWidget(_videoPlaysWidgets[1].get());
+            _vLayout.addWidget(_videoPlaysWidgets[1].get());
         if (_videoPlaysWidgets[2])
-            _vLayout->addWidget(_videoPlaysWidgets[2].get());
+            _vLayout.addWidget(_videoPlaysWidgets[2].get());
         if (_videoPlaysWidgets[0])
-            _altLayout->addWidget(_videoPlaysWidgets[0].get());
-
-
+            _altLayout.addWidget(_videoPlaysWidgets[0].get());
     }
 }
 
@@ -144,7 +136,7 @@ void QVideoManagerWidget::initWidget(void)
         {
             int row = index / 3;
             int col = index % 3;
-            _gridLayout->addWidget(widget.get(), row, col);
+            _gridLayout.addWidget(widget.get(), row, col);
             index++;
         }
     }
