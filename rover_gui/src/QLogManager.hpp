@@ -61,74 +61,104 @@ class QLogManager : public QObject
 
 namespace LogUtils
 {
-
     constexpr QLogManager::eLogSource RTSP_STREAMING = QLogManager::eLogSource::RTSP_STREAMING;
     constexpr QLogManager::eLogSource ARUCO_DETECTION = QLogManager::eLogSource::ARUCO_DETECTION;
     constexpr QLogManager::eLogSource SCREENSHOT = QLogManager::eLogSource::SCREENSHOT;
     constexpr QLogManager::eLogSource RECORDING = QLogManager::eLogSource::RECORDING;
     constexpr QLogManager::eLogSource GENERAL = QLogManager::eLogSource::GENERAL;
 
-    inline void UI_LOG_DEBUG(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    template<typename T>
+    inline QString toQString(const T& str)
     {
-        QLogManager::getInstance().debug(source, message, target);
+        if constexpr (std::is_same_v<T, QString>)
+        {
+            return str;
+        }
+        else if constexpr (std::is_same_v<T, std::string>)
+        {
+            return QString::fromStdString(str);
+        }
+        else if constexpr (std::is_same_v<T, const char*>)
+        {
+            return QString(str);
+        }
+        else
+        {
+            return QString::fromStdString(std::string(str));
+        }
     }
 
-    inline void UI_LOG_INFO(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_DEBUG(QLogManager::eLogSource source, const StrType& message, const TargetType& target = TargetType())
     {
-        QLogManager::getInstance().info(source, message, target);
+        QLogManager::getInstance().debug(source, toQString(message), toQString(target));
     }
 
-    inline void UI_LOG_WARNING(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_INFO(QLogManager::eLogSource source, const StrType& message, const TargetType& target = TargetType())
     {
-        QLogManager::getInstance().warning(source, message, target);
+        QLogManager::getInstance().info(source, toQString(message), toQString(target));
     }
 
-    inline void UI_LOG_ERROR(QLogManager::eLogSource source, const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_WARNING(QLogManager::eLogSource source, const StrType& message, const TargetType& target = TargetType())
     {
-        QLogManager::getInstance().error(source, message, target);
+        QLogManager::getInstance().warning(source, toQString(message), toQString(target));
     }
 
-    // Specialized logging functions for RTSP
-    inline void UI_LOG_DEBUG_RTSP(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_ERROR(QLogManager::eLogSource source, const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_DEBUG(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+        QLogManager::getInstance().error(source, toQString(message), toQString(target));
     }
 
-    inline void UI_LOG_INFO_RTSP(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_DEBUG_RTSP(const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_INFO(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+        UI_LOG_DEBUG(RTSP_STREAMING, message, target);
     }
 
-    inline void UI_LOG_WARNING_RTSP(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_INFO_RTSP(const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_WARNING(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+        UI_LOG_INFO(RTSP_STREAMING, message, target);
     }
 
-    inline void UI_LOG_ERROR_RTSP(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_WARNING_RTSP(const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_ERROR(QLogManager::eLogSource::RTSP_STREAMING, message, target);
+        UI_LOG_WARNING(RTSP_STREAMING, message, target);
     }
 
-    // Specialized logging functions for ARUCO
-    inline void UI_LOG_DEBUG_ARUCO(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_ERROR_RTSP(const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_DEBUG(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+        UI_LOG_ERROR(RTSP_STREAMING, message, target);
     }
 
-    inline void UI_LOG_INFO_ARUCO(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_DEBUG_ARUCO(const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_INFO(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+        UI_LOG_DEBUG(ARUCO_DETECTION, message, target);
     }
 
-    inline void UI_LOG_WARNING_ARUCO(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_INFO_ARUCO(const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_WARNING(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+        UI_LOG_INFO(ARUCO_DETECTION, message, target);
     }
 
-    inline void UI_LOG_ERROR_ARUCO(const QString& message, const QString& target = QString())
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_WARNING_ARUCO(const StrType& message, const TargetType& target = TargetType())
     {
-        UI_LOG_ERROR(QLogManager::eLogSource::ARUCO_DETECTION, message, target);
+        UI_LOG_WARNING(ARUCO_DETECTION, message, target);
     }
-}  // namespace LogUtils
+
+    template<typename StrType, typename TargetType = StrType>
+    inline void UI_LOG_ERROR_ARUCO(const StrType& message, const TargetType& target = TargetType())
+    {
+        UI_LOG_ERROR(ARUCO_DETECTION, message, target);
+    }
+}  
 
 #endif
