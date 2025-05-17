@@ -62,7 +62,7 @@ void QLogManager::log(eLogLevel level, eLogSource source, const QString& message
 
 QString QLogManager::formatLogMessage(eLogLevel level, const QString& message)
 {
-    QString timestamp = QDateTime::currentDateTime().toString("yyyy-MM-dd hh:mm:ss.zzz");
+    QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss");
     QString levelStr;
 
     switch (level)
