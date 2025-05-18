@@ -92,7 +92,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             {
                 this->setDefaultStyle();
                 auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
-                // this->setStatusReport(deviceID);
                 this->updateDeviceInfo(request);
             });
 
@@ -132,9 +131,10 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
 {
     _deviceMessageCount[msg_.id]++;
     RCLCPP_INFO(_node->get_logger(), "Message count for device %d: %d", msg_.id, _deviceMessageCount[msg_.id]);
-    
+
     this->updateRebootCounter(msg_.id);
     this->updateDeviceColor(msg_.id, msg_);
+    this->setStatusReport(msg_.id);
 }
 
 void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
