@@ -94,13 +94,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
                 auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
                 this->updateDeviceInfo(request);
             });
-
-    // Set the QSizePolicy to ensure aspect ratio resizing
-    // QSizePolicy sp = this->sizePolicy();
-    // sp.setHorizontalPolicy(QSizePolicy::Preferred);
-    // sp.setVerticalPolicy(QSizePolicy::Preferred);
-    // sp.setHeightForWidth(true);  // Enable height for width
-    // this->setSizePolicy(sp);
 }
 
 void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_)
@@ -159,18 +152,6 @@ void QDeviceStatus::rebootDevice(uint16_t deviceID_)
     _numberOfDeviceReboots[deviceID_]++;
 }
 
-// int QDeviceStatus::heightForWidth(int width_) const
-// {
-//     // Load the image and get the aspect ratio
-//     QPixmap pixmap(":/images/rover.png");  // Path to your image in resources
-//     int originalWidth = pixmap.width();
-//     int originalHeight = pixmap.height();
-
-//     // Calculate height based on width, keeping the same aspect ratio
-//     int height = width_ * originalHeight / originalWidth;
-//     return height;
-// }
-
 void QDeviceStatus::setStatusReport(uint16_t deviceID_)
 {
     auto label = _deviceLabels[deviceID_];
@@ -178,7 +159,7 @@ void QDeviceStatus::setStatusReport(uint16_t deviceID_)
     std::string deviceName = this->getDeviceName(deviceID_);
 
     QString labelText = QString::fromStdString(deviceName) + "\n" + "0x" + QString::number(deviceID_, 16).toUpper() + "\n"
-                        + "Nombre reboot: " + QString::number(_numberOfDeviceReboots[deviceID_]);
+                        + "Number of reboots: " + QString::number(_numberOfDeviceReboots[deviceID_]);
 
     label->setText(labelText);
     RCLCPP_INFO(_node->get_logger(), "Label %d text changed", deviceID_);
@@ -205,7 +186,7 @@ std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
     }
 }
 
-void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus deviceStatus_)
+void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
 {
     auto label = _deviceLabels[deviceID_];
 
