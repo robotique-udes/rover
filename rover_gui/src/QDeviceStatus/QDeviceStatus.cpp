@@ -94,6 +94,22 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
                 auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
                 this->updateDeviceInfo(request);
             });
+
+    // Load and assign pixmap to image label
+    _pixmap = QPixmap(":/rovUS/images/rover2.jpeg");
+    _imageLabel = _ui.RoverImage;
+    _imageLabel->setPixmap(_pixmap);
+    _imageLabel->setScaledContents(true);  // optionally if you want to fill label always
+
+    // Store initial relative overlay positions
+    _overlayPositions[_ui.frontleftMotor] = QPointF(0.0172, 0.3372);
+    _overlayPositions[_ui.frontrightMotor] = QPointF(0.6532, 0.3372);
+    _overlayPositions[_ui.rearleftMotor] = QPointF(0.0172, 0.6086);
+    _overlayPositions[_ui.rearrightMotor] = QPointF(0.6532, 0.6086);
+    _overlayPositions[_ui.ddbController] = QPointF(0.3442, 0.5263);
+    _overlayPositions[_ui.gnss] = QPointF(0.2926, 0.7017);
+    _overlayPositions[_ui.pb_serviceCall] = QPointF(0.7556, 0.0270);
+    // Add for each of your overlay widgets...
 }
 
 void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_)
@@ -214,5 +230,35 @@ void QDeviceStatus::setDefaultStyle()
     for (auto it = _deviceLabels.begin(); it != _deviceLabels.end(); ++it)
     {
         it.value()->setStyleSheet(STATUS_DEFAULT);
+    }
+}
+
+void QDeviceStatus::resizeEvent(QResizeEvent* event_)
+{
+    QWidget::resizeEvent(event_);
+
+    // Resize image label to fit widget while preserving aspect ratio
+    QSize scaledSize = _pixmap.size();
+    scaledSize.scale(size(), Qt::KeepAspectRatio);
+    _imageLabel->resize(scaledSize);
+    _imageLabel->move((width() - scaledSize.width()) / 2, (height() - scaledSize.height()) / 2);
+
+    // Update overlays' absolute positions
+    this->updateOverlayPositions();
+}
+
+void QDeviceStatus::updateOverlayPositions()
+{
+    QRect imageRect = _imageLabel->geometry();
+
+    for (auto it = _overlayPositions.begin(); it != _overlayPositions.end(); ++it)
+    {
+        QWidget* overlay = it.key();
+        QPointF relPos = it.value();
+
+        int x = imageRect.left() + relPos.x() * imageRect.width();
+        int y = imageRect.top() + relPos.y() * imageRect.height();
+
+        overlay->move(x, y);
     }
 }

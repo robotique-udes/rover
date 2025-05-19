@@ -195,8 +195,8 @@
      <widget class="QPushButton" name="pb_serviceCall">
       <property name="geometry">
        <rect>
-        <x>750</x>
-        <y>30</y>
+        <x>560</x>
+        <y>110</y>
         <width>91</width>
         <height>61</height>
        </rect>

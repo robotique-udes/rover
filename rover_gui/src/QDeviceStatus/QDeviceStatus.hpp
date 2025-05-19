@@ -23,9 +23,6 @@ class QDeviceStatus : public QWidget
     QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
     ~QDeviceStatus() = default;
 
-    // protected:
-    //   int heightForWidth(int width_) const override;
-
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
     void setStatusReport(uint16_t id_);
@@ -50,6 +47,18 @@ class QDeviceStatus : public QWidget
     QMap<uint16_t, QLabel*> _deviceLabels;
 
     uint16_t _numberOfCalls = 0U;
+
+    // Resizing ChatGPT
+  protected:
+    void resizeEvent(QResizeEvent* event) override;
+
+  private:
+    void updateOverlayPositions();
+
+    QLabel* _imageLabel;
+    QPixmap _pixmap;
+
+    QMap<QWidget*, QPointF> _overlayPositions;
 };
 
 #endif  // __QDEVICESTATUS_HPP__
