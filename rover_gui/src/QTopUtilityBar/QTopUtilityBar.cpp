@@ -1,11 +1,5 @@
 #include "QTopUtilityBar.hpp"
-#include <QDateTime>
-#include <QTimeZone>
 #include <QIcon>
-#include <rover_msgs/msg/battery.hpp>
-#include <rover_msgs/msg/wifi_connection.hpp>
-#include <rover_msgs/msg/gps.hpp>
-#include "Global/Helpers/QToastNotification/QToastNotification.hpp"
 
 QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
@@ -21,6 +15,7 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
     connect(this, &QTopUtilityBar::updateBatteryUI, this, &QTopUtilityBar::onUpdateBatteryUI);
     connect(this, &QTopUtilityBar::updateWifiUI, this, &QTopUtilityBar::onUpdateWifiUI);
     connect(this, &QTopUtilityBar::updateGNSS, this, &QTopUtilityBar::onUpdateGNSS);
+    connect(this, &QTopUtilityBar::updateTimer, this, &QTopUtilityBar::onUpdateTimer);
 }
 
 void QTopUtilityBar::setupUI(void)
@@ -28,10 +23,8 @@ void QTopUtilityBar::setupUI(void)
     _timeZone = QTimeZone("America/Montreal");
 
     _ui.batteryLabel->setText("-- %");
-
     _ui.signalQualityLabel->setText("RSSI: ---   ");
     _ui.connectionSpeedLabel->setText("--.- Mb/s   ");
-
     _ui.satellitesNbrLabel->setText("Sat: -- ");
     _ui.GNSSFixLabel->setText("Fix: --.-------");
     _ui.HeadingLabel->setText("---.--");
@@ -149,9 +142,6 @@ void QTopUtilityBar::CB_battery(rover_msgs::msg::Battery& msg_)
     {
         QIcon icon(":/icons/BatteryError.svg");
         _ui.batteryIcon->setIcon(icon);
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Error with battery publisher",
-                                                                       "battery publisher is unavailble, please check connection",
-                                                                       QHelper::QToastNotification::eNotifType::ERROR);
     }
     else
     {
@@ -166,10 +156,6 @@ void QTopUtilityBar::CB_wifiConnection(rover_msgs::msg::WifiConnection& msg_)
     {
         QIcon icon(":/icons/RSSIError.svg");
         _ui.RSSILabel->setIcon(icon);
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-            "Error with wifi connection publisher",
-            "wifi connection publisher is unavailble, please check connection",
-            QHelper::QToastNotification::eNotifType::ERROR);
     }
     else
     {
@@ -306,6 +292,6 @@ void QTopUtilityBar::onUpdateTimer(int secondsBeforeTimeOut_)
 void QTopUtilityBar::simulateTimerFileReading()
 {
     _timersList.push_back(QDateTime(QDate(2025, 5, 16), QTime(13, 58, 0), QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025, 5, 16), QTime(18, 36, 0), QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025, 5, 21), QTime(18, 36, 0), QTimeZone("America/Montreal")));
     _timersList.push_back(QDateTime(QDate(2025, 5, 18), QTime(16, 3, 0), QTimeZone("America/Edmonton")));
 }

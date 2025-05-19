@@ -1,6 +1,5 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/wifi_connection.hpp"
-#include <sys/ucontext.h>
 
 class ConnectionSpeedPublisher : public rclcpp::Node
 {
@@ -48,6 +47,3 @@ int main(int argc, char* argv[])
     rclcpp::shutdown();
     return 0;
 }
-
-// rssi (0 a -120)
-// vitesse MEG/S

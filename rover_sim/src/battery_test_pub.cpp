@@ -1,7 +1,5 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/battery.hpp"
-#include <cstdint>
-#include <rcl/publisher.h>
 
 class BatteryPublisher : public rclcpp::Node
 {

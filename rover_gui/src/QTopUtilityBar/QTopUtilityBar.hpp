@@ -7,13 +7,11 @@
 #include "UI_TopUtilityBar.h"
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include <cstdint>
 #include <rover_msgs/msg/battery.hpp>
-#include <rover_msgs/msg/detail/gps__struct.hpp>
-#include <rover_msgs/msg/detail/wifi_connection__struct.hpp>
+#include <rover_msgs/msg/gps.hpp>
+#include <rover_msgs/msg/wifi_connection.hpp>
 #include <QDateTime>
 #include <QTimeZone>
-#include <sys/types.h>
 
 class QTopUtilityBar : public QWidget
 {
@@ -43,7 +41,6 @@ class QTopUtilityBar : public QWidget
     void onUpdateWifiUI(float rssi_, float speed_);
     void onUpdateGNSS(float fix_, float heading_, uint8_t satNbr_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
-
 
   private:
     void setupUI(void);
