@@ -98,14 +98,14 @@ class Teleop : public rclcpp::Node
                 _jointController.setControlledJoint(KEYBINDINGS::JOINT::JOINT_SELECT_DEC);
             }
 
-            armMsg.data = _jointController.getJointCmdFromInput(joyArray);
+            armMsg.target_speed = _jointController.getJointCmdFromInput(joyArray);
         }
 
         // CARTESIAN CONTROL
         else if (_controlMode == eControlMode::CARTESIAN)
         {
             _cartesianController.getJointPositions(_jointPositions);
-            armMsg.data = _cartesianController.getJointCmdFromInput(joyArray);
+            armMsg.target_speed = _cartesianController.getJointCmdFromInput(joyArray);
 
             if (_joyManager.isTriggered(KEYBINDINGS::CARTESIAN::RECORD))
             {
@@ -151,7 +151,7 @@ class Teleop : public rclcpp::Node
 
     void position_CB(const rover_msgs::msg::ArmMsg& armMsg_)
     {
-        std::copy_n(armMsg_.data.begin(), TO_UNDERLYING(eJointIndex::eLAST), _jointPositions.begin());
+        std::copy_n(armMsg_.target_speed.begin(), TO_UNDERLYING(eJointIndex::eLAST), _jointPositions.begin());
     }
 };
 

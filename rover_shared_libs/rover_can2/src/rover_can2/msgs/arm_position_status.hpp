@@ -14,18 +14,18 @@ namespace RoverCan2::Msgs
       public:
         enum class eMsgContentID : uint8_t
         {
-            POSITION,
+            CURRENT_POSITION,
             eLAST
         };
 
       private:
         struct sMsgData
         {
-            bool jointLimitReached;
+            bool current_position;
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
-            = {eMsgContentID::POSITION};
+            = {eMsgContentID::CURRENT_POSITION};
 
         sMsgData _data;
 
@@ -33,10 +33,10 @@ namespace RoverCan2::Msgs
         ArmPositionStatus():
             Msg(Constant::eMsgId::ARM_POSITION_STATUS)
         {
-            _data.jointLimitReached = false;
+            _data.current_position = false;
         }
 
-        eLoadMsgCode _loadMsg(const CanMsg& msg_) override
+        eLoadMsgCode _loadMsg(const CanMsg& msg_)
         {
             if (msg_.getMsgID() == Constant::eMsgId::INVALID)
             {
@@ -50,15 +50,17 @@ namespace RoverCan2::Msgs
             eMsgContentID contentId = static_cast<eMsgContentID>(msg_.getMsgContentID());
             if (!VALID_MSG_IDS.contains(contentId))
             {
-                LOG_DEBUG(Logger::Nodes::ArmInfo_msg,
+                LOG_DEBUG(Logger::Nodes::ArmPostitionStatus_msg,
                           "Unexpected msgContentId: %u (expected < %u)",
                           TO_UNDERLYING(contentId),
                           TO_UNDERLYING(eMsgContentID::eLAST));
                 return eLoadMsgCode::ERROR_MISMATCH;
             }
 
-            bool success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.jointLimitReached);
-            LOG_DEBUG(Logger::Nodes::ArmInfo_msg, "jointLimitReached parsing: %s", success ? "success" : "failure");
+            bool success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.current_position);
+            LOG_DEBUG(Logger::Nodes::ArmPostitionStatus_msg,
+                      "switch (msgContentId) case eMsgContentID::CURRENT_POSITION: %s",
+                      success ? "success" : "failed");
             if (!success)
             {
                 return eLoadMsgCode::ERROR_MISMATCH;
@@ -68,7 +70,7 @@ namespace RoverCan2::Msgs
                                                                           : eLoadMsgCode::SUCCESS_INCOMPLETE;
         }
 
-        std::optional<CanMsg> _getCanMsg(uint8_t msgContentId_) const override
+        std::optional<CanMsg> _getCanMsg(uint8_t msgContentId_) const
         {
             eMsgContentID contentId = static_cast<eMsgContentID>(msgContentId_);
             if (!VALID_MSG_IDS.contains(contentId))
@@ -76,22 +78,18 @@ namespace RoverCan2::Msgs
                 return std::nullopt;
             }
             CanMsg msg;
-            Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.jointLimitReached, msg);
+            Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.current_position, msg);
             return msg;
         }
 
-        uint8_t _getMsgContentCount() const override
+        uint8_t _getMsgContentCount() const
         {
             return TO_UNDERLYING(eMsgContentID::eLAST);
         }
 
-        bool isJointLimitReached() const
+        const sMsgData& getData(void) const
         {
-            return _data.jointLimitReached;
-        }
-        void setJointLimitReached(bool reached)
-        {
-            _data.jointLimitReached = reached;
+            return static_cast<const sMsgData&>(_data);
         }
     };
 

@@ -1,36 +1,34 @@
 #ifndef ARM_JOINT_HPP
 #define ARM_JOINT_HPP
 
-#include <rover_can2/publisher.hpp>
-#include <rover_can2/subscriber.hpp>
-#include <rover_can2/device.hpp>
-
-#include "can_master/shared_msg.hpp"
 #include "can_master/master_device.hpp"
+#include "can_master/shared_msg.hpp"
 
-#include <rover_msgs/msg/arm_msg.hpp>
 #include <rover_can2/msgs/arm_speed_cmd.hpp>
-#include <rover_can2/msgs/arm_joint_info.hpp>
 #include <rover_can2/msgs/arm_position_status.hpp>
+#include <rover_msgs/msg/arm_msg.hpp>
+
+#include <rover_can2/rover_can2.hpp>
+
+#include <memory>
+#include <vector>
 
 class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmSpeedCmd>,
-                                          RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointInfo, ArmJoint>>,
+                                          RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmPositionStatus, ArmJoint>>,
                  public MasterDevice
 {
     using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmSpeedCmd>,
-                                      RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointInfo, ArmJoint>>;
+                                      RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmPositionStatus, ArmJoint>>;
 
     static constexpr const char* ARM_CMD_TOPIC = "/rover/arm/joints_cmd";
     static constexpr const char* ARM_POSITION_STATUS_TOPIC = "/rover/arm/joints_status";
-    // TODO Add hit joint limit topic
-
-    static constexpr float ARM_POSITION_STATUS_PUBLISH_FREQUENCY = 100.0F;
+    static constexpr float ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ = 100.0F;
     static constexpr uint32_t CAN_PUBLISH_PERIOD_MS
-        = static_cast<uint32_t>(ROUND(1'000.0F / ARM_POSITION_STATUS_PUBLISH_FREQUENCY));
+        = static_cast<uint32_t>(ROUND(1'000.0F / ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ));
 
   public:
     ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
-             uint8_t rosPropSpeedMsgId_,
+             uint8_t rosArmSpeedMsgId_,
              std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>> rosSharedMsg_);
 
   private:
@@ -43,7 +41,6 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     void CB_ROS_canSend(void);
 
     const uint8_t _rosArmSpeedMsgId;
-
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>> _rosSharedMsg;
     RoverCan2::Msgs::ArmSpeedCmd _nextArmCmdMsg;
 
@@ -52,4 +49,4 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     rclcpp::TimerBase::SharedPtr _timerCanSend;
 };
 
-#endif
+#endif  // ARM_JOINT_HPP

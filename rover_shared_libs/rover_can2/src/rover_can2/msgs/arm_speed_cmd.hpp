@@ -4,7 +4,7 @@
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
 
-DEFINE_LOG_NODE(PropSpeedCmd_msg, Logger::eNodeState::OFF)
+DEFINE_LOG_NODE(ArmSpeedCmd_msg, Logger::eNodeState::OFF)
 
 namespace RoverCan2::Msgs
 {
@@ -63,7 +63,7 @@ namespace RoverCan2::Msgs
             {
                 case eMsgContentID::TARGET_SPEED:
                     success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.targetSpeed);
-                    LOG_DEBUG(Logger::Nodes::PropSpeedCmd_msg,
+                    LOG_DEBUG(Logger::Nodes::ArmSpeedCmd_msg,
                               "switch (msgContentId) case eMsgContentID::TARGET_SPEED: %s",
                               success ? "success" : "failed");
                     break;
@@ -99,7 +99,7 @@ namespace RoverCan2::Msgs
             switch (static_cast<eMsgContentID>(msgContentId_))
             {
                 case eMsgContentID::TARGET_SPEED:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.targetSPeed, msg_);
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.targetSpeed, msg_);
                     break;
 
                 case eMsgContentID::eLAST:
