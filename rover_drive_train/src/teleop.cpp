@@ -15,11 +15,14 @@ class Teleop : public rclcpp::Node
     Teleop();
 
   private:
+    bool floatToBool(float variable)
+    {
+        return variable == 1.0f;
+    }
+
     void CB_joy(const rover_msgs::msg::Joy& msg)
     {
         rover_msgs::msg::PropulsionMotor message;
-
-        float controlMapFactor = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
 
         float deadmanSwitch = msg.joy_data[Constants::KeyBinding::DEADMAN_SWITCH];
         float linearInput = msg.joy_data[Constants::KeyBinding::LINEAR_INPUT];
@@ -28,15 +31,15 @@ class Teleop : public rclcpp::Node
         float modeNormalEnable = msg.joy_data[Constants::KeyBinding::MODE_NORMAL_ENABLE];
         float modeTurboEnable = msg.joy_data[Constants::KeyBinding::MODE_TURBO_ENABLE];
 
-        if (deadmanSwitch)
+        if (floatToBool(deadmanSwitch))
         {
             float speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
 
-            if (modeNormalEnable)
+            if (floatToBool(modeNormalEnable))
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             }
-            if (modeTurboEnable > 0.5 && modeNormalEnable)
+            if (modeTurboEnable > 0.5f && floatToBool(modeNormalEnable))
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_TURBO;
             }
@@ -52,6 +55,7 @@ class Teleop : public rclcpp::Node
 
             else
             {
+                float controlMapFactor = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
                 float adjustedFactor;
 
                 if (angularInput > 0.0f)
@@ -83,8 +87,6 @@ class Teleop : public rclcpp::Node
 Teleop::Teleop():
     Node("teleop")
 {
-    // this->getParams();
-
     _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY,
                                                                         QOS_DEFAULT,
                                                                         std::bind(&Teleop::CB_joy, this, std::placeholders::_1));

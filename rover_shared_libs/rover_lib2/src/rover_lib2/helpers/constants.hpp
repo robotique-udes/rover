@@ -46,14 +46,15 @@ namespace Constants
 
     namespace KeyBinding
     {
+#if defined(__linux__)
         constexpr float DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
         constexpr float LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
         constexpr float ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
         constexpr float MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
         constexpr float MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
         constexpr float MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
-
-    }  // namespace KeyBinding
+#endif  // defined(__linux__)
+    }   // namespace KeyBinding
 }  // namespace Constants
 
 #endif  // CONSTANTS_HPP
