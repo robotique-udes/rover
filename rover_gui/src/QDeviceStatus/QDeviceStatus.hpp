@@ -23,6 +23,9 @@ class QDeviceStatus : public QWidget
     QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
     ~QDeviceStatus() = default;
 
+  protected:
+    void resizeEvent(QResizeEvent* event) override;
+
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
     void setStatusReport(uint16_t id_);
@@ -32,12 +35,15 @@ class QDeviceStatus : public QWidget
     std::string getDeviceName(uint16_t deviceID_);
     void updateRebootCounter(uint16_t deviceID_);
     void setDefaultStyle();
+    void updateOverlayPositions();
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::DeviceStatus _ui;
+    QLabel* _imageLabel;
+    QPixmap _pixmap;
 
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
-    rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client;
+    rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client_requestErrorStatus;
 
     std::unordered_map<uint16_t, int16_t> _deviceMessageCount;
     std::unordered_map<uint16_t, uint16_t> _numberOfDeviceReboots;
@@ -45,20 +51,9 @@ class QDeviceStatus : public QWidget
 
     QMap<uint16_t, QPushButton*> _deviceButtons;
     QMap<uint16_t, QLabel*> _deviceLabels;
+    QMap<QWidget*, QPointF> _overlayPositions;
 
     uint16_t _numberOfCalls = 0U;
-
-    // Resizing ChatGPT
-  protected:
-    void resizeEvent(QResizeEvent* event) override;
-
-  private:
-    void updateOverlayPositions();
-
-    QLabel* _imageLabel;
-    QPixmap _pixmap;
-
-    QMap<QWidget*, QPointF> _overlayPositions;
 };
 
 #endif  // __QDEVICESTATUS_HPP__
