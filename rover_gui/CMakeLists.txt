@@ -89,7 +89,9 @@ add_executable(main_gui src/gui.cpp
                    src/QNavigation/resources.qrc
                         
                    src/QDashboard/QExample.hpp
-                   src/QDashboard/QExample.cpp
+                   src/QDashboard/QExample.hpp
+                   src/QDashboard/QArbitration.cpp
+                   src/QDashboard/QArbitration.cpp
 
                    src/QUtilityBarBottom/QUtilityBarBottom.hpp
                    src/QUtilityBarBottom/QUtilityBarBottom.cpp
