@@ -1,1 +1,2 @@
-float32 angle
+string[] urls
+uint8[] angle
