@@ -36,7 +36,7 @@ void QLogManager::log(eLogLevel level_, eLogSource source_, const QString& messa
         return;
     }
 
-    QString formattedMessage = this->formatLogMessage(level_, message_);
+    QString formattedMessage = this->formatLogMessageHtml(level_, message_);
 
     emit newLogMessage(formattedMessage, target_);
 
@@ -60,35 +60,37 @@ void QLogManager::log(eLogLevel level_, eLogSource source_, const QString& messa
     }
 }
 
-QString QLogManager::formatLogMessage(eLogLevel level_, const QString& message_)
+QString QLogManager::formatLogMessageHtml(eLogLevel level_, const QString& message_)
 {
     QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss");
     QString levelStr;
-    QString colorCode;
+    QString levelClass;
 
     switch (level_)
     {
         case eLogLevel::DEBUG:
             levelStr = "DEBUG";
-            colorCode = "\033[90m";
+            levelClass = "debug";
             break;
         case eLogLevel::INFO:
             levelStr = "INFO";
-            colorCode = "\033[97m";
+            levelClass = "info";
             break;
         case eLogLevel::WARNING:
             levelStr = "WARN";
-            colorCode = "\033[33m";
+            levelClass = "warning";
             break;
         case eLogLevel::ERROR:
             levelStr = "ERROR";
-            colorCode = "\033[31m";
+            levelClass = "error";
             break;
     }
 
-    QString resetCode = "\033[0m";
-
-    return QString("%1[%2][%3] %4%5").arg(colorCode).arg(levelStr).arg(timestamp).arg(message_).arg(resetCode);
+    return QString("<span class='%1'>[%2][%3] %4</span>")
+        .arg(levelClass)
+        .arg(levelStr)
+        .arg(timestamp)
+        .arg(message_.toHtmlEscaped());
 }
 
 void QLogManager::debug(eLogSource source_, const QString& message_, const QString& target_)

@@ -37,6 +37,11 @@ static void glib_log_handler(const gchar* log_domain_, GLogLevelFlags log_level_
     }
 }
 
+GstElement* GStreamerWorker::getPipeline()
+{
+    return _pipeline;
+}
+
 static void on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
     Q_UNUSED(bus_);
@@ -406,7 +411,7 @@ void GStreamerWorker::setTargetId(const QString& id_)
     _targetId = id_;
 }
 
-QString GStreamerWorker::getTargetId() const
+QString GStreamerWorker::getTargetId(void) const
 {
     return _targetId;
 }

@@ -12,13 +12,10 @@ class GStreamerWorker : public QObject
   public:
     explicit GStreamerWorker(QObject* parent_ = nullptr);
     ~GStreamerWorker();
-    GstElement* getPipeline() const
-    {
-        return _pipeline;
-    }
+    GstElement* getPipeline();
 
     void setTargetId(const QString& id_);
-    QString getTargetId() const;
+    QString getTargetId(void) const;
 
   public slots:
     void startPipeline(const QString& rtspUrl_);

@@ -53,7 +53,7 @@ class QLogManager : public QObject
     QLogManager(const QLogManager&) = delete;
     QLogManager& operator=(const QLogManager&) = delete;
 
-    QString formatLogMessage(eLogLevel level_, const QString& message_);
+    QString formatLogMessageHtml(eLogLevel level_, const QString& message_);
 
     QMap<QString, QSet<eLogLevel>> _enabledLevels;
     QMutex _mutex;
@@ -159,6 +159,6 @@ namespace LogUtils
     {
         UI_LOG_ERROR(ARUCO_DETECTION, message_, target_);
     }
-}  
+}  // namespace LogUtils
 
 #endif
