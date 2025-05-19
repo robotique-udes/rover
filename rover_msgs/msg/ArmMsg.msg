@@ -6,4 +6,5 @@ uint8 GRIPPER_TILT = 4
 uint8 GRIPPER_ROT= 5
 uint8 GRIPPER_CLOSE = 6
 
-float32[7] data
+float32[7] target_speed
+float32[7] current_position
