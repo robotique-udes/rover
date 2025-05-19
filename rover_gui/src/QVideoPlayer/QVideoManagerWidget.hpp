@@ -6,6 +6,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
 #include "rover_msgs/msg/camera_list.hpp"
+#include "rover_msgs/msg/camera_angle.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 
 #include <QtWidgets/QGridLayout>
@@ -62,6 +63,8 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraList>> _sub_cameraList;
+    
+    std::shared_ptr<rclcpp::Publisher<rover_msgs::msg::CameraAngle>> _pub_cameraAngle;
 
     std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };
