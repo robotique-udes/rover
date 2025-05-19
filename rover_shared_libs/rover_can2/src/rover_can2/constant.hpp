@@ -86,7 +86,7 @@ namespace RoverCan2::Constant
         
         ARM_SPEED_CMD,
         ARM_POSITION_STATUS,
-        ARM_JOINT_CONFIG,
+        ARM_JOINT_INFO,
         
         FIX_POSITION,
         FIX_HEADING,
