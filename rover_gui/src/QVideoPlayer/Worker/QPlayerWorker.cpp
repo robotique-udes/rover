@@ -22,7 +22,9 @@ void QPlayerWorker::manageDetectionInternal(
     bool start_)
 {
     bool success = false;
-    auto request = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
+
+    std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request
+        = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
 
     if (start_)
     {
@@ -35,12 +37,15 @@ void QPlayerWorker::manageDetectionInternal(
 
     request->camera_url = _camURL;
 
-    auto result = client_ArucoDetectionManager_->async_send_request(request);
+    rclcpp::Client<rover_msgs::srv::ArucoDetection>::FutureAndRequestId future_and_request
+        = client_ArucoDetectionManager_->async_send_request(request);
+
+    std::future<std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>> future_result = std::move(future_and_request.future);
 
     _timer_serviceCall.reset();
     bool service_call_interrupted = false;
 
-    while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(SERVICE_POLL_INTERVAL)) != std::future_status::ready)
+    while (rclcpp::ok() && future_result.wait_for(std::chrono::milliseconds(SERVICE_POLL_INTERVAL)) != std::future_status::ready)
     {
         if (_timer_serviceCall.isReady())
         {
@@ -49,15 +54,16 @@ void QPlayerWorker::manageDetectionInternal(
         }
     }
 
-    if (result.valid() && !service_call_interrupted)
+    if (future_result.valid() && !service_call_interrupted)
     {
-        std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();
+        std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = future_result.get();
 
         if (response != nullptr)
         {
             success = response->success;
         }
     }
+
     emit this->detectionHandledSuccessfully(success, playerIndex_);
 }
 
@@ -89,10 +95,10 @@ void QPlayerWorker::updateDetectionInternal(
 {
     bool success = false;
 
-    auto request = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
+    std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request
+        = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
 
     request->command = rover_msgs::srv::ArucoDetection::Request::INFO;
-
     request->camera_url = "";
 
     if (!client_ArucoDetectionManager_)
@@ -100,10 +106,10 @@ void QPlayerWorker::updateDetectionInternal(
         return;
     }
 
-    auto result = client_ArucoDetectionManager_->async_send_request(request);
+    rclcpp::Client<rover_msgs::srv::ArucoDetection>::FutureAndRequestId result
+        = client_ArucoDetectionManager_->async_send_request(request);
 
     _timer_serviceCall.reset();
-
     bool service_call_interrupt = false;
 
     while (rclcpp::ok() && result.wait_for(std::chrono::milliseconds(SERVICE_POLL_INTERVAL)) != std::future_status::ready)
@@ -117,17 +123,14 @@ void QPlayerWorker::updateDetectionInternal(
 
     std::vector<std::string> liveURLs;
 
-    if (result.valid())
+    if (result.valid() && !service_call_interrupt)
     {
-        if (!service_call_interrupt)
-        {
-            std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();
+        std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response = result.get();
 
-            if (response != nullptr)
-            {
-                liveURLs = response->urls;
-                success = true;
-            }
+        if (response != nullptr)
+        {
+            liveURLs = response->urls;
+            success = true;
         }
     }
 
@@ -187,14 +190,12 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
 
     if (future_result.valid() && !service_call_interrupt)
     {
-        std::shared_ptr<rover_msgs::srv::CameraControl::Response> response_ptr = future_result.get();
+        std::shared_ptr<rover_msgs::srv::CameraControl::Response> response = future_result.get();
 
-        if (response_ptr != nullptr)
+        if (response != nullptr)
         {
-            const rover_msgs::srv::CameraControl::Response& response = *response_ptr;
-
-            success = response.success;
-            status = response.status;
+            success = response->success;
+            status = response->status;
         }
     }
 
@@ -267,14 +268,12 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
 
     if (future_result.valid() && !service_call_interrupt)
     {
-        std::shared_ptr<rover_msgs::srv::CameraControl::Response> response_ptr = future_result.get();
+        std::shared_ptr<rover_msgs::srv::CameraControl::Response> response = future_result.get();
 
-        if (response_ptr != nullptr)
+        if (response != nullptr)
         {
-            const rover_msgs::srv::CameraControl::Response& response = *response_ptr;
-
-            success = response.success;
-            status = response.status;
+            success = response->success;
+            status = response->status;
         }
     }
 
@@ -322,13 +321,11 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
 
     if (future_result.valid() && !service_call_interrupt)
     {
-        std::shared_ptr<rover_msgs::srv::CameraControl::Response> response_ptr = future_result.get();
-        if (response_ptr != nullptr)
+        std::shared_ptr<rover_msgs::srv::CameraControl::Response> response = future_result.get();
+        if (response != nullptr)
         {
-            const rover_msgs::srv::CameraControl::Response& response = *response_ptr;
-
-            success = response.success;
-            status = response.status;
+            success = response->success;
+            status = response->status;
         }
     }
 
