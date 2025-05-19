@@ -3,7 +3,7 @@
 #include <QDebug>
 #include <rclcpp/rclcpp.hpp>
 
-QLogManager& QLogManager::getInstance()
+QLogManager& QLogManager::getInstance(void)
 {
     static QLogManager instance;
     return instance;
@@ -21,93 +21,99 @@ QLogManager::QLogManager():
     _enabledLevels[""] = allLevels;
 }
 
-void QLogManager::log(eLogLevel level, eLogSource source, const QString& message, const QString& target)
+void QLogManager::log(eLogLevel level_, eLogSource source_, const QString& message_, const QString& target_)
 {
     QMutexLocker locker(&_mutex);
 
-    QString effectiveTarget = target.isEmpty() ? "" : target;
+    QString effectiveTarget = target_.isEmpty() ? "" : target_;
     if (!_enabledLevels.contains(effectiveTarget))
     {
         effectiveTarget = "";
     }
 
-    if (!_enabledLevels[effectiveTarget].contains(level))
+    if (!_enabledLevels[effectiveTarget].contains(level_))
     {
         return;
     }
 
-    QString formattedMessage = this->formatLogMessage(level, message);
+    QString formattedMessage = this->formatLogMessage(level_, message_);
 
-    emit newLogMessage(formattedMessage, target);
+    emit newLogMessage(formattedMessage, target_);
 
-    if (source != eLogSource::RTSP_STREAMING)
+    if (source_ != eLogSource::RTSP_STREAMING)
     {
-        switch (level)
+        switch (level_)
         {
             case eLogLevel::DEBUG:
-                RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "%s", message.toStdString().c_str());
+                RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "%s", message_.toStdString().c_str());
                 break;
             case eLogLevel::INFO:
-                RCLCPP_INFO(rclcpp::get_logger("GUI"), "%s", message.toStdString().c_str());
+                RCLCPP_INFO(rclcpp::get_logger("GUI"), "%s", message_.toStdString().c_str());
                 break;
             case eLogLevel::WARNING:
-                RCLCPP_WARN(rclcpp::get_logger("GUI"), "%s", message.toStdString().c_str());
+                RCLCPP_WARN(rclcpp::get_logger("GUI"), "%s", message_.toStdString().c_str());
                 break;
             case eLogLevel::ERROR:
-                RCLCPP_ERROR(rclcpp::get_logger("GUI"), "%s", message.toStdString().c_str());
+                RCLCPP_ERROR(rclcpp::get_logger("GUI"), "%s", message_.toStdString().c_str());
                 break;
         }
     }
 }
 
-QString QLogManager::formatLogMessage(eLogLevel level, const QString& message)
+QString QLogManager::formatLogMessage(eLogLevel level_, const QString& message_)
 {
     QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss");
     QString levelStr;
 
-    switch (level)
+    switch (level_)
     {
         case eLogLevel::DEBUG:
             levelStr = "DEBUG";
+            colorCode = "\033[90m";
             break;
         case eLogLevel::INFO:
             levelStr = "INFO";
+            colorCode = "\033[97m";
             break;
         case eLogLevel::WARNING:
             levelStr = "WARN";
+            colorCode = "\033[33m";
             break;
         case eLogLevel::ERROR:
             levelStr = "ERROR";
+            colorCode = "\033[31m";
             break;
     }
 
-    return QString("[%1] [%2] %3").arg(timestamp).arg(levelStr).arg(message);
+    QString resetCode = "\033[0m";
+    
+    return QString("%1[%2][%3] %4%5").arg(colorCode).arg(levelStr).arg(timestamp).arg(message_).arg(resetCode);
 }
 
-void QLogManager::debug(eLogSource source, const QString& message, const QString& target)
+void QLogManager::debug(eLogSource source_, const QString& message_, const QString& target_)
 {
-    this->log(eLogLevel::DEBUG, source, message, target);
+    this->log(eLogLevel::DEBUG, source_, message_, target_);
 }
 
-void QLogManager::info(eLogSource source, const QString& message, const QString& target)
+void QLogManager::info(eLogSource source_, const QString& message_, const QString& target_)
 {
-    this->log(eLogLevel::INFO, source, message, target);
+    this->log(eLogLevel::INFO, source_, message_, target_);
 }
 
-void QLogManager::warning(eLogSource source, const QString& message, const QString& target)
+void QLogManager::warning(eLogSource source_, const QString& message_, const QString& target_)
 {
-    this->log(eLogLevel::WARNING, source, message, target);
+    this->log(eLogLevel::WARNING, source_, message_, target_);
 }
 
-void QLogManager::error(eLogSource source, const QString& message, const QString& target)
+void QLogManager::error(eLogSource source_, const QString& message_, const QString& target_)
 {
-    this->log(eLogLevel::ERROR, source, message, target);
+    this->log(eLogLevel::ERROR, source_, message_, target_);
 }
 
-void QLogManager::setShowDebug(bool show, const QString& target)
+void QLogManager::setShowDebug(bool show_, const QString& target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target.isEmpty() ? "" : target;
+    QString effectiveTarget = target_.isEmpty() ? "" : target_;
 
     if (!_enabledLevels.contains(effectiveTarget))
     {
@@ -117,7 +123,7 @@ void QLogManager::setShowDebug(bool show, const QString& target)
         _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
     }
 
-    if (show)
+    if (show_)
     {
         _enabledLevels[effectiveTarget].insert(eLogLevel::DEBUG);
     }
@@ -127,10 +133,10 @@ void QLogManager::setShowDebug(bool show, const QString& target)
     }
 }
 
-void QLogManager::setShowInfo(bool show, const QString& target)
+void QLogManager::setShowInfo(bool show_, const QString& target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target.isEmpty() ? "" : target;
+    QString effectiveTarget = target_.isEmpty() ? "" : target_;
 
     if (!_enabledLevels.contains(effectiveTarget))
     {
@@ -139,7 +145,7 @@ void QLogManager::setShowInfo(bool show, const QString& target)
         _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
     }
 
-    if (show)
+    if (show_)
     {
         _enabledLevels[effectiveTarget].insert(eLogLevel::INFO);
     }
@@ -149,10 +155,10 @@ void QLogManager::setShowInfo(bool show, const QString& target)
     }
 }
 
-void QLogManager::setShowWarning(bool show, const QString& target)
+void QLogManager::setShowWarning(bool show_, const QString& target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target.isEmpty() ? "" : target;
+    QString effectiveTarget = target_.isEmpty() ? "" : target_;
 
     if (!_enabledLevels.contains(effectiveTarget))
     {
@@ -160,7 +166,7 @@ void QLogManager::setShowWarning(bool show, const QString& target)
         _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
     }
 
-    if (show)
+    if (show_)
     {
         _enabledLevels[effectiveTarget].insert(eLogLevel::WARNING);
     }
@@ -170,17 +176,17 @@ void QLogManager::setShowWarning(bool show, const QString& target)
     }
 }
 
-void QLogManager::setShowError(bool show, const QString& target)
+void QLogManager::setShowError(bool show_, const QString& target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target.isEmpty() ? "" : target;
+    QString effectiveTarget = target_.isEmpty() ? "" : target_;
 
     if (!_enabledLevels.contains(effectiveTarget))
     {
         _enabledLevels[effectiveTarget] = QSet<eLogLevel>();
     }
 
-    if (show)
+    if (show_)
     {
         _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
     }

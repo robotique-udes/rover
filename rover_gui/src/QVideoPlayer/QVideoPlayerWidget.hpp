@@ -77,7 +77,7 @@ class QVideoPlayerWidget : public QWidget
   signals:
     void arucoCameraFailure(bool valid_);
     void streamStateChanged(bool isRunning_, int streamIndex_);
-    void requestStartStream(const QString& rtspUrl);
+    void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
 
   private slots:
@@ -96,9 +96,9 @@ class QVideoPlayerWidget : public QWidget
     void onUrlTextChanged(const QString& text_);
 
     void clearLogs(void);
-    void toggleLogView(bool show);
+    void toggleLogView(bool show_);
 
-    void onNewLogMessage(const QString& message, const QString& target);
+    void onNewLogMessage(const QString& message_, const QString& target_);
 
   private:
     void setupUI(void);

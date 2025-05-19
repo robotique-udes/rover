@@ -11,23 +11,23 @@ using namespace LogUtils;
 static constexpr int MAX_CONSECUTIVE_ERRORS = 3;
 static int consecutive_errors_count = 0;
 
-static void glib_log_handler(const gchar* log_domain, GLogLevelFlags log_level, const gchar* message, gpointer user_data)
+static void glib_log_handler(const gchar* log_domain_, GLogLevelFlags log_level_, const gchar* message_, gpointer user_data_)
 {
-    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    auto* worker = static_cast<GStreamerWorker*>(user_data_);
     QString targetId = worker ? worker->getTargetId() : QString();
 
-    QString domain = log_domain ? log_domain : "GLib";
-    QString msg = QString("%1: %2").arg(domain).arg(message);
+    QString domain = log_domain_ ? log_domain_ : "GLib";
+    QString msg = QString("%1: %2").arg(domain).arg(message_);
 
-    if (log_level & G_LOG_LEVEL_ERROR || log_level & G_LOG_LEVEL_CRITICAL)
+    if (log_level_ & G_LOG_LEVEL_ERROR || log_level_ & G_LOG_LEVEL_CRITICAL)
     {
         UI_LOG_ERROR_RTSP(msg, targetId);
     }
-    else if (log_level & G_LOG_LEVEL_WARNING)
+    else if (log_level_ & G_LOG_LEVEL_WARNING)
     {
         UI_LOG_WARNING_RTSP(msg, targetId);
     }
-    else if (log_level & G_LOG_LEVEL_MESSAGE || log_level & G_LOG_LEVEL_INFO)
+    else if (log_level_ & G_LOG_LEVEL_MESSAGE || log_level_ & G_LOG_LEVEL_INFO)
     {
         UI_LOG_INFO_RTSP(msg, targetId);
     }
@@ -37,14 +37,14 @@ static void glib_log_handler(const gchar* log_domain, GLogLevelFlags log_level, 
     }
 }
 
-static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_data)
+static void on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
-    Q_UNUSED(bus);
-    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    Q_UNUSED(bus_);
+    auto* worker = static_cast<GStreamerWorker*>(user_data_);
 
     GError* err = nullptr;
     gchar* debug = nullptr;
-    gst_message_parse_error(msg, &err, &debug);
+    gst_message_parse_error(msg_, &err, &debug);
 
     QString errorMsg = QString("%1").arg(err ? err->message : "Unknown Error");
 
@@ -76,9 +76,9 @@ static void on_gst_error_message(GstBus* bus, GstMessage* msg, gpointer user_dat
     }
 }
 
-static GstFlowReturn on_new_sample(GstElement* sink, gpointer user_data)
+static GstFlowReturn on_new_sample(GstElement* sink_, gpointer user_data_)
 {
-    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    auto* worker = static_cast<GStreamerWorker*>(user_data_);
     if (!worker)
     {
         return GST_FLOW_OK;
@@ -88,7 +88,7 @@ static GstFlowReturn on_new_sample(GstElement* sink, gpointer user_data)
 
     emit worker->frameReceived();
 
-    GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink));
+    GstSample* sample = gst_app_sink_pull_sample(GST_APP_SINK(sink_));
     if (sample)
     {
         gst_sample_unref(sample);
@@ -97,14 +97,14 @@ static GstFlowReturn on_new_sample(GstElement* sink, gpointer user_data)
     return GST_FLOW_OK;
 }
 
-static void on_gst_warning_message(GstBus* bus, GstMessage* msg, gpointer user_data)
+static void on_gst_warning_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
-    Q_UNUSED(bus);
-    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    Q_UNUSED(bus_);
+    auto* worker = static_cast<GStreamerWorker*>(user_data_);
 
     GError* err = nullptr;
     gchar* debug = nullptr;
-    gst_message_parse_warning(msg, &err, &debug);
+    gst_message_parse_warning(msg_, &err, &debug);
 
     UI_LOG_DEBUG_RTSP(QString("%1").arg(err ? err->message : "Unknown Warning"), worker ? worker->getTargetId() : QString());
 
@@ -118,10 +118,10 @@ static void on_gst_warning_message(GstBus* bus, GstMessage* msg, gpointer user_d
     }
 }
 
-static void on_decodebin_pad_added(GstElement* decodebin, GstPad* pad, gpointer user_data)
+static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointer user_data_)
 {
-    Q_UNUSED(decodebin);
-    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    Q_UNUSED(decodebin_);
+    auto* worker = static_cast<GStreamerWorker*>(user_data_);
     if (!worker)
     {
         UI_LOG_ERROR_RTSP("Invalid worker pointer in pad-added callback", worker ? worker->getTargetId() : QString());
@@ -143,7 +143,7 @@ static void on_decodebin_pad_added(GstElement* decodebin, GstPad* pad, gpointer 
         return;
     }
 
-    if (gst_pad_link(pad, queueSinkPad) != GST_PAD_LINK_OK)
+    if (gst_pad_link(pad_, queueSinkPad) != GST_PAD_LINK_OK)
     {
         UI_LOG_ERROR_RTSP("Failed to link decodebin pad to q0 sink pad", worker->getTargetId());
     }
@@ -152,40 +152,40 @@ static void on_decodebin_pad_added(GstElement* decodebin, GstPad* pad, gpointer 
     gst_object_unref(queue0);
 }
 
-static gboolean on_any_message(GstBus* bus, GstMessage* msg, gpointer user_data)
+static gboolean on_any_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
-    Q_UNUSED(bus);
-    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    Q_UNUSED(bus_);
+    auto* worker = static_cast<GStreamerWorker*>(user_data_);
     QString targetId = worker ? worker->getTargetId() : QString();
 
     gchar* sourceName = nullptr;
-    if (GST_IS_OBJECT(GST_MESSAGE_SRC(msg)))
+    if (GST_IS_OBJECT(GST_MESSAGE_SRC(msg_)))
     {
-        sourceName = gst_object_get_name(GST_MESSAGE_SRC(msg));
+        sourceName = gst_object_get_name(GST_MESSAGE_SRC(msg_));
     }
 
     QString source = sourceName ? sourceName : "unknown";
-    QString typeStr = GST_MESSAGE_TYPE_NAME(msg);
+    QString typeStr = GST_MESSAGE_TYPE_NAME(msg_);
 
-    if (GST_MESSAGE_TYPE(msg) == GST_MESSAGE_ERROR || GST_MESSAGE_TYPE(msg) == GST_MESSAGE_WARNING
-        || GST_MESSAGE_TYPE(msg) == GST_MESSAGE_INFO)
+    if (GST_MESSAGE_TYPE(msg_) == GST_MESSAGE_ERROR || GST_MESSAGE_TYPE(msg_) == GST_MESSAGE_WARNING
+        || GST_MESSAGE_TYPE(msg_) == GST_MESSAGE_INFO)
     {
         GError* err = nullptr;
         gchar* debug = nullptr;
 
-        if (GST_MESSAGE_TYPE(msg) == GST_MESSAGE_ERROR)
+        if (GST_MESSAGE_TYPE(msg_) == GST_MESSAGE_ERROR)
         {
-            gst_message_parse_error(msg, &err, &debug);
+            gst_message_parse_error(msg_, &err, &debug);
             UI_LOG_ERROR_RTSP(QString("%1: %2").arg(source).arg(err ? err->message : "Unknown Error"), targetId);
         }
-        else if (GST_MESSAGE_TYPE(msg) == GST_MESSAGE_WARNING)
+        else if (GST_MESSAGE_TYPE(msg_) == GST_MESSAGE_WARNING)
         {
-            gst_message_parse_warning(msg, &err, &debug);
+            gst_message_parse_warning(msg_, &err, &debug);
             UI_LOG_WARNING_RTSP(QString("%1: %2").arg(source).arg(err ? err->message : "Unknown Warning"), targetId);
         }
-        else if (GST_MESSAGE_TYPE(msg) == GST_MESSAGE_INFO)
+        else if (GST_MESSAGE_TYPE(msg_) == GST_MESSAGE_INFO)
         {
-            gst_message_parse_info(msg, &err, &debug);
+            gst_message_parse_info(msg_, &err, &debug);
             UI_LOG_INFO_RTSP(QString("%1: %2").arg(source).arg(err ? err->message : "Unknown Info"), targetId);
         }
 
@@ -209,34 +209,34 @@ static gboolean on_any_message(GstBus* bus, GstMessage* msg, gpointer user_data)
     return TRUE;
 }
 
-static void my_gst_debug_log_function(GstDebugCategory* category,
-                                      GstDebugLevel level,
-                                      const gchar* file,
-                                      const gchar* function,
-                                      gint line,
-                                      GObject* object,
-                                      GstDebugMessage* message,
-                                      gpointer user_data)
+static void my_gst_debug_log_function(GstDebugCategory* category_,
+                                      GstDebugLevel level_,
+                                      const gchar* file_,
+                                      const gchar* function_,
+                                      gint line_,
+                                      GObject* object_,
+                                      GstDebugMessage* message_,
+                                      gpointer user_data_)
 {
-    Q_UNUSED(file);
-    Q_UNUSED(function);
-    Q_UNUSED(line);
-    Q_UNUSED(object);
+    Q_UNUSED(file_);
+    Q_UNUSED(function_);
+    Q_UNUSED(line_);
+    Q_UNUSED(object_);
 
-    auto* worker = static_cast<GStreamerWorker*>(user_data);
+    auto* worker = static_cast<GStreamerWorker*>(user_data_);
     QString targetId = worker ? worker->getTargetId() : QString();
-    QString msg = gst_debug_message_get(message);
-    QString cat = gst_debug_category_get_name(category);
+    QString msg = gst_debug_message_get(message_);
+    QString cat = gst_debug_category_get_name(category_);
 
-    if (level <= GST_LEVEL_ERROR)
+    if (level_ <= GST_LEVEL_ERROR)
     {
         UI_LOG_ERROR_RTSP(QString("%1: %2").arg(cat).arg(msg), targetId);
     }
-    else if (level <= GST_LEVEL_WARNING)
+    else if (level_ <= GST_LEVEL_WARNING)
     {
         UI_LOG_WARNING_RTSP(QString("%1: %2").arg(cat).arg(msg), targetId);
     }
-    else if (level <= GST_LEVEL_INFO)
+    else if (level_ <= GST_LEVEL_INFO)
     {
         UI_LOG_INFO_RTSP(QString("%1: %2").arg(cat).arg(msg), targetId);
     }
@@ -275,7 +275,7 @@ GStreamerWorker::~GStreamerWorker()
     this->cleanupGStreamer();
 }
 
-QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
+QString GStreamerWorker::buildPipelineString(const QString& rtspUrl_) const
 {
     return QString(
                "rtspsrc location=%1 latency=100 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true ! "
@@ -285,16 +285,16 @@ QString GStreamerWorker::buildPipelineString(const QString& rtspUrl) const
                "t. ! queue max-size-buffers=2 leaky=downstream ! videoscale ! video/x-raw,pixel-aspect-ratio=1/1 ! ximagesink "
                "sync=false "
                "t. ! queue max-size-buffers=2 leaky=downstream ! videoconvert ! appsink name=myappsink sync=false")
-        .arg(rtspUrl);
+        .arg(rtspUrl_);
 }
 
-void GStreamerWorker::startPipeline(const QString& rtspUrl)
+void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 {
     this->cleanupGStreamer();
 
-    _lastUrl = rtspUrl;
+    _lastUrl = rtspUrl_;
 
-    QUrl url(rtspUrl);
+    QUrl url(rtspUrl_);
     if (!url.isValid() || url.host().isEmpty())
     {
         UI_LOG_ERROR_RTSP("Invalid URL or missing host part", _targetId);
@@ -302,7 +302,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl)
         return;
     }
 
-    const QString pipelineDesc = this->buildPipelineString(rtspUrl);
+    const QString pipelineDesc = this->buildPipelineString(rtspUrl_);
     _pipeline = gst_parse_launch(pipelineDesc.toUtf8().constData(), nullptr);
 
     if (!_pipeline)
@@ -401,9 +401,9 @@ void GStreamerWorker::cleanupGStreamer()
     }
 }
 
-void GStreamerWorker::setTargetId(const QString& id)
+void GStreamerWorker::setTargetId(const QString& id_)
 {
-    _targetId = id;
+    _targetId = id_;
 }
 
 QString GStreamerWorker::getTargetId() const

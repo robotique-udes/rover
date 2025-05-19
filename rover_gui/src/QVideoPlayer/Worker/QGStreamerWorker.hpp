@@ -17,7 +17,7 @@ class GStreamerWorker : public QObject
         return _pipeline;
     }
 
-    void setTargetId(const QString& id);
+    void setTargetId(const QString& id_);
     QString getTargetId() const;
 
   public slots:

@@ -165,11 +165,11 @@ void QVideoPlayerWidget::storeUIReferences(void)
     _clearButton = this->findChild<QPushButton*>("clearButton");
 }
 
-void QVideoPlayerWidget::onNewLogMessage(const QString& message, const QString& target)
+void QVideoPlayerWidget::onNewLogMessage(const QString& message_, const QString& target_)
 {
-    if (target == _widgetId && _logDisplay)
+    if (target_ == _widgetId && _logDisplay)
     {
-        _logDisplay->append(message);
+        _logDisplay->append(message_);
 
         QScrollBar* scrollBar = _logDisplay->verticalScrollBar();
         if (scrollBar)
@@ -672,11 +672,11 @@ void QVideoPlayerWidget::clearLogs(void)
     }
 }
 
-void QVideoPlayerWidget::toggleLogView(bool show)
+void QVideoPlayerWidget::toggleLogView(bool show_)
 {
     if (_stackedWidget)
     {
-        _stackedWidget->setCurrentIndex(show ? 1 : 0);
+        _stackedWidget->setCurrentIndex(show_ ? 1 : 0);
     }
 }
 

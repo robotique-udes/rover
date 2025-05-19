@@ -18,7 +18,7 @@ QPlayerWorker::~QPlayerWorker()
 
 void QPlayerWorker::manageDetectionInternal(
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,
-    std::string _camURL,
+    std::string _camURL_,
     uint16_t tag_,
     bool start_)
 {
@@ -34,12 +34,12 @@ void QPlayerWorker::manageDetectionInternal(
         request->command = rover_msgs::srv::ArucoDetection::Request::STOP;
     }
 
-    request->camera_url = _camURL;
+    request->camera_url = _camURL_;
 
     UI_LOG_INFO(ARUCO_DETECTION,
                 QString("Sending aruco detection %1 request for camera %2 (tag: %3)")
                     .arg(start_ ? "START" : "STOP")
-                    .arg(QString::fromStdString(_camURL))
+                    .arg(QString::fromStdString(_camURL_))
                     .arg(tag_),
                 "");
 
@@ -71,14 +71,14 @@ void QPlayerWorker::manageDetectionInternal(
     {
         UI_LOG_INFO(
             ARUCO_DETECTION,
-            QString("Aruco detection request successful for camera %1 (tag: %2)").arg(QString::fromStdString(_camURL)).arg(tag_),
+            QString("Aruco detection request successful for camera %1 (tag: %2)").arg(QString::fromStdString(_camURL_)).arg(tag_),
             "");
     }
     else
     {
         UI_LOG_ERROR(
             ARUCO_DETECTION,
-            QString("Aruco detection request failed for camera %1 (tag: %2)").arg(QString::fromStdString(_camURL)).arg(tag_),
+            QString("Aruco detection request failed for camera %1 (tag: %2)").arg(QString::fromStdString(_camURL_)).arg(tag_),
             "");
     }
 
@@ -87,24 +87,24 @@ void QPlayerWorker::manageDetectionInternal(
 
 void QPlayerWorker::manageDetection(
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,
-    std::string _camURL,
+    std::string _camURL_,
     uint16_t tag_,
     bool start_)
 {
     this->addTask(
-        [this, client_ArucoDetectionManager_, _camURL, tag_, start_](void)
+        [this, client_ArucoDetectionManager_, _camURL_, tag_, start_](void)
         {
-            this->manageDetectionInternal(client_ArucoDetectionManager_, _camURL, tag_, start_);
+            this->manageDetectionInternal(client_ArucoDetectionManager_, _camURL_, tag_, start_);
         });
 }
 
 void QPlayerWorker::updateDetectionManager(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager)
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_)
 {
     this->addTask(
-        [this, client_ArucoDetectionManager](void)
+        [this, client_ArucoDetectionManager_](void)
         {
-            this->updateDetectionInternal(client_ArucoDetectionManager);
+            this->updateDetectionInternal(client_ArucoDetectionManager_);
         });
 }
 
