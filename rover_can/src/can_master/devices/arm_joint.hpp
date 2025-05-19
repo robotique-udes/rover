@@ -5,10 +5,9 @@
 #include "can_master/shared_msg.hpp"
 
 #include <rover_can2/msgs/arm_speed_cmd.hpp>
+#include <rover_can2/rover_can2.hpp>
 #include <rover_can2/msgs/arm_position_status.hpp>
 #include <rover_msgs/msg/arm_msg.hpp>
-
-#include <rover_can2/rover_can2.hpp>
 
 #include <memory>
 #include <vector>
