@@ -21,7 +21,7 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5'000UL;
     static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
     static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
-    static constexpr int MAX_RECONNECT_ATTEMPTS = 3;
+    static int MAX_RECONNECT_ATTEMPTS = 3;
     static int _instanceCounter;
 
   public:
@@ -125,7 +125,7 @@ class QVideoPlayerWidget : public QWidget
     bool _wasEverConnected = false;
     bool _controlsVisible = true;
     GstElement* _pipeline = nullptr;
-    QThread* _gstreamerThread = nullptr;
+    QThread _gstreamerThread;  // Changed from pointer to direct member
     GStreamerWorker* _gstreamerWorker = nullptr;
     QDateTime _lastStreamTime;
 

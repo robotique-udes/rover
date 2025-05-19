@@ -64,6 +64,7 @@ QString QLogManager::formatLogMessage(eLogLevel level_, const QString& message_)
 {
     QString timestamp = QDateTime::currentDateTime().toString("hh:mm:ss");
     QString levelStr;
+    QString colorCode;
 
     switch (level_)
     {
@@ -86,7 +87,7 @@ QString QLogManager::formatLogMessage(eLogLevel level_, const QString& message_)
     }
 
     QString resetCode = "\033[0m";
-    
+
     return QString("%1[%2][%3] %4%5").arg(colorCode).arg(levelStr).arg(timestamp).arg(message_).arg(resetCode);
 }
 
