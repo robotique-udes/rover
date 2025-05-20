@@ -14,6 +14,12 @@
 #include <sys/stat.h>
 #include <cstdlib>
 
+struct sScreenshotResult
+{
+    bool success;
+    std::string msg;
+};
+
 class CameraNode : public rclcpp::Node
 {
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
@@ -48,7 +54,7 @@ class CameraNode : public rclcpp::Node
     void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
     bool folderExists(const std::string& path_);
     bool createFolder(const std::string& path_);
-    bool getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
+    sScreenshotResult getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
 
     bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
     bool stopRecording(std::string cameraURL_);

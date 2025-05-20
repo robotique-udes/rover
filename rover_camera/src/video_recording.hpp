@@ -16,12 +16,6 @@
 #include <unordered_set>
 #include <vector>
 
-struct sScreenshotResult
-{
-  bool success;
-  std::string msg;
-};
-
 /**
  * @brief Each Recording objects handle 1 camera stream \n
  * @brief They must be initialized with startRecording()
