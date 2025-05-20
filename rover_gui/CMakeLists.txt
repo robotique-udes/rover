@@ -2,7 +2,7 @@ cmake_minimum_required(VERSION 3.8)
 project(rover_gui)
 
 if(NOT CMAKE_CXX_STANDARD)
-  set(CMAKE_CXX_STANDARD 20)
+  set(CMAKE_CXX_STANDARD 23)
 endif()
 
 if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
@@ -12,7 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel)
 
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
@@ -20,12 +20,13 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
-  
+
 include_directories(
   src
   ui/include
   ${rover_msgs_INCLUDE_DIRS}
   ${LIBSSH_INCLUDE_DIR}
+  ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
 )
 
 add_custom_command(
@@ -47,6 +48,14 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Constant/StyleSheet.hpp
                    src/Global/Helpers/QHelpers.hpp
                    src/Global/Helpers/QHelpers.cpp
+
+                   src/Global/Helpers/QToastNotification/QToastNotification.cpp
+                   src/Global/Helpers/QToastNotification/QToastNotification.hpp
+                   src/Global/Helpers/QToastNotification/QNotificationHistoryData.cpp
+                   src/Global/Helpers/QToastNotification/QNotificationHistoryData.hpp
+                   src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
+                   src/Global/Helpers/QToastNotification/QNotificationShowHistory.hpp
+                   
                    src/Global/Workers/QWorker.hpp
                    src/Global/Workers/QWorker.cpp
                    src/Global/QTmpFolderManager.hpp
@@ -77,27 +86,46 @@ add_executable(main_gui src/gui.cpp
                         
                    src/QNavigation/QNavigation.hpp
                    src/QNavigation/QNavigation.cpp
+                   src/QNavigation/resources.qrc
                         
                    src/QDashboard/QExample.hpp
                    src/QDashboard/QExample.cpp
-                )
-add_dependencies(main_gui run_generate_ui)
 
-target_link_libraries(main_gui 
-                      Qt6::Widgets
-                      Qt6::Gui
-                      ${LIBSSH_LIBRARY})
+                   src/QUtilityBarBottom/QUtilityBarBottom.hpp
+                   src/QUtilityBarBottom/QUtilityBarBottom.cpp
+
+                   src/QVideoPlayer/QVideoManagerWidget.cpp
+                   src/QVideoPlayer/QVideoManagerWidget.hpp
+                   src/QVideoPlayer/QVideoPlayerWidget.cpp
+                   src/QVideoPlayer/QVideoPlayerWidget.hpp
+                   src/QVideoPlayer/Worker/QPlayerWorker.hpp
+                   src/QVideoPlayer/Worker/QPlayerWorker.cpp
+                )
+                  
+add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
+  rclcpp
+  rover_msgs
+  rcl_interfaces
+)
+
+target_link_libraries(main_gui 
+  Qt6::Core
+  Qt6::Widgets
+  Qt6::Gui
+  Qt6::WebEngineWidgets
+  Qt6::WebChannel
+  ${LIBSSH_LIBRARY}
+  rover_shared_libs
+)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS main_gui
-          DESTINATION lib/${PROJECT_NAME})
+  DESTINATION lib/${PROJECT_NAME}
+)
 
 ament_package()

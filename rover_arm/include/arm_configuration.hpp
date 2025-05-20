@@ -1,5 +1,17 @@
-#ifndef _ARM_CONFIGURATION__
-#define _ARM_CONFIGURATION__
+#ifndef _ARM_CONFIGURATION__HPP__
+#define _ARM_CONFIGURATION__HPP__
+
+enum class eJointIndex : size_t
+{
+    JL = rover_msgs::msg::ArmMsg::JL,
+    J0 = rover_msgs::msg::ArmMsg::J0,
+    J1 = rover_msgs::msg::ArmMsg::J1,
+    J2 = rover_msgs::msg::ArmMsg::J2,
+    GRIPPER_TILT = rover_msgs::msg::ArmMsg::GRIPPER_TILT,
+    GRIPPER_ROT = rover_msgs::msg::ArmMsg::GRIPPER_ROT,
+    GRIPPER_CLOSE = rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
+    eLAST
+};
 
 namespace ARM_CONFIGURATION
 {
@@ -17,7 +29,8 @@ namespace ARM_CONFIGURATION
 
     namespace JL
     {
-        constexpr float MAX_VELOCITY = 0.05f;  // mm/s
+        constexpr eJointIndex ID = eJointIndex::JL;
+        constexpr float MAX_VELOCITY = 0.05F;  // mm/s
         namespace LEN
         {
             constexpr float x = 0.0f;
@@ -28,7 +41,8 @@ namespace ARM_CONFIGURATION
 
     namespace J0
     {
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr eJointIndex ID = eJointIndex::J0;
+        constexpr float MAX_VELOCITY = 0.05F;  // mm/s
         namespace LEN
         {
             constexpr float x = 0.0f;
@@ -39,56 +53,69 @@ namespace ARM_CONFIGURATION
 
     namespace J1
     {
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr eJointIndex ID = eJointIndex::J1;
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.0f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.0f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.435F;
         }  // namespace LEN
     }      // namespace J1
 
     namespace J2
     {
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr eJointIndex ID = eJointIndex::J2;
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.65f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.0f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.371F;
         }  // namespace LEN
     }      // namespace J2
 
     namespace GRIPPER_TILT
     {
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr eJointIndex ID = eJointIndex::GRIPPER_TILT;
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.62f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.0f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.185F;
         }  // namespace LEN
     }      // namespace GRIPPER_TILT
 
     namespace GRIPPER_ROT
     {
-        constexpr float MAX_VELOCITY = 1.0f;  // rad/s
+        constexpr eJointIndex ID = eJointIndex::GRIPPER_ROT;
+        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
-            constexpr float x = 0.217f;
-            constexpr float y = 0.0f;
-            constexpr float z = 0.0f;
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.0F;
         }  // namespace LEN
     }      // namespace GRIPPER_ROT
+
+    namespace GRIPPER_CLOSE
+    {
+        constexpr eJointIndex ID = eJointIndex::GRIPPER_CLOSE;
+        constexpr float MAX_VELOCITY = 0.0F;  // rad/s
+        namespace LEN
+        {
+            constexpr float x = 0.0F;
+            constexpr float y = 0.0F;
+            constexpr float z = 0.0F;
+        }  // namespace LEN
+    }      // namespace GRIPPER_CLOSE
 
     // GRIPPER_CLOSE not defined because no speed control available in current arm configuration
 }  // namespace ARM_CONFIGURATION
 
 // Length for MotionGenesis kinematics, defined for quicker back and forth,
 // see doc or motion genesis code for bases reference
-constexpr float J0x = ARM_CONFIGURATION::J0::LEN::x;
-constexpr float J0y = ARM_CONFIGURATION::J0::LEN::y;
-constexpr float J0z = ARM_CONFIGURATION::J0::LEN::z;
 
 constexpr float J1x = ARM_CONFIGURATION::J1::LEN::x;
 constexpr float J1y = ARM_CONFIGURATION::J1::LEN::y;

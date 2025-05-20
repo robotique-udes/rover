@@ -12,8 +12,6 @@
 
 #include "rclcpp/rclcpp.hpp"
 
-#include "rovus_lib/macros.h"
-
 namespace QHelper
 {
 
@@ -36,6 +34,7 @@ namespace QHelper
                                                                                 buttons_);
                                           waitForAnswerLoop.quit();
                                       });
+            QObject::connect(pApp, &QCoreApplication::aboutToQuit, &waitForAnswerLoop, &QEventLoop::quit);
             waitForAnswerLoop.exec();
         }
         else
@@ -148,5 +147,11 @@ namespace QHelper
         }
 
         return fileExtension;
+    }
+
+    std::string getCurrentUserName(void)
+    {
+        QString username = QDir(QStandardPaths::writableLocation(QStandardPaths::HomeLocation)).dirName();
+        return username.toStdString();
     }
 }  // namespace QHelper

@@ -1,6 +1,10 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_msgs)
 
+if(POLICY CMP0148)
+  cmake_policy(SET CMP0148 OLD)
+endif()
+
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/..")
 
 set(ROVER_BASE_EXEC_PATH "${INSTALL_PATH}/rover_gui/lib/rover_gui/main_gui")
@@ -32,59 +36,38 @@ find_package(ament_index_cpp REQUIRED)
 find_package(rosidl_default_generators REQUIRED)
 find_package(rclcpp REQUIRED)
 
-include_directories(include)
-add_library(lib_exec src/lib.cpp
-              include/rovus_lib/timer.cpp)
-              
-ament_target_dependencies(lib_exec 
-                            ament_index_cpp 
-                            rclcpp)
-
-ament_export_targets(lib_exec 
-                        HAS_LIBRARY_TARGET)
-
-install(
-  DIRECTORY include/rovus_lib
-  DESTINATION include
-)
-
-install(
-  TARGETS lib_exec
-  EXPORT lib_exec
-  LIBRARY DESTINATION lib
-  ARCHIVE DESTINATION lib
-  RUNTIME DESTINATION bin
-  INCLUDES DESTINATION include
-)
-
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AntennaCmd.msg"
-  "msg/PropulsionMotor.msg"
+  "msg/ArmMsg.msg"
+  "msg/Aruco.msg"
+  "msg/CameraAngle.msg"
+  "msg/CameraControl.msg"
   "msg/CanDeviceStatus.msg"  
-  "msg/Joy.msg"
-  "msg/JoyDemuxStatus.msg"
+  "msg/Compass.msg"
+  "msg/DDBControl.msg"
+  "msg/DevicePower.msg"
+  "msg/DrivetrainArbitration.msg"
   "msg/Gps.msg"
   "msg/GpsPosition.msg"
-  "msg/CameraControl.msg"
+  "msg/Joy.msg"
+  "msg/JoyDemuxStatus.msg"
   "msg/LightControl.msg"
+  "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
-  "msg/ArmMsg.msg"
-  "msg/DrivetrainArbitration.msg"
-  "msg/Compass.msg"
-  "msg/CameraAngle.msg"
-  "msg/Aruco.msg"
   "msg/PhotoPanoramique.msg"
 
-  "srv/JoyDemuxSetState.srv"
   "srv/AntennaArbitration.srv"
-  "srv/DriveTrainArbitration.srv"
-  "srv/LightControl.srv"
+  "srv/ArucoDetection.srv"
+  "srv/CameraControl.srv"
   "srv/CompassCalibration.srv"
+  "srv/DDBControl.srv"
+  "srv/DriveTrainArbitration.srv"
+  "srv/Empty.srv"
+  "srv/JoyDemuxSetState.srv"
+  "srv/LightControl.srv"
   "srv/NewGpsGoal.srv"
   "srv/PanoControl.srv"
   "srv/RtspStream.srv"
-  "srv/CameraControl.srv"
-  "srv/ArucoDetection.srv"
   "srv/PhotoPanoramique.srv"
 )
 

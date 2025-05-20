@@ -1,7 +1,7 @@
 #ifndef __QTMP_FOLDER_MANAGER__
 #define __QTMP_FOLDER_MANAGER__
 
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 
 #include <string>
 

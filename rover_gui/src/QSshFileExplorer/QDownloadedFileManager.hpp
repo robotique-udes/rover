@@ -1,11 +1,9 @@
 #ifndef __QDOWNLOADED_FILE_MANAGER_HPP__
 #define __QDOWNLOADED_FILE_MANAGER_HPP__
 
-#include "../Global/QTmpFolderManager.hpp"
-
-#include "rclcpp/rclcpp.hpp"
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 #include <unordered_map>
+#include <string>
 
 class QDownloadedFileManager
 {

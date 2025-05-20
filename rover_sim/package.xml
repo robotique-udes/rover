@@ -3,18 +3,20 @@
 <package format="3">
   <name>rover_sim</name>
   <version>0.0.0</version>
-  <description>
-    rover_sim pkg contains the nodes to simulate the rover arm
-  </description>
-  <maintainer email="emile.savoie3@usherbrooke.ca">emile</maintainer>
-  <license>MIT</license>
+  <description>TODO: Package description</description>
+  <maintainer email="emilesavoie39@gmail.com">emiles</maintainer>
+  <license>TODO: License declaration</license>
 
+  <buildtool_depend>ament_cmake</buildtool_depend>
   <buildtool_depend>ament_cmake_python</buildtool_depend>
 
   <depend>rclpy</depend>
   <depend>rover_msgs</depend>
 
+  <test_depend>ament_lint_auto</test_depend>
+  <test_depend>ament_lint_common</test_depend>
+
   <export>
-    <build_type>ament_python</build_type>
+    <build_type>ament_cmake</build_type>
   </export>
 </package>

@@ -1,13 +1,13 @@
 #include <rclcpp/rclcpp.hpp>
 
-#include "rovus_lib/macros.h"
+#include "rover_lib2/helpers/macros.hpp"
 #include <libssh/libssh.h>
 #include <libssh/sftp.h>
 
 namespace LibSshSupportModule
 {
-    constexpr uint8_t MAX_LOGIN_ATTEMPT = 3u;
-    constexpr uint32_t LOGIN_TIMEOUT = 5'000'000u;  // us
+    constexpr uint8_t MAX_LOGIN_ATTEMPT = 1U;
+    constexpr uint32_t LOGIN_TIMEOUT = 500'000U;  // us
 
     bool getSshSession(IN const std::string& rUsername_, IN const std::string& rHostname_, OUT ssh_session& pSession_);
     bool getSftpSessions(INOUT ssh_session& pSession_, OUT sftp_session& pSftpSession_);
