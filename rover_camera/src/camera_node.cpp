@@ -107,7 +107,8 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
             = "Failed to create screenshots folder or it already exists at " + folderPath + " for camera: " + currentCamera;
     }
 
-    if (this->getScreenshot(folderPath, captureName, cameraURL))
+    sScreenshotResult screenshotResult = this->getScreenshot(folderPath, captureName, cameraURL);
+    if (screenshotResult.success)
     {
         response_.success = true;
         response_.status = "Screenshot saved as " + folderPath + "/" + captureName;
@@ -115,7 +116,7 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     else
     {
         response_.success = false;
-        response_.status = "Failed to take a screenshot.";
+        response_.status = "Failed to take a screenshot. " + screenshotResult.msg;
     }
 }
 
@@ -310,8 +311,9 @@ bool CameraNode::createFolder(const std::string& path_)
  * @return true if succesfully taken a screenshot.
  * @return false if unsuccesful in its task
  */
-bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_)
+sScreenshotResult CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_)
 {
+    sScreenshotResult result{false, ""};
     std::string captureName = screenshotFolderPath_ + "/" + filename_;
 
     RCLCPP_INFO(this->get_logger(), "Attempting to capture screenshot from camera: %s", cameraURL_.c_str());
@@ -333,7 +335,8 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
         // Display the frame for debug
         // cv::imshow("IP Camera Screenshot", rRecording.getFrame());
 
-        return true;
+        result.success = true;
+        return result;
     }
     else  // if not recording proceed normaly
     {
@@ -346,7 +349,8 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
         if (!cap.isOpened())
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to open camera stream.");
-            return false;
+            result.msg = "Unable to open rtsp pipeline (cap)";
+            return result;
         }
 
         // Read a single frame
@@ -368,13 +372,15 @@ bool CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string fi
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to capture frame from camera.");
             cap.release();
-            return false;
+            result.msg = "Couldn't read frame (ret)";
+            return result;
         }
 
         // Release the video capture object
         cap.release();
 
-        return true;
+        result.success = true;
+        return result;
     }
 }
 

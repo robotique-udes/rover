@@ -4,13 +4,13 @@
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
                                        uint16_t playerIndex_,
-                                       std::shared_ptr<QPlayerWorker> worker_,
-                                       std::shared_ptr<QPlayerWorker> worker2_):
+                                       std::shared_ptr<QPlayerWorker> workerThreadAruco_,
+                                       std::shared_ptr<QPlayerWorker> workerThreadRecording_):
     _node(guiNode_),
     _camURL(url_),
     _playerIndex(playerIndex_),
-    _playerWorkerThreadAruco(worker_),
-    _playerWorkerThreadRecording(worker2_)
+    _playerWorkerThreadAruco(workerThreadAruco_),
+    _playerWorkerThreadRecording(workerThreadRecording_)
 {
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);

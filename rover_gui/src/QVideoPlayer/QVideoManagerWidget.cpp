@@ -1,4 +1,5 @@
 #include "QVideoManagerWidget.hpp"
+#include "rover_lib2/helpers/assert.hpp"
 #include <QString>
 
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
@@ -161,7 +162,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
     }
 
-    assert(_node != nullptr);
+    ASSERT_COND(_node != nullptr);
     for (auto& widget : _videoPlaysWidgets)
     {
         widget->setCameraControlClientManager(_client_cameraControlManager);

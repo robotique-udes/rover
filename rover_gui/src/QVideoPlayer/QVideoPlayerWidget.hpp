@@ -23,8 +23,8 @@ class QVideoPlayerWidget : public QWidget
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                        std::string url_,
                        uint16_t tag_,
-                       std::shared_ptr<QPlayerWorker> worker_,
-                       std::shared_ptr<QPlayerWorker> worker2_);
+                       std::shared_ptr<QPlayerWorker> workerThreadAruco_,
+                       std::shared_ptr<QPlayerWorker> workerThreadRecording_);
 
     void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
 

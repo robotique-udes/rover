@@ -22,6 +22,7 @@ class QPlayerWorker : public QWorker
     Q_OBJECT
 
     static constexpr uint64_t MAX_DELAY_SERVICE_CALL = 4'000UL;
+    static constexpr uint16_t SERVICE_POLL_INTERVAL = 100U;
 
   public:
     QPlayerWorker(bool start_ = false, QObject* parent_ = nullptr);
@@ -40,15 +41,15 @@ class QPlayerWorker : public QWorker
     void updateDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
 
     void takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                               std::string camera_URL_,
+                               std::string cameraUrl_,
                                uint16_t tag_);
 
     void startRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                               std::string camera_URL_,
+                               std::string cameraUrl_,
                                uint16_t tag_);
 
     void stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                              std::string camera_URL_,
+                              std::string cameraUrl_,
                               uint16_t tag_);
   signals:
     void detectionHandledSuccessfully(bool success_, uint16_t tag_);
@@ -61,7 +62,7 @@ class QPlayerWorker : public QWorker
 
   private:
     void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                std::string camera_URL_,
+                                std::string cameraUrl_,
                                 uint16_t tag_);
 
     void startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
@@ -69,7 +70,7 @@ class QPlayerWorker : public QWorker
                                 uint16_t tag_);
 
     void stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                               std::string camera_URL_,
+                               std::string cameraUrl_,
                                uint16_t tag_);
 
     LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
