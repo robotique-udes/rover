@@ -24,13 +24,13 @@ class QDeviceStatus : public QWidget
     ~QDeviceStatus() = default;
 
   protected:
-    void resizeEvent(QResizeEvent* event) override;
+    void resizeEvent(QResizeEvent* event_) override;
 
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
-    void setStatusReport(uint16_t id_);
-    void updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_);
     void updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_);
+    void updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_);
+    void setStatusReport(uint16_t id_);
     void rebootDevice(uint16_t id_);
     std::string getDeviceName(uint16_t deviceID_);
     void updateRebootCounter(uint16_t deviceID_);
