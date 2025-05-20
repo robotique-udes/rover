@@ -48,6 +48,7 @@ class QDeviceStatus : public QWidget
     std::unordered_map<uint16_t, int16_t> _deviceMessageCount;
     std::unordered_map<uint16_t, uint16_t> _numberOfDeviceReboots;
     std::unordered_map<uint16_t, uint16_t> _oldDeviceReboots;
+    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceRebootsFromButton;
 
     QMap<uint16_t, QPushButton*> _deviceButtons;
     QMap<uint16_t, QLabel*> _deviceLabels;

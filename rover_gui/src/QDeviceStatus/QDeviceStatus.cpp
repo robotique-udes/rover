@@ -112,8 +112,8 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
 /**
  * @brief Makes the service call to request the error state of the devices.
- * 
- * @param request_ 
+ *
+ * @param request_
  */
 void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_)
 {
@@ -140,8 +140,8 @@ void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Req
 
 /**
  * @brief Starts updating the devices' informations when there is a new message.
- * 
- * @param msg_ 
+ *
+ * @param msg_
  */
 void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_)
 {
@@ -154,35 +154,40 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
 
 /**
  * @brief Keeps track of the number of reboots for each device. Logs a message when a device reboots.
- * 
- * @param deviceID_ 
+ *
+ * @param deviceID_
  */
 void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
 {
-    _numberOfDeviceReboots[deviceID_] = _numberOfCalls - _deviceMessageCount[deviceID_];
+    _numberOfDeviceReboots[deviceID_] = _numberOfDeviceRebootsFromButton[deviceID_] + _numberOfCalls - _deviceMessageCount[deviceID_];
 
     if (_numberOfDeviceReboots[deviceID_] != _oldDeviceReboots[deviceID_])
     {
         _oldDeviceReboots[deviceID_] = _numberOfDeviceReboots[deviceID_];
-        RCLCPP_INFO(_node->get_logger(), "Device %d is rebooting", deviceID_);
+        RCLCPP_INFO(_node->get_logger(), "Device %d has rebooted", deviceID_);
     }
 }
 
 /**
  * @brief #TODO: Implement the rebootDevice function to actually reboot the device.
- * 
- * @param deviceID_ 
+ *
+ * @param deviceID_
  */
 void QDeviceStatus::rebootDevice(uint16_t deviceID_)
 {
+    // Placeholder for reboot logic
     RCLCPP_INFO(_node->get_logger(), "Rebooting device %d", deviceID_);
+    //
+
     _numberOfDeviceReboots[deviceID_]++;
+    _numberOfDeviceRebootsFromButton[deviceID_]++;
+    this->setStatusReport(deviceID_);
 }
 
 /**
  * @brief Updates the label text with the updated status report for the received device.
- * 
- * @param deviceID_ 
+ *
+ * @param deviceID_
  */
 void QDeviceStatus::setStatusReport(uint16_t deviceID_)
 {
@@ -198,9 +203,9 @@ void QDeviceStatus::setStatusReport(uint16_t deviceID_)
 
 /**
  * @brief Returns the device name based on the device ID.
- * 
- * @param deviceID_ 
- * @return std::string 
+ *
+ * @param deviceID_
+ * @return std::string
  */
 std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
 {
@@ -225,9 +230,9 @@ std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
 
 /**
  * @brief Updates the label color based on the device status. If ok: green, if warning: yellow, if error: red.
- * 
- * @param deviceID_ 
- * @param deviceStatus_ 
+ *
+ * @param deviceID_
+ * @param deviceStatus_
  */
 void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
 {
@@ -252,7 +257,7 @@ void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg:
 
 /**
  * @brief Sets the default style for all device labels.
- * 
+ *
  */
 void QDeviceStatus::setDefaultStyle()
 {
@@ -264,8 +269,8 @@ void QDeviceStatus::setDefaultStyle()
 
 /**
  * @brief Resizes the image label to fit the widget while preserving the aspect ratio.
- * 
- * @param event_ 
+ *
+ * @param event_
  */
 void QDeviceStatus::resizeEvent(QResizeEvent* event_)
 {
@@ -282,7 +287,7 @@ void QDeviceStatus::resizeEvent(QResizeEvent* event_)
 
 /**
  * @brief Updates the positions of the overlays based on the image label size.
- * 
+ *
  */
 void QDeviceStatus::updateOverlayPositions()
 {
