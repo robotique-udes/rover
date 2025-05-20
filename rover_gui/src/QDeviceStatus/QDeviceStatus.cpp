@@ -129,10 +129,6 @@ void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Req
             }
             else
             {
-                // Reminder to remove this once everything is done
-                _numberOfCalls++;
-                RCLCPP_INFO(_node->get_logger(), "Calls count: %d", _numberOfCalls);
-                //
                 RCLCPP_WARN(_node->get_logger(), "Service request failed: %s", response->message.c_str());
             }
         });
@@ -159,12 +155,13 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
  */
 void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
 {
-    _numberOfDeviceReboots[deviceID_] = _numberOfDeviceRebootsFromButton[deviceID_] + _numberOfCalls - _deviceMessageCount[deviceID_];
+    _numberOfDeviceReboots[deviceID_]
+        = _numberOfDeviceRebootsFromButton[deviceID_] + _numberOfCalls - _deviceMessageCount[deviceID_];
 
     if (_numberOfDeviceReboots[deviceID_] != _oldDeviceReboots[deviceID_])
     {
         _oldDeviceReboots[deviceID_] = _numberOfDeviceReboots[deviceID_];
-        RCLCPP_INFO(_node->get_logger(), "Device %d has rebooted", deviceID_);
+        RCLCPP_INFO(_node->get_logger(), "Device %d has rebooted since last call", deviceID_);
     }
 }
 
