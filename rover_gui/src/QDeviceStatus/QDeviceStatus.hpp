@@ -7,6 +7,7 @@
 #include "rover_msgs/srv/empty.hpp"
 #include "rover_can2/constant.hpp"
 #include "rover_lib2/helpers/macros.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 
 // QT
 #include <QtWidgets/QGridLayout>

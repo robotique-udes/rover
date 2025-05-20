@@ -62,7 +62,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
-        10,
+        QOS_DEFAULT,
         [this](const rover_msgs::msg::CanDeviceStatus::SharedPtr msg)
         {
             QMetaObject::invokeMethod(
