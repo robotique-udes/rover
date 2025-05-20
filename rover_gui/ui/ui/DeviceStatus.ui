@@ -160,6 +160,9 @@
             <property name="text">
              <string/>
             </property>
+            <property name="icon">
+             <iconset theme="view-refresh"/>
+            </property>
             <property name="checkable">
              <bool>false</bool>
             </property>
@@ -311,6 +314,9 @@
             <property name="text">
              <string/>
             </property>
+            <property name="icon">
+             <iconset theme="view-refresh"/>
+            </property>
             <property name="checkable">
              <bool>false</bool>
             </property>
@@ -440,6 +446,9 @@
             </property>
             <property name="text">
              <string/>
+            </property>
+            <property name="icon">
+             <iconset theme="view-refresh"/>
             </property>
             <property name="checkable">
              <bool>false</bool>
@@ -571,6 +580,9 @@
             <property name="text">
              <string/>
             </property>
+            <property name="icon">
+             <iconset theme="view-refresh"/>
+            </property>
             <property name="checkable">
              <bool>false</bool>
             </property>
@@ -701,6 +713,9 @@
             <property name="text">
              <string/>
             </property>
+            <property name="icon">
+             <iconset theme="view-refresh"/>
+            </property>
             <property name="checkable">
              <bool>false</bool>
             </property>
@@ -830,6 +845,9 @@
             </property>
             <property name="text">
              <string/>
+            </property>
+            <property name="icon">
+             <iconset theme="view-refresh"/>
             </property>
             <property name="checkable">
              <bool>false</bool>
