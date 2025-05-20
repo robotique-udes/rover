@@ -20,7 +20,6 @@ def generate_launch_description():
     arm = LaunchConfiguration("arm")
     gps = LaunchConfiguration("gps")
 
-    '''
     arm_sim_node = Node(
         package="rover_sim",
         namespace="/rover/sim",
@@ -28,7 +27,6 @@ def generate_launch_description():
         name="arm_sim",
         condition=IfCondition(arm)
     )
-    '''
 
     gps_sim_node = Node(
         package="rover_sim",
@@ -55,7 +53,7 @@ def generate_launch_description():
     ld = LaunchDescription()
     ld.add_action(arm_arg)
     ld.add_action(gps_arg)
-    #ld.add_action(arm_sim_node)
+    ld.add_action(arm_sim_node)
     ld.add_action(gps_sim_node)
     ld.add_action(battery_sim_node)
     ld.add_action(connection_speed_sim_node)
