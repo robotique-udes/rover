@@ -7,6 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <sys/stat.h>
+#include "rover_lib2/helpers/constants.hpp"
 
 //cam: 192.168.144.30
 
@@ -110,14 +111,14 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	  
 	  //paramètres pour la lecture de la camera
 	   string path_camera= request->camera_id;
-	   //string pipeline = "rtspsrc location=‘rtsp://" + request->camera_id + "’/1/h264major’ latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
+	   string pipeline = "rtspsrc location=‘rtsp://" + request->camera_id + "’/1/h264major’ latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
 	   //string pipeline = "rtspsrc location=rtsp://192.168.144.30:554/1/h264major latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
 	   
-	   //VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
-	   VideoCapture cap;
-	   //int apiID = cv::CAP_GSTREAMER;
-	   int apiID = cv::CAP_ANY;
-	   cap.open(path_camera, apiID);
+	   VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
+	   //VideoCapture cap;
+	   int apiID = cv::CAP_GSTREAMER;
+	   //int apiID = cv::CAP_ANY;
+	   //cap.open(path_camera, apiID);
 	   
 	   if(cap.isOpened()){
 	    cout << "camera open" << endl;
@@ -179,17 +180,22 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 		
 		
 	    //creation du dossier du dossier de panoramas 
+   	    //std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");  // finds the path to our package
+   	    string currentPackageDirectory = "ros2_ws/src/rover/rover_video";
+    	    string path_panorama = "/src/panoramas";
+
 	    struct stat fileInfo;
 	    string nom_fichier_panorama;
-	    bool dossier_exist = stat("ros2_ws/src/rover/rover_video/src/panoramas", &fileInfo) == 0;
-
+	    string path_dossier = currentPackageDirectory+path_panorama;
+	    bool dossier_exist = stat(path_dossier.c_str(), &fileInfo) == 0;	    
+	    
 	    if (!dossier_exist)
 	    {
 	    cout << "dossier pas encore cree" << endl;
 	    
-	    if (mkdir("ros2_ws/src/rover/rover_video/src/panoramas", 0775)==0){ 
+	    if (mkdir(path_dossier.c_str(), 0775)==0){ 
 	    	cout << "Succesfully created the folder."<< endl;
-	    	nom_fichier_panorama =  "ros2_ws/src/rover/rover_video/src/panoramas/" + result_name;
+	    	nom_fichier_panorama =  path_dossier + result_name;
 	    	
 	     }else if(mkdir("src/rover/rover_video/src/panoramas", 0775)==0){ 
 	     	nom_fichier_panorama =  "src/rover/rover_video/src/panoramas/" + result_name;
@@ -200,7 +206,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	     	imwrite(result_name,pano_rectangle);//enregistre quand meme mais potentielement hors folder
 	     }
 	    }else{
-	     nom_fichier_panorama =  "ros2_ws/src/rover/rover_video/src/panoramas/" + result_name;
+	     nom_fichier_panorama =  path_dossier + "/" + result_name;
 	    }
 	    
 						

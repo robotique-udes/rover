@@ -17,13 +17,6 @@ add_subdirectory(../rover_shared_libs/ .build)
 
 add_executable(media_server src/camera_node.cpp
                 src/video_recording.cpp)
-add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
-                src/aruco_detection/detection.cpp
-                src/aruco_detection/process_frame.cpp
-                src/aruco_detection/image_capture.cpp)
-                
-add_executable(panorama src/panorama.cpp)
-
 ament_target_dependencies(media_server
                           rclcpp
                           rover_msgs
@@ -40,13 +33,18 @@ ament_target_dependencies(aruco_detection
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+target_link_libraries(aruco_detection 
+                          ${OpenCV_LIBS}
+                          rover_shared_libs)
+                
+add_executable(panorama src/panorama.cpp)
                           
 ament_target_dependencies(panorama
                           rclcpp
                           rover_msgs
                           rcl_interfaces
                           OpenCV)
-target_link_libraries(aruco_detection 
+target_link_libraries(panorama
                           ${OpenCV_LIBS}
                           rover_shared_libs)
 
