@@ -175,7 +175,7 @@ void QTopUtilityBar::CB_timerDisplaying(void)
     for (const auto& timers : _timersList)
     {
         QDateTime givenTimeUTC = timers.toUTC();
-        QDateTime nowUtc = QDateTime::currentDateTimeUtc().toTimeZone(_timeZone);
+        QDateTime nowUtc = QDateTime::currentDateTimeUtc();
 
         int secondsDiff = nowUtc.secsTo(givenTimeUTC);
 
@@ -292,6 +292,6 @@ void QTopUtilityBar::onUpdateTimer(int secondsBeforeTimeOut_)
 void QTopUtilityBar::simulateTimerFileReading()
 {
     _timersList.push_back(QDateTime(QDate(2025, 5, 16), QTime(13, 58, 0), QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025, 5, 21), QTime(18, 36, 0), QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025, 5, 19), QTime(20, 36, 0), QTimeZone("America/Montreal")));
     _timersList.push_back(QDateTime(QDate(2025, 5, 18), QTime(16, 3, 0), QTimeZone("America/Edmonton")));
 }
