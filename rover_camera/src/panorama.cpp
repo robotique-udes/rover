@@ -7,7 +7,7 @@
 #include <iostream>
 #include <vector>
 #include <sys/stat.h>
-#include "rover_lib2/helpers/constants.hpp"
+#include "rover_lib2/helpers/macros.hpp"
 
 //cam: 192.168.144.30
 
@@ -184,8 +184,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 		
 		
 	    //creation du dossier du dossier de panoramas 
-   	    //std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");  // cette commande serait mieux, mais pas encore fonctionnelle
-   	    string currentPackageDirectory = "ros2_ws/src/rover/rover_camera";
+   	    std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");
     	    string path_panorama = "/src/panoramas";
 
 	    struct stat fileInfo;
@@ -200,14 +199,6 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    if (mkdir(path_dossier.c_str(), 0775)==0){ 
 	    	cout << "Succesfully created the folder."<< endl;
 	    	nom_fichier_panorama =  path_dossier +"/"+ result_name;
-	    	
-	    /*	code pour debugger image malgre probleme avec creation du dossier
-	     }else if(mkdir("ros2_ws/src/rover/rover_camera/src/panoramas", 0775)==0){ 
-	     	nom_fichier_panorama =  "ros2_ws/src/rover/rover_camera/src/panoramas/" + result_name;
-	     
-	     }else if(mkdir("src/rover/rover_camera/src/panoramas", 0775)==0){ 
-	     	nom_fichier_panorama =  "src/rover/rover_camera/src/panoramas/" + result_name;
-	     	*/
 	     	
 	     }else{
 	     	cout << "Failed to create folder" << endl;
