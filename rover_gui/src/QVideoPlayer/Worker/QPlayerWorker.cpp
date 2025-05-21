@@ -166,6 +166,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
     if (!client_CameraControl_)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "ERROR: couldn't take screenshot \ncamera control client is invalid");
+        emit this->setCursorWaiting(false);
         return;
     }
 
@@ -184,6 +185,7 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
         {
             RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Service request timed out for take screenshot");
             service_call_interrupt = true;
+            status = "Service call was interupted because it took too long. Probable cause: Camera is disconnected";
             break;
         }
     }
@@ -243,6 +245,7 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
     if (!client_CameraControl_)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "ERROR: couldn't start recording \ncamera control client is invalid");
+        emit this->setCursorWaiting(false);
         return;
     }
 
@@ -262,6 +265,7 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
         {
             RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Service request timed out for start recording");
             service_call_interrupt = true;
+            status = "Service call was interupted because it took too long. Probable cause: Camera is disconnected";
             break;
         }
     }
@@ -297,6 +301,7 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
     if (!client_CameraControl_)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "ERROR: camera control client is invalid");
+        emit this->setCursorWaiting(false);
         return;
     }
 
@@ -315,6 +320,7 @@ void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_m
         {
             service_call_interrupt = true;
             RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Service request timed out for stop recording");
+            status = "Service call was interupted because it took too long. Probable cause: Camera is disconnected";
             break;
         }
     }

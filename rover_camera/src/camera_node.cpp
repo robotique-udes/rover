@@ -370,9 +370,9 @@ sScreenshotResult CameraNode::getScreenshot(std::string screenshotFolderPath_, s
         }
         else
         {
-            RCLCPP_ERROR(this->get_logger(), "Failed to capture frame from camera.");
+            RCLCPP_ERROR(this->get_logger(), "Failed to capture frame from camera. (cap.read = 0)");
             cap.release();
-            result.msg = "Couldn't read frame (ret)";
+            result.msg = "Couldn't read frame (cap.read = 0)";
             return result;
         }
 
