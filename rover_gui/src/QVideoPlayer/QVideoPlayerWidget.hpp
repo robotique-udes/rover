@@ -107,21 +107,6 @@ class QVideoPlayerWidget : public QWidget
     void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
     void onCameraAngleSliderChanged(void);
     void onCameraAngleBoxChanged(void);
-kkk
-    void onPipelineStarted(GstElement* pipeline_);
-    void onErrorOccurred(const QString& error_);
-    void onConnectionFailed(void);
-    void onFrameReceived(void);
-    void onFrameTimeout(void);
-    void onReconnectTimer(void);
-    void onConnectionTimeout(void);
-    void onToggleView(void);
-    void onUrlTextChanged(const QString& text_);
-
-    void clearLogs(void);
-    void toggleLogView(bool show_);
-
-    void onNewLogMessage(const QString& message_, QWidget* targetWidget_);
 
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);

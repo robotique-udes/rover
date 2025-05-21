@@ -225,6 +225,13 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
 
 void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float pitch_)
 {
+    if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
+        || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Can't publish camera angles. Coulnd't find 'Main' or 'Antenna' in camera map!");
+        return;
+    }
+
     rover_msgs::msg::CameraControl msg;
 
     if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))

@@ -672,27 +672,6 @@ void QVideoPlayerWidget::handlePlayPauseButton(void)
     }
 }
 
-std::string QVideoPlayerWidget::getCamURL(void)
-{
-    return this->_camURL;
-}
-
-void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
-{
-    _camURL = newCamUrl_;
-}
-
-void QVideoPlayerWidget::setURLToDefault(void)
-{
-    _camURL = this->_defaultCamUrl;
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
-}
-
-void QVideoPlayerWidget::updateCamURL(void)
-{
-    _camURL = _ui.rtspTextBox->text().toStdString();
-}
-
 void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)
 {
     if (client_)
@@ -792,7 +771,7 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
     {
         _ui.arucoIdsTextBox->setText(_ui.arucoIdsTextBox->text() + "  " + QString::number(id));
     }
-k
+
     if (!ids_.empty())
     {
         UI_LOG_INFO(ARUCO_DETECTION,
@@ -800,7 +779,6 @@ k
                         .arg(QString::fromStdString(_camURL))
                         .arg(_ui.arucoIdsTextBox->text().mid(5)),
                     _ui.logDisplay);
-    }
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
     }
     else
