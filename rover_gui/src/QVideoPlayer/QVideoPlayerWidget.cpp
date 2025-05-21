@@ -42,6 +42,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
 
     connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
+    connect(_ui.cameraAngleSlider, &QSlider::valueChanged, this, &QVideoPlayerWidget::onCameraAngleSliderChanged);
+    connect(_ui.cameraAngleBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::onCameraAngleBoxChanged);
 
     connect(_playerWorkerThreadRecording.get(),
             &QPlayerWorker::startRecordingHandledSuccessfully,
@@ -463,4 +465,18 @@ void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
         _ui.ScreenshotButton->setEnabled(true);
         _ui.startRecordingButton->setEnabled(true);
     }
+}
+
+void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
+{
+    _ui.cameraAngleBox->setValue(_ui.cameraAngleSlider->value());
+    float angle = static_cast<float>(_ui.cameraAngleSlider->value());
+    emit this->notifyCameraAnglePublisher(_playerIndex, angle);
+}
+
+void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
+{
+    _ui.cameraAngleSlider->setValue(_ui.cameraAngleBox->value());
+    float angle = static_cast<float>(_ui.cameraAngleBox->value());
+    emit this->notifyCameraAnglePublisher(_playerIndex, angle);
 }

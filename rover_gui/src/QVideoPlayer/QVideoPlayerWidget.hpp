@@ -50,6 +50,7 @@ class QVideoPlayerWidget : public QWidget
 
   signals:
     void arucoCameraFailure(bool valid_);
+    void notifyCameraAnglePublisher(uint8_t camID_, float angle_);
 
   private slots:
     // Arucuo
@@ -62,6 +63,8 @@ class QVideoPlayerWidget : public QWidget
     void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
     void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
     void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void onCameraAngleSliderChanged(void);
+    void onCameraAngleBoxChanged(void);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;

@@ -16,6 +16,14 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
     connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
+    connect(_videoPlaysWidgets[0].get(),
+            &QVideoPlayerWidget::notifyCameraAnglePublisher,
+            this,
+            &QVideoManagerWidget::CB_pubCameraAngle);
+    connect(_videoPlaysWidgets[1].get(),
+            &QVideoPlayerWidget::notifyCameraAnglePublisher,
+            this,
+            &QVideoManagerWidget::CB_pubCameraAngle);
 
     this->initArucoClient();
     this->initArucoPublisher();
@@ -185,12 +193,6 @@ void QVideoManagerWidget::initCameraControlClient(void)
 void QVideoManagerWidget::initCameraAnglePublisher(void)
 {
     _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_ANGLE_CONTROL_TOPIC, QOS_DEFAULT);
-
-    _timer_pubCameraAngle = _node->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
-                                                     [this](void)
-                                                     {
-                                                         this->CB_pubCameraAngle();
-                                                     });
 }
 
 void QVideoManagerWidget::initCameraControlSubscriber(void)
@@ -218,14 +220,13 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     }
 }
 
-void QVideoManagerWidget::CB_pubCameraAngle(void)
+void QVideoManagerWidget::CB_pubCameraAngle(uint8_t camID_, float pitch_)
 {
     rover_msgs::msg::CameraControl msg;
 
-    msg.pitch_main = _videoPlaysWidgets[0]->getCameraAngle();
-    msg.yaw_main = 0.0f;
-    msg.pitch_antenna = _videoPlaysWidgets[1]->getCameraAngle();
-    msg.yaw_antenna = 0.0f;
+    msg.id_cam = camID_;
+    msg.pitch = pitch_;
+    msg.yaw = 0.0f;
 
     _pub_cameraAngle->publish(msg);
 }
