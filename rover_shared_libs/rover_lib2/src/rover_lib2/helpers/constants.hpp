@@ -4,12 +4,12 @@
 #if defined(__linux__)
 #include <map>
 #include <string>
-#include <rover_msgs/msg/joy.hpp>
 #endif  // defined(__linux__)
 
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
 #include <rclcpp/qos.hpp>
 #define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
+#include <rover_msgs/msg/joy.hpp>
 #endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
 
 namespace Constants
@@ -46,7 +46,7 @@ namespace Constants
 
     namespace DriveTrain::KeyBinding
     {
-#if defined(__linux__)
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
         constexpr float DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
         constexpr float LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
         constexpr float ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
