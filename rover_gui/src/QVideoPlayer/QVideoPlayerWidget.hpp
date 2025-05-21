@@ -4,6 +4,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
+
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QTextEdit>
 #include <QThread>
@@ -13,6 +14,7 @@
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
+#include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 
 class QVideoPlayerWidget : public QWidget
 {
@@ -21,8 +23,12 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5'000UL;
     static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
     static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
+
     static int MAX_RECONNECT_ATTEMPTS;
     static int _instanceCounter;
+
+    static constexpr size_t STYLE_RESET_TIME = 2'000UL;
+    static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
 
   public:
     enum class ePlayerState
@@ -39,7 +45,8 @@ class QVideoPlayerWidget : public QWidget
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                        std::string url_,
                        uint16_t tag_,
-                       std::shared_ptr<QPlayerWorker> worker_);
+                       std::shared_ptr<QPlayerWorker> workerThreadAruco_,
+                       std::shared_ptr<QPlayerWorker> workerThreadRecording_);
 
     ~QVideoPlayerWidget();
 
@@ -60,6 +67,8 @@ class QVideoPlayerWidget : public QWidget
 
     void handlePlayPauseButton(void);
 
+    void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
+
     std::string getCamURL(void);
     void setCamURL(std::string newCamUrl_);
     void setURLToDefault(void);
@@ -73,6 +82,9 @@ class QVideoPlayerWidget : public QWidget
     QString getId(void);
     bool isStreaming(void);
 
+    void CB_cameraListUpdate(std::vector<std::string> urls_);
+    void CB_serviceCameraControlAvailable(bool available_);
+
   signals:
     void arucoCameraFailure(bool valid_);
     void streamStateChanged(bool isRunning_, int streamIndex_);
@@ -80,9 +92,16 @@ class QVideoPlayerWidget : public QWidget
     void requestStopStream(void);
 
   private slots:
+    // Arucuo
     void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
+    // Camera server
+    void handleScreenshot(void);
+    void handleRecording(void);
+    void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
 
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
@@ -111,11 +130,15 @@ class QVideoPlayerWidget : public QWidget
 
     std::string _camURL = "";
     std::string _defaultCamUrl = "";
+
     uint16_t _tag;
     int _streamIndex;
+    int16_t _playerIndex;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThread;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
+    std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
+    std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
     int _reconnectAttempts = 0;
