@@ -15,5 +15,7 @@ uint8 STATUS_MAX = 4 # Delimtiter
 uint8 id_cam
 bool power_on
 uint8 status
-float32 yaw
-float32 pitch
+float32 yaw_main
+float32 pitch_main
+float32 yaw_antenna
+float32 pitch_antenna

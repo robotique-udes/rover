@@ -15,6 +15,11 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
+    if(playerIndex_ > 1)
+    {
+        _ui.cameraAngleSlider->hide();
+    }
+
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
     connect(_playerWorkerThreadAruco.get(),
             &QPlayerWorker::detectionHandledSuccessfully,
