@@ -1,29 +1,39 @@
 #include "QVideoManagerWidget.hpp"
+#include "rover_lib2/helpers/assert.hpp"
 #include <QString>
 
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),
     _videoPlayerLayout(this),
-    _playerWorkerThread(std::make_shared<QPlayerWorker>())
+    _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
+    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>())
 {
     this->initWidget();
 
-    connect(_playerWorkerThread.get(), &QPlayerWorker::urlFoundInDetection, this, &QVideoManagerWidget::onArucoDetectionIsLive);
+    connect(_playerWorkerThreadAruco.get(),
+            &QPlayerWorker::urlFoundInDetection,
+            this,
+            &QVideoManagerWidget::onArucoDetectionIsLive);
+    connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
 
     this->initArucoClient();
     this->initArucoPublisher();
 
+    this->initCameraControlClient();
+    this->initCameraControlSubscriber();
+
     this->setLayout(&_videoPlayerLayout);
 
-    _playerWorkerThread->start();
+    _playerWorkerThreadAruco->start();
+    _playerWorkerThreadRecording->start();
 }
 
 void QVideoManagerWidget::CB_updateArucoDetectionManager()
 {
-    if (_playerWorkerThread.get())
+    if (_playerWorkerThreadAruco.get())
     {
-        _playerWorkerThread->updateDetectionManager(_client_arucoDetectionManager);
+        _playerWorkerThreadAruco->updateDetectionManager(_client_arucoDetectionManager);
     }
     else
     {
@@ -80,7 +90,8 @@ void QVideoManagerWidget::initWidget(void)
                         CAMERA_NAME_ORDER[i]);
         }
 
-        _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread);
+        _videoPlaysWidgets[i]
+            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
@@ -138,4 +149,59 @@ void QVideoManagerWidget::initArucoClient(void)
                                                              {
                                                                  this->CB_updateArucoDetectionManager();
                                                              });
+}
+
+void QVideoManagerWidget::initCameraControlClient(void)
+{
+    if (_node)
+    {
+        _client_cameraControlManager = _node->create_client<rover_msgs::srv::CameraControl>(SERVICE_RECORDING_NAME);
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+    }
+
+    ASSERT_COND(_node != nullptr);
+    for (auto& widget : _videoPlaysWidgets)
+    {
+        widget->setCameraControlClientManager(_client_cameraControlManager);
+    }
+
+    _timer_clientCameraControlHealth = _node->create_wall_timer(
+        std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
+        [this](void)
+        {
+            bool availble = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
+            for (auto& widget : _videoPlaysWidgets)
+            {
+                widget->CB_serviceCameraControlAvailable(availble);
+            }
+        });
+    return;
+}
+
+void QVideoManagerWidget::initCameraControlSubscriber(void)
+{
+    _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
+                                                                              1,
+                                                                              [this](const rover_msgs::msg::CameraList msg)
+                                                                              {
+                                                                                  for (auto& widget : _videoPlaysWidgets)
+                                                                                  {
+                                                                                      widget->CB_cameraListUpdate(msg.urls);
+                                                                                  }
+                                                                              });
+}
+
+void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
+{
+    if (waiting_)
+    {
+        this->setCursor(Qt::WaitCursor);
+    }
+    else
+    {
+        this->setCursor(Qt::ArrowCursor);
+    }
 }
