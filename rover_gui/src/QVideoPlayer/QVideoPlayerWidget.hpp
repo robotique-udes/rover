@@ -40,6 +40,7 @@ class QVideoPlayerWidget : public QWidget
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
 
     std::string getCamURL(void);
+    float getCameraAngle(void);
     void setCamURL(std::string newCamUrl_);
     void setURLToDefault(void);
     void updateCamURL(void);

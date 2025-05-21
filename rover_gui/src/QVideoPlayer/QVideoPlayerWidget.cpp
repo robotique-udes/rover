@@ -15,7 +15,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
-    if(playerIndex_ > 1)
+    if (playerIndex_ > 1)
     {
         _ui.cameraAngleSlider->hide();
     }
@@ -167,6 +167,11 @@ void QVideoPlayerWidget::handlePlayPauseButton(void)
 std::string QVideoPlayerWidget::getCamURL(void)
 {
     return this->_camURL;
+}
+
+float QVideoPlayerWidget::getCameraAngle(void)
+{
+    return static_cast<float>(_ui.cameraAngleSlider->value());
 }
 
 void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)

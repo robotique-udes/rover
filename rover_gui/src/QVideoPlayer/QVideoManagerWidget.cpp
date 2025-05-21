@@ -22,6 +22,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     this->initCameraControlClient();
     this->initCameraControlSubscriber();
+    this->initCameraAnglePublisher();
 
     this->setLayout(&_videoPlayerLayout);
 
@@ -181,6 +182,17 @@ void QVideoManagerWidget::initCameraControlClient(void)
     return;
 }
 
+void QVideoManagerWidget::initCameraAnglePublisher(void)
+{
+    _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_ANGLE_CONTROL_TOPIC, QOS_DEFAULT);
+
+    _timer_pubCameraAngle = _node->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
+                                                     [this](void)
+                                                     {
+                                                         this->CB_pubCameraAngle();
+                                                     });
+}
+
 void QVideoManagerWidget::initCameraControlSubscriber(void)
 {
     _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
@@ -204,4 +216,16 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     {
         this->setCursor(Qt::ArrowCursor);
     }
+}
+
+void QVideoManagerWidget::CB_pubCameraAngle(void)
+{
+    rover_msgs::msg::CameraControl msg;
+
+    msg.pitch_main = _videoPlaysWidgets[0]->getCameraAngle();
+    msg.yaw_main = 0.0f;
+    msg.pitch_antenna = _videoPlaysWidgets[1]->getCameraAngle();
+    msg.yaw_antenna = 0.0f;
+
+    _pub_cameraAngle->publish(msg);
 }
