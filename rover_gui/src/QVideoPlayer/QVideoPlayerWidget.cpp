@@ -19,18 +19,16 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::shared_ptr<QPlayerWorker> workerThreadRecording_):
     _node(guiNode_),
     _camURL(url_),
-    _tag(tag_),
-    _playerWorkerThread(worker_),
+    _tag(playerIndex_),
+    _streamIndex(_instanceCounter - 1),
+    _playerIndex(playerIndex_),
+    _playerWorkerThreadAruco(workerThreadAruco_),
+    _playerWorkerThreadRecording(workerThreadRecording_),
     _reconnectTimer(),
     _frameTimeoutTimer(),
     _connectionTimeoutTimer()
-    _playerIndex(playerIndex_),
-    _playerWorkerThreadAruco(workerThreadAruco_),
-    _playerWorkerThreadRecording(workerThreadRecording_)
-
 {
-    _streamIndex = _instanceCounter - 1;
-
+    _instanceCounter++;
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
@@ -800,27 +798,6 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
                         .arg(_ui.arucoIdsTextBox->text().mid(5)),
                     _ui.logDisplay);
     }
-}
-
-std::string QVideoPlayerWidget::getCamURL(void)
-{
-    return this->_camURL;
-}
-
-void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
-{
-    _camURL = newCamUrl_;
-}
-
-void QVideoPlayerWidget::setURLToDefault(void)
-{
-    _camURL = this->_defaultCamUrl;
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
-}
-
-void QVideoPlayerWidget::updateCamURL()
-{
-    _camURL = _ui.rtspTextBox->text().toStdString();
 }
 
 void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex_)

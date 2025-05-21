@@ -152,7 +152,6 @@ void QVideoManagerWidget::initArucoClient(void)
                                                              {
                                                                  this->CB_updateArucoDetectionManager();
                                                              });
-
 }
 
 void QVideoManagerWidget::initCameraControlClient(void)
@@ -208,5 +207,4 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     {
         this->setCursor(Qt::ArrowCursor);
     }
-
 }
