@@ -9,6 +9,7 @@
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 class QVideoPlayerWidget : public QWidget
 {
@@ -50,7 +51,7 @@ class QVideoPlayerWidget : public QWidget
 
   signals:
     void arucoCameraFailure(bool valid_);
-    void notifyCameraAnglePublisher(uint8_t camID_, float angle_);
+    void notifyCameraAnglePublisher(std::string camURL_, float angle_);
 
   private slots:
     // Arucuo
@@ -67,6 +68,8 @@ class QVideoPlayerWidget : public QWidget
     void onCameraAngleBoxChanged(void);
 
   private:
+
+    void hideAngleSelecter(void);
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 

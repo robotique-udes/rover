@@ -16,15 +16,15 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
     connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
-    connect(_videoPlaysWidgets[0].get(),
-            &QVideoPlayerWidget::notifyCameraAnglePublisher,
-            this,
-            &QVideoManagerWidget::CB_pubCameraAngle);
-    connect(_videoPlaysWidgets[1].get(),
-            &QVideoPlayerWidget::notifyCameraAnglePublisher,
-            this,
-            &QVideoManagerWidget::CB_pubCameraAngle);
 
+    for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
+    {
+        connect(_videoPlaysWidgets[i].get(),
+                &QVideoPlayerWidget::notifyCameraAnglePublisher,
+                this,
+                &QVideoManagerWidget::CB_pubCameraAngle);
+    }
+    
     this->initArucoClient();
     this->initArucoPublisher();
 
@@ -220,11 +220,23 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     }
 }
 
-void QVideoManagerWidget::CB_pubCameraAngle(uint8_t camID_, float pitch_)
+void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float pitch_)
 {
     rover_msgs::msg::CameraControl msg;
 
-    msg.id_cam = camID_;
+    if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))
+    {
+        msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_MAIN;
+    }
+    else if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    {
+        msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
+    }
+    else
+    {
+        return;
+    }
+
     msg.pitch = pitch_;
     msg.yaw = 0.0f;
 

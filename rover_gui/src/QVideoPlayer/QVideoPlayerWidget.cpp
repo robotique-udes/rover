@@ -14,11 +14,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 {
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
-
-    if (playerIndex_ > 1)
-    {
-        _ui.cameraAngleSlider->hide();
-    }
+    this->hideAngleSelecter();
 
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
     connect(_playerWorkerThreadAruco.get(),
@@ -179,17 +175,20 @@ float QVideoPlayerWidget::getCameraAngle(void)
 void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
 {
     _camURL = newCamUrl_;
+    this->hideAngleSelecter();
 }
 
 void QVideoPlayerWidget::setURLToDefault(void)
 {
     _camURL = this->_defaultCamUrl;
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+    this->hideAngleSelecter();
 }
 
 void QVideoPlayerWidget::updateCamURL()
 {
     _camURL = _ui.rtspTextBox->text().toStdString();
+    this->hideAngleSelecter();
 }
 
 void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex_)
@@ -471,12 +470,26 @@ void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
 {
     _ui.cameraAngleBox->setValue(_ui.cameraAngleSlider->value());
     float angle = static_cast<float>(_ui.cameraAngleSlider->value());
-    emit this->notifyCameraAnglePublisher(_playerIndex, angle);
+    emit this->notifyCameraAnglePublisher(_camURL, angle);
 }
 
 void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
 {
     _ui.cameraAngleSlider->setValue(_ui.cameraAngleBox->value());
     float angle = static_cast<float>(_ui.cameraAngleBox->value());
-    emit this->notifyCameraAnglePublisher(_playerIndex, angle);
+    emit this->notifyCameraAnglePublisher(_camURL, angle);
+}
+
+void QVideoPlayerWidget::hideAngleSelecter(void)
+{
+    if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main") || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    {
+        _ui.cameraAngleSlider->show();
+        _ui.cameraAngleBox->show();
+    }
+    else
+    {
+        _ui.cameraAngleSlider->hide();
+        _ui.cameraAngleBox->hide();
+    }
 }

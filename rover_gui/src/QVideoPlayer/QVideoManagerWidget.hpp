@@ -42,7 +42,7 @@ class QVideoManagerWidget : public QWidget
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
-    void CB_pubCameraAngle(u_int8_t camID_, float pitch_);
+    void CB_pubCameraAngle(std::string camURL_, float pitch_);
 
   private:
     void initWidget(void);
