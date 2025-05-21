@@ -482,7 +482,8 @@ void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
 
 void QVideoPlayerWidget::hideAngleSelecter(void)
 {
-    if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main") || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main")
+        || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
     {
         _ui.cameraAngleSlider->show();
         _ui.cameraAngleBox->show();

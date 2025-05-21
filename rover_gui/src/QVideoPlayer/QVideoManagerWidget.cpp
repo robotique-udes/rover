@@ -24,7 +24,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                 this,
                 &QVideoManagerWidget::CB_pubCameraAngle);
     }
-    
+
     this->initArucoClient();
     this->initArucoPublisher();
 

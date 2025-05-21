@@ -68,7 +68,6 @@ class QVideoPlayerWidget : public QWidget
     void onCameraAngleBoxChanged(void);
 
   private:
-
     void hideAngleSelecter(void);
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
