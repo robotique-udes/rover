@@ -38,27 +38,8 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 {
     _ui.setupUi(this);
 
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor_reboot;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor_reboot;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor_reboot;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor_reboot;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController_reboot;
-    _deviceButtons[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss_reboot;
-
-    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightmotor_info;
-    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftmotor_info;
-    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftmotor_info;
-    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightmotor_info;
-    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController_info;
-    _deviceLabels[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss_info;
-
-    _overlayPositions[_ui.frontleftMotor] = QPointF(0.0172, 0.3372);
-    _overlayPositions[_ui.frontrightMotor] = QPointF(0.6532, 0.3372);
-    _overlayPositions[_ui.rearleftMotor] = QPointF(0.0172, 0.6086);
-    _overlayPositions[_ui.rearrightMotor] = QPointF(0.6532, 0.6086);
-    _overlayPositions[_ui.ddbController] = QPointF(0.3442, 0.5263);
-    _overlayPositions[_ui.gnss] = QPointF(0.2926, 0.7017);
-    _overlayPositions[_ui.pb_serviceCall] = QPointF(0.7556, 0.0270);
+    _deviceWidgets[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
+    
 
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
@@ -78,21 +59,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
     this->updateDeviceInfo(request);
 
-    for (auto it = _deviceButtons.begin(); it != _deviceButtons.end(); ++it)
-    {
-        uint16_t deviceID = it.key();
-        QPushButton* button = it.value();
-
-        connect(button,
-                &QPushButton::clicked,
-                this,
-                [this, deviceID]()
-                {
-                    // this->setStatusReport(deviceID);
-                    this->rebootDevice(deviceID);
-                });
-    }
-
     connect(_ui.pb_serviceCall,
             &QPushButton::clicked,
             this,
@@ -102,12 +68,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
                 auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
                 this->updateDeviceInfo(request);
             });
-
-    // Load and assign pixmap to image label
-    _pixmap = QPixmap(":/rovUS/images/rover2.jpeg");
-    _imageLabel = _ui.RoverImage;
-    _imageLabel->setPixmap(_pixmap);
-    _imageLabel->setScaledContents(true);
 }
 
 /**
@@ -190,39 +150,12 @@ void QDeviceStatus::setStatusReport(uint16_t deviceID_)
 {
     auto label = _deviceLabels[deviceID_];
 
-    std::string deviceName = this->getDeviceName(deviceID_);
+    std::string deviceName = RoverCan2::Constant::getCanDeviceName(static_cast<RoverCan2::Constant::eDeviceId>(deviceID_));
 
     QString labelText = QString::fromStdString(deviceName) + "\n" + "0x" + QString::number(deviceID_, 16).toUpper() + "\n"
                         + "Number of reboots: " + QString::number(_numberOfDeviceReboots[deviceID_]);
 
     label->setText(labelText);
-}
-
-/**
- * @brief Returns the device name based on the device ID.
- *
- * @param deviceID_
- * @return std::string
- */
-std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
-{
-    switch (deviceID_)
-    {
-        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR):
-            return "Front Right Motor";
-        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR):
-            return "Front Left Motor";
-        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR):
-            return "Rear Left Motor";
-        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR):
-            return "Rear Right Motor";
-        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER):
-            return "DDB Controller";
-        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS):
-            return "GNSS";
-        default:
-            return "Unknown Device";
-    }
 }
 
 /**
@@ -261,43 +194,5 @@ void QDeviceStatus::setDefaultStyle()
     for (auto it = _deviceLabels.begin(); it != _deviceLabels.end(); ++it)
     {
         it.value()->setStyleSheet(STATUS_DEFAULT);
-    }
-}
-
-/**
- * @brief Resizes the image label to fit the widget while preserving the aspect ratio.
- *
- * @param event_
- */
-void QDeviceStatus::resizeEvent(QResizeEvent* event_)
-{
-    QWidget::resizeEvent(event_);
-
-    QSize scaledSize = _pixmap.size();
-    scaledSize.scale(size(), Qt::KeepAspectRatio);
-    _imageLabel->resize(scaledSize);
-    _imageLabel->move((width() - scaledSize.width()) / 2, (height() - scaledSize.height()) / 2);
-
-    // Update overlays' absolute positions
-    this->updateOverlayPositions();
-}
-
-/**
- * @brief Updates the positions of the overlays based on the image label size.
- *
- */
-void QDeviceStatus::updateOverlayPositions()
-{
-    QRect imageRect = _imageLabel->geometry();
-
-    for (auto it = _overlayPositions.begin(); it != _overlayPositions.end(); ++it)
-    {
-        QWidget* overlay = it.key();
-        QPointF relPos = it.value();
-
-        int x = imageRect.left() + relPos.x() * imageRect.width();
-        int y = imageRect.top() + relPos.y() * imageRect.height();
-
-        overlay->move(x, y);
     }
 }
