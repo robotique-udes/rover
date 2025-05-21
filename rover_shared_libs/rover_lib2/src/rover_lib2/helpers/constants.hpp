@@ -53,7 +53,7 @@ namespace Constants
         constexpr float MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
         constexpr float MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
         constexpr float MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
-#endif  // defined(__linux__)
+#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
     }   // namespace DriveTrain::KeyBinding
 }  // namespace Constants
 
