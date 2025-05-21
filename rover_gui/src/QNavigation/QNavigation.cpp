@@ -2,6 +2,8 @@
 
 #include "Global/Helpers/QHelpers.hpp"
 
+constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
+
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _webChannel(this),
@@ -25,7 +27,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                     "to documentation for more detailed information");
     }
 
-    _ui.webViewContainer->load(QUrl("qrc:/map.html"));
+    _ui.webViewContainer->load(QUrl(QRC_PATH_MAP_HTML));
 
     _webChannel.registerObject(QStringLiteral("bridge"), this);
     _ui.webViewContainer->page()->setWebChannel(&_webChannel);
