@@ -41,7 +41,7 @@ void QPlayerWorker::manageDetectionInternal(
                     .arg(start_ ? "START" : "STOP")
                     .arg(QString::fromStdString(_camURL_))
                     .arg(tag_),
-                "");
+                nullptr);
 
     auto result = client_ArucoDetectionManager_->async_send_request(request);
 
@@ -72,14 +72,14 @@ void QPlayerWorker::manageDetectionInternal(
         UI_LOG_INFO(
             ARUCO_DETECTION,
             QString("Aruco detection request successful for camera %1 (tag: %2)").arg(QString::fromStdString(_camURL_)).arg(tag_),
-            "");
+            nullptr);
     }
     else
     {
         UI_LOG_ERROR(
             ARUCO_DETECTION,
             QString("Aruco detection request failed for camera %1 (tag: %2)").arg(QString::fromStdString(_camURL_)).arg(tag_),
-            "");
+            nullptr);
     }
 
     emit detectionHandledSuccessfully(success, tag_);
@@ -124,7 +124,7 @@ void QPlayerWorker::updateDetectionInternal(
         return;
     }
 
-    UI_LOG_DEBUG(ARUCO_DETECTION, "Sending aruco detection INFO request", "");
+    UI_LOG_DEBUG(ARUCO_DETECTION, "Sending aruco detection INFO request", nullptr);
 
     auto result = client_ArucoDetectionManager_->async_send_request(request);
 
@@ -159,7 +159,7 @@ void QPlayerWorker::updateDetectionInternal(
 
     if (!success)
     {
-        UI_LOG_WARNING(ARUCO_DETECTION, "Failed to get aruco server info", "");
+        UI_LOG_WARNING(ARUCO_DETECTION, "Failed to get aruco server info", nullptr);
     }
     else if (!liveURLs.empty())
     {
@@ -170,7 +170,7 @@ void QPlayerWorker::updateDetectionInternal(
                 urlList += ", ";
             urlList += QString::fromStdString(url);
         }
-        UI_LOG_INFO(ARUCO_DETECTION, QString("Aruco detection active on cameras: %1").arg(urlList), "");
+        UI_LOG_INFO(ARUCO_DETECTION, QString("Aruco detection active on cameras: %1").arg(urlList), nullptr);
     }
 
     emit arucoServerInfoFailed(success);

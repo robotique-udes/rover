@@ -6,6 +6,7 @@
 #include <QMap>
 #include <QSet>
 #include <QMutex>
+#include <QWidget>
 
 class QLogManager : public QObject
 {
@@ -31,20 +32,20 @@ class QLogManager : public QObject
 
     static QLogManager& getInstance(void);
 
-    void log(eLogLevel level_, eLogSource source_, const QString& message_, const QString& target_ = QString());
+    void log(eLogLevel level_, eLogSource source_, const QString& message_, QWidget* target_ = nullptr);
 
-    void debug(eLogSource source_, const QString& message_, const QString& target_ = QString());
-    void info(eLogSource source_, const QString& message_, const QString& target_ = QString());
-    void warning(eLogSource source_, const QString& message_, const QString& target_ = QString());
-    void error(eLogSource source_, const QString& message_, const QString& target_ = QString());
+    void debug(eLogSource source_, const QString& message_, QWidget* target_ = nullptr);
+    void info(eLogSource source_, const QString& message_, QWidget* target_ = nullptr);
+    void warning(eLogSource source_, const QString& message_, QWidget* target_ = nullptr);
+    void error(eLogSource source_, const QString& message_, QWidget* target_ = nullptr);
 
-    void setShowDebug(bool show_, const QString& target_ = QString());
-    void setShowInfo(bool show_, const QString& target_ = QString());
-    void setShowWarning(bool show_, const QString& target_ = QString());
-    void setShowError(bool show_, const QString& target_ = QString());
+    void setShowDebug(bool show_, QWidget* target_ = nullptr);
+    void setShowInfo(bool show_, QWidget* target_ = nullptr);
+    void setShowWarning(bool show_, QWidget* target_ = nullptr);
+    void setShowError(bool show_, QWidget* target_ = nullptr);
 
   signals:
-    void newLogMessage(const QString& message_, const QString& target_);
+    void newLogMessage(const QString& message_, QWidget* target_);
 
   private:
     QLogManager();
@@ -55,7 +56,7 @@ class QLogManager : public QObject
 
     QString formatLogMessageHtml(eLogLevel level_, const QString& message_);
 
-    QMap<QString, QSet<eLogLevel>> _enabledLevels;
+    QMap<quintptr, QSet<eLogLevel>> _enabledLevels;
     QMutex _mutex;
 };
 
@@ -88,74 +89,74 @@ namespace LogUtils
         }
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_DEBUG(QLogManager::eLogSource source_, const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_DEBUG(QLogManager::eLogSource source_, const StrType& message_, QWidget* target_ = nullptr)
     {
-        QLogManager::getInstance().debug(source_, toQString(message_), toQString(target_));
+        QLogManager::getInstance().debug(source_, toQString(message_), target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_INFO(QLogManager::eLogSource source_, const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_INFO(QLogManager::eLogSource source_, const StrType& message_, QWidget* target_ = nullptr)
     {
-        QLogManager::getInstance().info(source_, toQString(message_), toQString(target_));
+        QLogManager::getInstance().info(source_, toQString(message_), target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_WARNING(QLogManager::eLogSource source_, const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_WARNING(QLogManager::eLogSource source_, const StrType& message_, QWidget* target_ = nullptr)
     {
-        QLogManager::getInstance().warning(source_, toQString(message_), toQString(target_));
+        QLogManager::getInstance().warning(source_, toQString(message_), target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_ERROR(QLogManager::eLogSource source_, const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_ERROR(QLogManager::eLogSource source_, const StrType& message_, QWidget* target_ = nullptr)
     {
-        QLogManager::getInstance().error(source_, toQString(message_), toQString(target_));
+        QLogManager::getInstance().error(source_, toQString(message_), target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_DEBUG_RTSP(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_DEBUG_RTSP(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_DEBUG(RTSP_STREAMING, message_, target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_INFO_RTSP(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_INFO_RTSP(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_INFO(RTSP_STREAMING, message_, target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_WARNING_RTSP(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_WARNING_RTSP(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_WARNING(RTSP_STREAMING, message_, target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_ERROR_RTSP(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_ERROR_RTSP(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_ERROR(RTSP_STREAMING, message_, target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_DEBUG_ARUCO(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_DEBUG_ARUCO(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_DEBUG(ARUCO_DETECTION, message_, target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_INFO_ARUCO(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_INFO_ARUCO(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_INFO(ARUCO_DETECTION, message_, target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_WARNING_ARUCO(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_WARNING_ARUCO(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_WARNING(ARUCO_DETECTION, message_, target_);
     }
 
-    template<typename StrType, typename TargetType = StrType>
-    inline void UI_LOG_ERROR_ARUCO(const StrType& message_, const TargetType& target_ = TargetType())
+    template<typename StrType>
+    inline void UI_LOG_ERROR_ARUCO(const StrType& message_, QWidget* target_ = nullptr)
     {
         UI_LOG_ERROR(ARUCO_DETECTION, message_, target_);
     }

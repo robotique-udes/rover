@@ -65,6 +65,11 @@ class QVideoPlayerWidget : public QWidget
     void setURLToDefault(void);
     void updateCamURL(void);
 
+    QTextEdit* getLogWidget()
+    {
+        return _ui.logDisplay;
+    }
+
     QString getId(void);
     bool isStreaming(void);
 
@@ -92,7 +97,7 @@ class QVideoPlayerWidget : public QWidget
     void clearLogs(void);
     void toggleLogView(bool show_);
 
-    void onNewLogMessage(const QString& message_, const QString& targetID_);
+    void onNewLogMessage(const QString& message_, QWidget* targetWidget_);
 
   private:
     void setupUI(void);
@@ -108,7 +113,6 @@ class QVideoPlayerWidget : public QWidget
     std::string _defaultCamUrl = "";
     uint16_t _tag;
     int _streamIndex;
-    QString _widgetId;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThread;

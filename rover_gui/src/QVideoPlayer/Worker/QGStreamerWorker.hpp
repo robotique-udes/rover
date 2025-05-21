@@ -3,6 +3,7 @@
 
 #include <QObject>
 #include <QString>
+#include <QWidget>
 #include <gst/gst.h>
 
 class GStreamerWorker : public QObject
@@ -14,8 +15,8 @@ class GStreamerWorker : public QObject
     ~GStreamerWorker();
     GstElement* getPipeline();
 
-    void setTargetId(const QString& id_);
-    QString getTargetId(void) const;
+    void setTargetWidget(QWidget* widget);
+    QWidget* getTargetWidget() const;
 
   public slots:
     void startPipeline(const QString& rtspUrl_);
@@ -34,7 +35,8 @@ class GStreamerWorker : public QObject
 
     GstElement* _pipeline = nullptr;
     QString _lastUrl;
-    QString _targetId;
+
+    QWidget* _targetWidget = nullptr;
 
     gulong _newSampleSignalId = 0;
     int _consecutiveErrorsCount = 0;

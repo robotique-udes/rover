@@ -30,7 +30,7 @@ void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
     }
     else
     {
-        UI_LOG_ERROR(ARUCO_DETECTION, "Error, couldn't access Video Player worker", "");
+        UI_LOG_ERROR(ARUCO_DETECTION, "Error, couldn't access Video Player worker", nullptr);
     }
 }
 
@@ -80,7 +80,7 @@ void QVideoManagerWidget::initWidget(void)
         {
             UI_LOG_WARNING(GENERAL,
                            QString("Couldn't find url for camera named %1 in camera infos.").arg(CAMERA_NAME_ORDER[i]),
-                           "");
+                           nullptr);
         }
 
         _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThread);
@@ -113,7 +113,7 @@ void QVideoManagerWidget::initArucoPublisher(void)
     }
     else
     {
-        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", "");
+        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", nullptr);
     }
 }
 
@@ -125,7 +125,7 @@ void QVideoManagerWidget::initArucoClient(void)
     }
     else
     {
-        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", "");
+        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", nullptr);
     }
 
     for (auto& widget : _videoPlaysWidgets)

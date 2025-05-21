@@ -18,20 +18,20 @@ QLogManager::QLogManager():
     allLevels.insert(eLogLevel::WARNING);
     allLevels.insert(eLogLevel::ERROR);
 
-    _enabledLevels[""] = allLevels;
+    _enabledLevels[0] = allLevels;
 }
 
-void QLogManager::log(eLogLevel level_, eLogSource source_, const QString& message_, const QString& target_)
+void QLogManager::log(eLogLevel level_, eLogSource source_, const QString& message_, QWidget* target_)
 {
     QMutexLocker locker(&_mutex);
 
-    QString effectiveTarget = target_.isEmpty() ? "" : target_;
-    if (!_enabledLevels.contains(effectiveTarget))
+    quintptr key = reinterpret_cast<quintptr>(target_);
+    if (!_enabledLevels.contains(key))
     {
-        effectiveTarget = "";
+        key = 0;
     }
 
-    if (!_enabledLevels[effectiveTarget].contains(level_))
+    if (!_enabledLevels[key].contains(level_))
     {
         return;
     }
@@ -93,108 +93,108 @@ QString QLogManager::formatLogMessageHtml(eLogLevel level_, const QString& messa
         .arg(message_.toHtmlEscaped());
 }
 
-void QLogManager::debug(eLogSource source_, const QString& message_, const QString& target_)
+void QLogManager::debug(eLogSource source_, const QString& message_, QWidget* target_)
 {
     this->log(eLogLevel::DEBUG, source_, message_, target_);
 }
 
-void QLogManager::info(eLogSource source_, const QString& message_, const QString& target_)
+void QLogManager::info(eLogSource source_, const QString& message_, QWidget* target_)
 {
     this->log(eLogLevel::INFO, source_, message_, target_);
 }
 
-void QLogManager::warning(eLogSource source_, const QString& message_, const QString& target_)
+void QLogManager::warning(eLogSource source_, const QString& message_, QWidget* target_)
 {
     this->log(eLogLevel::WARNING, source_, message_, target_);
 }
 
-void QLogManager::error(eLogSource source_, const QString& message_, const QString& target_)
+void QLogManager::error(eLogSource source_, const QString& message_, QWidget* target_)
 {
     this->log(eLogLevel::ERROR, source_, message_, target_);
 }
 
-void QLogManager::setShowDebug(bool show_, const QString& target_)
+void QLogManager::setShowDebug(bool show_, QWidget* target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target_.isEmpty() ? "" : target_;
+    quintptr key = reinterpret_cast<quintptr>(target_);
 
-    if (!_enabledLevels.contains(effectiveTarget))
+    if (!_enabledLevels.contains(key))
     {
-        _enabledLevels[effectiveTarget] = QSet<eLogLevel>();
-        _enabledLevels[effectiveTarget].insert(eLogLevel::INFO);
-        _enabledLevels[effectiveTarget].insert(eLogLevel::WARNING);
-        _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
+        _enabledLevels[key] = QSet<eLogLevel>();
+        _enabledLevels[key].insert(eLogLevel::INFO);
+        _enabledLevels[key].insert(eLogLevel::WARNING);
+        _enabledLevels[key].insert(eLogLevel::ERROR);
     }
 
     if (show_)
     {
-        _enabledLevels[effectiveTarget].insert(eLogLevel::DEBUG);
+        _enabledLevels[key].insert(eLogLevel::DEBUG);
     }
     else
     {
-        _enabledLevels[effectiveTarget].remove(eLogLevel::DEBUG);
+        _enabledLevels[key].remove(eLogLevel::DEBUG);
     }
 }
 
-void QLogManager::setShowInfo(bool show_, const QString& target_)
+void QLogManager::setShowInfo(bool show_, QWidget* target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target_.isEmpty() ? "" : target_;
+    quintptr key = reinterpret_cast<quintptr>(target_);
 
-    if (!_enabledLevels.contains(effectiveTarget))
+    if (!_enabledLevels.contains(key))
     {
-        _enabledLevels[effectiveTarget] = QSet<eLogLevel>();
-        _enabledLevels[effectiveTarget].insert(eLogLevel::WARNING);
-        _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
+        _enabledLevels[key] = QSet<eLogLevel>();
+        _enabledLevels[key].insert(eLogLevel::WARNING);
+        _enabledLevels[key].insert(eLogLevel::ERROR);
     }
 
     if (show_)
     {
-        _enabledLevels[effectiveTarget].insert(eLogLevel::INFO);
+        _enabledLevels[key].insert(eLogLevel::INFO);
     }
     else
     {
-        _enabledLevels[effectiveTarget].remove(eLogLevel::INFO);
+        _enabledLevels[key].remove(eLogLevel::INFO);
     }
 }
 
-void QLogManager::setShowWarning(bool show_, const QString& target_)
+void QLogManager::setShowWarning(bool show_, QWidget* target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target_.isEmpty() ? "" : target_;
+    quintptr key = reinterpret_cast<quintptr>(target_);
 
-    if (!_enabledLevels.contains(effectiveTarget))
+    if (!_enabledLevels.contains(key))
     {
-        _enabledLevels[effectiveTarget] = QSet<eLogLevel>();
-        _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
+        _enabledLevels[key] = QSet<eLogLevel>();
+        _enabledLevels[key].insert(eLogLevel::ERROR);
     }
 
     if (show_)
     {
-        _enabledLevels[effectiveTarget].insert(eLogLevel::WARNING);
+        _enabledLevels[key].insert(eLogLevel::WARNING);
     }
     else
     {
-        _enabledLevels[effectiveTarget].remove(eLogLevel::WARNING);
+        _enabledLevels[key].remove(eLogLevel::WARNING);
     }
 }
 
-void QLogManager::setShowError(bool show_, const QString& target_)
+void QLogManager::setShowError(bool show_, QWidget* target_)
 {
     QMutexLocker locker(&_mutex);
-    QString effectiveTarget = target_.isEmpty() ? "" : target_;
+    quintptr key = reinterpret_cast<quintptr>(target_);
 
-    if (!_enabledLevels.contains(effectiveTarget))
+    if (!_enabledLevels.contains(key))
     {
-        _enabledLevels[effectiveTarget] = QSet<eLogLevel>();
+        _enabledLevels[key] = QSet<eLogLevel>();
     }
 
     if (show_)
     {
-        _enabledLevels[effectiveTarget].insert(eLogLevel::ERROR);
+        _enabledLevels[key].insert(eLogLevel::ERROR);
     }
     else
     {
-        _enabledLevels[effectiveTarget].remove(eLogLevel::ERROR);
+        _enabledLevels[key].remove(eLogLevel::ERROR);
     }
 }
