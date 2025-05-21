@@ -46,6 +46,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_gstreamerWorker, &GStreamerWorker::errorOccurred, this, &QVideoPlayerWidget::onErrorOccurred);
     connect(_gstreamerWorker, &GStreamerWorker::connectionFailed, this, &QVideoPlayerWidget::onConnectionFailed);
     connect(_gstreamerWorker, &GStreamerWorker::frameReceived, this, &QVideoPlayerWidget::onFrameReceived);
+    this->hideAngleSelecter();
 
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
     connect(_playerWorkerThreadAruco.get(),
@@ -75,6 +76,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
 
     connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
+    connect(_ui.cameraAngleSlider, &QSlider::valueChanged, this, &QVideoPlayerWidget::onCameraAngleSliderChanged);
+    connect(_ui.cameraAngleBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::onCameraAngleBoxChanged);
 
     connect(_playerWorkerThreadRecording.get(),
             &QPlayerWorker::startRecordingHandledSuccessfully,
@@ -669,27 +672,6 @@ void QVideoPlayerWidget::handlePlayPauseButton(void)
     }
 }
 
-std::string QVideoPlayerWidget::getCamURL(void)
-{
-    return this->_camURL;
-}
-
-void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
-{
-    _camURL = newCamUrl_;
-}
-
-void QVideoPlayerWidget::setURLToDefault(void)
-{
-    _camURL = this->_defaultCamUrl;
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
-}
-
-void QVideoPlayerWidget::updateCamURL(void)
-{
-    _camURL = _ui.rtspTextBox->text().toStdString();
-}
-
 void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)
 {
     if (client_)
@@ -797,7 +779,41 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
                         .arg(QString::fromStdString(_camURL))
                         .arg(_ui.arucoIdsTextBox->text().mid(5)),
                     _ui.logDisplay);
+        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
     }
+    else
+    {
+        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
+    }
+}
+
+std::string QVideoPlayerWidget::getCamURL(void)
+{
+    return this->_camURL;
+}
+
+float QVideoPlayerWidget::getCameraAngle(void)
+{
+    return static_cast<float>(_ui.cameraAngleSlider->value());
+}
+
+void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
+{
+    _camURL = newCamUrl_;
+    this->hideAngleSelecter();
+}
+
+void QVideoPlayerWidget::setURLToDefault(void)
+{
+    _camURL = this->_defaultCamUrl;
+    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+    this->hideAngleSelecter();
+}
+
+void QVideoPlayerWidget::updateCamURL()
+{
+    _camURL = _ui.rtspTextBox->text().toStdString();
+    this->hideAngleSelecter();
 }
 
 void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex_)
@@ -1086,5 +1102,34 @@ void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
     {
         _ui.ScreenshotButton->setEnabled(true);
         _ui.startRecordingButton->setEnabled(true);
+    }
+}
+
+void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
+{
+    _ui.cameraAngleBox->setValue(_ui.cameraAngleSlider->value());
+    float angle = static_cast<float>(_ui.cameraAngleSlider->value());
+    emit this->notifyCameraAnglePublisher(_camURL, angle);
+}
+
+void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
+{
+    _ui.cameraAngleSlider->setValue(_ui.cameraAngleBox->value());
+    float angle = static_cast<float>(_ui.cameraAngleBox->value());
+    emit this->notifyCameraAnglePublisher(_camURL, angle);
+}
+
+void QVideoPlayerWidget::hideAngleSelecter(void)
+{
+    if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main")
+        || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    {
+        _ui.cameraAngleSlider->show();
+        _ui.cameraAngleBox->show();
+    }
+    else
+    {
+        _ui.cameraAngleSlider->hide();
+        _ui.cameraAngleBox->hide();
     }
 }

@@ -15,6 +15,7 @@
 #include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 class QVideoPlayerWidget : public QWidget
 {
@@ -70,6 +71,7 @@ class QVideoPlayerWidget : public QWidget
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
 
     std::string getCamURL(void);
+    float getCameraAngle(void);
     void setCamURL(std::string newCamUrl_);
     void setURLToDefault(void);
     void updateCamURL(void);
@@ -90,6 +92,7 @@ class QVideoPlayerWidget : public QWidget
     void streamStateChanged(bool isRunning_, int streamIndex_);
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
+    void notifyCameraAnglePublisher(std::string camURL_, float angle_);
 
   private slots:
     // Arucuo
@@ -102,6 +105,8 @@ class QVideoPlayerWidget : public QWidget
     void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
     void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
     void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void onCameraAngleSliderChanged(void);
+    void onCameraAngleBoxChanged(void);
 
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
@@ -125,6 +130,7 @@ class QVideoPlayerWidget : public QWidget
     void emitStateChanged(void);
     void cleanupResources(void);
 
+    void hideAngleSelecter(void);
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 
