@@ -34,7 +34,7 @@ class PhotoPanoramique : public rclcpp::Node
 	    int width = dimensions.width;
 	    int hauteur = dimensions.height;
 	    
-	    Rect coupe(50, 50, width-100, hauteur-100);
+	    Rect coupe(300, 300, width-500, hauteur-500);
 	    Mat pano_rectangle = pano(coupe);
 	    
 	    return pano_rectangle;
@@ -106,19 +106,23 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	  //paramètres pour le stitching
 	  int num = request->pano_number;
 	  string numero = to_string(num);
-	  string result_name = "panorama"+numero;
+	  string result_name = "panorama_"+numero;
 	  result_name =result_name+".jpg";
 	  
 	  //paramètres pour la lecture de la camera
-	   string path_camera= request->camera_id;
-	   string pipeline = "rtspsrc location=‘rtsp://" + request->camera_id + "’/1/h264major’ latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
-	   //string pipeline = "rtspsrc location=rtsp://192.168.144.30:554/1/h264major latency=0 ! decodebin ! videoconvert ! autovideosink sync=false";
-	   
-	   VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
-	   //VideoCapture cap;
-	   int apiID = cv::CAP_GSTREAMER;
+	  
+	  //Pour debugger via camera usb
+	  //string path_camera= request->camera_id;
+	  //VideoCapture cap;
 	   //int apiID = cv::CAP_ANY;
 	   //cap.open(path_camera, apiID);
+	   
+	   string pipeline = "rtspsrc location= rtsp://rovus:rovusrovus@" + request->camera_id + ":554/1/h264major latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+	   	   
+	   //Connection a la camera
+	   VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
+	   int apiID = cv::CAP_GSTREAMER;
+
 	   
 	   if(cap.isOpened()){
 	    cout << "camera open" << endl;
@@ -141,7 +145,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 		cap.read(frame);
 
 		 // Stocker les images pour le panorama
-		if (i % 5 == 0)
+		if (i % 5 == 0) //ici pour changer la fréquence de prise d'images
 		{
 		images_cam.push_back(frame.clone());
 		}
@@ -149,7 +153,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 		i=i+1;
 
 		// Gestion du temps alloue pour prendre la panoramique
-		if (i == 200) 
+		if (i == 200) //ici pour changer la quantite de frames a attendre avant d'arreter
 		{ 
 		    taking_panorama = false;
 		    cout<<"Arrêté avec succès"<<endl;
@@ -175,13 +179,13 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    Size dimensions = pano_rectangle.size();
 	    int hauteur = dimensions.height;
 	    string nom_photo = request->nom; 
-	    putText(pano_rectangle, coord_GPS, Point (10,hauteur-20), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(34,139,34), 2); // pour un font plus gros et lisible FONT_HERSHEY_SIMPLEX
-	    putText(pano_rectangle, nom_photo, Point (10,hauteur-50), FONT_HERSHEY_COMPLEX_SMALL,1.0, Scalar(34,139,34), 2);
+	    putText(pano_rectangle, coord_GPS, Point (10,hauteur-20), FONT_HERSHEY_SIMPLEX,3.0, Scalar(34,139,34), 5); // pour un font plus gros et lisible FONT_HERSHEY_SIMPLEX
+	    putText(pano_rectangle, nom_photo, Point (10,hauteur-120), FONT_HERSHEY_SIMPLEX,3.0, Scalar(34,139,34), 5);
 		
 		
 	    //creation du dossier du dossier de panoramas 
-   	    //std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");  // finds the path to our package
-   	    string currentPackageDirectory = "ros2_ws/src/rover/rover_video";
+   	    //std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");  // cette commande serait mieux, mais pas encore fonctionnelle
+   	    string currentPackageDirectory = "ros2_ws/src/rover/rover_camera";
     	    string path_panorama = "/src/panoramas";
 
 	    struct stat fileInfo;
@@ -189,16 +193,21 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    string path_dossier = currentPackageDirectory+path_panorama;
 	    bool dossier_exist = stat(path_dossier.c_str(), &fileInfo) == 0;	    
 	    
-	    if (!dossier_exist)
+	    if (!dossier_exist) //creation du dossier si necessaire
 	    {
 	    cout << "dossier pas encore cree" << endl;
 	    
 	    if (mkdir(path_dossier.c_str(), 0775)==0){ 
 	    	cout << "Succesfully created the folder."<< endl;
-	    	nom_fichier_panorama =  path_dossier + result_name;
+	    	nom_fichier_panorama =  path_dossier +"/"+ result_name;
 	    	
-	     }else if(mkdir("src/rover/rover_video/src/panoramas", 0775)==0){ 
-	     	nom_fichier_panorama =  "src/rover/rover_video/src/panoramas/" + result_name;
+	    /*	code pour debugger image malgre probleme avec creation du dossier
+	     }else if(mkdir("ros2_ws/src/rover/rover_camera/src/panoramas", 0775)==0){ 
+	     	nom_fichier_panorama =  "ros2_ws/src/rover/rover_camera/src/panoramas/" + result_name;
+	     
+	     }else if(mkdir("src/rover/rover_camera/src/panoramas", 0775)==0){ 
+	     	nom_fichier_panorama =  "src/rover/rover_camera/src/panoramas/" + result_name;
+	     	*/
 	     	
 	     }else{
 	     	cout << "Failed to create folder" << endl;
