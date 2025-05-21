@@ -77,4 +77,4 @@ class QPlayerWorker : public QWorker
     LoopTimer<uint64_t, Time::millis> _timer_serviceCallCamera;
 };
 
-#endif  // VIDEO_WORKER_HPP
+#endif

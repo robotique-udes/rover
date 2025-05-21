@@ -21,5 +21,5 @@ def generate_launch_description():
 
     ld.add_action(node_camera_node)
     ld.add_action(node_aruco)
-
+    
     return ld
