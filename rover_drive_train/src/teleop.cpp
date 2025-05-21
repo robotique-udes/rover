@@ -24,12 +24,12 @@ class Teleop : public rclcpp::Node
     {
         rover_msgs::msg::PropulsionMotor message;
 
-        float deadmanSwitch = msg.joy_data[Constants::KeyBinding::DEADMAN_SWITCH];
-        float linearInput = msg.joy_data[Constants::KeyBinding::LINEAR_INPUT];
-        float angularInput = msg.joy_data[Constants::KeyBinding::ANGULAR_INPUT];
-        float modeTankAngularInput = msg.joy_data[Constants::KeyBinding::MODE_TANK_ANGULAR_INPUT];
-        float modeNormalEnable = msg.joy_data[Constants::KeyBinding::MODE_NORMAL_ENABLE];
-        float modeTurboEnable = msg.joy_data[Constants::KeyBinding::MODE_TURBO_ENABLE];
+        float deadmanSwitch = msg.joy_data[Constants::DriveTrain::KeyBinding::DEADMAN_SWITCH];
+        float linearInput = msg.joy_data[Constants::DriveTrain::KeyBinding::LINEAR_INPUT];
+        float angularInput = msg.joy_data[Constants::DriveTrain::KeyBinding::ANGULAR_INPUT];
+        float modeTankAngularInput = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_TANK_ANGULAR_INPUT];
+        float modeNormalEnable = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_NORMAL_ENABLE];
+        float modeTurboEnable = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_TURBO_ENABLE];
 
         if (floatToBool(deadmanSwitch))
         {

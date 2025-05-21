@@ -44,7 +44,7 @@ namespace Constants
         constexpr float SMALLEST_RADIUS = 0.3f;
     }  // namespace DriveTrain
 
-    namespace KeyBinding
+    namespace DriveTrain::KeyBinding
     {
 #if defined(__linux__)
         constexpr float DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
