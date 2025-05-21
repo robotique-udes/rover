@@ -21,7 +21,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initArucoPublisher();
 
     this->initCameraControlClient();
-    this->initCameraControlPublisher();
+    this->initCameraControlSubscriber();
 
     this->setLayout(&_videoPlayerLayout);
 
@@ -167,10 +167,21 @@ void QVideoManagerWidget::initCameraControlClient(void)
     {
         widget->setCameraControlClientManager(_client_cameraControlManager);
     }
+
+    _timer_clientCameraControlHealth = _node->create_wall_timer(
+        std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
+        [this](void)
+        {
+            bool availble = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
+            for (auto& widget : _videoPlaysWidgets)
+            {
+                widget->CB_serviceCameraControlAvailable(availble);
+            }
+        });
     return;
 }
 
-void QVideoManagerWidget::initCameraControlPublisher(void)
+void QVideoManagerWidget::initCameraControlSubscriber(void)
 {
     _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
                                                                               1,

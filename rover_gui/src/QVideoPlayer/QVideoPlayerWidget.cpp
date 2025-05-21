@@ -433,3 +433,24 @@ void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls)
                                                                        QHelper::QToastNotification::eNotifType::WARNING);
     }
 }
+
+void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
+{
+    if (!available_)
+    {
+        _ui.ScreenshotButton->setEnabled(false);
+        _ui.startRecordingButton->setEnabled(false);
+        if (_playerIndex == 1)
+        {
+            RCLCPP_ERROR_THROTTLE(rclcpp::get_logger("GUI"),
+                                  *_node->get_clock(),
+                                  THROTTLE_RATE_ERROR,
+                                  "Error, camera control client is unavailable ");
+        }
+    }
+    else if (!_ui.ScreenshotButton->isEnabled() || !_ui.startRecordingButton->isEnabled())
+    {
+        _ui.ScreenshotButton->setEnabled(true);
+        _ui.startRecordingButton->setEnabled(true);
+    }
+}

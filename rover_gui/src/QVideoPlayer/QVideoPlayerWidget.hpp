@@ -18,6 +18,7 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
     static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
+    static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
 
   public:
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
@@ -44,6 +45,7 @@ class QVideoPlayerWidget : public QWidget
     void updateCamURL(void);
 
     void CB_cameraListUpdate(std::vector<std::string> urls_);
+    void CB_serviceCameraControlAvailable(bool available_);
 
   signals:
     void arucoCameraFailure(bool valid_);

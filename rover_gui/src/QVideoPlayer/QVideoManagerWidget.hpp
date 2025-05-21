@@ -21,6 +21,7 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* TOPIC_RECORDING_INFO = "rover/camera/recordings_info";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
+    static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 1000U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
     static constexpr std::array<const char*, 5> CAMERA_NAME_ORDER = {
         "Main",
@@ -47,7 +48,7 @@ class QVideoManagerWidget : public QWidget
 
     void initCameraControlClient(void);
 
-    void initCameraControlPublisher(void);
+    void initCameraControlSubscriber(void);
 
     std::shared_ptr<rclcpp::Node> _node;
 
@@ -62,6 +63,7 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraList>> _sub_cameraList;
+    rclcpp::TimerBase::SharedPtr _timer_clientCameraControlHealth;
 
     std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };
