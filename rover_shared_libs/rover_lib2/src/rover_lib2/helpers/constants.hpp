@@ -54,7 +54,7 @@ namespace Constants
         constexpr float MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
         constexpr float MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
 #endif  // defined(__linux__)
-    }   // namespace KeyBinding
+    }   // namespace DriveTrain::KeyBinding
 }  // namespace Constants
 
 #endif  // CONSTANTS_HPP
