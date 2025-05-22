@@ -51,6 +51,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/GpsPosition.msg"
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
+  "msg/CameraList.msg"
   "msg/LightControl.msg"
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
