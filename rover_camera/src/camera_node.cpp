@@ -93,7 +93,7 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
-    folderPath = this->getFolderPath(eFileFormatNameTypes::SCREENSHOT);
+    folderPath = this->getFolderPath(request_.base_path ,eFileFormatNameTypes::SCREENSHOT);
     Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!this->createFolder(folderPath))
@@ -129,7 +129,7 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
-    folderPath = this->getFolderPath(eFileFormatNameTypes::VIDEO);
+    folderPath = this->getFolderPath(request_.base_path, eFileFormatNameTypes::VIDEO);
     Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!this->createFolder(folderPath))
@@ -227,21 +227,20 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
  * @param fileType_ Whether it is a screenshot or a video
  * @return const std::string of the complete directory
  */
-const std::string CameraNode::getFolderPath(eFileFormatNameTypes fileType_)
+const std::string CameraNode::getFolderPath(std::string basePath_, eFileFormatNameTypes fileType_)
 {
     std::string folderPath;
-    std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");  // finds the path to our package
-    const std::string pathForScreenshots = "/src/screenshots";
-    const std::string pathForRecordings = "/src/recordings";
+    const std::string pathForScreenshots = "/screenshots";
+    const std::string pathForRecordings = "/recordings";
 
     switch (fileType_)
     {
         case eFileFormatNameTypes::SCREENSHOT:
-            folderPath = std::string(currentPackageDirectory) + pathForScreenshots;
+            folderPath = std::string(basePath_) + pathForScreenshots;
             break;
 
         case eFileFormatNameTypes::VIDEO:
-            folderPath = std::string(currentPackageDirectory) + pathForRecordings;
+            folderPath = std::string(basePath_) + pathForRecordings;
             break;
     }
 

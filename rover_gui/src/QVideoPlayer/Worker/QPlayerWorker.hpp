@@ -42,15 +42,15 @@ class QPlayerWorker : public QWorker
 
     void takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                std::string cameraUrl_,
-                               uint16_t tag_);
+                               uint16_t tag_, std::string basePath_);
 
     void startRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                std::string cameraUrl_,
-                               uint16_t tag_);
+                               uint16_t tag_, std::string basePath_);
 
     void stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                               std::string cameraUrl_,
-                              uint16_t tag_);
+                              uint16_t tag_, std::string basePath_);
   signals:
     void detectionHandledSuccessfully(bool success_, uint16_t tag_);
     void urlFoundInDetection(std::vector<std::string> urls_found);
@@ -63,15 +63,15 @@ class QPlayerWorker : public QWorker
   private:
     void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                 std::string cameraUrl_,
-                                uint16_t tag_);
+                                uint16_t tag_, std::string basePath_);
 
     void startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                 std::string camera_URL_,
-                                uint16_t tag_);
+                                uint16_t tag_, std::string basePath_);
 
     void stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                std::string cameraUrl_,
-                               uint16_t tag_);
+                               uint16_t tag_, std::string basePath_);
 
     LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
     LoopTimer<uint64_t, Time::millis> _timer_serviceCallCamera;

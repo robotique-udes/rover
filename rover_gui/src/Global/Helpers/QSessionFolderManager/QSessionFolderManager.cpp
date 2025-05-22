@@ -57,6 +57,18 @@ bool QSessionFolderManager::createDirectory(const std::string& path_) const
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create directory: " << path_);
         success = false;
+        return success;
+    }
+
+    for (const char* subdirectory : SUBDIRECTORIES)
+    {
+        std::string sub = subdirectory;
+        if (!QDir().mkpath(QString::fromStdString(path_ + sub)))
+        {
+            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create subdirectory: " << sub);
+            success = false;
+            return success;
+        }
     }
 
     return success;

@@ -19,7 +19,6 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::shared_ptr<QPlayerWorker> workerThreadRecording_):
     _node(guiNode_),
     _camURL(url_),
-    _tag(playerIndex_),
     _streamIndex(_instanceCounter - 1),
     _playerIndex(playerIndex_),
     _playerWorkerThreadAruco(workerThreadAruco_),
@@ -96,6 +95,11 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
     _gstreamerThread.start();
+
+    if (!QSessionFolderManager::getInstance().getSessionFolderPath(_sessionFolderPath))
+    {
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found", "SessionFolderManager couldn't return a valid path", QHelper::QToastNotification::eNotifType::ERROR);
+    }
 
     UI_LOG_INFO(GENERAL, QString::fromStdString("VideoPlayer Widget initialized for camera: " + _camURL), _ui.logDisplay);
 }
@@ -914,7 +918,7 @@ void QVideoPlayerWidget::handleScreenshot(void)
 {
     if (_playerWorkerThreadRecording.get() != nullptr)
     {
-        _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager, _camURL, _playerIndex);
+        _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager, _camURL, _playerIndex, _sessionFolderPath);
     }
     else
     {
@@ -929,11 +933,11 @@ void QVideoPlayerWidget::handleRecording(void)
     {
         if (_ui.startRecordingButton->isChecked())
         {
-            _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager, _camURL, _playerIndex);
+            _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager, _camURL, _playerIndex, _sessionFolderPath);
         }
         else
         {
-            _playerWorkerThreadRecording->stopRecordingManager(_client_cameraControlManager, _camURL, _playerIndex);
+            _playerWorkerThreadRecording->stopRecordingManager(_client_cameraControlManager, _camURL, _playerIndex, _sessionFolderPath);
         }
     }
     else
@@ -963,7 +967,7 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
             _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("Screenshot taken",
                                                                            status_,
-                                                                           QHelper::QToastNotification::eNotifType::INFO);
+                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
         }
 
         QTimer::singleShot(STYLE_RESET_TIME,
@@ -1009,7 +1013,7 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("Video started",
                                                                            status_,
-                                                                           QHelper::QToastNotification::eNotifType::INFO);
+                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
         }
     }
     return;
@@ -1046,7 +1050,7 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
             _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
                                                                            status_,
-                                                                           QHelper::QToastNotification::eNotifType::INFO);
+                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
         }
     }
     return;
