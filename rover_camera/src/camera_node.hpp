@@ -3,15 +3,29 @@
 
 #include "video_recording.hpp"
 
+#include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps_position.hpp>
 #include <rover_msgs/srv/camera_control.hpp>
+#include <rover_msgs/msg/camera_list.hpp>
+
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 #include <sys/stat.h>
 #include <cstdlib>
 
+struct sScreenshotResult
+{
+    bool success;
+    std::string msg;
+};
+
 class CameraNode : public rclcpp::Node
 {
+    static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
     static constexpr const char* SERVICE_MEDIA_SERVER_NAME = "/rover/cameras/media_server_control";
+    static constexpr const char* TOPIC_MEDIA_SERVER_NAME = "/rover/camera/recordings_info";
+    static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
 
     enum class eFileFormatNameTypes : size_t
     {
@@ -32,6 +46,7 @@ class CameraNode : public rclcpp::Node
                              rover_msgs::srv::CameraControl::Response& response_);
     void stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                             rover_msgs::srv::CameraControl::Response& response_);
+    void CB_url_publisher(void);
 
     std::string getCurrentTime(void);
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
@@ -39,7 +54,7 @@ class CameraNode : public rclcpp::Node
     void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
     bool folderExists(const std::string& path_);
     bool createFolder(const std::string& path_);
-    bool getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
+    sScreenshotResult getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
 
     bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
     bool stopRecording(std::string cameraURL_);
@@ -48,7 +63,9 @@ class CameraNode : public rclcpp::Node
     void requestShutdown(std::string camURL_);
 
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
+    rclcpp::Publisher<rover_msgs::msg::CameraList>::SharedPtr _pub_urls;
     rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
+    rclcpp::TimerBase::SharedPtr _timer_pub;
 
     float _lastLatitude = 0.0;
     float _lastLongitude = 0.0;
