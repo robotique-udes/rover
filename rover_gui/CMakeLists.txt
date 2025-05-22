@@ -99,8 +99,6 @@ add_executable(main_gui src/gui.cpp
                    src/QNavigation/QNavigation.cpp
                    src/Global/Constant/resources.qrc
                         
-                   src/QDashboard/QExample.hpp
-                   src/QDashboard/QExample.hpp
                    src/QDashboard/QArbitration.cpp
                    src/QDashboard/QArbitration.cpp
 
