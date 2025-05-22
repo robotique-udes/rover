@@ -10,6 +10,12 @@
     <height>95</height>
    </rect>
   </property>
+  <property name="maximumSize">
+   <size>
+    <width>16777215</width>
+    <height>200</height>
+   </size>
+  </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
@@ -36,6 +42,9 @@
    </item>
    <item row="2" column="1">
     <widget class="QCheckBox" name="mainForceCheckBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>Force</string>
      </property>
@@ -43,6 +52,9 @@
    </item>
    <item row="2" column="2">
     <widget class="QCheckBox" name="secForceCheckBox">
+     <property name="enabled">
+      <bool>false</bool>
+     </property>
      <property name="text">
       <string>Force</string>
      </property>

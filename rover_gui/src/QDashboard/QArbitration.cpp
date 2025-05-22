@@ -1,6 +1,5 @@
 #include "QArbitration.hpp"
-#include "rover_lib2/helpers/log.hpp"
-#include <rover_msgs/msg/detail/joy_demux_status__struct.hpp>
+#include "Global/Helpers/QToastNotification/QToastNotification.hpp"
 
 QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -13,6 +12,8 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
     this->_clientJoy = _node->create_client<rover_msgs::srv::JoyDemuxSetState>("/base/joy/demux_control");
 
     connect(_ui.mainComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &QArbitration::onMainComboChanged);
+    connect(_ui.secComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &QArbitration::onSecComboChanged);
+
 }
 
 void QArbitration::initComboBoxItems()
@@ -30,6 +31,8 @@ void QArbitration::initComboBoxItems()
 
 void QArbitration::onMainComboChanged(int index)
 {
+    this->isServiceAvailable();
+    
     auto request = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Request>();
     request->controller_type = main;
     request->destination = index;
@@ -40,10 +43,23 @@ void QArbitration::onMainComboChanged(int index)
 
 void QArbitration::onSecComboChanged(int index)
 {
+    this->isServiceAvailable();
+
     auto request = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Request>();
     request->controller_type = secondary;
     request->destination = index;
-    request->force = true;
+    request->force = false;
 
     auto result = _clientJoy->async_send_request(request);
+}
+
+void QArbitration::isServiceAvailable()
+{
+    if (!_clientJoy->service_is_ready()) {
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                "Service unavailable",
+                "Couldn't send a request to /base/joy/demux_control, the service is unavailable.",
+                QHelper::QToastNotification::eNotifType::WARNING,
+                2'000);
+    }
 }

@@ -13,6 +13,7 @@
 #include <QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
+#include <string>
 
 DEFINE_LOG_NODE(QArbitration, Logger::eNodeState::OFF);
 
@@ -20,7 +21,6 @@ class QArbitration : public QWidget
 {
     Q_OBJECT
 
-    
     enum eControllerType
     {
         main = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
@@ -34,7 +34,6 @@ class QArbitration : public QWidget
         antenna = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
         none = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
-    
 
   public:
     QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
@@ -47,6 +46,7 @@ class QArbitration : public QWidget
 
   private:
     void initComboBoxItems();
+    void isServiceAvailable();
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::Arbitration _ui;
