@@ -1,11 +1,8 @@
 #include "rover_lib2/helpers/macros.hpp"
-
-#include <string>
+#include <array>
 #include <cstdlib>
-#include <sstream>
-#include <iomanip>
-#include <chrono>
-#include <ctime>
+#include <string>
+#include <optional>
 
 class QSessionFolderManager
 {
@@ -14,7 +11,7 @@ class QSessionFolderManager
 
   public:
     static QSessionFolderManager& getInstance(void);
-    bool getSessionFolderPath(OUT std::string& path_) const;
+    std::optional<std::string> getSessionFolderPath(void) const;
 
   private:
     QSessionFolderManager();

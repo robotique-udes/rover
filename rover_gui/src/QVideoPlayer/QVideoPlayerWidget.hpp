@@ -15,7 +15,6 @@
 #include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
-#include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 #include <rover_lib2/helpers/constants.hpp>
 
 class QVideoPlayerWidget : public QWidget

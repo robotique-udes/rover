@@ -1,5 +1,9 @@
 #include "QSessionFolderManager.hpp"
 #include <QDir>
+#include <sstream>
+#include <iomanip>
+#include <chrono>
+#include <ctime>
 #include "rclcpp/rclcpp.hpp"
 
 QSessionFolderManager::QSessionFolderManager()
@@ -13,7 +17,7 @@ QSessionFolderManager::QSessionFolderManager()
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, home path was not defined");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, $HOME env variable wasn't found");
         return;
     }
 
@@ -41,24 +45,21 @@ std::string QSessionFolderManager::getCurrentTime(void)
     return current_time_output.str();
 }
 
-bool QSessionFolderManager::getSessionFolderPath(OUT std::string& path_) const
+std::optional<std::string> QSessionFolderManager::getSessionFolderPath(void) const
 {
     if (_valid)
     {
-        path_ = _sessionFolderPath;
+        return _sessionFolderPath;
     }
-
-    return _valid;
+    return std::nullopt;
 }
 
 bool QSessionFolderManager::createDirectory(const std::string& path_) const
 {
-    bool success = true;
     if (!QDir().mkpath(QString::fromStdString(path_)))
     {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create directory: " << path_);
-        success = false;
-        return success;
+        return false;
     }
 
     for (const char* subdirectory : SUBDIRECTORIES)
@@ -67,10 +68,9 @@ bool QSessionFolderManager::createDirectory(const std::string& path_) const
         if (!QDir().mkpath(QString::fromStdString(path_ + sub)))
         {
             RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create subdirectory: " << sub);
-            success = false;
-            return success;
+            return false;
         }
     }
 
-    return success;
+    return true;
 }

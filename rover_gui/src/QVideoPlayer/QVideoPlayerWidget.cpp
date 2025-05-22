@@ -5,7 +5,9 @@
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QRegularExpression>
+#include <optional>
 #include <gst/video/videooverlay.h>
+#include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 
 using namespace LogUtils;
 
@@ -95,8 +97,18 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
     _gstreamerThread.start();
-
-    if (!QSessionFolderManager::getInstance().getSessionFolderPath(_sessionFolderPath))
+    std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
+    if (optionalSessionFolderPath.has_value())
+    {
+        _sessionFolderPath = *optionalSessionFolderPath;
+        if (_sessionFolderPath.empty())
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                           "SessionFolderManager returned an empty path",
+                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+        }
+    }
+    else
     {
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
                                                                        "SessionFolderManager couldn't return a valid path",

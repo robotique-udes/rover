@@ -227,7 +227,7 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
  * @param fileType_ Whether it is a screenshot or a video
  * @return const std::string of the complete directory
  */
-const std::string CameraNode::getFolderPath(std::string basePath_, eFileFormatNameTypes fileType_)
+const std::string CameraNode::getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_)
 {
     std::string folderPath;
     const std::string pathForScreenshots = "/screenshots";
