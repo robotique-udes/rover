@@ -38,7 +38,9 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->setLayout(&_videoPlayerLayout);
 
     _playerWorkerThreadAruco->start();
+    _playerWorkerThreadAruco->setThreadName("WorkerAruco");
     _playerWorkerThreadRecording->start();
+    _playerWorkerThreadRecording->setThreadName("WorkerRecord");
 }
 
 void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
