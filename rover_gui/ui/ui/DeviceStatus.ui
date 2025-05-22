@@ -30,7 +30,7 @@
        <widget class="QWidget" name="switchETH0" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_4">
          <item>
-          <widget class="QLabel" name="deviceName_4">
+          <widget class="QLabel" name="switchETH0Info">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch ETH0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -40,7 +40,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_4">
+          <widget class="QLabel" name="switchETHInfoReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -56,7 +56,7 @@
        <widget class="QWidget" name="rearrightMotor" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_6">
          <item>
-          <widget class="QLabel" name="deviceName_12">
+          <widget class="QLabel" name="rearrightMotorInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rear right motor&lt;/p&gt;&lt;p&gt;ID: 0x106&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -66,7 +66,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_6">
+          <widget class="QLabel" name="rearrightMotorReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -82,7 +82,7 @@
        <widget class="QWidget" name="lightsMain" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_10">
          <item>
-          <widget class="QLabel" name="deviceName_10">
+          <widget class="QLabel" name="lightsMainInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lights main&lt;/p&gt;&lt;p&gt;ID: 0x304&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -92,7 +92,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_10">
+          <widget class="QLabel" name="lightsMainReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -108,7 +108,7 @@
        <widget class="QWidget" name="frontleftMotor" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_5">
          <item>
-          <widget class="QLabel" name="deviceName">
+          <widget class="QLabel" name="frontleftMotorInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Front left motor&lt;/p&gt;&lt;p&gt;ID: 0x101&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -118,7 +118,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_5">
+          <widget class="QLabel" name="frontleftMotorReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -137,7 +137,7 @@
        <widget class="QWidget" name="frontrightMotor" native="true">
         <layout class="QVBoxLayout" name="verticalLayout">
          <item>
-          <widget class="QLabel" name="deviceName_5">
+          <widget class="QLabel" name="frontrightMotorInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Front right motor&lt;/p&gt;&lt;p&gt;ID: 0x102&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -147,7 +147,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot">
+          <widget class="QLabel" name="frontrightMotorReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -163,7 +163,7 @@
        <widget class="QWidget" name="ddbController" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_8">
          <item>
-          <widget class="QLabel" name="deviceName_8">
+          <widget class="QLabel" name="ddbControllerInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DDB controller&lt;/p&gt;&lt;p&gt;ID: 0x023&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -173,7 +173,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_8">
+          <widget class="QLabel" name="ddbControllerReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -189,7 +189,7 @@
        <widget class="QWidget" name="rearleftMotor" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_12">
          <item>
-          <widget class="QLabel" name="deviceName_6">
+          <widget class="QLabel" name="rearleftMotorInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rear left motor&lt;/p&gt;&lt;p&gt;ID: 0x105&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -199,7 +199,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_12">
+          <widget class="QLabel" name="rearleftMotorReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -215,7 +215,7 @@
        <widget class="QWidget" name="cameraAntenne" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_7">
          <item>
-          <widget class="QLabel" name="deviceName_7">
+          <widget class="QLabel" name="cameraAntenneInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Camera antenne&lt;/p&gt;&lt;p&gt;ID: 0x402&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -225,7 +225,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_7">
+          <widget class="QLabel" name="cameraAntenneReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -241,7 +241,7 @@
        <widget class="QWidget" name="switchETH1" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_11">
          <item>
-          <widget class="QLabel" name="deviceName_11">
+          <widget class="QLabel" name="switchETH1Info">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch ETH1&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -251,7 +251,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_11">
+          <widget class="QLabel" name="switchETH1Reboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -267,7 +267,7 @@
        <widget class="QWidget" name="cameraMain" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_3">
          <item>
-          <widget class="QLabel" name="deviceName_3">
+          <widget class="QLabel" name="cameraMainInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Camera main&lt;/p&gt;&lt;p&gt;ID: 0x401&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -277,7 +277,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_3">
+          <widget class="QLabel" name="cameraMainReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>
@@ -293,7 +293,7 @@
        <widget class="QWidget" name="gnss" native="true">
         <layout class="QVBoxLayout" name="verticalLayout_2">
          <item>
-          <widget class="QLabel" name="deviceName_2">
+          <widget class="QLabel" name="gnssInfo">
            <property name="text">
             <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Gnss&lt;/p&gt;&lt;p&gt;ID: 0x302&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
            </property>
@@ -303,7 +303,7 @@
           </widget>
          </item>
          <item>
-          <widget class="QLabel" name="numberReboot_2">
+          <widget class="QLabel" name="gnssReboot">
            <property name="text">
             <string>Number of reboot: 0</string>
            </property>

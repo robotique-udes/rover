@@ -38,9 +38,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 {
     _ui.setupUi(this);
 
-    _deviceWidgets[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
-    
-
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
         QOS_DEFAULT,
