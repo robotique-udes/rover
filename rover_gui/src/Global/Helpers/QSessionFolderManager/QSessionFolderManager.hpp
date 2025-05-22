@@ -1,4 +1,10 @@
 #include <string>
+#include <cstdlib>
+#include <sstream>
+#include <iomanip>
+#include <chrono>
+#include <ctime>
+#include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 
 class QSessionFolderManager
 {
@@ -11,6 +17,8 @@ class QSessionFolderManager
 
     QSessionFolderManager(const QSessionFolderManager&) = delete;
     QSessionFolderManager& operator=(const QSessionFolderManager&) = delete;
+
+    std::string getCurrentTime(void);
 
     std::string _sessionFolderPath;
 };
