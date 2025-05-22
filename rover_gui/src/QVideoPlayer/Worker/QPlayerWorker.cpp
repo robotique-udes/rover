@@ -167,7 +167,8 @@ void QPlayerWorker::updateDetectionInternal(
 
 void QPlayerWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                           std::string cameraUrl_,
-                                          uint16_t playerIndex_, std::string basePath_)
+                                          uint16_t playerIndex_,
+                                          std::string basePath_)
 {
     this->addTask(
         [this, client_CameraControl_, cameraUrl_, playerIndex_, basePath_](void)
@@ -178,7 +179,8 @@ void QPlayerWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_m
 
 void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                            std::string cameraUrl_,
-                                           uint16_t playerIndex_, std::string basePath_)
+                                           uint16_t playerIndex_,
+                                           std::string basePath_)
 {
     emit this->setCursorWaiting(true);
     bool success = false;
@@ -235,7 +237,8 @@ void QPlayerWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_
 
 void QPlayerWorker::startRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                           std::string cameraUrl_,
-                                          uint16_t playerIndex_, std::string basePath_)
+                                          uint16_t playerIndex_,
+                                          std::string basePath_)
 {
     this->addTask(
         [this, client_CameraControl_, cameraUrl_, playerIndex_, basePath_](void)
@@ -246,7 +249,8 @@ void QPlayerWorker::startRecordingManager(std::shared_ptr<rclcpp::Client<rover_m
 
 void QPlayerWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                          std::string cameraUrl_,
-                                         uint16_t playerIndex_, std::string basePath_)
+                                         uint16_t playerIndex_,
+                                         std::string basePath_)
 {
     this->addTask(
         [this, client_CameraControl_, cameraUrl_, playerIndex_, basePath_](void)
@@ -257,7 +261,8 @@ void QPlayerWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_ms
 
 void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                            std::string cameraUrl_,
-                                           uint16_t playerIndex_, std::string basePath_)
+                                           uint16_t playerIndex_,
+                                           std::string basePath_)
 {
     emit this->setCursorWaiting(true);
     bool success = false;
@@ -316,7 +321,8 @@ void QPlayerWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_
 
 void QPlayerWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                           std::string cameraUrl_,
-                                          uint16_t playerIndex_, std::string basePath_)
+                                          uint16_t playerIndex_,
+                                          std::string basePath_)
 {
     emit this->setCursorWaiting(true);
     bool success = false;

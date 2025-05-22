@@ -98,7 +98,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     if (!QSessionFolderManager::getInstance().getSessionFolderPath(_sessionFolderPath))
     {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found", "SessionFolderManager couldn't return a valid path", QHelper::QToastNotification::eNotifType::ERROR);
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                       "SessionFolderManager couldn't return a valid path",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
     }
 
     UI_LOG_INFO(GENERAL, QString::fromStdString("VideoPlayer Widget initialized for camera: " + _camURL), _ui.logDisplay);
@@ -918,7 +920,10 @@ void QVideoPlayerWidget::handleScreenshot(void)
 {
     if (_playerWorkerThreadRecording.get() != nullptr)
     {
-        _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager, _camURL, _playerIndex, _sessionFolderPath);
+        _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager,
+                                                            _camURL,
+                                                            _playerIndex,
+                                                            _sessionFolderPath);
     }
     else
     {
@@ -933,11 +938,17 @@ void QVideoPlayerWidget::handleRecording(void)
     {
         if (_ui.startRecordingButton->isChecked())
         {
-            _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager, _camURL, _playerIndex, _sessionFolderPath);
+            _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager,
+                                                                _camURL,
+                                                                _playerIndex,
+                                                                _sessionFolderPath);
         }
         else
         {
-            _playerWorkerThreadRecording->stopRecordingManager(_client_cameraControlManager, _camURL, _playerIndex, _sessionFolderPath);
+            _playerWorkerThreadRecording->stopRecordingManager(_client_cameraControlManager,
+                                                               _camURL,
+                                                               _playerIndex,
+                                                               _sessionFolderPath);
         }
     }
     else

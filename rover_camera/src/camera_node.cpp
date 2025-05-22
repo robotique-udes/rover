@@ -93,7 +93,7 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
-    folderPath = this->getFolderPath(request_.base_path ,eFileFormatNameTypes::SCREENSHOT);
+    folderPath = this->getFolderPath(request_.base_path, eFileFormatNameTypes::SCREENSHOT);
     Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!this->createFolder(folderPath))

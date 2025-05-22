@@ -9,16 +9,14 @@
 
 class QSessionFolderManager
 {
-    private:
-    static constexpr std::array<const char*, 1> SUBDIRECTORIES = {
-        "/camera"
-    };
+  private:
+    static constexpr std::array<const char*, 1> SUBDIRECTORIES = {"/camera"};
 
-    public:
+  public:
     static QSessionFolderManager& getInstance(void);
     bool getSessionFolderPath(OUT std::string& path_) const;
-    
-    private:
+
+  private:
     QSessionFolderManager();
     ~QSessionFolderManager() = default;
 
