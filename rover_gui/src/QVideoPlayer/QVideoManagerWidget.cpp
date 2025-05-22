@@ -1,6 +1,9 @@
 #include "QVideoManagerWidget.hpp"
+#include "QLogManager.hpp"
 #include "rover_lib2/helpers/assert.hpp"
 #include <QString>
+
+using namespace LogUtils;
 
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -17,11 +20,20 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QVideoManagerWidget::onArucoDetectionIsLive);
     connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
 
+    for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
+    {
+        connect(_videoPlaysWidgets[i].get(),
+                &QVideoPlayerWidget::notifyCameraAnglePublisher,
+                this,
+                &QVideoManagerWidget::CB_pubCameraAngle);
+    }
+
     this->initArucoClient();
     this->initArucoPublisher();
 
     this->initCameraControlClient();
     this->initCameraControlSubscriber();
+    this->initCameraAnglePublisher();
 
     this->setLayout(&_videoPlayerLayout);
 
@@ -29,7 +41,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThreadRecording->start();
 }
 
-void QVideoManagerWidget::CB_updateArucoDetectionManager()
+void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
 {
     if (_playerWorkerThreadAruco.get())
     {
@@ -37,7 +49,7 @@ void QVideoManagerWidget::CB_updateArucoDetectionManager()
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        UI_LOG_ERROR(ARUCO_DETECTION, "Error, couldn't access Video Player worker", nullptr);
     }
 }
 
@@ -85,9 +97,9 @@ void QVideoManagerWidget::initWidget(void)
         }
         else if (i < CAMERA_NAME_ORDER.size())
         {
-            RCLCPP_WARN(rclcpp::get_logger("GUI"),
-                        "Couldn't find url for camera named %s in camera infos.",
-                        CAMERA_NAME_ORDER[i]);
+            UI_LOG_WARNING(GENERAL,
+                           QString("Couldn't find url for camera named %1 in camera infos.").arg(CAMERA_NAME_ORDER[i]),
+                           nullptr);
         }
 
         _videoPlaysWidgets[i]
@@ -116,12 +128,12 @@ void QVideoManagerWidget::initArucoPublisher(void)
                                                                                  5,
                                                                                  [this](const rover_msgs::msg::Aruco msg)
                                                                                  {
-                                                                                     CB_displayArucoDetected(msg);
+                                                                                     this->CB_displayArucoDetected(msg);
                                                                                  });
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", nullptr);
     }
 }
 
@@ -133,7 +145,7 @@ void QVideoManagerWidget::initArucoClient(void)
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", nullptr);
     }
 
     for (auto& widget : _videoPlaysWidgets)
@@ -181,6 +193,11 @@ void QVideoManagerWidget::initCameraControlClient(void)
     return;
 }
 
+void QVideoManagerWidget::initCameraAnglePublisher(void)
+{
+    _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_ANGLE_CONTROL_TOPIC, QOS_DEFAULT);
+}
+
 void QVideoManagerWidget::initCameraControlSubscriber(void)
 {
     _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
@@ -204,4 +221,34 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     {
         this->setCursor(Qt::ArrowCursor);
     }
+}
+
+void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float pitch_)
+{
+    if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
+        || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Can't publish camera angles. Coulnd't find 'Main' or 'Antenna' in camera map!");
+        return;
+    }
+
+    rover_msgs::msg::CameraControl msg;
+
+    if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))
+    {
+        msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_MAIN;
+    }
+    else if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    {
+        msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
+    }
+    else
+    {
+        return;
+    }
+
+    msg.pitch = pitch_;
+    msg.yaw = 0.0f;
+
+    _pub_cameraAngle->publish(msg);
 }
