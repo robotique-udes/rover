@@ -236,11 +236,11 @@ const std::string CameraNode::getFolderPath(std::string basePath_, eFileFormatNa
     switch (fileType_)
     {
         case eFileFormatNameTypes::SCREENSHOT:
-            folderPath = std::string(basePath_) + pathForScreenshots;
+            folderPath = basePath_ + pathForScreenshots;
             break;
 
         case eFileFormatNameTypes::VIDEO:
-            folderPath = std::string(basePath_) + pathForRecordings;
+            folderPath = basePath_ + pathForRecordings;
             break;
     }
 
