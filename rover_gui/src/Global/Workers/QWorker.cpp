@@ -2,6 +2,18 @@
 
 #include <rclcpp/rclcpp.hpp>
 
+#if defined(__linux__)
+void QWorker::setThreadName(std::string name_)
+{
+    while (name_.length() > 15)
+    {
+        name_.pop_back();
+    }
+
+    pthread_setname_np(_thread.native_handle(), name_.c_str());
+}
+#endif  // defined(__linux__)
+
 QWorker::QWorker(bool start_, QObject* parent_):
     QObject(parent_)
 {
