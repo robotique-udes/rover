@@ -27,6 +27,9 @@ void QArbitration::initComboBoxItems()
     this->_ui.secComboBox->addItem("Arm", 1);
     this->_ui.secComboBox->addItem("Antenna", 2);
     this->_ui.secComboBox->addItem("None", 3);
+
+    this->_ui.mainComboBox->setCurrentIndex(3);
+    this->_ui.secComboBox->setCurrentIndex(3); 
 }
 
 void QArbitration::onMainComboChanged(int index)
