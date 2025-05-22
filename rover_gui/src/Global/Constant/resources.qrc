@@ -1,0 +1,12 @@
+<!DOCTYPE RCC>
+<RCC>
+    <qresource prefix="/">
+        <file>icons/camera.png</file>
+        <file>icons/record_on.png</file>
+        <file>icons/record_off.png</file>
+        <file>icons/log_view.png</file>
+        <file>icons/refresh.png</file>
+        <file>other/map.html</file>
+        <file>icons/arrow.png</file>
+    </qresource>
+</RCC>

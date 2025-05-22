@@ -63,10 +63,6 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
                      QStringList() << "-c"
                                    << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
 
-    QHelper::QToastNotification::getInstance().notifyFromAnyThread("GUI Ready",
-                                                                   "GUI setup was successful!",
-                                                                   QHelper::QToastNotification::eNotifType::SUCCESS,
-                                                                   3000);
     int ret = app.exec();
 
     rosProcess.terminate();

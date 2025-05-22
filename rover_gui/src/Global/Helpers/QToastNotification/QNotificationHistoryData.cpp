@@ -1,8 +1,6 @@
 #include "QNotificationHistoryData.hpp"
 
 #include <QScreen>
-#include <qnamespace.h>
-#include <qsizepolicy.h>
 
 namespace QHelper
 {
@@ -46,7 +44,6 @@ namespace QHelper
         }
 
         _ui.historyIcon->setIcon(icon);
-        _ui.historyIcon->setIconSize(QSize(32, 32));
     }
 
     void QNotificationHistoryData::setStyle()
@@ -57,7 +54,6 @@ namespace QHelper
                 border-radius: 15px;
                 border: none;
                 padding: 5px 10px;
-                font-size: 14px;
                 font-weight: bold;
             }
             QLineEdit:focus {
@@ -90,9 +86,7 @@ namespace QHelper
                 background-color: transparent;
                 border-radius: 15px;
                 border: none;
-                font-size: 16px;
                 padding: 5px 10px;
-                font-weight: bold;
             }
             QTextEdit:focus {
                 border: none;
@@ -105,7 +99,6 @@ namespace QHelper
                 border-radius: 15px;
                 border: none;
                 padding: 5px 10px;
-                font-size: 20px;
                 font-weight: bold;
             }
             QLineEdit:focus {

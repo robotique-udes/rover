@@ -3,6 +3,7 @@
 
 #include "can_master/devices/camera.hpp"
 #include "can_master/devices/propulsion_motors.hpp"
+#include "rover_can2/drivers/driver_linux.hpp"
 
 #include <rover_msgs/msg/can_device_status.hpp>
 #include <rover_msgs/srv/empty.hpp>
@@ -69,8 +70,8 @@ class CanMasterNode : public rclcpp::Node
         = Camera(RoverCan2::Constant::eDeviceId::CAMERA_ARM_SIDE, rover_msgs::msg::CameraControl::ID_CAM_ARM_SIDE);
 
     // Can
-    RoverCan2::Drivers::DriverMock __canDriver;
-    RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverMock,
+    RoverCan2::Drivers::DriverLinux __canDriver;
+    RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverLinux,
                              PropulsionMotor&,
                              PropulsionMotor&,
                              PropulsionMotor&,
