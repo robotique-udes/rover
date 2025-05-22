@@ -1,20 +1,25 @@
 #include "QSessionFolderManager.hpp"
+#include <QDir>
+#include "rclcpp/rclcpp.hpp"
 
 QSessionFolderManager::QSessionFolderManager()
 {
     const char* home = std::getenv("HOME");
+    std::string homeStr;
     if (home)
     {
-        std::string homeStr = home;
+        homeStr = home;
     }
     else
     {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't find home filepath",
-            "Home environment is undefined",
-            QHelper::QToastNotification::eNotifType::ERROR);
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, home path was not defined");
+        return;
     }
 
     std::string currentTime = this->getCurrentTime();
+    _sessionFolderPath = homeStr + "/Rover_session/" + currentTime;
+
+    _valid = this->createDirectory(_sessionFolderPath);
 }
 
 QSessionFolderManager& QSessionFolderManager::getInstance(void)
@@ -33,4 +38,26 @@ std::string QSessionFolderManager::getCurrentTime(void)
     current_time_output << std::put_time(&tm_now, "%FT%T");            // ISO 8601 format
 
     return current_time_output.str();
+}
+
+bool QSessionFolderManager::getSessionFolderPath(OUT std::string& path_) const
+{
+    if (_valid)
+    {
+        path_ = _sessionFolderPath;
+    }
+
+    return _valid;
+}
+
+bool QSessionFolderManager::createDirectory(const std::string& path_) const
+{
+    bool success = true;
+    if (!QDir().mkpath(QString::fromStdString(path_)))
+    {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create directory: " << path_);
+        success = false;
+    }
+
+    return success;
 }
