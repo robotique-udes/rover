@@ -38,6 +38,30 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 {
     _ui.setupUi(this);
 
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotorInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotorInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnssInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbControllerInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMainInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenneInfo;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMainInfo;
+    // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Info;
+    // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Info;
+
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotorReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotorReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnssReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbControllerReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMainReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenneReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMainReboot;
+    // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Reboot;
+    // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Reboot;
+
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
         QOS_DEFAULT,
@@ -145,12 +169,11 @@ void QDeviceStatus::rebootDevice(uint16_t deviceID_)
  */
 void QDeviceStatus::setStatusReport(uint16_t deviceID_)
 {
-    auto label = _deviceLabels[deviceID_];
+    auto label = _deviceReboot[deviceID_];
 
     std::string deviceName = RoverCan2::Constant::getCanDeviceName(static_cast<RoverCan2::Constant::eDeviceId>(deviceID_));
 
-    QString labelText = QString::fromStdString(deviceName) + "\n" + "0x" + QString::number(deviceID_, 16).toUpper() + "\n"
-                        + "Number of reboots: " + QString::number(_numberOfDeviceReboots[deviceID_]);
+    QString labelText = "Number of reboots: " + QString::number(_numberOfDeviceReboots[deviceID_]);
 
     label->setText(labelText);
 }
@@ -163,21 +186,26 @@ void QDeviceStatus::setStatusReport(uint16_t deviceID_)
  */
 void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
 {
-    auto label = _deviceLabels[deviceID_];
-
+    auto labelInfo = _deviceInfo[deviceID_];
+    auto labelReboot = _deviceReboot[deviceID_];
+    
     switch (deviceStatus_.error_state)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            label->setStyleSheet(STATUS_SUCCESS);
+            labelInfo->setStyleSheet(STATUS_SUCCESS);
+            labelReboot->setStyleSheet(STATUS_SUCCESS);
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            label->setStyleSheet(STATUS_WARNING);
+            labelInfo->setStyleSheet(STATUS_WARNING);
+            labelReboot->setStyleSheet(STATUS_WARNING);
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            label->setStyleSheet(STATUS_ERROR);
+            labelInfo->setStyleSheet(STATUS_ERROR);
+            labelReboot->setStyleSheet(STATUS_ERROR);
             break;
         default:
-            label->setStyleSheet(STATUS_DEFAULT);
+            labelInfo->setStyleSheet(STATUS_DEFAULT);
+            labelReboot->setStyleSheet(STATUS_DEFAULT);
             break;
     }
 }
@@ -188,8 +216,9 @@ void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg:
  */
 void QDeviceStatus::setDefaultStyle()
 {
-    for (auto it = _deviceLabels.begin(); it != _deviceLabels.end(); ++it)
+    for (auto it = _deviceInfo.begin(); it != _deviceInfo.end(); ++it)
     {
+        _deviceReboot[it.key()]->setStyleSheet(STATUS_DEFAULT);
         it.value()->setStyleSheet(STATUS_DEFAULT);
     }
 }
