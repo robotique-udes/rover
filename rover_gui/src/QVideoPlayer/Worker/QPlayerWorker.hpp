@@ -30,11 +30,11 @@ class QPlayerWorker : public QWorker
 
     void manageDetection(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,
                          std::string _camURL,
-                         uint16_t tag_,
+                         uint16_t playerIndex_,
                          bool start_);
     void manageDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,
                                  std::string _camURL,
-                                 uint16_t tag_,
+                                 uint16_t playerIndex_,
                                  bool start_);
 
     void updateDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
@@ -42,41 +42,41 @@ class QPlayerWorker : public QWorker
 
     void takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                std::string cameraUrl_,
-                               uint16_t tag_,
+                               uint16_t playerIndex_,
                                std::string basePath_);
 
     void startRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                std::string cameraUrl_,
-                               uint16_t tag_,
+                               uint16_t playerIndex_,
                                std::string basePath_);
 
     void stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                               std::string cameraUrl_,
-                              uint16_t tag_,
+                              uint16_t playerIndex_,
                               std::string basePath_);
   signals:
-    void detectionHandledSuccessfully(bool success_, uint16_t tag_);
+    void detectionHandledSuccessfully(bool success_, uint16_t playerIndex_);
     void urlFoundInDetection(std::vector<std::string> urls_found);
     void arucoServerInfoFailed(bool success);
-    void screenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void startRecordingHandledSuccessfully(bool success, std::string status, uint16_t tag_);
-    void stopRecordingHandledSuccessfully(bool success, std::string status, uint16_t tag_);
+    void screenshotHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_);
+    void startRecordingHandledSuccessfully(bool success, std::string status, uint16_t playerIndex_);
+    void stopRecordingHandledSuccessfully(bool success, std::string status, uint16_t playerIndex_);
     void setCursorWaiting(bool waiting_);
 
   private:
     void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                 std::string cameraUrl_,
-                                uint16_t tag_,
+                                uint16_t playerIndex_,
                                 std::string basePath_);
 
     void startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                 std::string camera_URL_,
-                                uint16_t tag_,
+                                uint16_t playerIndex_,
                                 std::string basePath_);
 
     void stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
                                std::string cameraUrl_,
-                               uint16_t tag_,
+                               uint16_t playerIndex_,
                                std::string basePath_);
 
     LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
