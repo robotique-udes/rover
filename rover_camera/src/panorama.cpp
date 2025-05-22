@@ -25,8 +25,8 @@ class PhotoPanoramique : public rclcpp::Node
     
    private:
    //fonction pour enlever le warping
-    cv::Mat warp_correction(cv::Mat pano) {
-
+    cv::Mat warp_correction(cv::Mat pano)
+    {
 	    cv::Size dimensions = pano.size();
 	    
 	    int width = dimensions.width;
@@ -39,7 +39,8 @@ class PhotoPanoramique : public rclcpp::Node
 	}
 	
      //fonction pour le stitching de la photo
-     cv::Mat stitching(std::vector<cv::Mat> images_cam)  {
+     cv::Mat stitching(std::vector<cv::Mat> images_cam)
+       {
 	    cv::Mat pano;
 	    RCLCPP_INFO(this->get_logger(), "Maintenant en essai de stitching");
 	    cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
@@ -51,7 +52,6 @@ class PhotoPanoramique : public rclcpp::Node
     //fonction pour aller chercher la position GPS
     void PositionGPS(const rover_msgs::msg::GpsPosition& gps_message_)
 	    {
-	    
 	    coordonees_gps.latitude = gps_message_.latitude;
 	    coordonees_gps.longitude = gps_message_.longitude;	    
 	    }
@@ -80,7 +80,10 @@ PhotoPanoramique::PhotoPanoramique():
     _srvpanorama = this->create_service<rover_msgs::srv::PhotoPanoramique>(
         "/rover/video/panorama",
         [this](const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-         std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_) { this->CB_srv(request_, response_); });
+         std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_) 
+         { 
+           this->CB_srv(request_, response_); 
+         });
 
 
     _sub_position = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position", QOS_DEFAULT, [this](const rover_msgs::msg::GpsPosition& gps_message_)
@@ -98,7 +101,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     
     RCLCPP_INFO(this->get_logger(), "Incoming request");
     
-   if(request->start == true){
+   if(request->start == true)
+   {
    	  RCLCPP_INFO(this->get_logger(), "Panorama started");
 
 	  //paramètres pour le stitching
@@ -122,7 +126,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	   int apiID = cv::CAP_GSTREAMER;
 
 	   
-	   if(cap.isOpened()){
+	   if(cap.isOpened())
+	   {
 	    RCLCPP_INFO(this->get_logger(), "Camera open");
 	   }else{
 	    RCLCPP_INFO(this->get_logger(), "Failed to open camera");
@@ -194,7 +199,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 	    {
 	    RCLCPP_INFO(this->get_logger(), "The folder doesn't exist yet");
 	    
-	    if (mkdir(path_dossier.c_str(), 0775)==0){ 
+	    if (mkdir(path_dossier.c_str(), 0775)==0)
+	    { 
 	        RCLCPP_INFO(this->get_logger(), "Succesfully created the folder");
 	    	nom_fichier_panorama =  path_dossier +"/"+ result_name;
 	     	
