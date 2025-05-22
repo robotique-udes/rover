@@ -4,6 +4,7 @@
 
 QSessionFolderManager::QSessionFolderManager()
 {
+    _valid = false;
     const char* home = std::getenv("HOME");
     std::string homeStr;
     if (home)
