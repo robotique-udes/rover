@@ -29,7 +29,6 @@ class QDeviceStatus : public QWidget
     void updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_);
     void updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_);
     void setStatusReport(uint16_t id_);
-    void rebootDevice(uint16_t id_);
     void updateRebootCounter(uint16_t deviceID_);
     void setDefaultStyle();
 

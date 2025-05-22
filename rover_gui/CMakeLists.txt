@@ -138,9 +138,6 @@ target_link_libraries(main_gui
   rover_shared_libs
 )         
 
-                        
-set(RESOURCE_FILE ${CMAKE_CURRENT_SOURCE_DIR}/src/ressources/ressources.qrc)
-qt_add_resources(RESOURCES ${RESOURCE_FILE})
 target_sources(main_gui PRIVATE ${RESOURCES})
                       
 

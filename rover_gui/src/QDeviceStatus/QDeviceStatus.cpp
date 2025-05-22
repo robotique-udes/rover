@@ -110,6 +110,10 @@ void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Req
             }
             else
             {
+                // Reminder to remove this
+                _numberOfCalls++;
+                RCLCPP_INFO(_node->get_logger(), "NUmber of calls: %d", _numberOfCalls);
+                //
                 RCLCPP_WARN(_node->get_logger(), "Service request failed: %s", response->message.c_str());
             }
         });
@@ -136,6 +140,11 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
  */
 void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
 {
+    if (!_deviceInfo.contains(deviceID_) || !_deviceReboot.contains(deviceID_))
+    {
+        return;
+    }
+
     _numberOfDeviceReboots[deviceID_]
         = _numberOfDeviceRebootsFromButton[deviceID_] + _numberOfCalls - _deviceMessageCount[deviceID_];
 
@@ -147,28 +156,17 @@ void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
 }
 
 /**
- * @brief #TODO: Implement the rebootDevice function to actually reboot the device.
- *
- * @param deviceID_
- */
-void QDeviceStatus::rebootDevice(uint16_t deviceID_)
-{
-    // Placeholder for reboot logic
-    RCLCPP_INFO(_node->get_logger(), "Rebooting device %d", deviceID_);
-    //
-
-    _numberOfDeviceReboots[deviceID_]++;
-    _numberOfDeviceRebootsFromButton[deviceID_]++;
-    this->setStatusReport(deviceID_);
-}
-
-/**
  * @brief Updates the label text with the updated status report for the received device.
  *
  * @param deviceID_
  */
 void QDeviceStatus::setStatusReport(uint16_t deviceID_)
 {
+    if (!_deviceInfo.contains(deviceID_) || !_deviceReboot.contains(deviceID_))
+    {
+        return;
+    }
+
     auto label = _deviceReboot[deviceID_];
 
     std::string deviceName = RoverCan2::Constant::getCanDeviceName(static_cast<RoverCan2::Constant::eDeviceId>(deviceID_));
@@ -186,9 +184,14 @@ void QDeviceStatus::setStatusReport(uint16_t deviceID_)
  */
 void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_)
 {
+    if (!_deviceInfo.contains(deviceID_) || !_deviceReboot.contains(deviceID_))
+    {
+        return;
+    }
+
     auto labelInfo = _deviceInfo[deviceID_];
     auto labelReboot = _deviceReboot[deviceID_];
-    
+
     switch (deviceStatus_.error_state)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
