@@ -106,15 +106,15 @@ void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Req
             if (response->success)
             {
                 _numberOfCalls++;
-                RCLCPP_INFO(_node->get_logger(), "Service request succeeded: %s", response->message.c_str());
+                RCLCPP_INFO(rclcpp::get_logger("GUI"), "Service request succeeded: %s", response->message.c_str());
             }
             else
             {
                 // Reminder to remove this
                 _numberOfCalls++;
-                RCLCPP_INFO(_node->get_logger(), "NUmber of calls: %d", _numberOfCalls);
+                RCLCPP_INFO(_node->get_logger(), "Number of calls: %d", _numberOfCalls);
                 //
-                RCLCPP_WARN(_node->get_logger(), "Service request failed: %s", response->message.c_str());
+                RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response->message.c_str());
             }
         });
 }
@@ -151,7 +151,7 @@ void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
     if (_numberOfDeviceReboots[deviceID_] != _oldDeviceReboots[deviceID_])
     {
         _oldDeviceReboots[deviceID_] = _numberOfDeviceReboots[deviceID_];
-        RCLCPP_INFO(_node->get_logger(), "Device %d has rebooted since last call", deviceID_);
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Device %d has rebooted since last call", deviceID_);
     }
 }
 
