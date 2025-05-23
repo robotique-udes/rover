@@ -9,11 +9,15 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
 
     this->initComboBoxItems();
 
-    this->_clientJoy = _node->create_client<rover_msgs::srv::JoyDemuxSetState>("/base/joy/demux_control");
+    _clientJoy = _node->create_client<rover_msgs::srv::JoyDemuxSetState>("/base/joy/demux_control");
+
+    _demuxStatusSub = _node->create_subscription<rover_msgs::msg::JoyDemuxStatus>(
+        "/base/joy/demux_status",
+        10,
+        std::bind(&QArbitration::DemuxStatusCallback, this, std::placeholders::_1));
 
     connect(_ui.mainComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &QArbitration::onMainComboChanged);
     connect(_ui.secComboBox, QOverload<int>::of(&QComboBox::currentIndexChanged), this, &QArbitration::onSecComboChanged);
-
 }
 
 void QArbitration::initComboBoxItems()
@@ -29,13 +33,13 @@ void QArbitration::initComboBoxItems()
     this->_ui.secComboBox->addItem("None", 3);
 
     this->_ui.mainComboBox->setCurrentIndex(3);
-    this->_ui.secComboBox->setCurrentIndex(3); 
+    this->_ui.secComboBox->setCurrentIndex(3);
 }
 
 void QArbitration::onMainComboChanged(int index)
 {
     this->isServiceAvailable();
-    
+
     auto request = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Request>();
     request->controller_type = main;
     request->destination = index;
@@ -60,9 +64,26 @@ void QArbitration::isServiceAvailable()
 {
     if (!_clientJoy->service_is_ready()) {
         QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                "Service unavailable",
-                "Couldn't send a request to /base/joy/demux_control, the service is unavailable.",
-                QHelper::QToastNotification::eNotifType::WARNING,
-                2'000);
+            "Service unavailable",
+            "Couldn't send a request to /base/joy/demux_control, the service is unavailable.",
+            QHelper::QToastNotification::eNotifType::WARNING,
+            2'000);
     }
 }
+
+void QArbitration::DemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg)
+{
+    if (!msg) {
+        RCLCPP_WARN(_node->get_logger(), "Received null JoyDemuxStatus message.");
+        return;
+    }
+
+    RCLCPP_INFO(
+        _node->get_logger(),
+        "Received JoyDemuxStatus: controller_main_topic = %u, controller_secondary_topic = %u",
+        msg->controller_main_topic,
+        msg->controller_secondary_topic
+    );
+}
+
+

@@ -37,7 +37,6 @@ class QArbitration : public QWidget
 
   public:
     QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-
     ~QArbitration() {};
 
   private slots:
@@ -47,11 +46,14 @@ class QArbitration : public QWidget
   private:
     void initComboBoxItems();
     void isServiceAvailable();
+    void DemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg);
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::Arbitration _ui;
 
     rclcpp::Subscription<rover_msgs::msg::JoyDemuxStatus>::SharedPtr _demuxStatusSub;
     rclcpp::Client<rover_msgs::srv::JoyDemuxSetState>::SharedPtr _clientJoy;
+
 };
+
 #endif
