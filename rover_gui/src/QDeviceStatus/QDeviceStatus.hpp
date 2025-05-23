@@ -56,7 +56,7 @@ class QDeviceStatus : public QWidget
 
     uint16_t _numberOfCalls = 0U;
 
-    QStatusWorker* _QStatusWorker;
+    std::shared_ptr<QStatusWorker> _QStatusWorker;
 };
 
 #endif  // __QDEVICESTATUS_HPP__

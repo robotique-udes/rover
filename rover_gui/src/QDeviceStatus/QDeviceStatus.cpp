@@ -37,7 +37,8 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _node(guiNode_)
 {
     _ui.setupUi(this);
-    _QStatusWorker = new QStatusWorker(true, this);
+
+    _QStatusWorker = std::make_shared<QStatusWorker>(true, this);
 
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorInfo;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorInfo;
@@ -89,13 +90,10 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
                 this->updateDeviceInfo();
             });
 
-    connect(_QStatusWorker,
+    connect(_QStatusWorker.get(),
             &QStatusWorker::onRequestDeviceStatusSuccessful,
             this,
-            [this](bool success, const std::string response)
-            {
-                this->onRequestDeviceStatusSuccessful(success, response);
-            });
+            &QDeviceStatus::onRequestDeviceStatusSuccessful);
 }
 
 /**
