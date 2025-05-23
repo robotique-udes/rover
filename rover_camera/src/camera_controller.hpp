@@ -1,11 +1,13 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/camera_control.hpp>
+#include <rover_msgs/srv/camera_power.hpp>
 
 class CameraController : public rclcpp::Node
 {
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
     static constexpr const char* TOPIC_CAMERA_POSITION = "/rover/cameras/pos_control";
     static constexpr const char* TOPIC_CAMERA_STATUS = "/rover/camera/status";
+    static constexpr const char* SERVICE_CAMERA_POWER = "/rover/camera/status";
 
   public:
     enum class eCameraID
@@ -29,16 +31,19 @@ class CameraController : public rclcpp::Node
     CameraController();
 
   private:
-    void CB_cameraPosControl(const rover_msgs::msg::CameraControl& msg);
-    void publishCameraStatus(eCameraID id);
-    void publishAllCameraStatuses();
-
-    eCameraStatus checkCameraStatus(eCameraID id);
+    void CB_cameraPosControl(const rover_msgs::msg::CameraControl& msg_);
+    void publishCameraStatus(eCameraID id_);
+    void publishAllCameraStatuses(void);
+    void CB_setCameraPower(const std::shared_ptr<rover_msgs::srv::CameraPower::Request> request_,
+                           std::shared_ptr<rover_msgs::srv::CameraPower::Response> response_);
+    eCameraStatus checkCameraStatus(eCameraID id_);
 
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_camPosControl;
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_camStatus;
+    rclcpp::Service<rover_msgs::srv::CameraPower>::SharedPtr _srv_cameraPower;
     rclcpp::TimerBase::SharedPtr _timer_pub;
 
-    std::array<double, static_cast<size_t>(eCameraID::eLAST)> _camYaw{};
-    std::array<double, static_cast<size_t>(eCameraID::eLAST)> _camPitch{};
+    std::array<float, TO_UNDERLYING(eCameraID::eLAST)> _camYaw{};
+    std::array<float, TO_UNDERLYING(eCameraID::eLAST)> _camPitch{};
+    std::array<bool, TO_UNDERLYING(eCameraID::eLAST)> _powerOn{};
 };

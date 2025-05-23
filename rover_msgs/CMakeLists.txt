@@ -68,6 +68,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/NewGpsGoal.srv"
   "srv/PanoControl.srv"
   "srv/RtspStream.srv"
+  "srv/CameraPower.srv"
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

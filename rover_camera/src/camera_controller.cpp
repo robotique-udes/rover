@@ -17,6 +17,14 @@ CameraController::CameraController():
 
     _pub_camStatus = create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_STATUS, 1);
 
+    _srv_cameraPower = this->create_service<rover_msgs::srv::CameraPower>(
+        SERVICE_CAMERA_POWER,
+        [this](const std::shared_ptr<rover_msgs::srv::CameraPower::Request> request_,
+               std::shared_ptr<rover_msgs::srv::CameraPower::Response> response_)
+        {
+            this->CB_setCameraPower(request_, response_);
+        });
+
     _timer_pub = create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                    [this]()
                                    {
@@ -49,15 +57,13 @@ CameraController::eCameraStatus CameraController::checkCameraStatus(eCameraID ca
             return eCameraStatus::STATUS_ERROR;
     }
 
-    auto camID = Constants::CameraInfo::CAMERA_URL_MAP.find(cameraKey);
-    if (camID == Constants::CameraInfo::CAMERA_URL_MAP.end())
+    if (Constants::CameraInfo::CAMERA_URL_MAP.find(cameraKey) == Constants::CameraInfo::CAMERA_URL_MAP.end())
     {
         RCLCPP_ERROR(this->get_logger(), "checkCameraStatus(): no URL mapped for camera \"%s\"", cameraKey.c_str());
         return eCameraStatus::STATUS_ERROR;
     }
 
-    std::string cameraURL = camID->second;
-    RCLCPP_DEBUG(this->get_logger(), "checkCameraStatus(): URL for %s is %s", cameraKey.c_str(), cameraURL.c_str());
+    std::string cameraURL = Constants::CameraInfo::CAMERA_URL_MAP.at(cameraKey);
 
     if (!RoverLib2::isIPReachable(cameraURL, 554, 500u))
     {
@@ -69,6 +75,23 @@ CameraController::eCameraStatus CameraController::checkCameraStatus(eCameraID ca
     }
 
     return eCameraStatus::STATUS_OK;
+}
+
+void CameraController::CB_setCameraPower(const std::shared_ptr<rover_msgs::srv::CameraPower::Request> request_,
+                                         std::shared_ptr<rover_msgs::srv::CameraPower::Response> response_)
+{
+    uint8_t id = request_->id_cam;
+    if (id >= TO_UNDERLYING(eCameraID::eLAST))
+    {
+        response_->success = false;
+        response_->message = "Invalid camera ID";
+        RCLCPP_WARN(this->get_logger(), "Power service: invalid ID %u", id);
+        return;
+    }
+
+    _powerOn[id] = request_->power_on;
+    response_->success = true;
+    response_->message = request_->power_on ? "Powered ON" : "Powered OFF";
 }
 
 void CameraController::CB_cameraPosControl(const rover_msgs::msg::CameraControl& msg_)
