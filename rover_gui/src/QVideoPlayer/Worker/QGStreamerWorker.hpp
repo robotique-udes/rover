@@ -5,6 +5,8 @@
 #include <QString>
 #include <QWidget>
 #include <gst/gst.h>
+#include <rclcpp/rclcpp.hpp>
+#include <mutex>
 
 class GStreamerWorker : public QObject
 {
@@ -30,6 +32,7 @@ class GStreamerWorker : public QObject
     void frameReceived();
 
   private:
+    mutable std::mutex _pipelineMutex;
     QString buildPipelineString(const QString& rtspUrl_) const;
     void cleanupGStreamer();
 
@@ -41,6 +44,15 @@ class GStreamerWorker : public QObject
     gulong _newSampleSignalId = 0;
     int _consecutiveErrorsCount = 0;
     static constexpr int MAX_CONSECUTIVE_ERRORS = 3;
+
+    static void on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_);
+    static GstFlowReturn on_new_sample(GstElement* sink_, gpointer user_data_);
+    static void on_gst_warning_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_);
+
+    // Bus signal handler IDs
+    gulong _errorHandlerId = 0;
+    gulong _warningHandlerId = 0;
+    gulong _messageHandlerId = 0;
 };
 
 #endif
