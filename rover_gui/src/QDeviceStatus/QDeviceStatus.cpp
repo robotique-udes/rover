@@ -37,6 +37,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _node(guiNode_)
 {
     _ui.setupUi(this);
+    _QStatusWorker = new QStatusWorker(true, this);
 
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorInfo;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorInfo;
@@ -77,8 +78,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
         });
 
     _client_requestErrorStatus = _node->create_client<rover_msgs::srv::Empty>("/rover/can/request_error_state");
-    auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
-    this->updateDeviceInfo(request);
+    this->updateDeviceInfo();
 
     connect(_ui.pb_serviceCall,
             &QPushButton::clicked,
@@ -86,8 +86,24 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             [this]()
             {
                 this->setDefaultStyle();
-                auto request = std::make_shared<rover_msgs::srv::Empty::Request>();
-                this->updateDeviceInfo(request);
+                this->updateDeviceInfo();
+            });
+
+    connect(_QStatusWorker,
+            &QStatusWorker::onRequestDeviceStatusSuccessful,
+            this,
+            [this](bool success, const std::string response)
+            {
+                _numberOfCalls++;
+                if (success)
+                {
+                    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Service request succeeded: %s", response.c_str());
+                }
+                else
+                {
+                    RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response.c_str());
+                }
+                
             });
 }
 
@@ -96,27 +112,9 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
  *
  * @param request_
  */
-void QDeviceStatus::updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_)
+void QDeviceStatus::updateDeviceInfo()
 {
-    auto result_future = _client_requestErrorStatus->async_send_request(
-        request_,
-        [this](rclcpp::Client<rover_msgs::srv::Empty>::SharedFuture future)
-        {
-            auto response = future.get();
-            if (response->success)
-            {
-                _numberOfCalls++;
-                RCLCPP_INFO(rclcpp::get_logger("GUI"), "Service request succeeded: %s", response->message.c_str());
-            }
-            else
-            {
-                // Reminder to remove this
-                _numberOfCalls++;
-                RCLCPP_INFO(_node->get_logger(), "Number of calls: %d", _numberOfCalls);
-                //
-                RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response->message.c_str());
-            }
-        });
+    _QStatusWorker->requestDeviceStatusManager(_client_requestErrorStatus);
 }
 
 /**

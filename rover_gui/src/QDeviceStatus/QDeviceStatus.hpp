@@ -13,6 +13,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 #include "UI_DeviceStatus.h"
+#include "Worker/QStatusWorker.hpp"
 
 #include <unordered_map>
 
@@ -26,12 +27,17 @@ class QDeviceStatus : public QWidget
 
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
-    void updateDeviceInfo(std::shared_ptr<rover_msgs::srv::Empty::Request> request_);
+    void updateDeviceInfo();
     void updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_);
     void setStatusReport(uint16_t id_);
     void updateRebootCounter(uint16_t deviceID_);
     void setDefaultStyle();
 
+  private slots:
+
+    void onRequestDeviceStatusSuccessful(bool success_, const std::string status_);
+
+  private:
     std::shared_ptr<rclcpp::Node> _node;
     Ui::DeviceStatus _ui;
     QLabel* _imageLabel;
@@ -49,6 +55,8 @@ class QDeviceStatus : public QWidget
     QMap<uint16_t, QLabel*> _deviceReboot;
 
     uint16_t _numberOfCalls = 0U;
+
+    QStatusWorker* _QStatusWorker;
 };
 
 #endif  // __QDEVICESTATUS_HPP__
