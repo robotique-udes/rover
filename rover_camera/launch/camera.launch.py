@@ -18,8 +18,16 @@ def generate_launch_description():
         executable="aruco_detection",
         name="aruco_detection"
     )
+    
+    node_cam_controller = Node(
+        package="rover_camera",
+        namespace="/rover/camera",
+        executable="cam_controller",
+        name="cam_controller"
+    )
 
     ld.add_action(node_camera_node)
     ld.add_action(node_aruco)
+    ld.add_action(node_camera_node)
     
     return ld

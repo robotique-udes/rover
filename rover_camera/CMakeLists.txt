@@ -33,6 +33,13 @@ ament_target_dependencies(aruco_detection
                           rover_msgs
                           rcl_interfaces)
 
+add_executable(cam_controller src/camera_controller.cpp)
+ament_target_dependencies(cam_controller
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
+target_link_libraries(cam_controller rover_shared_libs)
 target_link_libraries(media_server ${OpenCV_LIBS})
 target_link_libraries(aruco_detection 
                           ${OpenCV_LIBS}
@@ -43,6 +50,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS 
             media_server
             aruco_detection
+            cam_controller
         DESTINATION lib/${PROJECT_NAME}/)
 
 ament_package()
