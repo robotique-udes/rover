@@ -94,16 +94,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             this,
             [this](bool success, const std::string response)
             {
-                _numberOfCalls++;
-                if (success)
-                {
-                    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Service request succeeded: %s", response.c_str());
-                }
-                else
-                {
-                    RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response.c_str());
-                }
-                
+                this->onRequestDeviceStatusSuccessful(success, response);
             });
 }
 
@@ -115,6 +106,19 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 void QDeviceStatus::updateDeviceInfo()
 {
     _QStatusWorker->requestDeviceStatusManager(_client_requestErrorStatus);
+}
+
+void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::string response_)
+{
+    if (success_)
+    {
+        _numberOfCalls++;
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Service request succeeded: %s", response_.c_str());
+    }
+    else
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response_.c_str());
+    }
 }
 
 /**

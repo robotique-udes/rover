@@ -18,7 +18,7 @@ class QStatusWorker : public QWorker
     void requestDeviceStatusInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_);
 
   signals:
-    void onRequestDeviceStatusSuccessful(bool success_, const std::string status_);
+    void onRequestDeviceStatusSuccessful(bool success_, const std::string response_);
 };
 
 #endif  // __QSTATUS_WORKER_HPP__

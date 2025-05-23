@@ -111,7 +111,7 @@ add_executable(main_gui src/gui.cpp
                    src/QDeviceStatus/QDeviceStatus.hpp
                    src/QDeviceStatus/QDeviceStatus.cpp
                    src/QDeviceStatus/Worker/QStatusWorker.hpp
-                   src/QDeviceStatus/Worker/QStatusWorker.hpp
+                   src/QDeviceStatus/Worker/QStatusWorker.cpp
                    
                    src/QVideoPlayer/Worker/QGStreamerWorker.cpp
                    src/QVideoPlayer/Worker/QGStreamerWorker.hpp

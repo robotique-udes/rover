@@ -35,7 +35,7 @@ class QDeviceStatus : public QWidget
 
   private slots:
 
-    void onRequestDeviceStatusSuccessful(bool success_, const std::string status_);
+    void onRequestDeviceStatusSuccessful(bool success_, const std::string response_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;
