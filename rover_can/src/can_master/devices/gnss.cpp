@@ -18,7 +18,7 @@ void Gnss::rosElementInit(void)
     _gpsPublishTimer = this->getAttachedNode()->create_wall_timer(std::chrono::duration_cast<std::chrono::milliseconds>(period),
                                                                   [this]()
                                                                   {
-                                                                      if (_pub_GnssData)
+                                                                      if (_pub_GnssData && _rosGpsMsg.fix_quality != 0)
                                                                       {
                                                                           _pub_GnssData->publish(_rosGpsMsg);
                                                                       }
