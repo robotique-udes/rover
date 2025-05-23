@@ -3,6 +3,7 @@ uint8 START_RECORDING = 1
 uint8 STOP_RECORDING = 2
 
 # Request
+string base_path        # Base path where to create the /recording and /screenshot folders
 string camera_url       # Take the cameraID from the URL
 string capture_name     # Optional: Name of the file to save (e.g., "screenshot.png" or "recording.avi")
 uint8 command           # Whether you want to screenshot, start a recording or stop it
