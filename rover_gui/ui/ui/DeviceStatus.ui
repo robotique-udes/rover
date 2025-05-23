@@ -355,6 +355,10 @@
 		border: 1px solid #4b4e52;
 		border-radius: 5px;
 		padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #4d4d4d;
 }</string>
            </property>
            <property name="text">
@@ -370,8 +374,6 @@
    </item>
   </layout>
  </widget>
- <resources>
-  <include location="../../src/ressources/ressources.qrc"/>
- </resources>
+ <resources/>
  <connections/>
 </ui>
