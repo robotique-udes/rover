@@ -106,6 +106,12 @@ void QDeviceStatus::updateDeviceInfo()
     _QStatusWorker->requestDeviceStatusManager(_client_requestErrorStatus);
 }
 
+/**
+ * @brief Handles the response from the service call
+ *
+ * @param success_
+ * @param response_
+ */
 void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::string response_)
 {
     if (success_)
