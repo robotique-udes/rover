@@ -4,6 +4,7 @@
 #include "can_master/master_device.hpp"
 #include "can_master/shared_msg.hpp"
 
+#include <cstdint>
 #include <memory>
 #include <rover_can2/rover_can2.hpp>
 #include "rover_can2/msgs/fix_position.hpp"
@@ -24,6 +25,7 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
 
     static constexpr const char* GNSS_DATA_TOPIC = "/rover/gnss/data";
     static constexpr float GNSS_DATA_PUBLISH_FREQUENCY_HZ = 20.0F;
+    static constexpr float HEADING_CALIB_VALUE = 1.0F;
 
   public:
     Gnss(RoverCan2::Constant::eDeviceId deviceId_);
