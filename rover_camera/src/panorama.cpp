@@ -25,10 +25,10 @@ class PhotoPanoramique : public rclcpp::Node
 
   private:
     // attribut pour gérer les coordonées gps
-    emplacement coordonees_gps;
+    emplacement sCoordoneesGps;
 
     // fonction pour enlever le warping
-    cv::Mat warp_correction(cv::Mat pano)
+    cv::Mat warpCorrection(cv::Mat pano)
     {
         cv::Size dimensions = pano.size();
 
@@ -42,12 +42,12 @@ class PhotoPanoramique : public rclcpp::Node
     }
 
     // fonction pour le stitching de la photo
-    cv::Mat stitching(std::vector<cv::Mat> images_cam)
+    cv::Mat stitching(std::vector<cv::Mat> imagesCam)
     {
         cv::Mat pano;
         RCLCPP_INFO(this->get_logger(), "Maintenant en essai de stitching");
         cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
-        stitcher->stitch(images_cam, pano);
+        stitcher->stitch(imagesCam, pano);
 
         return pano;
     }
@@ -55,15 +55,15 @@ class PhotoPanoramique : public rclcpp::Node
     // fonction pour aller chercher la position GPS
     void PositionGPS(const rover_msgs::msg::GpsPosition& gpsMessage_)
     {
-        coordonees_gps.latitude = gpsMessage_.latitude;
-        coordonees_gps.longitude = gpsMessage_.longitude;
+        sCoordoneesGps.latitude = gpsMessage_.latitude;
+        sCoordoneesGps.longitude = gpsMessage_.longitude;
     }
 
     // section necessitees ROS
-    rclcpp::Publisher<rover_msgs::msg::PhotoPanoramique>::SharedPtr _pubpanorama;
+    rclcpp::Publisher<rover_msgs::msg::PhotoPanoramique>::SharedPtr pub_panorama;
     rclcpp::TimerBase::SharedPtr _timerPub;
-    rclcpp::Service<rover_msgs::srv::PhotoPanoramique>::SharedPtr _srvpanorama;
-    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
+    rclcpp::Service<rover_msgs::srv::PhotoPanoramique>::SharedPtr srv_panorama;
+    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr sub_position;
 
     rover_msgs::msg::PhotoPanoramique _msgPanorama;
     void CB_timer(void);
@@ -75,9 +75,9 @@ class PhotoPanoramique : public rclcpp::Node
 PhotoPanoramique::PhotoPanoramique():
     Node("photo_panoramique")
 {
-    _pubpanorama = this->create_publisher<rover_msgs::msg::PhotoPanoramique>("/rover/video/panorama", QOS_DEFAULT);
+    pub_panorama = this->create_publisher<rover_msgs::msg::PhotoPanoramique>("/rover/video/panorama", QOS_DEFAULT);
 
-    _srvpanorama = this->create_service<rover_msgs::srv::PhotoPanoramique>(
+    srv_panorama = this->create_service<rover_msgs::srv::PhotoPanoramique>(
         "/rover/video/panorama",
         [this](const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
                std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_)
@@ -85,7 +85,7 @@ PhotoPanoramique::PhotoPanoramique():
             this->CB_srv(request_, response_);
         });
 
-    _sub_position
+    sub_position
         = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
                                                                   QOS_DEFAULT,
                                                                   [this](const rover_msgs::msg::GpsPosition& gps_message_)
@@ -108,8 +108,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
         // paramètres pour le stitching
         int num = request->pano_number;
         std::string numero = std::to_string(num);
-        std::string result_name = "panorama_" + numero;
-        result_name = result_name + ".jpg";
+        std::string resultName = "panorama_" + numero;
+        resultName = resultName + ".jpg";
 
         // paramètres pour la lecture de la camera
 
@@ -138,21 +138,21 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 
         // paramètres pour le traitement des images
         cv::Mat frame;
-        std::vector<cv::Mat> images_cam;
-        bool taking_panorama = true;
+        std::vector<cv::Mat> imagesCam;
+        bool takingPanorama = true;
 
         RCLCPP_INFO(this->get_logger(), "Début de la capture vidéo pour la panoramique");
 
         // création de la liste d'image
         int i = 0;
-        while (taking_panorama)
+        while (takingPanorama)
         {
             cap.read(frame);
 
             // Stocker les images pour le panorama
             if (i % 5 == 0)  // ici pour changer la fréquence de prise d'images
             {
-                images_cam.push_back(frame.clone());
+                imagesCam.push_back(frame.clone());
             }
 
             i = i + 1;
@@ -160,7 +160,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
             // Gestion du temps alloue pour prendre la panoramique
             if (i == 200)  // ici pour changer la quantite de frames a attendre avant d'arreter
             {
-                taking_panorama = false;
+                takingPanorama = false;
                 RCLCPP_INFO(this->get_logger(), "Arrêté avec succès");
             }
         }
@@ -169,29 +169,29 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
         cap.release();
 
         // stitching de la panoramique
-        cv::Mat pano = stitching(images_cam);
+        cv::Mat pano = stitching(imagesCam);
 
         // correction du warping
-        cv::Mat pano_rectangle = warp_correction(pano);
+        cv::Mat panoRectangle = warpCorrection(pano);
 
         // obtenir coordonees GPS
-        float latitude = coordonees_gps.latitude;
-        float longitude = coordonees_gps.longitude;
-        std::string coord_GPS = "latitude: " + std::to_string(latitude) + ", longitude: " + std::to_string(longitude);
+        float latitude = sCoordoneesGps.latitude;
+        float longitude = sCoordoneesGps.longitude;
+        std::string coordGps = "latitude: " + std::to_string(latitude) + ", longitude: " + std::to_string(longitude);
 
         // ajout du text
-        cv::Size dimensions = pano_rectangle.size();
+        cv::Size dimensions = panoRectangle.size();
         int hauteur = dimensions.height;
-        std::string nom_photo = request->nom;
-        putText(pano_rectangle,
-                coord_GPS,
+        std::string nomPhoto = request->nom;
+        putText(panoRectangle,
+                coordGps,
                 cv::Point(10, hauteur - 20),
                 cv::FONT_HERSHEY_SIMPLEX,
                 3.0,
                 cv::Scalar(34, 139, 34),
                 5);
-        putText(pano_rectangle,
-                nom_photo,
+        putText(panoRectangle,
+                nomPhoto,
                 cv::Point(10, hauteur - 120),
                 cv::FONT_HERSHEY_SIMPLEX,
                 3.0,
@@ -200,36 +200,36 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 
         // creation du dossier du dossier de panoramas
         std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");
-        std::string path_panorama = "/src/panoramas";
+        std::string pathPanorama = "/src/panoramas";
 
         struct stat fileInfo;
-        std::string nom_fichier_panorama;
-        std::string path_dossier = currentPackageDirectory + path_panorama;
-        bool dossier_exist = stat(path_dossier.c_str(), &fileInfo) == 0;
+        std::string nomFichierPanorama;
+        std::string pathDossier = currentPackageDirectory + pathPanorama;
+        bool dossierExist = stat(pathDossier.c_str(), &fileInfo) == 0;
 
-        if (!dossier_exist)  // creation du dossier si necessaire
+        if (!dossierExist)  // creation du dossier si necessaire
         {
             RCLCPP_INFO(this->get_logger(), "The folder doesn't exist yet");
 
-            if (mkdir(path_dossier.c_str(), 0775) == 0)
+            if (mkdir(pathDossier.c_str(), 0775) == 0)
             {
                 RCLCPP_INFO(this->get_logger(), "Succesfully created the folder");
-                nom_fichier_panorama = path_dossier + "/" + result_name;
+                nomFichierPanorama = pathDossier + "/" + resultName;
             }
             else
             {
                 RCLCPP_WARN(this->get_logger(), "Failed to create folder");
-                nom_fichier_panorama = result_name;
-                imwrite(result_name, pano_rectangle);  // enregistre quand meme mais potentielement hors folder
+                nomFichierPanorama = resultName;
+                imwrite(resultName, panoRectangle);  // enregistre quand meme mais potentielement hors folder
             }
         }
         else
         {
-            nom_fichier_panorama = path_dossier + "/" + result_name;
+            nomFichierPanorama = pathDossier + "/" + resultName;
         }
 
         // enregistrement de la panoramique
-        imwrite(nom_fichier_panorama, pano_rectangle);
+        imwrite(nomFichierPanorama, panoRectangle);
 
         RCLCPP_INFO(this->get_logger(), "Panorama done");
 
