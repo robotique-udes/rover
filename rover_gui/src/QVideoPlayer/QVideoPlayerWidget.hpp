@@ -136,8 +136,8 @@ class QVideoPlayerWidget : public QWidget
 
     std::string _camURL = "";
     std::string _defaultCamUrl = "";
+    std::string _sessionFolderPath;
 
-    uint16_t _tag;
     int _streamIndex;
     int16_t _playerIndex;
 

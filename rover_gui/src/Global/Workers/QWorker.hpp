@@ -59,6 +59,18 @@ class QWorker : public QObject
      */
     size_t getTaskNb(void);
 
+#if defined(__linux__)
+    /**
+     *
+     * @brief Set the Thread Name, usefull for debugging with GDB
+     * @warning name_ must be max 15 characters
+     * @note The thread name is only visible when using GDB for debugging
+     * @note Linux only
+     * @param name_ The new thread name
+     */
+    void setThreadName(std::string name_);
+#endif  // defined(__linux__)
+
   signals:
     void allTasksDone(void);
 

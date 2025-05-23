@@ -66,7 +66,10 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Helpers/QToastNotification/QNotificationHistoryData.hpp
                    src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
                    src/Global/Helpers/QToastNotification/QNotificationShowHistory.hpp
-                   
+
+                   src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.cpp
+                   src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp
+
                    src/Global/Workers/QWorker.hpp
                    src/Global/Workers/QWorker.cpp
                    src/Global/QTmpFolderManager.hpp
