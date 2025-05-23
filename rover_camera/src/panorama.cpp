@@ -53,10 +53,10 @@ class PhotoPanoramique : public rclcpp::Node
     }
 
     // fonction pour aller chercher la position GPS
-    void PositionGPS(const rover_msgs::msg::GpsPosition& gpsMessage)
+    void PositionGPS(const rover_msgs::msg::GpsPosition& gpsMessage_)
     {
-        coordonees_gps.latitude = gpsMessage.latitude;
-        coordonees_gps.longitude = gpsMessage.longitude;
+        coordonees_gps.latitude = gpsMessage_.latitude;
+        coordonees_gps.longitude = gpsMessage_.longitude;
     }
 
     // section necessitees ROS
