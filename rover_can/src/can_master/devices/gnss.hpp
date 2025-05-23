@@ -23,7 +23,7 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
                                       RoverCan2::SubscriberMember<RoverCan2::Msgs::FixPosition, Gnss>>;
 
     static constexpr const char* GNSS_DATA_TOPIC = "/rover/gnss/data";
-    static constexpr float GNSS_DATA_PUBLISH_FREQUENCY_HZ = 10.0F;
+    static constexpr float GNSS_DATA_PUBLISH_FREQUENCY_HZ = 20.0F;
 
   public:
     Gnss(RoverCan2::Constant::eDeviceId deviceId_);
@@ -36,8 +36,10 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
     void CB_CAN_FixHeading(const RoverCan2::Msgs::FixHeading& canMsg_);
     void CB_CAN_FixInfo(const RoverCan2::Msgs::FixInfo& canMsg_);
     void CB_CAN_FixPosition(const RoverCan2::Msgs::FixPosition& canMsg_);
-    
+
+    rover_msgs::msg::Gps _rosGpsMsg;
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr _pub_GnssData;
+    rclcpp::TimerBase::SharedPtr _gpsPublishTimer;
 };
 
 #endif  // GNSS_HPP

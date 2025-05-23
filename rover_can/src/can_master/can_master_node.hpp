@@ -48,9 +48,6 @@ class CanMasterNode : public rclcpp::Node
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::PropulsionMotor>> _propMotorMsg
         = std::make_shared<CanMaster::SharedRosMsg<rover_msgs::msg::PropulsionMotor>>();
 
-    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::Gps>> _GnssDataMsg
-        = std::make_shared<CanMaster::SharedRosMsg<rover_msgs::msg::Gps>>();
-
     // CanDevices
     PropulsionMotor motorFL = PropulsionMotor(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR,
                                               rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT,
@@ -74,6 +71,8 @@ class CanMasterNode : public rclcpp::Node
     Camera cameraArmSide
         = Camera(RoverCan2::Constant::eDeviceId::CAMERA_ARM_SIDE, rover_msgs::msg::CameraControl::ID_CAM_ARM_SIDE);
 
+    Gnss gnss = Gnss(RoverCan2::Constant::eDeviceId::GNSS);
+
     // Can
     RoverCan2::Drivers::DriverLinux __canDriver;
     RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverLinux,
@@ -85,7 +84,8 @@ class CanMasterNode : public rclcpp::Node
                              Camera&,
                              Camera&,
                              Camera&,
-                             Camera&>
+                             Camera&,
+                             Gnss&>
         _canManager = RoverCan2::ManagerMaster(
             __canDriver,
             [this](RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& msg_)
@@ -100,10 +100,11 @@ class CanMasterNode : public rclcpp::Node
             cameraAntenna,
             cameraSideFront,
             cameraArmTop,
-            cameraArmSide);
+            cameraArmSide,
+            gnss);
 
-    std::array<MasterDevice*, 9U> _deviceArray
-        = {&motorFL, &motorFR, &motorRL, &motorRR, &cameraMain, &cameraAntenna, &cameraSideFront, &cameraArmTop, &cameraArmSide};
+    std::array<MasterDevice*, 10U> _deviceArray
+        = {&motorFL, &motorFR, &motorRL, &motorRR, &cameraMain, &cameraAntenna, &cameraSideFront, &cameraArmTop, &cameraArmSide, &gnss};
 };
 
 #endif  // CAN_MASTER_NODE_HPP
