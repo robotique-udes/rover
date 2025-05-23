@@ -12,11 +12,11 @@
 
 // cam: 192.168.144.30
 
-struct
+struct emplacement
 {
     float latitude;
     float longitude;
-} coordonees_gps;
+};
 
 class PhotoPanoramique : public rclcpp::Node
 {
@@ -24,6 +24,9 @@ class PhotoPanoramique : public rclcpp::Node
     PhotoPanoramique();
 
   private:
+    // attribut pour gérer les coordonées gps
+    emplacement coordonees_gps;
+
     // fonction pour enlever le warping
     cv::Mat warp_correction(cv::Mat pano)
     {
@@ -33,9 +36,9 @@ class PhotoPanoramique : public rclcpp::Node
         int hauteur = dimensions.height;
 
         cv::Rect coupe(300, 300, width - 500, hauteur - 500);
-        cv::Mat pano_rectangle = pano(coupe);
+        cv::Mat panoRectangle = pano(coupe);
 
-        return pano_rectangle;
+        return panoRectangle;
     }
 
     // fonction pour le stitching de la photo
@@ -50,10 +53,10 @@ class PhotoPanoramique : public rclcpp::Node
     }
 
     // fonction pour aller chercher la position GPS
-    void PositionGPS(const rover_msgs::msg::GpsPosition& gps_message_)
+    void PositionGPS(const rover_msgs::msg::GpsPosition& gpsMessage)
     {
-        coordonees_gps.latitude = gps_message_.latitude;
-        coordonees_gps.longitude = gps_message_.longitude;
+        coordonees_gps.latitude = gpsMessage.latitude;
+        coordonees_gps.longitude = gpsMessage.longitude;
     }
 
     // section necessitees ROS
@@ -130,7 +133,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
         }
         else
         {
-            RCLCPP_INFO(this->get_logger(), "Failed to open camera");
+            RCLCPP_FATAL(this->get_logger(), "Failed to open camera");
         }
 
         // paramètres pour le traitement des images
@@ -215,7 +218,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
             }
             else
             {
-                RCLCPP_INFO(this->get_logger(), "Failed to create folder");
+                RCLCPP_WARN(this->get_logger(), "Failed to create folder");
                 nom_fichier_panorama = result_name;
                 imwrite(result_name, pano_rectangle);  // enregistre quand meme mais potentielement hors folder
             }
