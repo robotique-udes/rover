@@ -183,20 +183,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
         cv::Size dimensions = panoRectangle.size();
         int hauteur = dimensions.height;
         std::string nomPhoto = request->nom;
-        putText(panoRectangle,
-                coordGps,
-                cv::Point(10, hauteur - 20),
-                cv::FONT_HERSHEY_SIMPLEX,
-                3.0,
-                cv::Scalar(34, 139, 34),
-                5);
-        putText(panoRectangle,
-                nomPhoto,
-                cv::Point(10, hauteur - 120),
-                cv::FONT_HERSHEY_SIMPLEX,
-                3.0,
-                cv::Scalar(34, 139, 34),
-                5);
+        putText(panoRectangle, coordGps, cv::Point(10, hauteur - 20), cv::FONT_HERSHEY_SIMPLEX, 3.0, cv::Scalar(34, 139, 34), 5);
+        putText(panoRectangle, nomPhoto, cv::Point(10, hauteur - 120), cv::FONT_HERSHEY_SIMPLEX, 3.0, cv::Scalar(34, 139, 34), 5);
 
         // creation du dossier du dossier de panoramas
         std::string currentPackageDirectory = GET_PACKAGE_SOURCE_DIR("rover_camera");
