@@ -57,9 +57,9 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThreadRecording->setThreadName("WorkerRecord");
 }
 
-void QVideoManagerWidget::onTabChanged(uint16_t index)
+void QVideoManagerWidget::onTabChanged(uint16_t index_)
 {
-    if (index == 0)
+    if (index_ == 0)
     {
         uint16_t index = 0;
         for (auto& widget : _videoPlaysWidgets)
