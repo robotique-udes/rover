@@ -1166,6 +1166,8 @@ void QVideoPlayerWidget::hideAngleSelecter(void)
         _ui.cameraAngleBox->show();
         _ui.angleCenterButton->show();
         _ui.panoramaButton->show();
+        _ui.actualAngleSlider->show();
+        _ui.panoramaDurationBox->show();
     }
     else
     {
@@ -1173,6 +1175,8 @@ void QVideoPlayerWidget::hideAngleSelecter(void)
         _ui.cameraAngleBox->hide();
         _ui.angleCenterButton->hide();
         _ui.panoramaButton->hide();
+        _ui.actualAngleSlider->hide();
+        _ui.panoramaDurationBox->hide();
     }
 }
 
@@ -1261,15 +1265,34 @@ void QVideoPlayerWidget::panoramaTurnCamera(void)
 void QVideoPlayerWidget::initActualAngleSlider(void)
 {
     _ui.actualAngleSlider->setStyleSheet(R"(
-        QSlider::handle:horizontal {
-            image: url(:/icons/arrow.png);
-            background: transparent;
-            width: 16px;
-            height: 16px;
-            margin: -6px 0;
-        }
+    QSlider::handle:horizontal {
+        image: url(:/icons/arrow.png);
+        background: transparent;
+        border: none;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0;  /* adjust to align vertically */
+    }
+
+    QSlider::groove:horizontal {
+        background: transparent;
+        height: 4px;  /* or whatever you want */
+    }
+
+    QSlider::sub-page:horizontal,
+    QSlider::add-page:horizontal {
+        background: transparent;
+    }
     )");
 
     _ui.actualAngleSlider->setEnabled(false);
     _ui.actualAngleSlider->setValue(CAMERA_CENTER_ANGLE);
+}
+
+void QVideoPlayerWidget::CB_updateActualAngle(std::string camURL_, float yaw_)
+{
+    if (camURL_ == _camURL)
+    {
+        _ui.actualAngleSlider->setValue(static_cast<uint16_t>(yaw_));
+    }
 }

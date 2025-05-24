@@ -24,6 +24,7 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* SERVICE_RECORDING_NAME = "/rover/cameras/media_server_control";
     static constexpr const char* TOPIC_RECORDING_INFO = "/rover/camera/recordings_info";
     static constexpr const char* CAMERA_ANGLE_CONTROL_TOPIC = "/rover/cameras/pos_control";
+    static constexpr const char* CAMERA_STATUS_TOPIC = "/rover/cameras/status";
     static constexpr const char* SERVICE_PANORAMA_NAME = "/rover/video/panorama";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
@@ -58,7 +59,8 @@ class QVideoManagerWidget : public QWidget
 
     void initCameraControlClient(void);
     void initCameraAnglePublisher(void);
-    void initCameraControlSubscriber(void);
+    void initCameraListSubscriber(void);
+    void initCameraStatusSubscriber(void);
 
     void initPanoramaClient(void);
 
@@ -86,6 +88,7 @@ class QVideoManagerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraList>> _sub_cameraList;
     std::shared_ptr<rclcpp::Publisher<rover_msgs::msg::CameraControl>> _pub_cameraAngle;
+    std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraControl>> _sub_cameraStatus;
     rclcpp::TimerBase::SharedPtr _timer_clientCameraControlHealth;
     rclcpp::TimerBase::SharedPtr _timer_pubCameraAngle;
 

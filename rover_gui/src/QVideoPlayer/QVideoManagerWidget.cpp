@@ -38,7 +38,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initArucoPublisher();
 
     this->initCameraControlClient();
-    this->initCameraControlSubscriber();
+    this->initCameraListSubscriber();
     this->initCameraAnglePublisher();
 
     _gridContainer.setLayout(&_gridLayout);
@@ -250,7 +250,7 @@ void QVideoManagerWidget::initCameraAnglePublisher(void)
     _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_ANGLE_CONTROL_TOPIC, QOS_DEFAULT);
 }
 
-void QVideoManagerWidget::initCameraControlSubscriber(void)
+void QVideoManagerWidget::initCameraListSubscriber(void)
 {
     _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
                                                                               1,
@@ -321,4 +321,28 @@ void QVideoManagerWidget::initPanoramaClient(void)
     {
         widget->setPanoramaClientManager(_client_panoramique);
     }
+}
+
+void QVideoManagerWidget::initCameraStatusSubscriber(void)
+{
+    _sub_cameraStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(
+        CAMERA_STATUS_TOPIC,
+        QOS_DEFAULT,
+        [this](const rover_msgs::msg::CameraControl msg)
+        {
+            if (msg.id_cam > (NBR_CAM_TO_TRACK - 1))
+            {
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                    "Invalid message was received from /rover/cameras/status",
+                    "cam_id was out of bound",
+                    QHelper::QToastNotification::eNotifType::ERROR);
+                return;
+            }
+            for (auto& widget : _videoPlaysWidgets)
+            {
+                std::map<std::string, std::string>::const_iterator camInfo = Constants::CameraInfo::CAMERA_URL_MAP.begin();
+                std::advance(camInfo, msg.id_cam); 
+                widget->CB_updateActualAngle(camInfo->second, msg.yaw);
+            }
+        });
 }

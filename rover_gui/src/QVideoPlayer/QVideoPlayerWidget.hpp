@@ -93,6 +93,7 @@ class QVideoPlayerWidget : public QWidget
 
     void CB_cameraListUpdate(std::vector<std::string> urls_);
     void CB_serviceCameraControlAvailable(bool available_);
+    void CB_updateActualAngle(std::string camURL_, float yaw_);
 
   signals:
     void arucoCameraFailure(bool valid_);
