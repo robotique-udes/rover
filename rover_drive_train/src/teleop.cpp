@@ -39,7 +39,7 @@ class Teleop : public rclcpp::Node
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             }
-            if (modeTurboEnable > 0.5f && floatToBool(modeNormalEnable))
+            else if (modeTurboEnable > 0.5f && floatToBool(modeNormalEnable))
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_TURBO;
             }
