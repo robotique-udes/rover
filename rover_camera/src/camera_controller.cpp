@@ -14,6 +14,13 @@ CameraController::CameraController():
                                                                                  this->CB_cameraPosControl(msg_);
                                                                              });
 
+    _sub_camPower = create_subscription<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_POWER_STATUS,
+                                                                           QOS_DEFAULT,
+                                                                           [this](const rover_msgs::msg::CameraControl& msg_)
+                                                                           {
+                                                                               this->CB_cameraPower(msg_);
+                                                                           });
+
     _pub_camStatus = create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_STATUS, 1);
 
     _srv_cameraPower = this->create_service<rover_msgs::srv::CameraPower>(
@@ -23,6 +30,8 @@ CameraController::CameraController():
         {
             this->CB_setCameraPower(request_, response_);
         });
+
+    
 
     _timer_pub = create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                    [this]()
@@ -75,6 +84,18 @@ CameraController::eCameraStatus CameraController::checkCameraStatus(eCameraID ca
     }
 
     return eCameraStatus::STATUS_OK;
+}
+
+void CameraController::CB_cameraPower(const rover_msgs::msg::CameraControl& msg_)
+{
+    uint8_t camID = msg_.id_cam;
+    if (camID >= TO_UNDERLYING(eCameraID::eLAST))
+    {
+        RCLCPP_WARN(this->get_logger(), "Power service: invalid ID %u", camID);
+        return;
+    }
+
+    _powerOn[camID] = msg_.power_on;
 }
 
 void CameraController::CB_setCameraPower(const std::shared_ptr<rover_msgs::srv::CameraPower::Request> request_,

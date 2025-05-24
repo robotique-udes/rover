@@ -9,6 +9,7 @@ class CameraController : public rclcpp::Node
 {
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 300UL;
     static constexpr const char* TOPIC_CAMERA_POSITION = "/rover/cameras/pos_control";
+    static constexpr const char* TOPIC_CAMERA_POWER_STATUS = "/rover/cameras/power_status";
     static constexpr const char* TOPIC_CAMERA_STATUS = "/rover/cameras/status";
     static constexpr const char* SERVICE_CAMERA_POWER = "/rover/cameras/power_control";
 
@@ -42,6 +43,7 @@ class CameraController : public rclcpp::Node
 
   private:
     void CB_cameraPosControl(const rover_msgs::msg::CameraControl& msg_);
+    void CB_cameraPower(const rover_msgs::msg::CameraControl& msg_);
     void publishCameraStatus(eCameraID id_);
     void publishAllCameraStatuses(void);
     void CB_setCameraPower(const std::shared_ptr<rover_msgs::srv::CameraPower::Request> request_,
@@ -49,6 +51,7 @@ class CameraController : public rclcpp::Node
     eCameraStatus checkCameraStatus(eCameraID id_);
 
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_camPosControl;
+    rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_camPower;
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_camStatus;
     rclcpp::Service<rover_msgs::srv::CameraPower>::SharedPtr _srv_cameraPower;
     rclcpp::TimerBase::SharedPtr _timer_pub;
