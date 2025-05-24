@@ -15,11 +15,11 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
     _lastWifiTimeMsg = _node->now(void);
     _lastGNSSTimeMsg = _node->now(void);
 
-    this->setupUI();
-    this->initBatterySubscriber();
-    this->initWifiConnection();
-    this->initGNSS();
-    this->initTimerDisplay();
+    this->setupUI(void);
+    this->initBatterySubscriber(void);
+    this->initWifiConnection(void);
+    this->initGNSS(void);
+    this->initTimerDisplay(void);
 
     connect(this, &QTopUtilityBar::updateBatteryUI, this, &QTopUtilityBar::onUpdateBatteryUI);
     connect(this, &QTopUtilityBar::updateWifiUI, this, &QTopUtilityBar::onUpdateWifiUI);
