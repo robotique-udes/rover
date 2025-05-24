@@ -2,7 +2,7 @@
 #include <sstream>
 
 #if defined(__linux__)
-#include "helpers/log.hpp"
+#include "log.hpp"
 
 DEFINE_LOG_NODE(FoldersHelper, Logger::eNodeState::OFF);
 
