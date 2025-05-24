@@ -54,8 +54,8 @@ std::vector<std::string> Folders::splitpath(const std::string& path_)
     std::string sub;
     const size_t maxSubdirectories = 10;
     size_t count = 0;
-    
-    for (std::string sub; count < maxSubdirectories && std::getline(stringstream, sub, delimiter); )
+
+    for (std::string sub; count < maxSubdirectories && std::getline(stringstream, sub, delimiter);)
     {
         if (!sub.empty())
         {

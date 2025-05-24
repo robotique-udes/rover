@@ -143,7 +143,7 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
 
     std::string folderPath = folderPathOptional.value();
 
-        if (!Folders::createFolder(folderPath))
+    if (!Folders::createFolder(folderPath))
     {
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to create recordings folder or it already exists at %s for camera: %s",
