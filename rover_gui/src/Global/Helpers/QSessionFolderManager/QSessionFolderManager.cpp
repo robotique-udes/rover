@@ -8,23 +8,8 @@
 
 QSessionFolderManager::QSessionFolderManager()
 {
-    _valid = false;
-    const char* home = std::getenv("HOME");
-    std::string homeStr;
-    if (home)
-    {
-        homeStr = home;
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, $HOME env variable wasn't found");
-        return;
-    }
-
     std::string currentTime = this->getCurrentTime();
-    _sessionFolderPath = homeStr + "/Rover_session/" + currentTime;
-
-    _valid = this->createDirectory(_sessionFolderPath);
+    _sessionFolderPath = "/roverAutogen/roverSession/" + currentTime;
 }
 
 QSessionFolderManager& QSessionFolderManager::getInstance(void)
@@ -47,30 +32,5 @@ std::string QSessionFolderManager::getCurrentTime(void)
 
 std::optional<std::string> QSessionFolderManager::getSessionFolderPath(void) const
 {
-    if (_valid)
-    {
-        return _sessionFolderPath;
-    }
-    return std::nullopt;
-}
-
-bool QSessionFolderManager::createDirectory(const std::string& path_) const
-{
-    if (!QDir().mkpath(QString::fromStdString(path_)))
-    {
-        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create directory: " << path_);
-        return false;
-    }
-
-    for (const char* subdirectory : SUBDIRECTORIES)
-    {
-        std::string sub = subdirectory;
-        if (!QDir().mkpath(QString::fromStdString(path_ + sub)))
-        {
-            RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Failed to create subdirectory: " << sub);
-            return false;
-        }
-    }
-
-    return true;
+    return _sessionFolderPath;
 }

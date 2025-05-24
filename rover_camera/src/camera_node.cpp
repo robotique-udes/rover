@@ -1,6 +1,7 @@
 #include "camera_node.hpp"
 
 #include <rover_lib2/helpers/constants.hpp>
+#include <rover_lib2/helpers/folders.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -96,7 +97,7 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     folderPath = this->getFolderPath(request_.base_path, eFileFormatNameTypes::SCREENSHOT);
     Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
-    if (!this->createFolder(folderPath))
+    if (!Folders::createFolder(folderPath))
     {
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to create screenshots folder or it already exists at %s for camera: %s",
@@ -132,7 +133,7 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     folderPath = this->getFolderPath(request_.base_path, eFileFormatNameTypes::VIDEO);
     Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
-    if (!this->createFolder(folderPath))
+    if (!Folders::createFolder(folderPath))
     {
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to create recordings folder or it already exists at %s for camera: %s",
@@ -229,6 +230,17 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
  */
 const std::string CameraNode::getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_)
 {
+    const char* home = std::getenv("HOME");
+    std::string homeStr;
+    if (home)
+    {
+        homeStr = home;
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, $HOME env variable wasn't found");
+    }
+
     std::string folderPath;
     const std::string pathForScreenshots = "/screenshots";
     const std::string pathForRecordings = "/recordings";
@@ -236,69 +248,15 @@ const std::string CameraNode::getFolderPath(const std::string& basePath_, eFileF
     switch (fileType_)
     {
         case eFileFormatNameTypes::SCREENSHOT:
-            folderPath = basePath_ + pathForScreenshots;
+            folderPath = homeStr + basePath_ + pathForScreenshots;
             break;
 
         case eFileFormatNameTypes::VIDEO:
-            folderPath = basePath_ + pathForRecordings;
+            folderPath = homeStr + basePath_ + pathForRecordings;
             break;
     }
 
     return folderPath;
-}
-
-/**
- * @brief Checks if the screenshot or the recording folder exists
- *
- * @param path_ Path the the saving folder
- * @return true if it exists.
- * @return false if it doesn't or it isn't a folder
- */
-bool CameraNode::folderExists(const std::string& path_)
-{
-    struct stat fileInfo;
-
-    if (stat(path_.c_str(), &fileInfo) != 0)
-    {
-        return false;
-    }
-
-    if (fileInfo.st_mode & S_IFDIR)
-    {
-        return true;
-    }
-    else
-    {
-        RCLCPP_FATAL(this->get_logger(), "Element already exist with this path and name, but isn't a folder");
-        return false;
-    }
-}
-
-/**
- * @brief Creates the desired folder with the necessary permissions for Linux
- *
- * @param path_ Path to the folder that needs to be created
- * @return true
- * @return false
- */
-bool CameraNode::createFolder(const std::string& path_)
-{
-    if (!this->folderExists(path_))
-    {
-        if (mkdir(path_.c_str(), 0775) == 0)
-        {
-            RCLCPP_INFO(this->get_logger(), "Succesfully created the folder.");
-            return true;
-        }
-        else
-        {
-            RCLCPP_INFO(this->get_logger(), "Couldn't create the folder.");
-            return false;
-        }
-    }
-
-    RCLCPP_DEBUG(this->get_logger(), "Directory already exists: %s", path_.c_str());
-    return true;
 }
 
 /**
