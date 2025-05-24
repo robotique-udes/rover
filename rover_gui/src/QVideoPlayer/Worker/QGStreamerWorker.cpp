@@ -4,6 +4,8 @@
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
 #include <QUrl>
+#include <algorithm>
+#include <cctype>
 
 static rclcpp::Logger gst_logger = rclcpp::get_logger("VIDEOPLAYER");
 
@@ -16,6 +18,7 @@ GstElement* GStreamerWorker::getPipeline()
 void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
     Q_UNUSED(bus_);
+
     auto* worker = static_cast<GStreamerWorker*>(user_data_);
     if (!worker)
         return;
@@ -30,18 +33,11 @@ void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpoin
     gchar* debug = nullptr;
     gst_message_parse_error(msg_, &err, &debug);
 
-    worker->_consecutiveErrorsCount++;
+    std::string errorMsg = err ? err->message : "Unknown Error";
 
-    if (worker->_consecutiveErrorsCount >= worker->MAX_CONSECUTIVE_ERRORS)
-    {
-        RCLCPP_ERROR(gst_logger, "Maximum consecutive errors reached, connection failed");
-        emit worker->connectionFailed();
-        worker->_consecutiveErrorsCount = 0;
-    }
-    else
-    {
-        emit worker->errorOccurred(errorMsg);
-    }
+    RCLCPP_ERROR(gst_logger, "GStreamer error: %s", errorMsg.c_str());
+
+    emit worker->errorOccurred(QString::fromStdString(errorMsg));
 
     if (err)
     {
@@ -83,12 +79,8 @@ void GStreamerWorker::on_gst_warning_message(GstBus* bus_, GstMessage* msg_, gpo
     gchar* debug = nullptr;
     gst_message_parse_warning(msg_, &err, &debug);
 
-    QString warning = err ? err->message : "Unknown Warning";
-    if (warning.contains("timeout", Qt::CaseInsensitive) || warning.contains("connection", Qt::CaseInsensitive)
-        || warning.contains("failed", Qt::CaseInsensitive))
-    {
-        RCLCPP_WARN(gst_logger, "GStreamer warning: %s", warning.toStdString().c_str());
-    }
+    std::string warning = err ? err->message : "Unknown Warning";
+    RCLCPP_WARN(gst_logger, "GStreamer warning: %s", warning.c_str());
 
     if (err)
     {
@@ -105,34 +97,20 @@ static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointe
     Q_UNUSED(decodebin_);
     auto* worker = static_cast<GStreamerWorker*>(user_data_);
     if (!worker)
-    {
-        RCLCPP_ERROR(gst_logger, "Invalid worker pointer in pad-added callback");
         return;
-    }
 
     GstElement* queue0 = gst_bin_get_by_name(GST_BIN(worker->getPipeline()), "q0");
     if (!queue0)
-    {
-        RCLCPP_ERROR(gst_logger, "Failed to find q0 element");
         return;
-    }
 
     GstPad* queueSinkPad = gst_element_get_static_pad(queue0, "sink");
     if (!queueSinkPad)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to get sink pad from q0");
         gst_object_unref(queue0);
         return;
     }
 
-    if (gst_pad_link(pad_, queueSinkPad) != GST_PAD_LINK_OK)
-    {
-        RCLCPP_ERROR(gst_logger, "Failed to link decodebin pad to q0 sink pad");
-    }
-    else
-    {
-        RCLCPP_DEBUG(gst_logger, "Successfully linked decodebin pad");
-    }
+    gst_pad_link(pad_, queueSinkPad);
 
     gst_object_unref(queueSinkPad);
     gst_object_unref(queue0);
@@ -147,19 +125,21 @@ static void minimal_gst_debug_function(GstDebugCategory* category_,
                                        GstDebugMessage* message_,
                                        gpointer user_data_)
 {
-    Q_UNUSED(file_);
-    Q_UNUSED(function_);
-    Q_UNUSED(line_);
-    Q_UNUSED(object_);
-    Q_UNUSED(user_data_);
+    (void)file_;
+    (void)function_;
+    (void)line_;
+    (void)object_;
+    (void)user_data_;
 
     if (level_ <= GST_LEVEL_ERROR)
     {
         const gchar* msg = gst_debug_message_get(message_);
         const gchar* cat = gst_debug_category_get_name(category_);
 
-        QString msgStr(msg);
-        if (!msgStr.contains("QoS", Qt::CaseInsensitive) && !msgStr.contains("latency", Qt::CaseInsensitive))
+        std::string msgStr(msg);
+        std::transform(msgStr.begin(), msgStr.end(), msgStr.begin(), ::tolower);
+
+        if (msgStr.find("qos") == std::string::npos && msgStr.find("latency") == std::string::npos)
         {
             RCLCPP_ERROR(gst_logger, "[%s] %s", cat, msg);
         }
@@ -169,48 +149,28 @@ static void minimal_gst_debug_function(GstDebugCategory* category_,
 GStreamerWorker::GStreamerWorker(QObject* parent):
     QObject(parent)
 {
-    qputenv("GST_DEBUG_NO_COLOR", "1");
-    qputenv("GST_DEBUG", "1");
-
     gst_init(nullptr, nullptr);
 
     gst_debug_add_log_function(minimal_gst_debug_function, this, NULL);
     gst_debug_remove_log_function(gst_debug_log_default);
-
-    // Only show errors
-    gst_debug_set_default_threshold(GST_LEVEL_ERROR);
-
-    // Mute specific noisy categories
-    gst_debug_set_threshold_for_name("rtpjitterbuffer", GST_LEVEL_NONE);
-    gst_debug_set_threshold_for_name("rtpsession", GST_LEVEL_NONE);
-    gst_debug_set_threshold_for_name("rtpbasedepayload", GST_LEVEL_NONE);
-    gst_debug_set_threshold_for_name("videodecoder", GST_LEVEL_NONE);
-    gst_debug_set_threshold_for_name("basesink", GST_LEVEL_NONE);
-    gst_debug_set_threshold_for_name("default", GST_LEVEL_NONE);
-
-    RCLCPP_INFO(gst_logger, "GStreamer initialized with minimal logging");
 }
 
 GStreamerWorker::~GStreamerWorker()
 {
-    // Remove debug log function
     gst_debug_remove_log_function(minimal_gst_debug_function);
-
-    // Then cleanup GStreamer
     this->cleanupGStreamer();
 }
 
-QString GStreamerWorker::buildPipelineString(const QString& rtspUrl_) const
+std::string GStreamerWorker::buildPipelineString(const std::string& rtspUrl_) const
 {
-    return QString(
-               "rtspsrc location=%1 latency=100 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true ! "
-               "decodebin "
-               "name=dec "
-               "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
-               "t. ! queue max-size-buffers=2 leaky=downstream ! videoscale ! video/x-raw,pixel-aspect-ratio=1/1 ! ximagesink "
-               "sync=false "
-               "t. ! queue max-size-buffers=2 leaky=downstream ! videoconvert ! appsink name=myappsink sync=false")
-        .arg(rtspUrl_);
+    return "rtspsrc location=" + rtspUrl_
+           + " latency=100 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true ! "
+             "decodebin "
+             "name=dec "
+             "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
+             "t. ! queue max-size-buffers=2 leaky=downstream ! videoscale ! video/x-raw,pixel-aspect-ratio=1/1 ! ximagesink "
+             "sync=false "
+             "t. ! queue max-size-buffers=2 leaky=downstream ! videoconvert ! appsink name=myappsink sync=false";
 }
 
 void GStreamerWorker::startPipeline(const QString& rtspUrl_)
@@ -219,16 +179,10 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
     _lastUrl = rtspUrl_;
 
-    QUrl url(rtspUrl_);
-    if (!url.isValid() || url.host().isEmpty())
-    {
-        RCLCPP_ERROR(gst_logger, "Invalid URL or missing host part: %s", rtspUrl_.toStdString().c_str());
-        emit errorOccurred("Invalid URL format");
-        return;
-    }
+    std::string url = rtspUrl_.toStdString();
 
-    const QString pipelineDesc = this->buildPipelineString(rtspUrl_);
-    _pipeline = gst_parse_launch(pipelineDesc.toUtf8().constData(), nullptr);
+    const std::string pipelineDesc = this->buildPipelineString(url);
+    _pipeline = gst_parse_launch(pipelineDesc.c_str(), nullptr);
 
     if (!_pipeline)
     {
@@ -240,8 +194,8 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     GstElement* decodebin = gst_bin_get_by_name(GST_BIN(_pipeline), "dec");
     if (!decodebin)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to get decodebin element");
-        emit errorOccurred("Failed to get decodebin element from pipeline");
+        RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
+        emit errorOccurred("Failed to create GStreamer pipeline");
         gst_object_unref(_pipeline);
         _pipeline = nullptr;
         return;
@@ -253,8 +207,8 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     GstElement* appSink = gst_bin_get_by_name(GST_BIN(_pipeline), "myappsink");
     if (!appSink)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to get appsink");
-        emit errorOccurred("Failed to get appsink");
+        RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
+        emit errorOccurred("Failed to create GStreamer pipeline");
         gst_object_unref(_pipeline);
         _pipeline = nullptr;
         return;
@@ -275,8 +229,8 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(_pipeline));
     if (!bus)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to get GStreamer bus");
-        emit errorOccurred("Failed to get GStreamer bus");
+        RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
+        emit errorOccurred("Failed to create GStreamer pipeline");
         gst_object_unref(_pipeline);
         _pipeline = nullptr;
         return;
@@ -289,19 +243,15 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
     g_object_unref(bus);
 
-    _consecutiveErrorsCount = 0;
+    //GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_PLAYING);
+   // if (ret == GST_STATE_CHANGE_FAILURE)
+   // {
+    //    RCLCPP_ERROR(gst_logger, "Failed to start pipeline");
+    //    emit errorOccurred("Failed to start GStreamer pipeline");
+    //    cleanupGStreamer();
+     //   return;
+    //}
 
-    // Set the pipeline to playing state
-    GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_PLAYING);
-    if (ret == GST_STATE_CHANGE_FAILURE)
-    {
-        RCLCPP_ERROR(gst_logger, "Failed to start pipeline");
-        cleanupGStreamer();
-        emit errorOccurred("Failed to start pipeline");
-        return;
-    }
-
-    RCLCPP_INFO(gst_logger, "Pipeline started for URL: %s", rtspUrl_.toStdString().c_str());
     emit pipelineStarted(_pipeline);
 }
 
@@ -311,18 +261,6 @@ void GStreamerWorker::stopPipeline()
     if (!_pipeline)
         return;
 
-    gst_element_send_event(_pipeline, gst_event_new_eos());
-
-    GstBus* bus = gst_element_get_bus(_pipeline);
-    if (bus)
-    {
-        GstMessage* msg = gst_bus_timed_pop_filtered(bus, GST_SECOND, (GstMessageType)(GST_MESSAGE_EOS | GST_MESSAGE_ERROR));
-        if (msg)
-            gst_message_unref(msg);
-        gst_object_unref(bus);
-    }
-
-    RCLCPP_INFO(gst_logger, "Stopping pipeline");
     this->cleanupGStreamer();
     emit pipelineStopped();
 }
@@ -330,24 +268,17 @@ void GStreamerWorker::stopPipeline()
 void GStreamerWorker::cleanupGStreamer()
 {
     GstElement* pipeline_to_clean = nullptr;
-    
+
     {
         std::lock_guard<std::mutex> lock(_pipelineMutex);
         if (!_pipeline)
             return;
         pipeline_to_clean = _pipeline;
-        _pipeline = nullptr; 
+        _pipeline = nullptr;
     }
 
     if (pipeline_to_clean)
     {
-        GstElement* rtspsrc = gst_bin_get_by_name(GST_BIN(pipeline_to_clean), "rtspsrc0");
-        if (rtspsrc)
-        {
-            gst_element_send_event(rtspsrc, gst_event_new_eos());
-            gst_object_unref(rtspsrc);
-        }
-
         GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline_to_clean));
         if (bus)
         {
@@ -373,17 +304,7 @@ void GStreamerWorker::cleanupGStreamer()
             gst_object_unref(appSink);
         }
 
-        GstStateChangeReturn ret = gst_element_set_state(pipeline_to_clean, GST_STATE_NULL);
-        if (ret == GST_STATE_CHANGE_ASYNC)
-        {
-            GstState state, pending;
-            ret = gst_element_get_state(pipeline_to_clean, &state, &pending, 5 * GST_SECOND);
-            if (ret == GST_STATE_CHANGE_FAILURE)
-            {
-                RCLCPP_ERROR(gst_logger, "Failed to stop pipeline cleanly");
-            }
-        }
-
+        gst_element_set_state(pipeline_to_clean, GST_STATE_NULL);
         gst_object_unref(pipeline_to_clean);
     }
 }
@@ -391,9 +312,4 @@ void GStreamerWorker::cleanupGStreamer()
 void GStreamerWorker::setTargetWidget(QWidget* widget)
 {
     _targetWidget = widget;
-}
-
-QWidget* GStreamerWorker::getTargetWidget() const
-{
-    return _targetWidget;
 }

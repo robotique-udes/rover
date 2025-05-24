@@ -33,7 +33,7 @@ class GStreamerWorker : public QObject
 
   private:
     mutable std::mutex _pipelineMutex;
-    QString buildPipelineString(const QString& rtspUrl_) const;
+    std::string buildPipelineString(const std::string& rtspUrl_) const;
     void cleanupGStreamer();
 
     GstElement* _pipeline = nullptr;
