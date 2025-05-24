@@ -18,6 +18,9 @@ struct emplacement
 
 class PhotoPanoramique : public rclcpp::Node
 {
+  private:
+  static constexpr uint8_t FPS = 30U;
+
   public:
     PhotoPanoramique();
 
@@ -26,14 +29,14 @@ class PhotoPanoramique : public rclcpp::Node
     emplacement sCoordoneesGps;
 
     // fonction pour enlever le warping
-    cv::Mat warpCorrection(cv::Mat pano);
+    cv::Mat warpCorrection(const cv::Mat& pano);
 
     std::string getCurrentTime(void);
     bool createFolder(const std::string& path_);
     bool folderExists(const std::string& path_);
 
     // fonction pour le stitching de la photo
-    cv::Mat stitching(std::vector<cv::Mat> imagesCam);
+    cv::Mat stitching(std::vector<cv::Mat>& imagesCam);
 
     // fonction pour aller chercher la position GPS
     void PositionGPS(const rover_msgs::msg::GpsPosition& gpsMessage_);

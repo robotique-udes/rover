@@ -39,7 +39,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     // int apiID = cv::CAP_ANY;
     // cap.open(path_camera, apiID);
 
-    std::string pipeline = "rtspsrc location= rtsp://rovus:rovusrovus@" + request_->camera_id
+    std::string pipeline = "rtspsrc location= rtsp://rovus:rovusrovus@" + request_->camera_url
                            + ":554/1/h264major latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! "
                              "queue max-size-buffers=1 ! appsink";
 
@@ -55,29 +55,25 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     // paramètres pour le traitement des images
     cv::Mat frame;
     std::vector<cv::Mat> imagesCam;
-    bool takingPanorama = true;
 
     RCLCPP_INFO(this->get_logger(), "Début de la capture vidéo pour la panoramique");
 
     // création de la liste d'image
-    int i = 0;
-    while (takingPanorama)
-    {
-        cap.read(frame);
 
-        // Stocker les images pour le panorama
-        if (i % 5 == 0)  // ici pour changer la fréquence de prise d'images
+    bool frameValid;
+    for(size_t i = 0; i < FPS * request_->duration; i++)
+    {
+        frameValid = cap.read(frame);
+
+        if(!frameValid)
         {
-            imagesCam.push_back(frame.clone());
+            RCLCPP_ERROR(this->get_logger(), "Blank frame grabbed");
         }
 
-        i = i + 1;
-
-        // Gestion du temps alloue pour prendre la panoramique
-        if (i == 200)  // ici pour changer la quantite de frames a attendre avant d'arreter
+        // Stocker les images pour le panorama
+        if (i % 5 == 0 && frameValid)  // ici pour changer la fréquence de prise d'images
         {
-            takingPanorama = false;
-            RCLCPP_INFO(this->get_logger(), "Arrêté avec succès");
+            imagesCam.push_back(frame.clone());
         }
     }
 
@@ -98,7 +94,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     // ajout du text
     cv::Size dimensions = panoRectangle.size();
     int hauteur = dimensions.height;
-    std::string nomPhoto = request_->nom;
+    std::string nomPhoto = request_->panorama_name;
     putText(panoRectangle, coordGps, cv::Point(10, hauteur - 20), cv::FONT_HERSHEY_SIMPLEX, 3.0, cv::Scalar(34, 139, 34), 5);
     putText(panoRectangle, nomPhoto, cv::Point(10, hauteur - 120), cv::FONT_HERSHEY_SIMPLEX, 3.0, cv::Scalar(34, 139, 34), 5);
 
@@ -118,20 +114,34 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     response_->success = true;
 }
 
-cv::Mat PhotoPanoramique::warpCorrection(cv::Mat pano)
+cv::Mat PhotoPanoramique::warpCorrection(const cv::Mat& pano)
 {
-    cv::Size dimensions = pano.size();
+    if (pano.empty())
+    {
+        RCLCPP_WARN(this->get_logger(), "Image vide reçue pour correction de warping.");
+        return pano;
+    }
 
-    int width = dimensions.width;
-    int hauteur = dimensions.height;
+    int width = pano.cols;
+    int height = pano.rows;
 
-    cv::Rect coupe(300, 300, width - 500, hauteur - 500);
-    cv::Mat panoRectangle = pano(coupe);
+    int marginX = width * 0.10;   // 10% à gauche et à droite
+    int marginY = height * 0.10;  // 10% en haut et en bas
 
-    return panoRectangle;
+    int cropWidth = std::max(1, width - 2 * marginX);
+    int cropHeight = std::max(1, height - 2 * marginY);
+
+    if (cropWidth <= 0 || cropHeight <= 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Dimensions invalides pour la découpe du panorama.");
+        return pano;
+    }
+
+    cv::Rect roi(marginX, marginY, cropWidth, cropHeight);
+    return pano(roi).clone();
 }
 
-cv::Mat PhotoPanoramique::stitching(std::vector<cv::Mat> imagesCam)
+cv::Mat PhotoPanoramique::stitching(std::vector<cv::Mat>& imagesCam)
 {
     if (imagesCam.empty())
     {
@@ -140,7 +150,7 @@ cv::Mat PhotoPanoramique::stitching(std::vector<cv::Mat> imagesCam)
     }
 
     cv::Mat pano;
-    RCLCPP_INFO(this->get_logger(), "Maintenant en essai de stitching");
+    RCLCPP_DEBUG(this->get_logger(), "Maintenant en essai de stitching");
     cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
 
     cv::Stitcher::Status status = stitcher->stitch(imagesCam, pano);
@@ -178,7 +188,7 @@ bool PhotoPanoramique::createFolder(const std::string& path_)
     {
         if (mkdir(path_.c_str(), 0775) == 0)
         {
-            RCLCPP_INFO(this->get_logger(), "Succesfully created the folder.");
+            RCLCPP_DEBUG(this->get_logger(), "Succesfully created the folder.");
             return true;
         }
         else
