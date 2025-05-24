@@ -32,6 +32,8 @@ class QTopUtilityBar : public QWidget
 
     static constexpr const size_t WATCH_DOG_TIMEOUT = 1000UL;
 
+    static constexpr const size_t MAX_SUB_QUEUE = 5UL;
+
   public:
     QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
 

@@ -1,4 +1,6 @@
 #include "QTopUtilityBar.hpp"
+#include "rover_lib2/helpers/constants.hpp"
+
 #include <QIcon>
 
 
@@ -43,7 +45,7 @@ void QTopUtilityBar::initBatterySubscriber(void)
     if (_node)
     {
         _sub_battery = _node->create_subscription<rover_msgs::msg::Battery>(TOPIC_BATTERY,
-                                                                            5,
+                                                                            MAX_SUB_QUEUE,
                                                                             [this](rover_msgs::msg::Battery msg)
                                                                             {
                                                                                 CB_battery(msg);
@@ -72,7 +74,7 @@ void QTopUtilityBar::initWifiConnection(void)
     {
         _sub_wifiConnection
             = _node->create_subscription<rover_msgs::msg::WifiConnection>(TOPIC_WIFI_CONNECTION,
-                                                                          5,
+                                                                          MAX_SUB_QUEUE,
                                                                           [this](rover_msgs::msg::WifiConnection msg)
                                                                           {
                                                                               CB_wifiConnection(msg);
@@ -100,7 +102,7 @@ void QTopUtilityBar::initGNSS(void)
     if (_node)
     {
         _sub_GNSS = _node->create_subscription<rover_msgs::msg::Gps>(TOPIC_GNSS,
-                                                                     5,
+                                                                     MAX_SUB_QUEUE,
                                                                      [this](rover_msgs::msg::Gps msg)
                                                                      {
                                                                          CB_GNSS(msg);
@@ -241,13 +243,12 @@ void QTopUtilityBar::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
     _ui.latitudeLabel->setText("Lat: " + QString::number(static_cast<float>(lat_), 'f', 6));
     _ui.longitudeLabel->setText("Long: " + QString::number(static_cast<float>(long_), 'f', 6));
 
-
     _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSIcon.svg"));
     _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingIcon.svg"));
 
     std::string fixQuality;
 
-    switch (fix_) 
+    switch (fix_)
     {
         case 0: 
             fixQuality = "NF";    
