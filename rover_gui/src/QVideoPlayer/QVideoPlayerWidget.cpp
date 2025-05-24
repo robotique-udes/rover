@@ -6,6 +6,7 @@
 #include <QScrollBar>
 #include <QRegularExpression>
 #include <optional>
+#include <format>
 #include <gst/video/videooverlay.h>
 #include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 
@@ -94,7 +95,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
 
     connect(_ui.angleCenterButton, &QPushButton::clicked, this, &QVideoPlayerWidget::onCenterAngle);
+    connect(_ui.panoramaButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePanorama);
     connect(_panoramaWorkerThread.get(), &QPanoramaWorker::PanoramaStarted, this, &QVideoPlayerWidget::onPanoramaStarted);
+    connect(_ui.panoramaDurationBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::setPanoramaDuration);
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
@@ -1186,7 +1189,7 @@ void QVideoPlayerWidget::handlePanorama(void)
                                                    _camURL,
                                                    _playerIndex,
                                                    _sessionFolderPath,
-                                                   DEFAULT_PANORAMA_DURATION_SECONDS);
+                                                   _panoramaDuration);
     }
     else
     {
@@ -1208,20 +1211,26 @@ void QVideoPlayerWidget::setPanoramaClientManager(std::shared_ptr<rclcpp::Client
 
 void QVideoPlayerWidget::onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_)
 {
-    if(_playerIndex == playerIndex_)
+    if (_playerIndex == playerIndex_)
     {
-    QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama started",
-                                                                   "Duration:" + std::to_string(duration_) + " seconds",
-                                                                   QHelper::QToastNotification::eNotifType::SUCCESS);
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+            "Panorama started",
+            "Duration: " + std::to_string(duration_/1000.0) + " seconds",
+            QHelper::QToastNotification::eNotifType::SUCCESS);
 
-    QTimer::singleShot(duration_*1000,
-                       this,
-                       [this]()
-                       {
-                        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama done",
-                            "Picture was saved to the session folder under camera/panorama",
-                            QHelper::QToastNotification::eNotifType::SUCCESS);
-                       });
-
+        QTimer::singleShot(duration_,
+                           this,
+                           [this]()
+                           {
+                               QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                                   "Panorama done",
+                                   "Picture was saved to the session folder under camera/panorama",
+                                   QHelper::QToastNotification::eNotifType::SUCCESS);
+                           });
     }
+}
+
+void QVideoPlayerWidget::setPanoramaDuration(void)
+{
+    _panoramaDuration = _ui.panoramaDurationBox->value() * 1000;
 }

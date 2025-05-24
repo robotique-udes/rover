@@ -31,7 +31,6 @@ class QVideoPlayerWidget : public QWidget
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
     static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
-    static constexpr size_t DEFAULT_PANORAMA_DURATION_SECONDS = 5U;
 
     static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
 
@@ -116,6 +115,7 @@ class QVideoPlayerWidget : public QWidget
 
     void handlePanorama(void);
     void onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_);
+    void setPanoramaDuration(void);
 
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
@@ -170,6 +170,7 @@ class QVideoPlayerWidget : public QWidget
     QTimer _reconnectTimer;
     QTimer _frameTimeoutTimer;
     QTimer _connectionTimeoutTimer;
+    uint16_t _panoramaDuration = 5000U;
 };
 
 #endif

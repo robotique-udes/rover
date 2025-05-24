@@ -19,10 +19,10 @@ struct emplacement
 class PhotoPanoramique : public rclcpp::Node
 {
   private:
-  static constexpr uint8_t FPS = 30U;
-  static constexpr float CROP_PERCENT = 0.10f;
-  static constexpr size_t FRAMES_TO_SKIP = 5U;
-  static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
+    static constexpr uint8_t FPS = 30U;
+    static constexpr float CROP_PERCENT = 0.10f;
+    static constexpr size_t FRAMES_TO_SKIP = 5U;
+    static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
 
   public:
     PhotoPanoramique();

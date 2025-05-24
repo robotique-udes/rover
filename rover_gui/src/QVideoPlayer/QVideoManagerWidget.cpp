@@ -60,7 +60,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThreadRecording->setThreadName("WorkerRecord");
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
-
 }
 
 void QVideoManagerWidget::onTabChanged(uint16_t index_)
@@ -151,8 +150,12 @@ void QVideoManagerWidget::initWidget(void)
                            nullptr);
         }
 
-        _videoPlaysWidgets[i]
-            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording, _panoramaWorkerThread);
+        _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node,
+                                                                     cameraUrl,
+                                                                     i,
+                                                                     _playerWorkerThreadAruco,
+                                                                     _playerWorkerThreadRecording,
+                                                                     _panoramaWorkerThread);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
@@ -318,5 +321,4 @@ void QVideoManagerWidget::initPanoramaClient(void)
     {
         widget->setPanoramaClientManager(_client_panoramique);
     }
-
 }

@@ -478,6 +478,28 @@
        </property>
       </widget>
      </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="panoramaDurationBox">
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string> sec</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>15.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>5.000000000000000</double>
+       </property>
+      </widget>
+     </item>
     </layout>
    </item>
   </layout>

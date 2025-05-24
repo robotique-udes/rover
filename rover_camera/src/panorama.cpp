@@ -62,11 +62,11 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
 
     bool frameValid;
     uint8_t invalidFramesCounter = 0;
-    for(size_t i = 0; i < FPS * request_->duration; i++)
+    for (size_t i = 0; i < FPS * request_->duration / 1000; i++)
     {
         frameValid = cap.read(frame);
 
-        if(!frameValid)
+        if (!frameValid)
         {
             RCLCPP_ERROR(this->get_logger(), "Blank frame grabbed");
             invalidFramesCounter++;
@@ -78,7 +78,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
             imagesCam.push_back(frame.clone());
         }
 
-        if(invalidFramesCounter >= MAX_INVALID_FRAMES)
+        if (invalidFramesCounter >= MAX_INVALID_FRAMES)
         {
             RCLCPP_ERROR(this->get_logger(), "Too many blank frame grabbed, stopping capture");
             break;
@@ -134,7 +134,7 @@ cv::Mat PhotoPanoramique::warpCorrection(const cv::Mat& pano)
     int height = pano.rows;
 
     int marginX = width * CROP_PERCENT;
-    int marginY = height * CROP_PERCENT; 
+    int marginY = height * CROP_PERCENT;
 
     int cropWidth = std::max(1, width - 2 * marginX);
     int cropHeight = std::max(1, height - 2 * marginY);
