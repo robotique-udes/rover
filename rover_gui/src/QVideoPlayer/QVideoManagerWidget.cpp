@@ -341,7 +341,7 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
             for (auto& widget : _videoPlaysWidgets)
             {
                 std::map<std::string, std::string>::const_iterator camInfo = Constants::CameraInfo::CAMERA_URL_MAP.begin();
-                std::advance(camInfo, msg.id_cam); 
+                std::advance(camInfo, msg.id_cam);
                 widget->CB_updateActualAngle(camInfo->second, msg.yaw);
             }
         });

@@ -1252,7 +1252,6 @@ void QVideoPlayerWidget::panoramaTurnCamera(void)
     _ui.cameraAngleSlider->setValue(CAMERA_MAX_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_MAX_ANGLE);
 
-
     QTimer::singleShot(_panoramaDuration,
                        this,
                        [this]()
