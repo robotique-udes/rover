@@ -48,6 +48,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _mainLayout.addWidget(&_tabWidget);
     this->setLayout(&_mainLayout);
 
+    _altLayout.addWidget(&_splitter);
     _tabWidget.addTab(&_gridContainer, "grid");
     _tabWidget.addTab(&_altLayoutContainer, "alt");
 
@@ -79,8 +80,13 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
             _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
         if (_videoPlaysWidgets[2])
             _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+
+        _splitter.addWidget(&_vSubLayoutContainer);
+
         if (_videoPlaysWidgets[0])
-            _altLayout.insertWidget(0, _videoPlaysWidgets[0].get());
+        {
+            _splitter.insertWidget(0, _videoPlaysWidgets[0].get());
+        }
     }
 }
 
