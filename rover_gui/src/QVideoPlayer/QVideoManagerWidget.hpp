@@ -68,4 +68,4 @@ class QVideoManagerWidget : public QWidget
     std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };
 
-#endif
+#endif //QVIDEO_PLAYER_HPP
