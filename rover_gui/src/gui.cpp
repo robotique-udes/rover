@@ -3,6 +3,7 @@
 
 #include "MainWindow.hpp"
 #include "SecondaryWindow.hpp"
+#include "QScreenInhibitor.hpp"
 
 #include <QApplication>
 #include <QLabel>
@@ -48,6 +49,8 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
     app.setApplicationName(WM_CLASS);
     QApplication::setStyle("Fusion");
     app.setStyleSheet(Constants::Style::STYLE_DARK_MODE + QString(Constants::Style::STATUS_STYLE));
+
+    ScreenInhibitor screenInhibitor;
 
     MainWindow mainWindow(guiNode_);
     SecondaryWindow secondaryWindow(guiNode_);
