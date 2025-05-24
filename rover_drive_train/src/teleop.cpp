@@ -33,15 +33,15 @@ class Teleop : public rclcpp::Node
 
         if (floatToBool(deadmanSwitch))
         {
-            float speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            float speedFactor = Constants::DriveTrain::SPEED_FACTOR_CRAWLER;
 
-            if (floatToBool(modeNormalEnable))
-            {
-                speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            }
             if (modeTurboEnable > 0.5f && floatToBool(modeNormalEnable))
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_TURBO;
+            }
+            else if (floatToBool(modeNormalEnable))
+            {
+                speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             }
 
             float speedLeftMotor = linearInput * speedFactor;
