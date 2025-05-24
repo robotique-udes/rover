@@ -186,10 +186,10 @@ void QVideoManagerWidget::initCameraControlClient(void)
         std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
         [this](void)
         {
-            bool availble = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
+            bool available = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
             for (auto& widget : _videoPlaysWidgets)
             {
-                widget->CB_serviceCameraControlAvailable(availble);
+                widget->CB_serviceCameraControlAvailable(available);
             }
         });
     return;

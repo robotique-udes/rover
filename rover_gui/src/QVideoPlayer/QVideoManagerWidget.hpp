@@ -23,7 +23,7 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* CAMERA_ANGLE_CONTROL_TOPIC = "/rover/cameras/pos_control";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
-    static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 1000U;
+    static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 100U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
     static constexpr std::array<const char*, 5> CAMERA_NAME_ORDER = {
         "Main",
