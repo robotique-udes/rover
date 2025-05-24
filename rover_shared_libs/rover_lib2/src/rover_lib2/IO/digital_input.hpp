@@ -31,7 +31,6 @@ namespace IO
                 gpio_reset_pin(pin_);
                 this->setMode(mode_);
                 this->setPullMode(pullMode_);
-                this->setPowerMode(powerMode_);
             }
         }
 
