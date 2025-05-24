@@ -7,7 +7,7 @@ class BatteryPublisher : public rclcpp::Node
     BatteryPublisher():
         Node("battery_publisher")
     {
-        _pourcentage = 100;
+        _percent = 100;
         _publisher = this->create_publisher<rover_msgs::msg::Battery>("/rover/auxiliary/battery", 10);
         _timer = this->create_wall_timer(std::chrono::seconds(1), std::bind(&BatteryPublisher::publish_battery, this));
     }
@@ -16,18 +16,18 @@ class BatteryPublisher : public rclcpp::Node
     void publish_battery()
     {
         auto msg = rover_msgs::msg::Battery();
-        msg.pourcentage = _pourcentage;
+        msg.state_of_charge = _percent;
         _publisher->publish(msg);
-        _pourcentage -= 8;
-        if (_pourcentage >= 100)
+        _percent -= 8;
+        if (_percent >= 100)
         {
-            _pourcentage = 100;
+            _percent = 100;
         }
     }
 
     rclcpp::Publisher<rover_msgs::msg::Battery>::SharedPtr _publisher;
     rclcpp::TimerBase::SharedPtr _timer;
-    uint8_t _pourcentage;
+    uint8_t _percent;
 };
 
 int main(int argc, char* argv[])

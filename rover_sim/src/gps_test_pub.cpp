@@ -21,7 +21,6 @@ class GpsPublisher : public rclcpp::Node
         msg.height = 0.0;
         msg.heading_gps = 0.0;
         msg.heading_track = 0.0;
-        msg.speed = 0.0;
         msg.satellite = 8;
         msg.heading = M_PI;
         msg.fix_quality = 3;

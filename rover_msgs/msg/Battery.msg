@@ -1,1 +1,1 @@
-float32 pourcentage
+float32 state_of_charge

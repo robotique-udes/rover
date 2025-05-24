@@ -72,11 +72,7 @@ void QTopUtilityBar::initBatterySubscriber(void)
         _watchdog_battery = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                      [this](void)
                                                      {
-                                                         if ((_node->now() - _lastBatteryTimeMsg) > _battery_timeout)
-                                                         {
-                                                             QIcon icon(":/icons/BatteryError.svg");
-                                                             _ui.batteryIcon->setIcon(icon);
-                                                         }
+                                                         CB_batteryTimeout();
                                                      });
     }
     else
@@ -112,11 +108,7 @@ void QTopUtilityBar::initWifiConnection(void)
         _watchdog_wifi = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                   [this](void)
                                                   {
-                                                      if ((_node->now() - _lastWifiTimeMsg) > _wifi_timeout)
-                                                      {
-                                                          QIcon icon(":/icons/ErrorRSSI.png");
-                                                          _ui.RSSILabel->setIcon(icon);
-                                                      }
+                                                      CB_wifiConnectionTimeout();
                                                   });
     }
     else
@@ -154,11 +146,7 @@ void QTopUtilityBar::initGNSS(void)
         _watchdog_GNSS = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                   [this](void)
                                                   {
-                                                      if ((_node->now() - _lastGNSSTimeMsg) > _GNSS_timeout)
-                                                      {
-                                                          _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSError.svg"));
-                                                          _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingError.svg"));
-                                                      }
+                                                      CB_GNSSTimeout();
                                                   });
     }
     else
@@ -182,7 +170,7 @@ void QTopUtilityBar::CB_battery(rover_msgs::msg::Battery& msg_)
     QIcon icon(":/icons/BatteryError.svg");
     _ui.batteryIcon->setIcon(icon);
 
-    emit this->updateBatteryUI(msg_.pourcentage);
+    emit this->updateBatteryUI(msg_.state_of_charge);
 }
 
 void QTopUtilityBar::CB_wifiConnection(rover_msgs::msg::WifiConnection& msg_)
@@ -218,24 +206,24 @@ void QTopUtilityBar::CB_timerDisplaying(void)
     emit this->updateTimer(secondsBeforeTimeout);
 }
 
-void QTopUtilityBar::onUpdateBatteryUI(float pourcent_)
+void QTopUtilityBar::onUpdateBatteryUI(float _percent)
 {
-    _ui.batteryLabel->setText(QString::number(static_cast<int>(pourcent_)) + " %");
+    _ui.batteryLabel->setText(QString::number(static_cast<int>(_percent)) + " %");
     QIcon icon;
 
-    if (pourcent_ >= 85)
+    if (_percent >= 85)
     {
         icon = QIcon(":/icons/BatteryIcon100.svg");
     }
-    else if (pourcent_ >= 55)
+    else if (_percent >= 55)
     {
         icon = QIcon(":/icons/BatteryIcon75.svg");
     }
-    else if (pourcent_ >= 40)
+    else if (_percent >= 40)
     {
         icon = QIcon(":/icons/BatteryIcon50.svg");
     }
-    else if (pourcent_ >= 20)
+    else if (_percent >= 20)
     {
         icon = QIcon(":/icons/BatteryIcon25.svg");
     }
@@ -276,7 +264,7 @@ void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
 
 void QTopUtilityBar::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_)
 {
-    _ui.HeadingLabel->setText(QString::number(static_cast<float>(heading_), 'f', 2) + " deg   ");
+    _ui.HeadingLabel->setText(QString::number((heading_), 'f', 2) + " deg   ");
     _ui.satellitesNbrLabel->setText(QString::number(static_cast<int>(satNbr_)) + "   ");
     _ui.latitudeLabel->setText("Lat: " + QString::number(static_cast<float>(lat_), 'f', 6));
     _ui.longitudeLabel->setText("Long: " + QString::number(static_cast<float>(long_), 'f', 6));
@@ -354,6 +342,32 @@ void QTopUtilityBar::onUpdateTimer(int secondsBeforeTimeOut_)
     {
         _ui.timerLabel->setText("OVER");
         _ui.timerLabel->setStyleSheet("QLabel { color : red; }");
+    }
+}
+
+
+void QTopUtilityBar::CB_batteryTimeout()
+{
+    if ((_node->now() - _lastBatteryTimeMsg) > _battery_timeout)
+    {
+        QIcon icon(":/icons/BatteryError.svg");
+        _ui.batteryIcon->setIcon(icon);
+    }
+}
+void QTopUtilityBar::CB_wifiConnectionTimeout()
+{
+    if ((_node->now() - _lastWifiTimeMsg) > _wifi_timeout)
+    {
+        QIcon icon(":/icons/ErrorRSSI.png");
+        _ui.RSSILabel->setIcon(icon);
+    }
+}
+void QTopUtilityBar::CB_GNSSTimeout()
+{
+    if ((_node->now() - _lastBatteryTimeMsg) > _battery_timeout)
+    {
+        QIcon icon(":/icons/BatteryError.svg");
+        _ui.batteryIcon->setIcon(icon);
     }
 }
 

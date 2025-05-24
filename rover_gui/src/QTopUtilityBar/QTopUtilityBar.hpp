@@ -32,7 +32,7 @@ class QTopUtilityBar : public QWidget
     static constexpr const size_t DELAY_UPDATE_TIMER_MS = 1000UL;
 
     static constexpr const size_t WATCH_DOG_DELAY_MS = 1000UL;
-    static constexpr const float WATCH_DOG_TIMEOUT = 1.0f;
+    static constexpr const float WATCH_DOG_TIMEOUT = 1.0F;
 
     static constexpr const size_t MAX_SUB_QUEUE = 5UL;
 
@@ -40,13 +40,13 @@ class QTopUtilityBar : public QWidget
     QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
 
   signals:
-    void updateBatteryUI(float pourcent_);
+    void updateBatteryUI(float _percent);
     void updateWifiUI(float rssi_, float speed_);
     void updateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void updateTimer(int secondsBeforeTimeOut_);
 
   private slots:
-    void onUpdateBatteryUI(float pourcent_);
+    void onUpdateBatteryUI(float _percent);
     void onUpdateWifiUI(float rssi_, float speed_);
     void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
@@ -65,6 +65,10 @@ class QTopUtilityBar : public QWidget
     void CB_GNSS(rover_msgs::msg::Gps& msg_);
     void CB_timerDisplaying(void);
     void updateTimeZone(void);
+
+    void CB_batteryTimeout();
+    void CB_wifiConnectionTimeout();
+    void CB_GNSSTimeout();
 
     void simulateTimerFileReading(void);
 
