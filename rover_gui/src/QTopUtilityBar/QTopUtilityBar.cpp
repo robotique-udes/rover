@@ -11,15 +11,15 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
 {
     _ui.setupUi(this);
 
-    _lastBatteryTimeMsg = _node->now();
-    _lastWifiTimeMsg = _node->now();
-    _lastGNSSTimeMsg = _node->now();
+    _lastBatteryTimeMsg = _node->now(void);
+    _lastWifiTimeMsg = _node->now(void);
+    _lastGNSSTimeMsg = _node->now(void);
 
-    this->setupUI();
-    this->initBatterySubscriber();
-    this->initWifiConnection();
-    this->initGNSS();
-    this->initTimerDisplay();
+    this->setupUI(void);
+    this->initBatterySubscriber(void);
+    this->initWifiConnection(void);
+    this->initGNSS(void);
+    this->initTimerDisplay(void);
 
     connect(this, &QTopUtilityBar::updateBatteryUI, this, &QTopUtilityBar::onUpdateBatteryUI);
     connect(this, &QTopUtilityBar::updateWifiUI, this, &QTopUtilityBar::onUpdateWifiUI);
@@ -52,9 +52,9 @@ void QTopUtilityBar::initBatterySubscriber(void)
     {
         _sub_battery = _node->create_subscription<rover_msgs::msg::Battery>(TOPIC_BATTERY,
                                                                             MAX_SUB_QUEUE,
-                                                                            [this](rover_msgs::msg::Battery msg)
+                                                                            [this](rover_msgs::msg::Battery msg_)
                                                                             {
-                                                                                CB_battery(msg);
+                                                                                CB_battery(msg_);
                                                                             });
 
         _timer_batteryPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_BATTERY_PUB_COUNT_MS),
@@ -123,9 +123,9 @@ void QTopUtilityBar::initGNSS(void)
     {
         _sub_GNSS = _node->create_subscription<rover_msgs::msg::Gps>(TOPIC_GNSS,
                                                                      MAX_SUB_QUEUE,
-                                                                     [this](rover_msgs::msg::Gps msg)
+                                                                     [this](rover_msgs::msg::Gps msg_)
                                                                      {
-                                                                         CB_GNSS(msg);
+                                                                         CB_GNSS(msg_);
                                                                      });
 
         _timer_GNSSPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_GNSS_PUB_COUNT_MS),
