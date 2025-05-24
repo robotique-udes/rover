@@ -2,11 +2,14 @@
 #define QTOP_UTILITY_BAR
 
 #include "rclcpp/rclcpp.hpp"
+#include "rover_lib2/helpers/ip_pinging.hpp"
 #include "rover_msgs/msg/gps.hpp"
+#include "rover_lib2/helpers/watchdog.hpp"
 
 #include "UI_TopUtilityBar.h"
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
+#include <cstddef>
 #include <rover_msgs/msg/battery.hpp>
 #include <rover_msgs/msg/gps.hpp>
 #include <rover_msgs/msg/wifi_connection.hpp>
@@ -27,19 +30,21 @@ class QTopUtilityBar : public QWidget
 
     static constexpr const size_t DELAY_UPDATE_TIMER_MS = 1000UL;
 
+    static constexpr const size_t WATCH_DOG_TIMEOUT = 1000UL;
+
   public:
     QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
 
   signals:
-    void updateBatteryUI(uint8_t pourcent_);
+    void updateBatteryUI(float pourcent_);
     void updateWifiUI(float rssi_, float speed_);
-    void updateGNSS(float fix_, float heading_, uint8_t satNbr_);
+    void updateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void updateTimer(int secondsBeforeTimeOut_);
 
   private slots:
-    void onUpdateBatteryUI(uint8_t pourcent_);
+    void onUpdateBatteryUI(float pourcent_);
     void onUpdateWifiUI(float rssi_, float speed_);
-    void onUpdateGNSS(float fix_, float heading_, uint8_t satNbr_);
+    void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,float long_, float lat_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
 
   private:
@@ -49,6 +54,7 @@ class QTopUtilityBar : public QWidget
     void initWifiConnection(void);
     void initGNSS(void);
     void initTimerDisplay(void);
+    void initWatchdog(void);
 
     void CB_battery(rover_msgs::msg::Battery& msg_);
     void CB_wifiConnection(rover_msgs::msg::WifiConnection& msg_);

@@ -6,9 +6,8 @@ float32 heading_gps
 float32 heading_track
 float32 speed
 uint8 satellite
+uint8 fix_quality
 
 # From magnetometer
 float32 heading
 
-# Added
-float32 fix

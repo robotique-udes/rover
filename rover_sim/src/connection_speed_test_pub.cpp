@@ -18,9 +18,8 @@ class ConnectionSpeedPublisher : public rclcpp::Node
     void publish_connection_speed()
     {
         auto msg = rover_msgs::msg::WifiConnection();
-        msg.speed_connection = _speed_connection;
+        msg.link_speed = _speed_connection;
         msg.rssi = _connection_quality;
-        msg.valid = true;
         _publisher->publish(msg);
         _speed_connection += 1;
         _connection_quality -= 2;

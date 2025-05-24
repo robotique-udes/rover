@@ -17,7 +17,6 @@ class BatteryPublisher : public rclcpp::Node
     {
         auto msg = rover_msgs::msg::Battery();
         msg.pourcentage = _pourcentage;
-        msg.valid = true;
         _publisher->publish(msg);
         _pourcentage -= 8;
         if (_pourcentage >= 100)

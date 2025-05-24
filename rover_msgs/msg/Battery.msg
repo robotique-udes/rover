@@ -1,2 +1,1 @@
-bool valid
-uint8 pourcentage
+float32 pourcentage

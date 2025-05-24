@@ -1,6 +1,7 @@
 #include "QTopUtilityBar.hpp"
 #include <QIcon>
 
+
 QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
     _node(node_)
@@ -23,9 +24,9 @@ void QTopUtilityBar::setupUI(void)
     _timeZone = QTimeZone("America/Montreal");
 
     _ui.batteryLabel->setText("-- %");
-    _ui.signalQualityLabel->setText("RSSI: ---   ");
-    _ui.connectionSpeedLabel->setText("--.- Mb/s   ");
-    _ui.satellitesNbrLabel->setText("Sat: -- ");
+    _ui.signalQualityLabel->setText("RSSI: ---");
+    _ui.connectionSpeedLabel->setText("--.- Mb/s");
+    _ui.satellitesNbrLabel->setText("Sat: --");
     _ui.GNSSFixLabel->setText("Fix: --.-------");
     _ui.HeadingLabel->setText("---.--");
 
@@ -137,35 +138,24 @@ void QTopUtilityBar::initTimerDisplay(void)
 
 void QTopUtilityBar::CB_battery(rover_msgs::msg::Battery& msg_)
 {
-    bool valid = msg_.valid;
-    if (!valid)
-    {
-        QIcon icon(":/icons/BatteryError.svg");
-        _ui.batteryIcon->setIcon(icon);
-    }
-    else
-    {
-        emit this->updateBatteryUI(msg_.pourcentage);
-    }
+
+    QIcon icon(":/icons/BatteryError.svg");
+    _ui.batteryIcon->setIcon(icon);
+    
+    emit this->updateBatteryUI(msg_.pourcentage);
 }
 
 void QTopUtilityBar::CB_wifiConnection(rover_msgs::msg::WifiConnection& msg_)
 {
-    bool valid = msg_.valid;
-    if (!valid)
-    {
-        QIcon icon(":/icons/RSSIError.svg");
-        _ui.RSSILabel->setIcon(icon);
-    }
-    else
-    {
-        emit this->updateWifiUI(msg_.rssi, msg_.speed_connection);
-    }
+    QIcon icon(":/icons/RSSIError.svg");
+    _ui.RSSILabel->setIcon(icon);
+
+    emit this->updateWifiUI(msg_.rssi, msg_.link_speed);
 }
 
 void QTopUtilityBar::CB_GNSS(rover_msgs::msg::Gps& msg_)
 {
-    emit this->updateGNSS(msg_.fix, msg_.heading, msg_.satellite);
+    emit this->updateGNSS(msg_.fix_quality, msg_.heading, msg_.satellite, msg_.longitude, msg_.latitude);
 }
 
 void QTopUtilityBar::CB_timerDisplaying(void)
@@ -188,7 +178,7 @@ void QTopUtilityBar::CB_timerDisplaying(void)
     emit this->updateTimer(secondsBeforeTimeout);
 }
 
-void QTopUtilityBar::onUpdateBatteryUI(uint8_t pourcent_)
+void QTopUtilityBar::onUpdateBatteryUI(float pourcent_)
 {
     _ui.batteryLabel->setText(QString::number(static_cast<int>(pourcent_)) + " %");
     QIcon icon;
@@ -219,8 +209,8 @@ void QTopUtilityBar::onUpdateBatteryUI(uint8_t pourcent_)
 
 void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
 {
-    _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_)) + "   ");
-    _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_), 'f', 1) + " Mb/s   ");
+    _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_)));
+    _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_), 'f', 1) + " Mb/s");
 
     QIcon icon;
 
@@ -234,7 +224,6 @@ void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
     }
     else if (rssi_ > -75 && rssi_ <= -65)
     {
-        qDebug("yess");
         icon = QIcon(":/icons/RSSI_three.png");
     }
     else
@@ -245,14 +234,55 @@ void QTopUtilityBar::onUpdateWifiUI(float rssi_, float speed_)
     _ui.RSSILabel->setIcon(icon);
 }
 
-void QTopUtilityBar::onUpdateGNSS(float fix_, float heading_, uint8_t satNbr_)
+void QTopUtilityBar::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_)
 {
     _ui.HeadingLabel->setText(QString::number(static_cast<float>(heading_), 'f', 2) + " deg   ");
     _ui.satellitesNbrLabel->setText(QString::number(static_cast<int>(satNbr_)) + "   ");
-    _ui.GNSSFixLabel->setText("Fix: " + QString::number(static_cast<float>(fix_), 'f', 6) + "   ");
+    _ui.latitudeLabel->setText("Lat: " + QString::number(static_cast<float>(lat_), 'f', 6));
+    _ui.longitudeLabel->setText("Long: " + QString::number(static_cast<float>(long_), 'f', 6));
+
 
     _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSIcon.svg"));
     _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingIcon.svg"));
+
+    std::string fixQuality;
+
+    switch (fix_) 
+    {
+        case 0: 
+            fixQuality = "NF";    
+            break;
+        case 1: 
+            fixQuality = "GPS";   
+            break;
+        case 2:
+            fixQuality = "DGPS";  
+            break;
+        case 3:
+            fixQuality = "PPS";   
+            break;
+        case 4:
+            fixQuality = "RTK";   
+            break;
+        case 5:
+            fixQuality = "RTK-F"; 
+            break;
+        case 6:
+            fixQuality = "EST";   
+            break;
+        case 7:
+            fixQuality = "MAN";   
+            break;
+        case 8:
+            fixQuality = "SIM";   
+            break;
+        default:
+            fixQuality = "UNK";  
+            break;
+    }
+
+    _ui.GNSSFixLabel->setText("Fix Quality: " + QString::fromStdString(fixQuality));
+
 }
 
 void QTopUtilityBar::onUpdateTimer(int secondsBeforeTimeOut_)
