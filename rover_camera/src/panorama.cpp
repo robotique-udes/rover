@@ -56,11 +56,12 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     cv::Mat frame;
     std::vector<cv::Mat> imagesCam;
 
-    RCLCPP_INFO(this->get_logger(), "Début de la capture vidéo pour la panoramique");
+    RCLCPP_INFO(this->get_logger(), "Starting panorama");
 
     // création de la liste d'image
 
     bool frameValid;
+    uint8_t invalidFramesCounter = 0;
     for(size_t i = 0; i < FPS * request_->duration; i++)
     {
         frameValid = cap.read(frame);
@@ -68,12 +69,19 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
         if(!frameValid)
         {
             RCLCPP_ERROR(this->get_logger(), "Blank frame grabbed");
+            invalidFramesCounter++;
         }
 
         // Stocker les images pour le panorama
-        if (i % 5 == 0 && frameValid)  // ici pour changer la fréquence de prise d'images
+        if (i % FRAMES_TO_SKIP == 0 && frameValid)  // ici pour changer la fréquence de prise d'images
         {
             imagesCam.push_back(frame.clone());
+        }
+
+        if(invalidFramesCounter >= MAX_INVALID_FRAMES)
+        {
+            RCLCPP_ERROR(this->get_logger(), "Too many blank frame grabbed, stopping capture");
+            break;
         }
     }
 
@@ -118,22 +126,22 @@ cv::Mat PhotoPanoramique::warpCorrection(const cv::Mat& pano)
 {
     if (pano.empty())
     {
-        RCLCPP_WARN(this->get_logger(), "Image vide reçue pour correction de warping.");
+        RCLCPP_WARN(this->get_logger(), "Empty image was received for croping");
         return pano;
     }
 
     int width = pano.cols;
     int height = pano.rows;
 
-    int marginX = width * 0.10;   // 10% à gauche et à droite
-    int marginY = height * 0.10;  // 10% en haut et en bas
+    int marginX = width * CROP_PERCENT;
+    int marginY = height * CROP_PERCENT; 
 
     int cropWidth = std::max(1, width - 2 * marginX);
     int cropHeight = std::max(1, height - 2 * marginY);
 
     if (cropWidth <= 0 || cropHeight <= 0)
     {
-        RCLCPP_ERROR(this->get_logger(), "Dimensions invalides pour la découpe du panorama.");
+        RCLCPP_ERROR(this->get_logger(), "Invalid dimensions for croping.");
         return pano;
     }
 
