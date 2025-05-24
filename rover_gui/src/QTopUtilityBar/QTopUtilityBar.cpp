@@ -11,15 +11,15 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
 {
     _ui.setupUi(this);
 
-    _lastBatteryTimeMsg = _node->now(void);
-    _lastWifiTimeMsg = _node->now(void);
-    _lastGNSSTimeMsg = _node->now(void);
+    _lastBatteryTimeMsg = _node->now();
+    _lastWifiTimeMsg = _node->now();
+    _lastGNSSTimeMsg = _node->now();
 
-    this->setupUI(void);
-    this->initBatterySubscriber(void);
-    this->initWifiConnection(void);
-    this->initGNSS(void);
-    this->initTimerDisplay(void);
+    this->setupUI();
+    this->initBatterySubscriber();
+    this->initWifiConnection();
+    this->initGNSS();
+    this->initTimerDisplay();
 
     connect(this, &QTopUtilityBar::updateBatteryUI, this, &QTopUtilityBar::onUpdateBatteryUI);
     connect(this, &QTopUtilityBar::updateWifiUI, this, &QTopUtilityBar::onUpdateWifiUI);
@@ -344,7 +344,6 @@ void QTopUtilityBar::onUpdateTimer(int secondsBeforeTimeOut_)
         _ui.timerLabel->setStyleSheet("QLabel { color : red; }");
     }
 }
-
 
 void QTopUtilityBar::CB_batteryTimeout()
 {

@@ -17,8 +17,23 @@ def generate_launch_description():
         description="Whether to launch the gps_test node"
     )
 
+    GNSS_arg = DeclareLaunchArgument(
+    "gps",
+    default_value="true",
+    description="Whether to launch the gps_test node"
+    )
+
+    battery_arg = DeclareLaunchArgument(
+    "gps",
+    default_value="true",
+    description="Whether to launch the gps_test node"
+    )
+
     arm = LaunchConfiguration("arm")
     gps = LaunchConfiguration("gps")
+    GNSS_arg = LaunchConfiguration("gnss")
+    battery_arg = LaunchConfiguration(" battery")
+
 
     '''
     arm_sim_node = Node(
