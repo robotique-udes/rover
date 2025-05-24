@@ -60,34 +60,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThreadRecording->setThreadName("WorkerRecord");
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
-    
-}
 
-void QVideoManagerWidget::onTabChanged(uint16_t index_)
-{
-    if (index_ == 0)
-    {
-        uint16_t index = 0;
-        for (auto& widget : _videoPlaysWidgets)
-        {
-            if (widget)
-            {
-                int row = index / 3;
-                int col = index % 3;
-                _gridLayout.addWidget(widget.get(), row, col);
-                index++;
-            }
-        }
-    }
-    else
-    {
-        if (_videoPlaysWidgets[1])
-            _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
-        if (_videoPlaysWidgets[2])
-            _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
-        if (_videoPlaysWidgets[0])
-            _altLayout.insertWidget(0, _videoPlaysWidgets[0].get());
-    }
 }
 
 void QVideoManagerWidget::onTabChanged(uint16_t index_)

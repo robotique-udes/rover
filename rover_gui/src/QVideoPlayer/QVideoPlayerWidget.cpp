@@ -1206,8 +1206,10 @@ void QVideoPlayerWidget::setPanoramaClientManager(std::shared_ptr<rclcpp::Client
     }
 }
 
-void QVideoPlayerWidget::onPanoramaStarted(bool start_, uint16_t duration_, uint16_t playerIndex_)
+void QVideoPlayerWidget::onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_)
 {
+    if(_playerIndex == playerIndex_)
+    {
     QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama started",
                                                                    "Duration:" + std::to_string(duration_) + " seconds",
                                                                    QHelper::QToastNotification::eNotifType::SUCCESS);
@@ -1221,5 +1223,5 @@ void QVideoPlayerWidget::onPanoramaStarted(bool start_, uint16_t duration_, uint
                             QHelper::QToastNotification::eNotifType::SUCCESS);
                        });
 
-    return;
+    }
 }

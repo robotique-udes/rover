@@ -24,7 +24,7 @@ class QPanoramaWorker : public QWorker
         std::string basePath_, uint16_t duration_);
 
     signals:
-    void PanoramaStarted(bool start_, uint16_t duration_, uint16_t playerIndex_);    
+    void PanoramaStarted(uint16_t duration_, uint16_t playerIndex_);    
     private:
 
     void takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_panoramique_,

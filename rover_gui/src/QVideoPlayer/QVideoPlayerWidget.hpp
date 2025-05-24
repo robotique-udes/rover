@@ -115,7 +115,7 @@ class QVideoPlayerWidget : public QWidget
     void onCameraAngleBoxChanged(void);
 
     void handlePanorama(void);
-    void onPanoramaStarted(bool start_, uint16_t duration_, uint16_t playerIndex_);
+    void onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_);
 
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
