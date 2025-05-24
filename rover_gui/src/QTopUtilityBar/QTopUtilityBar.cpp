@@ -1,14 +1,20 @@
 #include "QTopUtilityBar.hpp"
 #include "rover_lib2/helpers/constants.hpp"
-
 #include <QIcon>
-
 
 QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
-    _node(node_)
+    _node(node_),
+    _battery_timeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
+    _GNSS_timeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
+    _wifi_timeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT))
 {
     _ui.setupUi(this);
+
+    _lastBatteryTimeMsg = _node->now();
+    _lastWifiTimeMsg = _node->now();
+    _lastGNSSTimeMsg = _node->now();
+
     this->setupUI();
     this->initBatterySubscriber();
     this->initWifiConnection();
@@ -54,8 +60,19 @@ void QTopUtilityBar::initBatterySubscriber(void)
         _timer_batteryPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_BATTERY_PUB_COUNT_MS),
                                                      [this](void)
                                                      {
+                                                         _lastBatteryTimeMsg = _node->now();
                                                          size_t count = _node->count_publishers(TOPIC_BATTERY);
                                                          if (!count)
+                                                         {
+                                                             QIcon icon(":/icons/BatteryError.svg");
+                                                             _ui.batteryIcon->setIcon(icon);
+                                                         }
+                                                     });
+
+        _watchdog_battery = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
+                                                     [this](void)
+                                                     {
+                                                         if ((_node->now() - _lastBatteryTimeMsg) > _battery_timeout)
                                                          {
                                                              QIcon icon(":/icons/BatteryError.svg");
                                                              _ui.batteryIcon->setIcon(icon);
@@ -83,8 +100,19 @@ void QTopUtilityBar::initWifiConnection(void)
         _timer_RSSIPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_RSSI_PUB_COUNT_MS),
                                                   [this](void)
                                                   {
+                                                      _lastWifiTimeMsg = _node->now();
                                                       size_t count = _node->count_publishers(TOPIC_WIFI_CONNECTION);
                                                       if (!count)
+                                                      {
+                                                          QIcon icon(":/icons/ErrorRSSI.png");
+                                                          _ui.RSSILabel->setIcon(icon);
+                                                      }
+                                                  });
+
+        _watchdog_wifi = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
+                                                  [this](void)
+                                                  {
+                                                      if ((_node->now() - _lastWifiTimeMsg) > _wifi_timeout)
                                                       {
                                                           QIcon icon(":/icons/ErrorRSSI.png");
                                                           _ui.RSSILabel->setIcon(icon);
@@ -111,6 +139,7 @@ void QTopUtilityBar::initGNSS(void)
         _timer_GNSSPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_GNSS_PUB_COUNT_MS),
                                                   [this](void)
                                                   {
+                                                      _lastGNSSTimeMsg = _node->now();
                                                       size_t count = _node->count_publishers(TOPIC_GNSS);
                                                       if (!count)
                                                       {
@@ -119,6 +148,16 @@ void QTopUtilityBar::initGNSS(void)
 
                                                           _ui.satellliteIcon_pb->setIcon(iconSat);
                                                           _ui.headingIcon_pb->setIcon(iconHeading);
+                                                      }
+                                                  });
+
+        _watchdog_GNSS = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
+                                                  [this](void)
+                                                  {
+                                                      if ((_node->now() - _lastGNSSTimeMsg) > _GNSS_timeout)
+                                                      {
+                                                          _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSError.svg"));
+                                                          _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingError.svg"));
                                                       }
                                                   });
     }
@@ -140,10 +179,9 @@ void QTopUtilityBar::initTimerDisplay(void)
 
 void QTopUtilityBar::CB_battery(rover_msgs::msg::Battery& msg_)
 {
-
     QIcon icon(":/icons/BatteryError.svg");
     _ui.batteryIcon->setIcon(icon);
-    
+
     emit this->updateBatteryUI(msg_.pourcentage);
 }
 
@@ -250,40 +288,39 @@ void QTopUtilityBar::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
 
     switch (fix_)
     {
-        case 0: 
-            fixQuality = "NF";    
+        case 0:
+            fixQuality = "NF";
             break;
-        case 1: 
-            fixQuality = "GPS";   
+        case 1:
+            fixQuality = "GPS";
             break;
         case 2:
-            fixQuality = "DGPS";  
+            fixQuality = "DGPS";
             break;
         case 3:
-            fixQuality = "PPS";   
+            fixQuality = "PPS";
             break;
         case 4:
-            fixQuality = "RTK";   
+            fixQuality = "RTK";
             break;
         case 5:
-            fixQuality = "RTK-F"; 
+            fixQuality = "RTK-F";
             break;
         case 6:
-            fixQuality = "EST";   
+            fixQuality = "EST";
             break;
         case 7:
-            fixQuality = "MAN";   
+            fixQuality = "MAN";
             break;
         case 8:
-            fixQuality = "SIM";   
+            fixQuality = "SIM";
             break;
         default:
-            fixQuality = "UNK";  
+            fixQuality = "UNK";
             break;
     }
 
     _ui.GNSSFixLabel->setText("Fix Quality: " + QString::fromStdString(fixQuality));
-
 }
 
 void QTopUtilityBar::onUpdateTimer(int secondsBeforeTimeOut_)

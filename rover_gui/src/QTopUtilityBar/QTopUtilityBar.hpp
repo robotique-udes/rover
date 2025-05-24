@@ -6,6 +6,7 @@
 #include "rover_msgs/msg/gps.hpp"
 #include "rover_lib2/helpers/watchdog.hpp"
 
+#include "rclcpp/duration.hpp"
 #include "UI_TopUtilityBar.h"
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
@@ -30,7 +31,8 @@ class QTopUtilityBar : public QWidget
 
     static constexpr const size_t DELAY_UPDATE_TIMER_MS = 1000UL;
 
-    static constexpr const size_t WATCH_DOG_TIMEOUT = 1000UL;
+    static constexpr const size_t WATCH_DOG_DELAY_MS = 1000UL;
+    static constexpr const float WATCH_DOG_TIMEOUT = 1.0f;
 
     static constexpr const size_t MAX_SUB_QUEUE = 5UL;
 
@@ -46,7 +48,7 @@ class QTopUtilityBar : public QWidget
   private slots:
     void onUpdateBatteryUI(float pourcent_);
     void onUpdateWifiUI(float rssi_, float speed_);
-    void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,float long_, float lat_);
+    void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
 
   private:
@@ -78,7 +80,19 @@ class QTopUtilityBar : public QWidget
     rclcpp::TimerBase::SharedPtr _timer_GNSSPub;
     rclcpp::TimerBase::SharedPtr _timer_updateTimer;
 
+    rclcpp::TimerBase::SharedPtr _watchdog_battery;
+    rclcpp::TimerBase::SharedPtr _watchdog_GNSS;
+    rclcpp::TimerBase::SharedPtr _watchdog_wifi;
+
+    rclcpp::Time _lastGNSSTimeMsg;
+    rclcpp::Time _lastBatteryTimeMsg;
+    rclcpp::Time _lastWifiTimeMsg;
+
     std::shared_ptr<rclcpp::Node> _node;
+
+    rclcpp::Duration _battery_timeout;
+    rclcpp::Duration _GNSS_timeout;
+    rclcpp::Duration _wifi_timeout;
 
     Ui::TopUtilityBar _ui;
 };
