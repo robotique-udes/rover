@@ -131,9 +131,9 @@ void QTopUtilityBar::initGNSS(void)
     {
         _sub_GNSS = _node->create_subscription<rover_msgs::msg::Gps>(TOPIC_GNSS,
                                                                      MAX_SUB_QUEUE,
-                                                                     [this](rover_msgs::msg::Gps msg)
+                                                                     [this](rover_msgs::msg::Gps msg_)
                                                                      {
-                                                                         CB_GNSS(msg);
+                                                                         CB_GNSS(msg_);
                                                                      });
 
         _timer_GNSSPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_GNSS_PUB_COUNT_MS),
