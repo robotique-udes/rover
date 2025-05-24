@@ -23,6 +23,7 @@ class PhotoPanoramique : public rclcpp::Node
     static constexpr float CROP_PERCENT = 0.10f;
     static constexpr size_t FRAMES_TO_SKIP = 5U;
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
+    static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";
 
   public:
     PhotoPanoramique();

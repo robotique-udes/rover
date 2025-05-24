@@ -102,6 +102,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
     _ui.arucoIdsTextBox->setText("Ids: ");
+    _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
+    _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
@@ -1213,10 +1215,10 @@ void QVideoPlayerWidget::onPanoramaStarted(uint16_t duration_, uint16_t playerIn
 {
     if (_playerIndex == playerIndex_)
     {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-            "Panorama started",
-            "Duration: " + std::to_string(duration_/1000.0) + " seconds",
-            QHelper::QToastNotification::eNotifType::SUCCESS);
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama started",
+                                                                       "Duration: " + std::to_string(duration_ / 1000.0)
+                                                                           + " seconds",
+                                                                       QHelper::QToastNotification::eNotifType::SUCCESS);
 
         QTimer::singleShot(duration_,
                            this,

@@ -6,7 +6,7 @@ PhotoPanoramique::PhotoPanoramique():
     Node("photo_panoramique")
 {
     srv_panorama = this->create_service<rover_msgs::srv::PhotoPanoramique>(
-        "/rover/video/panorama",
+        PANORAMA_SERVICE_NAME,
         [this](const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
                std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_)
         {
@@ -49,6 +49,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     if (!cap.isOpened())
     {
         RCLCPP_FATAL(this->get_logger(), "Failed to open camera");
+        response_->status = "Failed to open camera stream (cap)";
         return;
     }
 
