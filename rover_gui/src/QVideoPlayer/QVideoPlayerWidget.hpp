@@ -31,6 +31,8 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
     static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
 
+    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
+
   public:
     enum class ePlayerState
     {
@@ -117,6 +119,7 @@ class QVideoPlayerWidget : public QWidget
     void onConnectionTimeout(void);
     void onToggleView(void);
     void onUrlTextChanged(const QString& text_);
+    void onCenterAngle(void);
 
     void clearLogs(void);
     void toggleLogView(bool show_);

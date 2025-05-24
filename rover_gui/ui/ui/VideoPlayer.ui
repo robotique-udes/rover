@@ -424,6 +424,13 @@
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_angle">
      <item>
+      <widget class="QPushButton" name="angleCenterButton">
+       <property name="text">
+        <string>Center</string>
+       </property>
+      </widget>
+     </item>
+     <item>
       <widget class="QSlider" name="cameraAngleSlider">
        <property name="cursor">
         <cursorShape>ClosedHandCursor</cursorShape>
@@ -432,7 +439,7 @@
         <number>360</number>
        </property>
        <property name="value">
-        <number>0</number>
+        <number>180</number>
        </property>
        <property name="orientation">
         <enum>Qt::Horizontal</enum>
@@ -461,6 +468,13 @@
        </property>
        <property name="singleStep">
         <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="panoramaButton">
+       <property name="text">
+        <string>Panorama</string>
        </property>
       </widget>
      </item>

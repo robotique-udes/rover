@@ -90,7 +90,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             this,
             &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
 
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+    connect(_ui.angleCenterButton, &QPushButton::clicked, this, &QVideoPlayerWidget::onCenterAngle);
+
+        _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
     _ui.arucoIdsTextBox->setText("Ids: ");
 
@@ -1153,10 +1155,21 @@ void QVideoPlayerWidget::hideAngleSelecter(void)
     {
         _ui.cameraAngleSlider->show();
         _ui.cameraAngleBox->show();
+        _ui.angleCenterButton->show();
+        _ui.panoramaButton->show();
     }
     else
     {
         _ui.cameraAngleSlider->hide();
         _ui.cameraAngleBox->hide();
+        _ui.angleCenterButton->hide();
+        _ui.panoramaButton->hide();
     }
+}
+
+void QVideoPlayerWidget::onCenterAngle(void)
+{
+    _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
+    _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
+    emit this->notifyCameraAnglePublisher(_camURL, CAMERA_CENTER_ANGLE);
 }
