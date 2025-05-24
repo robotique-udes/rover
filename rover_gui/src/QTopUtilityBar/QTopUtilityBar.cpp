@@ -11,9 +11,9 @@ QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* par
 {
     _ui.setupUi(this);
 
-    _lastBatteryTimeMsg = _node->now();
-    _lastWifiTimeMsg = _node->now();
-    _lastGNSSTimeMsg = _node->now();
+    _lastBatteryTimeMsg = _node->now(void);
+    _lastWifiTimeMsg = _node->now(void);
+    _lastGNSSTimeMsg = _node->now(void);
 
     this->setupUI();
     this->initBatterySubscriber();
