@@ -88,14 +88,24 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
 void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& request_,
                                 rover_msgs::srv::CameraControl::Response& response_)
 {
-    std::string folderPath;
+    std::optional<std::string> folderPathOptional;
     std::string captureName;
     std::string cameraURL = request_.camera_url;
     std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
-    folderPath = this->getFolderPath(request_.base_path, eFileFormatNameTypes::SCREENSHOT);
+    folderPathOptional = this->getFolderPath(request_.base_path, eFileFormatNameTypes::SCREENSHOT);
     Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
+
+    if (!folderPathOptional)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Failed to find home environment when screenshoting camera %s", currentCamera.c_str());
+        response_.success = false;
+        response_.status = "Failed to find home environment for saving screenshot on camera: " + currentCamera;
+        return;
+    }
+
+    std::string folderPath = folderPathOptional.value();
 
     if (!Folders::createFolder(folderPath))
     {
