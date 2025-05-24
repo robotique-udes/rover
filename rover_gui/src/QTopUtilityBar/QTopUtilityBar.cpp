@@ -52,9 +52,9 @@ void QTopUtilityBar::initBatterySubscriber(void)
     {
         _sub_battery = _node->create_subscription<rover_msgs::msg::Battery>(TOPIC_BATTERY,
                                                                             MAX_SUB_QUEUE,
-                                                                            [this](rover_msgs::msg::Battery msg)
+                                                                            [this](rover_msgs::msg::Battery msg_)
                                                                             {
-                                                                                CB_battery(msg);
+                                                                                CB_battery(msg_);
                                                                             });
 
         _timer_batteryPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_BATTERY_PUB_COUNT_MS),
