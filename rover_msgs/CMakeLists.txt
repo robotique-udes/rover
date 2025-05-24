@@ -52,7 +52,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   "msg/CameraList.msg"
-  "msg/LightControl.msg"
+  "msg/Light.msg"
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
 
