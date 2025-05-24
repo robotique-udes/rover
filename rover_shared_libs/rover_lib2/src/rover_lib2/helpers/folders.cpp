@@ -2,6 +2,9 @@
 #include <sstream>
 
 #if defined(__linux__)
+#include "helpers/log.hpp"
+
+DEFINE_LOG_NODE(FoldersHelper, Logger::eNodeState::OFF);
 
 bool Folders::folderExists(const std::string& path_)
 {
@@ -33,6 +36,8 @@ bool Folders::createFolder(const std::string& path_)
         {
             if (mkdir(currentDirectory.c_str(), 0775) != 0)
             {
+                std::string errorMessage = "Failed to create folder for path: " + currentDirectory;
+                LOG_INFO(Logger::Nodes::FoldersHelper, errorMessage);
                 return false;
             }
         }
@@ -47,11 +52,15 @@ std::vector<std::string> Folders::splitpath(const std::string& path_)
     std::vector<std::string> subdirectories;
     std::stringstream stringstream(path_);
     std::string sub;
-    while (std::getline(stringstream, sub, delimiter))
+    const size_t maxSubdirectories = 10;
+    size_t count = 0;
+    
+    for (std::string sub; count < maxSubdirectories && std::getline(stringstream, sub, delimiter); )
     {
         if (!sub.empty())
         {
             subdirectories.push_back(sub);
+            ++count;
         }
     }
     return subdirectories;

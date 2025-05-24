@@ -13,6 +13,7 @@
 
 #include <sys/stat.h>
 #include <cstdlib>
+#include <optional>
 
 struct sScreenshotResult
 {
@@ -50,7 +51,7 @@ class CameraNode : public rclcpp::Node
 
     std::string getCurrentTime(void);
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
-    const std::string getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
+    std::optional<std::string> getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
     void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
     sScreenshotResult getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
 

@@ -9,7 +9,7 @@
 QSessionFolderManager::QSessionFolderManager()
 {
     std::string currentTime = this->getCurrentTime();
-    _sessionFolderPath = "/roverAutogen/roverSession/" + currentTime;
+    _sessionFolderPath = "/rover-autogen/rover-session/" + currentTime;
 }
 
 QSessionFolderManager& QSessionFolderManager::getInstance(void)

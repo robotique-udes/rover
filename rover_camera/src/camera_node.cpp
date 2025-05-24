@@ -124,16 +124,26 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
 void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                                      rover_msgs::srv::CameraControl::Response& response_)
 {
-    std::string folderPath;
+    std::optional<std::string> folderPathOptional;
     std::string captureName;
     std::string cameraURL = request_.camera_url;
     std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
-    folderPath = this->getFolderPath(request_.base_path, eFileFormatNameTypes::VIDEO);
+    folderPathOptional = this->getFolderPath(request_.base_path, eFileFormatNameTypes::VIDEO);
     Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
-    if (!Folders::createFolder(folderPath))
+    if (!folderPathOptional)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Failed to find home environment when recording camera %s", currentCamera.c_str());
+        response_.success = false;
+        response_.status = "Failed to find home environment for saving recording on camera: " + currentCamera;
+        return;
+    }
+
+    std::string folderPath = folderPathOptional.value();
+
+        if (!Folders::createFolder(folderPath))
     {
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to create recordings folder or it already exists at %s for camera: %s",
@@ -228,7 +238,7 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
  * @param fileType_ Whether it is a screenshot or a video
  * @return const std::string of the complete directory
  */
-const std::string CameraNode::getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_)
+std::optional<std::string> CameraNode::getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_)
 {
     const char* home = std::getenv("HOME");
     std::string homeStr;
@@ -238,6 +248,7 @@ const std::string CameraNode::getFolderPath(const std::string& basePath_, eFileF
     }
     else
     {
+        return std::nullopt;
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, $HOME env variable wasn't found");
     }
 
