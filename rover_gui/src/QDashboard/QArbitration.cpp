@@ -62,7 +62,8 @@ void QArbitration::onSecComboChanged(int index)
 
 void QArbitration::isServiceAvailable()
 {
-    if (!_clientJoy->service_is_ready()) {
+    if (!_clientJoy->service_is_ready())
+    {
         QHelper::QToastNotification::getInstance().notifyFromAnyThread(
             "Service unavailable",
             "Couldn't send a request to /base/joy/demux_control, the service is unavailable.",
@@ -73,17 +74,14 @@ void QArbitration::isServiceAvailable()
 
 void QArbitration::DemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg)
 {
-    if (!msg) {
+    if (!msg)
+    {
         RCLCPP_WARN(_node->get_logger(), "Received null JoyDemuxStatus message.");
         return;
     }
 
-    RCLCPP_INFO(
-        _node->get_logger(),
-        "Received JoyDemuxStatus: controller_main_topic = %u, controller_secondary_topic = %u",
-        msg->controller_main_topic,
-        msg->controller_secondary_topic
-    );
+    RCLCPP_INFO(_node->get_logger(),
+                "Received JoyDemuxStatus: controller_main_topic = %u, controller_secondary_topic = %u",
+                msg->controller_main_topic,
+                msg->controller_secondary_topic);
 }
-
-

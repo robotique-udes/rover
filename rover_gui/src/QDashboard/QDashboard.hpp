@@ -9,7 +9,6 @@
 #include "QExample.hpp"
 #include "QArbitration.hpp"
 
-
 class QDashboard : public QWidget
 {
     Q_OBJECT
@@ -25,7 +24,7 @@ class QDashboard : public QWidget
         this->setLayout(&_dashboardLayout);
 
         // Add your dashboard widget here
-        _dashboardLayout.addWidget(&_arbitrationWidget,1,0);
+        _dashboardLayout.addWidget(&_arbitrationWidget, 1, 0);
         _dashboardLayout.addWidget(&_emptyWidget, 0, 0);
     }
 
@@ -34,7 +33,7 @@ class QDashboard : public QWidget
 
     QGridLayout _dashboardLayout;
     QArbitration _arbitrationWidget;
-    QWidget _emptyWidget; 
+    QWidget _emptyWidget;
 };
 
 #endif  // QDASHBOARD_HPP
