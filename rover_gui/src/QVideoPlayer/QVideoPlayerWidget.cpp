@@ -6,7 +6,6 @@
 #include <QScrollBar>
 #include <QRegularExpression>
 #include <optional>
-#include <format>
 #include <gst/video/videooverlay.h>
 #include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 
@@ -38,6 +37,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.setupUi(this);
 
     this->setupUI();
+    this->initActualAngleSlider();
 
     _gstreamerWorker = new GStreamerWorker();
     _gstreamerWorker->setTargetWidget(_ui.logDisplay);
@@ -1192,6 +1192,8 @@ void QVideoPlayerWidget::handlePanorama(void)
                                                    _playerIndex,
                                                    _sessionFolderPath,
                                                    _panoramaDuration);
+
+        this->panoramaTurnCamera();
     }
     else
     {
@@ -1235,4 +1237,39 @@ void QVideoPlayerWidget::onPanoramaStarted(uint16_t duration_, uint16_t playerIn
 void QVideoPlayerWidget::setPanoramaDuration(void)
 {
     _panoramaDuration = _ui.panoramaDurationBox->value() * 1000;
+}
+
+void QVideoPlayerWidget::panoramaTurnCamera(void)
+{
+    _ui.cameraAngleSlider->setEnabled(false);
+    _ui.cameraAngleBox->setEnabled(false);
+
+    emit this->notifyCameraAnglePublisher(_camURL, CAMERA_MAX_ANGLE);
+    _ui.cameraAngleSlider->setValue(CAMERA_MAX_ANGLE);
+    _ui.cameraAngleBox->setValue(CAMERA_MAX_ANGLE);
+
+
+    QTimer::singleShot(_panoramaDuration,
+                       this,
+                       [this]()
+                       {
+                           _ui.cameraAngleSlider->setEnabled(true);
+                           _ui.cameraAngleBox->setEnabled(true);
+                       });
+}
+
+void QVideoPlayerWidget::initActualAngleSlider(void)
+{
+    _ui.actualAngleSlider->setStyleSheet(R"(
+        QSlider::handle:horizontal {
+            image: url(:/icons/arrow.png);
+            background: transparent;
+            width: 16px;
+            height: 16px;
+            margin: -6px 0;
+        }
+    )");
+
+    _ui.actualAngleSlider->setEnabled(false);
+    _ui.actualAngleSlider->setValue(CAMERA_CENTER_ANGLE);
 }

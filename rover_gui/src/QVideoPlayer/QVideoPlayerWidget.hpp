@@ -33,6 +33,8 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
 
     static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
+    static constexpr uint16_t CAMERA_MAX_ANGLE = 360;
+    static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100;
 
   public:
     enum class ePlayerState
@@ -135,10 +137,12 @@ class QVideoPlayerWidget : public QWidget
 
   private:
     void setupUI(void);
+    void initActualAngleSlider(void);
     void connectUISignals(void);
     void initializeUIState(void);
     void emitStateChanged(void);
     void cleanupResources(void);
+    void panoramaTurnCamera(void);
 
     void hideAngleSelecter(void);
     std::shared_ptr<rclcpp::Node> _node;
