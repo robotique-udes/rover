@@ -3,6 +3,8 @@
 
 #include "QVideoPlayerWidget.hpp"
 
+#include <QBoxLayout>
+#include <QTabWidget>
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
 #include "rover_msgs/msg/camera_list.hpp"
@@ -43,11 +45,14 @@ class QVideoManagerWidget : public QWidget
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
     void CB_pubCameraAngle(std::string camURL_, float pitch_);
+    void onTabChanged(uint16_t index_);
 
   private:
     void initWidget(void);
     void initArucoPublisher(void);
     void initArucoClient(void);
+
+    void clearLayout(QLayout* layout_);
 
     void initCameraControlClient(void);
     void initCameraAnglePublisher(void);
@@ -55,10 +60,19 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Node> _node;
 
-    QGridLayout _videoPlayerLayout;
-
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
+
+    QTabWidget _tabWidget;
+    QVBoxLayout _mainLayout;
+
+    QGridLayout _gridLayout;
+    QWidget _gridContainer;
+
+    QHBoxLayout _altLayout;
+    QVBoxLayout _vSubLayout;
+    QWidget _vSubLayoutContainer;
+    QWidget _altLayoutContainer;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
