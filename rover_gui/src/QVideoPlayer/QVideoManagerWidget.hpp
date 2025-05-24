@@ -5,6 +5,7 @@
 
 #include <QBoxLayout>
 #include <QTabWidget>
+#include <QSplitter>
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
 #include "rover_msgs/msg/camera_list.hpp"
@@ -73,6 +74,8 @@ class QVideoManagerWidget : public QWidget
     QVBoxLayout _vSubLayout;
     QWidget _vSubLayoutContainer;
     QWidget _altLayoutContainer;
+
+    QSplitter _splitter;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
