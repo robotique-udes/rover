@@ -140,6 +140,9 @@ void QTopUtilityBar::initGNSS(void)
 
                                                           _ui.satellliteIcon_pb->setIcon(iconSat);
                                                           _ui.headingIcon_pb->setIcon(iconHeading);
+
+                                                          _ui.longitudeLabel->setStyleSheet("QLabel { color : orange; }");
+                                                          _ui.latitudeLabel->setStyleSheet("QLabel { color : orange; }");
                                                       }
                                                   });
 
@@ -272,6 +275,9 @@ void QTopUtilityBar::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
     _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSIcon.svg"));
     _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingIcon.svg"));
 
+    _ui.longitudeLabel->setStyleSheet("QLabel { color : white; }");
+    _ui.latitudeLabel->setStyleSheet("QLabel { color : white; }");
+
     std::string fixQuality;
 
     switch (fix_)
@@ -365,14 +371,18 @@ void QTopUtilityBar::CB_GNSSTimeout()
 {
     if ((_node->now() - _lastBatteryTimeMsg) > _battery_timeout)
     {
-        QIcon icon(":/icons/BatteryError.svg");
-        _ui.batteryIcon->setIcon(icon);
+        QIcon iconSat(":/icons/GNSSError.svg");
+        QIcon iconHeading(":/icons/Heading");
+        _ui.satellliteIcon_pb->setIcon(iconSat);
+        _ui.headingIcon_pb->setIcon(iconHeading);
+        _ui.longitudeLabel->setStyleSheet("QLabel { color : orange; }");
+        _ui.latitudeLabel->setStyleSheet("QLabel { color : orange; }");
     }
 }
 
 void QTopUtilityBar::simulateTimerFileReading()
 {
     _timersList.push_back(QDateTime(QDate(2025, 5, 16), QTime(13, 58, 0), QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025, 5, 19), QTime(20, 36, 0), QTimeZone("America/Montreal")));
+    _timersList.push_back(QDateTime(QDate(2025, 5, 24), QTime(20, 36, 0), QTimeZone("America/Montreal")));
     _timersList.push_back(QDateTime(QDate(2025, 5, 18), QTime(16, 3, 0), QTimeZone("America/Edmonton")));
 }
