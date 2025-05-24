@@ -1,15 +1,19 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
-#include "std_msgs/msg/empty.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/joy.hpp>
+#include <rover_msgs/msg/joy_demux_status.hpp>
+#include <rover_msgs/msg/propulsion_motor.hpp>
+#include <std_msgs/msg/empty.hpp>
 #include <rover_lib2/helpers/constants.hpp>
+#include <rover_lib2/helpers/macros.hpp>
 
 // Class definition
 class Teleop : public rclcpp::Node
 {
     static constexpr const char* TOPIC_JOY = "/base/joy/drive_train";
     static constexpr const char* TOPIC_WHEEL_CMD = "/rover/drive_train/wheels_cmd_telelop";
+    static constexpr float CAR_CONTROL_MAP_FACTOR = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
+    static constexpr float CAR_MODE_INPUT_BYPASS_THREASHOLD = 0.05F;
+    static constexpr float CAR_MODE_TURN_DEADZONE = 0.50F / 2.0F;  // 50% total, 50%/2 right + 50%/2 left
 
   public:
     Teleop();
@@ -47,25 +51,23 @@ class Teleop : public rclcpp::Node
             float speedLeftMotor = linearInput * speedFactor;
             float speedRightMotor = linearInput * speedFactor;
 
-            if (modeTankAngularInput != 0.0f)
+            if (!IN_ERROR(modeTankAngularInput, CAR_MODE_INPUT_BYPASS_THREASHOLD, 0.0F))
             {
                 speedLeftMotor += -1.0f * modeTankAngularInput * speedFactor;
                 speedRightMotor -= -1.0f * modeTankAngularInput * speedFactor;
             }
-
-            else
+            else if (!IN_ERROR(angularInput, CAR_MODE_TURN_DEADZONE, 0.0F))
             {
-                float controlMapFactor = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
-                float adjustedFactor;
+                float adjustedFactor = 0.0F;
 
                 if (angularInput > 0.0f)
                 {
-                    adjustedFactor = 1.0f - angularInput * controlMapFactor;
+                    adjustedFactor = 1.0f - angularInput * CAR_CONTROL_MAP_FACTOR;
                     speedLeftMotor *= adjustedFactor < 0.01f ? 0.01f : adjustedFactor;
                 }
                 else
                 {
-                    adjustedFactor = 1.0f + angularInput * controlMapFactor;
+                    adjustedFactor = 1.0f + angularInput * CAR_CONTROL_MAP_FACTOR;
                     speedRightMotor *= adjustedFactor < 0.01f ? 0.01f : adjustedFactor;
                 }
             }
