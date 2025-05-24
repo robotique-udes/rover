@@ -5,7 +5,6 @@
 
 namespace PWMGenerators
 {
-
     /**
      * @brief Template shadowing for type validation
      *
@@ -17,7 +16,7 @@ namespace PWMGenerators
     };
 
     /**
-     * @brief RTCP Interface
+     * @brief CRTP Interface
      *
      * @tparam Impl_T
      */
@@ -60,8 +59,8 @@ namespace PWMGenerators
         }
 
         /**
-         * @brief Changing frequency is expensive and will often yield in jerky PWM signals when transitionning
-         *
+         * @brief Changing frequency is expensive and will often yield in jerky PWM signals when transitionning.
+         * @attention Not all PWM drivers will this
          * @param duty_
          */
         void setFrequency(float frequency_)
@@ -72,6 +71,21 @@ namespace PWMGenerators
         float getFrequency(void) const
         {
             return static_cast<const Impl_T*>(this)->_getFrequency();
+        }
+
+        /**
+         * @brief Disable the PWM output, will leave the pin to the specified pull mode specified at construction
+         *
+         * @param enable_
+         */
+        void setEnabled(bool enable_)
+        {
+            return static_cast<Impl_T*>(this)->_setEnabled(enable_);
+        }
+
+        bool isEnabled(void)
+        {
+            return static_cast<Impl_T*>(this)->_isEnabled();
         }
     };
 

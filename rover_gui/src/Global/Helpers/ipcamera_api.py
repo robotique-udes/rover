@@ -1,9 +1,10 @@
-import requests, signal, string
+import requests
+import string
+import logging
 from onvif import ONVIFCamera
 from enum import Enum
 
-class TimeoutException(Exception):
-    pass
+logger = logging.getLogger(__name__) 
 
 class Scenes(Enum):
     OUTDOOR = 0
@@ -66,7 +67,8 @@ class AEGains(Enum):
     _32X = 5
     _64X = 6
 
-class CameraController:
+class ParameterHandler:
+    
     ONVIF_PARAMS = {
         'Brightness': 'imaging',
         'Contrast': 'imaging',
@@ -108,41 +110,29 @@ class CameraController:
         '1080p': (1920, 1080),
         '1536p': (2048, 1536)
     }
-
-    def __init__(self, node, ip: str, port: int, username: str, password: str, timeout: int = 5):
+    
+    def __init__(self, ip: str, port: int, username: str, password: str):
+        self.logger = logger
+        self.verbose_logging = False
+        
+        # Configure basic logging if not already configured
+        if not logging.getLogger().handlers:
+            logging.basicConfig(level=logging.INFO, 
+                               format='%(asctime)s - %(name)s - %(levelname)s - %(message)s')
         self.ip = ip
         self.port = port
         self.username = username
         self.password = password
-        self.logger = node.get_logger()
+        self.camera = ONVIFCamera(self.ip, self.port, self.username, self.password)
+        self.media_service = self.camera.create_media_service()
+        self.profiles = self.media_service.GetProfiles()
+        self.profile = self.profiles[0]
+        self.imaging_service = self.camera.create_imaging_service()
+        self.source_token = self.profile.VideoSourceConfiguration.SourceToken
 
-        signal.signal(signal.SIGALRM, self.timeout_handler)
-        signal.alarm(timeout)
-
+    def _set_onvif_param(self, param: str, value, extra: tuple=None):
+            
         try:
-            self.camera = ONVIFCamera(self.ip, self.port, self.username, self.password)
-
-            self.media_service = self.camera.create_media_service()
-            profiles = self.media_service.GetProfiles()
-            if not profiles:
-                raise Exception("No media profiles found on the camera")
-            self.profile = profiles[0]
-
-            self.imaging_service = self.camera.create_imaging_service()
-            self.source_token = self.profile.VideoSourceConfiguration.SourceToken
-
-        except TimeoutException:
-            self.logger.error("Camera initialization timed out")
-        except Exception as e:
-            self.logger.error(f"Failed to initialize the camera: {str(e).split(':')[-1].strip()}")
-        finally:
-            signal.alarm(0)  
-
-    def _timeout_handler(signum, frame):
-            raise TimeoutException("Camera initialization timed out")
-
-    def _set_onvif_param(self, param: str, value: str, extra: tuple=None):
-        try:       
             encoder_config = self.profile.VideoEncoderConfiguration
             imaging_settings = self.imaging_service.GetImagingSettings(self.source_token)
 
@@ -158,33 +148,81 @@ class CameraController:
                     'ForcePersistence': True
                 })
             elif self.ONVIF_PARAMS[param] == 'video':
-                setattr(encoder_config.RateControl, param, value)
+                if not hasattr(encoder_config, 'Name') or encoder_config.Name is None:
+                   encoder_config.Name = f"Config_{self.profile.token}"
+                if not hasattr(encoder_config, 'token') or encoder_config.token is None:
+                    encoder_config.token = self.profile.VideoEncoderConfiguration.token
+
+                if param != 'Resolution':
+                    setattr(encoder_config.RateControl, param, value)
+                elif param == 'Resolution' and extra:
+                     encoder_config.Resolution.Width = extra[0]
+                     encoder_config.Resolution.Height = extra[1]
+
+                config_dict = {
+                    'Name': encoder_config.Name,
+                    'token': encoder_config.token,
+                    'UseCount': encoder_config.UseCount,
+                    'Encoding': encoder_config.Encoding,
+                    'Resolution': {
+                        'Width': encoder_config.Resolution.Width,
+                        'Height': encoder_config.Resolution.Height
+                    },
+                    'Quality': encoder_config.Quality,
+                    'RateControl': {
+                        'FrameRateLimit': encoder_config.RateControl.FrameRateLimit,
+                        'EncodingInterval': encoder_config.RateControl.EncodingInterval,
+                        'BitrateLimit': encoder_config.RateControl.BitrateLimit
+                    },
+                    'Multicast': {
+                         'Address': {
+                             'Type': encoder_config.Multicast.Address.Type,
+                             'IPv4Address': encoder_config.Multicast.Address.IPv4Address,
+                          },
+                         'Port': encoder_config.Multicast.Port,
+                         'TTL': encoder_config.Multicast.TTL,
+                         'AutoStart': encoder_config.Multicast.AutoStart
+                     },
+                    'SessionTimeout': encoder_config.SessionTimeout
+                }
+
                 self.media_service.SetVideoEncoderConfiguration({
-                    'Configuration': encoder_config,
+                    'Configuration': config_dict,
                     'ForcePersistence': True
                 })
-            self.logger.info(f"{param} updated to {value}")
+
+            if self.verbose_logging:
+                self.logger.info(f"{param} updated to {value}")
+            return True
         except Exception as e:
             self.logger.error(f"Failed to set ONVIF parameter {param}: {e}")
+            return False
            
-    def _set_http_param(self, param: str, value: str, extra: str = None):
+    def _set_http_param(self, param: str, value: str, extra: str = None, force: bool = False):
+        
         try:
             headers = {'Authorization': 'Basic YWRtaW46YWRtaW4='}
             form_data = {
                 'flag': self.HTTP_PARAMS[param][1] if 'IR' not in param else '',
                 self.HTTP_PARAMS[param][0]: value,
-                self.HTTP_PARAMS[param][0].replace('Text', ''): extra if extra else ''
             }
-
+            
+            if extra:
+                form_data[self.HTTP_PARAMS[param][0].replace('Text', '')] = extra
+            
             url = f"http://{self.ip}/form/{'IRset' if 'IR' in param else 'CameraSet'}"
             response = requests.post(url, data=form_data, headers=headers)
 
             if response.status_code == 200:
-                self.logger.info(f"{param} updated to {value}")
+                if self.verbose_logging:
+                    self.logger.info(f"{param} updated to {value}")
+                return True
             else:
                 self.logger.error(f"Failed to update {param} via HTTP. Status: {response.status_code}")
+                return False
         except Exception as e:
             self.logger.error(f"Failed to set parameter {param}: {e}")
+            return False
 
     # ======================================================================================================================= #
     #                                                      API METHODS                                                        #
@@ -196,12 +234,11 @@ class CameraController:
         
         Valid range: 0 to 255 (inclusive).
         """
-
         if not (0 <= value <= 255):
             self.logger.error(f"Invalid brightness value: {value}")
             return False
 
-        self._set_onvif_param('Brightness', value)
+        return self._set_onvif_param('Brightness', value)
 
     def setContrast(self, value: int):
         """
@@ -209,12 +246,11 @@ class CameraController:
         
         Valid range: 0 to 255 (inclusive).
         """
-
         if not (0 <= value <= 255):
             self.logger.error(f"Invalid contrast value: {value}")
             return False
 
-        self._set_onvif_param('Contrast', value)
+        return self._set_onvif_param('Contrast', value)
     
     def setSaturation(self, value: int):
         """
@@ -222,12 +258,11 @@ class CameraController:
         
         Valid range: 0 to 255 (inclusive).
         """
-
         if not (0 <= value <= 255):
             self.logger.error(f"Invalid saturation value: {value}")
             return False
 
-        self._set_onvif_param('ColorSaturation', value)
+        return self._set_onvif_param('ColorSaturation', value)
     
     def setSharpness(self, value: int):
         """
@@ -235,12 +270,11 @@ class CameraController:
         
         Valid range: 0 to 255 (inclusive).
         """
-
         if not (0 <= value <= 255):
             self.logger.error(f"Invalid sharpness value: {value}")
             return False
 
-        self._set_onvif_param('Sharpness', value)
+        return self._set_onvif_param('Sharpness', value)
     
     def setResolution(self, value: string):
         """
@@ -248,7 +282,6 @@ class CameraController:
         
         Valid values: 480p, w480p, 576p, 720p, 960p, 1080p, 1536p.
         """
-
         if value in self.RESOLUTION_MAP:
             width, height = self.RESOLUTION_MAP[value]
             extra = (width, height)
@@ -256,10 +289,12 @@ class CameraController:
             self.logger.error(f"Invalid resolution value: {value}")
             return False
 
-        self._set_onvif_param('Resolution', value, extra)
+        return self._set_onvif_param('Resolution', value, extra)
 
     def setFrameRate(self, value: FramerateValues):
-        self._set_onvif_param('FrameRateLimit', value.value)
+        val = value.value
+
+        return self._set_onvif_param('FrameRateLimit', val)
     
     def setBitrate(self, value: int):
         """
@@ -267,15 +302,15 @@ class CameraController:
         
         Valid range: 128 to 10000 (inclusive).
         """
-
         if not (128 <= value <= 10000):
             self.logger.error(f"Invalid bitrate value: {value}")
             return False
 
-        self._set_onvif_param('BitrateLimit', value)
+        return self._set_onvif_param('BitrateLimit', value)
     
     def disableWideDynamicRange(self):
-        self._set_http_param('WideDynamicRange', '0')
+
+        return self._set_http_param('WideDynamicRange', '0')
     
     def setWideDynamicRangeLevel(self, value: int):
         """
@@ -283,49 +318,61 @@ class CameraController:
         
         Valid range: 0 to 255 (inclusive).
         """
-
         if not (0 <= value <= 255):
             self.logger.error(f"Invalid WDR value: {value}")
             return False
-
-        self._set_http_param('WideDynamicRange', '1')
-        self._set_http_param('WideDynamicRangeLevel', value)
+        
+        result1 = self._set_http_param('WideDynamicRange', '1')
+        result2 = self._set_http_param('WideDynamicRangeLevel', str(value))
+        return result1 and result2
     
     def enableBackLight(self):
-        self._set_http_param('BackLight', '1')
+
+        return self._set_http_param('BackLight', '1')
     
     def disableBackLight(self):
-        self._set_http_param('BackLight', '0')
+
+        return self._set_http_param('BackLight', '0')
     
     def HorizontalMirror(self):
-        self._set_http_param('MirrorHorizontal', '1')
+
+        return self._set_http_param('MirrorHorizontal', '1')
     
     def VerticalMirror(self):
-        self._set_http_param('MirrorVertical', '1')
+
+        return self._set_http_param('MirrorVertical', '1')
     
     def resetHorizontalMirror(self):
-        self._set_http_param('MirrorHorizontal', '0')
+
+        return self._set_http_param('MirrorHorizontal', '0')
     
     def resetVerticalMirror(self):
-        self._set_http_param('MirrorVertical', '0')
+     
+        return self._set_http_param('MirrorVertical', '0')
 
     def enableAntiFalseColor(self):
-        self._set_http_param('AntiFalseColor', '1')
+
+        return self._set_http_param('AntiFalseColor', '1')
     
     def disableAntiFalseColor(self):
-        self._set_http_param('AntiFalseColor', '0')
+
+        return self._set_http_param('AntiFalseColor', '0')
     
     def enableDigitalImageStabilizer(self):
-        self._set_http_param('DigitalImageStabilizer', '1')
+
+        return self._set_http_param('DigitalImageStabilizer', '1')
     
     def disableDigitalImageStabilizer(self):
-        self._set_http_param('DigitalImageStabilizer', '0')
+
+        return self._set_http_param('DigitalImageStabilizer', '0')
     
     def enableLensShadeCorrection(self):
-        self._set_http_param('LensShadeCorrection', '1')
+
+        return self._set_http_param('LensShadeCorrection', '1')
     
     def disableLensShadeCorrection(self):
-        self._set_http_param('LensShadeCorrection', '0')
+
+        return self._set_http_param('LensShadeCorrection', '0')
     
     def setLensDistortionCorrection(self, value: int):
         """
@@ -333,16 +380,17 @@ class CameraController:
         
         Valid range: 0 to 255 (inclusive).
         """
-
         if not (0 <= value <= 255):
             self.logger.error(f"Invalid LDC value: {value}")
             return False
 
-        self._set_http_param('LensDistortionCorrection', '1')
-        self._set_http_param('LensDistortionCorrectionLevel', value)
+        result1 = self._set_http_param('LensDistortionCorrection', '1')
+        result2 = self._set_http_param('LensDistortionCorrectionLevel', str(value))
+        return result1 and result2
     
     def disableLensDistortionCorrection(self):
-        self._set_http_param('LensDistortionCorrection', '0')
+
+        return self._set_http_param('LensDistortionCorrection', '0')
     
     def setAntiFog(self, value: int):
         """
@@ -350,39 +398,52 @@ class CameraController:
         
         Valid range: 0 to 255 (inclusive).
         """
-
         if not (0 <= value <= 255):
             self.logger.error(f"Invalid Anti-fog level value: {value}")
             return False
 
-        self._set_http_param('AntiFog', '1')
-        self._set_http_param('AntiFogLevel', value)
+        result1 = self._set_http_param('AntiFog', '1')
+        result2 = self._set_http_param('AntiFogLevel', str(value))
+        return result1 and result2
     
     def disableAntiFog(self):
-        self._set_http_param('AntiFog', '0')
-    
-    def setScene(self, mode: Scenes = Scenes.INDOOR.name):
-        self._set_http_param('SceneSelect', mode.value)
-    
-    def setExposureMode(self, mode: ExposureModes = ExposureModes.MANUAL.name):
-        self._set_http_param('ExposureMode', mode.value)
-    
-    def setShutterSpeed(self, value: ShutterValues = ShutterValues._1_50.name):
-        value = value.name[1:].replace('_', '/')
-        extra = value.value
-        self._set_http_param('ShutterSpeed', value, extra)
 
-    def setManualACG(self, value: AEGains = AEGains._1X.name):
-        value = value.name[1:].replace('_', '/')
-        extra = value.value
-        self._set_http_param('AEGainText', value, extra)
-
-    def setWhiteBalanceMode(self, mode: WhiteBalanceModes = WhiteBalanceModes.AUTO.name):
-        self._set_http_param('WhiteBalanceModeSelect', mode.value)
+        return self._set_http_param('AntiFog', '0')
     
-    def setIRMode(self, mode: IRModes = IRModes.AUTO.name):
-        self._set_http_param('IRenable', '1')
-        self._set_http_param('IRmode', mode.value)
+    def setScene(self, mode: Scenes = Scenes.INDOOR):
+        value = mode.value
+        
+        return self._set_http_param('SceneSelect', str(value))
+    
+    def setExposureMode(self, mode: ExposureModes = ExposureModes.MANUAL):
+        value = mode.value
+        
+        return self._set_http_param('ExposureMode', str(value))
+    
+    def setShutterSpeed(self, value: ShutterValues = ShutterValues._1_50):
+        
+        value_str = value.name[1:].replace('_', '/')
+        extra = str(value.value)
+        return self._set_http_param('ShutterSpeed', value_str, extra)
+
+    def setManualACG(self, value: AEGains = AEGains._1X):
+        
+        value_str = value.name[1:].replace('_', '/')
+        extra = str(value.value)
+        return self._set_http_param('ManualACG', value_str, extra)
+
+    def setWhiteBalanceMode(self, mode: WhiteBalanceModes = WhiteBalanceModes.AUTO):
+        value = mode.value
+        
+        return self._set_http_param('WhiteBalanceModeSelect', str(value))
+    
+    def setIRMode(self, mode: IRModes = IRModes.AUTO):
+        value = mode.value
+        
+        result1 = self._set_http_param('IRenable', '1')
+        result2 = self._set_http_param('IRmode', str(value))
+        return result1 and result2
     
     def disableIR(self):
-        self._set_http_param('IRenable', '0')
+
+        return self._set_http_param('IRenable', '0')

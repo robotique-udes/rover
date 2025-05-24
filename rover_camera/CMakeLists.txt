@@ -1,16 +1,15 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_camera)
 
-# Default to C++20
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 23)
 endif()
 
-# find dependencies
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED) 
 find_package(rover_msgs REQUIRED)
+find_package(rcl_interfaces REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 add_subdirectory(../rover_shared_libs/ .build)
@@ -33,6 +32,8 @@ ament_target_dependencies(aruco_detection
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
+
+target_link_libraries(media_server ${OpenCV_LIBS})
 target_link_libraries(aruco_detection 
                           ${OpenCV_LIBS}
                           rover_shared_libs)

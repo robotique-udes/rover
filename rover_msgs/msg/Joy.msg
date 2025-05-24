@@ -1,4 +1,4 @@
-float32[20] joy_data
+float32[21] joy_data
 
 uint8 JOYSTICK_LEFT_FRONT = 0
 uint8 JOYSTICK_LEFT_SIDE = 1
@@ -21,4 +21,5 @@ uint8 Y = 17
 uint8 EXT0 = 18
 uint8 EXT1 = 19
 uint8 EXT2 = 20
+uint8 MAX = 21
 
