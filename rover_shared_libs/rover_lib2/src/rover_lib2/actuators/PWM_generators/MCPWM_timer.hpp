@@ -6,7 +6,7 @@
 #include "driver/mcpwm_prelude.h"
 #include "driver/gpio.h"
 
-DEFINE_LOG_NODE(MCPWMTimer, Logger::eNodeState::OFF);
+DEFINE_LOG_NODE(MCPWMTimer, Logger::eNodeState::ON);
 
 /**
  * @brief Each timer instance can generate up to two distinct PWM output at the same frequency
@@ -70,10 +70,11 @@ namespace PWMGenerators
             {
                 LOG_DEBUG(Logger::Nodes::MCPWMTimer,
                           "Requested frequency of %u Hz; Optimal possible timings are:\n\tEffective frequency: %f "
-                          "Hz\n\tDuty-Cycle resolution (steps of): %.3f%%",
+                          "Hz\n\tDuty-Cycle resolution (steps of): %.3f%%\n\tTimerCnt: %lu",
                           frequency_,
                           _frequency,
-                          dutyCycleResolution);
+                          dutyCycleResolution,
+                          _timerPeriodTick + 1);
             }
 
             ASSERT_COND_MSG_ARGS(TO_UNDERLYING(peripheralGroupId_) < SOC_MCPWM_GROUPS,
@@ -86,7 +87,7 @@ namespace PWMGenerators
                                                 .count_mode = mcpwm_timer_count_mode_t::MCPWM_TIMER_COUNT_MODE_UP,
                                                 .period_ticks = _timerPeriodTick,
                                                 .intr_priority = DEFAULT_INTERUPT_PRIORITY,
-                                                .flags = {.update_period_on_empty = false, .update_period_on_sync = false}};
+                                                .flags = {.update_period_on_empty = true, .update_period_on_sync = false}};
 
             esp_err_t retVal = mcpwm_new_timer(&timerConfig, &_timerH);
             ASSERT_COND_MSG_ARGS(retVal == ESP_OK, "mcpwm_new_timer() failed with %u", retVal);

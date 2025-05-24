@@ -8,10 +8,13 @@ using namespace LogUtils;
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),
-    _videoPlayerLayout(this),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
     _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>()),
-    _panoramaWorkerThread(std::make_shared<QPanoramaWorker>())
+    _panoramaWorkerThread(std::make_shared<QPanoramaWorker>()),
+    _tabWidget(this),
+    _gridContainer(nullptr),
+    _vSubLayoutContainer(nullptr),
+    _altLayoutContainer(nullptr)
 {
     this->initWidget();
 
@@ -29,6 +32,8 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                 &QVideoManagerWidget::CB_pubCameraAngle);
     }
 
+    connect(&_tabWidget, &QTabWidget::currentChanged, this, &QVideoManagerWidget::onTabChanged);
+
     this->initArucoClient();
     this->initArucoPublisher();
 
@@ -36,7 +41,16 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initCameraControlSubscriber();
     this->initCameraAnglePublisher();
 
-    this->setLayout(&_videoPlayerLayout);
+    _gridContainer.setLayout(&_gridLayout);
+    _altLayoutContainer.setLayout(&_altLayout);
+    _vSubLayoutContainer.setLayout(&_vSubLayout);
+    _altLayout.addWidget(&_vSubLayoutContainer);
+
+    _mainLayout.addWidget(&_tabWidget);
+    this->setLayout(&_mainLayout);
+
+    _tabWidget.addTab(&_gridContainer, "grid");
+    _tabWidget.addTab(&_altLayoutContainer, "alt");
 
     this->initPanoramaClient();
 
@@ -46,6 +60,61 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThreadRecording->setThreadName("WorkerRecord");
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
+    
+}
+
+void QVideoManagerWidget::onTabChanged(uint16_t index_)
+{
+    if (index_ == 0)
+    {
+        uint16_t index = 0;
+        for (auto& widget : _videoPlaysWidgets)
+        {
+            if (widget)
+            {
+                int row = index / 3;
+                int col = index % 3;
+                _gridLayout.addWidget(widget.get(), row, col);
+                index++;
+            }
+        }
+    }
+    else
+    {
+        if (_videoPlaysWidgets[1])
+            _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
+        if (_videoPlaysWidgets[2])
+            _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+        if (_videoPlaysWidgets[0])
+            _altLayout.insertWidget(0, _videoPlaysWidgets[0].get());
+    }
+}
+
+void QVideoManagerWidget::onTabChanged(uint16_t index_)
+{
+    if (index_ == 0)
+    {
+        uint16_t index = 0;
+        for (auto& widget : _videoPlaysWidgets)
+        {
+            if (widget)
+            {
+                int row = index / 3;
+                int col = index % 3;
+                _gridLayout.addWidget(widget.get(), row, col);
+                index++;
+            }
+        }
+    }
+    else
+    {
+        if (_videoPlaysWidgets[1])
+            _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
+        if (_videoPlaysWidgets[2])
+            _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+        if (_videoPlaysWidgets[0])
+            _altLayout.insertWidget(0, _videoPlaysWidgets[0].get());
+    }
 }
 
 void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
@@ -121,7 +190,7 @@ void QVideoManagerWidget::initWidget(void)
         {
             int row = index / 3;
             int col = index % 3;
-            _videoPlayerLayout.addWidget(widget.get(), row, col);
+            _gridLayout.addWidget(widget.get(), row, col);
             index++;
         }
     }
