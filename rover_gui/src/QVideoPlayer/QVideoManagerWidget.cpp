@@ -17,6 +17,11 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 {
     this->initWidget();
 
+    _resetLayout_PB.setIcon(QIcon(":/icons/refresh.png"));
+    _tabWidget.setCornerWidget(&_resetLayout_PB, Qt::TopRightCorner);
+
+    connect(&_resetLayout_PB, &QPushButton::clicked, this, &QVideoManagerWidget::setSplitterInitialGeometry);
+
     connect(_playerWorkerThreadAruco.get(),
             &QPlayerWorker::urlFoundInDetection,
             this,
@@ -73,6 +78,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
                 index++;
             }
         }
+        _resetLayout_PB.setVisible(false);
     }
     else
     {
@@ -87,6 +93,8 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
         {
             _splitter.insertWidget(0, _videoPlaysWidgets[0].get());
         }
+        _resetLayout_PB.setVisible(true);
+        this->setSplitterInitialGeometry();
     }
 }
 
@@ -258,6 +266,14 @@ void QVideoManagerWidget::initCameraControlSubscriber(void)
                                                                                       widget->CB_cameraListUpdate(msg.urls);
                                                                                   }
                                                                               });
+}
+
+void QVideoManagerWidget::setSplitterInitialGeometry()
+{
+    int total = _splitter.width();
+    int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
+    int right = total - left;
+    _splitter.setSizes(QList<int>({left, right}));
 }
 
 void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
