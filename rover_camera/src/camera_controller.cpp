@@ -1,9 +1,10 @@
 #include "camera_controller.hpp"
 
-#include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 #include "rover_lib2/helpers/rtsp_stream.hpp"
 #include "rover_lib2/helpers/ip_pinging.hpp"
+
+#include <regex>
 
 CameraController::CameraController():
     Node("camera_controller")
@@ -65,10 +66,19 @@ CameraController::eCameraStatus CameraController::checkCameraStatus(eCameraID ca
 
     std::string cameraURL = Constants::CameraInfo::CAMERA_URL_MAP.at(cameraKey);
 
-    if (!RoverLib2::isIPReachable(cameraURL, 554, 500u))
+    std::optional<sRtspUrl> parsedUrl = parseRtspUrl(cameraURL);
+    if (!parsedUrl)
+    {
+        RCLCPP_ERROR(this->get_logger(), "checkCameraStatus(): invalid RTSP URL format for camera \"%s\"", cameraKey.c_str());
+        return eCameraStatus::STATUS_ERROR;
+    }
+    sRtspUrl url = parsedUrl.value();
+
+    if (!RoverLib2::isIPReachable(cameraURL))
     {
         return eCameraStatus::STATUS_NO_PING;
     }
+
     if (!RoverLib2::hasRTSPStream(cameraURL, 500u))
     {
         return eCameraStatus::STATUS_NO_STREAM;
@@ -136,6 +146,7 @@ void CameraController::publishAllCameraStatuses()
 
 void CameraController::publishCameraStatus(eCameraID id)
 {
+    RCLCPP_INFO(this->get_logger(), "Publishing camera status for ID %u", TO_UNDERLYING(id));
     rover_msgs::msg::CameraControl msg;
     msg.id_cam = TO_UNDERLYING(checkCameraStatus(id));
     msg.yaw = _camYaw[TO_UNDERLYING(checkCameraStatus(id))];
@@ -147,9 +158,7 @@ void CameraController::publishCameraStatus(eCameraID id)
 int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
-
     rclcpp::spin(std::make_shared<CameraController>());
-
     rclcpp::shutdown();
     return 0;
 }

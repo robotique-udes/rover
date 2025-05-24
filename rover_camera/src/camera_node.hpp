@@ -24,7 +24,7 @@ class CameraNode : public rclcpp::Node
 {
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
     static constexpr const char* SERVICE_MEDIA_SERVER_NAME = "/rover/cameras/media_server_control";
-    static constexpr const char* TOPIC_MEDIA_SERVER_NAME = "/rover/camera/recordings_info";
+    static constexpr const char* TOPIC_MEDIA_SERVER_NAME = "/rover/cameras/recordings_info";
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
 
     enum class eFileFormatNameTypes : size_t

@@ -3,12 +3,25 @@
 
 #if defined(__linux__)
 #include <string>
+#include <cstddef>
 #endif  // defined(__linux__)
 
 namespace RoverLib2
 {
 #if defined(__linux__)
-    bool isIPReachable(const std::string& ip_, size_t port_, size_t timeoutMs_ = 500U);
+
+    struct RtspUrlInfo
+    {
+        std::string host;
+        int port;
+        std::string path;
+        bool valid;
+    };
+
+    RtspUrlInfo parseRtspUrl(const std::string& url);
+
+    bool isIPReachable(const std::string& rtspUrl, size_t timeoutMs = 5000);
+
 #endif  // defined(__linux__)
 }  // namespace RoverLib2
 

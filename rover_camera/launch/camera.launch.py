@@ -28,6 +28,6 @@ def generate_launch_description():
 
     ld.add_action(node_camera_node)
     ld.add_action(node_aruco)
-    ld.add_action(node_camera_node)
+    ld.add_action(node_cam_controller)
     
     return ld

@@ -121,6 +121,6 @@ bool ImageCapture::isCameraReachable(const std::string& url_, size_t port_, size
     }
     _firstTryPinningCam = false;
 
-    bool res = RoverLib2::isIPReachable(url_, port_, timeoutMs_);
+    bool res = RoverLib2::isIPReachable(url_, timeoutMs_);
     return res;
 }
