@@ -45,6 +45,7 @@ void QArbitration::onMainComboChanged(int index)
     request->destination = index;
     request->force = true;
 
+    RCLCPP_WARN(_node->get_logger(), "Sending Main request");
     auto result = _clientJoy->async_send_request(request);
 }
 
@@ -80,8 +81,12 @@ void QArbitration::DemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::Sh
         return;
     }
 
-    RCLCPP_INFO(_node->get_logger(),
-                "Received JoyDemuxStatus: controller_main_topic = %u, controller_secondary_topic = %u",
-                msg->controller_main_topic,
-                msg->controller_secondary_topic);
+    bool wasBlockedMain = _ui.mainComboBox->blockSignals(true);
+    bool wasBlockedSec = _ui.secComboBox->blockSignals(true);
+
+    _ui.mainComboBox->setCurrentIndex(msg->controller_main_topic);
+    _ui.secComboBox->setCurrentIndex(msg->controller_secondary_topic);
+
+    _ui.mainComboBox->blockSignals(wasBlockedMain);
+    _ui.secComboBox->blockSignals(wasBlockedSec);
 }
