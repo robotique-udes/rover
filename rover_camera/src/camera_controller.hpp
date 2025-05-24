@@ -9,7 +9,6 @@ class CameraController : public rclcpp::Node
 {
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 300UL;
     static constexpr const char* TOPIC_CAMERA_POSITION = "/rover/cameras/pos_control";
-    static constexpr const char* TOPIC_CAMERA_POWER_STATUS = "/rover/cameras/power_status";
     static constexpr const char* TOPIC_CAMERA_STATUS = "/rover/cameras/status";
     static constexpr const char* SERVICE_CAMERA_POWER = "/rover/cameras/power_control";
 
@@ -32,18 +31,11 @@ class CameraController : public rclcpp::Node
         STATUS_ERROR = 3,
     };
 
-    struct sRtspUrl
-    {
-        std::string host;
-        uint16_t port;
-        std::string path;
-    };
-
     CameraController();
+    ~CameraController() = default;
 
   private:
     void CB_cameraPosControl(const rover_msgs::msg::CameraControl& msg_);
-    void CB_cameraPower(const rover_msgs::msg::CameraControl& msg_);
     void publishCameraStatus(eCameraID id_);
     void publishAllCameraStatuses(void);
     void CB_setCameraPower(const std::shared_ptr<rover_msgs::srv::CameraPower::Request> request_,
