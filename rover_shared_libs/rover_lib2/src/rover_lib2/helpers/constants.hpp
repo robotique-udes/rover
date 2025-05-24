@@ -14,6 +14,10 @@
 
 namespace Constants
 {
+    constexpr float PI_ = 3.14159265;
+    constexpr float TWO_PI_ = PI_ * 2.0F;
+    constexpr float HALF_PI_ = PI_ / 2.0F;
+
     namespace CameraInfo
     {
 #if defined(__linux__)
@@ -26,8 +30,7 @@ namespace Constants
         };
 
         /**
-         * @brief Tries to find a name from a camera URL
-         *
+         * @brief
          * @param url_ URL of the camera
          * @param rName_ Overwrite value if found
          * @return Success on camera name found
