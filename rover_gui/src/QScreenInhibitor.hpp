@@ -12,10 +12,8 @@
 class ScreenInhibitor
 {
   public:
-    ScreenInhibitor(): interface("org.freedesktop.ScreenSaver",
-                                 "/ScreenSaver",
-                                 "org.freedesktop.ScreenSaver",
-                                 QDBusConnection::sessionBus())
+    ScreenInhibitor():
+        interface("org.freedesktop.ScreenSaver", "/ScreenSaver", "org.freedesktop.ScreenSaver", QDBusConnection::sessionBus())
     {
         if (!interface.isValid())
         {
