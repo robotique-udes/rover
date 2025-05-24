@@ -20,26 +20,6 @@
    <string>Form</string>
   </property>
   <layout class="QGridLayout" name="gridLayout">
-   <item row="1" column="2">
-    <widget class="QComboBox" name="secComboBox"/>
-   </item>
-   <item row="1" column="1">
-    <widget class="QComboBox" name="mainComboBox"/>
-   </item>
-   <item row="0" column="2">
-    <widget class="QLabel" name="secLabel">
-     <property name="text">
-      <string>Secondary</string>
-     </property>
-    </widget>
-   </item>
-   <item row="0" column="1">
-    <widget class="QLabel" name="mainLabel">
-     <property name="text">
-      <string>Main</string>
-     </property>
-    </widget>
-   </item>
    <item row="2" column="1">
     <widget class="QCheckBox" name="mainForceCheckBox">
      <property name="enabled">
@@ -47,6 +27,19 @@
      </property>
      <property name="text">
       <string>Force</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="2">
+    <widget class="QComboBox" name="secComboBox"/>
+   </item>
+   <item row="1" column="1">
+    <widget class="QComboBox" name="mainComboBox"/>
+   </item>
+   <item row="0" column="1">
+    <widget class="QLabel" name="mainLabel">
+     <property name="text">
+      <string>Main</string>
      </property>
     </widget>
    </item>
@@ -59,6 +52,23 @@
       <string>Force</string>
      </property>
     </widget>
+   </item>
+   <item row="0" column="2">
+    <widget class="QLabel" name="secLabel">
+     <property name="text">
+      <string>Secondary</string>
+     </property>
+    </widget>
+   </item>
+   <item row="0" column="3">
+    <widget class="QLabel" name="driveTrainLabel">
+     <property name="text">
+      <string>Drive train</string>
+     </property>
+    </widget>
+   </item>
+   <item row="1" column="3">
+    <widget class="QComboBox" name="driveTrainComboBox"/>
    </item>
   </layout>
  </widget>
