@@ -12,6 +12,7 @@
 #include <QDateTime>
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
+#include "Worker/QPanoramaWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
@@ -30,6 +31,7 @@ class QVideoPlayerWidget : public QWidget
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
     static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
+    static constexpr size_t DEFAULT_PANORAMA_DURATION_SECONDS = 5U;
 
     static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
 
@@ -49,7 +51,8 @@ class QVideoPlayerWidget : public QWidget
                        std::string url_,
                        uint16_t tag_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                       std::shared_ptr<QPlayerWorker> workerThreadRecording_);
+                       std::shared_ptr<QPlayerWorker> workerThreadRecording_,
+                       std::shared_ptr<QPanoramaWorker> workerThreadPanorama_);
 
     ~QVideoPlayerWidget();
 
@@ -71,6 +74,7 @@ class QVideoPlayerWidget : public QWidget
     void handlePlayPauseButton(void);
 
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
+    void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_);
 
     std::string getCamURL(void);
     float getCameraAngle(void);
@@ -110,6 +114,9 @@ class QVideoPlayerWidget : public QWidget
     void onCameraAngleSliderChanged(void);
     void onCameraAngleBoxChanged(void);
 
+    void handlePanorama(void);
+    void onPanoramaStarted(bool start_, uint16_t duration_, uint16_t playerIndex_);
+
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
     void onConnectionFailed(void);
@@ -142,12 +149,14 @@ class QVideoPlayerWidget : public QWidget
     std::string _sessionFolderPath;
 
     int _streamIndex;
-    int16_t _playerIndex;
+    uint16_t _playerIndex;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> _client_panoramaManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
+    std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
     int _reconnectAttempts = 0;

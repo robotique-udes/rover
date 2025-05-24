@@ -18,13 +18,15 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
                                        uint16_t playerIndex_,
                                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                                       std::shared_ptr<QPlayerWorker> workerThreadRecording_):
+                                       std::shared_ptr<QPlayerWorker> workerThreadRecording_,
+                                       std::shared_ptr<QPanoramaWorker> workerThreadPanorama_):
     _node(guiNode_),
     _camURL(url_),
     _streamIndex(_instanceCounter - 1),
     _playerIndex(playerIndex_),
     _playerWorkerThreadAruco(workerThreadAruco_),
     _playerWorkerThreadRecording(workerThreadRecording_),
+    _panoramaWorkerThread(workerThreadPanorama_),
     _reconnectTimer(),
     _frameTimeoutTimer(),
     _connectionTimeoutTimer()
@@ -91,8 +93,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
 
     connect(_ui.angleCenterButton, &QPushButton::clicked, this, &QVideoPlayerWidget::onCenterAngle);
+    connect(_panoramaWorkerThread.get(), &QPanoramaWorker::PanoramaStarted, this, &QVideoPlayerWidget::onPanoramaStarted);
 
-        _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
     _ui.arucoIdsTextBox->setText("Ids: ");
 
@@ -1172,4 +1175,50 @@ void QVideoPlayerWidget::onCenterAngle(void)
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
     emit this->notifyCameraAnglePublisher(_camURL, CAMERA_CENTER_ANGLE);
+}
+
+void QVideoPlayerWidget::handlePanorama(void)
+{
+    if (_panoramaWorkerThread.get() != nullptr)
+    {
+        _panoramaWorkerThread->takePanoramaManager(_client_panoramaManager,
+                                                   _camURL,
+                                                   _playerIndex,
+                                                   _sessionFolderPath,
+                                                   DEFAULT_PANORAMA_DURATION_SECONDS);
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access panorama worker");
+    }
+}
+
+void QVideoPlayerWidget::setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_)
+{
+    if (client_)
+    {
+        this->_client_panoramaManager = client_;
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Couldn't create panorama client");
+    }
+}
+
+void QVideoPlayerWidget::onPanoramaStarted(bool start_, uint16_t duration_, uint16_t playerIndex_)
+{
+    QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama started",
+                                                                   "Duration:" + std::to_string(duration_) + " seconds",
+                                                                   QHelper::QToastNotification::eNotifType::SUCCESS);
+
+    QTimer::singleShot(duration_*1000,
+                       this,
+                       [this]()
+                       {
+                        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama done",
+                            "Picture was saved to the session folder under camera/panorama",
+                            QHelper::QToastNotification::eNotifType::SUCCESS);
+                       });
+
+    return;
 }

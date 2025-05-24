@@ -66,7 +66,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/JoyDemuxSetState.srv"
   "srv/LightControl.srv"
   "srv/NewGpsGoal.srv"
-  "srv/PanoControl.srv"
   "srv/RtspStream.srv"
   "srv/PhotoPanoramique.srv"
 )

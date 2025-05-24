@@ -10,7 +10,8 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _node(guiNode_),
     _videoPlayerLayout(this),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
-    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>())
+    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>()),
+    _panoramaWorkerThread(std::make_shared<QPanoramaWorker>())
 {
     this->initWidget();
 
@@ -37,10 +38,14 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     this->setLayout(&_videoPlayerLayout);
 
+    this->initPanoramaClient();
+
     _playerWorkerThreadAruco->start();
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
     _playerWorkerThreadRecording->start();
     _playerWorkerThreadRecording->setThreadName("WorkerRecord");
+    _panoramaWorkerThread->start();
+    _panoramaWorkerThread->setThreadName("QWorkerPano");
 }
 
 void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
@@ -105,7 +110,7 @@ void QVideoManagerWidget::initWidget(void)
         }
 
         _videoPlaysWidgets[i]
-            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording);
+            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording, _panoramaWorkerThread);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
@@ -253,4 +258,23 @@ void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float pitch_)
     msg.yaw = 0.0f;
 
     _pub_cameraAngle->publish(msg);
+}
+
+void QVideoManagerWidget::initPanoramaClient(void)
+{
+    if (_node)
+    {
+        _client_panoramique = _node->create_client<rover_msgs::srv::PhotoPanoramique>(SERVICE_PANORAMA_NAME);
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+    }
+
+    ASSERT_COND(_node != nullptr);
+    for (auto& widget : _videoPlaysWidgets)
+    {
+        widget->setPanoramaClientManager(_client_panoramique);
+    }
+
 }
