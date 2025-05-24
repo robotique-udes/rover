@@ -16,14 +16,14 @@ namespace RoverLib2
 {
 #if defined(__linux__)
 
-    RtspUrlInfo parseRtspUrl(const std::string& url)
+    RtspUrlInfo parseRtspUrl(const std::string& url_)
     {
         RtspUrlInfo info = {"", 554, "", false};
 
         std::regex rtsp_regex(R"(^rtsp://(?:[^@/]+@)?([^:/]+)(?::(\d+))?(/.*)?$)");
         std::smatch matches;
 
-        if (std::regex_match(url, matches, rtsp_regex))
+        if (std::regex_match(url_, matches, rtsp_regex))
         {
             info.host = matches[1].str();
 
@@ -39,9 +39,9 @@ namespace RoverLib2
         return info;
     }
 
-    bool isIPReachable(const std::string& rtspUrl, size_t timeoutMs)
+    bool isIPReachable(const std::string& rtspUrl_, size_t timeoutMs_)
     {
-        RtspUrlInfo urlInfo = parseRtspUrl(rtspUrl);
+        RtspUrlInfo urlInfo = parseRtspUrl(rtspUrl_);
         if (!urlInfo.valid)
         {
             return false;
@@ -111,8 +111,8 @@ namespace RoverLib2
         FD_SET(sock, &errorfds);
 
         struct timeval tv;
-        tv.tv_sec = timeoutMs / 1000;
-        tv.tv_usec = (timeoutMs % 1000) * 1000;
+        tv.tv_sec = timeoutMs_ / 1000;
+        tv.tv_usec = (timeoutMs_ % 1000) * 1000;
 
         result = select(sock + 1, nullptr, &writefds, &errorfds, &tv);
 
