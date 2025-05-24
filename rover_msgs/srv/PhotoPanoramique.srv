@@ -1,6 +1,6 @@
-bool start
 string camera_id
 string nom
-uint8 pano_number
+string base_path
 ---
 bool success
+string status

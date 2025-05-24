@@ -55,7 +55,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/LightControl.msg"
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
-  "msg/PhotoPanoramique.msg"
 
   "srv/AntennaArbitration.srv"
   "srv/ArucoDetection.srv"
