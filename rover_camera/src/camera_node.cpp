@@ -38,9 +38,9 @@ CameraNode::CameraNode():
                                          });
 
     _sub_position
-        = this->create_subscription<rover_msgs::msg::GpsPosition>(TOPIC_GPS_NAME,
+        = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
                                                                   QOS_DEFAULT,
-                                                                  [this](const rover_msgs::msg::GpsPosition& gps_message_)
+                                                                  [this](const rover_msgs::msg::Gps& gps_message_)
                                                                   {
                                                                       this->callbackPosition(gps_message_);
                                                                   });
@@ -439,7 +439,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
  *
  * @param gps_message_ Address reference of the GPS subscriber
  */
-void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_)
+void CameraNode::callbackPosition(const rover_msgs::msg::Gps& gps_message_)
 {
     _lastLatitude = gps_message_.latitude;
     _lastLongitude = gps_message_.longitude;
