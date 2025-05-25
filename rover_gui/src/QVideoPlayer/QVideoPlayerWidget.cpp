@@ -42,7 +42,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     connect(&_gstreamerThread, &QThread::finished, _gstreamerWorker, &QObject::deleteLater);
     connect(this, &QVideoPlayerWidget::requestStartStream, _gstreamerWorker, &GStreamerWorker::startPipeline);
+    connect(this, &QVideoPlayerWidget::requestPauseStream, _gstreamerWorker, &GStreamerWorker::pausePipeline);
     connect(this, &QVideoPlayerWidget::requestStopStream, _gstreamerWorker, &GStreamerWorker::stopPipeline);
+    connect(this, &QVideoPlayerWidget::requestResumeStream, _gstreamerWorker, &GStreamerWorker::resumePipeline);
     connect(_gstreamerWorker, &GStreamerWorker::pipelineStarted, this, &QVideoPlayerWidget::onPipelineStarted);
     connect(_gstreamerWorker, &GStreamerWorker::errorOccurred, this, &QVideoPlayerWidget::onErrorOccurred);
     connect(_gstreamerWorker, &GStreamerWorker::connectionFailed, this, &QVideoPlayerWidget::onConnectionFailed);
@@ -54,7 +56,6 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::detectionHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onDetectionHandledSuccessfully);
-    connect(_ui.playPauseButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePlayPauseButton);
     connect(_playerWorkerThreadAruco.get(),
             &QPlayerWorker::arucoServerInfoFailed,
             this,
@@ -366,7 +367,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             this->updateStatusText("Connecting...");
             _ui.playPauseButton->setChecked(true);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-            _connectionTimeoutTimer.start(8000);
+            _connectionTimeoutTimer.start(15000);
             break;
 
         case ePlayerState::STREAMING:
@@ -375,9 +376,12 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
             _wasEverConnected = true;
             _ui.arucoPushButton->setEnabled(true);
-            _frameTimeoutTimer.start(2000);
             _ui.ScreenshotButton->setEnabled(true);
             _ui.startRecordingButton->setEnabled(true);
+            
+            // Reset reconnect attempts on successful connection
+            _reconnectAttempts = 0;
+            
             UI_LOG_INFO_RTSP("Stream connected successfully", _ui.logDisplay);
             break;
 
@@ -412,7 +416,18 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             this->updateStatusText("Connection Error");
             _ui.playPauseButton->setChecked(false);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
-            UI_LOG_ERROR_RTSP("Connection error occurred", _ui.logDisplay);
+            _frameTimeoutTimer.stop(); 
+            
+            // Don't log error if we're going to retry
+            if (_reconnectAttempts < MAX_RECONNECT_ATTEMPTS)
+            {
+                UI_LOG_WARNING_RTSP("Connection error occurred, will retry...", _ui.logDisplay);
+            }
+            else
+            {
+                UI_LOG_ERROR_RTSP("Connection error occurred", _ui.logDisplay);
+            }
+            
             this->tryReconnect();
             break;
 
@@ -423,6 +438,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.arucoPushButton->setEnabled(false);
             _ui.ScreenshotButton->setEnabled(false);
             _ui.startRecordingButton->setEnabled(false);
+            _frameTimeoutTimer.stop(); 
             UI_LOG_ERROR_RTSP("Connection failed permanently", _ui.logDisplay);
             break;
     }
@@ -557,16 +573,10 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
 
     gst_element_set_state(_pipeline, GST_STATE_PLAYING);
     UI_LOG_DEBUG_RTSP("Pipeline state set to PLAYING", _ui.logDisplay);
-
-    _frameTimeoutTimer.start(2000);
 }
 
 void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
 {
-    if (_state == ePlayerState::STREAMING)
-    {
-        return;
-    }
 
     if (_state == ePlayerState::RECONNECTING)
     {
@@ -588,9 +598,20 @@ void QVideoPlayerWidget::onConnectionFailed(void)
 {
     _reconnectTimer.stop();
     _connectionTimeoutTimer.stop();
-    _reconnectAttempts = 0;
-    this->setPlayerState(ePlayerState::CONNECTION_FAILED);
-    UI_LOG_ERROR_RTSP("Connection failed permanently", _ui.logDisplay);
+    
+    // Only handle as permanent failure if we're not in reconnecting state
+    if (_state != ePlayerState::RECONNECTING)
+    {
+        _reconnectAttempts = 0;
+        this->setPlayerState(ePlayerState::CONNECTION_FAILED);
+        UI_LOG_ERROR_RTSP("Connection failed permanently", _ui.logDisplay);
+    }
+    else
+    {
+        // We're reconnecting, so this is just another failed attempt
+        UI_LOG_ERROR_RTSP(QString("Reconnection attempt %1 failed").arg(_reconnectAttempts), _ui.logDisplay);
+        this->setPlayerState(ePlayerState::CONNECTION_ERROR);
+    }
 }
 
 void QVideoPlayerWidget::onFrameReceived(void)
@@ -616,10 +637,9 @@ void QVideoPlayerWidget::onFrameReceived(void)
         _ui.ScreenshotButton->setEnabled(true);
         _ui.startRecordingButton->setEnabled(true);
     }
-    else
-    {
-        _frameTimeoutTimer.start(2000);
-    }
+    _frameTimeoutTimer.stop();  
+    _frameTimeoutTimer.start(5000);
+    
 }
 
 void QVideoPlayerWidget::onFrameTimeout(void)
@@ -676,18 +696,41 @@ void QVideoPlayerWidget::onConnectionTimeout(void)
     emit requestStopStream();
 }
 
-void QVideoPlayerWidget::handlePlayPauseButton(void)
+void QVideoPlayerWidget::handlePlayPauseButton()
 {
-    if (!_ui.playPauseButton->isChecked())
+    if (_state == ePlayerState::STREAMING)
     {
+        _ui.playPauseButton->setChecked(false);
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
-        this->stopStream();
+        emit requestPauseStream();
+
+        _frameTimeoutTimer.stop();
+        _connectionTimeoutTimer.stop();
+        this->setPlayerState(ePlayerState::PAUSED);
+
+        return;
     }
-    else
+
+    if (_state == ePlayerState::PAUSED && _pipeline != nullptr)
     {
+        // Instead of resuming, restart the stream to handle stale connections
+        _ui.playPauseButton->setChecked(true);
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-        this->startStream(QString::fromStdString(_camURL));
+        
+        // Clean up the old pipeline and start fresh
+        emit requestStopStream();
+        
+        // Give a brief delay to ensure cleanup completes
+        QTimer::singleShot(100, this, [this]() {
+            this->startStream(QString::fromStdString(_camURL));
+        });
+
+        return;
     }
+
+    _ui.playPauseButton->setChecked(true);
+    _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
+    this->startStream(QString::fromStdString(_camURL));
 }
 
 void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)

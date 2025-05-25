@@ -92,6 +92,8 @@ class QVideoPlayerWidget : public QWidget
     void streamStateChanged(bool isRunning_, int streamIndex_);
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
+    void requestResumeStream(void);
+    void requestPauseStream(void);
     void notifyCameraAnglePublisher(std::string camURL_, float angle_);
 
   private slots:

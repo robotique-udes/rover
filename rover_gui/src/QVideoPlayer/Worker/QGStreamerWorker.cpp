@@ -23,30 +23,29 @@ void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpoin
     if (!worker)
         return;
 
+    bool hasPipeline = false;
     {
         std::lock_guard<std::mutex> lock(worker->_pipelineMutex);
-        if (!worker->_pipeline)
-            return;
+        hasPipeline = (worker->_pipeline != nullptr);
     }
+
+    if (!hasPipeline)
+        return;
 
     GError* err = nullptr;
     gchar* debug = nullptr;
     gst_message_parse_error(msg_, &err, &debug);
 
     std::string errorMsg = err ? err->message : "Unknown Error";
-
     RCLCPP_ERROR(gst_logger, "GStreamer error: %s", errorMsg.c_str());
 
+    // Emit errorOccurred instead of connectionFailed to allow retry logic
     emit worker->errorOccurred(QString::fromStdString(errorMsg));
 
     if (err)
-    {
         g_error_free(err);
-    }
     if (debug)
-    {
         g_free(debug);
-    }
 }
 
 GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_data_)
@@ -56,8 +55,6 @@ GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_da
     {
         return GST_FLOW_OK;
     }
-
-    worker->_consecutiveErrorsCount = 0;
 
     emit worker->frameReceived();
 
@@ -70,28 +67,6 @@ GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_da
     return GST_FLOW_OK;
 }
 
-void GStreamerWorker::on_gst_warning_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
-{
-    Q_UNUSED(bus_);
-    Q_UNUSED(user_data_);
-
-    GError* err = nullptr;
-    gchar* debug = nullptr;
-    gst_message_parse_warning(msg_, &err, &debug);
-
-    std::string warning = err ? err->message : "Unknown Warning";
-    RCLCPP_WARN(gst_logger, "GStreamer warning: %s", warning.c_str());
-
-    if (err)
-    {
-        g_error_free(err);
-    }
-    if (debug)
-    {
-        g_free(debug);
-    }
-}
-
 static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointer user_data_)
 {
     Q_UNUSED(decodebin_);
@@ -99,7 +74,11 @@ static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointe
     if (!worker)
         return;
 
-    GstElement* queue0 = gst_bin_get_by_name(GST_BIN(worker->getPipeline()), "q0");
+    GstElement* pipeline = worker->getPipeline();
+    if (!pipeline)
+        return;
+
+    GstElement* queue0 = gst_bin_get_by_name(GST_BIN(pipeline), "q0");
     if (!queue0)
         return;
 
@@ -151,20 +130,27 @@ GStreamerWorker::GStreamerWorker(QObject* parent):
 {
     gst_init(nullptr, nullptr);
 
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     gst_debug_add_log_function(minimal_gst_debug_function, this, NULL);
     gst_debug_remove_log_function(gst_debug_log_default);
+#pragma GCC diagnostic pop
 }
 
 GStreamerWorker::~GStreamerWorker()
 {
+#pragma GCC diagnostic push
+#pragma GCC diagnostic ignored "-Wpedantic"
     gst_debug_remove_log_function(minimal_gst_debug_function);
+#pragma GCC diagnostic pop
     this->cleanupGStreamer();
 }
 
 std::string GStreamerWorker::buildPipelineString(const std::string& rtspUrl_) const
 {
     return "rtspsrc location=" + rtspUrl_
-           + " latency=100 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true ! "
+           + " latency=100 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true "
+             "tcp-timeout=20000000 connection-speed=1000 protocols=tcp ! "  
              "decodebin "
              "name=dec "
              "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
@@ -179,90 +165,108 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
     _lastUrl = rtspUrl_;
 
-    std::string url = rtspUrl_.toStdString();
+    std::string urlStr = rtspUrl_.toStdString();
+    const std::string pipelineDesc = this->buildPipelineString(urlStr);
 
-    const std::string pipelineDesc = this->buildPipelineString(url);
-    _pipeline = gst_parse_launch(pipelineDesc.c_str(), nullptr);
+    GstElement* new_pipeline = gst_parse_launch(pipelineDesc.c_str(), nullptr);
 
-    if (!_pipeline)
+    if (!new_pipeline)
     {
         RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
         emit errorOccurred("Failed to create GStreamer pipeline");
         return;
     }
 
-    GstElement* decodebin = gst_bin_get_by_name(GST_BIN(_pipeline), "dec");
+    GstElement* decodebin = gst_bin_get_by_name(GST_BIN(new_pipeline), "dec");
     if (!decodebin)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
-        emit errorOccurred("Failed to create GStreamer pipeline");
-        gst_object_unref(_pipeline);
-        _pipeline = nullptr;
+        RCLCPP_ERROR(gst_logger, "Failed to get decodebin element");
+        emit errorOccurred("Failed to get decodebin element from pipeline");
+        gst_object_unref(new_pipeline);
         return;
     }
 
     g_signal_connect(decodebin, "pad-added", G_CALLBACK(on_decodebin_pad_added), this);
     gst_object_unref(decodebin);
 
-    GstElement* appSink = gst_bin_get_by_name(GST_BIN(_pipeline), "myappsink");
+    GstElement* appSink = gst_bin_get_by_name(GST_BIN(new_pipeline), "myappsink");
     if (!appSink)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
-        emit errorOccurred("Failed to create GStreamer pipeline");
-        gst_object_unref(_pipeline);
-        _pipeline = nullptr;
+        RCLCPP_ERROR(gst_logger, "Failed to get appsink");
+        emit errorOccurred("Failed to get appsink");
+        gst_object_unref(new_pipeline);
         return;
     }
 
     g_object_set(G_OBJECT(appSink), "emit-signals", TRUE, "sync", FALSE, "max-buffers", 2, "drop", TRUE, nullptr);
 
-    if (_newSampleSignalId != 0)
-    {
-        g_signal_handler_disconnect(appSink, _newSampleSignalId);
-        _newSampleSignalId = 0;
-    }
-
     _newSampleSignalId = g_signal_connect(appSink, "new-sample", G_CALLBACK(GStreamerWorker::on_new_sample), this);
 
     gst_object_unref(appSink);
 
-    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(_pipeline));
+    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(new_pipeline));
     if (!bus)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
-        emit errorOccurred("Failed to create GStreamer pipeline");
-        gst_object_unref(_pipeline);
-        _pipeline = nullptr;
+        RCLCPP_ERROR(gst_logger, "Failed to get GStreamer bus");
+        emit errorOccurred("Failed to get GStreamer bus");
+        gst_object_unref(new_pipeline);
         return;
     }
 
     gst_bus_add_signal_watch(bus);
 
     _errorHandlerId = g_signal_connect(bus, "message::error", G_CALLBACK(GStreamerWorker::on_gst_error_message), this);
-    _warningHandlerId = g_signal_connect(bus, "message::warning", G_CALLBACK(GStreamerWorker::on_gst_warning_message), this);
 
     g_object_unref(bus);
 
-    //GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_PLAYING);
-   // if (ret == GST_STATE_CHANGE_FAILURE)
-   // {
-    //    RCLCPP_ERROR(gst_logger, "Failed to start pipeline");
-    //    emit errorOccurred("Failed to start GStreamer pipeline");
-    //    cleanupGStreamer();
-     //   return;
-    //}
+    GstStateChangeReturn ret = gst_element_set_state(new_pipeline, GST_STATE_PLAYING);
+    if (ret == GST_STATE_CHANGE_FAILURE)
+    {
+        RCLCPP_ERROR(gst_logger, "Failed to start pipeline");
+        emit errorOccurred("Failed to start GStreamer pipeline");
+        gst_object_unref(new_pipeline);
+        return;
+    }
+
+    {
+        std::lock_guard<std::mutex> lock(_pipelineMutex);
+        _pipeline = new_pipeline;
+    }
 
     emit pipelineStarted(_pipeline);
 }
 
-void GStreamerWorker::stopPipeline()
+void GStreamerWorker::pausePipeline()
 {
     std::lock_guard<std::mutex> lock(_pipelineMutex);
     if (!_pipeline)
         return;
 
+    GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_PAUSED);
+    if (ret == GST_STATE_CHANGE_FAILURE)
+    {
+        RCLCPP_ERROR(gst_logger, "Failed to pause pipeline");
+        emit errorOccurred("Failed to pause pipeline");
+    }
+}
+
+void GStreamerWorker::stopPipeline()
+{
     this->cleanupGStreamer();
-    emit pipelineStopped();
+}
+
+void GStreamerWorker::resumePipeline()
+{
+    std::lock_guard<std::mutex> lock(_pipelineMutex);
+    if (!_pipeline)
+        return;
+
+    GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_PLAYING);
+    if (ret == GST_STATE_CHANGE_FAILURE)
+    {
+        RCLCPP_ERROR(gst_logger, "Failed to resume pipeline");
+        emit errorOccurred("Failed to resume pipeline");
+    }
 }
 
 void GStreamerWorker::cleanupGStreamer()
@@ -279,6 +283,10 @@ void GStreamerWorker::cleanupGStreamer()
 
     if (pipeline_to_clean)
     {
+        gst_element_set_state(pipeline_to_clean, GST_STATE_NULL);
+
+        gst_element_get_state(pipeline_to_clean, NULL, NULL, GST_CLOCK_TIME_NONE);
+
         GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline_to_clean));
         if (bus)
         {
@@ -287,24 +295,22 @@ void GStreamerWorker::cleanupGStreamer()
                 g_signal_handler_disconnect(bus, _errorHandlerId);
                 _errorHandlerId = 0;
             }
-            if (_warningHandlerId)
-            {
-                g_signal_handler_disconnect(bus, _warningHandlerId);
-                _warningHandlerId = 0;
-            }
+
             gst_bus_remove_signal_watch(bus);
             gst_object_unref(bus);
         }
 
         GstElement* appSink = gst_bin_get_by_name(GST_BIN(pipeline_to_clean), "myappsink");
-        if (appSink && _newSampleSignalId != 0)
+        if (appSink)
         {
-            g_signal_handler_disconnect(appSink, _newSampleSignalId);
-            _newSampleSignalId = 0;
+            if (_newSampleSignalId != 0)
+            {
+                g_signal_handler_disconnect(appSink, _newSampleSignalId);
+                _newSampleSignalId = 0;
+            }
             gst_object_unref(appSink);
         }
 
-        gst_element_set_state(pipeline_to_clean, GST_STATE_NULL);
         gst_object_unref(pipeline_to_clean);
     }
 }
