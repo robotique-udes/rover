@@ -47,8 +47,16 @@ void Gnss::CB_CAN_FixHeading(const RoverCan2::Msgs::FixHeading& canMsg_)
 {
     float rawHeading = canMsg_.getData().headingDeg;
     float calibratedHeading = std::fmod(rawHeading + HEADING_CALIB_VALUE, 360.0F);
-    if (calibratedHeading < 0.0F)
+    while (calibratedHeading < 0.0F)
+    {
         calibratedHeading += 360.0F;
+    }
+
+    while (calibratedHeading > 360.0F)
+    {
+        calibratedHeading -= 360.0F;
+    }
+
     _rosGpsMsg.heading = calibratedHeading;
 }
 

@@ -23,7 +23,7 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
                                       RoverCan2::SubscriberMember<RoverCan2::Msgs::FixInfo, Gnss>,
                                       RoverCan2::SubscriberMember<RoverCan2::Msgs::FixPosition, Gnss>>;
 
-    static constexpr const char* GNSS_DATA_TOPIC = "/rover/gnss/data";
+    static constexpr const char* GNSS_DATA_TOPIC = "/rover/gps/position";
     static constexpr float GNSS_DATA_PUBLISH_FREQUENCY_HZ = 20.0F;
     static constexpr float HEADING_CALIB_VALUE = 1.0F;
 

@@ -104,7 +104,7 @@ namespace RoverCan2::Constant
      * @brief Array holding all valid and implemented msgs used on the network.
      *
      */
-    constexpr CompileTimeArray<eMsgId, 13UL> SUPPORTED_MSGS = {eMsgId::TEST_MSG,
+    constexpr CompileTimeArray<eMsgId, 16UL> SUPPORTED_MSGS = {eMsgId::TEST_MSG,
                                                                eMsgId::TEST_MSG_2,
                                                                eMsgId::ERROR_STATE,
                                                                eMsgId::HEARTBEAT,
@@ -116,7 +116,10 @@ namespace RoverCan2::Constant
                                                                eMsgId::PROP_SPEED_CMD,
                                                                eMsgId::PROP_SPEED_STATUS,
                                                                eMsgId::DDB_CMD,
-                                                               eMsgId::DDB_STATUS};
+                                                               eMsgId::DDB_STATUS,
+                                                               eMsgId::FIX_POSITION,
+                                                               eMsgId::FIX_HEADING,
+                                                               eMsgId::FIX_INFO};
 
     /**
      * @brief
