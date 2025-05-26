@@ -11,7 +11,6 @@ static rclcpp::Logger gst_logger = rclcpp::get_logger("VIDEOPLAYER");
 
 GstElement* GStreamerWorker::getPipeline()
 {
-    std::lock_guard<std::mutex> lock(_pipelineMutex);
     return _pipeline;
 }
 
@@ -23,15 +22,6 @@ void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpoin
     if (!worker)
         return;
 
-    bool hasPipeline = false;
-    {
-        std::lock_guard<std::mutex> lock(worker->_pipelineMutex);
-        hasPipeline = (worker->_pipeline != nullptr);
-    }
-
-    if (!hasPipeline)
-        return;
-
     GError* err = nullptr;
     gchar* debug = nullptr;
     gst_message_parse_error(msg_, &err, &debug);
@@ -39,7 +29,6 @@ void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpoin
     std::string errorMsg = err ? err->message : "Unknown Error";
     RCLCPP_ERROR(gst_logger, "GStreamer error: %s", errorMsg.c_str());
 
-    // Emit errorOccurred instead of connectionFailed to allow retry logic
     emit worker->errorOccurred(QString::fromStdString(errorMsg));
 
     if (err)
@@ -52,9 +41,7 @@ GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_da
 {
     auto* worker = static_cast<GStreamerWorker*>(user_data_);
     if (!worker)
-    {
         return GST_FLOW_OK;
-    }
 
     emit worker->frameReceived();
 
@@ -150,7 +137,7 @@ std::string GStreamerWorker::buildPipelineString(const std::string& rtspUrl_) co
 {
     return "rtspsrc location=" + rtspUrl_
            + " latency=100 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true "
-             "tcp-timeout=20000000 connection-speed=1000 protocols=tcp ! "  
+             "tcp-timeout=20000000 connection-speed=1000 protocols=tcp ! "
              "decodebin "
              "name=dec "
              "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
@@ -229,7 +216,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     }
 
     {
-        std::lock_guard<std::mutex> lock(_pipelineMutex);
         _pipeline = new_pipeline;
     }
 
@@ -238,7 +224,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
 void GStreamerWorker::pausePipeline()
 {
-    std::lock_guard<std::mutex> lock(_pipelineMutex);
     if (!_pipeline)
         return;
 
@@ -255,64 +240,38 @@ void GStreamerWorker::stopPipeline()
     this->cleanupGStreamer();
 }
 
-void GStreamerWorker::resumePipeline()
+void GStreamerWorker::cleanupGStreamer()
 {
-    std::lock_guard<std::mutex> lock(_pipelineMutex);
     if (!_pipeline)
         return;
 
-    GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_PLAYING);
-    if (ret == GST_STATE_CHANGE_FAILURE)
+    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(_pipeline));
+    if (bus)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to resume pipeline");
-        emit errorOccurred("Failed to resume pipeline");
-    }
-}
-
-void GStreamerWorker::cleanupGStreamer()
-{
-    GstElement* pipeline_to_clean = nullptr;
-
-    {
-        std::lock_guard<std::mutex> lock(_pipelineMutex);
-        if (!_pipeline)
-            return;
-        pipeline_to_clean = _pipeline;
-        _pipeline = nullptr;
-    }
-
-    if (pipeline_to_clean)
-    {
-        gst_element_set_state(pipeline_to_clean, GST_STATE_NULL);
-
-        gst_element_get_state(pipeline_to_clean, NULL, NULL, GST_CLOCK_TIME_NONE);
-
-        GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(pipeline_to_clean));
-        if (bus)
+        if (_errorHandlerId)
         {
-            if (_errorHandlerId)
-            {
-                g_signal_handler_disconnect(bus, _errorHandlerId);
-                _errorHandlerId = 0;
-            }
-
-            gst_bus_remove_signal_watch(bus);
-            gst_object_unref(bus);
+            g_signal_handler_disconnect(bus, _errorHandlerId);
+            _errorHandlerId = 0;
         }
-
-        GstElement* appSink = gst_bin_get_by_name(GST_BIN(pipeline_to_clean), "myappsink");
-        if (appSink)
-        {
-            if (_newSampleSignalId != 0)
-            {
-                g_signal_handler_disconnect(appSink, _newSampleSignalId);
-                _newSampleSignalId = 0;
-            }
-            gst_object_unref(appSink);
-        }
-
-        gst_object_unref(pipeline_to_clean);
+        gst_bus_remove_signal_watch(bus);
+        gst_object_unref(bus);
     }
+
+    GstElement* appSink = gst_bin_get_by_name(GST_BIN(_pipeline), "myappsink");
+    if (appSink)
+    {
+        if (_newSampleSignalId != 0)
+        {
+            g_signal_handler_disconnect(appSink, _newSampleSignalId);
+            _newSampleSignalId = 0;
+        }
+        gst_object_unref(appSink);
+    }
+
+    gst_element_set_state(_pipeline, GST_STATE_NULL);
+    gst_element_get_state(_pipeline, NULL, NULL, GST_CLOCK_TIME_NONE);
+    gst_object_unref(_pipeline);
+    _pipeline = nullptr;
 }
 
 void GStreamerWorker::setTargetWidget(QWidget* widget)

@@ -15,12 +15,9 @@ class GStreamerWorker : public QObject
   public:
     explicit GStreamerWorker(QObject* parent_ = nullptr);
     ~GStreamerWorker();
-    GstElement* getPipeline();
 
     void setTargetWidget(QWidget* widget);
-    QWidget* getTargetWidget() const;
     void pausePipeline();
-    void resumePipeline();
     void stopPipeline();
 
   public slots:
@@ -34,7 +31,6 @@ class GStreamerWorker : public QObject
     void connectionFailed();
 
   private:
-    mutable std::mutex _pipelineMutex;
     std::string buildPipelineString(const std::string& rtspUrl_) const;
     void cleanupGStreamer();
 
@@ -44,12 +40,10 @@ class GStreamerWorker : public QObject
     QWidget* _targetWidget = nullptr;
 
     gulong _newSampleSignalId = 0;
+    gulong _errorHandlerId = 0;
 
     static void on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_);
     static GstFlowReturn on_new_sample(GstElement* sink_, gpointer user_data_);
-
-    gulong _errorHandlerId = 0;
-    gulong _messageHandlerId = 0;
 };
 
 #endif
