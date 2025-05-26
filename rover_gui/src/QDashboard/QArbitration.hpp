@@ -26,9 +26,8 @@ class QArbitration : public QWidget
 
     static constexpr const char* TOPIC_JOY_DEMUX_CONTROL = "/base/joy/demux_control";
     static constexpr const char* TOPIC_DT_DEMUX_CONTROL = "/rover/drive_train/demux_control";
-    static constexpr const char* TOPIC_JOY_DEMUX_STATUS  = "/base/joy/demux_status";
+    static constexpr const char* TOPIC_JOY_DEMUX_STATUS = "/base/joy/demux_status";
     static constexpr const char* TOPIC_DT_DEMUX_STATUS = "/rover/drive_train/demux_status";
-
 
     enum class eControllerType
     {
@@ -64,7 +63,7 @@ class QArbitration : public QWidget
     void initComboBoxItems();
     void JoyDemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg);
     void DriveTrainDemuxStatusCallback(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg);
-    
+
     template<typename T>
     void checkServiceAvailable(rclcpp::Client<T>::SharedPtr client, const std::string& serviceName);
 

@@ -103,8 +103,16 @@ class CanMasterNode : public rclcpp::Node
             cameraArmSide,
             gnss);
 
-    std::array<MasterDevice*, 10U> _deviceArray
-        = {&motorFL, &motorFR, &motorRL, &motorRR, &cameraMain, &cameraAntenna, &cameraSideFront, &cameraArmTop, &cameraArmSide, &gnss};
+    std::array<MasterDevice*, 10U> _deviceArray = {&motorFL,
+                                                   &motorFR,
+                                                   &motorRL,
+                                                   &motorRR,
+                                                   &cameraMain,
+                                                   &cameraAntenna,
+                                                   &cameraSideFront,
+                                                   &cameraArmTop,
+                                                   &cameraArmSide,
+                                                   &gnss};
 };
 
 #endif  // CAN_MASTER_NODE_HPP

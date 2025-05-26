@@ -37,13 +37,12 @@ CameraNode::CameraNode():
                                              this->CB_url_publisher();
                                          });
 
-    _sub_position
-        = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
-                                                                  QOS_DEFAULT,
-                                                                  [this](const rover_msgs::msg::Gps& gps_message_)
-                                                                  {
-                                                                      this->callbackPosition(gps_message_);
-                                                                  });
+    _sub_position = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
+                                                                    QOS_DEFAULT,
+                                                                    [this](const rover_msgs::msg::Gps& gps_message_)
+                                                                    {
+                                                                        this->callbackPosition(gps_message_);
+                                                                    });
 }
 
 void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
