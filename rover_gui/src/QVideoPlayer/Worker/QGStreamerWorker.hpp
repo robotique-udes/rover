@@ -6,7 +6,6 @@
 #include <QWidget>
 #include <gst/gst.h>
 #include <rclcpp/rclcpp.hpp>
-#include <mutex>
 
 class GStreamerWorker : public QObject
 {

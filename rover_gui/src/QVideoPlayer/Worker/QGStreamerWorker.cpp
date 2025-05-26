@@ -9,11 +9,6 @@
 
 static rclcpp::Logger gst_logger = rclcpp::get_logger("VIDEOPLAYER");
 
-GstElement* GStreamerWorker::getPipeline()
-{
-    return _pipeline;
-}
-
 void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
     Q_UNUSED(bus_);
@@ -56,16 +51,15 @@ GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_da
 
 static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointer user_data_)
 {
-    Q_UNUSED(decodebin_);
-    auto* worker = static_cast<GStreamerWorker*>(user_data_);
-    if (!worker)
-        return;
+    Q_UNUSED(user_data_);
 
-    GstElement* pipeline = worker->getPipeline();
+    GstElement* pipeline = GST_ELEMENT(gst_element_get_parent(decodebin_));
     if (!pipeline)
         return;
 
     GstElement* queue0 = gst_bin_get_by_name(GST_BIN(pipeline), "q0");
+    gst_object_unref(pipeline);
+
     if (!queue0)
         return;
 
@@ -173,7 +167,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
         return;
     }
 
-    g_signal_connect(decodebin, "pad-added", G_CALLBACK(on_decodebin_pad_added), this);
+    g_signal_connect(decodebin, "pad-added", G_CALLBACK(on_decodebin_pad_added), nullptr);
     gst_object_unref(decodebin);
 
     GstElement* appSink = gst_bin_get_by_name(GST_BIN(new_pipeline), "myappsink");
@@ -215,9 +209,7 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
         return;
     }
 
-    {
-        _pipeline = new_pipeline;
-    }
+    _pipeline = new_pipeline;
 
     emit pipelineStarted(_pipeline);
 }
