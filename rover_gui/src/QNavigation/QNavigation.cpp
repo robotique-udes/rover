@@ -40,7 +40,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
 
-    _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>("/rover/gnss/data",
+    _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
                                                                1,
                                                                [this](const rover_msgs::msg::Gps& gpsMsg_)
                                                                {
