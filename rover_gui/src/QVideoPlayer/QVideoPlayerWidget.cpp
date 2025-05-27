@@ -114,8 +114,6 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                                                        "SessionFolderManager couldn't return a valid path",
                                                                        QHelper::QToastNotification::eNotifType::ERROR);
     }
-
-    UI_LOG_INFO(GENERAL, QString::fromStdString("VideoPlayer Widget initialized for camera: " + _camURL), _ui.logDisplay);
 }
 
 QVideoPlayerWidget::~QVideoPlayerWidget()
@@ -280,13 +278,13 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
 {
     if (rtspUrl_.isEmpty())
     {
-        UI_LOG_WARNING_RTSP("Empty RTSP URL provided", _ui.logDisplay);
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Empty RTSP URL provided");
         return;
     }
 
     if (!this->validateRtspUrl(rtspUrl_))
-    {
-        UI_LOG_WARNING_RTSP(QString("Invalid RTSP URL: %1").arg(rtspUrl_), _ui.logDisplay);
+    {   
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Invalid RTSP URL: %s", rtspUrl_.toStdString().c_str());
         QMessageBox::warning(this,
                              "Invalid RTSP URL",
                              "The URL format is invalid. Please enter a valid RTSP URL.\n\n"
@@ -304,8 +302,8 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
     _camURL = rtspUrl_.toStdString();
 
     if (_state != ePlayerState::RECONNECTING)
-    {
-        UI_LOG_INFO_RTSP(QString("Starting stream: %1").arg(rtspUrl_), _ui.logDisplay);
+    {   
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Starting stream: %s", rtspUrl_.toStdString().c_str());
         _reconnectAttempts = 0;
     }
 
@@ -322,8 +320,6 @@ void QVideoPlayerWidget::stopStream(void)
     {
         return;
     }
-
-    UI_LOG_INFO_RTSP(QString("Stopping stream: %1").arg(QString::fromStdString(_camURL)), _ui.logDisplay);
 
     _frameTimeoutTimer.stop();
     _reconnectTimer.stop();
@@ -366,7 +362,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             this->updateStatusText("Connecting...");
             _ui.playPauseButton->setChecked(true);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-            _connectionTimeoutTimer.start(15000);
+            _connectionTimeoutTimer.start(5000);
             break;
 
         case ePlayerState::STREAMING:
@@ -377,10 +373,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.arucoPushButton->setEnabled(true);
             _ui.ScreenshotButton->setEnabled(true);
             _ui.startRecordingButton->setEnabled(true);
-
             _reconnectAttempts = 0;
-
-            UI_LOG_INFO_RTSP("Stream connected successfully", _ui.logDisplay);
             break;
 
         case ePlayerState::RECONNECTING:
@@ -389,7 +382,6 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             if (_ui.arucoPushButton->isChecked())
             {
-                UI_LOG_INFO_RTSP("Resetting Aruco button due to stream loss", _ui.logDisplay);
                 _ui.arucoPushButton->setChecked(false);
                 _ui.arucoPushButton->setProperty("class", "normal");
                 _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
@@ -415,17 +407,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.playPauseButton->setChecked(false);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             _frameTimeoutTimer.stop();
-
-            // Don't log error if we're going to retry
-            if (_reconnectAttempts < MAX_RECONNECT_ATTEMPTS)
-            {
-                UI_LOG_WARNING_RTSP("Connection error occurred, will retry...", _ui.logDisplay);
-            }
-            else
-            {
-                UI_LOG_ERROR_RTSP("Connection error occurred", _ui.logDisplay);
-            }
-
+            RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Connection error occurred");
             this->tryReconnect();
             break;
 
@@ -437,7 +419,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.ScreenshotButton->setEnabled(false);
             _ui.startRecordingButton->setEnabled(false);
             _frameTimeoutTimer.stop();
-            UI_LOG_ERROR_RTSP("Connection failed permanently", _ui.logDisplay);
+            RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Connection failed permanently");
             break;
     }
 
@@ -461,14 +443,11 @@ void QVideoPlayerWidget::tryReconnect(void)
 
     if (_reconnectAttempts <= MAX_RECONNECT_ATTEMPTS)
     {
-        UI_LOG_INFO_RTSP(QString("Automatic reconnection attempt %1 of %2").arg(_reconnectAttempts).arg(MAX_RECONNECT_ATTEMPTS),
-                         _ui.logDisplay);
         this->setPlayerState(ePlayerState::RECONNECTING);
         _reconnectTimer.start(3000);
     }
     else
     {
-        UI_LOG_ERROR_RTSP("Maximum reconnection attempts reached", _ui.logDisplay);
         this->setPlayerState(ePlayerState::CONNECTION_FAILED);
     }
 }
@@ -532,7 +511,6 @@ void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 void QVideoPlayerWidget::clearLogs(void)
 {
     _ui.logDisplay->clear();
-    UI_LOG_INFO_RTSP("Logs cleared", _ui.logDisplay);
 }
 
 void QVideoPlayerWidget::toggleLogView(bool show_)
@@ -544,15 +522,10 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
 {
     if (!pipeline_)
     {
-        UI_LOG_ERROR_RTSP("Pipeline creation failed", _ui.logDisplay);
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Pipeline creation failed");
         _connectionTimeoutTimer.stop();
         this->setPlayerState(ePlayerState::CONNECTION_ERROR);
         return;
-    }
-
-    if (_pipeline != nullptr)
-    {
-        UI_LOG_DEBUG_RTSP("Replacing existing pipeline reference", _ui.logDisplay);
     }
 
     _pipeline = pipeline_;
@@ -560,7 +533,6 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
 
     if (!videoSink)
     {
-        UI_LOG_ERROR_RTSP("Failed to find VideoOverlay in pipeline", _ui.logDisplay);
         _connectionTimeoutTimer.stop();
         this->setPlayerState(ePlayerState::CONNECTION_ERROR);
         return;
@@ -570,23 +542,20 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     gst_object_unref(videoSink);
 
     gst_element_set_state(_pipeline, GST_STATE_PLAYING);
-    UI_LOG_DEBUG_RTSP("Pipeline state set to PLAYING", _ui.logDisplay);
 }
 
 void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
 {
     if (_state == ePlayerState::RECONNECTING)
     {
-        UI_LOG_DEBUG_RTSP("Stream error during reconnect: " + error_, _ui.logDisplay);
-
         if (!_reconnectTimer.isActive())
         {
             _reconnectTimer.start(3000);
         }
     }
     else
-    {
-        UI_LOG_ERROR_RTSP("Stream error: " + error_, _ui.logDisplay);
+    {   
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Stream error: %s", error_.toStdString().c_str());
         this->setPlayerState(ePlayerState::CONNECTION_ERROR);
     }
 }
@@ -600,11 +569,10 @@ void QVideoPlayerWidget::onConnectionFailed(void)
     {
         _reconnectAttempts = 0;
         this->setPlayerState(ePlayerState::CONNECTION_FAILED);
-        UI_LOG_ERROR_RTSP("Connection failed permanently", _ui.logDisplay);
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Connection failed permanently");
     }
     else
     {
-        UI_LOG_ERROR_RTSP(QString("Reconnection attempt %1 failed").arg(_reconnectAttempts), _ui.logDisplay);
         this->setPlayerState(ePlayerState::CONNECTION_ERROR);
     }
 }
@@ -618,12 +586,11 @@ void QVideoPlayerWidget::onFrameReceived(void)
     {
         if (_state == ePlayerState::RECONNECTING)
         {
-            UI_LOG_INFO_RTSP("Reconnection successful, receiving frames...", _ui.logDisplay);
             _reconnectAttempts = 0;
         }
         else
         {
-            UI_LOG_INFO_RTSP("Receiving frames...", _ui.logDisplay);
+            RCLCPP_INFO_STREAM(rclcpp::get_logger("GUI"), "Receiving frames...");
         }
 
         this->setPlayerState(ePlayerState::STREAMING);
@@ -639,8 +606,8 @@ void QVideoPlayerWidget::onFrameReceived(void)
 void QVideoPlayerWidget::onFrameTimeout(void)
 {
     if (_state == ePlayerState::STREAMING)
-    {
-        UI_LOG_WARNING_RTSP("Frame timeout - no frames received", _ui.logDisplay);
+    {   
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Frame timeout - no frames received");
 
         _ui.arucoPushButton->setEnabled(false);
         _ui.ScreenshotButton->setEnabled(false);
@@ -648,7 +615,6 @@ void QVideoPlayerWidget::onFrameTimeout(void)
 
         if (_ui.arucoPushButton->isChecked())
         {
-            UI_LOG_INFO_RTSP("Resetting Aruco button due to frame timeout", _ui.logDisplay);
             _ui.arucoPushButton->setChecked(false);
             _ui.arucoPushButton->setProperty("class", "normal");
             _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
@@ -673,11 +639,10 @@ void QVideoPlayerWidget::onReconnectTimer(void)
 
 void QVideoPlayerWidget::onConnectionTimeout(void)
 {
-    UI_LOG_ERROR_RTSP("Connection timeout - no response from server", _ui.logDisplay);
+    RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Connection timeout - no response from server");
 
     if (_ui.arucoPushButton->isChecked())
     {
-        UI_LOG_INFO_RTSP("Resetting Aruco button due to connection timeout", _ui.logDisplay);
         _ui.arucoPushButton->setChecked(false);
         _ui.arucoPushButton->setProperty("class", "normal");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
@@ -735,7 +700,6 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
     }
     else
     {
-        UI_LOG_WARNING(ARUCO_DETECTION, "Error, couldn't access aruco detection manager client", _ui.logDisplay);
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);

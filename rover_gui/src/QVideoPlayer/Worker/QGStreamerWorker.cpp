@@ -7,8 +7,6 @@
 #include <algorithm>
 #include <cctype>
 
-static rclcpp::Logger gst_logger = rclcpp::get_logger("VIDEOPLAYER");
-
 void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
     Q_UNUSED(bus_);
@@ -22,7 +20,7 @@ void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpoin
     gst_message_parse_error(msg_, &err, &debug);
 
     std::string errorMsg = err ? err->message : "Unknown Error";
-    RCLCPP_ERROR(gst_logger, "GStreamer error: %s", errorMsg.c_str());
+    RCLCPP_DEBUG_STREAM(rclcpp::get_logger("GUI"), "GStreamer error:" << errorMsg.c_str());
 
     emit worker->errorOccurred(QString::fromStdString(errorMsg));
 
@@ -101,7 +99,7 @@ static void minimal_gst_debug_function(GstDebugCategory* category_,
 
         if (msgStr.find("qos") == std::string::npos && msgStr.find("latency") == std::string::npos)
         {
-            RCLCPP_ERROR(gst_logger, "[%s] %s", cat, msg);
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "[%s] %s", cat, msg);
         }
     }
 }
@@ -153,7 +151,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
     if (!new_pipeline)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to create pipeline");
         emit errorOccurred("Failed to create GStreamer pipeline");
         return;
     }
@@ -161,7 +158,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     GstElement* decodebin = gst_bin_get_by_name(GST_BIN(new_pipeline), "dec");
     if (!decodebin)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to get decodebin element");
         emit errorOccurred("Failed to get decodebin element from pipeline");
         gst_object_unref(new_pipeline);
         return;
@@ -173,7 +169,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     GstElement* appSink = gst_bin_get_by_name(GST_BIN(new_pipeline), "myappsink");
     if (!appSink)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to get appsink");
         emit errorOccurred("Failed to get appsink");
         gst_object_unref(new_pipeline);
         return;
@@ -188,7 +183,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(new_pipeline));
     if (!bus)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to get GStreamer bus");
         emit errorOccurred("Failed to get GStreamer bus");
         gst_object_unref(new_pipeline);
         return;
@@ -203,7 +197,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     GstStateChangeReturn ret = gst_element_set_state(new_pipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to start pipeline");
         emit errorOccurred("Failed to start GStreamer pipeline");
         gst_object_unref(new_pipeline);
         return;
@@ -222,7 +215,6 @@ void GStreamerWorker::pausePipeline()
     GstStateChangeReturn ret = gst_element_set_state(_pipeline, GST_STATE_PAUSED);
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
-        RCLCPP_ERROR(gst_logger, "Failed to pause pipeline");
         emit errorOccurred("Failed to pause pipeline");
     }
 }
