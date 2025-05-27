@@ -38,6 +38,7 @@ namespace PWMGenerators
               ePinPullMode pinPullMode_ = ePinPullMode::FLOATING):
             _timer(timer_),
             _duty(0.0F),
+            _enabled(true),
             _comparatorH(nullptr),
             _generatorH(nullptr)
         {
@@ -77,7 +78,7 @@ namespace PWMGenerators
                                                  .action = mcpwm_generator_action_t::MCPWM_GEN_ACTION_LOW});
             ASSERT_COND_MSG_ARGS(retVal == ESP_OK, "mcpwm_generator_set_action_on_timer_event() failed with %u", retVal);
 
-            this->_setDutyCycle(_duty);
+            this->setEnabled(true);
             _timer.enable();
         }
 
@@ -92,6 +93,11 @@ namespace PWMGenerators
 
         void _setDutyCycle(float duty_)
         {
+            if (_duty == duty_)
+            {
+                return;
+            }
+
             _duty = CONSTRAIN(duty_, 0.0F, 100.0F);
             uint32_t activePeriodCtn = _timer.dutyToTickCtn(_duty);
 
@@ -124,9 +130,47 @@ namespace PWMGenerators
             return _timer.getFrequency();
         }
 
+        void _setEnabled(bool enable_)
+        {
+            if (_enabled == enable_)
+            {
+                return;
+            }
+
+            if (enable_)
+            {
+                esp_err_t retVal = mcpwm_generator_set_action_on_timer_event(
+                    _generatorH,
+                    mcpwm_gen_timer_event_action_t{.direction = mcpwm_timer_direction_t::MCPWM_TIMER_DIRECTION_UP,
+                                                   .event = mcpwm_timer_event_t::MCPWM_TIMER_EVENT_EMPTY,
+                                                   .action = mcpwm_generator_action_t::MCPWM_GEN_ACTION_HIGH});
+                ASSERT_COND_MSG_ARGS(retVal == ESP_OK, "mcpwm_generator_set_action_on_timer_event() failed with %u", retVal);
+
+                retVal = mcpwm_generator_set_action_on_compare_event(
+                    _generatorH,
+                    mcpwm_gen_compare_event_action_t{.direction = mcpwm_timer_direction_t::MCPWM_TIMER_DIRECTION_UP,
+                                                     .comparator = _comparatorH,
+                                                     .action = mcpwm_generator_action_t::MCPWM_GEN_ACTION_LOW});
+                ASSERT_COND_MSG_ARGS(retVal == ESP_OK, "mcpwm_generator_set_action_on_timer_event() failed with %u", retVal);
+
+                _setDutyCycle(_duty);
+            }
+            else
+            {
+                esp_err_t retVal = mcpwm_generator_set_force_level(_generatorH, -1, true);  // -1 means let it float
+                ASSERT_COND_MSG_ARGS(retVal == ESP_OK, "mcpwm_generator_set_force_level() failed with %u", retVal);
+            }
+        }
+
+        bool _isEnabled() const
+        {
+            return _enabled;
+        }
+
       private:
         MCPWMTimer& _timer;
         float _duty;
+        bool _enabled;
 
         mcpwm_cmpr_handle_t _comparatorH;
         mcpwm_gen_handle_t _generatorH;

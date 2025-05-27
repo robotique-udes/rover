@@ -26,6 +26,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _reconnectTimer(),
     _frameTimeoutTimer(),
     _connectionTimeoutTimer()
+
 {
     g_instanceCounter++;
     _defaultCamUrl = _camURL;
