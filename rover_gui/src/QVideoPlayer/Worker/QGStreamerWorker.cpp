@@ -9,7 +9,7 @@
 
 void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
 {
-    Q_UNUSED(bus_);
+    (void)bus_;
 
     auto* worker = static_cast<GStreamerWorker*>(user_data_);
     if (!worker)
@@ -49,7 +49,7 @@ GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_da
 
 static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointer user_data_)
 {
-    Q_UNUSED(user_data_);
+    (void)user_data_;
 
     GstElement* pipeline = GST_ELEMENT(gst_element_get_parent(decodebin_));
     if (!pipeline)
