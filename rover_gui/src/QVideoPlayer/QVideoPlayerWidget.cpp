@@ -9,10 +9,8 @@
 #include <gst/video/videooverlay.h>
 #include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 
-using namespace LogUtils;
-
 int QVideoPlayerWidget::MAX_RECONNECT_ATTEMPTS = 3;
-int QVideoPlayerWidget::_instanceCounter = 0;
+int QVideoPlayerWidget::g_instanceCounter = 0;
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
@@ -21,7 +19,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::shared_ptr<QPlayerWorker> workerThreadRecording_):
     _node(guiNode_),
     _camURL(url_),
-    _streamIndex(_instanceCounter - 1),
+    _streamIndex(g_instanceCounter - 1),
     _playerIndex(playerIndex_),
     _playerWorkerThreadAruco(workerThreadAruco_),
     _playerWorkerThreadRecording(workerThreadRecording_),
@@ -29,7 +27,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _frameTimeoutTimer(),
     _connectionTimeoutTimer()
 {
-    _instanceCounter++;
+    g_instanceCounter++;
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
@@ -712,10 +710,6 @@ void QVideoPlayerWidget::startDetection(void)
     {
         _playerWorkerThreadAruco->manageDetection(_client_arucoManager, _camURL, _playerIndex, true);
     }
-    else
-    {
-        UI_LOG_ERROR(ARUCO_DETECTION, "Error, couldn't access Video Player worker", _ui.logDisplay);
-    }
 }
 
 void QVideoPlayerWidget::stopDetection(void)
@@ -724,19 +718,12 @@ void QVideoPlayerWidget::stopDetection(void)
     {
         _playerWorkerThreadAruco->manageDetection(_client_arucoManager, _camURL, _playerIndex, false);
     }
-    else
-    {
-        UI_LOG_ERROR(ARUCO_DETECTION, "Error, couldn't access Video Player worker", _ui.logDisplay);
-    }
 }
 
 void QVideoPlayerWidget::handleArucoDetection(void)
 {
     if (_ui.arucoPushButton->isChecked())
     {
-        UI_LOG_INFO(ARUCO_DETECTION,
-                    QString("Starting aruco detection on camera %1").arg(QString::fromStdString(_camURL)),
-                    _ui.logDisplay);
         this->startDetection();
 
         if (!_ui.arucoPushButton->isChecked())
@@ -749,9 +736,6 @@ void QVideoPlayerWidget::handleArucoDetection(void)
     }
     else
     {
-        UI_LOG_INFO(ARUCO_DETECTION,
-                    QString("Stopping aruco detection on camera %1").arg(QString::fromStdString(_camURL)),
-                    _ui.logDisplay);
         this->stopDetection();
         if (_ui.arucoPushButton->isChecked())
         {
@@ -767,9 +751,6 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 {
     if (!urlFound_ && _ui.arucoPushButton->isChecked())
     {
-        UI_LOG_WARNING(ARUCO_DETECTION,
-                       QString("Error, aruco detection on %1 was not found").arg(QString::fromStdString(_camURL)),
-                       _ui.logDisplay);
         _ui.arucoPushButton->setProperty("class", "normal");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -793,11 +774,6 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 
     if (!ids_.empty())
     {
-        UI_LOG_INFO(ARUCO_DETECTION,
-                    QString("Detected aruco markers on camera %1: %2")
-                        .arg(QString::fromStdString(_camURL))
-                        .arg(_ui.arucoIdsTextBox->text().mid(5)),
-                    _ui.logDisplay);
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
     }
     else
@@ -839,9 +815,6 @@ void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t 
 {
     if (!success_ && _playerIndex == playerIndex_)
     {
-        UI_LOG_ERROR(ARUCO_DETECTION,
-                     QString("Error, request made on %1 regarding aruco detection failed").arg(QString::fromStdString(_camURL)),
-                     _ui.logDisplay);
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -852,7 +825,6 @@ void QVideoPlayerWidget::onArucoServerInfoFailed(bool success_)
 {
     if (!success_)
     {
-        UI_LOG_DEBUG(ARUCO_DETECTION, "Error, info request to aruco detection manager client failed", _ui.logDisplay);
         _ui.arucoPushButton->setEnabled(false);
     }
     else
@@ -880,9 +852,6 @@ void QVideoPlayerWidget::onArucoCameraFailed(bool valid_)
             _ui.arucoPushButton->setEnabled(true);
         }
 
-        UI_LOG_ERROR(ARUCO_DETECTION,
-                     QString("Error, camera at %1 is not accessible").arg(QString::fromStdString(_camURL)),
-                     _ui.logDisplay);
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);

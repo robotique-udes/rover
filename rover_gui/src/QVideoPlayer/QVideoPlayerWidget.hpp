@@ -26,7 +26,7 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
 
     static int MAX_RECONNECT_ATTEMPTS;
-    static int _instanceCounter;
+    static int g_instanceCounter;
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
     static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
