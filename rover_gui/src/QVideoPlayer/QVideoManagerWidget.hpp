@@ -3,6 +3,9 @@
 
 #include "QVideoPlayerWidget.hpp"
 
+#include <QBoxLayout>
+#include <QTabWidget>
+#include <QSplitter>
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/aruco.hpp"
 #include "rover_msgs/msg/camera_list.hpp"
@@ -25,6 +28,9 @@ class QVideoManagerWidget : public QWidget
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
     static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 1000U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
+
+    static constexpr float ALT_CAM_LAYOUT_PROPORTION = 0.7f;
+
     static constexpr std::array<const char*, 5> CAMERA_NAME_ORDER = {
         "Main",
         "Antenna",
@@ -43,22 +49,39 @@ class QVideoManagerWidget : public QWidget
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
     void CB_pubCameraAngle(std::string camURL_, float pitch_);
+    void onTabChanged(uint16_t index_);
 
   private:
     void initWidget(void);
     void initArucoPublisher(void);
     void initArucoClient(void);
 
+    void clearLayout(QLayout* layout_);
+
     void initCameraControlClient(void);
     void initCameraAnglePublisher(void);
     void initCameraControlSubscriber(void);
 
-    std::shared_ptr<rclcpp::Node> _node;
+    void setSplitterInitialGeometry(void);
 
-    QGridLayout _videoPlayerLayout;
+    std::shared_ptr<rclcpp::Node> _node;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
+
+    QTabWidget _tabWidget;
+    QVBoxLayout _mainLayout;
+
+    QGridLayout _gridLayout;
+    QWidget _gridContainer;
+
+    QHBoxLayout _altLayout;
+    QVBoxLayout _vSubLayout;
+    QWidget _vSubLayoutContainer;
+    QWidget _altLayoutContainer;
+
+    QSplitter _splitter;
+    QPushButton _resetLayout_PB;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
