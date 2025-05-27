@@ -283,7 +283,7 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
     }
 
     if (!this->validateRtspUrl(rtspUrl_))
-    {   
+    {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Invalid RTSP URL: %s", rtspUrl_.toStdString().c_str());
         QMessageBox::warning(this,
                              "Invalid RTSP URL",
@@ -302,8 +302,8 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
     _camURL = rtspUrl_.toStdString();
 
     if (_state != ePlayerState::RECONNECTING)
-    {   
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Starting stream: %s", rtspUrl_.toStdString().c_str());
+    {
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Starting stream: %s", rtspUrl_.toStdString().c_str());
         _reconnectAttempts = 0;
     }
 
@@ -554,7 +554,7 @@ void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
         }
     }
     else
-    {   
+    {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Stream error: %s", error_.toStdString().c_str());
         this->setPlayerState(ePlayerState::CONNECTION_ERROR);
     }
@@ -606,7 +606,7 @@ void QVideoPlayerWidget::onFrameReceived(void)
 void QVideoPlayerWidget::onFrameTimeout(void)
 {
     if (_state == ePlayerState::STREAMING)
-    {   
+    {
         RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Frame timeout - no frames received");
 
         _ui.arucoPushButton->setEnabled(false);
