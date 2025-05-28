@@ -40,17 +40,17 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     _QStatusWorker = std::make_shared<QStatusWorker>(true, this);
 
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotorInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotorInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnssInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbControllerInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMainInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenneInfo;
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMainInfo;
-    // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Info;
-    // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Info;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnss;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbController;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMain;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenne;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMain;
+    // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0;
+    // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1;
 
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorReboot;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorReboot;
@@ -195,26 +195,21 @@ void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg:
         return;
     }
 
-    auto labelInfo = _deviceInfo[deviceID_];
-    auto labelReboot = _deviceReboot[deviceID_];
+    auto widgetInfo = _deviceInfo[deviceID_];
 
     switch (deviceStatus_.error_state)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            labelInfo->setStyleSheet(STATUS_SUCCESS);
-            labelReboot->setStyleSheet(STATUS_SUCCESS);
+            widgetInfo->setStyleSheet(STATUS_SUCCESS);
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            labelInfo->setStyleSheet(STATUS_WARNING);
-            labelReboot->setStyleSheet(STATUS_WARNING);
+            widgetInfo->setStyleSheet(STATUS_WARNING);
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
-            labelInfo->setStyleSheet(STATUS_ERROR);
-            labelReboot->setStyleSheet(STATUS_ERROR);
+            widgetInfo->setStyleSheet(STATUS_ERROR);
             break;
         default:
-            labelInfo->setStyleSheet(STATUS_DEFAULT);
-            labelReboot->setStyleSheet(STATUS_DEFAULT);
+            widgetInfo->setStyleSheet(STATUS_DEFAULT);
             break;
     }
 }
@@ -227,7 +222,6 @@ void QDeviceStatus::setDefaultStyle()
 {
     for (auto it = _deviceInfo.begin(); it != _deviceInfo.end(); ++it)
     {
-        _deviceReboot[it.key()]->setStyleSheet(STATUS_DEFAULT);
         it.value()->setStyleSheet(STATUS_DEFAULT);
     }
 }
