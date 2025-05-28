@@ -48,7 +48,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DevicePower.msg"
   "msg/DrivetrainArbitration.msg"
   "msg/Gps.msg"
-  "msg/GpsPosition.msg"
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   "msg/CameraList.msg"
@@ -65,7 +64,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/Empty.srv"
   "srv/JoyDemuxSetState.srv"
   "srv/LightControl.srv"
-  "srv/NewGpsGoal.srv"
   "srv/PanoControl.srv"
   "srv/RtspStream.srv"
 )
