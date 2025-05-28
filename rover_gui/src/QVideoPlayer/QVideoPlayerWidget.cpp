@@ -10,7 +10,7 @@
 #include <optional>
 
 static constexpr size_t connection_timeout = 5000;
-size_t  QVideoPlayerWidget::g_instanceCounter = 0;
+size_t QVideoPlayerWidget::g_instanceCounter = 0;
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
@@ -663,7 +663,7 @@ void QVideoPlayerWidget::handlePlayPauseButton(void)
 
         emit this->requestStopStream();
 
-        std::string camURL = _camURL; 
+        std::string camURL = _camURL;
         QTimer::singleShot(100,
                            this,
                            [this, camURL]()
