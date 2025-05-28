@@ -18,6 +18,8 @@ class GStreamerWorker : public QObject
     void setTargetWidget(QWidget* widget);
     void pausePipeline();
     void stopPipeline();
+    void setVideoWidget(QWidget* widget);
+    void setupVideoOverlay();
 
   public slots:
     void startPipeline(const QString& rtspUrl_);
@@ -32,6 +34,7 @@ class GStreamerWorker : public QObject
   private:
     std::string buildPipelineString(const std::string& rtspUrl_) const;
     void cleanupGStreamer();
+    QWidget* _videoWidget = nullptr;
 
     GstElement* _pipeline = nullptr;
     QString _lastUrl;

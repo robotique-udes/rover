@@ -7,10 +7,8 @@
 #include <algorithm>
 #include <cctype>
 
-void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_)
+void GStreamerWorker::on_gst_error_message(GstBus* /*bus_*/, GstMessage* msg_, gpointer user_data_)
 {
-    (void)bus_;
-
     auto* worker = static_cast<GStreamerWorker*>(user_data_);
     if (!worker)
         return;
@@ -25,9 +23,13 @@ void GStreamerWorker::on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpoin
     emit worker->errorOccurred(QString::fromStdString(errorMsg));
 
     if (err)
+    {
         g_error_free(err);
+    }
     if (debug)
+    {
         g_free(debug);
+    }
 }
 
 GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_data_)
@@ -47,10 +49,8 @@ GstFlowReturn GStreamerWorker::on_new_sample(GstElement* sink_, gpointer user_da
     return GST_FLOW_OK;
 }
 
-static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointer user_data_)
+static void on_decodebin_pad_added(GstElement* decodebin_, GstPad* pad_, gpointer /*user_data_*/)
 {
-    (void)user_data_;
-
     GstElement* pipeline = GST_ELEMENT(gst_element_get_parent(decodebin_));
     if (!pipeline)
         return;
@@ -128,14 +128,14 @@ GStreamerWorker::~GStreamerWorker()
 std::string GStreamerWorker::buildPipelineString(const std::string& rtspUrl_) const
 {
     return "rtspsrc location=" + rtspUrl_
-           + " latency=100 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true "
-             "tcp-timeout=20000000 connection-speed=1000 protocols=tcp ! "
+           + " latency=0 timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true "
+             "connection-speed=1000 protocols=udp ! "
              "decodebin "
              "name=dec "
-             "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
-             "t. ! queue max-size-buffers=2 leaky=downstream ! videoscale ! video/x-raw,pixel-aspect-ratio=1/1 ! ximagesink "
+             "queue name=q0 max-size-buffers=1 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
+             "t. ! queue max-size-buffers=1 leaky=downstream ! videoscale ! video/x-raw,pixel-aspect-ratio=1/1 ! ximagesink "
              "sync=false "
-             "t. ! queue max-size-buffers=2 leaky=downstream ! videoconvert ! appsink name=myappsink sync=false";
+             "t. ! queue max-size-buffers=1 leaky=downstream ! videoconvert ! appsink name=myappsink sync=false";
 }
 
 void GStreamerWorker::startPipeline(const QString& rtspUrl_)
@@ -147,30 +147,30 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     std::string urlStr = rtspUrl_.toStdString();
     const std::string pipelineDesc = this->buildPipelineString(urlStr);
 
-    GstElement* new_pipeline = gst_parse_launch(pipelineDesc.c_str(), nullptr);
+    GstElement* newPipeline = gst_parse_launch(pipelineDesc.c_str(), nullptr);
 
-    if (!new_pipeline)
+    if (!newPipeline)
     {
-        emit errorOccurred("Failed to create GStreamer pipeline");
+        emit this->errorOccurred("Failed to create GStreamer pipeline");
         return;
     }
 
-    GstElement* decodebin = gst_bin_get_by_name(GST_BIN(new_pipeline), "dec");
+    GstElement* decodebin = gst_bin_get_by_name(GST_BIN(newPipeline), "dec");
     if (!decodebin)
     {
-        emit errorOccurred("Failed to get decodebin element from pipeline");
-        gst_object_unref(new_pipeline);
+        emit this->errorOccurred("Failed to get decodebin element from pipeline");
+        gst_object_unref(newPipeline);
         return;
     }
 
     g_signal_connect(decodebin, "pad-added", G_CALLBACK(on_decodebin_pad_added), nullptr);
     gst_object_unref(decodebin);
 
-    GstElement* appSink = gst_bin_get_by_name(GST_BIN(new_pipeline), "myappsink");
+    GstElement* appSink = gst_bin_get_by_name(GST_BIN(newPipeline), "myappsink");
     if (!appSink)
     {
-        emit errorOccurred("Failed to get appsink");
-        gst_object_unref(new_pipeline);
+        emit this->errorOccurred("Failed to get appsink");
+        gst_object_unref(newPipeline);
         return;
     }
 
@@ -180,11 +180,11 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
     gst_object_unref(appSink);
 
-    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(new_pipeline));
+    GstBus* bus = gst_pipeline_get_bus(GST_PIPELINE(newPipeline));
     if (!bus)
     {
         emit errorOccurred("Failed to get GStreamer bus");
-        gst_object_unref(new_pipeline);
+        gst_object_unref(newPipeline);
         return;
     }
 
@@ -194,15 +194,18 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
     g_object_unref(bus);
 
-    GstStateChangeReturn ret = gst_element_set_state(new_pipeline, GST_STATE_PLAYING);
+    _pipeline = newPipeline;
+
+    this->setupVideoOverlay();
+
+    GstStateChangeReturn ret = gst_element_set_state(newPipeline, GST_STATE_PLAYING);
     if (ret == GST_STATE_CHANGE_FAILURE)
     {
         emit errorOccurred("Failed to start GStreamer pipeline");
-        gst_object_unref(new_pipeline);
+        _pipeline = nullptr;
+        gst_object_unref(newPipeline);
         return;
     }
-
-    _pipeline = new_pipeline;
 
     emit pipelineStarted(_pipeline);
 }
@@ -261,4 +264,25 @@ void GStreamerWorker::cleanupGStreamer()
 void GStreamerWorker::setTargetWidget(QWidget* widget)
 {
     _targetWidget = widget;
+}
+
+void GStreamerWorker::setVideoWidget(QWidget* widget)
+{
+    _videoWidget = widget;
+}
+
+void GStreamerWorker::setupVideoOverlay()
+{
+    if (!_pipeline || !_videoWidget)
+        return;
+
+    GstElement* videoSink = gst_bin_get_by_interface(GST_BIN(_pipeline), GST_TYPE_VIDEO_OVERLAY);
+    if (!videoSink)
+    {
+        emit errorOccurred("Failed to get video overlay interface");
+        return;
+    }
+
+    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)_videoWidget->winId());
+    gst_object_unref(videoSink);
 }

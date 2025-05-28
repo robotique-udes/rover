@@ -25,8 +25,8 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
     static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
 
-    static int MAX_RECONNECT_ATTEMPTS;
-    static int g_instanceCounter;
+    static constexpr size_t MAX_RECONNECT_ATTEMPTS = 3;
+    static size_t g_instanceCounter;
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
     static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
@@ -148,7 +148,7 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
-    int _reconnectAttempts = 0;
+    size_t _reconnectAttempts = 0;
     bool _wasEverConnected = false;
     bool _controlsVisible = true;
     GstElement* _pipeline = nullptr;

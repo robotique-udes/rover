@@ -1,16 +1,16 @@
 #include "QVideoPlayerWidget.hpp"
+#include "Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp"
 #include "QLogManager.hpp"
+
 #include <QStyle>
 #include <QDateTime>
 #include <QMessageBox>
 #include <QScrollBar>
 #include <QRegularExpression>
 #include <optional>
-#include <gst/video/videooverlay.h>
-#include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 
-int QVideoPlayerWidget::MAX_RECONNECT_ATTEMPTS = 3;
-int QVideoPlayerWidget::g_instanceCounter = 0;
+static constexpr size_t connection_timeout = 5000;
+size_t  QVideoPlayerWidget::g_instanceCounter = 0;
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
@@ -36,7 +36,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     _gstreamerWorker = new GStreamerWorker();
     _gstreamerWorker->setTargetWidget(_ui.logDisplay);
-
+    _gstreamerWorker->setVideoWidget(_ui.videoWidget);
     _gstreamerWorker->moveToThread(&_gstreamerThread);
 
     connect(&_gstreamerThread, &QThread::finished, _gstreamerWorker, &QObject::deleteLater);
@@ -308,7 +308,7 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
 
     this->setPlayerState(ePlayerState::CONNECTING);
 
-    emit requestStartStream(rtspUrl_);
+    emit this->requestStartStream(rtspUrl_);
 }
 
 void QVideoPlayerWidget::stopStream(void)
@@ -327,7 +327,7 @@ void QVideoPlayerWidget::stopStream(void)
     _ui.ScreenshotButton->setEnabled(false);
     _ui.startRecordingButton->setEnabled(false);
 
-    emit requestStopStream();
+    emit this->requestStopStream();
 
     if (_wasEverConnected)
     {
@@ -361,7 +361,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             this->updateStatusText("Connecting...");
             _ui.playPauseButton->setChecked(true);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-            _connectionTimeoutTimer.start(5000);
+            _connectionTimeoutTimer.start(connection_timeout);
             break;
 
         case ePlayerState::STREAMING:
@@ -478,7 +478,7 @@ void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
 
 void QVideoPlayerWidget::emitStateChanged(void)
 {
-    emit streamStateChanged(_state == ePlayerState::STREAMING, _streamIndex);
+    emit this->streamStateChanged(_state == ePlayerState::STREAMING, _streamIndex);
 }
 
 void QVideoPlayerWidget::onToggleView(void)
@@ -528,19 +528,6 @@ void QVideoPlayerWidget::onPipelineStarted(GstElement* pipeline_)
     }
 
     _pipeline = pipeline_;
-    GstElement* videoSink = gst_bin_get_by_interface(GST_BIN(_pipeline), GST_TYPE_VIDEO_OVERLAY);
-
-    if (!videoSink)
-    {
-        _connectionTimeoutTimer.stop();
-        this->setPlayerState(ePlayerState::CONNECTION_ERROR);
-        return;
-    }
-
-    gst_video_overlay_set_window_handle(GST_VIDEO_OVERLAY(videoSink), (guintptr)_ui.videoWidget->winId());
-    gst_object_unref(videoSink);
-
-    gst_element_set_state(_pipeline, GST_STATE_PLAYING);
 }
 
 void QVideoPlayerWidget::onErrorOccurred(const QString& error_)
@@ -599,7 +586,7 @@ void QVideoPlayerWidget::onFrameReceived(void)
         _ui.startRecordingButton->setEnabled(true);
     }
     _frameTimeoutTimer.stop();
-    _frameTimeoutTimer.start(5000);
+    _frameTimeoutTimer.start(connection_timeout);
 }
 
 void QVideoPlayerWidget::onFrameTimeout(void)
@@ -651,16 +638,16 @@ void QVideoPlayerWidget::onConnectionTimeout(void)
 
     _reconnectAttempts = 0;
     this->setPlayerState(ePlayerState::CONNECTION_FAILED);
-    emit requestStopStream();
+    emit this->requestStopStream();
 }
 
-void QVideoPlayerWidget::handlePlayPauseButton()
+void QVideoPlayerWidget::handlePlayPauseButton(void)
 {
     if (_state == ePlayerState::STREAMING)
     {
         _ui.playPauseButton->setChecked(false);
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
-        emit requestPauseStream();
+        emit this->requestPauseStream();
 
         _frameTimeoutTimer.stop();
         _connectionTimeoutTimer.stop();
@@ -674,11 +661,12 @@ void QVideoPlayerWidget::handlePlayPauseButton()
         _ui.playPauseButton->setChecked(true);
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
 
-        emit requestStopStream();
+        emit this->requestStopStream();
 
+        std::string camURL = _camURL; 
         QTimer::singleShot(100,
                            this,
-                           [this]()
+                           [this, camURL]()
                            {
                                this->startStream(QString::fromStdString(_camURL));
                            });
@@ -806,7 +794,7 @@ void QVideoPlayerWidget::setURLToDefault(void)
     this->hideAngleSelecter();
 }
 
-void QVideoPlayerWidget::updateCamURL()
+void QVideoPlayerWidget::updateCamURL(void)
 {
     _camURL = _ui.rtspTextBox->text().toStdString();
     this->hideAngleSelecter();
