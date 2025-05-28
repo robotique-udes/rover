@@ -2,20 +2,21 @@
 #define __QARBITRATION_HPP__
 
 #include "UI_Arbitration.h"
+
 #include "rover_lib2/helpers/log.hpp"
 
 // ROS
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/msg/drivetrain_arbitration.hpp"
-#include "rover_msgs/srv/joy_demux_set_state.hpp"
-#include "rover_msgs/srv/drive_train_arbitration.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/joy_demux_status.hpp>
+#include <rover_msgs/msg/drivetrain_arbitration.hpp>
+#include <rover_msgs/srv/joy_demux_set_state.hpp>
+#include <rover_msgs/srv/drive_train_arbitration.hpp>
 
 // QT
 #include <QComboBox>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include <rover_msgs/msg/detail/drivetrain_arbitration__struct.hpp>
+
 #include <string>
 
 DEFINE_LOG_NODE(QArbitration, Logger::eNodeState::OFF);
@@ -29,43 +30,41 @@ class QArbitration : public QWidget
     static constexpr const char* TOPIC_JOY_DEMUX_STATUS = "/base/joy/demux_status";
     static constexpr const char* TOPIC_DT_DEMUX_STATUS = "/rover/drive_train/demux_status";
 
-    enum class eControllerType
+    enum class eControllerType : uint8_t
     {
-        main = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
-        secondary = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_SECONDARY
+        MAIN = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
+        SECONDARY = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_SECONDARY
     };
 
-    enum class eDemuxDestination
+    enum class eDemuxDestination : uint8_t
     {
-        drive_train = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
-        arm = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
-        antenna = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
-        none = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
+        DRIVE_TRAIN = rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
+        ARM = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
+        ANTENNA = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
+        NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
 
-    enum class eDriveTrainDestination
+    enum class eDriveTrainDestination : uint8_t
     {
-        none = (int8_t)rover_msgs::msg::DrivetrainArbitration::NONE,
-        teleop = (int8_t)rover_msgs::msg::DrivetrainArbitration::TELEOP,
-        autonomus = (int8_t)rover_msgs::msg::DrivetrainArbitration::AUTONOMUS
+        NONE = rover_msgs::msg::DrivetrainArbitration::NONE,
+        TELEOP = rover_msgs::msg::DrivetrainArbitration::TELEOP,
+        AUTONOMUS = rover_msgs::msg::DrivetrainArbitration::AUTONOMUS
     };
 
   public:
     QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-    ~QArbitration(){};
 
   private slots:
-    void onMainComboChanged(int index);
-    void onSecComboChanged(int index);
-    void onDriveTrainComboChanged(int index);
+    void onControllerComboChanged(eControllerType controller_, int index_);
+    void onDriveTrainComboChanged(int index_);
 
   private:
     void initComboBoxItems();
-    void JoyDemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg);
-    void DriveTrainDemuxStatusCallback(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg);
+    void joyDemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
+    void driveTrainDemuxStatusCallback(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
 
     template<typename T>
-    void checkServiceAvailable(rclcpp::Client<T>::SharedPtr client, const std::string& serviceName);
+    void checkServiceAvailable(rclcpp::Client<T>::SharedPtr client_, const std::string& serviceName_);
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::Arbitration _ui;

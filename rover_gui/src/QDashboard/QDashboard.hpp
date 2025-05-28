@@ -1,12 +1,10 @@
 #ifndef QDASHBOARD_HPP
 #define QDASHBOARD_HPP
 
-#include "rclcpp/rclcpp.hpp"
+#include <rclcpp/rclcpp.hpp>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-#include <qwidget.h>
 
-#include "QExample.hpp"
 #include "QArbitration.hpp"
 
 class QDashboard : public QWidget
@@ -19,7 +17,7 @@ class QDashboard : public QWidget
         _node(guiNode_),
         _dashboardLayout(this),
         _arbitrationWidget(guiNode_, this),
-        _emptyWidget(new QWidget(this))
+        _emptyWidget(QWidget(this))
     {
         this->setLayout(&_dashboardLayout);
 

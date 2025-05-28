@@ -1,5 +1,5 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/gps.hpp>
 
 class GpsPublisher : public rclcpp::Node
 {
@@ -8,7 +8,7 @@ class GpsPublisher : public rclcpp::Node
         Node("gps_publisher"),
         latitude_(45.404476)
     {
-        publisher_ = this->create_publisher<rover_msgs::msg::Gps>("/rover/gnss/data", 10);
+        publisher_ = this->create_publisher<rover_msgs::msg::Gps>("/rover/gps/position", 10);
         timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&GpsPublisher::publish_gps, this));
     }
 
