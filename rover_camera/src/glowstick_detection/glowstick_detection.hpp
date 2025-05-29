@@ -1,0 +1,5 @@
+#ifndef GLOWSTICK_DETECTION_HPP
+#define GLOWSTICK_DETECTION_HPP
+
+
+#endif
