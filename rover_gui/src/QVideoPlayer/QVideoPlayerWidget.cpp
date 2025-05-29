@@ -277,7 +277,12 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
 {
     if (rtspUrl_.isEmpty())
     {
-        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Empty RTSP URL provided");
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Invalid URL",
+                                                                       "Empty RTSP URL provided. Please enter a valid RTSP URL.",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
+
+        _ui.playPauseButton->setChecked(false);
+        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
         return;
     }
 
@@ -288,6 +293,8 @@ void QVideoPlayerWidget::startStream(const QString& rtspUrl_)
                              "Invalid RTSP URL",
                              "The URL format is invalid. Please enter a valid RTSP URL.\n\n"
                              "Format: rtsp://[username:password@]host[:port]/path");
+        _ui.playPauseButton->setChecked(false);
+        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
         return;
     }
 
@@ -319,6 +326,8 @@ void QVideoPlayerWidget::stopStream(void)
     {
         return;
     }
+
+    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Stopping stream: %s", _camURL.c_str());
 
     _frameTimeoutTimer.stop();
     _reconnectTimer.stop();
@@ -373,6 +382,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.ScreenshotButton->setEnabled(true);
             _ui.startRecordingButton->setEnabled(true);
             _reconnectAttempts = 0;
+            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Stream connected successfully");
             break;
 
         case ePlayerState::RECONNECTING:
@@ -381,6 +391,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             if (_ui.arucoPushButton->isChecked())
             {
+                RCLCPP_INFO(rclcpp::get_logger("GUI"), "Resetting Aruco button due to stream loss");
                 _ui.arucoPushButton->setChecked(false);
                 _ui.arucoPushButton->setProperty("class", "normal");
                 _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
@@ -687,6 +698,7 @@ void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<ro
     }
     else
     {
+        RCLCPP_WARN_STREAM(rclcpp::get_logger("GUI"), "Error, couldn't access aruco detection manager client");
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -699,6 +711,10 @@ void QVideoPlayerWidget::startDetection(void)
     {
         _playerWorkerThreadAruco->manageDetection(_client_arucoManager, _camURL, _playerIndex, true);
     }
+    else
+    {
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+    }
 }
 
 void QVideoPlayerWidget::stopDetection(void)
@@ -707,12 +723,17 @@ void QVideoPlayerWidget::stopDetection(void)
     {
         _playerWorkerThreadAruco->manageDetection(_client_arucoManager, _camURL, _playerIndex, false);
     }
+    else
+    {
+        RCLCPP_ERROR_STREAM(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+    }
 }
 
 void QVideoPlayerWidget::handleArucoDetection(void)
 {
     if (_ui.arucoPushButton->isChecked())
     {
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Starting aruco detection on camera %s", _camURL.c_str());
         this->startDetection();
 
         if (!_ui.arucoPushButton->isChecked())
@@ -725,6 +746,7 @@ void QVideoPlayerWidget::handleArucoDetection(void)
     }
     else
     {
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Stopping aruco detection on camera %s", _camURL.c_str());
         this->stopDetection();
         if (_ui.arucoPushButton->isChecked())
         {
@@ -740,6 +762,7 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
 {
     if (!urlFound_ && _ui.arucoPushButton->isChecked())
     {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, aruco detection on %s was not found", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "normal");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -763,6 +786,10 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
 
     if (!ids_.empty())
     {
+        RCLCPP_INFO(rclcpp::get_logger("GUI"),
+                    "Detected aruco markers on camera %s: %s",
+                    _camURL.c_str(),
+                    _ui.arucoIdsTextBox->text().mid(5).toStdString().c_str());
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
     }
     else
@@ -804,6 +831,7 @@ void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t 
 {
     if (!success_ && _playerIndex == playerIndex_)
     {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, request made on %s regarding aruco detection failed", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
@@ -841,6 +869,7 @@ void QVideoPlayerWidget::onArucoCameraFailed(bool valid_)
             _ui.arucoPushButton->setEnabled(true);
         }
 
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, camera at %s is not accessible", _camURL.c_str());
         _ui.arucoPushButton->setProperty("class", "error");
         _ui.arucoPushButton->style()->unpolish(_ui.arucoPushButton);
         _ui.arucoPushButton->style()->polish(_ui.arucoPushButton);
