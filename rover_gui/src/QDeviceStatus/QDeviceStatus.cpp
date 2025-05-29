@@ -40,7 +40,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     _QStatusWorker = std::make_shared<QStatusWorker>(true, this);
 
-    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
+    //_deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotor;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotor;
@@ -49,10 +49,11 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMain;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenne;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMain;
+    _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.test;
     // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0;
     // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1;
 
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorReboot;
+    //_deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorReboot;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorReboot;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotorReboot;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotorReboot;
@@ -61,6 +62,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMainReboot;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenneReboot;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMainReboot;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.test3;
     // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Reboot;
     // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Reboot;
 
