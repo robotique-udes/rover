@@ -13,7 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel DBus)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 
@@ -66,7 +66,10 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Helpers/QToastNotification/QNotificationHistoryData.hpp
                    src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
                    src/Global/Helpers/QToastNotification/QNotificationShowHistory.hpp
-                   
+
+                   src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.cpp
+                   src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp
+
                    src/Global/Workers/QWorker.hpp
                    src/Global/Workers/QWorker.cpp
                    src/Global/QTmpFolderManager.hpp
@@ -99,8 +102,8 @@ add_executable(main_gui src/gui.cpp
                    src/QNavigation/QNavigation.cpp
                    src/Global/Constant/resources.qrc
                         
-                   src/QDashboard/QExample.hpp
-                   src/QDashboard/QExample.cpp
+                   src/QDashboard/QArbitration.cpp
+                   src/QDashboard/QArbitration.cpp
 
                    src/QUtilityBarBottom/QUtilityBarBottom.hpp
                    src/QUtilityBarBottom/QUtilityBarBottom.cpp
@@ -130,6 +133,7 @@ target_link_libraries(main_gui
   Qt6::Gui
   Qt6::WebEngineWidgets
   Qt6::WebChannel
+  Qt6::DBus
   ${LIBSSH_LIBRARY}
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs

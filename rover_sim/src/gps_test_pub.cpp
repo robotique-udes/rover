@@ -1,5 +1,5 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/gps.hpp>
 
 class GpsPublisher : public rclcpp::Node
 {
@@ -18,10 +18,7 @@ class GpsPublisher : public rclcpp::Node
         auto msg = rover_msgs::msg::Gps();
         msg.latitude = latitude_;
         msg.longitude = -71.888351;
-        msg.height = 0.0;
-        msg.heading_gps = 0.0;
-        msg.heading_track = 0.0;
-        msg.speed = 0.0;
+        msg.heading = 0.0;
         msg.satellite = 8;
         msg.heading = M_PI;
 
