@@ -34,7 +34,7 @@ class QTopUtilityBar : public QWidget
     static constexpr const size_t WATCH_DOG_DELAY_MS = 1000UL;
     static constexpr const float WATCH_DOG_TIMEOUT = 1.0F;
 
-    static constexpr const size_t MAX_SUB_QUEUE = 5UL;
+    static constexpr const char* FILE_PATH = "TaskDateAndTime.txt";
 
   public:
     QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
@@ -66,11 +66,15 @@ class QTopUtilityBar : public QWidget
     void CB_timerDisplaying(void);
     void updateTimeZone(void);
 
+    void CB_batteryPubCount();
+    void CB_wifiConnectionPubCount();
+    void CB_GNSSPubCount();
+
     void CB_batteryTimeout();
     void CB_wifiConnectionTimeout();
     void CB_GNSSTimeout();
 
-    void simulateTimerFileReading(void);
+    void readTimersFromFile(const char* filename_, std::vector<QDateTime> timersList_);
 
     std::vector<QDateTime> _timersList;
     QTimeZone _timeZone;
@@ -94,9 +98,9 @@ class QTopUtilityBar : public QWidget
 
     std::shared_ptr<rclcpp::Node> _node;
 
-    rclcpp::Duration _battery_timeout;
-    rclcpp::Duration _GNSS_timeout;
-    rclcpp::Duration _wifi_timeout;
+    rclcpp::Duration _batteryTimeout;
+    rclcpp::Duration _GNSSTimeout;
+    rclcpp::Duration _wifiTimeout;
 
     Ui::TopUtilityBar _ui;
 };

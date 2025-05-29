@@ -1,13 +1,14 @@
 #include "QTopUtilityBar.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 #include <QIcon>
+#include <QFile>
 
 QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
     _node(node_),
-    _battery_timeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
-    _GNSS_timeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
-    _wifi_timeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT))
+    _batteryTimeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
+    _GNSSTimeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
+    _wifiTimeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT))
 {
     _ui.setupUi(this);
 
@@ -51,33 +52,27 @@ void QTopUtilityBar::initBatterySubscriber(void)
     if (_node)
     {
         _sub_battery = _node->create_subscription<rover_msgs::msg::Battery>(TOPIC_BATTERY,
-                                                                            MAX_SUB_QUEUE,
+                                                                            QOS_DEFAULT,
                                                                             [this](rover_msgs::msg::Battery msg_)
                                                                             {
-                                                                                CB_battery(msg_);
+                                                                                this->CB_battery(msg_);
                                                                             });
 
         _timer_batteryPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_BATTERY_PUB_COUNT_MS),
                                                      [this](void)
                                                      {
-                                                         _lastBatteryTimeMsg = _node->now();
-                                                         size_t count = _node->count_publishers(TOPIC_BATTERY);
-                                                         if (!count)
-                                                         {
-                                                             QIcon icon(":/icons/BatteryError.svg");
-                                                             _ui.batteryIcon->setIcon(icon);
-                                                         }
+                                                         this->CB_batteryPubCount();
                                                      });
 
         _watchdog_battery = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                      [this](void)
                                                      {
-                                                         CB_batteryTimeout();
+                                                         this->CB_batteryTimeout();
                                                      });
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        assert(false && "Error: GUI node is null");
     }
 }
 
@@ -87,33 +82,27 @@ void QTopUtilityBar::initWifiConnection(void)
     {
         _sub_wifiConnection
             = _node->create_subscription<rover_msgs::msg::WifiConnection>(TOPIC_WIFI_CONNECTION,
-                                                                          MAX_SUB_QUEUE,
+                                                                          QOS_DEFAULT,
                                                                           [this](rover_msgs::msg::WifiConnection msg)
                                                                           {
-                                                                              CB_wifiConnection(msg);
+                                                                              this->CB_wifiConnection(msg);
                                                                           });
 
         _timer_RSSIPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_RSSI_PUB_COUNT_MS),
                                                   [this](void)
                                                   {
-                                                      _lastWifiTimeMsg = _node->now();
-                                                      size_t count = _node->count_publishers(TOPIC_WIFI_CONNECTION);
-                                                      if (!count)
-                                                      {
-                                                          QIcon icon(":/icons/ErrorRSSI.png");
-                                                          _ui.RSSILabel->setIcon(icon);
-                                                      }
+                                                      this->CB_wifiConnectionPubCount();
                                                   });
 
         _watchdog_wifi = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                   [this](void)
                                                   {
-                                                      CB_wifiConnectionTimeout();
+                                                      this->CB_wifiConnectionTimeout();
                                                   });
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        assert(false && "Error: GUI node is null");
     }
 }
 
@@ -122,45 +111,33 @@ void QTopUtilityBar::initGNSS(void)
     if (_node)
     {
         _sub_GNSS = _node->create_subscription<rover_msgs::msg::Gps>(TOPIC_GNSS,
-                                                                     MAX_SUB_QUEUE,
+                                                                     QOS_DEFAULT,
                                                                      [this](rover_msgs::msg::Gps msg_)
                                                                      {
-                                                                         CB_GNSS(msg_);
+                                                                         this->CB_GNSS(msg_);
                                                                      });
 
         _timer_GNSSPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_GNSS_PUB_COUNT_MS),
                                                   [this](void)
                                                   {
-                                                      _lastGNSSTimeMsg = _node->now();
-                                                      size_t count = _node->count_publishers(TOPIC_GNSS);
-                                                      if (!count)
-                                                      {
-                                                          QIcon iconSat(":/icons/GNSSError.svg");
-                                                          QIcon iconHeading(":/icons/HeadingError.svg");
-
-                                                          _ui.satellliteIcon_pb->setIcon(iconSat);
-                                                          _ui.headingIcon_pb->setIcon(iconHeading);
-
-                                                          _ui.longitudeLabel->setStyleSheet("QLabel { color : orange; }");
-                                                          _ui.latitudeLabel->setStyleSheet("QLabel { color : orange; }");
-                                                      }
+                                                      this->CB_GNSSPubCount();
                                                   });
 
         _watchdog_GNSS = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                   [this](void)
                                                   {
-                                                      CB_GNSSTimeout();
+                                                      this->CB_GNSSTimeout();
                                                   });
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, GUI node is invalid");
+        assert(false && "Error: GUI node is null");
     }
 }
 
 void QTopUtilityBar::initTimerDisplay(void)
 {
-    this->simulateTimerFileReading();
+    this->readTimersFromFile(FILE_PATH,_timersList);
     _timer_updateTimer = _node->create_wall_timer(std::chrono::milliseconds(DELAY_UPDATE_TIMER_MS),
                                                   [this](void)
                                                   {
@@ -211,7 +188,7 @@ void QTopUtilityBar::CB_timerDisplaying(void)
 
 void QTopUtilityBar::onUpdateBatteryUI(float _percent)
 {
-    _ui.batteryLabel->setText(QString::number(static_cast<int>(_percent)) + " %");
+    _ui.batteryLabel->setText(QString::number(static_cast<float>(std::round(_percent))) + " %");
     QIcon icon;
 
     if (_percent >= 85)
@@ -283,34 +260,28 @@ void QTopUtilityBar::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
     switch (fix_)
     {
         case 0:
-            fixQuality = "NF";
+            fixQuality = "NV"; // Not valid
             break;
         case 1:
-            fixQuality = "GPS";
+            fixQuality = "GPSF"; // GPS fix
             break;
         case 2:
-            fixQuality = "DGPS";
+            fixQuality = "DGPS"; // Differentiel GPS
             break;
         case 3:
-            fixQuality = "PPS";
+            fixQuality = "NA"; // Not Applicable
             break;
         case 4:
-            fixQuality = "RTK";
+            fixQuality = "RF"; // RTK Fixed (xFill)
             break;
         case 5:
-            fixQuality = "RTK-F";
+            fixQuality = "FL"; // RTK Float
             break;
         case 6:
-            fixQuality = "EST";
-            break;
-        case 7:
-            fixQuality = "MAN";
-            break;
-        case 8:
-            fixQuality = "SIM";
+            fixQuality = "DR"; // INS Dead Reckoning
             break;
         default:
-            fixQuality = "UNK";
+            fixQuality = "NV";
             break;
     }
 
@@ -351,9 +322,46 @@ void QTopUtilityBar::onUpdateTimer(int secondsBeforeTimeOut_)
     }
 }
 
+void QTopUtilityBar::CB_batteryPubCount()
+{
+    _lastBatteryTimeMsg = _node->now();
+    size_t count = _node->count_publishers(TOPIC_BATTERY);
+    if (!count)
+    {
+        QIcon icon(":/icons/BatteryError.svg");
+        _ui.batteryIcon->setIcon(icon);
+    }
+}
+
+void QTopUtilityBar::CB_wifiConnectionPubCount()
+{
+    _lastWifiTimeMsg = _node->now();
+    size_t count = _node->count_publishers(TOPIC_WIFI_CONNECTION);
+    if (!count)
+    {
+        QIcon icon(":/icons/ErrorRSSI.png");
+        _ui.RSSILabel->setIcon(icon);
+    }
+}
+
+void QTopUtilityBar::CB_GNSSPubCount()
+{
+    _lastGNSSTimeMsg = _node->now();
+    size_t count = _node->count_publishers(TOPIC_GNSS);
+    if (!count)
+    {
+        QIcon iconSat(":/icons/GNSSError.svg");
+        QIcon iconHeading(":/icons/HeadingError.svg");
+        _ui.satellliteIcon_pb->setIcon(iconSat);
+        _ui.headingIcon_pb->setIcon(iconHeading);
+        _ui.longitudeLabel->setStyleSheet("QLabel { color : orange; }");
+        _ui.latitudeLabel->setStyleSheet("QLabel { color : orange; }");
+    }
+}
+
 void QTopUtilityBar::CB_batteryTimeout()
 {
-    if ((_node->now() - _lastBatteryTimeMsg) > _battery_timeout)
+    if ((_node->now() - _lastBatteryTimeMsg) > _batteryTimeout)
     {
         QIcon icon(":/icons/BatteryError.svg");
         _ui.batteryIcon->setIcon(icon);
@@ -361,7 +369,7 @@ void QTopUtilityBar::CB_batteryTimeout()
 }
 void QTopUtilityBar::CB_wifiConnectionTimeout()
 {
-    if ((_node->now() - _lastWifiTimeMsg) > _wifi_timeout)
+    if ((_node->now() - _lastWifiTimeMsg) > _wifiTimeout)
     {
         QIcon icon(":/icons/ErrorRSSI.png");
         _ui.RSSILabel->setIcon(icon);
@@ -369,7 +377,7 @@ void QTopUtilityBar::CB_wifiConnectionTimeout()
 }
 void QTopUtilityBar::CB_GNSSTimeout()
 {
-    if ((_node->now() - _lastBatteryTimeMsg) > _battery_timeout)
+    if ((_node->now() - _lastBatteryTimeMsg) > _batteryTimeout)
     {
         QIcon iconSat(":/icons/GNSSError.svg");
         QIcon iconHeading(":/icons/Heading");
@@ -380,9 +388,34 @@ void QTopUtilityBar::CB_GNSSTimeout()
     }
 }
 
-void QTopUtilityBar::simulateTimerFileReading()
-{
-    _timersList.push_back(QDateTime(QDate(2025, 5, 16), QTime(13, 58, 0), QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025, 5, 24), QTime(20, 36, 0), QTimeZone("America/Montreal")));
-    _timersList.push_back(QDateTime(QDate(2025, 5, 18), QTime(16, 3, 0), QTimeZone("America/Edmonton")));
+
+void readTimersFromFile(const char* filename_, std::vector<QDateTime>& timersList_) {
+    QFile file(filename_);
+
+    if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+        return;
+
+    QTextStream in(&file);
+    while (!in.atEnd()) {
+        QString line = in.readLine();
+        if (line.startsWith('#') || line.isEmpty())
+            continue;
+            
+        QStringList parts = line.split(';');
+        if (parts.size() == 7) {
+            int year = parts[0].toInt();
+            int month = parts[1].toInt();
+            int day = parts[2].toInt();
+            int hour = parts[3].toInt();
+            int minute = parts[4].toInt();
+            int second = parts[5].toInt();
+            QString tz = parts[6].trimmed();
+            
+            QTimeZone timezone = (tz == "QC") ? QTimeZone("America/Montreal") : QTimeZone("America/Edmonton");
+            
+            timersList_.push_back(QDateTime(QDate(year, month, day), 
+                                         QTime(hour, minute, second), 
+                                         QTimeZone(timezone)));
+        }
+    }
 }
