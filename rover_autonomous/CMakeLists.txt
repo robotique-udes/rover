@@ -19,20 +19,19 @@ include_directories(
   include
 )
 
-# add_executable(ddb_control src/DDB/ddb_control_node.cpp)
+add_executable(goal_manager_node src/goal_manager_node.cpp)
 
-# ament_target_dependencies(ddb_control
-#                           rclcpp
-#                           rover_msgs
-#                           rcl_interfaces)
-# target_link_libraries(ddb_control rover_shared_libs)
+ament_target_dependencies(goal_manager_node
+                          rclcpp
+                          rover_msgs)
+target_link_libraries(goal_manager_node rover_shared_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-        #   ddb_control
+        goal_manager_node
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

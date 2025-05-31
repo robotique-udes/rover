@@ -18,12 +18,11 @@ class GpsPublisher : public rclcpp::Node
         auto msg = rover_msgs::msg::Gps();
         msg.latitude = latitude_;
         msg.longitude = -71.888351;
-        msg.heading = 0.0;
+        msg.heading = 120.0F;
         msg.satellite = 8;
-        msg.heading = M_PI;
 
         publisher_->publish(msg);
-        latitude_ += 0.0001;
+        // latitude_ += 0.0001;
     }
 
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr publisher_;
