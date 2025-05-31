@@ -28,8 +28,8 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* CAMERA_STATUS_TOPIC = "/rover/cameras/status";
     static constexpr const char* SERVICE_PANORAMA_NAME = "/rover/video/panorama";
 
-    static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 500U;
-    static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 1000U;
+    static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 5000U;
+    static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 50U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
 
     static constexpr float ALT_CAM_LAYOUT_PROPORTION = 0.7f;

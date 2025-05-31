@@ -4,7 +4,7 @@
 #include "video_recording.hpp"
 
 #include <rclcpp/rclcpp.hpp>
-#include <rover_msgs/msg/gps_position.hpp>
+#include <rover_msgs/msg/gps.hpp>
 #include <rover_msgs/srv/camera_control.hpp>
 #include <rover_msgs/msg/camera_list.hpp>
 
@@ -13,6 +13,7 @@
 
 #include <sys/stat.h>
 #include <cstdlib>
+#include <optional>
 
 struct sScreenshotResult
 {
@@ -50,10 +51,8 @@ class CameraNode : public rclcpp::Node
 
     std::string getCurrentTime(void);
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
-    const std::string getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
-    void callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_);
-    bool folderExists(const std::string& path_);
-    bool createFolder(const std::string& path_);
+    std::optional<std::string> getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
+    void callbackPosition(const rover_msgs::msg::Gps& gps_message_);
     sScreenshotResult getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
 
     bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
@@ -64,7 +63,7 @@ class CameraNode : public rclcpp::Node
 
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
     rclcpp::Publisher<rover_msgs::msg::CameraList>::SharedPtr _pub_urls;
-    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr _sub_position;
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_position;
     rclcpp::TimerBase::SharedPtr _timer_pub;
 
     float _lastLatitude = 0.0;
