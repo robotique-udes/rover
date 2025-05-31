@@ -1,0 +1,7 @@
+# Request
+float64 desired_latitude
+float64 desired_longitude 
+---
+# Response
+bool success
+string status
