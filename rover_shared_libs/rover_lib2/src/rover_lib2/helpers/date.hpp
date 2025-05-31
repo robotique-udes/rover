@@ -1,16 +1,19 @@
 #ifndef DATE_HPP
 #define DATE_HPP
 
+#include <string>
+
 namespace Date
 {
 
 #if defined(__linux__)
 
-#include <string>
+    /**
+     * @brief Get the current time in ISO 8601 format
+     */
+    std::string getCurrentTime(void);
 
-std::string getCurrentTime(void);
+#endif  // defined(__linux__)
+}  // namespace Date
 
-#endif //defined(__linux__)
-} //namespace Date
-
-#endif //DATE_HPP
+#endif  // DATE_HPP
