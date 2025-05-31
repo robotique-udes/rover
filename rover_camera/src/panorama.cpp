@@ -1,4 +1,5 @@
 #include "panorama.hpp"
+#include <rover_lib2/helpers/folders.hpp>
 
 // cam: 192.168.144.30
 
@@ -14,7 +15,7 @@ PhotoPanoramique::PhotoPanoramique():
         });
 
     sub_position
-        = this->create_subscription<rover_msgs::msg::GpsPosition>("/rover/gps/position",
+        = this->create_subscription<rover_msgs::msg::GpsPosition>(TOPIC_GPS_NAME,
                                                                   QOS_DEFAULT,
                                                                   [this](const rover_msgs::msg::GpsPosition& gps_message_)
                                                                   {
@@ -113,7 +114,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     struct stat fileInfo;
     std::string filename = pathFolder + "/" + resultName;
 
-    this->createFolder(pathFolder);
+    Folders::createFolder(pathFolder);
 
     // enregistrement de la panoramique
     imwrite(filename, panoRectangle);
@@ -189,26 +190,6 @@ std::string PhotoPanoramique::getCurrentTime(void)
     current_time_output << std::put_time(&tm_now, "%FT%T");            // ISO 8601 format
 
     return current_time_output.str();
-}
-
-bool PhotoPanoramique::createFolder(const std::string& path_)
-{
-    if (!this->folderExists(path_))
-    {
-        if (mkdir(path_.c_str(), 0775) == 0)
-        {
-            RCLCPP_DEBUG(this->get_logger(), "Succesfully created the folder.");
-            return true;
-        }
-        else
-        {
-            RCLCPP_INFO(this->get_logger(), "Couldn't create the folder.");
-            return false;
-        }
-    }
-
-    RCLCPP_DEBUG(this->get_logger(), "Directory already exists: %s", path_.c_str());
-    return true;
 }
 
 bool PhotoPanoramique::folderExists(const std::string& path_)

@@ -23,6 +23,7 @@ class PhotoPanoramique : public rclcpp::Node
     static constexpr size_t FRAMES_TO_SKIP = 5U;
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
     static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";
+    static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
 
   public:
     PhotoPanoramique();
@@ -35,7 +36,6 @@ class PhotoPanoramique : public rclcpp::Node
     cv::Mat warpCorrection(const cv::Mat& pano);
 
     std::string getCurrentTime(void);
-    bool createFolder(const std::string& path_);
     bool folderExists(const std::string& path_);
 
     // fonction pour le stitching de la photo
