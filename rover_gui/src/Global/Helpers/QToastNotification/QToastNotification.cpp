@@ -20,6 +20,7 @@ namespace QHelper
         setupAnimations();
         setupScreenRect();
     }
+    
     QToastNotification& QToastNotification::getInstance(void)
     {
         static QToastNotification instance;
