@@ -3,18 +3,27 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include <opencv2/opencv.hpp>
+#include <string>
+#include <optional>
 
 class ImageCaptureGlowstick
 {
     public:
         ImageCaptureGlowstick(std::string cameraURL_);
         ~ImageCaptureGlowstick(void);
+
+        std::optional<cv::Mat> getFrame(bool debugMode_);
         bool initCam(void);
+        bool changeStream(std::string URL_);
+        cv::Mat getErrorFrame(void);
+        bool isValid(void) const;
+        bool isCameraReachable(const std::string& url_, size_t port_, size_t timeoutMs_);
 
     private:
         bool isValid;
         std::string _cameraURL;
         cv::VideoCapture _cap;
+        bool _firstTryPinningCam = true;
 
 }
 

@@ -20,6 +20,7 @@ ament_target_dependencies(media_server
                           rclcpp
                           rover_msgs
                           OpenCV)
+
 target_link_libraries(media_server 
                         ${OpenCV_LIBS}
                         rover_shared_libs)
@@ -33,16 +34,24 @@ ament_target_dependencies(aruco_detection
                           rover_msgs
                           rcl_interfaces)
 
+add_executable(glowstick_detection src/glowstick_detection/image_capture_glowstick.cpp)
+ament_target_dependencies(glowstick_detection
+                          rclcpp
+                          OpenCV)
+
 target_link_libraries(media_server ${OpenCV_LIBS})
 target_link_libraries(aruco_detection 
                           ${OpenCV_LIBS}
                           rover_shared_libs)
+target_link_libraries(glowstick_detection
+                      ${OpenCV_LIBS})                           
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS 
             media_server
             aruco_detection
+            glowstick_detection
         DESTINATION lib/${PROJECT_NAME}/)
 
 ament_package()
