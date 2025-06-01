@@ -1,11 +1,11 @@
 #ifndef QDASHBOARD_HPP
 #define QDASHBOARD_HPP
 
-#include "rclcpp/rclcpp.hpp"
+#include <rclcpp/rclcpp.hpp>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 
-#include "QExample.hpp"
+#include "QArbitration.hpp"
 
 class QDashboard : public QWidget
 {
@@ -16,19 +16,22 @@ class QDashboard : public QWidget
         QWidget(parent_),
         _node(guiNode_),
         _dashboardLayout(this),
-        _exampleWidget(guiNode_, this)
+        _arbitrationWidget(guiNode_, this),
+        _emptyWidget(QWidget(this))
     {
         this->setLayout(&_dashboardLayout);
 
         // Add your dashboard widget here
-        _dashboardLayout.addWidget(&_exampleWidget);
+        _dashboardLayout.addWidget(&_arbitrationWidget, 1, 0);
+        _dashboardLayout.addWidget(&_emptyWidget, 0, 0);
     }
 
   private:
     std::shared_ptr<rclcpp::Node> _node;
 
     QGridLayout _dashboardLayout;
-    QExample _exampleWidget;
+    QArbitration _arbitrationWidget;
+    QWidget _emptyWidget;
 };
 
 #endif  // QDASHBOARD_HPP

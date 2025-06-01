@@ -1,10 +1,9 @@
 #ifndef FOLDERS_HPP
 #define FOLDERS_HPP
-#include <string>
-#include <sys/stat.h>
-#include <vector>
 
 #if defined(__linux__)
+#include <string>
+#include <vector>
 
 namespace Folders
 {
@@ -26,7 +25,13 @@ namespace Folders
      */
     bool createFolder(const std::string& path_);
 
-    std::vector<std::string> splitpath(const std::string& path);
+    /**
+     * @brief Splits a path into a list of directories as strings
+     *
+     * @param path
+     * @return std::vector<std::string>
+     */
+    std::vector<std::string> splitPath(const std::string& path);
 }  // namespace Folders
 
 #endif  //(__linux__)

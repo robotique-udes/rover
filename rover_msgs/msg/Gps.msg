@@ -1,4 +1,4 @@
-# From GPS
+# From GNSS
 float32 latitude
 float32 longitude
 float32 height
@@ -9,4 +9,3 @@ uint8 fix_quality
 
 # From magnetometer
 float32 heading
-

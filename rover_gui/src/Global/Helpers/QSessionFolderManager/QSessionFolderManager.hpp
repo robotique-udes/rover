@@ -20,7 +20,5 @@ class QSessionFolderManager
     QSessionFolderManager(const QSessionFolderManager&) = delete;
     QSessionFolderManager& operator=(const QSessionFolderManager&) = delete;
 
-    std::string getCurrentTime(void);
-
     std::string _sessionFolderPath;
 };

@@ -11,7 +11,7 @@ class QSshWorker : public QWorker
 {
     Q_OBJECT
 
-    static constexpr size_t FILE_TRANSFER_BUFFER_SIZE = 16'384u;  // 16 kb
+    static constexpr size_t FILE_TRANSFER_BUFFER_SIZE = 1'024'000UL;  // 1 mb/transfer
 
   public:
     QSshWorker(bool start_ = false, QObject* parent_ = nullptr);
