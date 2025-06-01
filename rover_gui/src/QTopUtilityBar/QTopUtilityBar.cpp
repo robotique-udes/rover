@@ -431,7 +431,6 @@ void QTopUtilityBar::readTimersFromFile(const char* filename_, std::vector<QDate
             }
 
             QDateTime dateTime = QDateTime(QDate(year, month, day), QTime(hour, minute, second), timezone);
-
             timersList_.push_back(dateTime);
         }
     }
