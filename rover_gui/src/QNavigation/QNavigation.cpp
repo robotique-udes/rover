@@ -157,7 +157,19 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     _waypoints.append(waypoint_);
 
     QString displayText_ = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
-    _ui.waypointList->addItem(displayText_);
+
+    QListWidgetItem* waypointItem_ = new QListWidgetItem(displayText_);
+
+    waypointItem_->setFlags(waypointItem_->flags() | Qt::ItemIsUserCheckable);
+    waypointItem_->setCheckState(Qt::Checked);
+    waypointItem_->setData(Qt::UserRole, id_);
+
+    _ui.waypointList->addItem(waypointItem_);
+}
+
+void QNavigation::waypointVisibility(QListWidgetItem* item_)
+{
+    Qt::CheckState stateWaypoint = item_->checkState();
 }
 
 void QNavigation::onWaypointSelected(QListWidgetItem* item_)

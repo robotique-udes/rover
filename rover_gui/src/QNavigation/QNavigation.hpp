@@ -44,6 +44,7 @@ class QNavigation : public QWidget
     void onClearPathClicked(void);
     void onDeleteWaypointClicked(void);
     void onSetGoalClicked(void);
+    void waypointVisibility(QListWidgetItem* item_)
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
 
