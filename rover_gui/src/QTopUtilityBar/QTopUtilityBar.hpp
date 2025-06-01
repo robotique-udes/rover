@@ -74,7 +74,7 @@ class QTopUtilityBar : public QWidget
     void CB_wifiConnectionTimeout();
     void CB_GNSSTimeout();
 
-    void readTimersFromFile(const char* filename_, std::vector<QDateTime> timersList_);
+    void readTimersFromFile(const char* filename_, std::vector<QDateTime>& timersList_);
 
     std::vector<QDateTime> _timersList;
     QTimeZone _timeZone;

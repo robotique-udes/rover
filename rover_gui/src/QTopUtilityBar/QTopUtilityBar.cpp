@@ -2,6 +2,8 @@
 #include "rover_lib2/helpers/constants.hpp"
 #include <QIcon>
 #include <QFile>
+#include <qdebug.h>
+#include <qtimezone.h>
 
 QTopUtilityBar::QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
@@ -137,7 +139,7 @@ void QTopUtilityBar::initGNSS(void)
 
 void QTopUtilityBar::initTimerDisplay(void)
 {
-    this->readTimersFromFile(FILE_PATH,_timersList);
+    this->readTimersFromFile(FILE_PATH, _timersList);
     _timer_updateTimer = _node->create_wall_timer(std::chrono::milliseconds(DELAY_UPDATE_TIMER_MS),
                                                   [this](void)
                                                   {
@@ -260,25 +262,25 @@ void QTopUtilityBar::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
     switch (fix_)
     {
         case 0:
-            fixQuality = "NV"; // Not valid
+            fixQuality = "NV";  // Not valid
             break;
         case 1:
-            fixQuality = "GPSF"; // GPS fix
+            fixQuality = "GPSF";  // GPS fix
             break;
         case 2:
-            fixQuality = "DGPS"; // Differentiel GPS
+            fixQuality = "DGPS";  // Differentiel GPS
             break;
         case 3:
-            fixQuality = "NA"; // Not Applicable
+            fixQuality = "NA";  // Not Applicable
             break;
         case 4:
-            fixQuality = "RF"; // RTK Fixed (xFill)
+            fixQuality = "RF";  // RTK Fixed (xFill)
             break;
         case 5:
-            fixQuality = "FL"; // RTK Float
+            fixQuality = "FL";  // RTK Float
             break;
         case 6:
-            fixQuality = "DR"; // INS Dead Reckoning
+            fixQuality = "DR";  // INS Dead Reckoning
             break;
         default:
             fixQuality = "NV";
@@ -388,21 +390,27 @@ void QTopUtilityBar::CB_GNSSTimeout()
     }
 }
 
-
-void readTimersFromFile(const char* filename_, std::vector<QDateTime>& timersList_) {
-    QFile file(filename_);
+void QTopUtilityBar::readTimersFromFile(const char* filename_, std::vector<QDateTime>& timersList_)
+{
+    QFile file(QString(":/") + filename_);
 
     if (!file.open(QIODevice::ReadOnly | QIODevice::Text))
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open file containing timers for top bar");
         return;
+    }
 
     QTextStream in(&file);
-    while (!in.atEnd()) {
+
+    QString line = in.readLine();
+
+    while (!in.atEnd())
+    {
         QString line = in.readLine();
-        if (line.startsWith('#') || line.isEmpty())
-            continue;
-            
         QStringList parts = line.split(';');
-        if (parts.size() == 7) {
+
+        if (parts.size() == 7)
+        {
             int year = parts[0].toInt();
             int month = parts[1].toInt();
             int day = parts[2].toInt();
@@ -410,12 +418,21 @@ void readTimersFromFile(const char* filename_, std::vector<QDateTime>& timersLis
             int minute = parts[4].toInt();
             int second = parts[5].toInt();
             QString tz = parts[6].trimmed();
-            
-            QTimeZone timezone = (tz == "QC") ? QTimeZone("America/Montreal") : QTimeZone("America/Edmonton");
-            
-            timersList_.push_back(QDateTime(QDate(year, month, day), 
-                                         QTime(hour, minute, second), 
-                                         QTimeZone(timezone)));
+
+            QTimeZone timezone;
+
+            if (tz == "QC")
+            {
+                timezone = QTimeZone("America/Montreal");
+            }
+            else
+            {
+                timezone = QTimeZone("America/Edmonton");
+            }
+
+            QDateTime dateTime = QDateTime(QDate(year, month, day), QTime(hour, minute, second), timezone);
+
+            timersList_.push_back(dateTime);
         }
     }
 }
