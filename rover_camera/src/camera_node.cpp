@@ -2,6 +2,7 @@
 
 #include <rover_lib2/helpers/constants.hpp>
 #include <rover_lib2/helpers/folders.hpp>
+#include <rover_lib2/helpers/date.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -37,13 +38,12 @@ CameraNode::CameraNode():
                                              this->CB_url_publisher();
                                          });
 
-    _sub_position
-        = this->create_subscription<rover_msgs::msg::GpsPosition>(TOPIC_GPS_NAME,
-                                                                  QOS_DEFAULT,
-                                                                  [this](const rover_msgs::msg::GpsPosition& gps_message_)
-                                                                  {
-                                                                      this->callbackPosition(gps_message_);
-                                                                  });
+    _sub_position = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
+                                                                    QOS_DEFAULT,
+                                                                    [this](const rover_msgs::msg::Gps& gps_message_)
+                                                                    {
+                                                                        this->callbackPosition(gps_message_);
+                                                                    });
 }
 
 void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
@@ -193,18 +193,6 @@ void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Reques
     }
 }
 
-std::string CameraNode::getCurrentTime(void)
-{
-    std::stringstream current_time_output;
-
-    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    std::time_t now_time = std::chrono::system_clock::to_time_t(now);  // convert to real time
-    std::tm tm_now = *std::localtime(&now_time);                       // convert to calendar time
-    current_time_output << std::put_time(&tm_now, "%FT%T");            // ISO 8601 format
-
-    return current_time_output.str();
-}
-
 /**
  * @brief Gets the filename necessary to save the file, depending on the file type
  *
@@ -217,7 +205,7 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
 {
     std::string filename;
 
-    std::string time = this->getCurrentTime();
+    std::string time = Date::getCurrentTime();
     std::string latitude = std::to_string(_lastLatitude);
     std::string longitude = std::to_string(_lastLongitude);
     std::string ID = "UnknownID";
@@ -439,7 +427,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
  *
  * @param gps_message_ Address reference of the GPS subscriber
  */
-void CameraNode::callbackPosition(const rover_msgs::msg::GpsPosition& gps_message_)
+void CameraNode::callbackPosition(const rover_msgs::msg::Gps& gps_message_)
 {
     _lastLatitude = gps_message_.latitude;
     _lastLongitude = gps_message_.longitude;
