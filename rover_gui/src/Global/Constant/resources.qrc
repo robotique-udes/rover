@@ -1,16 +1,15 @@
 <RCC>
-  <qresource prefix="/">
-    <file>icons/motor.png</file>
-<<<<<<< Updated upstream
-=======
-    <file>icons/ethswitch.png</file>
->>>>>>> Stashed changes
-    <file>icons/camera.png</file>
+  <qresource prefix="icons">
+    <file>icons/refresh.png</file>
+    <file>icons/light.png</file>
+    <file>icons/gnss.png</file>
+    <file>icons/refresh.png</file>
     <file>icons/record_on.png</file>
     <file>icons/record_off.png</file>
+    <file>icons/motor.png</file>
     <file>icons/log_view.png</file>
-    <file>icons/refresh.png</file>
-    <file>other/map.html</file>
+    <file>icons/ethswitch.png</file>
+    <file>icons/camera.png</file>
     <file>icons/arrow.png</file>
   </qresource>
 </RCC>
