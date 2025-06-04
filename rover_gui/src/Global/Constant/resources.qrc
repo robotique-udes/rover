@@ -1,5 +1,6 @@
 <RCC>
   <qresource prefix="icons">
+    <file>icons/ddb.png</file>
     <file>icons/refresh.png</file>
     <file>icons/light.png</file>
     <file>icons/gnss.png</file>
