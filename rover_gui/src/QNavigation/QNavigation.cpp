@@ -170,6 +170,16 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
 void QNavigation::waypointVisibility(QListWidgetItem* item_)
 {
     Qt::CheckState stateWaypoint = item_->checkState();
+
+    if (stateWaypoint = Qt::Checked)
+    {
+        return 1;
+    }
+
+    else
+    {
+        return null;
+    }
 }
 
 void QNavigation::onWaypointSelected(QListWidgetItem* item_)

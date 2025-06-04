@@ -791,7 +791,7 @@
       return R * c;
     }
 
-    function addWaypoint(lat, lon, name, waypointId) {
+    function waypointNameExists(name, waypointId){
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
 
@@ -800,8 +800,11 @@
         console.log("Waypoint with name already exists:", waypointName);
         return null;
       }
+    }
 
-      const waypointEntity = viewer.entities.add({
+    function addWaypoint(lat, lon, name, waypointId) {
+      if (waypointNameExists(name) && QNavigation.waypointVisibility()){
+        const waypointEntity = viewer.entities.add({
         id: id,
         name: waypointName,
         position: Cesium.Cartesian3.fromDegrees(lon, lat),
@@ -843,6 +846,13 @@
 
       waypointEntities.push(waypointEntity);
       return waypointEntity;
+      }
+
+      else{
+          console.log("Not adding a waypoint, because checkbox wasn't checked")
+      }
+
+
     }
 
     function showWaypointDialog(lat, lon) {
