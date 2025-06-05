@@ -9,6 +9,10 @@
 #include <rover_msgs/msg/antenna_status.hpp>
 
 class AntennaNode : public rclcpp::Node {
+
+    static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
+    static constexpr uint64_t PUBLISHER_PERIOD_MS = 1000UL;
+    
 public:
     // Constructor initializes curl once
     AntennaNode();
@@ -31,6 +35,10 @@ public:
     Response get(const std::string& url, bool verify_ssl = true);
 
 private:
+
+    rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pub_antenna_status;
+    rclcpp::TimerBase::SharedPtr _timer_pub;
+
     // Curl handle that will be reused
     CURL* curl_handle;
     

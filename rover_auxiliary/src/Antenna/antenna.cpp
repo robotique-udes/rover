@@ -1,5 +1,6 @@
 #include "antenna.hpp"
 #include <iostream>
+#include <rover_lib2/helpers/constants.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -33,8 +34,20 @@ AntennaNode::AntennaNode() : rclcpp::Node("antenna"), curl_handle(nullptr), is_i
     if (curl_handle) {
         is_initialized = true;
     } else {
-        std::cerr << "Failed to initialize curl handle" << std::endl;
+        RCLCPP_INFO(rclcpp::get_logger("Antenna"), "Failed to initialize cURL handle");
+        is_initialized = false;
     }
+
+    _pub_antenna_status = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
+
+    _timer_pub = this->create_wall_timer(
+        std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
+        [this]() {
+            rover_msgs::msg::AntennaStatus msg;
+//insert function
+            _pub_antenna_status->publish(msg);
+        }
+    );
 }
 
 AntennaNode::~AntennaNode() {
