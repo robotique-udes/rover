@@ -34,7 +34,8 @@ ament_target_dependencies(aruco_detection
                           rover_msgs
                           rcl_interfaces)
 
-add_executable(glowstick_detection src/glowstick_detection/image_capture_glowstick.cpp)
+add_executable(glowstick_detection src/glowstick_detection/glowstick_detection_node.cpp
+                                   src/glowstick_detection/image_capture_glowstick.cpp)
 ament_target_dependencies(glowstick_detection
                           rclcpp
                           OpenCV)

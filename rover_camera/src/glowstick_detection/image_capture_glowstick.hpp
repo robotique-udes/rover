@@ -5,6 +5,7 @@
 #include <opencv2/opencv.hpp>
 #include <string>
 #include <optional>
+#include <iostream>
 
 class ImageCaptureGlowstick
 {
@@ -18,13 +19,13 @@ class ImageCaptureGlowstick
         cv::Mat getErrorFrame(void);
         bool isValid(void) const;
         bool isCameraReachable(const std::string& url_, size_t port_, size_t timeoutMs_);
+        cv::VideoCapture _cap;
 
     private:
-        bool isValid;
+        bool _isValid;
         std::string _cameraURL;
-        cv::VideoCapture _cap;
         bool _firstTryPinningCam = true;
 
-}
+};
 
 #endif
