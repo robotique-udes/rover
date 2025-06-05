@@ -154,8 +154,6 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     waypoint_.longitude = longitude_;
     waypoint_.id = id_;
 
-    _waypoints.append(waypoint_);
-
     QString displayText_ = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
 
     QListWidgetItem* waypointItem_ = new QListWidgetItem(displayText_);
@@ -164,20 +162,24 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     waypointItem_->setCheckState(Qt::Checked);
     waypointItem_->setData(Qt::UserRole, id_);
 
+    _waypoints.append(waypoint_);
+
     _ui.waypointList->addItem(waypointItem_);
 }
 
 bool QNavigation::waypointVisibility(QListWidgetItem* item_)
 {
     Qt::CheckState stateWaypoint = item_->checkState();
-
+    emit this->waypointIsVisible(stateWaypoint);
     if (stateWaypoint == Qt::Checked)
     {
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Box checked");
         return true;
     }
 
     else
     {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Box not checked");
         return false;
     }
 }

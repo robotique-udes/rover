@@ -15,6 +15,7 @@
 class QNavigation : public QWidget
 {
     Q_OBJECT
+    //QML_ELEMENT
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
@@ -30,6 +31,7 @@ class QNavigation : public QWidget
     void gpsCallback(double latitude_, double longitude_, double heading_);
     void sendGoal(QString name, double latitude, double longitude, QString id);
     void calculatePath(double latitude_, double longitude_);
+    bool waypointIsVisible(bool stateWaypoint);
     void jsReady(void);
     void clearWaypoints(void);
     void clearPath(void);
@@ -39,12 +41,12 @@ class QNavigation : public QWidget
     void pathDistanceCalculated(double distanceMeters_);
     void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
     void onCalculatePathClicked(void);
+    bool waypointVisibility(QListWidgetItem* item_);
     void onWaypointSelected(QListWidgetItem* item_);
     void onClearWaypointsClicked(void);
     void onClearPathClicked(void);
     void onDeleteWaypointClicked(void);
     void onSetGoalClicked(void);
-    bool waypointVisibility(QListWidgetItem* item_);
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
 
