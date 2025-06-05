@@ -32,6 +32,7 @@ class QDeviceStatus : public QWidget
     void setStatusReport(uint16_t id_);
     void updateRebootCounter(uint16_t deviceID_);
     void setDefaultStyle();
+    const std::string getDeviceName(uint16_t deviceID_);
 
   private slots:
 

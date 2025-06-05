@@ -6,7 +6,7 @@ constexpr const char* STATUS_DEFAULT = "QLabel {"
                                        "border: 1px solid #4b4e52;"
                                        "}";
 
-constexpr const char* STATUS_SUCCESS = "QLabel {"
+constexpr const char* STATUS_SUCCESS = "QWidget {"
                                        "background-color: #81c784;"
                                        "color: black;"
                                        "border: 1px solid #388e3c;"
@@ -43,16 +43,16 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMain;
     // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0;
     // _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1;
-    
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotorReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotorReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnssReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbControllerReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMainReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenneReboot;
-    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMainReboot;
+
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotorInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotorInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR)] = _ui.rearleftMotorInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR)] = _ui.rearrightMotorInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS)] = _ui.gnssInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER)] = _ui.ddbControllerInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMainInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenneInfo;
+    _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMainInfo;
     // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Reboot;
     // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Reboot;
 
@@ -167,9 +167,10 @@ void QDeviceStatus::setStatusReport(uint16_t deviceID_)
 
     auto label = _deviceReboot[deviceID_];
 
-    std::string deviceName = RoverCan2::Constant::getCanDeviceName(static_cast<RoverCan2::Constant::eDeviceId>(deviceID_));
+    std::string deviceName = this->getDeviceName(deviceID_);
 
-    QString labelText = "Number of reboots: " + QString::number(_numberOfDeviceReboots[deviceID_]);
+    QString labelText = QString::fromStdString(deviceName) + QString("\n\nID: 0x%1").arg(deviceID_, 3, 16, QChar('0'))
+                        + "\n\nReboots: " + QString::number(_numberOfDeviceReboots[deviceID_]);
 
     label->setText(labelText);
 }
@@ -215,5 +216,32 @@ void QDeviceStatus::setDefaultStyle()
     for (auto it = _deviceInfo.begin(); it != _deviceInfo.end(); ++it)
     {
         it.value()->setStyleSheet(STATUS_DEFAULT);
+    }
+}
+
+const std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
+{
+    switch (deviceID_)
+    {
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR):
+            return "Front Left Motor";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR):
+            return "Front Right Motor";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR):
+            return "Rear Left Motor";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR):
+            return "Rear Right Motor";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::GNSS):
+            return "GNSS";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER):
+            return "DDB Controller";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN):
+            return "Camera Rover Main";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA):
+            return "Camera Rover Antenna";
+        case TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN):
+            return "Lights Main";
+        default:
+            return "Unknown Device";
     }
 }
