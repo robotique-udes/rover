@@ -34,6 +34,7 @@ class QNavigation : public QWidget
     void clearWaypoints(void);
     void clearPath(void);
     void deleteWaypoint(QString waypointId_);
+    
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_);

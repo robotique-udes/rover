@@ -3,10 +3,14 @@
 
 #include <array>
 #include "rover_lib2/helpers/macros.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 
 class NavigationController
 {
-    static constexpr float HEADING_BUFFER = 0.0F;
+    static constexpr float HEADING_BUFFER = 0.1F;
+    static constexpr float POSITION_BUFFER = 1.0F;
+    static constexpr float RECTIFICATION_FACTOR = 1.2F;
+    static constexpr float EARTH_RADIUS_METERS = 6'378'137.0F;  // Radius of the Earth in meters
 
   public:
     enum class eGpsData
@@ -24,6 +28,15 @@ class NavigationController
         NO_ROTATION = 2
     };
 
+    enum class eWheelCmd
+    {
+        FRONT_LEFT = 0,
+        REAR_LEFT = 1,
+        FRONT_RIGHT = 2,
+        REAR_RIGHT = 3,
+        eLAST
+    };
+
     NavigationController() {};
 
   private:
@@ -36,6 +49,8 @@ class NavigationController
     double _currentHeading;
     double _targetLat;
     double _targetLon;
+
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> _targetWheelCmd;
 
   public:
     void getDesiredGpsData(std::array<float, TO_UNDERLYING(eGpsData::eLAST)>& desiredGpsData_)
@@ -56,17 +71,17 @@ class NavigationController
         float bearing = computeBearing();
         float headingDiff = std::abs(bearing - _currentHeading);
 
-        if (headingDiff <= 180.0F)
+        if (headingDiff <= HEADING_BUFFER)
+        {
+            return eRotationDirection::NO_ROTATION;
+        }
+        if (headingDiff > HEADING_BUFFER && headingDiff <= 180.0F)
         {
             return eRotationDirection::CLOCKWISE;
         }
-        else if (headingDiff > 180.0F)
+        else if (headingDiff > HEADING_BUFFER && headingDiff > 180.0F)
         {
             return eRotationDirection::COUNTERCLOCKWISE;
-        }
-        else
-        {
-            return eRotationDirection::NO_ROTATION;
         }
     }
 
@@ -91,6 +106,65 @@ class NavigationController
         return bearing;
     }
 
+    float getDistance(void)
+    {
+        float lat1Rad = _currentLat * M_PI / 180.0F;
+        float lat2Rad = _targetLat * M_PI / 180.0F;
+        float deltaLatRad = (lat2Rad - lat1Rad);
+        float deltaLonRad = (_targetLon - _currentLon) * M_PI / 180.0F;
+
+        float a = sin(deltaLatRad / 2.0F) * sin(deltaLatRad / 2.0F)
+                  + cos(lat1Rad) * cos(lat2Rad) * sin(deltaLonRad / 2.0F) * sin(deltaLonRad / 2.0F);
+        float c = 2.0F * atan2(sqrt(a), sqrt(1 - a));
+
+        float distance = EARTH_RADIUS_METERS * c;
+
+        return distance;
+    }
+
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> setWheelCmd(void)
+    {
+        if (this->getDistance() <= POSITION_BUFFER)
+        {
+            _endNodeReached = true;
+
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = 0.0F;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = 0.0F;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = 0.0F;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = 0.0F;
+            return _targetWheelCmd;
+        }
+        else
+        {
+            if (this->computeRotationDirection() == eRotationDirection::CLOCKWISE)
+            {
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)]
+                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL * RECTIFICATION_FACTOR;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)]
+                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL * RECTIFICATION_FACTOR;
+            }
+            else if (this->computeRotationDirection() == eRotationDirection::COUNTERCLOCKWISE)
+            {
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)]
+                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL * RECTIFICATION_FACTOR;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)]
+                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL * RECTIFICATION_FACTOR;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            }
+            else
+            {
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            }
+        }
+
+        return _targetWheelCmd;
+    }
 };
 
 #endif

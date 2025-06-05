@@ -21,7 +21,7 @@ GoalManager::GoalManager():
     _timer = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                      [this]()
                                      {
-                                        this->driveTrainPublisher();
+                                         this->driveTrainPublisher();
                                      });
 }
 
@@ -36,8 +36,10 @@ void GoalManager::CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_)
 void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Request::SharedPtr request_,
                                 rover_msgs::srv::DesiredGpsPosition::Response::SharedPtr response_)
 {
-    RCLCPP_INFO(this->get_logger(), "Received desired GPS position: lat=%.6f, lon=%.6f",
-             request_->desired_latitude, request_->desired_longitude);
+    RCLCPP_INFO(this->get_logger(),
+                "Received desired GPS position: lat=%.6f, lon=%.6f",
+                request_->desired_latitude,
+                request_->desired_longitude);
 
     std::array<float, TO_UNDERLYING(NavigationController::eGpsData::eLAST)> desiredGpsData = {
         request_->desired_latitude,
@@ -45,13 +47,53 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
         0.0F  // Heading is not used in this context
     };
 
-    goalReached = false;
-    goalRequested = true;
+    this->goalReached = false;
+    this->goalRequested = true;
 
     // TODO : Add check
     response_->success = true;
 
     _navigationController.getDesiredGpsData(desiredGpsData);
+}
+
+bool GoalManager::desiredHeadingReached(NavigationController::eRotationDirection rotationDirection_)
+{
+    rover_msgs::msg::PropulsionMotor wheelCmdMsg;
+
+    bool desiredHeadingReached = false;
+
+    switch (rotationDirection_)
+    {
+        case NavigationController::eRotationDirection::CLOCKWISE:
+            RCLCPP_INFO(this->get_logger(), "Rotating clockwise");
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT]
+                = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT]
+                = -Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT]
+                = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT]
+                = -Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+            break;
+        case NavigationController::eRotationDirection::COUNTERCLOCKWISE:
+            RCLCPP_INFO(this->get_logger(), "Rotating counterclockwise");
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT]
+                = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT]
+                = -Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT]
+                = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT]
+                = -Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            break;
+        case NavigationController::eRotationDirection::NO_ROTATION:
+            desiredHeadingReached = true;
+        default:
+            break;
+    }
+
+    _pub_auto_cmd->publish(wheelCmdMsg);
+    return desiredHeadingReached;
 }
 
 void GoalManager::driveTrainPublisher(void)
@@ -61,40 +103,23 @@ void GoalManager::driveTrainPublisher(void)
         RCLCPP_INFO(this->get_logger(), "Processing goal request...");
         NavigationController::eRotationDirection rotationDirection = _navigationController.computeRotationDirection();
 
-        rover_msgs::msg::PropulsionMotor wheelCmdMsg;
-
-        switch (rotationDirection)
+        if (this->desiredHeadingReached(rotationDirection))
         {
-            case NavigationController::eRotationDirection::CLOCKWISE:
-                RCLCPP_INFO(this->get_logger(), "Rotating clockwise");
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT]
-                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT]
-                    = -Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT]
-                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT]
-                    = -Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-                break;
-            case NavigationController::eRotationDirection::COUNTERCLOCKWISE:
-                RCLCPP_INFO(this->get_logger(), "Rotating counterclockwise");
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT]
-                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT]
-                    = -Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT]
-                    = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-                wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT]
-                    = -Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-                break;
-            case NavigationController::eRotationDirection::NO_ROTATION:
-                RCLCPP_INFO(this->get_logger(), "Heading reached");
-                goalReached = true;
-            default:
-                break;
-        }
+            std::array<float, TO_UNDERLYING(NavigationController::eWheelCmd::eLAST)> wheelCmd
+                = _navigationController.setWheelCmd();
 
-        _pub_auto_cmd->publish(wheelCmdMsg);
+            rover_msgs::msg::PropulsionMotor wheelCmdMsg;
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT]
+                = wheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::FRONT_LEFT)];
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT]
+                = wheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::REAR_LEFT)];
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT]
+                = wheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::FRONT_RIGHT)];
+            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT]
+                = wheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::REAR_RIGHT)];
+
+            _pub_auto_cmd->publish(wheelCmdMsg);
+        }
     }
 }
 
