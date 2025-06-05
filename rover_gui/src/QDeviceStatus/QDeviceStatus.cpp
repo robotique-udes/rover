@@ -6,7 +6,7 @@ constexpr const char* STATUS_DEFAULT = "QLabel {"
                                        "border: 1px solid #4b4e52;"
                                        "}";
 
-constexpr const char* STATUS_SUCCESS = "QWidget {"
+constexpr const char* STATUS_SUCCESS = "QLabel {"
                                        "background-color: #81c784;"
                                        "color: black;"
                                        "border: 1px solid #388e3c;"
