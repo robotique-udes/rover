@@ -1,0 +1,2 @@
+uint8 channel_bandwidth
+uint8 rssi

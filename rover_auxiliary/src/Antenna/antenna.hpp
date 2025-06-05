@@ -6,6 +6,7 @@
 #include <curl/curl.h>
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/antenna_status.hpp>
 
 class AntennaNode : public rclcpp::Node {
 public:
