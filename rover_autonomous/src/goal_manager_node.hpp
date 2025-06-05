@@ -35,6 +35,7 @@ class GoalManager : public rclcpp::Node
     void CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Request::SharedPtr request_,
                        rover_msgs::srv::DesiredGpsPosition::Response::SharedPtr response_);
     void driveTrainPublisher(void);
+    bool desiredHeadingReached(NavigationController::eRotationDirection rotationDirection_);
 };
 
 #endif
