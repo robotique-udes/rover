@@ -32,6 +32,7 @@ class QNavigation : public QWidget
     void sendGoal(QString name, double latitude, double longitude, QString id);
     void calculatePath(double latitude_, double longitude_);
     bool waypointIsVisible(bool stateWaypoint);
+    bool waypointIsNotVisible(bool stateWaypoint);
     void jsReady(void);
     void clearWaypoints(void);
     void clearPath(void);
@@ -41,7 +42,7 @@ class QNavigation : public QWidget
     void pathDistanceCalculated(double distanceMeters_);
     void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
     void onCalculatePathClicked(void);
-    bool waypointVisibility(QListWidgetItem* item_);
+    void onWaypointVisibilityChanged(QListWidgetItem* item_);
     void onWaypointSelected(QListWidgetItem* item_);
     void onClearWaypointsClicked(void);
     void onClearPathClicked(void);

@@ -34,8 +34,9 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
 
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
-    connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);
-    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected);
+    connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);    
+    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected); 
+    connect(_ui.waypointList, &QListWidget::itemChanged, this, &QNavigation::onWaypointVisibilityChanged); //
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
@@ -165,22 +166,22 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     _waypoints.append(waypoint_);
 
     _ui.waypointList->addItem(waypointItem_);
+
+    onWaypointVisibilityChanged(waypointItem_);
 }
 
-bool QNavigation::waypointVisibility(QListWidgetItem* item_)
+void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
 {
     Qt::CheckState stateWaypoint = item_->checkState();
-    emit this->waypointIsVisible(stateWaypoint);
+    
     if (stateWaypoint == Qt::Checked)
     {
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Box checked");
-        return true;
+        emit this->waypointIsVisible(stateWaypoint);
     }
 
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Box not checked");
-        return false;
+        emit this->waypointIsNotVisible(stateWaypoint);
     }
 }
 

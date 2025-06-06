@@ -577,6 +577,13 @@
           }
         });
 
+        //bridge.waypointIsVisible.connect(function (lat, lon, name, waypointId) {
+        //  addWaypoint(lat, lon, name, waypointId)
+        //});
+        //bridge.waypointIsNotVisible.connect(function (lat, lon, name, waypointId) {
+        // addWaypoint(lat, lon, name, waypointId)
+        //});
+
         bridge.sendGoal.connect(function (name, lat, lon) {
           if (isAddingWaypoint) return;
 
@@ -617,12 +624,9 @@
             });
             isAddingWaypoint = false;
             return;
-          }
+          }        
 
           addWaypoint(lat, lon, name, id);
-          bridge.waypointIsVisible.connect(function (lat, lon, name, waypointId, stateWaypoint) {
-            addWaypoint(lat, lon, name, waypointId, stateWaypoint)
-          });
 
           const wasTracking = cameraTracking;
           const wasTopDown = isTopDownView;
@@ -806,7 +810,7 @@
     }
 
     function addWaypoint(lat, lon, name, waypointId, stateWaypoint) {
-      if (!waypointNameExists(name) && stateWaypoint) {
+      if (!waypointNameExists(name)) {
         const waypointName = name || `Waypoint ${waypointCounter++}`;
         const id = waypointId || `waypoint_${Date.now()}`;
 
