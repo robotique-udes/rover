@@ -1,17 +1,32 @@
 #include "glowstick_detection_node.hpp"
+#include "glowstick_detector.hpp"
 
 
 GlowStickDetectionNode::GlowStickDetectionNode() : Node("glowstick_detection_node")
 {
     _camera = std::make_unique<ImageCaptureGlowstick>("file:///dev/video0");
 
-    cv::Mat frame;
+    cv::Mat frameCam;
+    cv::Mat frameGlowStick;
+    GlowsitckDetector gsDetector;
+    std::vector<cv::Point> gsPosition;
 
     while (true)
     {
-        _camera->_cap >> frame;
+        _camera->_cap >> frameCam;
 
-        cv::imshow("Laptop Camera", frame);
+        cv::imshow("Laptop Camera", frameCam);
+        //cv::imshow("GlowStick Cam", frameGlowStick);
+
+        gsPosition = gsDetector.getPosition();
+
+        if (gsDetector.detectGlowstick(frameCam))
+        {
+            for (uint16_t i=0;i<gsPosition.size();i++)
+            {
+                cv::circle(frameCam, gsPosition[i], 5, cv::Scalar(0, 255, 0), 2);
+            }
+        }
 
         if (cv::waitKey(27) >=0) break;
     }
