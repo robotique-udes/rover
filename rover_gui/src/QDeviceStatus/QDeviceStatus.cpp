@@ -1,27 +1,31 @@
 #include "QDeviceStatus.hpp"
 #include <QStyle>
 
-constexpr const char* STATUS_DEFAULT = "QLabel {"
+constexpr const char* STATUS_DEFAULT = "QWidget {"
                                        "background-color: #3c3f41;"
-                                       "border: 1px solid #4b4e52;"
+                                       "border-radius: 5px;"
+                                       "padding: 5px 10px;"
                                        "}";
 
-constexpr const char* STATUS_SUCCESS = "QLabel {"
+constexpr const char* STATUS_SUCCESS = "QWidget {"
                                        "background-color: #81c784;"
                                        "color: black;"
-                                       "border: 1px solid #388e3c;"
+                                       "border-radius: 5px;"
+                                       "padding: 5px 10px;"
                                        "}";
 
-constexpr const char* STATUS_WARNING = "QLabel {"
+constexpr const char* STATUS_WARNING = "QWidget {"
                                        "background-color : #ffb74d;"
                                        "color: black;"
-                                       "border: 1px solid #e65100;"
+                                       "border-radius: 5px;"
+                                       "padding: 5px 10px;"
                                        "}";
 
-constexpr const char* STATUS_ERROR = "QLabel {"
+constexpr const char* STATUS_ERROR = "QWidget {"
                                      "background-color : #e57373;"
                                      "color: black;"
-                                     "border: 1px solid #b71c1c;"
+                                     "border-radius: 5px;"
+                                     "padding: 5px 10px;"
                                      "}";
 
 QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
@@ -53,8 +57,8 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN)] = _ui.cameraMainInfo;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA)] = _ui.cameraAntenneInfo;
     _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN)] = _ui.lightsMainInfo;
-    // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Reboot;
-    // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Reboot;
+    // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Info;
+    // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Info;
 
     _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
         "/rover/can/devices_status",
