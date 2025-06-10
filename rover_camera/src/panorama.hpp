@@ -25,7 +25,7 @@ class PhotoPanoramique : public rclcpp::Node
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
     static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
-    static constexpr const char* PATH_FOR_PANORAMA = "/panorama"
+    static constexpr const char* PATH_FOR_PANORAMA = "/panorama";
 
   public:
     PhotoPanoramique();
@@ -38,17 +38,17 @@ class PhotoPanoramique : public rclcpp::Node
     cv::Mat warpCorrection(const cv::Mat& pano);
 
     std::string getCurrentTime(void);
-    std::optional<std::string> getFolderPath(const std::string& basePath_)
+    std::optional<std::string> getFolderPath(const std::string& basePath_);
 
     // fonction pour le stitching de la photo
     cv::Mat stitching(std::vector<cv::Mat>& imagesCam);
 
     // fonction pour aller chercher la position GPS
-    void PositionGPS(const rover_msgs::msg::GpsPosition& gpsMessage_);
+    void PositionGPS(const rover_msgs::msg::Gps& gpsMessage_);
 
     // section necessitees ROS
     rclcpp::Service<rover_msgs::srv::PhotoPanoramique>::SharedPtr srv_panorama;
-    rclcpp::Subscription<rover_msgs::msg::GpsPosition>::SharedPtr sub_position;
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr sub_position;
 
     void CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
                 std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_);

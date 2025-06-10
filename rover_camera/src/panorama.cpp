@@ -15,9 +15,9 @@ PhotoPanoramique::PhotoPanoramique():
         });
 
     sub_position
-        = this->create_subscription<rover_msgs::msg::GpsPosition>(TOPIC_GPS_NAME,
+        = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
                                                                   QOS_DEFAULT,
-                                                                  [this](const rover_msgs::msg::GpsPosition& gps_message_)
+                                                                  [this](const rover_msgs::msg::Gps& gps_message_)
                                                                   {
                                                                       this->PositionGPS(gps_message_);
                                                                   });
@@ -115,8 +115,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to find home environment when capturing panorama on camera %s",
                      request_->camera_url.c_str());
-        response_.success = false;
-        response_.status = "Failed to find home environment for saving screenshot on camera: " + request_->camera_url.c_str();
+        response_->success = false;
+        response_->status = "Failed to find home environment for saving screenshot on camera: " + request_->camera_url;
         return;
     }
     std::string pathFolder = pathFolderOptional.value();
@@ -126,8 +126,8 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
                      "Failed to create panorama folder at %s for camera: %s",
                      pathFolder.c_str(),
                      request_->camera_url.c_str());
-        response_.success = false;
-        response_.status = "Failed to create screenshots folder or it already exists at " + pathFolder
+        response_->success = false;
+        response_->status = "Failed to create screenshots folder or it already exists at " + pathFolder
                            + " for camera: " + request_->camera_url;
     }
 
@@ -191,7 +191,7 @@ cv::Mat PhotoPanoramique::stitching(std::vector<cv::Mat>& imagesCam)
     return pano;
 }
 
-void PhotoPanoramique::PositionGPS(const rover_msgs::msg::GpsPosition& gpsMessage_)
+void PhotoPanoramique::PositionGPS(const rover_msgs::msg::Gps& gpsMessage_)
 {
     sCoordoneesGps.latitude = gpsMessage_.latitude;
     sCoordoneesGps.longitude = gpsMessage_.longitude;
