@@ -1,5 +1,6 @@
 #include "panorama.hpp"
 #include <rover_lib2/helpers/folders.hpp>
+#include <rover_lib2/helpers/date.hpp>
 
 // cam: 192.168.144.30
 
@@ -29,7 +30,7 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     response_->success = false;
 
     // paramètres pour le stitching
-    std::string resultName = "panorama_" + getCurrentTime() + ".jpg";
+    std::string resultName = "panorama_" + Date::getCurrentTime() + ".jpg";
 
     // paramètres pour la lecture de la camera
 
@@ -195,18 +196,6 @@ void PhotoPanoramique::PositionGPS(const rover_msgs::msg::Gps& gpsMessage_)
 {
     sCoordoneesGps.latitude = gpsMessage_.latitude;
     sCoordoneesGps.longitude = gpsMessage_.longitude;
-}
-
-std::string PhotoPanoramique::getCurrentTime(void)
-{
-    std::stringstream current_time_output;
-
-    std::chrono::time_point<std::chrono::system_clock> now = std::chrono::system_clock::now();
-    std::time_t now_time = std::chrono::system_clock::to_time_t(now);  // convert to real time
-    std::tm tm_now = *std::localtime(&now_time);                       // convert to calendar time
-    current_time_output << std::put_time(&tm_now, "%FT%T");            // ISO 8601 format
-
-    return current_time_output.str();
 }
 
 std::optional<std::string> PhotoPanoramique::getFolderPath(const std::string& basePath_)

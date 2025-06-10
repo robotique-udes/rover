@@ -37,7 +37,6 @@ class PhotoPanoramique : public rclcpp::Node
     // fonction pour enlever le warping
     cv::Mat warpCorrection(const cv::Mat& pano);
 
-    std::string getCurrentTime(void);
     std::optional<std::string> getFolderPath(const std::string& basePath_);
 
     // fonction pour le stitching de la photo
