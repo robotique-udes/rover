@@ -14,8 +14,16 @@ class GoalManager : public rclcpp::Node
     static constexpr char* SRV_GOAL_NAME = "/rover/goal/position";
     static constexpr char* TOPIC_WHEEL_CMD_NAME = "/rover/drive_train/wheels_cmd_auto";
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
+    static constexpr float HEADING_BUFFER = 1.0F;
 
   public:
+    enum class eState
+    {
+        IDLE = 0,
+        ROTATING = 1,
+        NAVIGATING_TO_POINT = 2,
+        ERROR
+    };
     GoalManager();
     ~GoalManager() = default;
 
@@ -26,9 +34,13 @@ class GoalManager : public rclcpp::Node
     rclcpp::TimerBase::SharedPtr _timer;
 
     NavigationController _navigationController;
+    eState _state = eState::IDLE;
 
     bool goalRequested = false;
     bool goalReached = false;
+    bool _desiredHeadingReached = false;
+
+    std::array<float, TO_UNDERLYING(NavigationController::eWheelCmd::eLAST)> _targetWheelCmd = {0.0F, 0.0F, 0.0F, 0.0F};
 
   public:
     void CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_);

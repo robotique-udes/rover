@@ -7,7 +7,7 @@
 
 class NavigationController
 {
-    static constexpr float HEADING_BUFFER = 0.1F;
+    // static constexpr float HEADING_BUFFER = 1.0F;
     static constexpr float POSITION_BUFFER = 1.0F;
     static constexpr float RECTIFICATION_FACTOR = 1.2F;
     static constexpr float EARTH_RADIUS_METERS = 6'378'137.0F;  // Radius of the Earth in meters
@@ -39,10 +39,14 @@ class NavigationController
 
     NavigationController() {};
 
+    float headingBuffer_;
+    bool _desiredHeadingReached = false;
+
   private:
     std::array<float, TO_UNDERLYING(eGpsData::eLAST)> _currentGpsData = {0.0F, 0.0F, 0.0F};
 
     bool _endNodeReached = false;
+
 
     double _currentLat;
     double _currentLon;
@@ -71,17 +75,46 @@ class NavigationController
         float bearing = computeBearing();
         float headingDiff = std::abs(bearing - _currentHeading);
 
-        if (headingDiff <= HEADING_BUFFER)
+        if (headingDiff <= this->headingBuffer_)
         {
             return eRotationDirection::NO_ROTATION;
         }
-        if (headingDiff > HEADING_BUFFER && headingDiff <= 180.0F)
+        if (headingDiff > this->headingBuffer_ && headingDiff <= 180.0F)
         {
             return eRotationDirection::CLOCKWISE;
         }
-        else if (headingDiff > HEADING_BUFFER && headingDiff > 180.0F)
+        else if (headingDiff > this->headingBuffer_ && headingDiff > 180.0F)
         {
             return eRotationDirection::COUNTERCLOCKWISE;
+        }
+    }
+
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> idleCmd(void)
+    {
+        // TODO
+    }
+
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> getToHeading(void)
+    {
+        eRotationDirection rotationDirection = this->computeRotationDirection();
+
+        if (rotationDirection == eRotationDirection::CLOCKWISE)
+        {
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+        }
+        else if (rotationDirection == eRotationDirection::COUNTERCLOCKWISE)
+        {
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+        }
+        else
+        {
+            _desiredHeadingReached = true;
         }
     }
 
