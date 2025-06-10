@@ -2,12 +2,13 @@
 #include <opencv2/stitching.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/srv/photo_panoramique.hpp>
-#include <rover_msgs/msg/gps_position.hpp>
+#include <rover_msgs/msg/gps.hpp>
 #include <iostream>
 #include <vector>
 #include <sys/stat.h>
 #include <rover_lib2/helpers/macros.hpp>
 #include <rover_lib2/helpers/constants.hpp>
+#include <optional>
 
 struct emplacement
 {
@@ -24,6 +25,7 @@ class PhotoPanoramique : public rclcpp::Node
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
     static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
+    static constexpr const char* PATH_FOR_PANORAMA = "/panorama"
 
   public:
     PhotoPanoramique();
@@ -36,7 +38,7 @@ class PhotoPanoramique : public rclcpp::Node
     cv::Mat warpCorrection(const cv::Mat& pano);
 
     std::string getCurrentTime(void);
-    bool folderExists(const std::string& path_);
+    std::optional<std::string> getFolderPath(const std::string& basePath_)
 
     // fonction pour le stitching de la photo
     cv::Mat stitching(std::vector<cv::Mat>& imagesCam);

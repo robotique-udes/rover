@@ -109,12 +109,29 @@ void PhotoPanoramique::CB_srv(const std::shared_ptr<rover_msgs::srv::PhotoPanora
     putText(panoRectangle, nomPhoto, cv::Point(10, hauteur - 120), cv::FONT_HERSHEY_SIMPLEX, 3.0, cv::Scalar(34, 139, 34), 5);
 
     // creation du dossier du dossier de panoramas
-    std::string pathFolder = request_->base_path + "/panoramas";
+    std::optional<std::string> pathFolderOptional = this->getFolderPath(request_->base_path);
+    if (!pathFolderOptional)
+    {
+        RCLCPP_ERROR(this->get_logger(),
+                     "Failed to find home environment when capturing panorama on camera %s",
+                     request_->camera_url.c_str());
+        response_.success = false;
+        response_.status = "Failed to find home environment for saving screenshot on camera: " + request_->camera_url.c_str();
+        return;
+    }
+    std::string pathFolder = pathFolderOptional.value();
+    if (!Folders::createFolder(pathFolder))
+    {
+        RCLCPP_ERROR(this->get_logger(),
+                     "Failed to create panorama folder at %s for camera: %s",
+                     pathFolder.c_str(),
+                     request_->camera_url.c_str());
+        response_.success = false;
+        response_.status = "Failed to create screenshots folder or it already exists at " + pathFolder
+                           + " for camera: " + request_->camera_url;
+    }
 
-    struct stat fileInfo;
     std::string filename = pathFolder + "/" + resultName;
-
-    Folders::createFolder(pathFolder);
 
     // enregistrement de la panoramique
     imwrite(filename, panoRectangle);
@@ -192,24 +209,22 @@ std::string PhotoPanoramique::getCurrentTime(void)
     return current_time_output.str();
 }
 
-bool PhotoPanoramique::folderExists(const std::string& path_)
+std::optional<std::string> PhotoPanoramique::getFolderPath(const std::string& basePath_)
 {
-    struct stat fileInfo;
-
-    if (stat(path_.c_str(), &fileInfo) != 0)
+    const char* home = std::getenv("HOME");
+    std::string homeStr;
+    if (home)
     {
-        return false;
-    }
-
-    if (fileInfo.st_mode & S_IFDIR)
-    {
-        return true;
+        homeStr = home;
     }
     else
     {
-        RCLCPP_FATAL(this->get_logger(), "Element already exist with this path and name, but isn't a folder");
-        return false;
+        return std::nullopt;
+        RCLCPP_ERROR(this->get_logger(), "Unable to create session folder, $HOME env variable wasn't found");
     }
+
+    std::string folderPath = homeStr + basePath_ + PATH_FOR_PANORAMA;
+    return folderPath;
 }
 
 int main(int argc, char* argv[])

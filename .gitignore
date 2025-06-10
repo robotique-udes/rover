@@ -1,6 +1,7 @@
 .vscode
 *~
 *.bkp
+.env
 
 screenshots/
 recordings/
