@@ -252,7 +252,7 @@ class CartesianController : public RobotController
         _jointPositions = position_;
     }
 
-    std::array<float, TO_UNDERLYING(eCartesianInput::eLAST)> getDesiredCartesian(void) const 
+    std::array<float, TO_UNDERLYING(eCartesianInput::eLAST)> getDesiredCartesian(void) const
     {
         return _desiredCartesian;
     }

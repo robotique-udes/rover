@@ -42,7 +42,10 @@ class DDBControlNode : public rclcpp::Node
 
     bool setChannelOutput(uint8_t channelID_, eOutputState desiredState_);
     bool setPWMValues(float dutyCycle_, float frequency_, uint8_t channelID_);
-    bool valuesCheck(float dutyCycle_, float frequency_, uint8_t channelID_, rover_msgs::srv::DDBControl::Response& response_) const;
+    bool valuesCheck(float dutyCycle_,
+                     float frequency_,
+                     uint8_t channelID_,
+                     rover_msgs::srv::DDBControl::Response& response_) const;
 
     bool setChannelOutput2(uint8_t channelID_, eOutputState desiredState_);
     void setStateLogic2(const rover_msgs::srv::DDBControl::Request& request_, rover_msgs::srv::DDBControl::Response& response_);
