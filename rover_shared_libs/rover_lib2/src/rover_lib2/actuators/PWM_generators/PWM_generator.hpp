@@ -1,5 +1,5 @@
-#ifndef PWM_GENERATOR_HPP
-#define PWM_GENERATOR_HPP
+#ifndef ROVER_LIB2_ACTUATORS_PWM_GENERATORS_PWM_GENERATOR_HPP
+#define ROVER_LIB2_ACTUATORS_PWM_GENERATORS_PWM_GENERATOR_HPP
 
 #include "rover_lib2/rover_object.hpp"
 
@@ -91,4 +91,4 @@ namespace PWMGenerators
 
 }  // namespace PWMGenerators
 
-#endif  // PWM_GENERATOR_HPP
+#endif  // ROVER_LIB2_ACTUATORS_PWM_GENERATORS_PWM_GENERATOR_HPP

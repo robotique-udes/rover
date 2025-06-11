@@ -7,6 +7,8 @@ on:
   push:
     branches:
       - release/**  # Triggers on pushes to release branches, including merges
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   lint-cpp:

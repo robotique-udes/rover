@@ -1,5 +1,5 @@
-#ifndef MCPWM_HPP
-#define MCPWM_HPP
+#ifndef ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_HPP
+#define ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_HPP
 
 #include "rover_lib2/actuators/PWM_generators/PWM_generator.hpp"
 #include "rover_lib2/actuators/PWM_generators/MCPWM_timer.hpp"
@@ -177,4 +177,4 @@ namespace PWMGenerators
     };
 }  // namespace PWMGenerators
 
-#endif  // MCPWM_HPP
+#endif  // ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_HPP

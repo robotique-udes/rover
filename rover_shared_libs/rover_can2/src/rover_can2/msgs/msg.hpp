@@ -1,5 +1,5 @@
-#ifndef MSG_HPP
-#define MSG_HPP
+#ifndef ROVER_CAN2_MSGS_MSG_HPP
+#define ROVER_CAN2_MSGS_MSG_HPP
 
 #include "rover_can2/constant.hpp"
 #include "rover_can2/can_msg.hpp"
@@ -80,4 +80,4 @@ namespace RoverCan2::Msgs
     };
 }  // namespace RoverCan2::Msgs
 
-#endif  // MSG_HPP
+#endif  // ROVER_CAN2_MSGS_MSG_HPP
