@@ -130,7 +130,8 @@ namespace PWMGenerators
 
         uint32_t dutyToTickCtn(float duty_) const
         {
-            return static_cast<uint32_t>(std::round(static_cast<float>(_timerPeriodTick) * (duty_ / 100.0F)));
+            uint32_t activeTickCtn = static_cast<uint32_t>(std::round(static_cast<float>(_timerPeriodTick) * (duty_ / 100.0F)));
+            return CONSTRAIN(activeTickCtn, 0UL, _timerPeriodTick);
         }
 
         float tickCtnToDuty(uint32_t tickCtn_) const

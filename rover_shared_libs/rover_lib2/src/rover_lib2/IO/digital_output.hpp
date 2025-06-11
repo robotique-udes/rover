@@ -21,11 +21,12 @@ namespace IO
       public:
         explicit DigitalOutput(gpio_num_t pin_,
                                eIOState initialState_ = eIOState::LOW_,
-                               gpio_mode_t mode_ = gpio_mode_t::GPIO_MODE_OUTPUT,
+                               gpio_mode_t mode_ = gpio_mode_t::GPIO_MODE_INPUT_OUTPUT,
                                gpio_pull_mode_t pullMode_ = gpio_pull_mode_t::GPIO_FLOATING,
                                gpio_drive_cap_t powerMode_ = gpio_drive_cap_t::GPIO_DRIVE_CAP_DEFAULT):
             _pin(pin_),
-            _isDirectAccess(_pin <= GPIO_DIRECT_ACCESS_MAX)
+            _isDirectAccess(_pin <= GPIO_DIRECT_ACCESS_MAX),
+            _pinMode(mode_)
         {
             if (_pin != GPIO_NUM_NC)
             {
@@ -78,6 +79,9 @@ namespace IO
 
         eIOState read(void) const
         {
+            ASSERT_COND_MSG(_pinMode == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT || _pinMode == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT_OD,
+                            "Reading from a output only pin will always return \"LOW_\"");
+
             if (_pin == GPIO_NUM_NC)
             {
                 return eIOState::LOW_;
@@ -123,6 +127,7 @@ namespace IO
             ASSERT_COND_MSG(mode_ == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT || mode_ == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT_OD
                                 || mode_ == gpio_mode_t::GPIO_MODE_OUTPUT || mode_ == gpio_mode_t::GPIO_MODE_OUTPUT_OD,
                             "Wrong mode selected for DigitalIO, implementation error. Undefined behavior on IO");
+
             gpio_set_direction(_pin, mode_);
         }
 
@@ -149,6 +154,8 @@ namespace IO
       private:
         const gpio_num_t _pin;
         const bool _isDirectAccess;
+
+        gpio_mode_t _pinMode;
     };
 }  // namespace IO
 

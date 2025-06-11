@@ -21,8 +21,7 @@ namespace IO
       public:
         explicit DigitalInput(gpio_num_t pin_,
                               gpio_mode_t mode_ = gpio_mode_t::GPIO_MODE_INPUT,
-                              gpio_pull_mode_t pullMode_ = gpio_pull_mode_t::GPIO_FLOATING,
-                              gpio_drive_cap_t powerMode_ = gpio_drive_cap_t::GPIO_DRIVE_CAP_0):
+                              gpio_pull_mode_t pullMode_ = gpio_pull_mode_t::GPIO_FLOATING):
             _pin(pin_),
             _isDirectAccess(_pin <= GPIO_DIRECT_ACCESS_MAX)
         {
@@ -38,7 +37,7 @@ namespace IO
         {
             if (_pin == GPIO_NUM_NC)
             {
-                return;
+                return eIOState::LOW_;
             }
 
             if (_isDirectAccess)
@@ -62,8 +61,8 @@ namespace IO
             }
 
             ASSERT_COND_MSG(mode_ == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT || mode_ == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT_OD
-                                || mode_ == gpio_mode_t::GPIO_MODE_OUTPUT || mode_ == gpio_mode_t::GPIO_MODE_OUTPUT_OD,
-                            "Wrong mode selected for DigitalIO, implementation error. Undefined behavior on IO");
+                                || mode_ == gpio_mode_t::GPIO_MODE_INPUT,
+                            "Wrong mode selected for digital input, implementation error. Undefined behavior on IO");
             gpio_set_direction(_pin, mode_);
         }
 

@@ -15,7 +15,7 @@ class PushButton
     PushButton(gpio_num_t pin_,
                ePullMode pullMode_ = ePullMode::PULL_UP,
                gpio_pull_mode_t internalPullMode_ = gpio_pull_mode_t::GPIO_FLOATING):
-        _io(pin_, gpio_mode_t::GPIO_MODE_INPUT, internalPullMode_, gpio_drive_cap_t::GPIO_DRIVE_CAP_0),
+        _io(pin_, gpio_mode_t::GPIO_MODE_INPUT, internalPullMode_),
         _pullMode(pullMode_)
     {
         ASSERT_COND_MSG(!(_pullMode == ePullMode::PULL_DOWN && internalPullMode_ == gpio_pull_mode_t::GPIO_PULLUP_ONLY)
