@@ -1,5 +1,5 @@
-#ifndef CAN_DRIVER_HPP
-#define CAN_DRIVER_HPP
+#ifndef ROVER_CAN2_DRIVERS_DRIVER_BASE_HPP
+#define ROVER_CAN2_DRIVERS_DRIVER_BASE_HPP
 
 #include "rover_lib2/rover_object.hpp"
 #include "rover_can2/can_msg.hpp"
@@ -50,4 +50,4 @@ namespace RoverCan2::Drivers
     };
 }  // namespace RoverCan2::Drivers
 
-#endif  // CAN_DRIVER_HPP
+#endif  // ROVER_CAN2_DRIVERS_DRIVER_BASE_HPP

@@ -1,5 +1,5 @@
-#ifndef POWER_STATUS_HPP
-#define POWER_STATUS_HPP
+#ifndef ROVER_CAN2_MSGS_POWER_STATUS_HPP
+#define ROVER_CAN2_MSGS_POWER_STATUS_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
@@ -129,4 +129,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // POWER_STATUS_HPP
+#endif  // ROVER_CAN2_MSGS_POWER_STATUS_HPP
