@@ -1,6 +1,8 @@
 #ifndef ROVER_LIB2_HELPERS_MACROS_HPP
 #define ROVER_LIB2_HELPERS_MACROS_HPP
 
+#include <concepts>
+#include <cstdint>
 #include <numbers>
 #include <type_traits>
 
