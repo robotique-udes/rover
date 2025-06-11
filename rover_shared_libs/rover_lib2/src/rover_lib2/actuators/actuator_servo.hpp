@@ -1,5 +1,5 @@
-#ifndef ACTUATOR_SERVO_HPP
-#define ACTUATOR_SERVO_HPP
+#ifndef ROVER_LIB2_ACTUATORS_ACTUATOR_SERVO_HPP
+#define ROVER_LIB2_ACTUATORS_ACTUATOR_SERVO_HPP
 
 #error IMPLEMENTATION IN PROGRESS DON'T USE
 
@@ -185,4 +185,4 @@ class ActuatorServo : public Actuator<ActuatorServo<PwmGenerator_T>>
     LoopTimer<uint64_t, Time::millis> _updateTimer;
 };
 
-#endif  // ACTUATOR_SERVO_HPP
+#endif  // ROVER_LIB2_ACTUATORS_ACTUATOR_SERVO_HPP

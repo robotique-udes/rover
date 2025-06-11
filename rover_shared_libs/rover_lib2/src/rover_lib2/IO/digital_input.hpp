@@ -1,5 +1,5 @@
-#ifndef DIGITAL_INPUT_HPP
-#define DIGITAL_INPUT_HPP
+#ifndef ROVER_LIB2_IO_DIGITAL_INPUT_HPP
+#define ROVER_LIB2_IO_DIGITAL_INPUT_HPP
 
 #include "rover_lib2/rover_object.hpp"
 #include "rover_lib2/helpers/log.hpp"
@@ -85,4 +85,4 @@ namespace IO
 
 #endif  // defined(ARDUINO_ESP32S3_DEV)
 
-#endif  // DIGITAL_INPUT_HPP
+#endif  // ROVER_LIB2_IO_DIGITAL_INPUT_HPP

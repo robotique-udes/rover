@@ -1,5 +1,5 @@
-#ifndef AMT222A_HPP
-#define AMT222A_HPP
+#ifndef ROVER_LIB2_SENSORS_ENCODER_AMT222A_HPP
+#define ROVER_LIB2_SENSORS_ENCODER_AMT222A_HPP
 
 #include "rover_lib2/sensors/encoder/encoder.hpp"
 #include "rover_lib2/communication/SPI/SPI_device.hpp"
@@ -227,4 +227,4 @@ class AMT222A : public Encoder<AMT222A>
     OneShotTimer<uint64_t, Time::micros> _timerTimingDelay;
 };
 
-#endif  // AMT222A_HPP
+#endif  // ROVER_LIB2_SENSORS_ENCODER_AMT222A_HPP

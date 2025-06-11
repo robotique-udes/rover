@@ -1,5 +1,5 @@
-#ifndef MACROS_HPP
-#define MACROS_HPP
+#ifndef ROVER_LIB2_HELPERS_MACROS_HPP
+#define ROVER_LIB2_HELPERS_MACROS_HPP
 
 #include <cmath>
 #include <type_traits>
@@ -160,4 +160,4 @@ constexpr T ROUND_DOWN(T value_)
     (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
 #endif  // defined(_linux_) && defined(RCLCPP_DEBUG
 
-#endif  // MACROS_HPP
+#endif  // ROVER_LIB2_HELPERS_MACROS_HPP

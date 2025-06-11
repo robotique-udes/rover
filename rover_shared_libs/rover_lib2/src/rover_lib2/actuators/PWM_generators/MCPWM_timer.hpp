@@ -1,5 +1,5 @@
-#ifndef MCPWM_TIMER_HPP
-#define MCPWM_TIMER_HPP
+#ifndef ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_TIMER_HPP
+#define ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_TIMER_HPP
 
 #include "rover_lib2/helpers/assert.hpp"
 #include "rover_lib2/helpers/macros.hpp"
@@ -249,4 +249,4 @@ namespace PWMGenerators
     };
 }  // namespace PWMGenerators
 
-#endif  // MCPWM_TIMER_HPP
+#endif  // ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_TIMER_HPP

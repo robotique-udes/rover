@@ -1,5 +1,5 @@
-#ifndef PUSH_BUTTON_HPP
-#define PUSH_BUTTON_HPP
+#ifndef ROVER_LIB2_SENSORS_PUSH_BUTTON_HPP
+#define ROVER_LIB2_SENSORS_PUSH_BUTTON_HPP
 
 #include "rover_lib2/IO/digital_input.hpp"
 
@@ -41,4 +41,4 @@ class PushButton
     const ePullMode _pullMode;
 };
 
-#endif  // PUSH_BUTTON_HPP
+#endif  // ROVER_LIB2_SENSORS_PUSH_BUTTON_HPP

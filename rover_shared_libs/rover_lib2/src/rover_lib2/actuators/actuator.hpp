@@ -1,5 +1,5 @@
-#ifndef ACTUATOR_HPP
-#define ACTUATOR_HPP
+#ifndef ROVER_LIB2_ACTUATORS_ACTUATOR_HPP
+#define ROVER_LIB2_ACTUATORS_ACTUATOR_HPP
 
 #include <rover_lib2/rover_object.hpp>
 
@@ -57,4 +57,4 @@ class Actuator : public RoverObject<Actuator<Impl_T>>
     }
 };
 
-#endif  // ACTUATOR_HPP
+#endif  // ROVER_LIB2_ACTUATORS_ACTUATOR_HPP

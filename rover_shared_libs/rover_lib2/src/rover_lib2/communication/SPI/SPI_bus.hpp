@@ -1,5 +1,5 @@
-#ifndef SPI_BUS_HPP
-#define SPI_BUS_HPP
+#ifndef ROVER_LIB2_COMMUNICATION_SPI_SPI_BUS_HPP
+#define ROVER_LIB2_COMMUNICATION_SPI_SPI_BUS_HPP
 
 #include "rover_lib2/helpers/assert.hpp"
 #include "rover_lib2/helpers/macros.hpp"
@@ -106,4 +106,4 @@ class SPIBus
     spi_host_device_t _spiHost;
 };
 
-#endif  // SPI_BUS_HPP
+#endif  // ROVER_LIB2_COMMUNICATION_SPI_SPI_BUS_HPP

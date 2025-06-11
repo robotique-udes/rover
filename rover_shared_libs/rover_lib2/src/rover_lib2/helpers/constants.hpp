@@ -1,5 +1,5 @@
-#ifndef CONSTANTS_HPP
-#define CONSTANTS_HPP
+#ifndef ROVER_LIB2_HELPERS_CONSTANTS_HPP
+#define ROVER_LIB2_HELPERS_CONSTANTS_HPP
 
 #if defined(__linux__)
 #include <map>
@@ -60,4 +60,4 @@ namespace Constants
     }   // namespace DriveTrain::KeyBinding
 }  // namespace Constants
 
-#endif  // CONSTANTS_HPP
+#endif  // ROVER_LIB2_HELPERS_CONSTANTS_HPP
