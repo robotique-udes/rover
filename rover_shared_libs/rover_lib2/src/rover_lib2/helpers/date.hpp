@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_DATE_HPP
-#define ROVER_LIB2_HELPERS_DATE_HPP
+#ifndef DATE_HPP
+#define DATE_HPP
 
 #include <string>
 
@@ -16,4 +16,4 @@ namespace Date
 #endif  // defined(__linux__)
 }  // namespace Date
 
-#endif  // ROVER_LIB2_HELPERS_DATE_HPP
+#endif  // DATE_HPP
