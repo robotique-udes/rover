@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_MOVING_AVERAGE_HPP
-#define ROVER_LIB2_HELPERS_MOVING_AVERAGE_HPP
+#ifndef __MOVING_AVERAGE_HPP__
+#define __MOVING_AVERAGE_HPP__
 
 #include <cstdint>
 
@@ -36,4 +36,4 @@ class MovingAverage
     }
 };
 
-#endif  // ROVER_LIB2_HELPERS_MOVING_AVERAGE_HPP
+#endif  // __MOVING_AVERAGE_HPP__

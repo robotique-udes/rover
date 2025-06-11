@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_FOLDERS_HPP
-#define ROVER_LIB2_HELPERS_FOLDERS_HPP
+#ifndef FOLDERS_HPP
+#define FOLDERS_HPP
 
 #if defined(__linux__)
 #include <string>
@@ -36,4 +36,4 @@ namespace Folders
 
 #endif  //(__linux__)
 
-#endif  // ROVER_LIB2_HELPERS_FOLDERS_HPP
+#endif  // FOLDERS_HPP

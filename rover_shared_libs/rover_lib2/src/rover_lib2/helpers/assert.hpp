@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_ASSERT_HPP
-#define ROVER_LIB2_HELPERS_ASSERT_HPP
+#ifndef ASSERT_HPP
+#define ASSERT_HPP
 
 #include "rover_lib2/helpers/log.hpp"
 
@@ -173,4 +173,4 @@ namespace
     while (0)
 
 #endif  // defined(ARDUINO_ESP32S3_DEV)
-#endif  // ROVER_LIB2_HELPERS_ASSERT_HPP
+#endif  // ASSERT_HPP

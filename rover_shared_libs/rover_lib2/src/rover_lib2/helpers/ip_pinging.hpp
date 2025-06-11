@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_IP_PINGING_HPP
-#define ROVER_LIB2_HELPERS_IP_PINGING_HPP
+#ifndef IP_PINGING
+#define IP_PINGING
 
 #if defined(__linux__)
 #include <string>
@@ -12,4 +12,4 @@ namespace RoverLib2
 #endif  // defined(__linux__)
 }  // namespace RoverLib2
 
-#endif  // ROVER_LIB2_HELPERS_IP_PINGING_HPP
+#endif  // IP_PINGING

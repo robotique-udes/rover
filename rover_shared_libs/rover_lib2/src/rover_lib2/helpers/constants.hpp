@@ -1,22 +1,23 @@
-#ifndef ROVER_LIB2_HELPERS_CONSTANTS_HPP
-#define ROVER_LIB2_HELPERS_CONSTANTS_HPP
+#ifndef CONSTANTS_HPP
+#define CONSTANTS_HPP
+
+#if defined(__linux__)
+#include <map>
+#include <string>
+#endif  // defined(__linux__)
 
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
 #include <rclcpp/qos.hpp>
-#include <rover_msgs/msg/joy.hpp>
-
-#elif defined(__linux__)
-#include <map>
-#include <string>
-
-#endif
-
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
 #define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
+#include <rover_msgs/msg/joy.hpp>
 #endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
 
 namespace Constants
 {
+    constexpr float PI_ = 3.14159265;
+    constexpr float TWO_PI_ = PI_ * 2.0F;
+    constexpr float HALF_PI_ = PI_ / 2.0F;
+
     namespace CameraInfo
     {
 #if defined(__linux__)
@@ -59,4 +60,4 @@ namespace Constants
     }   // namespace DriveTrain::KeyBinding
 }  // namespace Constants
 
-#endif  // ROVER_LIB2_HELPERS_CONSTANTS_HPP
+#endif  // CONSTANTS_HPP

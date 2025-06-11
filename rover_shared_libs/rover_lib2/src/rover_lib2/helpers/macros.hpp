@@ -1,7 +1,7 @@
-#ifndef ROVER_LIB2_HELPERS_MACROS_HPP
-#define ROVER_LIB2_HELPERS_MACROS_HPP
+#ifndef MACROS_HPP
+#define MACROS_HPP
 
-#include <numbers>
+#include <cmath>
 #include <type_traits>
 
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
@@ -26,6 +26,12 @@ constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 #define IN
 #define OUT
 #define INOUT
+
+// Necessary for following macros because VSCode's Microsoft CPP language server doesn't work with template and throws a bunch of
+// false positive errors
+#ifdef __INTELLISENSE__
+#pragma diag_suppress 1919  // Parameter pack expension
+#endif
 
 /**
  * @brief Checks if types derive from a base
@@ -79,22 +85,6 @@ constexpr T CONSTRAIN(T value_, T min_, T max_)
     {
         return value_;
     }
-}
-
-template<std::floating_point T>
-constexpr T CONSTRAIN_TO_CIRCLE(T value_)
-{
-    while (value_ >= static_cast<T>(2.0 * std::numbers::pi))
-    {
-        value_ -= static_cast<T>(2.0 * std::numbers::pi);
-    }
-
-    while (value_ < 0.0F)
-    {
-        value_ += static_cast<T>(2.0 * std::numbers::pi);
-    }
-
-    return value_;
 }
 
 /**
@@ -152,11 +142,9 @@ constexpr T ROUND_DOWN(T value_)
     return (value_ < 0) ? integerPart - static_cast<T>(1) : integerPart;
 }
 
-template<std::floating_point T>
-constexpr T MAP(T value_, T inMin_, T inMax_, T outMin_, T outMax_)
-{
-    return ((value_ - inMin_) * (outMax_ - outMin_) / (inMax_ - inMin_) + outMin_);
-}
+#define MAP(x, in_min, in_max, out_min, out_max)                                                                  \
+    (((float)(x) - (float)(in_min)) * ((float)(out_max) - (float)(out_min)) / ((float)(in_max) - (float)(in_min)) \
+     + (float)(out_min))
 
 #define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
 
@@ -164,15 +152,12 @@ constexpr T MAP(T value_, T inMin_, T inMax_, T outMin_, T outMax_)
 
 #define GET_WORSE_OF(A, B) (A == true && B == true)
 
+// Removes unused argument warning
+#define REMOVE_UNUSED(x) (void)(x)
+
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
 #define GET_PACKAGE_SOURCE_DIR(package_name) \
     (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
 #endif  // defined(_linux_) && defined(RCLCPP_DEBUG
 
-// Necessary for following macros because VSCode's Microsoft CPP language server doesn't work with template and throws a bunch of
-// false positive errors
-#ifdef __INTELLISENSE__
-#pragma diag_suppress 1919  // Parameter pack expension
-#endif
-
-#endif  // ROVER_LIB2_HELPERS_MACROS_HPP
+#endif  // MACROS_HPP

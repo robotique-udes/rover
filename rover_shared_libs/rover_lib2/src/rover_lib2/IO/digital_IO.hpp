@@ -1,19 +1,24 @@
-#ifndef DIGITAL_OUTPUT_HPP
-#define DIGITAL_OUTPUT_HPP
+#ifndef DIGITAL_IO_HPP
+#define DIGITAL_IO_HPP
 
-#include "rover_lib2/IO/digital_io.hpp"
-#include "rover_lib2/rover_object.hpp"
-#include "rover_lib2/helpers/log.hpp"
-#include "rover_lib2/helpers/assert.hpp"
+#include <rover_lib2/rover_object.hpp>
+#include <rover_lib2/helpers/log.hpp>
+#include <rover_lib2/helpers/assert.hpp>
 
 #if defined(ARDUINO_ESP32S3_DEV)
 #include "driver/gpio.h"
 #include "soc/gpio_struct.h"
 
-DEFINE_LOG_NODE(DigitalOutput, Logger::eNodeState::OFF);
+DEFINE_LOG_NODE(DigitalIO, Logger::eNodeState::ON);
 
 namespace IO
 {
+    enum class eIOState : uint32_t
+    {
+        LOW_ = 0U,
+        HIGH_ = 1U,
+    };
+
     class DigitalOutput
     {
         static constexpr gpio_num_t GPIO_DIRECT_ACCESS_MAX = static_cast<gpio_num_t>(31);
@@ -27,24 +32,15 @@ namespace IO
             _pin(pin_),
             _isDirectAccess(_pin <= GPIO_DIRECT_ACCESS_MAX)
         {
-            if (_pin != GPIO_NUM_NC)
-            {
-                gpio_reset_pin(pin_);
-                this->setMode(mode_);
-                this->setPullMode(pullMode_);
-                this->setPowerMode(powerMode_);
+            this->setMode(mode_);
+            this->setPullMode(pullMode_);
+            this->setPowerMode(powerMode_);
 
-                this->write(initialState_);
-            }
+            this->write(initialState_);
         }
 
         void write(eIOState state_)
         {
-            if (_pin == GPIO_NUM_NC)
-            {
-                return;
-            }
-
             switch (state_)
             {
                 case eIOState::HIGH_:
@@ -68,24 +64,17 @@ namespace IO
                     }
                     break;
                 default:
-                    ASSERT_COND_MSG_ARGS(false,
-                                         "Invalid argument | Tried to write gpio state: %u",
-                                         static_cast<uint32_t>(state_));
+                    ASSERT(false, "Invalid argument | Tried to write gpio state: %u", static_cast<uint32_t>(state_));
                     break;
             }
             return;
         }
 
-        eIOState read(void) const
+        eIOState read(void)
         {
-            if (_pin == GPIO_NUM_NC)
-            {
-                return eIOState::LOW_;
-            }
-
             if (_isDirectAccess)
             {
-                LOG_DEBUG(Logger::Nodes::DigitalOutput, "Pin state: %d", GPIO.out & (1 << _pin));
+                LOG_DEBUG(Logger::Nodes::DigitalIO, "Pin state: %d", GPIO.out & (1 << _pin));
                 bool pinHigh = static_cast<bool>(GPIO.out & (1 << _pin));
                 eIOState pinState = pinHigh ? eIOState::HIGH_ : eIOState::LOW_;
                 return pinState;
@@ -98,11 +87,6 @@ namespace IO
 
         void toggle(void)
         {
-            if (_pin == GPIO_NUM_NC)
-            {
-                return;
-            }
-
             if (_isDirectAccess)
             {
                 GPIO.out = GPIO.out ^ (1 << _pin);
@@ -115,34 +99,19 @@ namespace IO
 
         void setMode(gpio_mode_t mode_)
         {
-            if (_pin == GPIO_NUM_NC)
-            {
-                return;
-            }
-
-            ASSERT_COND_MSG(mode_ == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT || mode_ == gpio_mode_t::GPIO_MODE_INPUT_OUTPUT_OD
-                                || mode_ == gpio_mode_t::GPIO_MODE_OUTPUT || mode_ == gpio_mode_t::GPIO_MODE_OUTPUT_OD,
-                            "Wrong mode selected for DigitalIO, implementation error. Undefined behavior on IO");
+            ASSERT(mode_ != gpio_mode_t::GPIO_MODE_INPUT_OUTPUT || mode_ != gpio_mode_t::GPIO_MODE_INPUT_OUTPUT_OD
+                       || mode_ != gpio_mode_t::GPIO_MODE_OUTPUT || mode_ != gpio_mode_t::GPIO_MODE_OUTPUT_OD,
+                   "Wrong mode selected for DigitalIO, implementation error. Undefined behavior on IO");
             gpio_set_direction(_pin, mode_);
         }
 
         void setPullMode(gpio_pull_mode_t pullMode_)
         {
-            if (_pin == GPIO_NUM_NC)
-            {
-                return;
-            }
-
             gpio_set_pull_mode(_pin, pullMode_);
         }
 
         void setPowerMode(gpio_drive_cap_t powerMode_)
         {
-            if (_pin == GPIO_NUM_NC)
-            {
-                return;
-            }
-
             gpio_set_drive_capability(_pin, powerMode_);
         }
 
@@ -154,4 +123,4 @@ namespace IO
 
 #endif  // defined(ARDUINO_ESP32S3_DEV)
 
-#endif  // DIGITAL_OUTPUT_HPP
+#endif  // DIGITAL_IO_HPP

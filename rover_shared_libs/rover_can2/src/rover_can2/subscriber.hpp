@@ -1,5 +1,5 @@
-#ifndef ROVER_CAN2_SUBSCRIBER_HPP
-#define ROVER_CAN2_SUBSCRIBER_HPP
+#ifndef SUBSCRIBER_HPP
+#define SUBSCRIBER_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 
@@ -154,4 +154,4 @@ namespace RoverCan2
     SubscriberMember(CallerT&, void (CallerT::*)(const MsgT&)) -> SubscriberMember<MsgT, CallerT>;
 }  // namespace RoverCan2
 
-#endif  // ROVER_CAN2_SUBSCRIBER_HPP
+#endif  // SUBSCRIBER_HPP

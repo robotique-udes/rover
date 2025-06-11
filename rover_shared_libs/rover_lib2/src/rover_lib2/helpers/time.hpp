@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_TIME_HPP
-#define ROVER_LIB2_HELPERS_TIME_HPP
+#ifndef TIME_HPP
+#define TIME_HPP
 
 #if defined(__linux__)
 #include <cstdint>
@@ -21,4 +21,4 @@ namespace Time
 #endif  //  TIME_CPP
 #endif  // defined(ARDUINO_ESP32S3_DEV) || defined(TEST_NATIVE)
 
-#endif  // ROVER_LIB2_HELPERS_TIME_HPP
+#endif  // TIME_HPP

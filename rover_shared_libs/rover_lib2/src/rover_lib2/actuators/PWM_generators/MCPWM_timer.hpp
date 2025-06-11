@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_TIMER_HPP
-#define ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_TIMER_HPP
+#ifndef MCPWM_TIMER_HPP
+#define MCPWM_TIMER_HPP
 
 #include "rover_lib2/helpers/assert.hpp"
 #include "rover_lib2/helpers/macros.hpp"
@@ -130,8 +130,7 @@ namespace PWMGenerators
 
         uint32_t dutyToTickCtn(float duty_) const
         {
-            uint32_t activeTickCtn = static_cast<uint32_t>(std::round(static_cast<float>(_timerPeriodTick) * (duty_ / 100.0F)));
-            return CONSTRAIN(activeTickCtn, 0UL, _timerPeriodTick);
+            return static_cast<uint32_t>(std::round(static_cast<float>(_timerPeriodTick) * (duty_ / 100.0F)));
         }
 
         float tickCtnToDuty(uint32_t tickCtn_) const
@@ -250,4 +249,4 @@ namespace PWMGenerators
     };
 }  // namespace PWMGenerators
 
-#endif  // ROVER_LIB2_ACTUATORS_PWM_GENERATORS_MCPWM_TIMER_HPP
+#endif  // MCPWM_TIMER_HPP

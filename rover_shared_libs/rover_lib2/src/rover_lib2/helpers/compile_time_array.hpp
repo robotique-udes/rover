@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_COMPILE_TIME_ARRAY_HPP
-#define ROVER_LIB2_HELPERS_COMPILE_TIME_ARRAY_HPP
+#ifndef COMPILE_TIME_ARRAY
+#define COMPILE_TIME_ARRAY
 
 #include <array>
 #include <algorithm>
@@ -71,4 +71,4 @@ class CompileTimeArray
     std::array<DataT, NB_ELEM> _data;
 };
 
-#endif  // ROVER_LIB2_HELPERS_COMPILE_TIME_ARRAY_HPP
+#endif  // COMPILE_TIME_ARRAY

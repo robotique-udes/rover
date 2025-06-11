@@ -1,5 +1,5 @@
-#ifndef ROVER_CAN2_DEVICE_HPP
-#define ROVER_CAN2_DEVICE_HPP
+#ifndef CAN_DEVICE_HPP
+#define CAN_DEVICE_HPP
 
 #include "rover_can2/constant.hpp"
 #include "rover_can2/msgs/msg.hpp"
@@ -219,4 +219,4 @@ namespace RoverCan2
 
 }  // namespace RoverCan2
 
-#endif  // ROVER_CAN2_DEVICE_HPP
+#endif  // CAN_DEVICE_HPP

@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_COMMUNICATION_SPI_SPI_BUS_HPP
-#define ROVER_LIB2_COMMUNICATION_SPI_SPI_BUS_HPP
+#ifndef SPI_BUS_HPP
+#define SPI_BUS_HPP
 
 #include "rover_lib2/helpers/assert.hpp"
 #include "rover_lib2/helpers/macros.hpp"
@@ -27,7 +27,7 @@ class SPIBus
                              spi_host_device_t::SPI_HOST_MAX - 1U);
 
         ASSERT_COND_MSG_ARGS(maxTransferSize_ <= MAX_SPI_TRANSFER,
-                             "Unsupported transfer size specified, valid range is: [%u; %u]",
+                             "Wrong transfer size value passed, range is: [%u; %u]",
                              MIN_SPI_TRANSFER,
                              MAX_SPI_TRANSFER);
 
@@ -40,9 +40,9 @@ class SPIBus
                                    .data5_io_num = -1,
                                    .data6_io_num = -1,
                                    .data7_io_num = -1,
-                                   .max_transfer_sz = maxTransferSize_,
+                                   .max_transfer_sz = maxTransferSize_,  // Default in DMA mode
                                    .flags = SPICOMMON_BUSFLAG_MASTER,
-                                   .isr_cpu_id = esp_intr_cpu_affinity_t::ESP_INTR_CPU_AFFINITY_AUTO,
+                                   .isr_cpu_id = INTR_CPU_ID_AUTO,  ///< Select cpu core to register SPI ISR.
                                    .intr_flags = 0};
 
         esp_err_t retval = spi_bus_initialize(_spiHost, &config, SPI_DMA_CH_AUTO);
@@ -106,4 +106,4 @@ class SPIBus
     spi_host_device_t _spiHost;
 };
 
-#endif  // ROVER_LIB2_COMMUNICATION_SPI_SPI_BUS_HPP
+#endif  // SPI_BUS_HPP

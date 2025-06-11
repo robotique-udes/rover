@@ -1,5 +1,5 @@
-#ifndef ROVER_CAN2_CONSTANT_HPP
-#define ROVER_CAN2_CONSTANT_HPP
+#ifndef __CONSTANT_HPP__
+#define __CONSTANT_HPP__
 
 #include <cstdint>
 #include "rover_lib2/helpers/compile_time_array.hpp"
@@ -86,15 +86,14 @@ namespace RoverCan2::Constant
         
         ARM_SPEED_CMD,
         ARM_POSITION_STATUS,
-        ARM_JOINT_CONFIG,
+        ARM_JOINT_INFO,
         
         FIX_POSITION,
         FIX_HEADING,
         FIX_INFO,
         
-        PTZ_CMD,
-        PTZ_STATUS,
-        PTZ_CONFIG,
+        CAM_POSITION_CMD,
+        CAM_POSITION_STATUS,
 
         DDB_CMD,
         DDB_STATUS,
@@ -105,12 +104,22 @@ namespace RoverCan2::Constant
      * @brief Array holding all valid and implemented msgs used on the network.
      *
      */
-    constexpr CompileTimeArray<eMsgId, 19UL> SUPPORTED_MSGS = {
-        eMsgId::TEST_MSG,          eMsgId::TEST_MSG_2, eMsgId::ERROR_STATE, eMsgId::HEARTBEAT,    eMsgId::POWER_CMD,
-        eMsgId::POWER_STATUS,      eMsgId::PWM_CMD,    eMsgId::PWM_STATUS,  eMsgId::PWM_INFO,     eMsgId::PROP_SPEED_CMD,
-        eMsgId::PROP_SPEED_STATUS, eMsgId::DDB_CMD,    eMsgId::DDB_STATUS,  eMsgId::FIX_POSITION, eMsgId::FIX_HEADING,
-        eMsgId::FIX_INFO,          eMsgId::PTZ_CMD,    eMsgId::PTZ_STATUS,  eMsgId::PTZ_CONFIG,
-    };
+    constexpr CompileTimeArray<eMsgId, 16UL> SUPPORTED_MSGS = {eMsgId::TEST_MSG,
+                                                               eMsgId::TEST_MSG_2,
+                                                               eMsgId::ERROR_STATE,
+                                                               eMsgId::HEARTBEAT,
+                                                               eMsgId::POWER_CMD,
+                                                               eMsgId::POWER_STATUS,
+                                                               eMsgId::PWM_CMD,
+                                                               eMsgId::PWM_STATUS,
+                                                               eMsgId::PWM_INFO,
+                                                               eMsgId::PROP_SPEED_CMD,
+                                                               eMsgId::PROP_SPEED_STATUS,
+                                                               eMsgId::DDB_CMD,
+                                                               eMsgId::DDB_STATUS,
+                                                               eMsgId::FIX_POSITION,
+                                                               eMsgId::FIX_HEADING,
+                                                               eMsgId::FIX_INFO};
 
     /**
      * @brief
@@ -234,4 +243,4 @@ namespace RoverCan2::Constant
 
 }  // namespace RoverCan2::Constant
 
-#endif  // ROVER_CAN2_CONSTANT_HPP
+#endif  // __CONSTANT_HPP__

@@ -1,5 +1,5 @@
-#ifndef ROVER_LIB2_HELPERS_THREAD_SAFE_ACCESS_HPP
-#define ROVER_LIB2_HELPERS_THREAD_SAFE_ACCESS_HPP
+#ifndef THREAD_SAFE_ACCESS_HPP
+#define THREAD_SAFE_ACCESS_HPP
 
 #if defined(__linux__)
 
@@ -32,4 +32,4 @@ class ThreadSafeAccess
 
 #endif  // defined(__linux__)
 
-#endif  // ROVER_LIB2_HELPERS_THREAD_SAFE_ACCESS_HPP
+#endif  // THREAD_SAFE_ACCESS_HPP
