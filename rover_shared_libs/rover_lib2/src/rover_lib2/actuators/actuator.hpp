@@ -1,60 +1,65 @@
-#ifndef ACTUATOR_HPP
-#define ACTUATOR_HPP
+#ifndef ROVER_LIB2_ACTUATORS_ACTUATOR_HPP
+#define ROVER_LIB2_ACTUATORS_ACTUATOR_HPP
 
 #include <rover_lib2/rover_object.hpp>
 
-template<typename Impl_T>
-class Actuator : public RoverObject<Actuator<Impl_T>>
+#include <optional>
+
+namespace Actuators
 {
-  private:
-    friend Impl_T;
-    Actuator() = default;
-
-  public:
-    void _init(void)
+    template<typename Impl_T>
+    class Actuator : public RoverObject<Actuator<Impl_T>>
     {
-        static_cast<Impl_T*>(this)->__init();
-    }
+      private:
+        friend Impl_T;
+        Actuator() = default;
 
-    void _update(void)
-    {
-        static_cast<Impl_T*>(this)->__update();
-    }
+      public:
+        void _init(void)
+        {
+            static_cast<Impl_T*>(this)->__init();
+        }
 
-    void setPosition(float pos_)
-    {
-        static_cast<Impl_T*>(this)->_setPosition(pos_);
-    }
+        void _update(void)
+        {
+            static_cast<Impl_T*>(this)->__update();
+        }
 
-    float getPosition(void)
-    {
-        return static_cast<Impl_T*>(this)->_getPosition();
-    }
+        void setPosition(float pos_)
+        {
+            static_cast<Impl_T*>(this)->_setPosition(pos_);
+        }
 
-    void setSpeed(float speed_)
-    {
-        static_cast<Impl_T*>(this)->_setSpeed(speed_);
-    }
+        float getPosition(void)
+        {
+            return static_cast<Impl_T*>(this)->_getPosition();
+        }
 
-    float getSpeed(void)
-    {
-        return static_cast<Impl_T*>(this)->_getSpeed();
-    }
+        void setSpeed(float speed_)
+        {
+            static_cast<Impl_T*>(this)->_setSpeed(speed_);
+        }
 
-    void setMaxSpeed(float max_speed_)
-    {
-        static_cast<Impl_T*>(this)->_setMaxSpeed(max_speed_);
-    }
+        float getSpeed(void)
+        {
+            return static_cast<Impl_T*>(this)->_getSpeed();
+        }
 
-    void setJointLimit(float min_, float max_)
-    {
-        static_cast<Impl_T*>(this)->_setJointLimit(min_, max_);
-    }
+        void setMaxSpeed(float max_speed_)
+        {
+            static_cast<Impl_T*>(this)->_setMaxSpeed(max_speed_);
+        }
 
-    void setReversed(bool reversed_)
-    {
-        static_cast<Impl_T*>(this)->_setReversed(reversed_);
-    }
-};
+        /**
+         * @brief Sets the joint limits of the actuators, using std::nullopt will reset limits
+         *
+         */
+        void setJointLimit(std::optional<float> min_, std::optional<float> max_)
+        {
+            static_cast<Impl_T*>(this)->_setJointLimit(min_, max_);
+        }
+    };
 
-#endif  // ACTUATOR_HPP
+}  // namespace Actuators
+
+#endif  // ROVER_LIB2_ACTUATORS_ACTUATOR_HPP

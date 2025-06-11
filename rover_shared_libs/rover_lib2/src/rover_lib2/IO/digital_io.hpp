@@ -1,5 +1,5 @@
-#ifndef DIGITAL_IO_HPP
-#define DIGITAL_IO_HPP
+#ifndef ROVER_LIB2_IO_DIGITAL_IO_HPP
+#define ROVER_LIB2_IO_DIGITAL_IO_HPP
 
 #include <cstdint>
 
@@ -13,4 +13,4 @@ namespace IO
 
 }  // namespace IO
 
-#endif  // DIGITAL_IO_HPP
+#endif  // ROVER_LIB2_IO_DIGITAL_IO_HPP

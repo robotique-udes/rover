@@ -1,5 +1,5 @@
-#ifndef ARM_POSITION_STATUS_HPP
-#define ARM_POSITION_STATUS_HPP
+#ifndef ROVER_CAN2_MSGS_ARM_POSITION_STATUS_HPP
+#define ROVER_CAN2_MSGS_ARM_POSITION_STATUS_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
@@ -95,4 +95,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // ARM_INFO_HPP
+#endif  // ROVER_CAN2_MSGS_ARM_POSITION_STATUS_HPP
