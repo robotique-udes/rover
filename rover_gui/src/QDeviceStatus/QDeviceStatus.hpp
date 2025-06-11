@@ -1,5 +1,5 @@
-#ifndef __QDEVICESTATUS_HPP__
-#define __QDEVICESTATUS_HPP__
+#ifndef QDEVICESTATUS_HPP
+#define QDEVICESTATUS_HPP
 
 // ROS
 #include <rclcpp/rclcpp.hpp>
@@ -47,11 +47,10 @@ class QDeviceStatus : public QWidget
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
     rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client_requestErrorStatus;
 
-    std::unordered_map<RoverCan2::Constant::eDeviceId, int16_t> _deviceMessageCount;
-    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceReboots;
-    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _oldDeviceReboots;
-    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceRebootsFromButton;
-
+    std::unordered_map<uint16_t, int16_t> _deviceMessageCount;
+    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceReboots;
+    std::unordered_map<uint16_t, uint16_t> _oldDeviceReboots;
+    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceRebootsFromButton;
     std::unordered_map<uint16_t, QWidget*> _deviceInfo;
     std::unordered_map<uint16_t, QLabel*> _deviceReboot;
 

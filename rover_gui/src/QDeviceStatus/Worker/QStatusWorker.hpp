@@ -1,5 +1,5 @@
-#ifndef __QSTATUS_WORKER_HPP__
-#define __QSTATUS_WORKER_HPP__
+#ifndef QSTATUS_WORKER_HPP
+#define QSTATUS_WORKER_HPP
 
 #include <Global/Workers/QWorker.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -12,7 +12,6 @@ class QStatusWorker : public QWorker
 
   public:
     QStatusWorker(bool start_ = false, QObject* parent_ = nullptr);
-    ~QStatusWorker();
 
     void requestDeviceStatusManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_);
     void requestDeviceStatusInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_);
