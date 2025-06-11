@@ -1,5 +1,5 @@
-#ifndef MANAGER_MASTER_HPP
-#define MANAGER_MASTER_HPP
+#ifndef ROVER_CAN2_MANAGER_MANAGER_MASTER_HPP
+#define ROVER_CAN2_MANAGER_MANAGER_MASTER_HPP
 
 #include "rover_can2/constant.hpp"
 #include "rover_can2/device.hpp"
@@ -82,4 +82,4 @@ namespace RoverCan2
         -> ManagerMaster<DriverT, DevicesT...>;
 }  // namespace RoverCan2
 
-#endif  // MANAGER_MASTER_HPP
+#endif  // ROVER_CAN2_MANAGER_MANAGER_MASTER_HPP

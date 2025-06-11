@@ -1,5 +1,5 @@
-#ifndef LOG_HPP
-#define LOG_HPP
+#ifndef ROVER_LIB2_HELPERS_LOG_HPP
+#define ROVER_LIB2_HELPERS_LOG_HPP
 
 // Always activate Logger in ROS
 #if defined(__linux__) && defined(RCLCPP_DEBUG)
@@ -17,11 +17,7 @@
 #define NODE_BYPASS_SEVERITY_LEVEL Logger::eSeverityLevels::ERROR
 #endif
 
-#if defined(ARDUINO_ESP32S3_DEV)
-#include <Stream.h>
-#include <Arduino.h>
-
-#elif defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(__linux__) && defined(RCLCPP_DEBUG)
 #include <rclcpp/logger.hpp>
 #include <rclcpp/logging.hpp>
 #include <rcutils/logging_macros.h>
@@ -214,4 +210,4 @@ DEFINE_LOG_NODE(Debug, Logger::eNodeState::ON);
 
 #endif  // defined(VERBOSE)
 
-#endif  // LOG_HPP
+#endif  // ROVER_LIB2_HELPERS_LOG_HPP

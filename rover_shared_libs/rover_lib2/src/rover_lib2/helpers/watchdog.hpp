@@ -1,5 +1,5 @@
-#ifndef WATCHDOG_HPP
-#define WATCHDOG_HPP
+#ifndef ROVER_LIB2_HELPERS_WATCHDOG_HPP
+#define ROVER_LIB2_HELPERS_WATCHDOG_HPP
 
 #include "chrono.hpp"
 
@@ -28,4 +28,4 @@ class Watchdog
     const ClockFuncReturnT _interval;
 };
 
-#endif  // WATCHDOG_HPP
+#endif  // ROVER_LIB2_HELPERS_WATCHDOG_HPP

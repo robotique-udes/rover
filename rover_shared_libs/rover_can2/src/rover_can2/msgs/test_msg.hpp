@@ -1,5 +1,5 @@
-#ifndef TEST_MSG_HPP
-#define TEST_MSG_HPP
+#ifndef ROVER_CAN2_MSGS_TEST_MSG_HPP
+#define ROVER_CAN2_MSGS_TEST_MSG_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
@@ -143,4 +143,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // TEST_MSG_HPP
+#endif  // ROVER_CAN2_MSGS_TEST_MSG_HPP

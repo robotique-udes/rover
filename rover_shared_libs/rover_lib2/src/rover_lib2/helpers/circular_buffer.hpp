@@ -1,5 +1,5 @@
-#ifndef CIRCULAR_BUFFER_HPP
-#define CIRCULAR_BUFFER_HPP
+#ifndef ROVER_LIB2_HELPERS_CIRCULAR_BUFFER_HPP
+#define ROVER_LIB2_HELPERS_CIRCULAR_BUFFER_HPP
 
 #include <array>
 #include <cstddef>
@@ -118,4 +118,4 @@ class CircularBuffer : public CircularBufferT
     std::size_t _size = 0UL;
 };
 
-#endif  // CIRCULAR_BUFFER_HPP
+#endif  // ROVER_LIB2_HELPERS_CIRCULAR_BUFFER_HPP

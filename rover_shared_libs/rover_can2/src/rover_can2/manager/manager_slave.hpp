@@ -1,5 +1,5 @@
-#ifndef MANAGER_SLAVE_HPP
-#define MANAGER_SLAVE_HPP
+#ifndef ROVER_CAN2_MANAGER_MANAGER_SLAVE_HPP
+#define ROVER_CAN2_MANAGER_MANAGER_SLAVE_HPP
 
 #include "rover_can2/msgs/error_state.hpp"
 
@@ -87,4 +87,4 @@ namespace RoverCan2
 
 }  // namespace RoverCan2
 
-#endif  // MANAGER_SLAVE_HPP
+#endif  // ROVER_CAN2_MANAGER_MANAGER_SLAVE_HPP

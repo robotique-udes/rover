@@ -1,5 +1,5 @@
-#ifndef FIX_POSITION_HPP
-#define FIX_POSITION_HPP
+#ifndef ROVER_CAN2_MSGS_FIX_POSITION_HPP
+#define ROVER_CAN2_MSGS_FIX_POSITION_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
@@ -143,4 +143,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // FIX_POSITION_HPP
+#endif  // ROVER_CAN2_MSGS_FIX_POSITION_HPP
