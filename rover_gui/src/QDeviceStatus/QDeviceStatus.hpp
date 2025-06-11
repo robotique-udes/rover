@@ -2,12 +2,12 @@
 #define __QDEVICESTATUS_HPP__
 
 // ROS
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/can_device_status.hpp"
-#include "rover_msgs/srv/empty.hpp"
-#include "rover_can2/constant.hpp"
-#include "rover_lib2/helpers/macros.hpp"
-#include "rover_lib2/helpers/constants.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/can_device_status.hpp>
+#include <rover_msgs/srv/empty.hpp>
+#include <rover_can2/constant.hpp>
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 // QT
 #include <QtWidgets/QGridLayout>
@@ -32,11 +32,11 @@ class QDeviceStatus : public QWidget
     void setStatusReport(uint16_t id_);
     void updateRebootCounter(uint16_t deviceID_);
     void setDefaultStyle();
-    const std::string getDeviceName(uint16_t deviceID_);
+    std::string getDeviceName(uint16_t deviceID_);
 
   private slots:
 
-    void onRequestDeviceStatusSuccessful(bool success_, const std::string response_);
+    void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;
@@ -47,17 +47,17 @@ class QDeviceStatus : public QWidget
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
     rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client_requestErrorStatus;
 
-    std::unordered_map<uint16_t, int16_t> _deviceMessageCount;
-    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceReboots;
-    std::unordered_map<uint16_t, uint16_t> _oldDeviceReboots;
-    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceRebootsFromButton;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, int16_t> _deviceMessageCount;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceReboots;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _oldDeviceReboots;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceRebootsFromButton;
 
-    QMap<uint16_t, QWidget*> _deviceInfo;
-    QMap<uint16_t, QLabel*> _deviceReboot;
+    std::unordered_map<uint16_t, QWidget*> _deviceInfo;
+    std::unordered_map<uint16_t, QLabel*> _deviceReboot;
 
     uint16_t _numberOfCalls = 0U;
 
-    std::shared_ptr<QStatusWorker> _QStatusWorker;
+    QStatusWorker _QStatusWorker;
 };
 
 #endif  // __QDEVICESTATUS_HPP__

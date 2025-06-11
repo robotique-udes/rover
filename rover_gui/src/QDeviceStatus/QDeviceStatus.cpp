@@ -30,11 +30,15 @@ constexpr const char* STATUS_ERROR = "QWidget {"
 
 QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_)
+    _node(guiNode_),
+    _QStatusWorker(true, this)
 {
-    _ui.setupUi(this);
+    if (!_node)
+    {
+        throw std::invalid_argument("QDeviceStatus requires a valid ROS node");
+    }
 
-    _QStatusWorker = std::make_shared<QStatusWorker>(true, this);
+    _ui.setupUi(this);
 
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR)] = _ui.frontleftMotor;
     _deviceInfo[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR)] = _ui.frontrightMotor;
@@ -60,19 +64,19 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH0)] = _ui.switchETH0Info;
     // _deviceReboot[TO_UNDERLYING(RoverCan2::Constant::eDeviceId::SWITCHETH1)] = _ui.switchETH1Info;
 
-    _sub_deviceStatus = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>(
-        "/rover/can/devices_status",
-        QOS_DEFAULT,
-        [this](const rover_msgs::msg::CanDeviceStatus::SharedPtr msg)
-        {
-            QMetaObject::invokeMethod(
-                this,
-                [this, msg]()
-                {
-                    this->callbackDeviceInfos(*msg);
-                },
-                Qt::QueuedConnection);
-        });
+    _sub_deviceStatus
+        = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>("/rover/can/devices_status",
+                                                                       QOS_DEFAULT,
+                                                                       [this](const rover_msgs::msg::CanDeviceStatus& msg)
+                                                                       {
+                                                                           QMetaObject::invokeMethod(
+                                                                               this,
+                                                                               [this, msg]()
+                                                                               {
+                                                                                   this->callbackDeviceInfos(msg);
+                                                                               },
+                                                                               Qt::QueuedConnection);
+                                                                       });
 
     _client_requestErrorStatus = _node->create_client<rover_msgs::srv::Empty>("/rover/can/request_error_state");
     this->updateDeviceInfo();
@@ -86,7 +90,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
                 this->updateDeviceInfo();
             });
 
-    connect(_QStatusWorker.get(),
+    connect(&_QStatusWorker,
             &QStatusWorker::onRequestDeviceStatusSuccessful,
             this,
             &QDeviceStatus::onRequestDeviceStatusSuccessful);
@@ -99,7 +103,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
  */
 void QDeviceStatus::updateDeviceInfo()
 {
-    _QStatusWorker->requestDeviceStatusManager(_client_requestErrorStatus);
+    _QStatusWorker.requestDeviceStatusManager(_client_requestErrorStatus);
 }
 
 /**
@@ -108,7 +112,7 @@ void QDeviceStatus::updateDeviceInfo()
  * @param success_
  * @param response_
  */
-void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::string response_)
+void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::string& response_)
 {
     if (success_)
     {
@@ -146,13 +150,16 @@ void QDeviceStatus::updateRebootCounter(uint16_t deviceID_)
     {
         return;
     }
+    uint16_t& deviceReboots = _numberOfDeviceReboots[deviceID_];
+    uint16_t& oldDeviceReboots = _oldDeviceReboots[deviceID_];
+    uint16_t& deviceRebootsFromButton = _numberOfDeviceRebootsFromButton[deviceID_];
+    int16_t& deviceMessageCount = _deviceMessageCount[deviceID_];
 
-    _numberOfDeviceReboots[deviceID_]
-        = _numberOfDeviceRebootsFromButton[deviceID_] + _numberOfCalls - _deviceMessageCount[deviceID_];
+    deviceReboots = deviceRebootsFromButton + _numberOfCalls - deviceMessageCount;
 
-    if (_numberOfDeviceReboots[deviceID_] != _oldDeviceReboots[deviceID_])
+    if (deviceReboots != oldDeviceReboots)
     {
-        _oldDeviceReboots[deviceID_] = _numberOfDeviceReboots[deviceID_];
+        oldDeviceReboots = deviceReboots;
         RCLCPP_INFO(rclcpp::get_logger("GUI"), "Device %d has rebooted since last call", deviceID_);
     }
 }
@@ -169,7 +176,7 @@ void QDeviceStatus::setStatusReport(uint16_t deviceID_)
         return;
     }
 
-    auto label = _deviceReboot[deviceID_];
+    QLabel* label = _deviceReboot[deviceID_];
 
     std::string deviceName = this->getDeviceName(deviceID_);
 
@@ -217,13 +224,13 @@ void QDeviceStatus::updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg:
  */
 void QDeviceStatus::setDefaultStyle()
 {
-    for (auto it = _deviceInfo.begin(); it != _deviceInfo.end(); ++it)
+    for (auto& it : _deviceInfo)
     {
-        it.value()->setStyleSheet(STATUS_DEFAULT);
+        it.second->setStyleSheet(STATUS_DEFAULT);
     }
 }
 
-const std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
+std::string QDeviceStatus::getDeviceName(uint16_t deviceID_)
 {
     switch (deviceID_)
     {
