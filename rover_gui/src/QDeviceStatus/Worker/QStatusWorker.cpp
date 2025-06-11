@@ -5,11 +5,6 @@ QStatusWorker::QStatusWorker(bool start_, QObject* parent_):
 {
 }
 
-QStatusWorker::~QStatusWorker()
-{
-    this->finish();
-}
-
 void QStatusWorker::requestDeviceStatusManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_)
 {
     this->addTask(

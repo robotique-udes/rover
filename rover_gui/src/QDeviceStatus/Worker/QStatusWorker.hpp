@@ -1,10 +1,10 @@
 #ifndef __QSTATUS_WORKER_HPP__
 #define __QSTATUS_WORKER_HPP__
 
-#include "Global/Workers/QWorker.hpp"
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/srv/empty.hpp"
-#include "rover_lib2/helpers/macros.hpp"
+#include <Global/Workers/QWorker.hpp>
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/srv/empty.hpp>
+#include <rover_lib2/helpers/macros.hpp>
 
 class QStatusWorker : public QWorker
 {
@@ -18,7 +18,7 @@ class QStatusWorker : public QWorker
     void requestDeviceStatusInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_);
 
   signals:
-    void onRequestDeviceStatusSuccessful(bool success_, const std::string response_);
+    void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);
 };
 
 #endif  // __QSTATUS_WORKER_HPP__
