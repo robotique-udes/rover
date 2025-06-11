@@ -1,5 +1,5 @@
-#ifndef LED_BLINKER_HPP
-#define LED_BLINKER_HPP
+#ifndef ROVER_LIB2_LED_LED_BLINKER_HPP
+#define ROVER_LIB2_LED_LED_BLINKER_HPP
 
 #include "rover_lib2/LED/blink_pattern.hpp"
 
@@ -176,4 +176,4 @@ namespace LED
     };
 }  // namespace LED
 
-#endif  // LED_BLINKER_HPP
+#endif  // ROVER_LIB2_LED_LED_BLINKER_HPP
