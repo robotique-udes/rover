@@ -1,5 +1,5 @@
-#ifndef ENCODER_HPP
-#define ENCODER_HPP
+#ifndef ROVER_LIB2_SENSORS_ENCODER_ENCODER_HPP
+#define ROVER_LIB2_SENSORS_ENCODER_ENCODER_HPP
 
 #include <rover_lib2/rover_object.hpp>
 
@@ -47,4 +47,4 @@ class Encoder : public RoverObject<Encoder<Impl_T>>
     }
 };
 
-#endif  // ENCODER_HPP
+#endif  // ROVER_LIB2_SENSORS_ENCODER_ENCODER_HPP

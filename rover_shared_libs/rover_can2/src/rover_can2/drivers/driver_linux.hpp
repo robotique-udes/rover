@@ -1,5 +1,5 @@
-#ifndef DRIVER_LINUX_HPP
-#define DRIVER_LINUX_HPP
+#ifndef ROVER_CAN2_DRIVERS_DRIVER_LINUX_HPP
+#define ROVER_CAN2_DRIVERS_DRIVER_LINUX_HPP
 
 #include "rover_can2/can_msg.hpp"
 #include "rover_can2/constant.hpp"
@@ -395,4 +395,4 @@ namespace RoverCan2::Drivers
     };
 }  // namespace RoverCan2::Drivers
 
-#endif  // DRIVER_LINUX_HPP
+#endif  // ROVER_CAN2_DRIVERS_DRIVER_LINUX_HPP

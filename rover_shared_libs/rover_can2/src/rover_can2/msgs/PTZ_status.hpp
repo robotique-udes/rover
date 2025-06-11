@@ -1,39 +1,42 @@
-#ifndef ROVER_CAN2_MSGS_FIX_INFO_HPP
-#define ROVER_CAN2_MSGS_FIX_INFO_HPP
+#ifndef ROVER_CAN2_MSGS_PTZ_STATUS_HPP
+#define ROVER_CAN2_MSGS_PTZ_STATUS_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
 
-DEFINE_LOG_NODE(FixInfo_msg, Logger::eNodeState::OFF)
+DEFINE_LOG_NODE(PtzStatus_msg, Logger::eNodeState::OFF)
 
 namespace RoverCan2::Msgs
 {
-    class FixInfo : public Msg<FixInfo>
+    class PtzStatus : public Msg<PtzStatus>
     {
       public:
         enum class eMsgContentID : uint8_t
         {
-            FIX_QUALITY,
-            SATELLITE_COUNT,
+            PAN,
+            TILT,
+            ZOOM,
             eLAST,
         };
 
       private:
         struct sMsgData
         {
-            uint8_t fixQuality;
-            uint8_t satelliteCount;
+            float pan;
+            float tilt;
+            float zoom;
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
-            = {eMsgContentID::FIX_QUALITY, eMsgContentID::SATELLITE_COUNT};
+            = {eMsgContentID::PAN, eMsgContentID::TILT, eMsgContentID::ZOOM};
 
       public:
-        FixInfo():
-            Msg(Constant::eMsgId::FIX_INFO)
+        PtzStatus():
+            Msg(Constant::eMsgId::PTZ_STATUS)
         {
-            _data.fixQuality = static_cast<decltype(_data.fixQuality)>(0);
-            _data.satelliteCount = static_cast<decltype(_data.satelliteCount)>(0);
+            _data.pan = static_cast<decltype(_data.pan)>(0);
+            _data.tilt = static_cast<decltype(_data.tilt)>(0);
+            _data.zoom = static_cast<decltype(_data.zoom)>(0);
         }
 
         eLoadMsgCode _loadMsg(const CanMsg& msg_)
@@ -51,7 +54,7 @@ namespace RoverCan2::Msgs
             eMsgContentID msgContentId = static_cast<eMsgContentID>(msg_.getMsgContentID());
             if (!VALID_MSG_IDS.contains(msgContentId))
             {
-                LOG_DEBUG(Logger::Nodes::FixInfo_msg,
+                LOG_DEBUG(Logger::Nodes::PtzStatus_msg,
                           "Mismatch between received message and local message definition. Received msgContentId: (%u), "
                           "expected lower than (%u) and none zero",
                           TO_UNDERLYING(msgContentId),
@@ -62,17 +65,24 @@ namespace RoverCan2::Msgs
             bool success = false;
             switch (msgContentId)
             {
-                case eMsgContentID::FIX_QUALITY:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.fixQuality);
-                    LOG_DEBUG(Logger::Nodes::FixInfo_msg,
-                              "switch (msgContentId) case eMsgContentID::FIX_QUALITY: %s",
+                case eMsgContentID::PAN:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.pan);
+                    LOG_DEBUG(Logger::Nodes::PtzStatus_msg,
+                              "switch (msgContentId) case eMsgContentID::PAN: %s",
                               success ? "success" : "failed");
                     break;
 
-                case eMsgContentID::SATELLITE_COUNT:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.satelliteCount);
-                    LOG_DEBUG(Logger::Nodes::FixInfo_msg,
-                              "switch (msgContentId) case eMsgContentID::SATELLITE_COUNT: %s",
+                case eMsgContentID::TILT:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.tilt);
+                    LOG_DEBUG(Logger::Nodes::PtzStatus_msg,
+                              "switch (msgContentId) case eMsgContentID::TILT: %s",
+                              success ? "success" : "failed");
+                    break;
+
+                case eMsgContentID::ZOOM:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.zoom);
+                    LOG_DEBUG(Logger::Nodes::PtzStatus_msg,
+                              "switch (msgContentId) case eMsgContentID::ZOOM: %s",
                               success ? "success" : "failed");
                     break;
 
@@ -107,12 +117,16 @@ namespace RoverCan2::Msgs
             CanMsg msg_;
             switch (static_cast<eMsgContentID>(msgContentId_))
             {
-                case eMsgContentID::FIX_QUALITY:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.fixQuality, msg_);
+                case eMsgContentID::PAN:
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.pan, msg_);
                     break;
 
-                case eMsgContentID::SATELLITE_COUNT:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.satelliteCount, msg_);
+                case eMsgContentID::TILT:
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.tilt, msg_);
+                    break;
+
+                case eMsgContentID::ZOOM:
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.zoom, msg_);
                     break;
 
                 case eMsgContentID::eLAST:
@@ -143,4 +157,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // ROVER_CAN2_MSGS_FIX_INFO_HPP
+#endif  // ROVER_CAN2_MSGS_PTZ_STATUS_HPP

@@ -123,10 +123,8 @@ void Arbitration::cbTimerSendStatus()
     _pubArbitrationStatus->publish(_arbitration);
 }
 
-void Arbitration::cbHB(const std_msgs::msg::Empty msg_, bool* _HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer)
+void Arbitration::cbHB(const std_msgs::msg::Empty /*msg_*/, bool* _HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer)
 {
-    REMOVE_UNUSED(msg_);
-
     *_HBLostVar = false;
     _HBWatchdogTimer->reset();
 }
