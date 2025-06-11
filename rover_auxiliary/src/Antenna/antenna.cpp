@@ -54,9 +54,7 @@ AntennaNode::AntennaNode():
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                          [this]()
                                          {
-                                             rover_msgs::msg::AntennaStatus msg;
-                                             // insert function
-                                             _pub_antenna_status->publish(msg);
+                                             CB_antenna_publisher();
                                          });
 }
 
@@ -108,6 +106,9 @@ sGetResponse AntennaNode::getHTTPS(const std::string& url_, bool verify_ssl_, st
     // Set the callback function to handle the response
     curl_easy_setopt(curl_handle, CURLOPT_WRITEFUNCTION, WriteCallback);
     curl_easy_setopt(curl_handle, CURLOPT_WRITEDATA, &readBuffer);
+
+    curl_easy_setopt(curl_handle, CURLOPT_FOLLOWLOCATION, 1L);
+
 
     // Set a timeout (in seconds)
     curl_easy_setopt(curl_handle, CURLOPT_TIMEOUT, 10L);
@@ -201,23 +202,24 @@ std::string AntennaNode::login(const std::string& url)
 }
 
 void AntennaNode::CB_antenna_publisher(void)
-{
+{ 
     rover_msgs::msg::AntennaStatus msg;
-    if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("BASE") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
+    if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
     {
         msg.success = false;
         msg.status = "Couldn't find the Base antenna URL in the URL map";
         _pub_antenna_status->publish(msg);
+        RCLCPP_ERROR(this->get_logger(), "HERE");
         return;
     }
 
     if (_roverAntennaCookie.empty())
     {
-        _roverAntennaCookie = login(Constants::AntennaInfo::ANTENNA_URL_MAP.at("BASE") + "/login.cgi");
+        _roverAntennaCookie = login(Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/login.cgi");
+        RCLCPP_INFO(this->get_logger(), "Cookie is now %s", _roverAntennaCookie.c_str());
     }
-
     sGetResponse getResponse
-        = this->getHTTPS(Constants::AntennaInfo::ANTENNA_URL_MAP.at("BASE") + "/status.cgi", false, _roverAntennaCookie);
+        = this->getHTTPS(Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/status.cgi", false, _roverAntennaCookie);
     msg.success = getResponse.success;
     msg.status = getResponse.error_message;
     msg.http_code = getResponse.http_code;
