@@ -1,5 +1,5 @@
-#ifndef LOOP_TIMER
-#define LOOP_TIMER
+#ifndef ROVER_LIB2_HELPERS_LOOP_TIMER_HPP
+#define ROVER_LIB2_HELPERS_LOOP_TIMER_HPP
 
 #include "rover_lib2/helpers/chrono.hpp"
 #include "rover_lib2/helpers/log.hpp"
@@ -77,4 +77,4 @@ class LoopTimer
     bool _overrunFalsePositiveLatch;
 };
 
-#endif  // LOOP_TIMER
+#endif  // ROVER_LIB2_HELPERS_LOOP_TIMER_HPP

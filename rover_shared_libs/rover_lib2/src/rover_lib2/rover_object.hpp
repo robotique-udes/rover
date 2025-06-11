@@ -1,5 +1,5 @@
-#ifndef ROVER_OBJECT_HPP
-#define ROVER_OBJECT_HPP
+#ifndef ROVER_LIB2_ROVER_OBJECT_HPP
+#define ROVER_LIB2_ROVER_OBJECT_HPP
 
 template<typename Impl_T>
 class RoverObject
@@ -20,4 +20,4 @@ class RoverObject
     }
 };
 
-#endif  // ROVER_OBJECT_T_HPP
+#endif  // ROVER_LIB2_ROVER_OBJECT_HPP

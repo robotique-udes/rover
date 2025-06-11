@@ -1,5 +1,5 @@
-#ifndef PUBLISHER_HPP
-#define PUBLISHER_HPP
+#ifndef ROVER_CAN2_PUBLISHER_HPP
+#define ROVER_CAN2_PUBLISHER_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_lib2/helpers/circular_buffer.hpp"
@@ -87,4 +87,4 @@ namespace RoverCan2
         CircularBuffer<MsgT, MSG_QUEUE_SIZE> _msgToSendBuffer;
     };
 }  // namespace RoverCan2
-#endif  // PUBLISHER_HPP
+#endif  // ROVER_CAN2_PUBLISHER_HPP

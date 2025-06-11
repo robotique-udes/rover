@@ -1,5 +1,5 @@
-#ifndef ROVER_CAN_HPP
-#define ROVER_CAN_HPP
+#ifndef ROVER_CAN2_ROVER_CAN2_HPP
+#define ROVER_CAN2_ROVER_CAN2_HPP
 
 #include <rover_can2/manager/manager_slave.hpp>
 #include <rover_can2/manager/manager_master.hpp>
@@ -12,4 +12,4 @@
 
 #include <rover_can2/drivers/driver_mock.hpp>
 
-#endif  // ROVER_CAN_HPP
+#endif  // ROVER_CAN2_ROVER_CAN2_HPP

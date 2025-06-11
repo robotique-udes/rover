@@ -1,5 +1,5 @@
-#ifndef BLINKING_PATTERN_HPP
-#define BLINKING_PATTERN_HPP
+#ifndef ROVER_LIB2_LED_BLINK_PATTERN_HPP
+#define ROVER_LIB2_LED_BLINK_PATTERN_HPP
 
 #include <cstdint>
 #include <limits>
@@ -49,4 +49,4 @@ namespace LED
     };  // namespace BlinkPatterns
 }  // namespace LED
 
-#endif  // BLINKING_PATTERN_HPP
+#endif  // ROVER_LIB2_LED_BLINK_PATTERN_HPP
