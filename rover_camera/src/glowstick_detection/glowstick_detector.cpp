@@ -1,37 +1,42 @@
 #include "glowstick_detector.hpp"
 
-GlowsitckDetector::GlowsitckDetector()
+GlowstickDetector::GlowstickDetector()
 {}
 
-bool GlowsitckDetector::detectGlowstick(const cv::Mat& frame)
+bool GlowstickDetector::detectGlowstick(const cv::Mat& frame)
 {
-    cv::Mat grey, binary;
-    std::vector<std::vector<cv::Point>> contours;
+    filterFrame(frame);
 
-    cv::cvtColor(frame, grey, cv::COLOR_BGR2GRAY);
-    cv::threshold(grey, binary, brightThreshold, 255, cv::CHAIN_APPROX_SIMPLE);
-    cv::findContours(binary, contours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+    redContours.clear();
+    cv::findContours(redMask, redContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
-    for (uint16_t i=0;i<contours.size();i++)
-    {
-        const std::vector<cv::Point>& contour = contours[i];
-        if (cv::contourArea(contour) > minArea)
-        {
-            cv::Moments m = cv::moments(contour);
-            gsPosition.push_back(cv::Point(m.m10/m.m00, m.m01/m.m00));
-        }
-    }
+    blueContours.clear();
+    cv::findContours(blueMask, blueContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
+
+    whiteContours.clear();
+    cv::findContours(whiteMask, whiteContours, cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
 
     return true;
-
 }
 
-uint16_t GlowsitckDetector::getSize()
+bool GlowstickDetector::filterFrame(const cv::Mat& frame)
 {
-    return gsPosition.size();
-}
+    cv::Mat hsv;
+    cv::Mat red1, red2;
 
-std::vector<cv::Point> GlowsitckDetector::getPosition()
-{
-    return gsPosition;
+    cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+
+    cv::inRange(hsv, lowerWhite, upperWhite, whiteMask);
+    cv::inRange(hsv, lowerBlue, upperBlue, blueMask);
+    cv::inRange(hsv, lowerRed1, upperRed1, red1);
+    cv::inRange(hsv, lowerRed2, upperRed2, red2);
+    
+    cv::bitwise_or(red1, red2, redMask);
+
+    cv::GaussianBlur(redMask, redMask, cv::Size(5,5), 0);
+    cv::GaussianBlur(whiteMask, whiteMask, cv::Size(5,5), 0);
+    cv::GaussianBlur(blueMask, blueMask, cv::Size(5,5), 0);
+    
+
+    return true;
 }
