@@ -10,7 +10,6 @@ find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED) 
 find_package(rover_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
-find_package(CURL REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
 add_subdirectory(../rover_shared_libs/ .build)
