@@ -34,7 +34,7 @@ void AntennaNode::CB_antenna_publisher(void)
         msg.success = false;
         msg.status = "Couldn't find the Base antenna URL in the URL map";
         _pub_antenna_status->publish(msg);
-        RCLCPP_ERROR(this->get_logger(), "HERE");
+        RCLCPP_ERROR(this->get_logger(), "HERE HERE");
         return;
     }
 
