@@ -45,7 +45,8 @@ void AntennaNode::CB_antenna_publisher(void)
     session.SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/status.cgi"});
 
     // Set timeout for connection establishment (5 seconds)
-    session.SetConnectTimeout(cpr::Timeout{5000});
+
+    session.SetConnectTimeout(cpr::ConnectTimeout{5000});
 
     // Set timeout for the entire request (10 seconds)
     session.SetTimeout(cpr::Timeout{10000});
@@ -64,7 +65,7 @@ void AntennaNode::CB_antenna_publisher(void)
     session.SetAuth(cpr::Authentication(username, password, cpr::AuthMode::BASIC));
 
     session.SetDebugCallback(cpr::DebugCallback(
-        [this](cpr::DebugCallback::InfoType type, std::string data)
+        [this](cpr::DebugCallback::InfoType type, std::string data, intptr_t /*userdata*/)
         {
             switch (type)
             {
@@ -95,7 +96,7 @@ void AntennaNode::CB_antenna_publisher(void)
     cpr::Response response = session.Get();
 
     // Print the status code
-    msg.status = response.error;
+    msg.status = response.error.message;
     msg.raw_json = response.text;
     msg.http_code = response.status_code;
 
