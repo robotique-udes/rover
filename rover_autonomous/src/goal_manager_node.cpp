@@ -103,6 +103,7 @@ void GoalManager::driveTrainPublisher(void)
     switch (_state)
     {
         case (eState::IDLE):
+            RCLCPP_INFO(this->get_logger(), "IDLE");
             if (!goalRequested)
             {
                 this->_targetWheelCmd = _navigationController.idleCmd();
@@ -113,6 +114,7 @@ void GoalManager::driveTrainPublisher(void)
             }
             break;
         case (eState::ROTATING):
+            RCLCPP_INFO(this->get_logger(), "ROTATING");
             if (!_navigationController._desiredHeadingReached)
             {
                 this->_targetWheelCmd = _navigationController.getToHeading();
@@ -124,6 +126,7 @@ void GoalManager::driveTrainPublisher(void)
             break;
         case (eState::NAVIGATING_TO_POINT):
         {
+            RCLCPP_INFO(this->get_logger(), "HEADING REACHED");
         }
     }
 

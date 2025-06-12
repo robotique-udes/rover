@@ -16,8 +16,8 @@ class GpsPublisher : public rclcpp::Node
     void publish_gps()
     {
         auto msg = rover_msgs::msg::Gps();
-        msg.latitude = latitude_;
-        msg.longitude = -71.888351;
+        msg.latitude = 45.377775;
+        msg.longitude = -71.92474;
         msg.heading = 120.0F;
         msg.satellite = 8;
 

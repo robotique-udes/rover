@@ -47,7 +47,6 @@ class NavigationController
 
     bool _endNodeReached = false;
 
-
     double _currentLat;
     double _currentLon;
     double _currentHeading;
@@ -91,7 +90,12 @@ class NavigationController
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> idleCmd(void)
     {
-        // TODO
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = 5.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = 5.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = 5.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = 5.0F;
+
+        return _targetWheelCmd;
     }
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> getToHeading(void)
@@ -116,6 +120,8 @@ class NavigationController
         {
             _desiredHeadingReached = true;
         }
+
+        return _targetWheelCmd;
     }
 
     float computeBearing(void)
