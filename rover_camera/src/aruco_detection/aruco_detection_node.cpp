@@ -1,9 +1,9 @@
 #include "aruco_detection_node.hpp"
 
-int main(int argc, char** argv)
+int main(int argc_, char** argv_)
 {
-    rclcpp::init(argc, argv);
-    auto node = std::make_shared<ArucoDetectionNode>(argc, argv);
+    rclcpp::init(argc_, argv_);
+    auto node = std::make_shared<ArucoDetectionNode>(argc_, argv_);
     rclcpp::executors::MultiThreadedExecutor executor;
     executor.add_node(node);
     executor.spin();
@@ -12,12 +12,12 @@ int main(int argc, char** argv)
     return 0;
 }
 
-ArucoDetectionNode::ArucoDetectionNode(int argc, char** argv):
+ArucoDetectionNode::ArucoDetectionNode(int argc_, char** argv_):
     Node("aruco_detection_node")
 {
     cv::utils::logging::setLogLevel(OPENCV_LOG_LEVEL);
 
-    this->getParams(argc, argv);
+    this->getParams(argc_, argv_);
 
     _publisher = this->create_publisher<rover_msgs::msg::Aruco>(TOPIC_ARUCO_DETECTED, 10);
 
@@ -58,14 +58,14 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
     std::vector<bool> camLost;
 
     {
-        std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+        std::lock_guard lock(_detectedArucosMutex);
 
-        for (const auto& it : _detections)
+        for (const auto& [key, detection] : _detections)
         {
-            detectedArucos.push_back(it.second.getValidatedIds());
-            matchingURL.push_back(it.second.getCamURL());
-            isValid.push_back(it.second.isValid());
-            camLost.push_back(it.second.getCamLost());
+            detectedArucos.push_back(detection.getValidatedIds());
+            matchingURL.push_back(detection.getCamURL());
+            isValid.push_back(detection.isValid());
+            camLost.push_back(detection.getCamLost());
         }
     }
 
@@ -115,7 +115,7 @@ void ArucoDetectionNode::CB_arucoPublisher(void)
 
 void ArucoDetectionNode::CB_arucoDetection(void)
 {
-    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+    std::lock_guard lock(_detectedArucosMutex);
 
     for (auto it = _detections.begin(); it != _detections.end();)
     {
@@ -144,10 +144,10 @@ void ArucoDetectionNode::CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDete
     infoDetection(response_);
 }
 
-bool ArucoDetectionNode::startDetection(std::string URL_)
+bool ArucoDetectionNode::startDetection(const std::string& URL_)
 {
-    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
-    if (!_detections.emplace(URL_, Detection(URL_, _nbrOngoingDetection + 1)).second)
+    std::lock_guard lock(_detectedArucosMutex);
+    if (!_detections.try_emplace(URL_, URL_, _nbrOngoingDetection + 1).second)
     {
         RCLCPP_WARN(this->get_logger(), "Failed to start detection at %s", URL_.c_str());
         return false;
@@ -157,9 +157,9 @@ bool ArucoDetectionNode::startDetection(std::string URL_)
     return true;
 }
 
-bool ArucoDetectionNode::stopDetection(std::string URL_)
+bool ArucoDetectionNode::stopDetection(const std::string& URL_)
 {
-    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+    std::lock_guard lock(_detectedArucosMutex);
 
     if (!_detections.erase(URL_))
     {
@@ -173,14 +173,14 @@ bool ArucoDetectionNode::stopDetection(std::string URL_)
 
 void ArucoDetectionNode::infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
 {
-    std::lock_guard<std::mutex> lock(_detectedArucosMutex);
+    std::lock_guard lock(_detectedArucosMutex);
 
     if (response_ != nullptr)
     {
-        for (auto& it : _detections)
+        for (auto const& [key, detection] : _detections)
         {
-            response_->urls.push_back(it.second.getCamURL());
-            response_->tags.push_back(it.second.getTag());
+            response_->urls.push_back(detection.getCamURL());
+            response_->tags.push_back(detection.getTag());
         }
     }
 }

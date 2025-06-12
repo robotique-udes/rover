@@ -1,10 +1,9 @@
 #ifndef IMAGE_CAPTURE_HPP
 #define IMAGE_CAPTURE_HPP
 
-#include "rover_lib2/helpers/time.hpp"
-#include "rover_lib2/helpers/loop_timer.hpp"
-#include "rover_lib2/helpers/ip_pinging.hpp"
-#include "rclcpp/rclcpp.hpp"
+#include <rover_lib2/helpers/time.hpp>
+#include <rover_lib2/helpers/loop_timer.hpp>
+#include <rclcpp/rclcpp.hpp>
 #include <opencv2/aruco.hpp>
 #include <opencv2/opencv.hpp>
 #include <optional>
@@ -22,12 +21,12 @@ class ImageCapture
                                             "appsink sync=false";
 
   public:
-    ImageCapture(std::string cameraURL_);
+    explicit ImageCapture(const std::string& cameraURL_);
     ~ImageCapture(void);
 
-    bool changeStream(std::string URL_);
+    bool changeStream(std::string_view URL_);
     std::optional<cv::Mat> getFrame(bool debugMode_);
-    cv::Mat getErrorFrame(void);
+    cv::Mat getErrorFrame(void) const;
     bool initCam(void);
     bool isValid(void) const;
     bool isCameraReachable(const std::string& url_, size_t port_, size_t timeoutMs_);
@@ -36,7 +35,7 @@ class ImageCapture
     bool _isValid;
     std::string _cameraURL;
     cv::VideoCapture _cap;
-    LoopTimer<uint64_t, Time::millis> _timer_cameraPinningRetries;
+    LoopTimer<uint64_t, &Time::millis> _timer_cameraPinningRetries;
     bool _firstTryPinningCam = true;
 
     // The the max rate (fps) must be paired with the detection delay

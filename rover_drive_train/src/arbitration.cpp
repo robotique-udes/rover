@@ -1,13 +1,14 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/drivetrain_arbitration.hpp"
-#include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
-#include "std_msgs/msg/empty.hpp"
-
-#include "rover_msgs/srv/drive_train_arbitration.hpp"
-#include "rover_lib2/helpers/macros.hpp"
+#include <rover_lib2/helpers/macros.hpp>
 #include <rover_lib2/helpers/constants.hpp>
+
+#include <rover_msgs/srv/drive_train_arbitration.hpp>
+#include <rover_msgs/msg/drivetrain_arbitration.hpp>
+#include <rover_msgs/msg/joy.hpp>
+#include <rover_msgs/msg/joy_demux_status.hpp>
+#include <rover_msgs/msg/propulsion_motor.hpp>
+#include <std_msgs/msg/empty.hpp>
+
+#include <rclcpp/rclcpp.hpp>
 
 class Arbitration : public rclcpp::Node
 {
@@ -21,18 +22,16 @@ class Arbitration : public rclcpp::Node
 
   public:
     Arbitration();
-    ~Arbitration() {}
 
   private:
-    void cbTimerSendCmd();
-    void cbTimerSendStatus();
-    void watchdog(bool* LostHB);
-    void cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_);
-    void cbAutonomousCmd(const rover_msgs::msg::PropulsionMotor msg_);
-    void cbHB(const std_msgs::msg::Empty msg_, bool* _HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer);
-    void cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
-                std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response);
-    void sendCmd();
+    void cbTimerSendCmd(void) const;
+    void cbTimerSendStatus(void) const;
+    void watchdog(bool* lostHB_) const;
+    void cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor& msg_);
+    void cbHB(const std_msgs::msg::Empty msg_, bool* HBLostVar_, rclcpp::TimerBase::SharedPtr HBWatchdogTimer_) const;
+    void cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request_,
+                std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_);
+    void sendCmd(void) const;
 
     rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _subMotorCmdTeleop;
     rclcpp::Subscription<rover_msgs::msg::PropulsionMotor>::SharedPtr _subMotorCmdAuto;
@@ -48,7 +47,6 @@ class Arbitration : public rclcpp::Node
 
     rover_msgs::msg::PropulsionMotor _zeroCmd;
     rover_msgs::msg::PropulsionMotor _cmdTeleop;
-    rover_msgs::msg::PropulsionMotor _cmdAuto;
 
     rclcpp::TimerBase::SharedPtr _timerSendCmd;
     rclcpp::TimerBase::SharedPtr _timerSendStatus;
@@ -81,21 +79,31 @@ Arbitration::Arbitration():
                                                                       this->cbHB(msg_, &_roverHBLost, _watchdogRover);
                                                                   });
 
-    _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
-        TOPIC_CMD_WHEELS_TELEOP,
-        QOS_DEFAULT,
-        std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
-    _subMotorCmdAuto = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
-        TOPIC_CMD_WHEELS_AUTO,
-        QOS_DEFAULT,
-        std::bind(&Arbitration::cbAutonomousCmd, this, std::placeholders::_1));
+    _subMotorCmdTeleop
+        = this->create_subscription<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_TELEOP,
+                                                                      QOS_DEFAULT,
+                                                                      [this](const rover_msgs::msg::PropulsionMotor& msg_)
+                                                                      {
+                                                                          this->cbPropulsionCmd(msg_);
+                                                                      });
+    _subMotorCmdAuto
+        = this->create_subscription<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_AUTO,
+                                                                      QOS_DEFAULT,
+                                                                      [this](const rover_msgs::msg::PropulsionMotor& msg_)
+                                                                      {
+                                                                          this->cbPropulsionCmd(msg_);
+                                                                      });
 
     _pubCmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_OUT, QOS_DEFAULT);
     _pubArbitrationStatus = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>(TOPIC_ARBITRATION_STATUS, QOS_DEFAULT);
 
     _srvControlDemux = this->create_service<rover_msgs::srv::DriveTrainArbitration>(
         SERVICE_ARBITRATION_CONTROL,
-        std::bind(&Arbitration::cbAbtr, this, std::placeholders::_1, std::placeholders::_2));
+        [this](const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request_,
+               std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
+        {
+            this->cbAbtr(request_, response_);
+        });
 
     _watchdogRover = this->create_wall_timer(std::chrono::milliseconds(500),
                                              [this]()
@@ -108,59 +116,55 @@ Arbitration::Arbitration():
                                                 this->watchdog(&_baseHBLost);
                                             });
 
-    _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10), std::bind(&Arbitration::cbTimerSendCmd, this));
-    _timerSendStatus = this->create_wall_timer(std::chrono::milliseconds(1000), std::bind(&Arbitration::cbTimerSendStatus, this));
+    _timerSendCmd = this->create_wall_timer(std::chrono::milliseconds(10),
+                                            [this]()
+                                            {
+                                                this->cbTimerSendCmd();
+                                            });
+    _timerSendStatus = this->create_wall_timer(std::chrono::milliseconds(1000),
+                                               [this]()
+                                               {
+                                                   this->cbTimerSendStatus();
+                                               });
 }
 
-void Arbitration::cbTimerSendCmd()
+void Arbitration::cbTimerSendCmd(void) const
 {
-    RCLCPP_INFO(this->get_logger(), "Timer send command");
-    sendCmd();
+    this->sendCmd();
 }
 
-void Arbitration::cbTimerSendStatus()
+void Arbitration::cbTimerSendStatus(void) const
 {
     _pubArbitrationStatus->publish(_arbitration);
 }
 
-void Arbitration::cbHB(const std_msgs::msg::Empty /*msg_*/, bool* _HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer)
+void Arbitration::cbHB(const std_msgs::msg::Empty /*msg_*/, bool* HBLostVar_, rclcpp::TimerBase::SharedPtr HBWatchdogTimer_) const
 {
-    *_HBLostVar = false;
-    _HBWatchdogTimer->reset();
+    *HBLostVar_ = false;
+    HBWatchdogTimer_->reset();
 }
 
-void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_)
+void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor& msg_)
 {
     _cmdTeleop = msg_;
 }
 
-void Arbitration::cbAutonomousCmd(const rover_msgs::msg::PropulsionMotor msg_)
-{
-    RCLCPP_INFO(this->get_logger(), "Received autonomous command");
-    _cmdAuto = msg_;
-}
-
-void Arbitration::watchdog(bool* lostHB_)
+void Arbitration::watchdog(bool* lostHB_) const
 {
     *lostHB_ = true;
 }
 
-void Arbitration::sendCmd()
+void Arbitration::sendCmd() const
 {
-    // RCLCPP_INFO(this->get_logger(), "Sending command");
-    // if (_baseHBLost || _roverHBLost)
-    // {
-    //     _pubCmd->publish(_zeroCmd);
-    //     return;
-    // }
+    if (_baseHBLost || _roverHBLost)
+    {
+        _pubCmd->publish(_zeroCmd);
+        return;
+    }
 
     if (_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
     {
         _pubCmd->publish(_cmdTeleop);
-    }
-    else if(_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
-    {
-        _pubCmd->publish(_cmdAuto);
     }
     else
     {
@@ -172,8 +176,7 @@ void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitr
                          std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
 {
     if (request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::NONE
-        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP
-        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
+        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
     {
         _arbitration = request_->target_arbitration;
     }

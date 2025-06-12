@@ -2,6 +2,7 @@
 #define FRAME_PROCESSING_HPP
 
 #include "image_capture.hpp"
+
 #include <optional>
 #include <vector>
 
@@ -11,14 +12,12 @@ class ProcessFrame
     static constexpr cv::aruco::PREDEFINED_DICTIONARY_NAME DICT = cv::aruco::DICT_4X4_250;
 
   public:
-    ProcessFrame(std::string cameraURL_);
+    explicit ProcessFrame(const std::string& cameraURL_);
 
     std::optional<cv::Mat> updateDetection(bool debugMode_);
     std::vector<uint16_t> getIds(void) const;
     bool IdsEmpty(void) const;
     bool isValid(void) const;
-
-    bool empty = true;
 
   private:
     const cv::Ptr<cv::aruco::Dictionary> DICTIONNARY;

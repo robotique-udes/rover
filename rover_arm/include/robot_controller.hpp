@@ -1,21 +1,18 @@
 #ifndef __ROBOT_CONTROLLER_HPP__
 #define __ROBOT_CONTROLLER_HPP__
 
+#include "arm_configuration.hpp"
 #include "keybinding.hpp"
 #include "joy_manager.hpp"
 
-#include "rover_lib2/helpers/macros.hpp"
-
+#include <rover_lib2/helpers/macros.hpp>
 #include <stdint.h>
-#include <vector>
-#include <map>
-#include <initializer_list>
 
 class RobotController
 {
   public:
     virtual ~RobotController() = default;
-    RobotController(JoyManager& joyManager_):
+    explicit RobotController(JoyManager& joyManager_):
         _joyManager(joyManager_)
     {
     }
@@ -24,7 +21,7 @@ class RobotController
         std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_)
         = 0;
 
-    constexpr float getMaxVelocity(eJointIndex joint_)
+    constexpr float getMaxVelocity(eJointIndex joint_) const
     {
         switch (joint_)
         {

@@ -6,9 +6,8 @@
 class JointController : public RobotController
 {
   public:
-    JointController(JoyManager& joyManager_):
-        RobotController(joyManager_),
-        _currentControlledJoint(eJointIndex::JL)
+    explicit JointController(JoyManager& joyManager_):
+        RobotController(joyManager_)
     {
     }
 
@@ -41,21 +40,15 @@ class JointController : public RobotController
         //         jointCommands[TO_UNDERLYING(_currentControlledJoint)] = getMaxVelocity(ARM_CONFIGURATION::J0::ID);
         //     }
         // }
-        if (ARM_CONFIGURATION::J1::ID == _currentControlledJoint)
+        if (ARM_CONFIGURATION::J1::ID == _currentControlledJoint && _joyManager.isPressed(KEYBINDINGS::JOINT::J1))
         {
-            if (_joyManager.isPressed(KEYBINDINGS::JOINT::J1))
-            {
-                jointCommands[TO_UNDERLYING(_currentControlledJoint)]
-                    = inputArray_[TO_UNDERLYING(KEYBINDINGS::JOINT::J1)] * getMaxVelocity(ARM_CONFIGURATION::J1::ID);
-            }
+            jointCommands[TO_UNDERLYING(_currentControlledJoint)]
+                = inputArray_[TO_UNDERLYING(KEYBINDINGS::JOINT::J1)] * getMaxVelocity(ARM_CONFIGURATION::J1::ID);
         }
-        if (ARM_CONFIGURATION::J2::ID == _currentControlledJoint)
+        if (ARM_CONFIGURATION::J2::ID == _currentControlledJoint && _joyManager.isPressed(KEYBINDINGS::JOINT::J2))
         {
-            if (_joyManager.isPressed(KEYBINDINGS::JOINT::J2))
-            {
-                jointCommands[TO_UNDERLYING(_currentControlledJoint)]
-                    = inputArray_[TO_UNDERLYING(KEYBINDINGS::JOINT::J2)] * getMaxVelocity(ARM_CONFIGURATION::J2::ID);
-            }
+            jointCommands[TO_UNDERLYING(_currentControlledJoint)]
+                = inputArray_[TO_UNDERLYING(KEYBINDINGS::JOINT::J2)] * getMaxVelocity(ARM_CONFIGURATION::J2::ID);
         }
 
         if (ARM_CONFIGURATION::GRIPPER_TILT::ID == _currentControlledJoint)
@@ -102,13 +95,13 @@ class JointController : public RobotController
         }
     }
 
-    eJointIndex getControlledJoint(void)
+    eJointIndex getControlledJoint(void) const
     {
         return _currentControlledJoint;
     }
 
   private:
-    eJointIndex _currentControlledJoint;
+    eJointIndex _currentControlledJoint = {eJointIndex::JL};
 };
 
 #endif
