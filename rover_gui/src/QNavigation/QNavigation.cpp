@@ -36,7 +36,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
     connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);    
     connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected); 
-    connect(_ui.waypointList, &QListWidget::itemChanged, this, &QNavigation::onWaypointVisibilityChanged); //
+    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointVisibilityChanged); 
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
@@ -176,11 +176,13 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
     
     if (stateWaypoint == Qt::Checked)
     {
+        //RCLCPP_INFO(_node->get_logger(), "Waypoint should be visible");
         emit this->waypointIsVisible(stateWaypoint);
     }
 
     else
     {
+        //RCLCPP_INFO(_node->get_logger(), "Waypoint should not be visible");
         emit this->waypointIsNotVisible(stateWaypoint);
     }
 }
