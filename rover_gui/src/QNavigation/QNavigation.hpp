@@ -31,8 +31,7 @@ class QNavigation : public QWidget
     void gpsCallback(double latitude_, double longitude_, double heading_);
     void sendGoal(QString name, double latitude, double longitude, QString id);
     void calculatePath(double latitude_, double longitude_);
-    bool waypointIsVisible(bool stateWaypoint);
-    bool waypointIsNotVisible(bool stateWaypoint);
+    bool waypointIsVisible(bool stateWaypoint, QString waypointId);
     void jsReady(void);
     void clearWaypoints(void);
     void clearPath(void);

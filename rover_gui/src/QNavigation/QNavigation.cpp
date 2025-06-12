@@ -34,9 +34,9 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
 
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
-    connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);    
-    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected); 
-    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointVisibilityChanged); 
+    connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);
+    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected);
+    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointVisibilityChanged);
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
@@ -172,18 +172,29 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
 
 void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
 {
-    Qt::CheckState stateWaypoint = item_->checkState();
-    
-    if (stateWaypoint == Qt::Checked)
+    if (!item_)
     {
-        //RCLCPP_INFO(_node->get_logger(), "Waypoint should be visible");
-        emit this->waypointIsVisible(stateWaypoint);
+        // RCLCPP_ERROR(_node->get_logger(), "Item is null in onWaypointVisibilityChanged");
+        return;
     }
 
-    else
+    int index_ = _ui.waypointList->row(item_);
+    if (index_ >= 0 && index_ < _waypoints.size())
     {
-        //RCLCPP_INFO(_node->get_logger(), "Waypoint should not be visible");
-        emit this->waypointIsNotVisible(stateWaypoint);
+        const QString waypointId = _waypoints.at(index_).id;
+
+        switch (item_->checkState())
+        {
+            case Qt::Checked:
+                emit this->waypointIsVisible(true, waypointId);
+                break;
+            case Qt::Unchecked:
+                emit this->waypointIsVisible(false, waypointId);
+                break;
+            default:
+                RCLCPP_WARN(_node->get_logger(), "Unexpected check state for waypoint: %s", waypointId.toStdString().c_str());
+                return;
+        }
     }
 }
 
