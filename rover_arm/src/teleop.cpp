@@ -1,17 +1,18 @@
-#include "rclcpp/rclcpp.hpp"
 
-#include "rover_msgs/msg/arm_msg.hpp"
-#include "rover_msgs/msg/joy.hpp"
-
-#include "rover_lib2/helpers/time.hpp"
-#include "rover_lib2/helpers/loop_timer.hpp"
-#include "rover_lib2/helpers/macros.hpp"
-#include <rover_lib2/helpers/constants.hpp>
 #include "arm_configuration.hpp"
 #include "keybinding.hpp"
+#include "joint_controller.hpp"
+#include "cartesian_controller.hpp"
 
-#include <joint_controller.hpp>
-#include <cartesian_controller.hpp>
+#include <rover_msgs/msg/arm_msg.hpp>
+#include <rover_msgs/msg/joy.hpp>
+
+#include <rover_lib2/helpers/time.hpp>
+#include <rover_lib2/helpers/loop_timer.hpp>
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
+
+#include <rclcpp/rclcpp.hpp>
 
 class Teleop : public rclcpp::Node
 {
@@ -42,7 +43,6 @@ class Teleop : public rclcpp::Node
   public:
     Teleop():
         rclcpp::Node("teleop_node"),
-        _joyManager(),
         _jointController(_joyManager),
         _cartesianController(_joyManager)
     {
@@ -64,7 +64,7 @@ class Teleop : public rclcpp::Node
 
     void joy_CB(const rover_msgs::msg::Joy& joyMsg_)
     {
-        const uint8_t joyMsgSize = joyMsg_.joy_data.size();
+        const size_t joyMsgSize = joyMsg_.joy_data.size();
         std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> joyArray = {};
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
         rover_msgs::msg::ArmMsg armMsg;
@@ -126,16 +126,13 @@ class Teleop : public rclcpp::Node
                 {
                     RCLCPP_WARN(this->get_logger(), "Cannot create plan since not enough points have been gathered");
                 }
+                else if (_cartesianController.applyPlan())
+                {
+                    RCLCPP_INFO(this->get_logger(), "Applying plan");
+                }
                 else
                 {
-                    if (_cartesianController.applyPlan())
-                    {
-                        RCLCPP_INFO(this->get_logger(), "Applying plan");
-                    }
-                    else
-                    {
-                        RCLCPP_INFO(this->get_logger(), "Unapplying");
-                    }
+                    RCLCPP_INFO(this->get_logger(), "Unapplying");
                 }
             }
         }

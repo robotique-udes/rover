@@ -2,17 +2,17 @@
 #define DETECTION_HPP
 
 #include "process_frame.hpp"
-#include "rover_lib2/helpers/moving_average.hpp"
-#include <unordered_map>
 
-#define COEFF_NB_ARUCO 10
+#include <rover_lib2/helpers/moving_average.hpp>
+#include <unordered_map>
 
 class Detection
 {
-    static constexpr float VALIDATION_THRESHOLD = 0.75;
+    static constexpr uint16_t COEFF_NB_ARUCO = 10U;
+    static constexpr float VALIDATION_THRESHOLD = 0.75F;
 
   public:
-    Detection(std::string cameraURL_, uint8_t detectionTag_);
+    Detection(const std::string& cameraURL_, uint8_t detectionTag_);
 
     std::optional<std::vector<uint16_t>> detect(bool debugMode_);
     void update(bool debugMode_);
