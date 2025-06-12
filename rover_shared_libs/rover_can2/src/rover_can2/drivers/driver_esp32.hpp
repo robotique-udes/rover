@@ -1,5 +1,5 @@
-#ifndef DRIVER_ESP32_HPP
-#define DRIVER_ESP32_HPP
+#ifndef ROVER_CAN2_DRIVERS_DRIVER_ESP32_HPP
+#define ROVER_CAN2_DRIVERS_DRIVER_ESP32_HPP
 
 #include "rover_can2/drivers/driver_base.hpp"
 
@@ -417,4 +417,4 @@ namespace RoverCan2::Drivers
     DriverESP32(gpio_num_t ioRx_, gpio_num_t ioTx_, LedBlinkerT_* led_ = nullptr) -> DriverESP32<LedBlinkerT_>;
 }  // namespace RoverCan2::Drivers
 
-#endif  // DRIVER_ESP32_HPP
+#endif  // ROVER_CAN2_DRIVERS_DRIVER_ESP32_HPP

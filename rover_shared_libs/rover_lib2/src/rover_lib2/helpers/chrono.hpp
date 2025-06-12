@@ -1,5 +1,5 @@
-#ifndef __CHRONO_HPP__
-#define __CHRONO_HPP__
+#ifndef ROVER_LIB2_HELPERS_CHRONO_HPP
+#define ROVER_LIB2_HELPERS_CHRONO_HPP
 
 /// @brief Chronometer helper class
 /// @tparam TYPE The return type of the clock function used in 2nd template
@@ -82,4 +82,4 @@ class Chrono
     bool _paused;
 };
 
-#endif  // __CHRONO_HPP__
+#endif  // ROVER_LIB2_HELPERS_CHRONO_HPP

@@ -1,5 +1,5 @@
-#ifndef SPI_DEVICE_HPP
-#define SPI_DEVICE_HPP
+#ifndef ROVER_LIB2_COMMUNICATION_SPI_SPI_DEVICE_HPP
+#define ROVER_LIB2_COMMUNICATION_SPI_SPI_DEVICE_HPP
 
 #include "rover_lib2/communication/SPI/SPI_bus.hpp"
 #include <cstring>
@@ -182,4 +182,4 @@ class SPIDevice : public SPIDeviceT
     std::array<uint8_t, MAX_MSG_LENGTH> _rxBuff = {};
 };
 
-#endif  // SPI_DEVICE_HPP
+#endif  // ROVER_LIB2_COMMUNICATION_SPI_SPI_DEVICE_HPP

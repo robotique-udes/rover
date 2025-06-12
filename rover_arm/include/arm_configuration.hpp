@@ -1,6 +1,9 @@
 #ifndef _ARM_CONFIGURATION__HPP__
 #define _ARM_CONFIGURATION__HPP__
 
+#include <cstddef>
+#include <rover_msgs/msg/arm_msg.hpp>
+
 enum class eJointIndex : size_t
 {
     JL = rover_msgs::msg::ArmMsg::JL,
