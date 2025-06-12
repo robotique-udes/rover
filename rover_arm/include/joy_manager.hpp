@@ -3,28 +3,16 @@
 
 #include "keybinding.hpp"
 
-#include "rover_lib2/helpers/macros.hpp"
-
+#include <rover_lib2/helpers/macros.hpp>
 #include <stdint.h>
-#include <vector>
-#include <map>
-#include <initializer_list>
-
-static constexpr float DEADZONE = 0.01F;
-static constexpr float NEUTRAL = 0.0F;
 
 class JoyManager
 {
-  public:
-    ~JoyManager() = default;
-    JoyManager():
-        _joyInputArray{},
-        _prevButtonStates{},
-        _risingEdgeStates{}
-    {
-    }
+    static constexpr float DEADZONE = 0.01F;
+    static constexpr float NEUTRAL = 0.0F;
 
-    void updateJoyArray(std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> joyInputArray_)
+  public:
+    void updateJoyArray(const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& joyInputArray_)
     {
         _joyInputArray = joyInputArray_;
 
@@ -45,12 +33,12 @@ class JoyManager
         return _risingEdgeStates[TO_UNDERLYING(joyInput_)];
     }
 
-    std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> getJoyArray(void)
+    std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> getJoyArray(void) const
     {
         return _joyInputArray;
     }
 
-  protected:
+  private:
     std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> _joyInputArray;
     std::array<bool, TO_UNDERLYING(eJoyInput::eLAST)> _prevButtonStates;
     std::array<bool, TO_UNDERLYING(eJoyInput::eLAST)> _risingEdgeStates;

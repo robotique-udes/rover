@@ -1,6 +1,6 @@
 #include "detection.hpp"
 
-Detection::Detection(std::string cameraURL_, uint8_t detectionTag_):
+Detection::Detection(const std::string& cameraURL_, uint8_t detectionTag_):
     _processFrame(cameraURL_)
 {
     _tag = detectionTag_;
@@ -45,15 +45,14 @@ void Detection::update(bool debugMode_)
     {
         uint16_t id = it->first;
 
-        auto found = std::find(detectedIds.begin(), detectedIds.end(), id);
+        auto found = std::ranges::find(detectedIds, id);
 
         if (found != detectedIds.end())
         {
             it->second.addValue(static_cast<uint16_t>(1));
             detectedIds.erase(found);
 
-            if (it->second.getAverage() > VALIDATION_THRESHOLD
-                && std::find(_validatedIds.begin(), _validatedIds.end(), id) == _validatedIds.end())
+            if (it->second.getAverage() > VALIDATION_THRESHOLD && std::ranges::find(_validatedIds, id) == _validatedIds.end())
             {
                 _validatedIds.push_back(id);
             }
@@ -77,7 +76,7 @@ void Detection::update(bool debugMode_)
 
     for (const auto& id : detectedIds)
     {
-        _validation.emplace(id, MovingAverage<uint16_t, COEFF_NB_ARUCO>(0));
+        _validation.try_emplace(id, 0);
     }
 }
 
