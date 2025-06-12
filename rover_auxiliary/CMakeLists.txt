@@ -13,12 +13,11 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
-find_package(CURL REQUIRED)
 
+add_subdirectory(../cpr cpr_build)
 add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
-include_directories(${CURL_INCLUDE_DIRS})
 
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 add_executable(antenna src/Antenna/antenna.cpp)
@@ -35,8 +34,8 @@ ament_target_dependencies(antenna
                           rcl_interfaces)
 
 target_link_libraries(antenna 
-        rover_shared_libs
-        ${CURL_LIBRARIES})
+                          rover_shared_libs
+                          cpr::cpr)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
