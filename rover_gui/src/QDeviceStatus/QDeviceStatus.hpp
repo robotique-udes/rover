@@ -58,14 +58,6 @@ class QDeviceStatus : public QWidget
 
     std::unordered_map<RoverCan2::Constant::eDeviceId, sCanDeviceInfos> _canDevices;
 
-    // std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _deviceMessageCount;
-    // std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceReboots;
-    // std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _oldDeviceReboots;
-    // std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceRebootsFromButton;
-
-    // std::unordered_map<RoverCan2::Constant::eDeviceId, QWidget*> _deviceInfo;
-    // std::unordered_map<RoverCan2::Constant::eDeviceId, QLabel*> _deviceReboot;
-
     uint16_t _numberOfCalls = 0U;
 
     QStatusWorker _QStatusWorker;

@@ -53,30 +53,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH0] = {0, 0, 0, 0, _ui.switchETH0, _ui.switchETH0Info};
     // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH1] = {0, 0, 0, 0, _ui.switchETH1, _ui.switchETH1Info};
 
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = _ui.frontleftMotor;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = _ui.frontrightMotor;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = _ui.rearleftMotor;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = _ui.rearrightMotor;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::GNSS] = _ui.gnss;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = _ui.ddbController;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = _ui.cameraMain;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = _ui.cameraAntenne;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = _ui.lightsMain;
-    // // _deviceInfo[RoverCan2::Constant::eDeviceId::SWITCHETH0] = _ui.switchETH0;
-    // // _deviceInfo[RoverCan2::Constant::eDeviceId::SWITCHETH1] = _ui.switchETH1;
-
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = _ui.frontleftMotorInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = _ui.frontrightMotorInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = _ui.rearleftMotorInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = _ui.rearrightMotorInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::GNSS] = _ui.gnssInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = _ui.ddbControllerInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = _ui.cameraMainInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = _ui.cameraAntenneInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = _ui.lightsMainInfo;
-    // // _deviceReboot[RoverCan2::Constant::eDeviceId::SWITCHETH0] = _ui.switchETH0Info;
-    // // _deviceReboot[RoverCan2::Constant::eDeviceId::SWITCHETH1] = _ui.switchETH1Info;
-
     _sub_deviceStatus
         = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>("/rover/can/devices_status",
                                                                        QOS_DEFAULT,
