@@ -12,6 +12,7 @@ on:
 
 jobs:
   lint-cpp:
+    name: 'Lint C++ Files (Ubuntu 22.04)'
     runs-on: ubuntu-22.04
 
     steps:
