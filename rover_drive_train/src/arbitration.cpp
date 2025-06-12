@@ -28,6 +28,7 @@ class Arbitration : public rclcpp::Node
     void cbTimerSendStatus();
     void watchdog(bool* LostHB);
     void cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_);
+    void cbAutonomousCmd(const rover_msgs::msg::PropulsionMotor msg_);
     void cbHB(const std_msgs::msg::Empty msg_, bool* _HBLostVar, rclcpp::TimerBase::SharedPtr _HBWatchdogTimer);
     void cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Request> request,
                 std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response);
@@ -47,6 +48,7 @@ class Arbitration : public rclcpp::Node
 
     rover_msgs::msg::PropulsionMotor _zeroCmd;
     rover_msgs::msg::PropulsionMotor _cmdTeleop;
+    rover_msgs::msg::PropulsionMotor _cmdAuto;
 
     rclcpp::TimerBase::SharedPtr _timerSendCmd;
     rclcpp::TimerBase::SharedPtr _timerSendStatus;
@@ -86,7 +88,7 @@ Arbitration::Arbitration():
     _subMotorCmdAuto = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
         TOPIC_CMD_WHEELS_AUTO,
         QOS_DEFAULT,
-        std::bind(&Arbitration::cbPropulsionCmd, this, std::placeholders::_1));
+        std::bind(&Arbitration::cbAutonomousCmd, this, std::placeholders::_1));
 
     _pubCmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_OUT, QOS_DEFAULT);
     _pubArbitrationStatus = this->create_publisher<rover_msgs::msg::DrivetrainArbitration>(TOPIC_ARBITRATION_STATUS, QOS_DEFAULT);
@@ -133,6 +135,11 @@ void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_)
     _cmdTeleop = msg_;
 }
 
+void Arbitration::cbAutonomousCmd(const rover_msgs::msg::PropulsionMotor msg_)
+{
+    _cmdAuto = msg_;
+}
+
 void Arbitration::watchdog(bool* lostHB_)
 {
     *lostHB_ = true;
@@ -150,6 +157,10 @@ void Arbitration::sendCmd()
     {
         _pubCmd->publish(_cmdTeleop);
     }
+    else if(_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
+    {
+        _pubCmd->publish(_cmdAuto);
+    }
     else
     {
         _pubCmd->publish(_zeroCmd);
@@ -160,7 +171,8 @@ void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitr
                          std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
 {
     if (request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::NONE
-        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
+        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP
+        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
     {
         _arbitration = request_->target_arbitration;
     }
