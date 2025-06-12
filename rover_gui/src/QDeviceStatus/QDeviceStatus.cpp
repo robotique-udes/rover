@@ -1,4 +1,5 @@
 #include "QDeviceStatus.hpp"
+
 #include <QStyle>
 
 constexpr const char* STATUS_DEFAULT = "QWidget {"
@@ -40,29 +41,41 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     _ui.setupUi(this);
 
-    _deviceInfo[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = _ui.frontleftMotor;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = _ui.frontrightMotor;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = _ui.rearleftMotor;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = _ui.rearrightMotor;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::GNSS] = _ui.gnss;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = _ui.ddbController;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = _ui.cameraMain;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = _ui.cameraAntenne;
-    _deviceInfo[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = _ui.lightsMain;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::SWITCHETH0] = _ui.switchETH0;
-    // _deviceInfo[RoverCan2::Constant::eDeviceId::SWITCHETH1] = _ui.switchETH1;
+    _canDevices[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = {0, 0, 0, 0, _ui.frontleftMotor, _ui.frontleftMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = {0, 0, 0, 0, _ui.frontrightMotor, _ui.frontrightMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = {0, 0, 0, 0, _ui.rearleftMotor, _ui.rearleftMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = {0, 0, 0, 0, _ui.rearrightMotor, _ui.rearrightMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::GNSS] = {0, 0, 0, 0, _ui.gnss, _ui.gnssInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = {0, 0, 0, 0, _ui.ddbController, _ui.ddbControllerInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = {0, 0, 0, 0, _ui.cameraMain, _ui.cameraMainInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = {0, 0, 0, 0, _ui.cameraAntenne, _ui.cameraAntenneInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = {0, 0, 0, 0, _ui.lightsMain, _ui.lightsMainInfo};
+    // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH0] = {0, 0, 0, 0, _ui.switchETH0, _ui.switchETH0Info};
+    // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH1] = {0, 0, 0, 0, _ui.switchETH1, _ui.switchETH1Info};
 
-    _deviceReboot[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = _ui.frontleftMotorInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = _ui.frontrightMotorInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = _ui.rearleftMotorInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = _ui.rearrightMotorInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::GNSS] = _ui.gnssInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = _ui.ddbControllerInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = _ui.cameraMainInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = _ui.cameraAntenneInfo;
-    _deviceReboot[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = _ui.lightsMainInfo;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::SWITCHETH0] = _ui.switchETH0Info;
-    // _deviceReboot[RoverCan2::Constant::eDeviceId::SWITCHETH1] = _ui.switchETH1Info;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = _ui.frontleftMotor;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = _ui.frontrightMotor;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = _ui.rearleftMotor;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = _ui.rearrightMotor;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::GNSS] = _ui.gnss;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = _ui.ddbController;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = _ui.cameraMain;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = _ui.cameraAntenne;
+    // _deviceInfo[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = _ui.lightsMain;
+    // // _deviceInfo[RoverCan2::Constant::eDeviceId::SWITCHETH0] = _ui.switchETH0;
+    // // _deviceInfo[RoverCan2::Constant::eDeviceId::SWITCHETH1] = _ui.switchETH1;
+
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = _ui.frontleftMotorInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = _ui.frontrightMotorInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = _ui.rearleftMotorInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = _ui.rearrightMotorInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::GNSS] = _ui.gnssInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = _ui.ddbControllerInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = _ui.cameraMainInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = _ui.cameraAntenneInfo;
+    // _deviceReboot[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = _ui.lightsMainInfo;
+    // // _deviceReboot[RoverCan2::Constant::eDeviceId::SWITCHETH0] = _ui.switchETH0Info;
+    // // _deviceReboot[RoverCan2::Constant::eDeviceId::SWITCHETH1] = _ui.switchETH1Info;
 
     _sub_deviceStatus
         = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>("/rover/can/devices_status",
@@ -121,6 +134,9 @@ void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::st
     }
     else
     {
+        // Test
+        _numberOfCalls++;
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Here");
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response_.c_str());
     }
 }
@@ -134,7 +150,13 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
 {
     RoverCan2::Constant::eDeviceId deviceID = RoverCan2::Constant::eDeviceId(msg_.id);
 
-    _deviceMessageCount[deviceID]++;
+    if (!_canDevices.contains(deviceID))
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Invalid device ID received: %d", msg_.id);
+        return;
+    }
+
+    _canDevices[deviceID].deviceMessageCount++;
 
     this->updateRebootCounter(deviceID);
     this->updateDeviceColor(deviceID, msg_);
@@ -148,15 +170,10 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
  */
 void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_)
 {
-    if (!_deviceInfo.contains(deviceID_) || !_deviceReboot.contains(deviceID_))
-    {
-        return;
-    }
-
-    uint16_t& deviceReboots = _numberOfDeviceReboots[deviceID_];
-    uint16_t& oldDeviceReboots = _oldDeviceReboots[deviceID_];
-    uint16_t& deviceRebootsFromButton = _numberOfDeviceRebootsFromButton[deviceID_];
-    uint16_t& deviceMessageCount = _deviceMessageCount[deviceID_];
+    uint16_t& deviceReboots = _canDevices[deviceID_].numberOfDeviceReboots;
+    uint16_t& oldDeviceReboots = _canDevices[deviceID_].oldDeviceReboots;
+    const uint16_t& deviceRebootsFromButton = _canDevices[deviceID_].numberOfDeviceRebootsFromButton;
+    const uint16_t& deviceMessageCount = _canDevices[deviceID_].deviceMessageCount;
 
     if (_numberOfCalls < deviceMessageCount)
     {
@@ -170,7 +187,7 @@ void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_
     if (deviceReboots != oldDeviceReboots)
     {
         oldDeviceReboots = deviceReboots;
-        uint16_t deviceID = static_cast<uint16_t>(deviceID_);
+        uint16_t deviceID = TO_UNDERLYING(deviceID_);
         RCLCPP_INFO(rclcpp::get_logger("GUI"), "Device %d has rebooted since last call", deviceID);
     }
 }
@@ -182,18 +199,13 @@ void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_
  */
 void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId deviceID_)
 {
-    if (!_deviceInfo.contains(deviceID_) || !_deviceReboot.contains(deviceID_))
-    {
-        return;
-    }
-
-    QLabel* label = _deviceReboot[deviceID_];
+    QLabel* label = _canDevices[deviceID_].deviceReboot;
 
     std::string deviceName = this->getDeviceName(deviceID_);
     uint16_t deviceID = static_cast<uint16_t>(deviceID_);
 
     QString labelText = QString::fromStdString(deviceName) + QString("\n\nID: 0x%1").arg(deviceID, 3, 16, QChar('0'))
-                        + "\n\nReboots: " + QString::number(_numberOfDeviceReboots[deviceID_]);
+                        + "\n\nReboots: " + QString::number(_canDevices[deviceID_].numberOfDeviceReboots);
 
     label->setText(labelText);
 }
@@ -206,12 +218,7 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId deviceID_)
  */
 void QDeviceStatus::updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_)
 {
-    if (!_deviceInfo.contains(deviceID_) || !_deviceReboot.contains(deviceID_))
-    {
-        return;
-    }
-
-    QWidget* widgetInfo = _deviceInfo[deviceID_];
+    QWidget* widgetInfo = _canDevices[deviceID_].deviceInfo;
 
     switch (msg_.error_state)
     {
@@ -236,13 +243,16 @@ void QDeviceStatus::updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, 
  */
 void QDeviceStatus::setDefaultStyle()
 {
-    for (auto& it : _deviceInfo)
+    for (auto& [key, value] : _canDevices)
     {
-        it.second->setStyleSheet(STATUS_DEFAULT);
+        if (value.deviceInfo)
+        {
+            value.deviceInfo->setStyleSheet(STATUS_DEFAULT);
+        }
     }
 }
 
-std::string QDeviceStatus::getDeviceName(RoverCan2::Constant::eDeviceId deviceID_)
+const std::string QDeviceStatus::getDeviceName(RoverCan2::Constant::eDeviceId deviceID_)
 {
     switch (deviceID_)
     {
