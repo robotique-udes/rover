@@ -11,30 +11,34 @@ find_package(rclpy REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 
-add_subdirectory(../rover_shared_libs/ .build)
-
 install(PROGRAMS
   scripts/arm_sim.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
 add_executable(gps_test src/gps_test_pub.cpp)
-add_executable(rover_sim src/rover_sim.cpp)
+add_executable(battery_test src/battery_test_pub.cpp)
+add_executable(connection_speed_test src/connection_speed_test_pub.cpp)
+
+install(TARGETS
+        battery_test
+        connection_speed_test
+        gps_test
+        DESTINATION lib/${PROJECT_NAME}
+  )
 
 ament_target_dependencies(gps_test
                           rclcpp
                           rover_msgs)
 
-ament_target_dependencies(rover_sim
+ament_target_dependencies(battery_test
                           rclcpp
                           rover_msgs)
 
-target_link_libraries(rover_sim rover_shared_libs)
+ament_target_dependencies(connection_speed_test
+                          rclcpp
+                          rover_msgs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
-install(TARGETS
-          gps_test
-          rover_sim
-        DESTINATION lib/${PROJECT_NAME})
 ament_package()

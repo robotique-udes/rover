@@ -1,0 +1,3 @@
+# Required Format : YYYY;MM;DD;HH;MM;SS;TZ (QC or AB)
+2025;08;08;00;00;00;QC
+2025;08;11;00;00;00;QC
