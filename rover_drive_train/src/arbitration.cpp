@@ -114,6 +114,7 @@ Arbitration::Arbitration():
 
 void Arbitration::cbTimerSendCmd()
 {
+    RCLCPP_INFO(this->get_logger(), "Timer send command");
     sendCmd();
 }
 
@@ -137,6 +138,7 @@ void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor msg_)
 
 void Arbitration::cbAutonomousCmd(const rover_msgs::msg::PropulsionMotor msg_)
 {
+    RCLCPP_INFO(this->get_logger(), "Received autonomous command");
     _cmdAuto = msg_;
 }
 
@@ -147,6 +149,7 @@ void Arbitration::watchdog(bool* lostHB_)
 
 void Arbitration::sendCmd()
 {
+    RCLCPP_INFO(this->get_logger(), "Sending command");
     if (_baseHBLost || _roverHBLost)
     {
         _pubCmd->publish(_zeroCmd);
@@ -159,6 +162,7 @@ void Arbitration::sendCmd()
     }
     else if(_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
     {
+        RCLCPP_INFO(this->get_logger(), "Publishing autonomous command");
         _pubCmd->publish(_cmdAuto);
     }
     else
