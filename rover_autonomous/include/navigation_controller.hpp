@@ -90,10 +90,10 @@ class NavigationController
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> idleCmd(void)
     {
-        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = 5.0F;
-        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = 5.0F;
-        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = 5.0F;
-        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = 5.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = 0.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = 0.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = 0.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = 0.0F;
 
         return _targetWheelCmd;
     }
