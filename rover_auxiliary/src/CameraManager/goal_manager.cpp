@@ -1,4 +1,4 @@
-#include "arbitration.hpp"
+#include "goal_manager.hpp"
 
 namespace CameraManager
 {

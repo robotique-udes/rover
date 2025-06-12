@@ -25,12 +25,12 @@ void CameraInterface::setGoalMsg(rover_msgs::msg::CameraControl goalMsg_)
     _goalMsg = goalMsg_;
 }
 
-const rover_msgs::msg::CameraControl CameraInterface::getGoalMsg(void)
+rover_msgs::msg::CameraControl CameraInterface::getGoalMsg(void) const
 {
     return _goalMsg;
 }
 
-const rover_msgs::msg::CameraControl CameraInterface::getLastStatusMsg(void)
+rover_msgs::msg::CameraControl CameraInterface::getLastStatusMsg(void) const
 {
     return _lastStatusMsg;
 }

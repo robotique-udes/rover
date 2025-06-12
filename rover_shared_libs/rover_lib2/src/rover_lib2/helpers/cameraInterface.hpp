@@ -17,9 +17,9 @@ class CameraInterface
     CameraInterface(std::shared_ptr<rclcpp::Node> node_, const std::string& commandTopic_, const std::string& statusTopic_);
     
     void setGoalMsg(rover_msgs::msg::CameraControl goalMsg_);
-    const rover_msgs::msg::CameraControl getGoalMsg(void);
+    rover_msgs::msg::CameraControl getGoalMsg(void) const;
     
-    const rover_msgs::msg::CameraControl getLastStatusMsg(void);
+    rover_msgs::msg::CameraControl getLastStatusMsg(void) const;
 
   private:
     void CB_publishCommand(const rover_msgs::msg::CameraControl& commandMsg_);
