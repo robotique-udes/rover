@@ -11,11 +11,13 @@ file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS
 )
 
 find_package(rover_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
 
 add_library(rover_shared_libs ${LIB_HEADERS} ${LIB_SOURCES})
 
 
 ament_target_dependencies(rover_shared_libs
+                          rclcpp
                           rover_msgs)
 
 
