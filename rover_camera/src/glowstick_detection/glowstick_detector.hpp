@@ -2,7 +2,6 @@
 #define GLOWSTICK_DETECTOR_HPP
 
 #include "image_capture_glowstick.hpp"
-#include <vector>
 
 class GlowstickDetector 
 {
