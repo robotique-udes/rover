@@ -12,8 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
-
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel DBus)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg DBus)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 
@@ -94,6 +93,9 @@ add_executable(main_gui src/gui.cpp
                         
                    src/QSideBar/QSideBar.hpp
                    src/QSideBar/QSideBar.cpp
+
+                   src/QTopUtilityBar/QTopUtilityBar.hpp
+                   src/QTopUtilityBar/QTopUtilityBar.cpp
                         
                    src/QDashboard/QDashboard.hpp
                    src/QDashboard/QDashboard.cpp
@@ -118,7 +120,8 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
                    src/QVideoPlayer/Worker/QPanoramaWorker.hpp
                    src/QVideoPlayer/Worker/QPanoramaWorker.cpp
-                   
+
+                   ui/icons.qrc
                 )
                   
 add_subdirectory(../rover_shared_libs/ .build)
@@ -133,6 +136,7 @@ target_link_libraries(main_gui
   Qt6::Core
   Qt6::Widgets
   Qt6::Gui
+  Qt6::Svg
   Qt6::WebEngineWidgets
   Qt6::WebChannel
   Qt6::DBus

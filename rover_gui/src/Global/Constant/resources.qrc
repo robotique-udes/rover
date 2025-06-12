@@ -8,5 +8,6 @@
         <file>icons/refresh.png</file>
         <file>other/map.html</file>
         <file>icons/arrow.png</file>
+        <file>TaskDateAndTime.txt</file>
     </qresource>
 </RCC>

@@ -1,5 +1,5 @@
-#ifndef FIX_HEADING_HPP
-#define FIX_HEADING_HPP
+#ifndef ROVER_CAN2_MSGS_FIX_HEADING_HPP
+#define ROVER_CAN2_MSGS_FIX_HEADING_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
@@ -129,4 +129,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // FIX_HEADING_HPP
+#endif  // ROVER_CAN2_MSGS_FIX_HEADING_HPP

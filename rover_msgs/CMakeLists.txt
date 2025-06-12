@@ -40,6 +40,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AntennaCmd.msg"
   "msg/ArmMsg.msg"
   "msg/Aruco.msg"
+  "msg/Battery.msg"
   "msg/CameraAngle.msg"
   "msg/CameraControl.msg"
   "msg/CanDeviceStatus.msg"  
@@ -54,6 +55,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/LightControl.msg"
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
+  "msg/WifiConnection.msg"
 
   "srv/AntennaArbitration.srv"
   "srv/ArucoDetection.srv"
