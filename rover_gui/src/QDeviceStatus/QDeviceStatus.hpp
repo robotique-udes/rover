@@ -1,5 +1,5 @@
-#ifndef QDEVICESTATUS_HPP
-#define QDEVICESTATUS_HPP
+#ifndef QDEVICESTATUS_QDEVICESTATUS_HPP
+#define QDEVICESTATUS_QDEVICESTATUS_HPP
 
 // ROS
 #include <rclcpp/rclcpp.hpp>
@@ -28,11 +28,11 @@ class QDeviceStatus : public QWidget
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
     void updateDeviceInfo();
-    void updateDeviceColor(uint16_t deviceID_, const rover_msgs::msg::CanDeviceStatus& deviceStatus_);
-    void setStatusReport(uint16_t id_);
-    void updateRebootCounter(uint16_t deviceID_);
+    void updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_);
+    void setStatusReport(RoverCan2::Constant::eDeviceId id_);
+    void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
     void setDefaultStyle();
-    std::string getDeviceName(uint16_t deviceID_);
+    std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_);
 
   private slots:
 
@@ -47,16 +47,17 @@ class QDeviceStatus : public QWidget
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
     rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client_requestErrorStatus;
 
-    std::unordered_map<uint16_t, int16_t> _deviceMessageCount;
-    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceReboots;
-    std::unordered_map<uint16_t, uint16_t> _oldDeviceReboots;
-    std::unordered_map<uint16_t, uint16_t> _numberOfDeviceRebootsFromButton;
-    std::unordered_map<uint16_t, QWidget*> _deviceInfo;
-    std::unordered_map<uint16_t, QLabel*> _deviceReboot;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _deviceMessageCount;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceReboots;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _oldDeviceReboots;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, uint16_t> _numberOfDeviceRebootsFromButton;
+
+    std::unordered_map<RoverCan2::Constant::eDeviceId, QWidget*> _deviceInfo;
+    std::unordered_map<RoverCan2::Constant::eDeviceId, QLabel*> _deviceReboot;
 
     uint16_t _numberOfCalls = 0U;
 
     QStatusWorker _QStatusWorker;
 };
 
-#endif  // __QDEVICESTATUS_HPP__
+#endif  // QDEVICESTATUS_QDEVICESTATUS_HPP

@@ -1,5 +1,5 @@
-#ifndef QSTATUS_WORKER_HPP
-#define QSTATUS_WORKER_HPP
+#ifndef QDEVICESTATUS_WORKER_QSTATUS_WORKER_HPP
+#define QDEVICESTATUS_WORKER_QSTATUS_WORKER_HPP
 
 #include <Global/Workers/QWorker.hpp>
 #include <rclcpp/rclcpp.hpp>
@@ -20,4 +20,4 @@ class QStatusWorker : public QWorker
     void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);
 };
 
-#endif  // __QSTATUS_WORKER_HPP__
+#endif  // QDEVICESTATUS_WORKER_QSTATUS_WORKER_HPP
