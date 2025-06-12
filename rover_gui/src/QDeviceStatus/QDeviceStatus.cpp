@@ -157,7 +157,7 @@ void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_
     uint16_t& oldDeviceReboots = _oldDeviceReboots[deviceID_];
     uint16_t& deviceRebootsFromButton = _numberOfDeviceRebootsFromButton[deviceID_];
     uint16_t& deviceMessageCount = _deviceMessageCount[deviceID_];
-    
+
     if (_numberOfCalls < deviceMessageCount)
     {
         oldDeviceReboots = 0;
