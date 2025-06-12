@@ -149,12 +149,12 @@ void Arbitration::watchdog(bool* lostHB_)
 
 void Arbitration::sendCmd()
 {
-    RCLCPP_INFO(this->get_logger(), "Sending command");
-    if (_baseHBLost || _roverHBLost)
-    {
-        _pubCmd->publish(_zeroCmd);
-        return;
-    }
+    // RCLCPP_INFO(this->get_logger(), "Sending command");
+    // if (_baseHBLost || _roverHBLost)
+    // {
+    //     _pubCmd->publish(_zeroCmd);
+    //     return;
+    // }
 
     if (_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
     {
@@ -162,7 +162,6 @@ void Arbitration::sendCmd()
     }
     else if(_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
     {
-        RCLCPP_INFO(this->get_logger(), "Publishing autonomous command");
         _pubCmd->publish(_cmdAuto);
     }
     else
