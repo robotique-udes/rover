@@ -42,7 +42,7 @@ namespace Constants
     namespace DriveTrain
     {
         constexpr float SPEED_FACTOR_CRAWLER = 0.2f;
-        constexpr float SPEED_FACTOR_NORMAL = 0.1f;
+        constexpr float SPEED_FACTOR_NORMAL = 0.5f;
         constexpr float SPEED_FACTOR_TURBO = 1.0f;
         constexpr float SMALLEST_RADIUS = 0.3f;
     }  // namespace DriveTrain
