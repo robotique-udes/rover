@@ -130,13 +130,16 @@ void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::st
     if (success_)
     {
         _numberOfCalls++;
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Number of calls: %d", _numberOfCalls);
         RCLCPP_INFO(rclcpp::get_logger("GUI"), "Service request succeeded: %s", response_.c_str());
     }
     else
     {
-        // Test
+        // Uncomment the following lines for debugging purposes
+        /*
         _numberOfCalls++;
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Here");
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Number of calls: %d", _numberOfCalls);
+        */
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response_.c_str());
     }
 }

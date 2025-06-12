@@ -1,7 +1,7 @@
 #ifndef QDEVICESTATUS_WORKER_QSTATUS_WORKER_HPP
 #define QDEVICESTATUS_WORKER_QSTATUS_WORKER_HPP
 
-#include <Global/Workers/QWorker.hpp>
+#include "Global/Workers/QWorker.hpp"
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/srv/empty.hpp>
 #include <rover_lib2/helpers/macros.hpp>
