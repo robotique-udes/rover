@@ -1,26 +1,26 @@
 #ifndef ROVER_LIB2_HELPERS_CONSTANTS_HPP
 #define ROVER_LIB2_HELPERS_CONSTANTS_HPP
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
-#include <rclcpp/qos.hpp>
-#include <rover_msgs/msg/joy.hpp>
-
-#elif defined(__linux__)
+#if defined(__linux__)
 #include <map>
 #include <string>
+#endif  // defined(__linux__)
 
-#endif
+#if defined(ROS)
+#include <rclcpp/qos.hpp>
+#include <rover_msgs/msg/joy.hpp>
+#endif  // defined(ROS)
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(ROS)
 #define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
-#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+#endif  // defined(ROS)
 
 namespace Constants
 {
     namespace CameraInfo
     {
 #if defined(__linux__)
-        const std::map<std::string, std::string> CAMERA_URL_MAP = {
+        const std::map<std::string, std::string, std::less<>> CAMERA_URL_MAP = {
             {"Main", "rtsp://192.168.144.30:554/1/h264major"},
             {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
             {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
@@ -46,17 +46,17 @@ namespace Constants
         constexpr float SMALLEST_RADIUS = 0.3f;
     }  // namespace DriveTrain
 
+#if defined(__linux__) && defined(ROS)
     namespace DriveTrain::KeyBinding
     {
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
-        constexpr float DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
-        constexpr float LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
-        constexpr float ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
-        constexpr float MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
-        constexpr float MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
-        constexpr float MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
-#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+        constexpr uint8_t DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
+        constexpr uint8_t LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
+        constexpr uint8_t ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
+        constexpr uint8_t MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
+        constexpr uint8_t MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
+        constexpr uint8_t MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
     }   // namespace DriveTrain::KeyBinding
+#endif  // defined(__linux__) && defined(ROS)
 }  // namespace Constants
 
 #endif  // ROVER_LIB2_HELPERS_CONSTANTS_HPP

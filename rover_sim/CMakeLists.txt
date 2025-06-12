@@ -17,12 +17,25 @@ install(PROGRAMS
 )
 
 add_executable(gps_test src/gps_test_pub.cpp)
+add_executable(battery_test src/battery_test_pub.cpp)
+add_executable(connection_speed_test src/connection_speed_test_pub.cpp)
 
 install(TARGETS
-          gps_test
-        DESTINATION lib/${PROJECT_NAME})
+        battery_test
+        connection_speed_test
+        gps_test
+        DESTINATION lib/${PROJECT_NAME}
+  )
 
 ament_target_dependencies(gps_test
+                          rclcpp
+                          rover_msgs)
+
+ament_target_dependencies(battery_test
+                          rclcpp
+                          rover_msgs)
+
+ament_target_dependencies(connection_speed_test
                           rclcpp
                           rover_msgs)
 

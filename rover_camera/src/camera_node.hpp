@@ -36,7 +36,6 @@ class CameraNode : public rclcpp::Node
 
   public:
     CameraNode();
-    ~CameraNode() = default;
 
   private:
     void controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
