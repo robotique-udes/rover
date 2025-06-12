@@ -118,6 +118,8 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/QVideoPlayerWidget.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
+                   src/QVideoPlayer/Worker/QRecordingWorker.cpp
+                   src/QVideoPlayer/Worker/QRecordingWorker.hpp
 
                    ui/icons.qrc
                 )
