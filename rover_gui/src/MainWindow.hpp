@@ -7,6 +7,7 @@
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
 #include "QUtilityBarBottom/QUtilityBarBottom.hpp"
+#include "QTopUtilityBar/QTopUtilityBar.hpp"
 
 #include <QStackedWidget>
 #include <QMainWindow>
@@ -32,6 +33,7 @@ class MainWindow : public QMainWindow
     QShortcut _closeShortCut;
 
     QSideBar _sideBarWidget;
+    QTopUtilityBar _topUtilityBar;
     QUtilityBarBottom _bottomUtilityBar;
     QDashboard _dashboardWidget;
     QNavigation _navigationWidget;
