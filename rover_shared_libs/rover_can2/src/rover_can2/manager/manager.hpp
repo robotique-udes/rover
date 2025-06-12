@@ -1,5 +1,5 @@
-#ifndef MANAGER_HPP
-#define MANAGER_HPP
+#ifndef ROVER_CAN2_MANAGER_MANAGER_HPP
+#define ROVER_CAN2_MANAGER_MANAGER_HPP
 
 #include "rover_can2/drivers/driver_base.hpp"
 #include "rover_can2/device.hpp"
@@ -161,4 +161,4 @@ namespace RoverCan2
 
 }  // namespace RoverCan2
 
-#endif  // MANAGER_HPP
+#endif  // ROVER_CAN2_MANAGER_MANAGER_HPP

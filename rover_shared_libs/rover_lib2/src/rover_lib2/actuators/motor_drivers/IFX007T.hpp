@@ -1,5 +1,5 @@
-#ifndef IFX007T_HPP
-#define IFX007T_HPP
+#ifndef ROVER_LIB2_ACTUATORS_MOTOR_DRIVERS_IFX007T_HPP
+#define ROVER_LIB2_ACTUATORS_MOTOR_DRIVERS_IFX007T_HPP
 
 #include "rover_lib2/actuators/motor_drivers/motor_driver.hpp"
 #include "rover_lib2/actuators/PWM_generators/PWM_generator.hpp"
@@ -39,6 +39,10 @@ class IFX007T : public MotorDriver<IFX007T<PwmGeneratorAT, PwmGeneratorBT>>
         this->setReversed(_reversed);
         this->setEnabled(_enabled);
         this->setBrakeMode(brakeMode_);
+
+        ASSERT_COND_MSG(pwmA_.getFrequency() <= 1'000.0F && pwmB_.getFrequency() <= 1'000.0F,
+                        "IFX007T drivers are quite bad and can't handle pwm frequency over 1'000Hz without loosing precision and "
+                        "generating a lot of jitter and back EMF");
     }
 
     void __init(void)
@@ -130,7 +134,7 @@ class IFX007T : public MotorDriver<IFX007T<PwmGeneratorAT, PwmGeneratorBT>>
     void setReversed(bool reversed_)
     {
         _reversed = reversed_;
-        this->setCmd(this->getCmd());  // will apply reversed on the inernal command value
+        this->setCmd(this->getCmd());  // will apply reversed on the internal command value
     }
 
     bool isReversed(void)
@@ -189,4 +193,4 @@ template<typename PwmGeneratorAT, typename PwmGeneratorBT>
 IFX007T(IO::DigitalOutput&, PwmGeneratorAT&, IO::DigitalOutput&, PwmGeneratorBT&, bool, MotorDriverT::eBrakeMode)
     -> IFX007T<PwmGeneratorAT, PwmGeneratorBT>;
 
-#endif  // IFX007T_HPP
+#endif  // ROVER_LIB2_ACTUATORS_MOTOR_DRIVERS_IFX007T_HPP
