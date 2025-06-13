@@ -46,7 +46,6 @@ class QPlayerWorker : public QWorker
     void arucoServerInfoFailed(bool success);
 
   private:
-
     LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
 };
 

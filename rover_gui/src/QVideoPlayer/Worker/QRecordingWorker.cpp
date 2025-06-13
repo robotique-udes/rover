@@ -11,10 +11,11 @@ QRecordingWorker::~QRecordingWorker()
     this->finish();
 }
 
-void QRecordingWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                          std::string cameraUrl_,
-                                          uint16_t playerIndex_,
-                                          std::string basePath_)
+void QRecordingWorker::takeScreenshotManager(
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    std::string cameraUrl_,
+    uint16_t playerIndex_,
+    std::string basePath_)
 {
     this->addTask(
         [this, client_CameraControl_, cameraUrl_, playerIndex_, basePath_](void)
@@ -23,10 +24,11 @@ void QRecordingWorker::takeScreenshotManager(std::shared_ptr<rclcpp::Client<rove
         });
 }
 
-void QRecordingWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                           std::string cameraUrl_,
-                                           uint16_t playerIndex_,
-                                           std::string basePath_)
+void QRecordingWorker::takeScreenshotInternal(
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    std::string cameraUrl_,
+    uint16_t playerIndex_,
+    std::string basePath_)
 {
     emit this->setCursorWaiting(true);
     bool success = false;
@@ -81,10 +83,11 @@ void QRecordingWorker::takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rov
     emit this->screenshotHandledSuccessfully(success, status, playerIndex_);
 }
 
-void QRecordingWorker::startRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                          std::string cameraUrl_,
-                                          uint16_t playerIndex_,
-                                          std::string basePath_)
+void QRecordingWorker::startRecordingManager(
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    std::string cameraUrl_,
+    uint16_t playerIndex_,
+    std::string basePath_)
 {
     this->addTask(
         [this, client_CameraControl_, cameraUrl_, playerIndex_, basePath_](void)
@@ -94,9 +97,9 @@ void QRecordingWorker::startRecordingManager(std::shared_ptr<rclcpp::Client<rove
 }
 
 void QRecordingWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                         std::string cameraUrl_,
-                                         uint16_t playerIndex_,
-                                         std::string basePath_)
+                                            std::string cameraUrl_,
+                                            uint16_t playerIndex_,
+                                            std::string basePath_)
 {
     this->addTask(
         [this, client_CameraControl_, cameraUrl_, playerIndex_, basePath_](void)
@@ -105,10 +108,11 @@ void QRecordingWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover
         });
 }
 
-void QRecordingWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                           std::string cameraUrl_,
-                                           uint16_t playerIndex_,
-                                           std::string basePath_)
+void QRecordingWorker::startRecordingInternal(
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    std::string cameraUrl_,
+    uint16_t playerIndex_,
+    std::string basePath_)
 {
     emit this->setCursorWaiting(true);
     bool success = false;
@@ -165,10 +169,11 @@ void QRecordingWorker::startRecordingInternal(std::shared_ptr<rclcpp::Client<rov
     emit this->startRecordingHandledSuccessfully(success, status, playerIndex_);
 }
 
-void QRecordingWorker::stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                          std::string cameraUrl_,
-                                          uint16_t playerIndex_,
-                                          std::string basePath_)
+void QRecordingWorker::stopRecordingInternal(
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    std::string cameraUrl_,
+    uint16_t playerIndex_,
+    std::string basePath_)
 {
     emit this->setCursorWaiting(true);
     bool success = false;

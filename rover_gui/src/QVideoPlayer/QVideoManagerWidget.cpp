@@ -26,7 +26,10 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::urlFoundInDetection,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
-    connect(_playerWorkerThreadRecording.get(), &QRecordingWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
+    connect(_playerWorkerThreadRecording.get(),
+            &QRecordingWorker::setCursorWaiting,
+            this,
+            &QVideoManagerWidget::onSetCursorWaiting);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
