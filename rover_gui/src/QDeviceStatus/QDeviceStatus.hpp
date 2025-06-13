@@ -43,7 +43,6 @@ class QDeviceStatus : public QWidget
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
 
   private slots:
-
     void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);
 
   private:

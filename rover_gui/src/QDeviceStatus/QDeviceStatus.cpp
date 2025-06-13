@@ -1,5 +1,6 @@
 #include "QDeviceStatus.hpp"
 
+#include <rover_lib2/helpers/assert.hpp>
 #include <QStyle>
 #include <utility>
 
@@ -35,10 +36,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _node(guiNode_),
     _QStatusWorker(true, this)
 {
-    if (!_node)
-    {
-        throw std::invalid_argument("QDeviceStatus requires a valid ROS node");
-    }
+    ASSERT_COND(!_node);
 
     _ui.setupUi(this);
 
