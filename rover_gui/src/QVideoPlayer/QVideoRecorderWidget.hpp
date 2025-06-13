@@ -15,7 +15,7 @@ class QVideoRecorderWidget : public QWidget
     QVideoRecorderWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                        std::string url_,
                        uint16_t tag_,
-                       std::shared_ptr<QRecordingWorker> workerThreadRecording_);
+                       std::shared_ptr<QRecordingWorker> workerThreadRecording_,);
 
     ~QVideoRecorderWidget();
 };
