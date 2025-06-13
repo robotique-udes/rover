@@ -47,7 +47,6 @@ void CanMasterNode::CB_updateCan(void)
 void CanMasterNode::CB_ROS_canDeviceErrorStateRequest(rover_msgs::srv::Empty::Request::SharedPtr,
                                                       rover_msgs::srv::Empty::Response::SharedPtr response_)
 {
-    bool success = _canManager.sendErrorStateRequest();
     if (!response_)
     {
         RCLCPP_ERROR(this->get_logger(),
@@ -55,10 +54,19 @@ void CanMasterNode::CB_ROS_canDeviceErrorStateRequest(rover_msgs::srv::Empty::Re
                      "be populated");
         return;
     }
+    bool success = _canManager.sendErrorStateRequest();
 
-    response_->success = success;
-    response_->message = std::string("ErrorState request succesfully sent on CanBus network, response from all devices can "
-                                     "be retrieved on /rover/can/devices_status topic");
+    if (success)
+    {
+        response_->success = success;
+        response_->message = std::string("ErrorState request succesfully sent on CanBus network, response from all devices can "
+                                         "be retrieved on /rover/can/devices_status topic");
+    }
+    else
+    {
+        response_->success = success;
+        response_->message = std::string("ErrorState request failed to be sent on CanBus network.");
+    }
 }
 
 void CanMasterNode::CB_CAN_errorStateRecv(RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& canMsg_)

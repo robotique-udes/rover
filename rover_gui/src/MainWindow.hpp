@@ -8,6 +8,7 @@
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
 #include "QUtilityBarBottom/QUtilityBarBottom.hpp"
 #include "QTopUtilityBar/QTopUtilityBar.hpp"
+#include "QDeviceStatus/QDeviceStatus.hpp"
 
 #include <QStackedWidget>
 #include <QMainWindow>
@@ -40,6 +41,7 @@ class MainWindow : public QMainWindow
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
 
     QFileTransferWidget _fileTransferWidget;
+    QDeviceStatus _deviceStatusWidget;
 };
 
 #endif  // MAIN_WINDOWS_HPP
