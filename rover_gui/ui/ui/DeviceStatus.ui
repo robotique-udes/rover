@@ -65,7 +65,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/ethswitch.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/ethswitch.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -124,7 +124,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/motor.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -192,7 +192,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/ddb.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/ddb.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -254,7 +254,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/motor.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -326,7 +326,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/light.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/light.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -375,7 +375,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/camera.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/camera.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -444,7 +444,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/motor.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -493,7 +493,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/camera.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/camera.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -565,7 +565,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/gnss.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/gnss.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -614,7 +614,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/ethswitch.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/ethswitch.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
@@ -673,7 +673,7 @@
             <string/>
            </property>
            <property name="pixmap">
-            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/icons/motor.png</pixmap>
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
            </property>
            <property name="scaledContents">
             <bool>true</bool>
