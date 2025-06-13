@@ -579,6 +579,16 @@
 
         bridge.waypointIsVisible.connect(function (lat, lon, name, waypointId, visibility) {
           addWaypoint(lat, lon, name, waypointId, visibility);
+          // waypointVisibility(visibility, waypointId);
+
+          /* Anib
+          const existingWaypoint = viewer.entities.getById(waypointId);
+          if (existingWaypoint) {
+            waypointVisibility(visibility, waypointId);
+          } else {
+            addWaypoint(lat, lon, name, waypointId, visibility);
+          }
+          */
         });
 
         bridge.sendGoal.connect(function (name, lat, lon) {
@@ -810,45 +820,77 @@
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
 
-        const waypointEntity = viewer.entities.add({
-          id: id,
-          name: waypointName,
-          position: Cesium.Cartesian3.fromDegrees(lon, lat),
-          point: visibility ? {
-            pixelSize: 10,
-            color: Cesium.Color.BLUE,
-            outlineColor: Cesium.Color.WHITE,
-            outlineWidth: 2,
-            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY
-          }: undefined,
-          label:  visibility ?{
-            text: waypointName,
-            font: '14pt sans-serif',
-            style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-            outlineWidth: 2,
-            verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-            pixelOffset: new Cesium.Cartesian2(0, -10),
-            fillColor: Cesium.Color.WHITE,
-            outlineColor: Cesium.Color.BLACK,
-            showBackground: true,
-            backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
-            heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY
-           }: undefined
-        });
+      const waypointEntity = viewer.entities.add({
+        id: id,
+        name: waypointName,
+        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        point: visibility ? {
+          pixelSize: 10,
+          color: Cesium.Color.BLUE,
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        } : undefined,
+        label: visibility ? {
+          text: waypointName,
+          font: '14pt sans-serif',
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          outlineWidth: 2,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, -10),
+          fillColor: Cesium.Color.WHITE,
+          outlineColor: Cesium.Color.BLACK,
+          showBackground: true,
+          backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+        } : undefined
+      });
 
-        if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
-          waypointEntity._visualizers.forEach(visualizer => {
-            if (visualizer && visualizer.visualizersByDisplayID) {
-              for (const displayID in visualizer.visualizersByDisplayID) {
-                if (visualizer.visualizersByDisplayID[displayID]) {
-                  visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
-                }
+      /* Anib
+      const waypointEntity = viewer.entities.add({
+        id: id,
+        name: waypointName,
+        position: Cesium.Cartesian3.fromDegrees(lon, lat),
+        point: {
+          pixelSize: 10,
+          color: Cesium.Color.BLUE,
+          outlineColor: Cesium.Color.WHITE,
+          outlineWidth: 2,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          show: visibility
+        }: undefined,
+        label: {
+          text: waypointName,
+          font: '14pt sans-serif',
+          style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+          outlineWidth: 2,
+          verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+          pixelOffset: new Cesium.Cartesian2(0, -10),
+          fillColor: Cesium.Color.WHITE,
+          outlineColor: Cesium.Color.BLACK,
+          showBackground: true,
+          backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+          disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          show: visibility
+        }
+      });
+      */
+
+      if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
+        waypointEntity._visualizers.forEach(visualizer => {
+          if (visualizer && visualizer.visualizersByDisplayID) {
+            for (const displayID in visualizer.visualizersByDisplayID) {
+              if (visualizer.visualizersByDisplayID[displayID]) {
+                visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
               }
             }
-          });
-        }
+          }
+        });
+      }
       waypointEntities.push(waypointEntity);
       return waypointEntity;
     }
@@ -860,6 +902,15 @@
     //   }
     // }
 
+    /* Anib
+    function waypointVisibility(visibility, waypointId) {
+      const waypointEntity = viewer.entities.getById(waypointId);
+      if (waypointEntity) {
+        waypointEntity.label.show = visibility;
+        waypointEntity.point.show = visibility;
+      }
+    }
+    */
 
     function showWaypointDialog(lat, lon) {
       Swal.fire({
