@@ -17,12 +17,14 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _bottomUtilityBar(this),
     _dashboardWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
-    _fileTransferWidget(this)
+    _fileTransferWidget(this),
+    _deviceStatusWidget(guiNode_, this)
 {
     _stackedWidget.addWidget(&_dashboardWidget);
     _stackedWidget.addWidget(&_navigationWidget);
 
     _stackedWidget.addWidget(&_fileTransferWidget);
+    _stackedWidget.addWidget(&_deviceStatusWidget);
 
     _layout.addWidget(&_sideBarWidget);
     _layout.addWidget(&_stackedWidget);

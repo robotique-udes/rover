@@ -1,0 +1,759 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<ui version="4.0">
+ <class>DeviceStatus</class>
+ <widget class="QWidget" name="DeviceStatus">
+  <property name="geometry">
+   <rect>
+    <x>0</x>
+    <y>0</y>
+    <width>974</width>
+    <height>414</height>
+   </rect>
+  </property>
+  <property name="windowTitle">
+   <string>Form</string>
+  </property>
+  <property name="styleSheet">
+   <string notr="true"/>
+  </property>
+  <layout class="QGridLayout" name="gridLayout_2">
+   <item row="1" column="5">
+    <widget class="QWidget" name="deviceInfos" native="true">
+     <property name="styleSheet">
+      <string notr="true">QWidget {
+     background-color: #2e2e2e;
+    color: #ffffff;
+}</string>
+     </property>
+     <layout class="QGridLayout" name="gridLayout">
+      <item row="3" column="3">
+       <widget class="QWidget" name="switchETH0" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_12">
+         <item row="0" column="0">
+          <widget class="QLabel" name="switchETH0Icon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/ethswitch.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="switchETH0Info">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch ETH0&lt;/p&gt;&lt;p&gt;ID: TODO&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="1">
+       <widget class="QWidget" name="frontleftMotor" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_11">
+         <item row="0" column="1">
+          <widget class="QLabel" name="frontleftMotorIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="frontleftMotorInfo">
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Front Left Motor&lt;/p&gt;&lt;p&gt;ID: 0x101&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="1">
+       <widget class="QWidget" name="ddbController" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_18">
+         <property name="verticalSpacing">
+          <number>5</number>
+         </property>
+         <item row="0" column="0">
+          <widget class="QLabel" name="ddbControllerIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/ddb.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="ddbControllerInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;DDB controller&lt;/p&gt;&lt;p&gt;ID: 0x023&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="textFormat">
+            <enum>Qt::AutoText</enum>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="4">
+       <widget class="QWidget" name="rearrightMotor" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_10">
+         <item row="0" column="1">
+          <widget class="QLabel" name="rearrightMotorIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="2">
+          <widget class="QLabel" name="rearrightMotorInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rear Right Motor&lt;/p&gt;&lt;p&gt;ID: 0x106&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="3">
+       <widget class="QWidget" name="lightsMain" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_16">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <item row="0" column="1">
+          <widget class="QLabel" name="lightsMainInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Lights main&lt;/p&gt;&lt;p&gt;ID: 0x304&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="lightsMainIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/light.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="1">
+       <widget class="QWidget" name="cameraMain" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_15">
+         <item row="0" column="0">
+          <widget class="QLabel" name="CamMainIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/camera.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="cameraMainInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Camera main&lt;/p&gt;&lt;p&gt;ID: 0x401&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="2">
+       <widget class="QWidget" name="frontrightMotor" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_3">
+         <item row="0" column="1">
+          <widget class="QLabel" name="frontrightMotorInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Front Right Motor&lt;/p&gt;&lt;p&gt;ID: 0x102&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="frontrightMotorIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="2">
+       <widget class="QWidget" name="cameraAntenne" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_8">
+         <item row="0" column="0">
+          <widget class="QLabel" name="camAntIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/camera.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="cameraAntenneInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Camera antenne&lt;/p&gt;&lt;p&gt;ID: 0x402&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="0" column="2">
+       <widget class="QWidget" name="gnss" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_17">
+         <property name="spacing">
+          <number>5</number>
+         </property>
+         <item row="0" column="1">
+          <widget class="QLabel" name="gnssInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;GNSS&lt;/p&gt;&lt;p&gt;ID: 0x302&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="0">
+          <widget class="QLabel" name="gnssIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/gnss.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="3" column="4">
+       <widget class="QWidget" name="switchETH1" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_14">
+         <item row="0" column="0">
+          <widget class="QLabel" name="switchETH1Icon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/ethswitch.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="switchETH1Info">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Switch ETH1&lt;/p&gt;&lt;p&gt;ID: TODO&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+      <item row="1" column="3">
+       <widget class="QWidget" name="rearleftMotor" native="true">
+        <property name="styleSheet">
+         <string notr="true">QWidget {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #3c3f41;
+		border-radius: 5px;
+		padding: 5px 10px;
+}</string>
+        </property>
+        <layout class="QGridLayout" name="gridLayout_9">
+         <item row="0" column="0">
+          <widget class="QLabel" name="rearleftMotorIcon">
+           <property name="enabled">
+            <bool>true</bool>
+           </property>
+           <property name="sizePolicy">
+            <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+             <horstretch>0</horstretch>
+             <verstretch>0</verstretch>
+            </sizepolicy>
+           </property>
+           <property name="maximumSize">
+            <size>
+             <width>60</width>
+             <height>60</height>
+            </size>
+           </property>
+           <property name="autoFillBackground">
+            <bool>false</bool>
+           </property>
+           <property name="lineWidth">
+            <number>1</number>
+           </property>
+           <property name="text">
+            <string/>
+           </property>
+           <property name="pixmap">
+            <pixmap resource="../../src/Global/Constant/resources.qrc">:/icons/motor.png</pixmap>
+           </property>
+           <property name="scaledContents">
+            <bool>true</bool>
+           </property>
+          </widget>
+         </item>
+         <item row="0" column="1">
+          <widget class="QLabel" name="rearleftMotorInfo">
+           <property name="text">
+            <string>&lt;html&gt;&lt;head/&gt;&lt;body&gt;&lt;p&gt;Rear Left Motor&lt;/p&gt;&lt;p&gt;ID: 0x105&lt;/p&gt;&lt;p&gt;Reboots: 0&lt;/p&gt;&lt;/body&gt;&lt;/html&gt;</string>
+           </property>
+           <property name="wordWrap">
+            <bool>false</bool>
+           </property>
+          </widget>
+         </item>
+        </layout>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+   <item row="0" column="5">
+    <widget class="QWidget" name="serviceCall" native="true">
+     <property name="sizePolicy">
+      <sizepolicy hsizetype="Minimum" vsizetype="Minimum">
+       <horstretch>0</horstretch>
+       <verstretch>0</verstretch>
+      </sizepolicy>
+     </property>
+     <property name="maximumSize">
+      <size>
+       <width>16777215</width>
+       <height>50</height>
+      </size>
+     </property>
+     <layout class="QHBoxLayout" name="horizontalLayout_2">
+      <property name="bottomMargin">
+       <number>7</number>
+      </property>
+      <item>
+       <spacer name="horizontalSpacer">
+        <property name="orientation">
+         <enum>Qt::Horizontal</enum>
+        </property>
+        <property name="sizeHint" stdset="0">
+         <size>
+          <width>40</width>
+          <height>20</height>
+         </size>
+        </property>
+       </spacer>
+      </item>
+      <item>
+       <widget class="QPushButton" name="pb_serviceCall">
+        <property name="styleSheet">
+         <string notr="true">QPushButton {
+		background-color: #3c3f41;
+		color: #FFFFFF;
+		border: 1px solid #4b4e52;
+		border-radius: 5px;
+		padding: 5px 10px;
+}
+
+QPushButton:hover {
+    background-color: #4d4d4d;
+}</string>
+        </property>
+        <property name="text">
+         <string>Service Call</string>
+        </property>
+       </widget>
+      </item>
+     </layout>
+    </widget>
+   </item>
+  </layout>
+ </widget>
+ <resources>
+  <include location="../../src/Global/Constant/resources.qrc"/>
+ </resources>
+ <connections/>
+</ui>
