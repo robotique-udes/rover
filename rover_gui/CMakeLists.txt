@@ -109,6 +109,11 @@ add_executable(main_gui src/gui.cpp
 
                    src/QUtilityBarBottom/QUtilityBarBottom.hpp
                    src/QUtilityBarBottom/QUtilityBarBottom.cpp
+
+                   src/QDeviceStatus/QDeviceStatus.hpp
+                   src/QDeviceStatus/QDeviceStatus.cpp
+                   src/QDeviceStatus/Worker/QStatusWorker.hpp
+                   src/QDeviceStatus/Worker/QStatusWorker.cpp
                    
                    src/QVideoPlayer/Worker/QGStreamerWorker.cpp
                    src/QVideoPlayer/Worker/QGStreamerWorker.hpp
@@ -143,7 +148,10 @@ target_link_libraries(main_gui
   ${LIBSSH_LIBRARY}
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs
-)
+)         
+
+target_sources(main_gui PRIVATE ${RESOURCES})
+                      
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 

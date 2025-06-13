@@ -30,7 +30,6 @@ class QVideoPlayerWidget : public QWidget
     static int _instanceCounter;
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
-    static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
 
   public:
     enum class ePlayerState
