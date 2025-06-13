@@ -1,6 +1,7 @@
 #include "QDeviceStatus.hpp"
 
 #include <QStyle>
+#include <utility>
 
 constexpr const char* STATUS_DEFAULT = "QWidget {"
                                        "background-color: #3c3f41;"
@@ -111,11 +112,6 @@ void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::st
     }
     else
     {
-        // Uncomment the following lines for debugging purposes
-        /*
-        _numberOfCalls++;
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Number of calls: %d", _numberOfCalls);
-        */
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Service request failed: %s", response_.c_str());
     }
 }
@@ -181,7 +177,7 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId deviceID_)
     QLabel* label = _canDevices[deviceID_].deviceReboot;
 
     std::string deviceName = this->getDeviceName(deviceID_);
-    uint16_t deviceID = static_cast<uint16_t>(deviceID_);
+    uint16_t deviceID = std::to_underlying(deviceID_);
 
     QString labelText = QString::fromStdString(deviceName) + QString("\n\nID: 0x%1").arg(deviceID, 3, 16, QChar('0'))
                         + "\n\nReboots: " + QString::number(_canDevices[deviceID_].numberOfDeviceReboots);
@@ -231,7 +227,7 @@ void QDeviceStatus::setDefaultStyle()
     }
 }
 
-const std::string QDeviceStatus::getDeviceName(RoverCan2::Constant::eDeviceId deviceID_)
+std::string QDeviceStatus::getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const
 {
     switch (deviceID_)
     {

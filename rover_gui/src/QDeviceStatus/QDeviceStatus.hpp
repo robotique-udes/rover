@@ -1,8 +1,7 @@
 #ifndef QDEVICESTATUS_QDEVICESTATUS_HPP
 #define QDEVICESTATUS_QDEVICESTATUS_HPP
 
-#include <QWidget>
-
+// ROS
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/can_device_status.hpp>
 #include <rover_msgs/srv/empty.hpp>
@@ -41,7 +40,7 @@ class QDeviceStatus : public QWidget
     void setStatusReport(RoverCan2::Constant::eDeviceId id_);
     void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
     void setDefaultStyle();
-    const std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_);
+    std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
 
   private slots:
 
