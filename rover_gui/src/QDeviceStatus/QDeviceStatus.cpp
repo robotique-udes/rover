@@ -36,7 +36,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _node(guiNode_),
     _QStatusWorker(true, this)
 {
-    ASSERT_COND(!_node);
+    ASSERT_COND(_node != nullptr);
 
     _ui.setupUi(this);
 
