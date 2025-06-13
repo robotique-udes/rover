@@ -12,6 +12,7 @@
 #include <QDateTime>
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
+#include "Worker/QRecordingWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
@@ -47,7 +48,7 @@ class QVideoPlayerWidget : public QWidget
                        std::string url_,
                        uint16_t tag_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                       std::shared_ptr<QPlayerWorker> workerThreadRecording_);
+                       std::shared_ptr<QRecordingWorker> workerThreadRecording_);
 
     ~QVideoPlayerWidget();
 
@@ -144,7 +145,7 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
+    std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
     int _reconnectAttempts = 0;

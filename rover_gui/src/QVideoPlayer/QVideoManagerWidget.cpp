@@ -9,7 +9,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     QWidget(parent_),
     _node(guiNode_),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
-    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>()),
+    _playerWorkerThreadRecording(std::make_shared<QRecordingWorker>()),
     _tabWidget(this),
     _gridContainer(nullptr),
     _vSubLayoutContainer(nullptr),
@@ -26,7 +26,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::urlFoundInDetection,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
-    connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
+    connect(_playerWorkerThreadRecording.get(), &QRecordingWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
