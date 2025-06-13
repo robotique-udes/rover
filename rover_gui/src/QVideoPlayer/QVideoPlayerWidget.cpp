@@ -1118,13 +1118,6 @@ void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
     {
         _ui.ScreenshotButton->setEnabled(false);
         _ui.startRecordingButton->setEnabled(false);
-        if (_playerIndex == 1)
-        {
-            RCLCPP_ERROR_THROTTLE(rclcpp::get_logger("GUI"),
-                                  *_node->get_clock(),
-                                  THROTTLE_RATE_ERROR,
-                                  "Error, camera control client is unavailable ");
-        }
     }
     else if (!_ui.ScreenshotButton->isEnabled() || !_ui.startRecordingButton->isEnabled())
     {
