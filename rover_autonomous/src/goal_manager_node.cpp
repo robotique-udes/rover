@@ -10,6 +10,13 @@ GoalManager::GoalManager():
                                                                       {
                                                                           this->CB_currentGps(gpsMsg_);
                                                                       });
+
+    _sub_arucoDetection = this->create_subscription<rover_msgs::msg::Aruco>(TOPIC_ARUCO_DETECTED,
+                                                                            QOS_DEFAULT,
+                                                                            [this](const rover_msgs::msg::Aruco& arucoMsg_)
+                                                                            {
+                                                                                this->CB_aruco(arucoMsg_);
+                                                                            });
     _srv_desiredGps = this->create_service<rover_msgs::srv::DesiredGpsPosition>(
         SRV_GOAL_NAME,
         [this](const rover_msgs::srv::DesiredGpsPosition::Request::SharedPtr request_,
@@ -23,8 +30,17 @@ GoalManager::GoalManager():
                                      {
                                          this->driveTrainPublisher();
                                      });
-
+    _srv_arucoDetection = this->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_SERVER_NAME);
     _navigationController.headingBuffer_ = HEADING_BUFFER;  // TODO make this cleaner
+}
+
+void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
+{
+    if(arucoMsg_.valid)
+    {
+        RCLCPP_INFO(this->get_logger(), "Detected aruco => %d", arucoMsg_.id);
+        this->_arucoDetected = true;
+    }
 }
 
 void GoalManager::CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_)
@@ -58,48 +74,9 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
     _navigationController.getDesiredGpsData(desiredGpsData);
 }
 
-bool GoalManager::desiredHeadingReached(NavigationController::eRotationDirection rotationDirection_)
-{
-    rover_msgs::msg::PropulsionMotor wheelCmdMsg;
-
-    bool desiredHeadingReached = false;
-
-    switch (rotationDirection_)
-    {
-        case NavigationController::eRotationDirection::CLOCKWISE:
-            RCLCPP_INFO(this->get_logger(), "Rotating clockwise");
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-            break;
-        case NavigationController::eRotationDirection::COUNTERCLOCKWISE:
-            RCLCPP_INFO(this->get_logger(), "Rotating counterclockwise");
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_LEFT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_RIGHT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            wheelCmdMsg.target_speed[rover_msgs::msg::PropulsionMotor::MOTOR_REAR_RIGHT]
-                = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            break;
-        case NavigationController::eRotationDirection::NO_ROTATION:
-            desiredHeadingReached = true;
-        default:
-            break;
-    }
-
-    _pub_auto_cmd->publish(wheelCmdMsg);
-    return desiredHeadingReached;
-}
-
 void GoalManager::driveTrainPublisher(void)
 {
+    // TODO Change if logic -> switch sides
     switch (_state)
     {
         case (eState::IDLE):
@@ -121,13 +98,38 @@ void GoalManager::driveTrainPublisher(void)
             }
             else
             {
-                _state = eState::NAVIGATING_TO_POINT;
+                // _state = eState::NAVIGATING_TO_POINT;
+                _state = eState::IDLE;
             }
             break;
         case (eState::NAVIGATING_TO_POINT):
-        {
+            RCLCPP_INFO(this->get_logger(), "NAVIGATING TO POINT");
+            if (!_navigationController._endNodeReached)
+            {
+                _targetWheelCmd = _navigationController.setWheelCmd();
+                goalRequested = false;
+                goalReached = true;
+            }
+            else
+            {
+                auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
+                arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
+                arucoRequest->camera_url = Constants::CameraInfo::CAMERA_URL_MAP.at(("Main"));  // TODO Make better
+                _state = eState::DETECTING_ARUCO;
+            }
+        case (eState::DETECTING_ARUCO):
             RCLCPP_INFO(this->get_logger(), "HEADING REACHED");
-        }
+            if (!this->_arucoDetected)
+            {
+                _targetWheelCmd = _navigationController.rotate();
+            }
+            else
+            {
+                RCLCPP_INFO(this->get_logger(), "ARUCO DETECTED");
+                _targetWheelCmd = _navigationController.idleCmd();
+                _state = eState::IDLE;
+                // TODO END NODE REACHED
+            }
     }
 
     auto msg = rover_msgs::msg::PropulsionMotor();
