@@ -11,6 +11,7 @@
     <file>icons/log_view.png</file>
     <file>icons/ethswitch.png</file>
     <file>icons/camera.png</file>
+    <file>other/map.html</file>
     <file>icons/arrow.png</file>
         <file>TaskDateAndTime.txt</file>
   </qresource>
