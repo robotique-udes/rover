@@ -41,11 +41,10 @@ class NavigationController
 
     float headingBuffer_;
     bool _desiredHeadingReached = false;
+    bool _endNodeReached = false;
 
   private:
     std::array<float, TO_UNDERLYING(eGpsData::eLAST)> _currentGpsData = {0.0F, 0.0F, 0.0F};
-
-    bool _endNodeReached = false;
 
     double _currentLat;
     double _currentLon;
@@ -88,12 +87,39 @@ class NavigationController
         }
     }
 
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> rotate(void)
+    {
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+        _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+    }
+
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> idleCmd(void)
     {
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = 0.0F;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = 0.0F;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = 0.0F;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = 0.0F;
+
+        return _targetWheelCmd;
+    }
+
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> navigateToPoint(void)
+    {
+        if (_endNodeReached)
+        {
+            _targetWheelCmd = this->idleCmd();
+            return _targetWheelCmd;
+        }
+        if (!_desiredHeadingReached)
+        {
+            _targetWheelCmd = this->getToHeading();
+        }
+        else
+        {
+            _targetWheelCmd = this->setWheelCmd();
+        }
 
         return _targetWheelCmd;
     }
