@@ -8,10 +8,18 @@ class QSideBar : public QWidget
     Q_OBJECT
 
   public:
-    QSideBar(QWidget* parent_);
+    enum class eTabIndex : int
+    {
+        DASHBOARD = 0,
+        NAVIGATION,
+        DEVICE_STATUS,
+        FILE_TRANSFER,
+    };
+
+    explicit QSideBar(QWidget* parent_);
 
   signals:
-    void switchPage(int pageIndex);
+    void switchPage(eTabIndex pageIndex);
 
   private:
     Ui::SideBar _ui;

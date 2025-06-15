@@ -26,6 +26,21 @@
 }</string>
      </property>
      <layout class="QGridLayout" name="gridLayout">
+      <property name="leftMargin">
+       <number>0</number>
+      </property>
+      <property name="topMargin">
+       <number>0</number>
+      </property>
+      <property name="rightMargin">
+       <number>0</number>
+      </property>
+      <property name="bottomMargin">
+       <number>0</number>
+      </property>
+      <property name="horizontalSpacing">
+       <number>6</number>
+      </property>
       <item row="3" column="3">
        <widget class="QWidget" name="switchETH0" native="true">
         <property name="styleSheet">
@@ -38,6 +53,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_12">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="switchETH0Icon">
            <property name="enabled">
@@ -97,6 +127,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_11">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="1">
           <widget class="QLabel" name="frontleftMotorIcon">
            <property name="enabled">
@@ -162,8 +207,20 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_18">
-         <property name="verticalSpacing">
-          <number>5</number>
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
          </property>
          <item row="0" column="0">
           <widget class="QLabel" name="ddbControllerIcon">
@@ -227,6 +284,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_10">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="1">
           <widget class="QLabel" name="rearrightMotorIcon">
            <property name="enabled">
@@ -286,8 +358,20 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_16">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <property name="spacing">
-          <number>5</number>
+          <number>0</number>
          </property>
          <item row="0" column="1">
           <widget class="QLabel" name="lightsMainInfo">
@@ -348,6 +432,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_15">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="CamMainIcon">
            <property name="enabled">
@@ -407,6 +506,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_3">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="1">
           <widget class="QLabel" name="frontrightMotorInfo">
            <property name="text">
@@ -466,6 +580,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_8">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="camAntIcon">
            <property name="enabled">
@@ -525,8 +654,20 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_17">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
          <property name="spacing">
-          <number>5</number>
+          <number>0</number>
          </property>
          <item row="0" column="1">
           <widget class="QLabel" name="gnssInfo">
@@ -587,6 +728,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_14">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="switchETH1Icon">
            <property name="enabled">
@@ -646,6 +802,21 @@
 }</string>
         </property>
         <layout class="QGridLayout" name="gridLayout_9">
+         <property name="leftMargin">
+          <number>0</number>
+         </property>
+         <property name="topMargin">
+          <number>0</number>
+         </property>
+         <property name="rightMargin">
+          <number>0</number>
+         </property>
+         <property name="bottomMargin">
+          <number>0</number>
+         </property>
+         <property name="spacing">
+          <number>0</number>
+         </property>
          <item row="0" column="0">
           <widget class="QLabel" name="rearleftMotorIcon">
            <property name="enabled">

@@ -14,6 +14,10 @@
 
 class QNavigation : public QWidget
 {
+    // Default to Studio de Création
+    static constexpr double DEFAULT_LATITUDE = 45.377755F;
+    static constexpr double DEFAULT_LONGITUDE = -71.924652F;
+
     Q_OBJECT
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
@@ -56,8 +60,8 @@ class QNavigation : public QWidget
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
-    double _currentLat = 0.0;
-    double _currentLon = 0.0;
+    double _currentLat = DEFAULT_LATITUDE;
+    double _currentLon = DEFAULT_LONGITUDE;
     double _currentHeading = 0.0;
 
     QList<Waypoint> _waypoints;

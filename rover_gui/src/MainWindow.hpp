@@ -1,20 +1,19 @@
 #ifndef MAIN_WINDOWS_HPP
 #define MAIN_WINDOWS_HPP
 
-#include "QDashboard/QDashboard.hpp"
+#include "QArbitration/QArbitration.hpp"
 #include "QNavigation/QNavigation.hpp"
 #include "Global/Helpers/QToastNotification/QNotificationShowHistory.hpp"
 #include "QSideBar/QSideBar.hpp"
 #include "QSshFileExplorer/QFileTransferWidget.hpp"
 #include "QUtilityBarBottom/QUtilityBarBottom.hpp"
-#include "QTopUtilityBar/QTopUtilityBar.hpp"
+#include "QUtilityBarTop/QUtilityBarTop.hpp"
 #include "QDeviceStatus/QDeviceStatus.hpp"
 
 #include <QStackedWidget>
 #include <QMainWindow>
 #include <QShortcut>
-
-#include "rclcpp/rclcpp.hpp"
+#include <qgridlayout.h>
 
 class MainWindow : public QMainWindow
 {
@@ -23,6 +22,9 @@ class MainWindow : public QMainWindow
   public:
     explicit MainWindow(std::shared_ptr<rclcpp::Node> guiNode_);
 
+  private slots:
+    void onTabChange(QSideBar::eTabIndex index_);
+
   private:
     void closeEvent(QCloseEvent* event_) override;
 
@@ -30,18 +32,18 @@ class MainWindow : public QMainWindow
     QWidget _hBoxContainer;
     QHBoxLayout _layout;
     QVBoxLayout _verticalLayout;
-    QStackedWidget _stackedWidget;
+    QTabWidget _mainTabWidget;
     QShortcut _closeShortCut;
 
     QSideBar _sideBarWidget;
-    QTopUtilityBar _topUtilityBar;
+    QUtilityBarTop _topUtilityBar;
     QUtilityBarBottom _bottomUtilityBar;
-    QDashboard _dashboardWidget;
-    QNavigation _navigationWidget;
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
 
+    QArbitration _arbitrationWidget;
     QFileTransferWidget _fileTransferWidget;
     QDeviceStatus _deviceStatusWidget;
+    QNavigation _navigationWidget;
 };
 
 #endif  // MAIN_WINDOWS_HPP
