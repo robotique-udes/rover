@@ -22,7 +22,7 @@ namespace CameraManager
         for (auto& subscriber : _sub_PTZcmd)
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
-                PTZ_CMD_TOPIC[index],
+                Arbitration::PTZ_CMD_TOPIC[index],
                 QOS_DEFAULT,
                 [this, index](const rover_msgs::msg::CameraControl& PTZcmd_)
                 {

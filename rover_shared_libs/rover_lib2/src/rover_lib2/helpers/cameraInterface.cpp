@@ -19,6 +19,7 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                                                                  {
                                                                                      this->CB_subscriberStatus(msg_);
                                                                                  });
+
         _timer_pubCommand = _node->create_wall_timer(std::chrono::milliseconds(1000 / SEND_COMMAND_FREQUENCY),
                                                      [this](void)
                                                      {
@@ -33,8 +34,13 @@ void CameraInterface::setGoalMsg(rover_msgs::msg::CameraControl goalMsg_, size_t
     {
         _isCamConcerned.at(id_) = true;
     }
-    
+
     _goalMsg.at(id_) = goalMsg_;
+}
+
+void CameraInterface::forgetGoal(size_t id_)
+{
+    _isCamConcerned.at(id_) = false;
 }
 
 rover_msgs::msg::CameraControl CameraInterface::getGoalMsg(size_t id_) const

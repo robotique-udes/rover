@@ -8,13 +8,18 @@
 
 namespace CameraManager
 {
+
     class Arbitration
     {
         static constexpr const size_t NUMBER_CAM = 5;
         static constexpr const size_t NUMBER_TOPIC = 2;
+        static constexpr const size_t LOWEST_PRIORITY_LEVEL = NUMBER_TOPIC-1;
+        static constexpr const size_t HIGH_PRIORITY_MISSING_MSG_SAFETY_FACTOR = 2;
 
       public:
-         Arbitration();
+        static constexpr const char* PTZ_CMD_TOPIC[NUMBER_TOPIC] = {"rover/camera/PTZcmd/panorama", "rover/camera/PTZcmd/GUI"};
+
+        Arbitration();
 
         std::optional<rover_msgs::msg::CameraControl> getValidPTZcmdMsg(size_t camID_);
 
@@ -25,7 +30,12 @@ namespace CameraManager
 
         std::array<size_t, NUMBER_CAM> _highestPriorityLevel;
 
-        std::array<bool, NUMBER_CAM> _isPTZcmdRequired;
+        std::array<bool, NUMBER_CAM> _isPTZTopicActive;
+
+        std::array<size_t, NUMBER_CAM> _missingHighPriorityMsg;
+
+        size_t _activeTopicCount = 0;
+
     };
 
 }  // namespace CameraManager

@@ -27,6 +27,8 @@ class CameraInterface
     
     void setGoalMsg(rover_msgs::msg::CameraControl goalMsg_,size_t id_);
     rover_msgs::msg::CameraControl getGoalMsg(size_t id_) const;
+
+    void forgetGoal(size_t id_);
     
     rover_msgs::msg::CameraControl getLastStatusMsg(size_t id_) const;
 

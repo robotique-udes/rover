@@ -14,8 +14,6 @@ namespace CameraManager
         static constexpr const size_t NUMBER_TOPIC = 2;
         static constexpr const size_t NUMBER_CAM = 5;
 
-        static constexpr const char* PTZ_CMD_TOPIC[NUMBER_TOPIC] = {"rover/camera/PTZcmd/panorama", "rover/camera/PTZcmd/GUI"};
-
       public:
         ManagerNode();
         void simu(void);
