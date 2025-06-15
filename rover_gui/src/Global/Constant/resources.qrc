@@ -12,6 +12,9 @@
     <file>icons/ethswitch.png</file>
     <file>icons/camera.png</file>
     <file>icons/arrow.png</file>
-        <file>TaskDateAndTime.txt</file>
+    
+    <file>TaskDateAndTime.txt</file>
+    
+    <file>other/map.html</file>
   </qresource>
 </RCC>
