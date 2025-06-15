@@ -5,15 +5,26 @@
 #include "arbitration.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <rclcpp/node.hpp>
-//#include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/camera_control.hpp"
 
-namespace CameraManager 
+namespace CameraManager
 {
-    class ManagerNode: public rclcpp::Node
+    class ManagerNode : public rclcpp::Node
     {
-        public:
-            ManagerNode();
+        static constexpr const size_t NUMBER_TOPIC = 2;
+        static constexpr const size_t NUMBER_CAM = 5;
+
+        static constexpr const char* PTZ_CMD_TOPIC[NUMBER_TOPIC] = {"rover/camera/PTZcmd/panorama", "rover/camera/PTZcmd/GUI"};
+
+      public:
+        ManagerNode();
+        void simu(void);
+
+      private:
+        Arbitration _arbitration;
+
+        std::array<rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr, NUMBER_TOPIC> _sub_PTZcmd;
     };
 
-} //namespace CameraManager
-#endif //MANAGER_NODE_HPP
+}  // namespace CameraManager
+#endif  // MANAGER_NODE_HPP
