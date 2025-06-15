@@ -14,6 +14,7 @@
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QRecordingWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
+#include "QVideoRecorderWidget.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 #include <rover_lib2/helpers/constants.hpp>
@@ -29,8 +30,6 @@ class QVideoPlayerWidget : public QWidget
     static int MAX_RECONNECT_ATTEMPTS;
     static int _instanceCounter;
 
-    static constexpr size_t STYLE_RESET_TIME = 2'000UL;
-
   public:
     enum class ePlayerState
     {
@@ -45,7 +44,7 @@ class QVideoPlayerWidget : public QWidget
 
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                        std::string url_,
-                       uint16_t tag_,
+                       uint16_t playerIndex_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
                        std::shared_ptr<QRecordingWorker> workerThreadRecording_);
 
@@ -99,12 +98,7 @@ class QVideoPlayerWidget : public QWidget
     void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
-    // Camera server
-    void handleScreenshot(void);
-    void handleRecording(void);
-    void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    // Camera angle
     void onCameraAngleSliderChanged(void);
     void onCameraAngleBoxChanged(void);
 
@@ -129,17 +123,19 @@ class QVideoPlayerWidget : public QWidget
     void initializeUIState(void);
     void emitStateChanged(void);
     void cleanupResources(void);
+    void initializeRecorder(void);
 
-    void hideAngleSelecter(void);
+    void hideAngleSelector(void);
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 
     std::string _camURL = "";
     std::string _defaultCamUrl = "";
-    std::string _sessionFolderPath;
 
     int _streamIndex;
     int16_t _playerIndex;
+
+    std::unique_ptr<QVideoRecorderWidget> _recorderWidget;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;

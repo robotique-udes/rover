@@ -7,7 +7,6 @@
 #include <QRegularExpression>
 #include <optional>
 #include <gst/video/videooverlay.h>
-#include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 
 using namespace LogUtils;
 
@@ -35,6 +34,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.setupUi(this);
 
     this->setupUI();
+    this->initializeRecorder();
 
     _gstreamerWorker = new GStreamerWorker();
     _gstreamerWorker->setTargetWidget(_ui.logDisplay);
@@ -48,7 +48,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_gstreamerWorker, &GStreamerWorker::errorOccurred, this, &QVideoPlayerWidget::onErrorOccurred);
     connect(_gstreamerWorker, &GStreamerWorker::connectionFailed, this, &QVideoPlayerWidget::onConnectionFailed);
     connect(_gstreamerWorker, &GStreamerWorker::frameReceived, this, &QVideoPlayerWidget::onFrameReceived);
-    this->hideAngleSelecter();
+    this->hideAngleSelector();
 
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
     connect(_playerWorkerThreadAruco.get(),
@@ -71,25 +71,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     connect(&QLogManager::getInstance(), &QLogManager::newLogMessage, this, &QVideoPlayerWidget::onNewLogMessage);
 
-    connect(_ui.ScreenshotButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleScreenshot);
-    connect(_playerWorkerThreadRecording.get(),
-            &QRecordingWorker::screenshotHandledSuccessfully,
-            this,
-            &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
-
-    connect(_ui.startRecordingButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleRecording);
     connect(_ui.cameraAngleSlider, &QSlider::valueChanged, this, &QVideoPlayerWidget::onCameraAngleSliderChanged);
     connect(_ui.cameraAngleBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::onCameraAngleBoxChanged);
-
-    connect(_playerWorkerThreadRecording.get(),
-            &QRecordingWorker::startRecordingHandledSuccessfully,
-            this,
-            &QVideoPlayerWidget::onStartRecordingHandledSuccessfully);
-
-    connect(_playerWorkerThreadRecording.get(),
-            &QRecordingWorker::stopRecordingHandledSuccessfully,
-            this,
-            &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
@@ -98,23 +81,6 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
     _gstreamerThread.start();
-    std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
-    if (optionalSessionFolderPath.has_value())
-    {
-        _sessionFolderPath = *optionalSessionFolderPath;
-        if (_sessionFolderPath.empty())
-        {
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
-                                                                           "SessionFolderManager returned an empty path",
-                                                                           QHelper::QToastNotification::eNotifType::ERROR);
-        }
-    }
-    else
-    {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
-                                                                       "SessionFolderManager couldn't return a valid path",
-                                                                       QHelper::QToastNotification::eNotifType::ERROR);
-    }
 
     UI_LOG_INFO(GENERAL, QString::fromStdString("VideoPlayer Widget initialized for camera: " + _camURL), _ui.logDisplay);
 }
@@ -819,20 +785,23 @@ float QVideoPlayerWidget::getCameraAngle(void)
 void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
 {
     _camURL = newCamUrl_;
-    this->hideAngleSelecter();
+    _recorderWidget->updateCamURL(_camURL);
+    this->hideAngleSelector();
 }
 
 void QVideoPlayerWidget::setURLToDefault(void)
 {
     _camURL = this->_defaultCamUrl;
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
-    this->hideAngleSelecter();
+    _recorderWidget->updateCamURL(_camURL);
+    this->hideAngleSelector();
 }
 
 void QVideoPlayerWidget::updateCamURL()
 {
     _camURL = _ui.rtspTextBox->text().toStdString();
-    this->hideAngleSelecter();
+    _recorderWidget->updateCamURL(_camURL);
+    this->hideAngleSelector();
 }
 
 void QVideoPlayerWidget::onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex_)
@@ -916,214 +885,17 @@ bool QVideoPlayerWidget::isStreaming(void)
 
 void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_)
 {
-    if (client_)
-    {
-        this->_client_cameraControlManager = client_;
-    }
-    else
-    {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access aruco detection manager client");
-        _ui.ScreenshotButton->setProperty("class", "error");
-        _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
-        _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-    }
+    _recorderWidget->setCameraControlClientManager(client_);
 }
 
-void QVideoPlayerWidget::handleScreenshot(void)
+void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls_)
 {
-    if (_playerWorkerThreadRecording.get() != nullptr)
-    {
-        _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager,
-                                                            _camURL,
-                                                            _playerIndex,
-                                                            _sessionFolderPath);
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
-    }
-    return;
-}
-
-void QVideoPlayerWidget::handleRecording(void)
-{
-    if (_playerWorkerThreadRecording.get() != nullptr)
-    {
-        if (_ui.startRecordingButton->isChecked())
-        {
-            _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager,
-                                                                _camURL,
-                                                                _playerIndex,
-                                                                _sessionFolderPath);
-        }
-        else
-        {
-            _playerWorkerThreadRecording->stopRecordingManager(_client_cameraControlManager,
-                                                               _camURL,
-                                                               _playerIndex,
-                                                               _sessionFolderPath);
-        }
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
-    }
-    return;
-}
-
-void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
-{
-    if (playerIndex_ == _playerIndex)
-    {
-        if (!success_)
-        {
-            _ui.ScreenshotButton->setProperty("class", "error");
-            _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
-            _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't take screenshot",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::ERROR);
-        }
-        else
-        {
-            _ui.ScreenshotButton->setProperty("class", "success");
-            _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
-            _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Screenshot taken",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
-        }
-
-        QTimer::singleShot(STYLE_RESET_TIME,
-                           this,
-                           [this]()
-                           {
-                               _ui.ScreenshotButton->setProperty("class", "normal");
-                               _ui.ScreenshotButton->style()->unpolish(_ui.ScreenshotButton);
-                               _ui.ScreenshotButton->style()->polish(_ui.ScreenshotButton);
-                           });
-    }
-    return;
-}
-
-void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
-{
-    if (playerIndex_ == _playerIndex)
-    {
-        if (!success_)
-        {
-            _ui.startRecordingButton->setProperty("class", "error");
-            _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
-            _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't start video",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::ERROR);
-
-            // reset after timer
-            QTimer::singleShot(STYLE_RESET_TIME,
-                               this,
-                               [this]()
-                               {
-                                   _ui.startRecordingButton->setProperty("class", "");
-                                   _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
-                                   _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-                               });
-        }
-        else
-        {
-            _ui.startRecordingButton->setProperty("class", "success");
-            _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-            _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
-            _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Video started",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
-        }
-    }
-    return;
-}
-
-void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
-{
-    if (playerIndex_ == _playerIndex)
-    {
-        if (!success_)
-        {
-            _ui.startRecordingButton->setProperty("class", "error");
-            _ui.startRecordingButton->style()->unpolish(_ui.ScreenshotButton);
-            _ui.startRecordingButton->style()->polish(_ui.ScreenshotButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't stop recording",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::ERROR);
-
-            // reset after timer
-            QTimer::singleShot(STYLE_RESET_TIME,
-                               this,
-                               [this]()
-                               {
-                                   _ui.startRecordingButton->setProperty("class", "normal");
-                                   _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
-                                   _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-                               });
-        }
-        else
-        {
-            _ui.startRecordingButton->setProperty("class", "normal");
-            _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
-            _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
-            _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
-        }
-    }
-    return;
-}
-
-void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls)
-{
-    for (const auto& url : urls)
-    {
-        if (url == _camURL)
-        {
-            if (!_ui.startRecordingButton->isChecked())
-            {
-                _ui.startRecordingButton->setChecked(true);
-                _ui.startRecordingButton->setProperty("class", "success");
-                _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-                _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
-                _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-            }
-            return;
-        }
-    }
-
-    // if cam_url wasn't found in vector and we're currently recording
-    if (_ui.startRecordingButton->isChecked())
-    {
-        std::string error_message = "Recording on " + _camURL + " was stopped unexpectedly";
-        _ui.startRecordingButton->setChecked(false);
-        _ui.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
-        _ui.startRecordingButton->style()->unpolish(_ui.startRecordingButton);
-        _ui.startRecordingButton->style()->polish(_ui.startRecordingButton);
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
-                                                                       error_message,
-                                                                       QHelper::QToastNotification::eNotifType::WARNING);
-    }
+    _recorderWidget->CB_cameraListUpdate(urls_);
 }
 
 void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
 {
-    if (!available_)
-    {
-        _ui.ScreenshotButton->setEnabled(false);
-        _ui.startRecordingButton->setEnabled(false);
-    }
-    else if (!_ui.ScreenshotButton->isEnabled() || !_ui.startRecordingButton->isEnabled())
-    {
-        _ui.ScreenshotButton->setEnabled(true);
-        _ui.startRecordingButton->setEnabled(true);
-    }
+    _recorderWidget->CB_serviceCameraControlAvailable(available_);
 }
 
 void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
@@ -1140,7 +912,7 @@ void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
     emit this->notifyCameraAnglePublisher(_camURL, angle);
 }
 
-void QVideoPlayerWidget::hideAngleSelecter(void)
+void QVideoPlayerWidget::hideAngleSelector(void)
 {
     if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main")
         || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
@@ -1153,4 +925,11 @@ void QVideoPlayerWidget::hideAngleSelecter(void)
         _ui.cameraAngleSlider->hide();
         _ui.cameraAngleBox->hide();
     }
+}
+
+void QVideoPlayerWidget::initializeRecorder(void)
+{
+    sRecordingButtons recordingButtons = {_ui.startRecordingButton, _ui.ScreenshotButton};
+    _recorderWidget
+        = std::make_unique<QVideoRecorderWidget>(recordingButtons, _camURL, _playerIndex, _playerWorkerThreadRecording);
 }

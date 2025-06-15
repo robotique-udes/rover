@@ -120,6 +120,8 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/QVideoManagerWidget.cpp
                    src/QVideoPlayer/QVideoManagerWidget.hpp
                    src/QVideoPlayer/QVideoPlayerWidget.cpp
+                   src/QVideoPlayer/QVideoRecorderWidget.cpp
+                   src/QVideoPlayer/QVideoRecorderWidget.hpp
                    src/QVideoPlayer/QVideoPlayerWidget.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
