@@ -1,6 +1,13 @@
 #include "goal_manager_node.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 
+/* // TODO
+    * Add sanity cehck for gps and heading
+    * Add sanity check for aruco detection
+    * Add teleop priority
+    * Add error handling
+*/  
+
 GoalManager::GoalManager():
     Node("Goal_manager")
 {
@@ -36,9 +43,8 @@ GoalManager::GoalManager():
 
 void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
 {
-    if(arucoMsg_.valid)
+    if (arucoMsg_.valid)
     {
-        RCLCPP_INFO(this->get_logger(), "Detected aruco => %d", arucoMsg_.id);
         this->_arucoDetected = true;
     }
 }
@@ -77,29 +83,29 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
 void GoalManager::driveTrainPublisher(void)
 {
     // TODO Change if logic -> switch sides
+    // TODO Write getters/setters instead of accessing variables
     switch (_state)
     {
         case (eState::IDLE):
             RCLCPP_INFO(this->get_logger(), "IDLE");
-            if (!goalRequested)
+            if (goalRequested)
             {
-                this->_targetWheelCmd = _navigationController.idleCmd();
+                _state = eState::ROTATING;
             }
             else
             {
-                _state = eState::ROTATING;
+                this->_targetWheelCmd = _navigationController.idleCmd();
             }
             break;
         case (eState::ROTATING):
             RCLCPP_INFO(this->get_logger(), "ROTATING");
-            if (!_navigationController._desiredHeadingReached)
+            if (_navigationController._desiredHeadingReached)
             {
-                this->_targetWheelCmd = _navigationController.getToHeading();
+                _state = eState::IDLE;
             }
             else
             {
-                // _state = eState::NAVIGATING_TO_POINT;
-                _state = eState::IDLE;
+                this->_targetWheelCmd = _navigationController.getToHeading();
             }
             break;
         case (eState::NAVIGATING_TO_POINT):
@@ -127,8 +133,11 @@ void GoalManager::driveTrainPublisher(void)
             {
                 RCLCPP_INFO(this->get_logger(), "ARUCO DETECTED");
                 _targetWheelCmd = _navigationController.idleCmd();
+                goalRequested = false;
+                goalReached = true;
+
                 _state = eState::IDLE;
-                // TODO END NODE REACHED
+                // TODO END NODE REACHED LOGIC
             }
     }
 
