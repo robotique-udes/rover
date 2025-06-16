@@ -1,5 +1,4 @@
 #include "QToastNotification.hpp"
-
 #include <rclcpp/rclcpp.hpp>
 
 #include <QScreen>
@@ -22,7 +21,7 @@ namespace QHelper
         setupScreenRect();
     }
 
-    QToastNotification& QToastNotification::getInstance()
+    QToastNotification& QToastNotification::getInstance(void)
     {
         static QToastNotification instance;
         return instance;
@@ -42,7 +41,6 @@ namespace QHelper
     {
         _targetScreenRect = targetScreenRect_;
     }
-
     void QToastNotification::setHistory(std::deque<QToastNotification::sNotificationInfo> history_)
     {
         _history = history_;

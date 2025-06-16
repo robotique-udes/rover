@@ -9,5 +9,6 @@ QSideBar::QSideBar(QWidget* parent_):
     connect(_ui.pb_dashboard, &QPushButton::clicked, this, [this]() { emit this->switchPage(0); });
     connect(_ui.pb_navigation, &QPushButton::clicked, this, [this]() { emit this->switchPage(1); });
     connect(_ui.pb_fileTransfer, &QPushButton::clicked, this, [this]() { emit this->switchPage(2); });
+    connect(_ui.pb_deviceStatus, &QPushButton::clicked, this, [this]() { emit this->switchPage(3); });
     // clang-format on
 }

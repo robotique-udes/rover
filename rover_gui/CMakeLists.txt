@@ -12,8 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
-
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel DBus)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg DBus)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 
@@ -94,6 +93,9 @@ add_executable(main_gui src/gui.cpp
                         
                    src/QSideBar/QSideBar.hpp
                    src/QSideBar/QSideBar.cpp
+
+                   src/QTopUtilityBar/QTopUtilityBar.hpp
+                   src/QTopUtilityBar/QTopUtilityBar.cpp
                         
                    src/QDashboard/QDashboard.hpp
                    src/QDashboard/QDashboard.cpp
@@ -107,6 +109,11 @@ add_executable(main_gui src/gui.cpp
 
                    src/QUtilityBarBottom/QUtilityBarBottom.hpp
                    src/QUtilityBarBottom/QUtilityBarBottom.cpp
+
+                   src/QDeviceStatus/QDeviceStatus.hpp
+                   src/QDeviceStatus/QDeviceStatus.cpp
+                   src/QDeviceStatus/Worker/QStatusWorker.hpp
+                   src/QDeviceStatus/Worker/QStatusWorker.cpp
                    
                    src/QVideoPlayer/Worker/QGStreamerWorker.cpp
                    src/QVideoPlayer/Worker/QGStreamerWorker.hpp
@@ -116,7 +123,10 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/QVideoPlayerWidget.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
-                   
+                   src/QVideoPlayer/Worker/QRecordingWorker.cpp
+                   src/QVideoPlayer/Worker/QRecordingWorker.hpp
+
+                   ui/icons.qrc
                 )
                   
 add_subdirectory(../rover_shared_libs/ .build)
@@ -131,13 +141,17 @@ target_link_libraries(main_gui
   Qt6::Core
   Qt6::Widgets
   Qt6::Gui
+  Qt6::Svg
   Qt6::WebEngineWidgets
   Qt6::WebChannel
   Qt6::DBus
   ${LIBSSH_LIBRARY}
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs
-)
+)         
+
+target_sources(main_gui PRIVATE ${RESOURCES})
+                      
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 

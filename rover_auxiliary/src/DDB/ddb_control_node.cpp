@@ -204,7 +204,7 @@ void DDBControlNode::setStateLogic(const rover_msgs::srv::DDBControl::Request& r
 bool DDBControlNode::valuesCheck(float dutyCycle_,
                                  float frequency_,
                                  uint8_t channelID_,
-                                 rover_msgs::srv::DDBControl::Response& response_)
+                                 rover_msgs::srv::DDBControl::Response& response_) const
 {
     if (dutyCycle_ > 100.0F || dutyCycle_ < 0.0F)
     {
@@ -261,7 +261,7 @@ void DDBControlNode::setValuesLogic(const rover_msgs::srv::DDBControl::Request& 
     }
 }
 
-void DDBControlNode::callbackDdbStatus(void)
+void DDBControlNode::callbackDdbStatus(void) const
 {
     rover_msgs::msg::DDBControl msg;
 

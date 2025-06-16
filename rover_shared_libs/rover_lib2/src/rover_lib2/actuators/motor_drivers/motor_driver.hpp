@@ -1,5 +1,5 @@
-#ifndef MOTOR_DRIVER_HPP
-#define MOTOR_DRIVER_HPP
+#ifndef ROVER_LIB2_ACTUATORS_MOTOR_DRIVERS_MOTOR_DRIVER_HPP
+#define ROVER_LIB2_ACTUATORS_MOTOR_DRIVERS_MOTOR_DRIVER_HPP
 
 #include "rover_lib2/rover_object.hpp"
 
@@ -81,4 +81,4 @@ class MotorDriver : public MotorDriverT,
     }
 };
 
-#endif  // MOTOR_DRIVER_HPP
+#endif  // ROVER_LIB2_ACTUATORS_MOTOR_DRIVERS_MOTOR_DRIVER_HPP
