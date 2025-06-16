@@ -14,7 +14,16 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _centralWidget.setLayout(&_verticalLayout);
 
     _verticalLayout.addWidget(&_topUtilityBar);
+    _verticalLayout.setSpacing(0);
+    _verticalLayout.setContentsMargins(0, 0, 0, 0);
+
+    _topBarSeperator.setFrameShape(QFrame::HLine);
+    _verticalLayout.addWidget(&_topBarSeperator);
+
     _verticalLayout.addLayout(&_layout);
+
+    _bottomBarSeperator.setFrameShape(QFrame::HLine);
+    _verticalLayout.addWidget(&_bottomBarSeperator);
     _verticalLayout.addWidget(&_bottomUtilityBar);
 
     _layout.addWidget(&_sideBarWidget);

@@ -17,6 +17,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     _node(guiNode_)
 {
     _ui.setupUi(this);
+
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
         {

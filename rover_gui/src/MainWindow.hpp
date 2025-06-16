@@ -12,8 +12,7 @@
 
 #include <QMainWindow>
 #include <QShortcut>
-#include <qtabwidget.h>
-#include <qwidget.h>
+#include <QFrame>
 
 class MainWindow : public QMainWindow
 {
@@ -31,7 +30,7 @@ class MainWindow : public QMainWindow
     QShortcut _closeShortCut;
 
     QWidget _centralWidget = QWidget(this);
-    QHBoxLayout _layout = QHBoxLayout(this);
+    QHBoxLayout _layout;
     QVBoxLayout _verticalLayout = QVBoxLayout(&_centralWidget);
     QTabWidget _mainTabWidget = QTabWidget(this);
 
@@ -45,6 +44,9 @@ class MainWindow : public QMainWindow
     QNavigation _navigationWidget;
     QDeviceStatus _deviceStatusWidget;
     QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
+
+    QFrame _topBarSeperator = QFrame(this);
+    QFrame _bottomBarSeperator = QFrame(this);
 };
 
 #endif  // MAIN_WINDOWS_HPP
