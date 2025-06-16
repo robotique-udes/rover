@@ -29,7 +29,7 @@ class MainWindow : public QMainWindow
     void closeEvent(QCloseEvent* event_) override;
 
     QShortcut _closeShortCut;
-    
+
     QWidget _centralWidget = QWidget(this);
     QHBoxLayout _layout = QHBoxLayout(this);
     QVBoxLayout _verticalLayout = QVBoxLayout(&_centralWidget);
@@ -37,7 +37,7 @@ class MainWindow : public QMainWindow
 
     QUtilityBarTop _topUtilityBar;
     QUtilityBarBottom _bottomUtilityBar = QUtilityBarBottom(this);
-    
+
     QSideBar _sideBarWidget = QSideBar(this);
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
 

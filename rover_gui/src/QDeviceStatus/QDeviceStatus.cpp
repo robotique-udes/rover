@@ -86,12 +86,12 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
 void QDeviceStatus::hideControls()
 {
-        _ui.serviceCall->hide();
+    _ui.serviceCall->hide();
 }
 
 void QDeviceStatus::showControls()
 {
-        _ui.serviceCall->show();
+    _ui.serviceCall->show();
 }
 
 /**
