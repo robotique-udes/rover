@@ -33,8 +33,8 @@ class QDeviceStatus : public QWidget
   public:
     QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
 
-    void hideControls(void);
-    void showControls(void);
+    void hideControls();
+    void showControls();
 
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);

@@ -10,10 +10,10 @@
 #include "QUtilityBarTop/QUtilityBarTop.hpp"
 #include "QDeviceStatus/QDeviceStatus.hpp"
 
-#include <QStackedWidget>
 #include <QMainWindow>
 #include <QShortcut>
-#include <qgridlayout.h>
+#include <qtabwidget.h>
+#include <qwidget.h>
 
 class MainWindow : public QMainWindow
 {
@@ -28,22 +28,23 @@ class MainWindow : public QMainWindow
   private:
     void closeEvent(QCloseEvent* event_) override;
 
-    QWidget _centralWidget;
-    QWidget _hBoxContainer;
-    QHBoxLayout _layout;
-    QVBoxLayout _verticalLayout;
-    QTabWidget _mainTabWidget;
     QShortcut _closeShortCut;
+    
+    QWidget _centralWidget = QWidget(this);
+    QHBoxLayout _layout = QHBoxLayout(this);
+    QVBoxLayout _verticalLayout = QVBoxLayout(&_centralWidget);
+    QTabWidget _mainTabWidget = QTabWidget(this);
 
-    QSideBar _sideBarWidget;
     QUtilityBarTop _topUtilityBar;
-    QUtilityBarBottom _bottomUtilityBar;
+    QUtilityBarBottom _bottomUtilityBar = QUtilityBarBottom(this);
+    
+    QSideBar _sideBarWidget = QSideBar(this);
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
 
     QArbitration _arbitrationWidget;
-    QFileTransferWidget _fileTransferWidget;
-    QDeviceStatus _deviceStatusWidget;
     QNavigation _navigationWidget;
+    QDeviceStatus _deviceStatusWidget;
+    QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
 };
 
 #endif  // MAIN_WINDOWS_HPP

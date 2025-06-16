@@ -21,5 +21,3 @@ QFileTransferWidget::QFileTransferWidget(QWidget* parent_):
 
     _mainLayout.addWidget(&_splitter, 0, 0, 1, 1);
 }
-
-QFileTransferWidget::~QFileTransferWidget() {}

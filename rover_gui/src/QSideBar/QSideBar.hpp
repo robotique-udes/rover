@@ -12,8 +12,8 @@ class QSideBar : public QWidget
     {
         DASHBOARD = 0,
         NAVIGATION,
-        DEVICE_STATUS,
         FILE_TRANSFER,
+        DEVICE_STATUS,
     };
 
     explicit QSideBar(QWidget* parent_);

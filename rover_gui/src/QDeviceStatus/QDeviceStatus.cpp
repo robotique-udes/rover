@@ -84,12 +84,12 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             &QDeviceStatus::onRequestDeviceStatusSuccessful);
 }
 
-void QDeviceStatus::hideControls(void)
+void QDeviceStatus::hideControls()
 {
         _ui.serviceCall->hide();
 }
 
-void QDeviceStatus::showControls(void)
+void QDeviceStatus::showControls()
 {
         _ui.serviceCall->show();
 }
