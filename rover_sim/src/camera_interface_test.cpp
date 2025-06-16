@@ -21,7 +21,7 @@ class CameraInterfaceTest : public rclcpp::Node
     CameraInterfaceTest():
         Node("camera_interface_test")
     {
-        _timer = this->create_wall_timer(std::chrono::milliseconds(5000),
+        _timer = this->create_wall_timer(std::chrono::milliseconds(10000),
                                          [this](void)
                                          {
                                              CB_cameraInterfaceTest();

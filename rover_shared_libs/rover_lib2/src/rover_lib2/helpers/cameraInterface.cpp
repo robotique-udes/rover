@@ -20,7 +20,7 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                                                                      this->CB_subscriberStatus(msg_);
                                                                                  });
 
-        _timer_pubCommand = _node->create_wall_timer(std::chrono::milliseconds(1000 / SEND_COMMAND_FREQUENCY),
+        _timer_pubCommand = _node->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000 / SEND_COMMAND_FREQUENCY)),
                                                      [this](void)
                                                      {
                                                          this->CB_publishCommand();

@@ -1,7 +1,9 @@
 #include "manager_node.hpp"
+#include <cstddef>
 #include <optional>
 #include <rclcpp/logging.hpp>
 #include <rover_lib2/helpers/constants.hpp>
+#include <rover_msgs/msg/detail/camera_control__struct.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -27,13 +29,20 @@ namespace CameraManager
                 [this, index](const rover_msgs::msg::CameraControl& PTZcmd_)
                 {
                     this->_arbitration.CB_PTZcmdFiltering(PTZcmd_, index);
-                    this->simu();
                 });
             ++index;
         }
+
+        _publisher_filteredPTZcmd = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_SEND_PTZCOMMAND_MANAGER, QOS_DEFAULT);
+
+        _timer_filtredPTZcmdPub = this->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000/SEND_COMMAND_FREQUENCY)),
+                                         [this](void)
+                                         {
+                                             CB_publishFilteredPtzCmd();
+                                         });
     }
 
-    void ManagerNode::simu()
+    void ManagerNode::CB_publishFilteredPtzCmd()
     {
         for (size_t i = 0; i < NUMBER_CAM; i++)
         {
@@ -42,7 +51,12 @@ namespace CameraManager
             {
                 size_t id = cmd.value().id_cam;
                 float yaw = cmd.value().yaw;
-                RCLCPP_WARN(this->get_logger(), "ID: %ld, YAW: %f", id,yaw);
+                RCLCPP_INFO(this->get_logger(), "ID: %ld, YAW: %f", id,yaw);
+                rover_msgs::msg::CameraControl msg;
+                msg.id_cam = cmd.value().id_cam;
+                msg.yaw = cmd.value().yaw;
+
+                _publisher_filteredPTZcmd->publish(msg);
 
             }
         }

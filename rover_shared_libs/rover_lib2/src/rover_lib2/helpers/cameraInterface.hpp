@@ -11,7 +11,7 @@
 
 class CameraInterface
 {
-    static constexpr uint8_t SEND_COMMAND_FREQUENCY = 5U;
+    static constexpr float SEND_COMMAND_FREQUENCY = 1.F;
     static constexpr float REICEVE_STATUS_FREQUENCY = 0.5F;
 
     static constexpr uint8_t NUMBER_CAM = 5;
