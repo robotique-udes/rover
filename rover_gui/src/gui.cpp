@@ -1,5 +1,4 @@
 #include "Global/Constant/StyleSheet.hpp"
-#include "Global/Helpers/QToastNotification/QToastNotification.hpp"
 
 #include "MainWindow.hpp"
 #include "SecondaryWindow.hpp"
@@ -22,7 +21,7 @@ int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
     std::shared_ptr<rclcpp::Node> guiNode = std::make_shared<rclcpp::Node>("gui_node");
-    std::thread rosThread(nodeThreadFunc, guiNode);
+    std::jthread rosThread(nodeThreadFunc, guiNode);
 
     int ret = guiMain(argc, argv, guiNode);
 
@@ -46,9 +45,9 @@ int main(int argc, char* argv[])
 int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
 {
     QApplication app(argc_, argv_);
-    app.setApplicationName(WM_CLASS);
+    QApplication::setApplicationName(WM_CLASS);
     QApplication::setStyle("Fusion");
-    app.setStyleSheet(Constants::Style::STYLE_DARK_MODE + QString(Constants::Style::STATUS_STYLE));
+    app.setStyleSheet(QString(Constants::Style::STYLE_DARK_MODE) + QString(Constants::Style::STATUS_STYLE));
 
     ScreenInhibitor screenInhibitor;
 
@@ -58,15 +57,15 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
 
     QProcess rosProcess;
     // clang-format off
-    QObject::connect(&rosProcess, &QProcess::readyReadStandardOutput, [&](){ forwardPrints(rosProcess); });
-    QObject::connect(&rosProcess, &QProcess::readyReadStandardError, [&](){ forwardPrints(rosProcess); });
+    QObject::connect(&rosProcess, &QProcess::readyReadStandardOutput, [&rosProcess](){ forwardPrints(rosProcess); });
+    QObject::connect(&rosProcess, &QProcess::readyReadStandardError, [&rosProcess](){ forwardPrints(rosProcess); });
     // clang-format on
 
     rosProcess.start("bash",
                      QStringList() << "-c"
                                    << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
 
-    int ret = app.exec();
+    int ret = QApplication::exec();
 
     rosProcess.terminate();
     if (!rosProcess.waitForFinished(3000))
