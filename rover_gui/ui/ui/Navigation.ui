@@ -2,16 +2,19 @@
 <ui version="4.0">
  <class>Navigation</class>
  <widget class="QWidget" name="Navigation">
+  <property name="windowModality">
+   <enum>Qt::NonModal</enum>
+  </property>
   <property name="geometry">
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>927</width>
-    <height>797</height>
+    <width>1643</width>
+    <height>1148</height>
    </rect>
   </property>
   <property name="sizePolicy">
-   <sizepolicy hsizetype="Preferred" vsizetype="Minimum">
+   <sizepolicy hsizetype="Preferred" vsizetype="Preferred">
     <horstretch>0</horstretch>
     <verstretch>0</verstretch>
    </sizepolicy>
@@ -22,170 +25,210 @@
     <height>16777215</height>
    </size>
   </property>
-  <layout class="QHBoxLayout" name="horizontalLayout">
+  <layout class="QHBoxLayout" name="horizontalLayout_5">
    <item>
-    <widget class="QWebEngineView" name="webViewContainer" native="true">
-     <property name="sizePolicy">
-      <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
-       <horstretch>1</horstretch>
-       <verstretch>0</verstretch>
-      </sizepolicy>
+    <layout class="QHBoxLayout" name="horizontalLayout_3">
+     <property name="spacing">
+      <number>6</number>
      </property>
-    </widget>
-   </item>
-   <item>
-    <layout class="QVBoxLayout" name="inputLayout">
      <item>
-      <widget class="QGroupBox" name="waypointInputGroup">
-       <property name="title">
-        <string>Add Waypoint</string>
+      <widget class="QWebEngineView" name="webViewContainer" native="true">
+       <property name="sizePolicy">
+        <sizepolicy hsizetype="Expanding" vsizetype="Expanding">
+         <horstretch>1</horstretch>
+         <verstretch>0</verstretch>
+        </sizepolicy>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout">
-        <item>
-         <layout class="QHBoxLayout" name="nameLayout">
-          <item>
-           <widget class="QLabel" name="labelName">
-            <property name="text">
-             <string>Waypoint Name:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="inputName"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="latitudeLayout">
-          <item>
-           <widget class="QLabel" name="labelLatitude">
-            <property name="text">
-             <string>Latitude:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="inputLatitude"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="longitudeLayout">
-          <item>
-           <widget class="QLabel" name="labelLongitude">
-            <property name="text">
-             <string>Longitude:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLineEdit" name="inputLongitude"/>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QPushButton" name="setGoalButton">
-          <property name="text">
-           <string>Set Goal</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
       </widget>
      </item>
      <item>
-      <widget class="QGroupBox" name="waypointListGroup">
-       <property name="title">
-        <string>Waypoints</string>
+      <widget class="QWidget" name="_inputWidget" native="true">
+       <property name="autoFillBackground">
+        <bool>false</bool>
        </property>
-       <layout class="QVBoxLayout" name="verticalLayout_2">
+       <layout class="QHBoxLayout" name="horizontalLayout_4">
+        <property name="spacing">
+         <number>0</number>
+        </property>
+        <property name="leftMargin">
+         <number>0</number>
+        </property>
+        <property name="topMargin">
+         <number>0</number>
+        </property>
+        <property name="rightMargin">
+         <number>0</number>
+        </property>
+        <property name="bottomMargin">
+         <number>0</number>
+        </property>
         <item>
-         <widget class="QListWidget" name="waypointList">
-          <property name="alternatingRowColors">
-           <bool>false</bool>
+         <layout class="QVBoxLayout" name="inputLayout">
+          <property name="spacing">
+           <number>6</number>
           </property>
-          <property name="selectionMode">
-           <enum>QAbstractItemView::NoSelection</enum>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="waypointButtonsLayout">
           <item>
-           <widget class="QPushButton" name="deleteWaypointButton">
-            <property name="text">
-             <string>Delete Waypoint</string>
+           <widget class="QGroupBox" name="waypointInputGroup">
+            <property name="title">
+             <string>Add Waypoint</string>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout">
+             <item>
+              <layout class="QHBoxLayout" name="nameLayout">
+               <item>
+                <widget class="QLabel" name="labelName">
+                 <property name="text">
+                  <string>Waypoint Name:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="inputName"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="latitudeLayout">
+               <item>
+                <widget class="QLabel" name="labelLatitude">
+                 <property name="text">
+                  <string>Latitude:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="inputLatitude"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="longitudeLayout">
+               <item>
+                <widget class="QLabel" name="labelLongitude">
+                 <property name="text">
+                  <string>Longitude:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLineEdit" name="inputLongitude"/>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="setGoalButton">
+               <property name="text">
+                <string>Set Goal</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
            </widget>
           </item>
           <item>
-           <widget class="QPushButton" name="clearWaypointsButton">
-            <property name="text">
-             <string>Clear All Waypoints</string>
+           <widget class="QGroupBox" name="waypointListGroup">
+            <property name="title">
+             <string>Waypoints</string>
             </property>
+            <layout class="QVBoxLayout" name="verticalLayout_2">
+             <item>
+              <widget class="QListWidget" name="waypointList">
+               <property name="alternatingRowColors">
+                <bool>false</bool>
+               </property>
+               <property name="selectionMode">
+                <enum>QAbstractItemView::NoSelection</enum>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="waypointButtonsLayout">
+               <item>
+                <widget class="QPushButton" name="deleteWaypointButton">
+                 <property name="text">
+                  <string>Delete Waypoint</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QPushButton" name="clearWaypointsButton">
+                 <property name="text">
+                  <string>Clear All Waypoints</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+            </layout>
            </widget>
+          </item>
+          <item>
+           <widget class="QGroupBox" name="pathGroup">
+            <property name="title">
+             <string>Path Planning</string>
+            </property>
+            <property name="flat">
+             <bool>false</bool>
+            </property>
+            <property name="checkable">
+             <bool>false</bool>
+            </property>
+            <layout class="QVBoxLayout" name="verticalLayout_3">
+             <item>
+              <widget class="QPushButton" name="calculatePathButton">
+               <property name="text">
+                <string>Calculate Path to Selected Waypoint</string>
+               </property>
+              </widget>
+             </item>
+             <item>
+              <layout class="QHBoxLayout" name="distanceLayout">
+               <item>
+                <widget class="QLabel" name="distanceTextLabel">
+                 <property name="text">
+                  <string>Distance:</string>
+                 </property>
+                </widget>
+               </item>
+               <item>
+                <widget class="QLabel" name="distanceLabel">
+                 <property name="text">
+                  <string>N/A</string>
+                 </property>
+                </widget>
+               </item>
+              </layout>
+             </item>
+             <item>
+              <widget class="QPushButton" name="clearPathButton">
+               <property name="text">
+                <string>Clear Calculated Path</string>
+               </property>
+              </widget>
+             </item>
+            </layout>
+           </widget>
+          </item>
+          <item>
+           <spacer name="verticalSpacer">
+            <property name="orientation">
+             <enum>Qt::Vertical</enum>
+            </property>
+            <property name="sizeType">
+             <enum>QSizePolicy::Expanding</enum>
+            </property>
+            <property name="sizeHint" stdset="0">
+             <size>
+              <width>20</width>
+              <height>40</height>
+             </size>
+            </property>
+           </spacer>
           </item>
          </layout>
         </item>
        </layout>
       </widget>
-     </item>
-     <item>
-      <widget class="QGroupBox" name="pathGroup">
-       <property name="title">
-        <string>Path Planning</string>
-       </property>
-       <layout class="QVBoxLayout" name="verticalLayout_3">
-        <item>
-         <widget class="QPushButton" name="calculatePathButton">
-          <property name="text">
-           <string>Calculate Path to Selected Waypoint</string>
-          </property>
-         </widget>
-        </item>
-        <item>
-         <layout class="QHBoxLayout" name="distanceLayout">
-          <item>
-           <widget class="QLabel" name="distanceTextLabel">
-            <property name="text">
-             <string>Distance:</string>
-            </property>
-           </widget>
-          </item>
-          <item>
-           <widget class="QLabel" name="distanceLabel">
-            <property name="text">
-             <string>N/A</string>
-            </property>
-           </widget>
-          </item>
-         </layout>
-        </item>
-        <item>
-         <widget class="QPushButton" name="clearPathButton">
-          <property name="text">
-           <string>Clear Calculated Path</string>
-          </property>
-         </widget>
-        </item>
-       </layout>
-      </widget>
-     </item>
-     <item>
-      <spacer name="verticalSpacer">
-       <property name="orientation">
-        <enum>Qt::Vertical</enum>
-       </property>
-       <property name="sizeType">
-        <enum>QSizePolicy::Expanding</enum>
-       </property>
-       <property name="sizeHint" stdset="0">
-        <size>
-         <width>20</width>
-         <height>40</height>
-        </size>
-       </property>
-      </spacer>
      </item>
     </layout>
    </item>

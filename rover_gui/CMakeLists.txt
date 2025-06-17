@@ -46,88 +46,51 @@ add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
 add_executable(main_gui src/gui.cpp
 
-                   src/MainWindow.hpp
                    src/MainWindow.cpp
-
-                   src/SecondaryWindow.hpp
                    src/SecondaryWindow.cpp
-                   
-                   src/QLogManager.hpp
                    src/QLogManager.cpp
+                   src/QScreenInhibitor.cpp
                   
-                   src/Global/Constant/StyleSheet.hpp
-                   src/Global/Helpers/QHelpers.hpp
                    src/Global/Helpers/QHelpers.cpp
-
                    src/Global/Helpers/QToastNotification/QToastNotification.cpp
-                   src/Global/Helpers/QToastNotification/QToastNotification.hpp
                    src/Global/Helpers/QToastNotification/QNotificationHistoryData.cpp
-                   src/Global/Helpers/QToastNotification/QNotificationHistoryData.hpp
                    src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
-                   src/Global/Helpers/QToastNotification/QNotificationShowHistory.hpp
-
                    src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.cpp
-                   src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp
-
-                   src/Global/Workers/QWorker.hpp
                    src/Global/Workers/QWorker.cpp
-                   src/Global/QTmpFolderManager.hpp
                    src/Global/QTmpFolderManager.cpp
+                   
+                   src/QArbitration/QArbitration.cpp
+                   src/QArbitration/QArbitration.cpp
 
-                   src/QSshFileExplorer/Worker/LibSshSupportModule.hpp
-                   src/QSshFileExplorer/Worker/LibSshSupportModule.cpp
-                   src/QSshFileExplorer/Worker/QSshWorker.hpp
-                   src/QSshFileExplorer/Worker/QSshWorker.cpp
-                   src/QSshFileExplorer/QDownloadedFileManager.hpp
-                   src/QSshFileExplorer/QDownloadedFileManager.cpp
-                   src/QSshFileExplorer/QFileItem.hpp
-                   src/QSshFileExplorer/QFileItem.cpp
-                   src/QSshFileExplorer/QFileTransferWidget.hpp
-                   src/QSshFileExplorer/QFileTransferWidget.cpp
-                   src/QSshFileExplorer/QIconManager.hpp
-                   src/QSshFileExplorer/QIconManager.cpp
-                   src/QSshFileExplorer/QSshFileExplorerWidget.hpp
-                   src/QSshFileExplorer/QSshFileExplorerWidget.cpp
-                   src/QSshFileExplorer/QTreeViewExplorer.hpp
-                   src/QSshFileExplorer/QTreeViewExplorer.cpp
-                        
-                   src/QSideBar/QSideBar.hpp
+                   src/QDeviceStatus/QDeviceStatus.cpp
+                   src/QDeviceStatus/Worker/QStatusWorker.cpp
+
+                   src/QNavigation/QNavigation.cpp
+
                    src/QSideBar/QSideBar.cpp
 
-                   src/QTopUtilityBar/QTopUtilityBar.hpp
-                   src/QTopUtilityBar/QTopUtilityBar.cpp
-                        
-                   src/QDashboard/QDashboard.hpp
-                   src/QDashboard/QDashboard.cpp
-                        
-                   src/QNavigation/QNavigation.hpp
-                   src/QNavigation/QNavigation.cpp
-                   src/Global/Constant/resources.qrc
-                        
-                   src/QDashboard/QArbitration.cpp
-                   src/QDashboard/QArbitration.cpp
+                   src/QSshFileExplorer/Worker/LibSshSupportModule.cpp
+                   src/QSshFileExplorer/Worker/QSshWorker.cpp
+                   src/QSshFileExplorer/QDownloadedFileManager.cpp
+                   src/QSshFileExplorer/QFileItem.cpp
+                   src/QSshFileExplorer/QFileTransferWidget.cpp
+                   src/QSshFileExplorer/QIconManager.cpp
+                   src/QSshFileExplorer/QSshFileExplorerWidget.cpp
+                   src/QSshFileExplorer/QTreeViewExplorer.cpp
 
-                   src/QUtilityBarBottom/QUtilityBarBottom.hpp
                    src/QUtilityBarBottom/QUtilityBarBottom.cpp
 
-                   src/QDeviceStatus/QDeviceStatus.hpp
-                   src/QDeviceStatus/QDeviceStatus.cpp
-                   src/QDeviceStatus/Worker/QStatusWorker.hpp
-                   src/QDeviceStatus/Worker/QStatusWorker.cpp
-                   
+                   src/QUtilityBarTop/QUtilityBarTop.cpp
+                                           
                    src/QVideoPlayer/Worker/QGStreamerWorker.cpp
-                   src/QVideoPlayer/Worker/QGStreamerWorker.hpp
                    src/QVideoPlayer/QVideoManagerWidget.cpp
-                   src/QVideoPlayer/QVideoManagerWidget.hpp
                    src/QVideoPlayer/QVideoPlayerWidget.cpp
                    src/QVideoPlayer/QVideoRecorderWidget.cpp
                    src/QVideoPlayer/QVideoRecorderWidget.hpp
-                   src/QVideoPlayer/QVideoPlayerWidget.hpp
-                   src/QVideoPlayer/Worker/QPlayerWorker.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
                    src/QVideoPlayer/Worker/QRecordingWorker.cpp
-                   src/QVideoPlayer/Worker/QRecordingWorker.hpp
 
+                   src/Global/Constant/resources.qrc
                    ui/icons.qrc
                 )
                   
