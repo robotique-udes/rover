@@ -84,6 +84,16 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             &QDeviceStatus::onRequestDeviceStatusSuccessful);
 }
 
+void QDeviceStatus::hideControls()
+{
+    _ui.serviceCall->hide();
+}
+
+void QDeviceStatus::showControls()
+{
+    _ui.serviceCall->show();
+}
+
 /**
  * @brief Makes the service call to request the error state of the devices.
  *
