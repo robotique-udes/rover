@@ -19,7 +19,8 @@ class QVideoRecorderWidget : public QWidget
 
   public:
     QVideoRecorderWidget(const std::string& url_,
-                         uint16_t playerIndex__);
+                         uint16_t playerIndex__,
+                         std::shared_ptr<QRecordingWorker> workerThreadRecording_);
 
     ~QVideoRecorderWidget();
 

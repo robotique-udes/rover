@@ -6,14 +6,11 @@
 #include <QStyle>
 #include <QTimer>
 
-QVideoRecorderWidget::QVideoRecorderWidget(sRecordingButtons buttons_,
-                                           std::string url_,
+QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
                                            uint16_t playerIndex__,
                                            std::shared_ptr<QRecordingWorker> workerThreadRecording_):
     _playerIndex(playerIndex__),
     _camURL(url_),
-    _startRecordingButton(buttons_.startRecordingButton),
-    _screenshotButton(buttons_.screenshotButton),
     _playerWorkerThreadRecording(workerThreadRecording_)
 {
     connect(_screenshotButton, &QPushButton::clicked, this, &QVideoRecorderWidget::handleScreenshot);
