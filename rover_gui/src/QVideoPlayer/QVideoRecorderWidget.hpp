@@ -1,17 +1,14 @@
 #ifndef QVIDEOPLAYER_QVIDEORECORDERWIDGET_HPP
 #define QVIDEOPLAYER_QVIDEORECORDERWIDGET_HPP
 
-#include "rclcpp/rclcpp.hpp"
-
-#include "rover_msgs/srv/camera_control.hpp"
 #include "Worker/QRecordingWorker.hpp"
 #include "UI_VideoPlayer.h"
 #include <QtWidgets/QWidget>
 
 struct sRecordingButtons
 {
-    QPushButton* startRecordingButton;
-    QPushButton* screenshotButton;
+    QPushButton* startRecordingButton = nullptr;
+    QPushButton* screenshotButton = nullptr;
 };
 
 class QVideoRecorderWidget : public QWidget
@@ -21,10 +18,8 @@ class QVideoRecorderWidget : public QWidget
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
 
   public:
-    QVideoRecorderWidget(sRecordingButtons buttons_,
-                         std::string url_,
-                         uint16_t playerIndex__,
-                         std::shared_ptr<QRecordingWorker> workerThreadRecording_);
+    QVideoRecorderWidget(const std::string& url_,
+                         uint16_t playerIndex__);
 
     ~QVideoRecorderWidget();
 
@@ -37,13 +32,13 @@ class QVideoRecorderWidget : public QWidget
   private slots:
     void handleScreenshot(void);
     void handleRecording(void);
-    void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_);
+    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_);
+    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_);
 
   private:
-    int16_t _playerIndex;
-    std::string _camURL = "";
+    uint16_t _playerIndex;
+    std::string _camURL;
     std::string _sessionFolderPath;
 
     QPushButton* _startRecordingButton;

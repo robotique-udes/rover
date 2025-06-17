@@ -24,6 +24,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerIndex(playerIndex_),
     _playerWorkerThreadAruco(workerThreadAruco_),
     _playerWorkerThreadRecording(workerThreadRecording_),
+    _recorderWidget(url_, playerIndex_),
     _reconnectTimer(),
     _frameTimeoutTimer(),
     _connectionTimeoutTimer()
@@ -785,7 +786,7 @@ float QVideoPlayerWidget::getCameraAngle(void)
 void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
 {
     _camURL = newCamUrl_;
-    _recorderWidget->updateCamURL(_camURL);
+    _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
 
@@ -793,14 +794,14 @@ void QVideoPlayerWidget::setURLToDefault(void)
 {
     _camURL = this->_defaultCamUrl;
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
-    _recorderWidget->updateCamURL(_camURL);
+    _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
 
 void QVideoPlayerWidget::updateCamURL()
 {
     _camURL = _ui.rtspTextBox->text().toStdString();
-    _recorderWidget->updateCamURL(_camURL);
+    _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
 
@@ -885,17 +886,17 @@ bool QVideoPlayerWidget::isStreaming(void)
 
 void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_)
 {
-    _recorderWidget->setCameraControlClientManager(client_);
+    _recorderWidget.setCameraControlClientManager(client_);
 }
 
 void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls_)
 {
-    _recorderWidget->CB_cameraListUpdate(urls_);
+    _recorderWidget.CB_cameraListUpdate(urls_);
 }
 
 void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
 {
-    _recorderWidget->CB_serviceCameraControlAvailable(available_);
+    _recorderWidget.CB_serviceCameraControlAvailable(available_);
 }
 
 void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
@@ -925,11 +926,4 @@ void QVideoPlayerWidget::hideAngleSelector(void)
         _ui.cameraAngleSlider->hide();
         _ui.cameraAngleBox->hide();
     }
-}
-
-void QVideoPlayerWidget::initializeRecorder(void)
-{
-    sRecordingButtons recordingButtons = {_ui.startRecordingButton, _ui.ScreenshotButton};
-    _recorderWidget
-        = std::make_unique<QVideoRecorderWidget>(recordingButtons, _camURL, _playerIndex, _playerWorkerThreadRecording);
 }

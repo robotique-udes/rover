@@ -2,19 +2,20 @@
 #define QVIDEOPLAYERWIDGER_HPP
 
 #include "rclcpp/rclcpp.hpp"
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QWidget>
 
-#include <QtWidgets/QCheckBox>
-#include <QtWidgets/QTextEdit>
-#include <QThread>
-#include <QTimer>
-#include <QDateTime>
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QRecordingWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
 #include "QVideoRecorderWidget.hpp"
+
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QWidget>
+#include <QtWidgets/QCheckBox>
+#include <QtWidgets/QTextEdit>
+#include <QThread>
+#include <QTimer>
+#include <QDateTime>
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 #include <rover_lib2/helpers/constants.hpp>
@@ -95,7 +96,7 @@ class QVideoPlayerWidget : public QWidget
 
   private slots:
     // Arucuo
-    void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
+    void onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex__);
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
     // Camera angle
@@ -135,7 +136,7 @@ class QVideoPlayerWidget : public QWidget
     int _streamIndex;
     int16_t _playerIndex;
 
-    std::unique_ptr<QVideoRecorderWidget> _recorderWidget;
+    QVideoRecorderWidget _recorderWidget;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
