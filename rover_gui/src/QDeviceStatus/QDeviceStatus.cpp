@@ -144,9 +144,8 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
 void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_)
 {
     uint16_t& deviceReboots = _canDevices[deviceID_].numberOfDeviceReboots;
-    uint16_t& oldDeviceReboots = _canDevices[deviceID_].oldDeviceReboots;
-    const uint16_t& deviceRebootsFromButton = _canDevices[deviceID_].numberOfDeviceRebootsFromButton;
     const uint16_t& deviceMessageCount = _canDevices[deviceID_].deviceMessageCount;
+    uint16_t& oldDeviceReboots = _canDevices[deviceID_].oldDeviceReboots;
 
     if (_numberOfCalls < deviceMessageCount)
     {
@@ -155,13 +154,14 @@ void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_
         return;
     }
 
-    deviceReboots = deviceRebootsFromButton + _numberOfCalls - deviceMessageCount;
+    deviceReboots = deviceMessageCount - _numberOfCalls ;
 
     if (deviceReboots != oldDeviceReboots)
     {
         oldDeviceReboots = deviceReboots;
         uint16_t deviceID = TO_UNDERLYING(deviceID_);
         RCLCPP_INFO(rclcpp::get_logger("GUI"), "Device %d has rebooted since last call", deviceID);
+        deviceReboots++;
     }
 }
 
