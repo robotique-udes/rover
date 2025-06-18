@@ -17,12 +17,12 @@ namespace
     constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5000;
     constexpr size_t MAX_DELAY_SERVICE_CALL_MS = 2000;
     constexpr size_t NBR_IDS_TO_DISPLAY = 5;
-    constexpr size_t MAX_RECONNECT_ATTEMPTS = 3;
+    constexpr size_t MAX_RECONNECT_ATTEMPTS = 3UL;
     constexpr size_t STYLE_RESET_TIME_MS = 2000;
     constexpr size_t THROTTLE_RATE_ERROR_MS = 2000;
 
     std::atomic<size_t> g_instanceCounter{0};
-}  // namespace
+}  
 
 size_t QVideoPlayerWidget::getNextInstanceIndex()
 {
