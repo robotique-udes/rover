@@ -13,6 +13,7 @@
 #include <memory>
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
+#include "Worker/QRecordingWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
@@ -21,6 +22,15 @@
 class QVideoPlayerWidget : public QWidget
 {
     Q_OBJECT
+
+    static constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5'000UL;
+    static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
+    static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
+
+    static int MAX_RECONNECT_ATTEMPTS;
+    static int _instanceCounter;
+
+    static constexpr size_t STYLE_RESET_TIME = 2'000UL;
 
   public:
     enum class ePlayerState
@@ -38,7 +48,7 @@ class QVideoPlayerWidget : public QWidget
                        const std::string& url_,
                        uint16_t tag_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                       std::shared_ptr<QPlayerWorker> workerThreadRecording_);
+                       std::shared_ptr<QRecordingWorker> workerThreadRecording_);
 
     ~QVideoPlayerWidget();
 
@@ -139,7 +149,7 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
+    std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
     size_t _reconnectAttempts = 0;

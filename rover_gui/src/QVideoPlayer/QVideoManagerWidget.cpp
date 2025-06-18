@@ -9,7 +9,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     QWidget(parent_),
     _node(guiNode_),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
-    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>()),
+    _playerWorkerThreadRecording(std::make_shared<QRecordingWorker>()),
     _tabWidget(this),
     _gridContainer(nullptr),
     _vSubLayoutContainer(nullptr),
@@ -26,7 +26,10 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::urlFoundInDetection,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
-    connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
+    connect(_playerWorkerThreadRecording.get(),
+            &QRecordingWorker::setCursorWaiting,
+            this,
+            &QVideoManagerWidget::onSetCursorWaiting);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
@@ -68,7 +71,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     if (index_ == 0)
     {
         uint16_t index = 0;
-        for (auto& widget : _videoPlaysWidgets)
+        for (const auto& widget : _videoPlaysWidgets)
         {
             if (widget)
             {
@@ -83,9 +86,14 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     else
     {
         if (_videoPlaysWidgets[1])
+        {
             _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
+        }
+
         if (_videoPlaysWidgets[2])
+        {
             _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+        }
 
         _splitter.addWidget(&_vSubLayoutContainer);
 
@@ -241,10 +249,10 @@ void QVideoManagerWidget::initCameraControlClient(void)
         std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
         [this](void)
         {
-            bool availble = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
+            bool available = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
             for (auto& widget : _videoPlaysWidgets)
             {
-                widget->CB_serviceCameraControlAvailable(availble);
+                widget->CB_serviceCameraControlAvailable(available);
             }
         });
     return;
