@@ -10,6 +10,7 @@
 #include <QThread>
 #include <QTimer>
 #include <QDateTime>
+#include <memory>
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
@@ -20,16 +21,6 @@
 class QVideoPlayerWidget : public QWidget
 {
     Q_OBJECT
-
-    static constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5'000UL;
-    static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
-    static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
-
-    static constexpr size_t MAX_RECONNECT_ATTEMPTS = 3;
-    static size_t g_instanceCounter;
-
-    static constexpr size_t STYLE_RESET_TIME = 2'000UL;
-    static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
 
   public:
     enum class ePlayerState
@@ -44,7 +35,7 @@ class QVideoPlayerWidget : public QWidget
     };
 
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                       std::string url_,
+                       const std::string& url_,
                        uint16_t tag_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
                        std::shared_ptr<QPlayerWorker> workerThreadRecording_);
@@ -56,7 +47,7 @@ class QVideoPlayerWidget : public QWidget
     void stopDetection(void);
     void handleArucoDetection(void);
     void arucoStillAliveUpdate(bool urlFound_);
-    void displayDetectedArucos(std::vector<uint16_t> ids_);
+    void displayDetectedArucos(const std::vector<uint16_t>& ids_);
 
     void startStream(const QString& rtspUrl_);
     void stopStream(void);
@@ -72,7 +63,7 @@ class QVideoPlayerWidget : public QWidget
 
     std::string getCamURL(void);
     float getCameraAngle(void);
-    void setCamURL(std::string newCamUrl_);
+    void setCamURL(const std::string& newCamUrl_);
     void setURLToDefault(void);
     void updateCamURL(void);
 
@@ -84,7 +75,7 @@ class QVideoPlayerWidget : public QWidget
     QString getId(void);
     bool isStreaming(void);
 
-    void CB_cameraListUpdate(std::vector<std::string> urls_);
+    void CB_cameraListUpdate(const std::vector<std::string>& urls_);
     void CB_serviceCameraControlAvailable(bool available_);
 
   signals:
@@ -93,7 +84,7 @@ class QVideoPlayerWidget : public QWidget
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
     void requestPauseStream(void);
-    void notifyCameraAnglePublisher(std::string camURL_, float angle_);
+    void notifyCameraAnglePublisher(const std::string& camURL_, float angle_);
 
   private slots:
     // Arucuo
@@ -103,9 +94,9 @@ class QVideoPlayerWidget : public QWidget
     // Camera server
     void handleScreenshot(void);
     void handleRecording(void);
-    void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void onScreenshotHandledSuccessfully(bool success_, const std::string& status_, uint16_t tag_);
+    void onStartRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t tag_);
+    void onStopRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t tag_);
     void onCameraAngleSliderChanged(void);
     void onCameraAngleBoxChanged(void);
 
@@ -132,6 +123,9 @@ class QVideoPlayerWidget : public QWidget
     void cleanupResources(void);
 
     void hideAngleSelecter(void);
+
+    static size_t getNextInstanceIndex();
+
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 
@@ -139,7 +133,7 @@ class QVideoPlayerWidget : public QWidget
     std::string _defaultCamUrl = "";
     std::string _sessionFolderPath;
 
-    int _streamIndex;
+    size_t _streamIndex;
     int16_t _playerIndex;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
@@ -153,7 +147,7 @@ class QVideoPlayerWidget : public QWidget
     bool _controlsVisible = true;
     GstElement* _pipeline = nullptr;
     QThread _gstreamerThread;
-    GStreamerWorker* _gstreamerWorker = nullptr;
+    std::unique_ptr<GStreamerWorker> _gstreamerWorker;
     QDateTime _lastStreamTime;
 
     QTimer _reconnectTimer;

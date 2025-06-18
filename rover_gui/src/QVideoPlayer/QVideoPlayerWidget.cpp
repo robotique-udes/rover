@@ -8,18 +8,35 @@
 #include <QScrollBar>
 #include <QRegularExpression>
 #include <optional>
+#include <atomic>
 
-static constexpr size_t connection_timeout = 5000;
-size_t QVideoPlayerWidget::g_instanceCounter = 0;
+namespace
+{
+
+    constexpr size_t CONNECTION_TIMEOUT_MS = 5000;
+    constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5000;
+    constexpr size_t MAX_DELAY_SERVICE_CALL_MS = 2000;
+    constexpr size_t NBR_IDS_TO_DISPLAY = 5;
+    constexpr size_t MAX_RECONNECT_ATTEMPTS = 3;
+    constexpr size_t STYLE_RESET_TIME_MS = 2000;
+    constexpr size_t THROTTLE_RATE_ERROR_MS = 2000;
+
+    std::atomic<size_t> g_instanceCounter{0};
+}  // namespace
+
+size_t QVideoPlayerWidget::getNextInstanceIndex()
+{
+    return g_instanceCounter.fetch_add(1);
+}
 
 QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                                       std::string url_,
+                                       const std::string& url_,
                                        uint16_t playerIndex_,
                                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
                                        std::shared_ptr<QPlayerWorker> workerThreadRecording_):
     _node(guiNode_),
     _camURL(url_),
-    _streamIndex(g_instanceCounter - 1),
+    _streamIndex(getNextInstanceIndex()),
     _playerIndex(playerIndex_),
     _playerWorkerThreadAruco(workerThreadAruco_),
     _playerWorkerThreadRecording(workerThreadRecording_),
@@ -28,25 +45,25 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _connectionTimeoutTimer()
 
 {
-    g_instanceCounter++;
     _defaultCamUrl = _camURL;
     _ui.setupUi(this);
 
     this->setupUI();
 
-    _gstreamerWorker = new GStreamerWorker();
+    // Use smart pointer instead of raw pointer to prevent leaks
+    _gstreamerWorker = std::make_unique<GStreamerWorker>();
     _gstreamerWorker->setTargetWidget(_ui.logDisplay);
     _gstreamerWorker->setVideoWidget(_ui.videoWidget);
     _gstreamerWorker->moveToThread(&_gstreamerThread);
 
-    connect(&_gstreamerThread, &QThread::finished, _gstreamerWorker, &QObject::deleteLater);
-    connect(this, &QVideoPlayerWidget::requestStartStream, _gstreamerWorker, &GStreamerWorker::startPipeline);
-    connect(this, &QVideoPlayerWidget::requestPauseStream, _gstreamerWorker, &GStreamerWorker::pausePipeline);
-    connect(this, &QVideoPlayerWidget::requestStopStream, _gstreamerWorker, &GStreamerWorker::stopPipeline);
-    connect(_gstreamerWorker, &GStreamerWorker::pipelineStarted, this, &QVideoPlayerWidget::onPipelineStarted);
-    connect(_gstreamerWorker, &GStreamerWorker::errorOccurred, this, &QVideoPlayerWidget::onErrorOccurred);
-    connect(_gstreamerWorker, &GStreamerWorker::connectionFailed, this, &QVideoPlayerWidget::onConnectionFailed);
-    connect(_gstreamerWorker, &GStreamerWorker::frameReceived, this, &QVideoPlayerWidget::onFrameReceived);
+    connect(&_gstreamerThread, &QThread::finished, _gstreamerWorker.get(), &QObject::deleteLater);
+    connect(this, &QVideoPlayerWidget::requestStartStream, _gstreamerWorker.get(), &GStreamerWorker::startPipeline);
+    connect(this, &QVideoPlayerWidget::requestPauseStream, _gstreamerWorker.get(), &GStreamerWorker::pausePipeline);
+    connect(this, &QVideoPlayerWidget::requestStopStream, _gstreamerWorker.get(), &GStreamerWorker::stopPipeline);
+    connect(_gstreamerWorker.get(), &GStreamerWorker::pipelineStarted, this, &QVideoPlayerWidget::onPipelineStarted);
+    connect(_gstreamerWorker.get(), &GStreamerWorker::errorOccurred, this, &QVideoPlayerWidget::onErrorOccurred);
+    connect(_gstreamerWorker.get(), &GStreamerWorker::connectionFailed, this, &QVideoPlayerWidget::onConnectionFailed);
+    connect(_gstreamerWorker.get(), &GStreamerWorker::frameReceived, this, &QVideoPlayerWidget::onFrameReceived);
     this->hideAngleSelecter();
 
     connect(_ui.arucoPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleArucoDetection);
@@ -370,7 +387,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             this->updateStatusText("Connecting...");
             _ui.playPauseButton->setChecked(true);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
-            _connectionTimeoutTimer.start(connection_timeout);
+            _connectionTimeoutTimer.start(CONNECTION_TIMEOUT_MS);
             break;
 
         case ePlayerState::STREAMING:
@@ -597,7 +614,7 @@ void QVideoPlayerWidget::onFrameReceived(void)
         _ui.startRecordingButton->setEnabled(true);
     }
     _frameTimeoutTimer.stop();
-    _frameTimeoutTimer.start(connection_timeout);
+    _frameTimeoutTimer.start(CONNECTION_TIMEOUT_MS);
 }
 
 void QVideoPlayerWidget::onFrameTimeout(void)
@@ -769,22 +786,23 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
     }
 }
 
-void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
+void QVideoPlayerWidget::displayDetectedArucos(const std::vector<uint16_t>& ids_)
 {
-    size_t nbr_ids_detected = ids_.size();
+    std::vector<uint16_t> displayIds = ids_;
+    size_t nbr_ids_detected = displayIds.size();
 
     if (nbr_ids_detected > NBR_IDS_TO_DISPLAY)
     {
-        ids_.resize(NBR_IDS_TO_DISPLAY);
+        displayIds.resize(NBR_IDS_TO_DISPLAY);
     }
     _ui.arucoIdsTextBox->setText("Ids: ");
 
-    for (const auto& id : ids_)
+    for (const auto& id : displayIds)
     {
         _ui.arucoIdsTextBox->setText(_ui.arucoIdsTextBox->text() + "  " + QString::number(id));
     }
 
-    if (!ids_.empty())
+    if (!displayIds.empty())
     {
         RCLCPP_INFO(rclcpp::get_logger("GUI"),
                     "Detected aruco markers on camera %s: %s",
@@ -808,7 +826,7 @@ float QVideoPlayerWidget::getCameraAngle(void)
     return static_cast<float>(_ui.cameraAngleSlider->value());
 }
 
-void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
+void QVideoPlayerWidget::setCamURL(const std::string& newCamUrl_)
 {
     _camURL = newCamUrl_;
     this->hideAngleSelecter();
@@ -958,7 +976,7 @@ void QVideoPlayerWidget::handleRecording(void)
     return;
 }
 
-void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
+void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_)
 {
     if (playerIndex_ == _playerIndex)
     {
@@ -981,7 +999,7 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
                                                                            QHelper::QToastNotification::eNotifType::SUCCESS);
         }
 
-        QTimer::singleShot(STYLE_RESET_TIME,
+        QTimer::singleShot(STYLE_RESET_TIME_MS,
                            this,
                            [this]()
                            {
@@ -993,7 +1011,7 @@ void QVideoPlayerWidget::onScreenshotHandledSuccessfully(bool success_, std::str
     return;
 }
 
-void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
+void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_)
 {
     if (playerIndex_ == _playerIndex)
     {
@@ -1007,7 +1025,7 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
                                                                            QHelper::QToastNotification::eNotifType::ERROR);
 
             // reset after timer
-            QTimer::singleShot(STYLE_RESET_TIME,
+            QTimer::singleShot(STYLE_RESET_TIME_MS,
                                this,
                                [this]()
                                {
@@ -1030,7 +1048,7 @@ void QVideoPlayerWidget::onStartRecordingHandledSuccessfully(bool success_, std:
     return;
 }
 
-void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
+void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_)
 {
     if (playerIndex_ == _playerIndex)
     {
@@ -1044,7 +1062,7 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
                                                                            QHelper::QToastNotification::eNotifType::ERROR);
 
             // reset after timer
-            QTimer::singleShot(STYLE_RESET_TIME,
+            QTimer::singleShot(STYLE_RESET_TIME_MS,
                                this,
                                [this]()
                                {
@@ -1067,9 +1085,9 @@ void QVideoPlayerWidget::onStopRecordingHandledSuccessfully(bool success_, std::
     return;
 }
 
-void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls)
+void QVideoPlayerWidget::CB_cameraListUpdate(const std::vector<std::string>& urls_)
 {
-    for (const auto& url : urls)
+    for (const auto& url : urls_)
     {
         if (url == _camURL)
         {
@@ -1109,7 +1127,7 @@ void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
         {
             RCLCPP_ERROR_THROTTLE(rclcpp::get_logger("GUI"),
                                   *_node->get_clock(),
-                                  THROTTLE_RATE_ERROR,
+                                  THROTTLE_RATE_ERROR_MS,
                                   "Error, camera control client is unavailable ");
         }
     }

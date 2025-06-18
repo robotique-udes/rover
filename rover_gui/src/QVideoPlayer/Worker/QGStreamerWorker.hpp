@@ -15,36 +15,36 @@ class GStreamerWorker : public QObject
     explicit GStreamerWorker(QObject* parent_ = nullptr);
     ~GStreamerWorker();
 
-    void setTargetWidget(QWidget* widget);
+    void setTargetWidget(QWidget* target_widget_);
+    void setVideoWidget(QWidget* video_widget_);
+    void setupVideoOverlay();
     void pausePipeline();
     void stopPipeline();
-    void setVideoWidget(QWidget* widget);
-    void setupVideoOverlay();
 
   public slots:
-    void startPipeline(const QString& rtspUrl_);
+    void startPipeline(const QString& rtsp_url_);
 
   signals:
     void pipelineStarted(GstElement* pipeline_);
     void pipelineStopped();
-    void errorOccurred(const QString& error_);
+    void errorOccurred(const QString& error_message_);
     void frameReceived();
     void connectionFailed();
 
   private:
-    std::string buildPipelineString(const std::string& rtspUrl_) const;
+    std::string buildPipelineString(const std::string& rtsp_url_) const;
     void cleanupGStreamer();
-    QWidget* _videoWidget = nullptr;
+
+    QWidget* _video_widget = nullptr;
+    QWidget* _target_widget = nullptr;
 
     GstElement* _pipeline = nullptr;
-    QString _lastUrl;
+    QString _last_rtsp_url;
 
-    QWidget* _targetWidget = nullptr;
+    gulong _new_sample_signal_id = 0;
+    gulong _error_handler_id = 0;
 
-    gulong _newSampleSignalId = 0;
-    gulong _errorHandlerId = 0;
-
-    static void on_gst_error_message(GstBus* bus_, GstMessage* msg_, gpointer user_data_);
+    static void on_gst_error_message(GstBus* bus_, GstMessage* message_, gpointer user_data_);
     static GstFlowReturn on_new_sample(GstElement* sink_, gpointer user_data_);
 };
 

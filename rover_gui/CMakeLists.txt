@@ -18,7 +18,7 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
-set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
+set(LIBSSH_LIBRARY "/usr/lib/aarch64-linux-gnu/libssh.so")
 
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
