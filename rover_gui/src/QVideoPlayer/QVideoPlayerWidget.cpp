@@ -22,7 +22,7 @@ namespace
     constexpr size_t THROTTLE_RATE_ERROR_MS = 2000;
 
     std::atomic<size_t> g_instanceCounter{0};
-}  
+}  // namespace
 
 size_t QVideoPlayerWidget::getNextInstanceIndex()
 {
@@ -403,7 +403,7 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             break;
 
         case ePlayerState::RECONNECTING:
-            this->updateStatusText(QString("Reconnecting... (%1/%2)").arg(_reconnectAttempts).arg(MAX_RECONNECT_ATTEMPTS));
+            this->updateStatusText(QString("Reconnecting... (%1/%2)").arg(_reconnectAttempts).arg(::MAX_RECONNECT_ATTEMPTS));
             _ui.playPauseButton->setChecked(false);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             if (_ui.arucoPushButton->isChecked())
@@ -468,7 +468,7 @@ void QVideoPlayerWidget::tryReconnect(void)
 
     _reconnectAttempts++;
 
-    if (_reconnectAttempts <= MAX_RECONNECT_ATTEMPTS)
+    if (_reconnectAttempts <= ::MAX_RECONNECT_ATTEMPTS)
     {
         this->setPlayerState(ePlayerState::RECONNECTING);
         _reconnectTimer.start(3000);
