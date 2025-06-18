@@ -1,16 +1,12 @@
 #ifndef QNAVIGATION_HPP
 #define QNAVIGATION_HPP
 
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/gps.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/gps.hpp>
 #include "UI_Navigation.h"
 
-#include <QWidget>
 #include <QWebChannel>
 #include <QListWidgetItem>
-#include <QWebEngineView>
-#include <QMessageBox>
-#include <QUuid>
 
 class QNavigation : public QWidget
 {
@@ -55,10 +51,6 @@ class QNavigation : public QWidget
     Ui::Navigation _ui;
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
-
-    double _currentLat = 0.0;
-    double _currentLon = 0.0;
-    double _currentHeading = 0.0;
 
     QList<Waypoint> _waypoints;
 };
