@@ -1,0 +1,19 @@
+<RCC>
+  <qresource prefix="/">
+    <file>icons/BatteryIcon100.svg</file>
+    <file>icons/BatteryIcon75.svg</file>
+    <file>icons/BatteryIcon50.svg</file>
+    <file>icons/BatteryIcon25.svg</file>
+    <file>icons/BatteryIcon0.svg</file>
+    <file>icons/BatteryError.svg</file>
+    <file>icons/RSSI_one.png</file>
+    <file>icons/RSSI_two.png</file>
+    <file>icons/RSSI_three.png</file>
+    <file>icons/RSSI_four.png</file>  
+    <file>icons/ErrorRSSI.png</file>
+    <file>icons/GNSSIcon.svg</file>
+    <file>icons/GNSSError.svg</file>
+    <file>icons/HeadingIcon.svg</file>
+    <file>icons/HeadingError.svg</file>
+  </qresource>
+</RCC>

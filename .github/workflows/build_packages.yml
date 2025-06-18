@@ -7,9 +7,12 @@ on:
   push:
     branches:
       - release/**
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   humble-build:
+    name: 'Build on ROS2 Humble (Ubuntu 22.04)'
     runs-on: ubuntu-22.04
 
     container:

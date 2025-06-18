@@ -19,21 +19,21 @@ class Teleop : public rclcpp::Node
     Teleop();
 
   private:
-    bool floatToBool(float variable)
+    bool floatToBool(float variable_) const
     {
-        return variable == 1.0f;
+        return variable_ == 1.0f;
     }
 
-    void CB_joy(const rover_msgs::msg::Joy& msg)
+    void CB_joy(const rover_msgs::msg::Joy& msg_) const
     {
         rover_msgs::msg::PropulsionMotor message;
 
-        float deadmanSwitch = msg.joy_data[Constants::DriveTrain::KeyBinding::DEADMAN_SWITCH];
-        float linearInput = msg.joy_data[Constants::DriveTrain::KeyBinding::LINEAR_INPUT];
-        float angularInput = msg.joy_data[Constants::DriveTrain::KeyBinding::ANGULAR_INPUT];
-        float modeTankAngularInput = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_TANK_ANGULAR_INPUT];
-        float modeNormalEnable = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_NORMAL_ENABLE];
-        float modeTurboEnable = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_TURBO_ENABLE];
+        float deadmanSwitch = msg_.joy_data[Constants::DriveTrain::KeyBinding::DEADMAN_SWITCH];
+        float linearInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::LINEAR_INPUT];
+        float angularInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::ANGULAR_INPUT];
+        float modeTankAngularInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_TANK_ANGULAR_INPUT];
+        float modeNormalEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_NORMAL_ENABLE];
+        float modeTurboEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_TURBO_ENABLE];
 
         if (floatToBool(deadmanSwitch))
         {
@@ -91,7 +91,10 @@ Teleop::Teleop():
 {
     _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY,
                                                                         QOS_DEFAULT,
-                                                                        std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+                                                                        [this](const rover_msgs::msg::Joy& msg_)
+                                                                        {
+                                                                            this->CB_joy(msg_);
+                                                                        });
 
     _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, QOS_DEFAULT);
 }
