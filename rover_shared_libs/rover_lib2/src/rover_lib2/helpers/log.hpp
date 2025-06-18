@@ -2,10 +2,10 @@
 #define ROVER_LIB2_HELPERS_LOG_HPP
 
 // Always activate Logger in ROS
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(__linux__) && defined(ROS)
 #define VERBOSE
 #define NODE_BYPASS_SEVERITY_LEVEL Logger::eSeverityLevels::WARN
-#endif  // defined (__linux__) &&!defined(VERBOSE)
+#endif  // defined(__linux__) && defined(ROS)
 
 #if defined(VERBOSE)
 
@@ -17,7 +17,7 @@
 #define NODE_BYPASS_SEVERITY_LEVEL Logger::eSeverityLevels::ERROR
 #endif
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(__linux__) && defined(ROS)
 #include <rclcpp/logger.hpp>
 #include <rclcpp/logging.hpp>
 #include <rcutils/logging_macros.h>
@@ -27,7 +27,7 @@
 #include <cstdarg>
 #include <cstdio>
 
-#endif  // defined(ARDUINO_ESP32S3_DEV)
+#endif  // defined(__linux__) && defined(ROS)
 
 #include "rover_lib2/helpers/time.hpp"
 #include "rover_lib2/helpers/macros.hpp"
@@ -106,7 +106,7 @@ namespace Logger
                 loggerStream.printf("\n%s", COLOR_RESET);
 
 // If ROS
-#elif defined(__linux__) && defined(RCLCPP_DEBUG)
+#elif defined(__linux__) && defined(ROS)
                 (void)severityIndex;
 
                 std::string loggerName;
