@@ -2,8 +2,9 @@
 #define ARUCO_DETECTION_NODE_HPP
 
 #include "detection.hpp"
-#include "rover_msgs/msg/aruco.hpp"
-#include "rover_msgs/srv/aruco_detection.hpp"
+
+#include <rover_msgs/msg/aruco.hpp>
+#include <rover_msgs/srv/aruco_detection.hpp>
 #include <opencv2/core/utils/logger.hpp>
 
 class ArucoDetectionNode : public rclcpp::Node
@@ -27,8 +28,8 @@ class ArucoDetectionNode : public rclcpp::Node
     void CB_arucoDetection(void);
     void CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
                 std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_);
-    bool startDetection(std::string URL_);
-    bool stopDetection(std::string URL_);
+    bool startDetection(const std::string& URL_);
+    bool stopDetection(const std::string& URL_);
     void infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_);
 
     bool _debugMode = false;

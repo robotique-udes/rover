@@ -5,16 +5,17 @@
 #include <cstdint>
 #include <numbers>
 #include <type_traits>
+#include <utility>
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(__linux__) && defined(ROS)
 #include <ament_index_cpp/get_package_prefix.hpp>
-#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+#endif  // defined(__linux__) && defined(ROS)
 
 template<typename ENUM_T>
 constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 {
     static_assert(std::is_enum_v<ENUM_T>, "TO_UNDERLYING() can only be used with enum types");
-    return static_cast<std::underlying_type_t<ENUM_T>>(e);
+    return std::to_underlying(e);
 }
 
 #if !defined(ARDUINO_ESP32S3_DEV)
@@ -105,9 +106,18 @@ constexpr T CONSTRAIN_TO_CIRCLE(T value_)
 template<std::floating_point T>
 constexpr T TRUNC(T value_)
 {
-    return (value_ == 0) ? value_ :  // Handle ±0.0
-               (value_ > 0) ? static_cast<T>(static_cast<int64_t>(value_))
-                            : static_cast<T>(static_cast<int64_t>(value_ - static_cast<T>(1.0)) + static_cast<T>(1.0));
+    if (value_ == 0)
+    {
+        return value_;
+    }
+    else if (value_ > 0)
+    {
+        return static_cast<T>(static_cast<int64_t>(value_));
+    }
+    else
+    {
+        return static_cast<T>(static_cast<int64_t>(value_ - static_cast<T>(1.0)) + static_cast<T>(1.0));
+    }
 }
 
 /**
@@ -166,10 +176,10 @@ constexpr T MAP(T value_, T inMin_, T inMax_, T outMin_, T outMax_)
 
 #define GET_WORSE_OF(A, B) (A == true && B == true)
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(__linux__) && defined(ROS)
 #define GET_PACKAGE_SOURCE_DIR(package_name) \
     (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
-#endif  // defined(_linux_) && defined(RCLCPP_DEBUG
+#endif  // defined(_linux_) && defined(ROS
 
 // Necessary for following macros because VSCode's Microsoft CPP language server doesn't work with template and throws a bunch of
 // false positive errors

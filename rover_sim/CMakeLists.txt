@@ -22,6 +22,15 @@ add_executable(gps_test src/gps_test_pub.cpp)
 add_executable(camera_interface_test src/camera_interface_test.cpp)
 add_executable(camera_test_pub src/camera_test_pub.cpp)
 
+add_executable(battery_test src/battery_test_pub.cpp)
+add_executable(connection_speed_test src/connection_speed_test_pub.cpp)
+
+install(TARGETS
+        battery_test
+        connection_speed_test
+        gps_test
+        DESTINATION lib/${PROJECT_NAME}
+  )
 
 ament_target_dependencies(gps_test
                           rclcpp
@@ -45,5 +54,16 @@ install(TARGETS
           camera_interface_test
           camera_test_pub
         DESTINATION lib/${PROJECT_NAME})
+
+ament_package()
+ament_target_dependencies(battery_test
+                          rclcpp
+                          rover_msgs)
+
+ament_target_dependencies(connection_speed_test
+                          rclcpp
+                          rover_msgs)
+
+install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 ament_package()

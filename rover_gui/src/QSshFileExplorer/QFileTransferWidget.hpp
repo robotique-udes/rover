@@ -6,8 +6,7 @@
 class QFileTransferWidget : public QWidget
 {
   public:
-    QFileTransferWidget(QWidget* parent_);
-    ~QFileTransferWidget();
+    explicit QFileTransferWidget(QWidget* parent_);
 
   private:
     QGridLayout _mainLayout;
