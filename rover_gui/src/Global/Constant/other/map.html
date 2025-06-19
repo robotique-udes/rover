@@ -113,7 +113,7 @@
 
   <script>
     let viewer;
-    let currentPosition = { latitude: 0.0, longitude: 0.0 };
+    let currentPosition = { latitude: 45.377755, longitude: -71.924652 };
     let pathEntity = null;
     let waypointEntities = [];
     let waypointCounter = 1;
@@ -532,14 +532,16 @@
           stopDynamicPathUpdates();
         });
 
-        bridge.gpsCallback.connect(function (lat, lon, heading) {
-          currentPosition.latitude = lat;
-          currentPosition.longitude = lon;
-          lastHeading = -heading;
+        bridge.gpsCallback.connect(function (lat, lon, headingDeg) {
+    currentPosition.latitude = lat;
+    currentPosition.longitude = lon;
 
-          const position = Cesium.Cartesian3.fromDegrees(lon, lat);
-          entity.position = position;
-          entity.billboard.rotation = -heading;
+    headingDeg = ((headingDeg % 360) + 360) % 360;
+    const headingRad = Cesium.Math.toRadians(headingDeg);
+    const cesiumRotation = headingRad - Math.PI/2;
+    entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
+    
+    entity.billboard.rotation = cesiumRotation % (2 * Math.PI);
 
           if (!viewInitialized) {
             try {

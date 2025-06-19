@@ -2,8 +2,6 @@
 
 #include <QString>
 
-// Here some style presets can be added for different app themes
-
 namespace Constants::Style
 {
     constexpr const char* STATUS_STYLE = R"(
@@ -174,6 +172,25 @@ SideBar {
     border: 1px solid #4b4e52;
     border-radius: 5px;
     padding: 5px 10px;
+}
+
+/* frameShape=QFrame::HLine */
+QFrame[frameShape="4"] {
+    background-color: #444444;
+    max-height: 2px;
+    min-height: 2px;
+    border: none;
+    margin: 8px 0 8px 0;
+    border-radius: 1px;
+}
+
+QFrame[frameShape="5"] {
+    background-color: #444444;
+    max-height: 2px;
+    min-height: 2px;
+    border: none;
+    margin: 8px 0 8px 0;
+    border-radius: 1px;
 }
 )";
 

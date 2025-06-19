@@ -71,7 +71,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     if (index_ == 0)
     {
         uint16_t index = 0;
-        for (auto& widget : _videoPlaysWidgets)
+        for (const auto& widget : _videoPlaysWidgets)
         {
             if (widget)
             {
@@ -86,9 +86,14 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     else
     {
         if (_videoPlaysWidgets[1])
+        {
             _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
+        }
+
         if (_videoPlaysWidgets[2])
+        {
             _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+        }
 
         _splitter.addWidget(&_vSubLayoutContainer);
 
