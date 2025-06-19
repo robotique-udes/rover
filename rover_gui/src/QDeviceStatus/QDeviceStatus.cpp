@@ -153,11 +153,11 @@ void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_
 {
     uint16_t& deviceReboots = _canDevices[deviceID_].numberOfDeviceReboots;
     const uint16_t& deviceMessageCount = _canDevices[deviceID_].deviceMessageCount;
-    QString currentStyle = _canDevices[deviceID_].deviceInfo->styleSheet();
+    const QString& currentStyle = _canDevices[deviceID_].deviceInfo->styleSheet();
 
     if (deviceMessageCount > 1U)
     {
-        deviceReboots = deviceMessageCount - 1;
+        deviceReboots = deviceMessageCount - 1U;
         uint16_t deviceID = TO_UNDERLYING(deviceID_);
         RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Device 0x%X has rebooted since last call", deviceID);
         _canDevices[deviceID_].deviceInfo->setStyleSheet(STATUS_WARNING);
@@ -191,12 +191,12 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId deviceID_)
 void QDeviceStatus::updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_)
 {
     QWidget* widgetInfo = _canDevices[deviceID_].deviceInfo;
-    QString currentStyle = widgetInfo->styleSheet();
+    const QString& currentStyle = widgetInfo->styleSheet();
 
     switch (msg_.error_state)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            if (currentStyle != STATUS_WARNING)
+            if (currentStyle != STATUS_WARNING && currentStyle != STATUS_ERROR)
             {
                 widgetInfo->setStyleSheet(STATUS_SUCCESS);
             }
