@@ -13,7 +13,7 @@ class GpsPublisher : public rclcpp::Node
         heading_deg_(0.0)
     {
         publisher_ = this->create_publisher<rover_msgs::msg::Gps>("/rover/gps/position", 10);
-        timer_ = this->create_wall_timer(std::chrono::milliseconds(200), std::bind(&GpsPublisher::publish_gps, this));
+        timer_ = this->create_wall_timer(std::chrono::seconds(1), std::bind(&GpsPublisher::publish_gps, this));
     }
 
   private:
@@ -29,11 +29,11 @@ class GpsPublisher : public rclcpp::Node
 
         publisher_->publish(msg);
 
-        // heading_deg_ += 1.0F;
-        // if (heading_deg_ >= 360.0)
-        // {
-        //     heading_deg_ -= 360.0;
-        // }
+        heading_deg_ += 20.0F;
+        if (heading_deg_ >= 360.0)
+        {
+            heading_deg_ -= 360.0;
+        }
     }
 
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr publisher_;
