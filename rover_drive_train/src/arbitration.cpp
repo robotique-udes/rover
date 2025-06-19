@@ -47,6 +47,7 @@ class Arbitration : public rclcpp::Node
 
     rover_msgs::msg::PropulsionMotor _zeroCmd;
     rover_msgs::msg::PropulsionMotor _cmdTeleop;
+    rover_msgs::msg::PropulsionMotor _cmdAuto;
 
     rclcpp::TimerBase::SharedPtr _timerSendCmd;
     rclcpp::TimerBase::SharedPtr _timerSendStatus;
@@ -156,6 +157,7 @@ void Arbitration::watchdog(bool* lostHB_) const
 
 void Arbitration::sendCmd() const
 {
+    RCLCPP_INFO(this->get_logger(), "Sending command");
     if (_baseHBLost || _roverHBLost)
     {
         _pubCmd->publish(_zeroCmd);
@@ -165,6 +167,10 @@ void Arbitration::sendCmd() const
     if (_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
     {
         _pubCmd->publish(_cmdTeleop);
+    }
+    else if(_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
+    {
+        _pubCmd->publish(_cmdAuto);
     }
     else
     {
@@ -176,7 +182,8 @@ void Arbitration::cbAbtr(const std::shared_ptr<rover_msgs::srv::DriveTrainArbitr
                          std::shared_ptr<rover_msgs::srv::DriveTrainArbitration::Response> response_)
 {
     if (request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::NONE
-        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP)
+        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::TELEOP
+        || request_->target_arbitration.arbitration == rover_msgs::msg::DrivetrainArbitration::AUTONOMUS)
     {
         _arbitration = request_->target_arbitration;
     }
