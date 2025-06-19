@@ -7,7 +7,7 @@
 
 class NavigationController
 {
-    // static constexpr float HEADING_BUFFER = 1.0F;
+    static constexpr float HEADING_BUFFER = 1.0F;
     static constexpr float POSITION_BUFFER = 1.0F;
     static constexpr float RECTIFICATION_FACTOR = 1.2F;
     static constexpr float EARTH_RADIUS_METERS = 6'378'137.0F;  // Radius of the Earth in meters
@@ -39,7 +39,7 @@ class NavigationController
 
     NavigationController() {};
 
-    float headingBuffer_;
+    float headingBuffer_ = HEADING_BUFFER;
     bool _desiredHeadingReached = false;
     bool _endNodeReached = false;
 
@@ -72,6 +72,7 @@ class NavigationController
     {
         float bearing = computeBearing();
         float headingDiff = std::abs(bearing - _currentHeading);
+        printf("Heading Diff: %.2f\n", headingDiff);
 
         if (headingDiff <= this->headingBuffer_)
         {
