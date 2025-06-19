@@ -82,7 +82,6 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
 
 void GoalManager::driveTrainPublisher(void)
 {
-    // TODO Change if logic -> switch sides
     // TODO Write getters/setters instead of accessing variables
     switch (_state)
     {
@@ -101,7 +100,7 @@ void GoalManager::driveTrainPublisher(void)
             RCLCPP_INFO(this->get_logger(), "ROTATING");
             if (_navigationController._desiredHeadingReached)
             {
-                _state = eState::IDLE;
+                _state = eState::NAVIGATING_TO_POINT;
             }
             else
             {

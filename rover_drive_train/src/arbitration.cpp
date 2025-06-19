@@ -157,7 +157,6 @@ void Arbitration::watchdog(bool* lostHB_) const
 
 void Arbitration::sendCmd() const
 {
-    RCLCPP_INFO(this->get_logger(), "Sending command");
     if (_baseHBLost || _roverHBLost)
     {
         _pubCmd->publish(_zeroCmd);
