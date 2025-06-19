@@ -153,13 +153,18 @@ void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_
 {
     uint16_t& deviceReboots = _canDevices[deviceID_].numberOfDeviceReboots;
     const uint16_t& deviceMessageCount = _canDevices[deviceID_].deviceMessageCount;
+    QString currentStyle = _canDevices[deviceID_].deviceInfo->styleSheet();
 
     if (deviceMessageCount > 1U)
     {
         deviceReboots = deviceMessageCount - 1;
         uint16_t deviceID = TO_UNDERLYING(deviceID_);
         RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Device 0x%X has rebooted since last call", deviceID);
-        _canDevices[deviceID_].deviceInfo->setStyleSheet(STATUS_WARNING);
+
+        if (currentStyle != STATUS_ERROR)
+        {
+            _canDevices[deviceID_].deviceInfo->setStyleSheet(STATUS_WARNING);
+        }
     }
 }
 
