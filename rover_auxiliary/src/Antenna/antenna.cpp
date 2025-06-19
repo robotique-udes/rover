@@ -58,6 +58,8 @@ void AntennaNode::CB_antenna_publisher(void)
     // This requires setting CURLOPT_SSL_CIPHER_LIST directly with CPR's option
     cpr::SslOptions ssl_options;
     ssl_options.ciphers = "DEFAULT@SECLEVEL=1";
+    ssl_options.verify_peer = false;
+    ssl_options.verify_host = false;
     session.SetOption(ssl_options);
 
     // Instead of using cookie files, use authentication
