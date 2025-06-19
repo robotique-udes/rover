@@ -82,7 +82,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             &QStatusWorker::onRequestDeviceStatusSuccessful,
             this,
             &QDeviceStatus::onRequestDeviceStatusSuccessful);
-
 }
 
 void QDeviceStatus::hideControls()
@@ -159,7 +158,7 @@ void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_
     {
         deviceReboots = deviceMessageCount - 1;
         uint16_t deviceID = TO_UNDERLYING(deviceID_);
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Device 0x%X has rebooted since last call", deviceID);
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Device 0x%X has rebooted since last call", deviceID);
         _canDevices[deviceID_].deviceInfo->setStyleSheet(STATUS_WARNING);
     }
 }
@@ -191,11 +190,15 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId deviceID_)
 void QDeviceStatus::updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_)
 {
     QWidget* widgetInfo = _canDevices[deviceID_].deviceInfo;
+    QString currentStyle = widgetInfo->styleSheet();
 
     switch (msg_.error_state)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            widgetInfo->setStyleSheet(STATUS_SUCCESS);
+            if (currentStyle != STATUS_WARNING)
+            {
+                widgetInfo->setStyleSheet(STATUS_SUCCESS);
+            }
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
             [[fallthrough]];
