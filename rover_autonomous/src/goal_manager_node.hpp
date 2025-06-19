@@ -14,7 +14,7 @@ class GoalManager : public rclcpp::Node
 {
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
     static constexpr const char* SRV_GOAL_NAME = "/rover/goal/position";
-    static constexpr const char* TOPIC_WHEEL_CMD_NAME = "/rover/drive_train/wheels_cmd_out";
+    static constexpr const char* TOPIC_WHEEL_CMD_NAME = "/rover/drive_train/wheels_cmd_auto";
     static constexpr const char* SERVICE_SERVER_NAME = "/rover/cameras/aruco_detection_management";
     static constexpr const char* TOPIC_ARUCO_DETECTED = "/rover/cameras/aruco_detected";
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
