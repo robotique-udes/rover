@@ -71,9 +71,7 @@ class NavigationController
     eRotationDirection computeRotationDirection(void)
     {
         double bearing = computeBearing();
-        printf("Bearing: %.2f\n", bearing);
         float headingDiff = std::abs(bearing - _currentHeading);
-        printf("Heading Diff: %.2f\n", headingDiff);
 
         if (headingDiff <= this->headingBuffer_)
         {
@@ -91,10 +89,13 @@ class NavigationController
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> rotate(void)
     {
+        // TODO Maybe define a SPEED FACTOR AUTO between crawler and normal
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
+
+        return _targetWheelCmd;
     }
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> idleCmd(void)
@@ -113,10 +114,6 @@ class NavigationController
         {
             _targetWheelCmd = this->idleCmd();
             return _targetWheelCmd;
-        }
-        if (!_desiredHeadingReached)
-        {
-            _targetWheelCmd = this->getToHeading();
         }
         else
         {
@@ -181,16 +178,18 @@ class NavigationController
 
     float getDistance(void)
     {
-        float lat1Rad = _currentLat * M_PI / 180.0F;
-        float lat2Rad = _targetLat * M_PI / 180.0F;
+        float lat1Rad = _currentLat * std::numbers::pi / 180.0F;
+        float lat2Rad = _targetLat * std::numbers::pi / 180.0F;
         float deltaLatRad = (lat2Rad - lat1Rad);
-        float deltaLonRad = (_targetLon - _currentLon) * M_PI / 180.0F;
+        float deltaLonRad = (_targetLon - _currentLon) * std::numbers::pi / 180.0F;
 
         float a = sin(deltaLatRad / 2.0F) * sin(deltaLatRad / 2.0F)
                   + cos(lat1Rad) * cos(lat2Rad) * sin(deltaLonRad / 2.0F) * sin(deltaLonRad / 2.0F);
         float c = 2.0F * atan2(sqrt(a), sqrt(1 - a));
 
         float distance = EARTH_RADIUS_METERS * c;
+
+        printf("Distance to target: %.2f meters\n", distance);
 
         return distance;
     }
