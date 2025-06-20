@@ -111,19 +111,22 @@ void GoalManager::driveTrainPublisher(void)
             RCLCPP_INFO(this->get_logger(), "NAVIGATING TO POINT");
             if (!_navigationController._endNodeReached)
             {
+                RCLCPP_INFO(this->get_logger(), "SET  WHEEL CMD");
                 _targetWheelCmd = _navigationController.setWheelCmd();
-                goalRequested = false;
-                goalReached = true;
             }
             else
             {
+                RCLCPP_INFO(this->get_logger(), "POINT REACHED");
                 auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
                 arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
                 arucoRequest->camera_url = Constants::CameraInfo::CAMERA_URL_MAP.at(("Main"));  // TODO Make better
+                goalRequested = false;
+                goalReached = true;
                 _state = eState::DETECTING_ARUCO;
             }
+            break;
         case (eState::DETECTING_ARUCO):
-            RCLCPP_INFO(this->get_logger(), "HEADING REACHED");
+            RCLCPP_INFO(this->get_logger(), "GOAL REACHED");
             if (!this->_arucoDetected)
             {
                 _targetWheelCmd = _navigationController.rotate();
