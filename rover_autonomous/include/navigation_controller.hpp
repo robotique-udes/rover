@@ -70,7 +70,8 @@ class NavigationController
 
     eRotationDirection computeRotationDirection(void)
     {
-        float bearing = computeBearing();
+        double bearing = computeBearing();
+        printf("Bearing: %.2f\n", bearing);
         float headingDiff = std::abs(bearing - _currentHeading);
         printf("Heading Diff: %.2f\n", headingDiff);
 
@@ -151,22 +152,28 @@ class NavigationController
         return _targetWheelCmd;
     }
 
-    float computeBearing(void)
+    double computeBearing(void)
     {
-        float currentLatRad = _currentLat * M_PI / 180.0F;
-        float targetLatRad = _targetLat * M_PI / 180.0F;
-        float deltaLonRad = (_targetLon - _currentLon) * M_PI / 180.0F;
+        double currentLatRad = _currentLat * std::numbers::pi / 180.0;  // Remove F
+        double targetLatRad = _targetLat * std::numbers::pi / 180.0;
+        double deltaLonRad = (_targetLon - _currentLon) * std::numbers::pi / 180.0;
 
-        float y = sin(deltaLonRad) * cos(targetLatRad);
-        float x = cos(currentLatRad) * sin(targetLatRad) - sin(currentLatRad) * cos(targetLatRad) * cos(deltaLonRad);
+        double y = sin(deltaLonRad) * cos(targetLatRad);
+        double x = cos(currentLatRad) * sin(targetLatRad) - sin(currentLatRad) * cos(targetLatRad) * cos(deltaLonRad);
 
-        float bearing = atan2(y, x);
+        double bearing = atan2(y, x);
+        bearing = bearing * 180.0 / std::numbers::pi;  // Remove F
 
-        bearing = bearing * 180.0F / M_PI;
-
-        if (bearing < 0.0F)
+        if (bearing < 0.0)
         {
-            bearing += 360.0F;
+            bearing += 360.0;  // Remove F
+        }
+
+        // Convert from mathematical bearing to navigation bearing
+        bearing = 90.0 - bearing;  // Remove F
+        if (bearing < 0.0)
+        {
+            bearing += 360.0;  // Remove F
         }
 
         return bearing;
