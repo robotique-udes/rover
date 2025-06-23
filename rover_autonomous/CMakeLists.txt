@@ -21,9 +21,11 @@ include_directories(
 
 add_executable(goal_manager_node src/goal_manager_node.cpp)
 
+
 ament_target_dependencies(goal_manager_node
                           rclcpp
                           rover_msgs)
+                          
 target_link_libraries(goal_manager_node rover_shared_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
