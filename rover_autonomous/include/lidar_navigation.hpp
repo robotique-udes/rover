@@ -17,10 +17,22 @@
 
 class LidarNavigation
 {
+  public:
     static constexpr float INFLUENCE_DISTANCE = 1.5F;
     static constexpr float REPULSIVE_GAIN = 0.8F;
+    static constexpr float TURN_GAIN = 1.0F;
 
-  private:
+    enum class eWheelCmd
+    {
+        FRONT_LEFT = 0,
+        REAR_LEFT = 1,
+        FRONT_RIGHT = 2,
+        REAR_RIGHT = 3,
+        eLAST
+    };
+
+    std::array<float, TO_UNDERLYING(NavigationController::eWheelCmd::eLAST)> _targetWheelCmd = {0.0F, 0.0F, 0.0F, 0.0F};
+
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> computeLidarNav(const sensor_msgs::msg::PointCloud2& msg_)
     {
         pcl::PointCloud<pcl::PointXYZ> cloud;
@@ -34,6 +46,7 @@ class LidarNavigation
         {
             float x = pt.x;
             float y = pt.y;
+            
 
             float r = std::hypot(x, y);
 
@@ -58,18 +71,21 @@ class LidarNavigation
         }
         else
         {
-            float steer = std::atan2(forceY, forcex);
+            float steer = std::atan2(forceY, forceX);
 
             float forwardFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL * std::max(0.0F, 1.0F - normalForce);
 
-            float angularFactor = Constants::DriveTrain::TURN_GAIN * steer;
+            float angularFactor = TURN_GAIN * steer;
 
             float leftFactor = forwardFactor - angularFactor;
             float rightFactor = forwardFactor + angularFactor;
 
             // TODO check for constrain in helpers
-            leftFactor = std::clamp(leftFactor, Constants::DriveTrain::SPEED_FACTOR_CRAWLER, Constants::DriveTrain::SPEED_FACTOR_NORMAL);
-            rightFactor = std::clamp(rightFactor, Constants::DriveTrain::SPEED_FACTOR_CRAWLER, Constants::DriveTrain::SPEED_FACTOR_NORMAL);
+            leftFactor
+                = std::clamp(leftFactor, Constants::DriveTrain::SPEED_FACTOR_CRAWLER, Constants::DriveTrain::SPEED_FACTOR_NORMAL);
+            rightFactor = std::clamp(rightFactor,
+                                     Constants::DriveTrain::SPEED_FACTOR_CRAWLER,
+                                     Constants::DriveTrain::SPEED_FACTOR_NORMAL);
 
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = leftFactor;
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = leftFactor;

@@ -12,6 +12,10 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package(sensor_msgs   REQUIRED)
+find_package(pcl_conversions REQUIRED)
+find_package(PCL REQUIRED)
+
 
 add_subdirectory(../rover_shared_libs/ .build)
 
@@ -24,7 +28,10 @@ add_executable(goal_manager_node src/goal_manager_node.cpp)
 
 ament_target_dependencies(goal_manager_node
                           rclcpp
-                          rover_msgs)
+                          rover_msgs
+                          sensor_msgs
+                          pcl_conversions
+                          PCL)
                           
 target_link_libraries(goal_manager_node rover_shared_libs)
 

@@ -7,12 +7,15 @@
 #include "rover_msgs/msg/aruco.hpp"
 #include "rover_msgs/srv/desired_gps_position.hpp"
 #include "rover_msgs/srv/aruco_detection.hpp"
+#include "sensor_msgs/msg/point_cloud2.hpp"
 
 #include "navigation_controller.hpp"
+#include "lidar_navigation.hpp"
 
 class GoalManager : public rclcpp::Node
 {
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
+    static constexpr const char* TOPIC_LIDAR_POINT_CLOUD = "/unilidar/cloud";
     static constexpr const char* SRV_GOAL_NAME = "/rover/goal/position";
     static constexpr const char* TOPIC_WHEEL_CMD_NAME = "/rover/drive_train/wheels_cmd_auto";
     static constexpr const char* SERVICE_SERVER_NAME = "/rover/cameras/aruco_detection_management";
@@ -35,13 +38,17 @@ class GoalManager : public rclcpp::Node
   private:
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_currentGps;
     rclcpp::Subscription<rover_msgs::msg::Aruco>::SharedPtr _sub_arucoDetection;  
+    rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr _sub_pointCloud;
     rclcpp::Service<rover_msgs::srv::DesiredGpsPosition>::SharedPtr _srv_desiredGps;
     rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr _srv_arucoDetection;
     rclcpp::Publisher<rover_msgs::msg::PropulsionMotor>::SharedPtr _pub_auto_cmd;
     rclcpp::TimerBase::SharedPtr _timer;
 
     NavigationController _navigationController;
-    eState _state = eState::IDLE;
+    LidarNavigation _lidarNavigation;
+
+    sensor_msgs::msg::PointCloud2 _pointCloudMsg; 
+    eState _state = eState::NAVIGATING_TO_POINT;
 
     bool goalRequested = false;
     bool goalReached = false;
@@ -53,6 +60,7 @@ class GoalManager : public rclcpp::Node
   public:
     void CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_);
     void CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_);
+    void CB_pointCloud(const sensor_msgs::msg::PointCloud2& pointCloudMsg_);
     void CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Request::SharedPtr request_,
                        rover_msgs::srv::DesiredGpsPosition::Response::SharedPtr response_);
     void driveTrainPublisher(void);

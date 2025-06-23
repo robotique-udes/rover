@@ -2,11 +2,11 @@
 #include "rover_lib2/helpers/constants.hpp"
 
 /* // TODO
-    * Add sanity cehck for gps and heading
-    * Add sanity check for aruco detection
-    * Add teleop priority
-    * Add error handling
-*/  
+ * Add sanity cehck for gps and heading
+ * Add sanity check for aruco detection
+ * Add teleop priority
+ * Add error handling
+ */
 
 GoalManager::GoalManager():
     Node("Goal_manager")
@@ -17,6 +17,13 @@ GoalManager::GoalManager():
                                                                       {
                                                                           this->CB_currentGps(gpsMsg_);
                                                                       });
+    _sub_pointCloud
+        = this->create_subscription<sensor_msgs::msg::PointCloud2>(TOPIC_LIDAR_POINT_CLOUD,
+                                                                   QOS_DEFAULT,
+                                                                   [this](const sensor_msgs::msg::PointCloud2& pointCloudMsg_)
+                                                                   {
+                                                                       this->CB_pointCloud(pointCloudMsg_);
+                                                                   });
 
     _sub_arucoDetection = this->create_subscription<rover_msgs::msg::Aruco>(TOPIC_ARUCO_DETECTED,
                                                                             QOS_DEFAULT,
@@ -47,6 +54,11 @@ void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
     {
         this->_arucoDetected = true;
     }
+}
+
+void GoalManager::CB_pointCloud(const sensor_msgs::msg::PointCloud2& pointCloudMsg_)
+{
+    _pointCloudMsg = pointCloudMsg_;
 }
 
 void GoalManager::CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_)
@@ -112,7 +124,8 @@ void GoalManager::driveTrainPublisher(void)
             if (!_navigationController._endNodeReached)
             {
                 RCLCPP_INFO(this->get_logger(), "SET  WHEEL CMD");
-                _targetWheelCmd = _navigationController.setWheelCmd();
+                // _targetWheelCmd = _navigationController.setWheelCmd();
+                _targetWheelCmd = _lidarNavigation.computeLidarNav(_pointCloudMsg);
             }
             else
             {
