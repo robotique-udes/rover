@@ -1,0 +1,9 @@
+std_msgs/msg/Header header
+uint32 height
+uint32 width
+sensor_msgs/msg/PointField[] fields
+boolean is_bigendian
+uint32 point_step
+uint32 row_step
+uint8[] data
+boolean is_dense
