@@ -32,7 +32,7 @@ QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
     }
 }
 
-void QVideoRecorderWidget::updateCamURL(std::string& url_)
+void QVideoRecorderWidget::updateCamURL(const std::string& url_)
 {
     _camURL = url_;
 }
@@ -54,7 +54,7 @@ void QVideoRecorderWidget::setCameraControlClientManager(std::shared_ptr<rclcpp:
 
 void QVideoRecorderWidget::handleScreenshot(void)
 {
-    if (_playerWorkerThreadRecording.get() != nullptr)
+    if (_playerWorkerThreadRecording != nullptr)
     {
         _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager,
                                                             _camURL,
@@ -70,7 +70,7 @@ void QVideoRecorderWidget::handleScreenshot(void)
 
 void QVideoRecorderWidget::handleRecording(void)
 {
-    if (_playerWorkerThreadRecording.get() != nullptr)
+    if (_playerWorkerThreadRecording != nullptr)
     {
         if (_sButtons.startRecordingButton->isChecked())
         {
@@ -235,7 +235,7 @@ void QVideoRecorderWidget::CB_cameraListUpdate(const std::vector<std::string>& u
     }
 }
 
-void QVideoRecorderWidget::CB_serviceCameraControlAvailable(bool available_)
+void QVideoRecorderWidget::CB_srvAvailable(bool available_)
 {
     if (!available_)
     {

@@ -252,7 +252,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
             bool available = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
             for (auto& widget : _videoPlaysWidgets)
             {
-                widget->CB_serviceCameraControlAvailable(available);
+                widget->CB_srvCameraAvailable(available);
             }
         });
     return;

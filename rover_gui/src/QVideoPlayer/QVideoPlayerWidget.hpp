@@ -85,7 +85,7 @@ class QVideoPlayerWidget : public QWidget
     bool isStreaming(void);
 
     void CB_cameraListUpdate(std::vector<std::string> urls_);
-    void CB_serviceCameraControlAvailable(bool available_);
+    void CB_srvCameraAvailable(bool available_);
 
   signals:
     void arucoCameraFailure(bool valid_);
