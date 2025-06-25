@@ -94,6 +94,22 @@ void QDeviceStatus::showControls()
     _ui.serviceCall->show();
 }
 
+void QDeviceStatus::hideInfos()
+{
+    for (auto& [key, value] : _canDevices)
+    {
+        value.deviceInfo->hide();
+    }
+}
+
+void QDeviceStatus::showInfos()
+{
+    for (auto& [key, value] : _canDevices)
+    {
+        value.deviceInfo->show();
+    }
+}
+
 /**
  * @brief Makes the service call to request the error state of the devices.
  *

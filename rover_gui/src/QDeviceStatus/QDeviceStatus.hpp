@@ -33,6 +33,8 @@ class QDeviceStatus : public QWidget
 
     void hideControls();
     void showControls();
+    void hideInfos();
+    void showInfos();
 
   private:
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
