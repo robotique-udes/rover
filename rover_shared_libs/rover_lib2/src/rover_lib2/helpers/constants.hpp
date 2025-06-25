@@ -38,12 +38,6 @@ namespace Constants
 #endif  // defined(__linux__)
     }   // namespace CameraInfo
 
-    namespace AntennaInfo
-    {
-        const std::map<std::string, std::string> ANTENNA_URL_MAP
-            = {{"Base", "https://192.168.144.55"}, {"Rover", "https://192.168.144.50"}};
-    }   // namespace AntennaInfo
-
     namespace DriveTrain
     {
         constexpr float SPEED_FACTOR_CRAWLER = 0.2f;

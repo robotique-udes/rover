@@ -7,10 +7,4 @@ from launch_ros.actions import Node
 def generate_launch_description():
     ld = LaunchDescription()
 
-    node_antenna = Node(
-        package="rover_auxiliary",
-        namespace="/rover/antenna",
-        executable="antenna",
-        name="antenna"
-    )
     return ld

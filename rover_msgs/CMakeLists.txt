@@ -38,7 +38,6 @@ find_package(rclcpp REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AntennaCmd.msg"
-  "msg/AntennaStatus.msg"
   "msg/ArmMsg.msg"
   "msg/Aruco.msg"
   "msg/Battery.msg"
