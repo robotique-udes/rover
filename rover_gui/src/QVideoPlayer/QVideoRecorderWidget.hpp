@@ -30,11 +30,11 @@ class QVideoRecorderWidget : public QWidget
     void CB_srvAvailable(bool available_);
 
   private slots:
-    void handleScreenshot(void);
-    void handleRecording(void);
-    void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_);
-    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_);
-    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_);
+    void handleScreenshot(void) const;
+    void handleRecording(void) const;
+    void onScreenshotHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_);
+    void onStartRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_);
+    void onStopRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_);
 
   private:
     uint16_t _playerIndex;

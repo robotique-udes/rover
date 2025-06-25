@@ -135,11 +135,10 @@ class QVideoPlayerWidget : public QWidget
     int _streamIndex;
     int16_t _playerIndex;
 
-    QVideoRecorderWidget _recorderWidget;
-
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
+    QVideoRecorderWidget _recorderWidget;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
     int _reconnectAttempts = 0;

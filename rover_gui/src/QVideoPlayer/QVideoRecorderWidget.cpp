@@ -13,6 +13,21 @@ QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
     _camURL(url_),
     _playerWorkerThreadRecording(workerThreadRecording_)
 {
+    connect(_playerWorkerThreadRecording.get(),
+            &QRecordingWorker::screenshotHandledSuccessfully,
+            this,
+            &QVideoRecorderWidget::onScreenshotHandledSuccessfully);
+
+    connect(_playerWorkerThreadRecording.get(),
+            &QRecordingWorker::startRecordingHandledSuccessfully,
+            this,
+            &QVideoRecorderWidget::onStartRecordingHandledSuccessfully);
+
+    connect(_playerWorkerThreadRecording.get(),
+            &QRecordingWorker::stopRecordingHandledSuccessfully,
+            this,
+            &QVideoRecorderWidget::onStopRecordingHandledSuccessfully);
+
     std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
     if (optionalSessionFolderPath.has_value())
     {
@@ -46,15 +61,18 @@ void QVideoRecorderWidget::setCameraControlClientManager(std::shared_ptr<rclcpp:
     else
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Error, couldn't access aruco detection manager client");
-        _sButtons.screenshotButton->setProperty("class", "error");
-        _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
-        _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
+        if (_sButtons.screenshotButton)
+        {
+            _sButtons.screenshotButton->setProperty("class", "error");
+            _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
+            _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
+        }
     }
 }
 
-void QVideoRecorderWidget::handleScreenshot(void)
+void QVideoRecorderWidget::handleScreenshot(void) const
 {
-    if (_playerWorkerThreadRecording != nullptr)
+    if (_playerWorkerThreadRecording)
     {
         _playerWorkerThreadRecording->takeScreenshotManager(_client_cameraControlManager,
                                                             _camURL,
@@ -63,14 +81,14 @@ void QVideoRecorderWidget::handleScreenshot(void)
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"),
+                     "Error, couldn't access Video Player worker. _playerWorkerThreadRecording was nullptr");
     }
-    return;
 }
 
-void QVideoRecorderWidget::handleRecording(void)
+void QVideoRecorderWidget::handleRecording(void) const
 {
-    if (_playerWorkerThreadRecording != nullptr)
+    if (_playerWorkerThreadRecording && _sButtons.startRecordingButton)
     {
         if (_sButtons.startRecordingButton->isChecked())
         {
@@ -91,116 +109,121 @@ void QVideoRecorderWidget::handleRecording(void)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access Video Player worker");
     }
-    return;
 }
 
-void QVideoRecorderWidget::onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
+void QVideoRecorderWidget::onScreenshotHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_)
 {
     if (playerIndex_ == _playerIndex)
     {
-        if (!success_)
+        if (_sButtons.screenshotButton)
         {
-            _sButtons.screenshotButton->setProperty("class", "error");
-            _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
-            _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't take screenshot",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::ERROR);
-        }
-        else
-        {
-            _sButtons.screenshotButton->setProperty("class", "success");
-            _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
-            _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Screenshot taken",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
-        }
+            if (!success_)
+            {
+                _sButtons.screenshotButton->setProperty("class", "error");
+                _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
+                _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't take screenshot",
+                                                                               status_,
+                                                                               QHelper::QToastNotification::eNotifType::ERROR);
+            }
+            else
+            {
+                _sButtons.screenshotButton->setProperty("class", "success");
+                _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
+                _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread("Screenshot taken",
+                                                                               status_,
+                                                                               QHelper::QToastNotification::eNotifType::SUCCESS);
+            }
 
-        QTimer::singleShot(STYLE_RESET_TIME,
-                           this,
-                           [this]()
-                           {
-                               _sButtons.screenshotButton->setProperty("class", "normal");
-                               _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
-                               _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
-                           });
-    }
-    return;
-}
-
-void QVideoRecorderWidget::onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
-{
-    if (playerIndex_ == _playerIndex)
-    {
-        if (!success_)
-        {
-            _sButtons.startRecordingButton->setProperty("class", "error");
-            _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-            _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't start video",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::ERROR);
-
-            // reset after timer
             QTimer::singleShot(STYLE_RESET_TIME,
                                this,
                                [this]()
                                {
-                                   _sButtons.startRecordingButton->setProperty("class", "");
-                                   _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-                                   _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                                   _sButtons.screenshotButton->setProperty("class", "normal");
+                                   _sButtons.screenshotButton->style()->unpolish(_sButtons.screenshotButton);
+                                   _sButtons.screenshotButton->style()->polish(_sButtons.screenshotButton);
                                });
         }
-        else
-        {
-            _sButtons.startRecordingButton->setProperty("class", "success");
-            _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-            _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-            _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Video started",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
-        }
     }
-    return;
 }
 
-void QVideoRecorderWidget::onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t playerIndex_)
+void QVideoRecorderWidget::onStartRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_)
 {
     if (playerIndex_ == _playerIndex)
     {
-        if (!success_)
+        if (_sButtons.startRecordingButton)
         {
-            _sButtons.startRecordingButton->setProperty("class", "error");
-            _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-            _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't stop recording",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+            if (!success_)
+            {
+                _sButtons.startRecordingButton->setProperty("class", "error");
+                _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+                _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't start video",
+                                                                               status_,
+                                                                               QHelper::QToastNotification::eNotifType::ERROR);
 
-            // reset after timer
-            QTimer::singleShot(STYLE_RESET_TIME,
-                               this,
-                               [this]()
-                               {
-                                   _sButtons.startRecordingButton->setProperty("class", "normal");
-                                   _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-                                   _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-                               });
-        }
-        else
-        {
-            _sButtons.startRecordingButton->setProperty("class", "normal");
-            _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
-            _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-            _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
-                                                                           status_,
-                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
+                // reset after timer
+                QTimer::singleShot(STYLE_RESET_TIME,
+                                   this,
+                                   [this]()
+                                   {
+                                       _sButtons.startRecordingButton->setProperty("class", "");
+                                       _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+                                       _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                                   });
+            }
+            else
+            {
+                _sButtons.startRecordingButton->setProperty("class", "success");
+                _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
+                _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+                _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread("Video started",
+                                                                               status_,
+                                                                               QHelper::QToastNotification::eNotifType::SUCCESS);
+            }
         }
     }
-    return;
+}
+
+void QVideoRecorderWidget::onStopRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_)
+{
+    if (playerIndex_ == _playerIndex)
+    {
+        if (_sButtons.startRecordingButton)
+        {
+            if (!success_)
+            {
+                _sButtons.startRecordingButton->setProperty("class", "error");
+                _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+                _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread("Couldn't stop recording",
+                                                                               status_,
+                                                                               QHelper::QToastNotification::eNotifType::ERROR);
+
+                // reset after timer
+                QTimer::singleShot(STYLE_RESET_TIME,
+                                   this,
+                                   [this]()
+                                   {
+                                       _sButtons.startRecordingButton->setProperty("class", "normal");
+                                       _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+                                       _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                                   });
+            }
+            else
+            {
+                _sButtons.startRecordingButton->setProperty("class", "normal");
+                _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
+                _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+                _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
+                                                                               status_,
+                                                                               QHelper::QToastNotification::eNotifType::SUCCESS);
+            }
+        }
+    }
 }
 
 void QVideoRecorderWidget::CB_cameraListUpdate(const std::vector<std::string>& urls)
@@ -209,43 +232,51 @@ void QVideoRecorderWidget::CB_cameraListUpdate(const std::vector<std::string>& u
     {
         if (url == _camURL)
         {
-            if (!_sButtons.startRecordingButton->isChecked())
+            if (_sButtons.startRecordingButton)
             {
-                _sButtons.startRecordingButton->setChecked(true);
-                _sButtons.startRecordingButton->setProperty("class", "success");
-                _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-                _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-                _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                if (!_sButtons.startRecordingButton->isChecked())
+                {
+                    _sButtons.startRecordingButton->setChecked(true);
+                    _sButtons.startRecordingButton->setProperty("class", "success");
+                    _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
+                    _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+                    _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+                }
             }
-            return;
         }
     }
 
     // if cam_url wasn't found in vector and we're currently recording
-    if (_sButtons.startRecordingButton->isChecked())
+    if (_sButtons.startRecordingButton)
     {
-        std::string error_message = "Recording on " + _camURL + " was stopped unexpectedly";
-        _sButtons.startRecordingButton->setChecked(false);
-        _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
-        _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-        _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
-                                                                       error_message,
-                                                                       QHelper::QToastNotification::eNotifType::WARNING);
+        if (_sButtons.startRecordingButton->isChecked())
+        {
+            std::string error_message = "Recording on " + _camURL + " was stopped unexpectedly";
+            _sButtons.startRecordingButton->setChecked(false);
+            _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
+            _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
+            _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
+                                                                           error_message,
+                                                                           QHelper::QToastNotification::eNotifType::WARNING);
+        }
     }
 }
 
 void QVideoRecorderWidget::CB_srvAvailable(bool available_)
 {
-    if (!available_)
+    if (_sButtons.screenshotButton && _sButtons.startRecordingButton)
     {
-        _sButtons.screenshotButton->setEnabled(false);
-        _sButtons.startRecordingButton->setEnabled(false);
-    }
-    else if (!_sButtons.screenshotButton->isEnabled() || !_sButtons.startRecordingButton->isEnabled())
-    {
-        _sButtons.screenshotButton->setEnabled(true);
-        _sButtons.startRecordingButton->setEnabled(true);
+        if (!available_)
+        {
+            _sButtons.screenshotButton->setEnabled(false);
+            _sButtons.startRecordingButton->setEnabled(false);
+        }
+        else if (!_sButtons.screenshotButton->isEnabled() || !_sButtons.startRecordingButton->isEnabled())
+        {
+            _sButtons.screenshotButton->setEnabled(true);
+            _sButtons.startRecordingButton->setEnabled(true);
+        }
     }
 }
 
@@ -253,20 +284,9 @@ void QVideoRecorderWidget::setButtons(sRecordingButtons& buttons_)
 {
     _sButtons = buttons_;
 
-    connect(_sButtons.screenshotButton, &QPushButton::clicked, this, &QVideoRecorderWidget::handleScreenshot);
-    connect(_playerWorkerThreadRecording.get(),
-            &QRecordingWorker::screenshotHandledSuccessfully,
-            this,
-            &QVideoRecorderWidget::onScreenshotHandledSuccessfully);
-
-    connect(_sButtons.startRecordingButton, &QPushButton::clicked, this, &QVideoRecorderWidget::handleRecording);
-    connect(_playerWorkerThreadRecording.get(),
-            &QRecordingWorker::startRecordingHandledSuccessfully,
-            this,
-            &QVideoRecorderWidget::onStartRecordingHandledSuccessfully);
-
-    connect(_playerWorkerThreadRecording.get(),
-            &QRecordingWorker::stopRecordingHandledSuccessfully,
-            this,
-            &QVideoRecorderWidget::onStopRecordingHandledSuccessfully);
+    if (_sButtons.screenshotButton && _sButtons.startRecordingButton)
+    {
+        connect(_sButtons.screenshotButton, &QPushButton::clicked, this, &QVideoRecorderWidget::handleScreenshot);
+        connect(_sButtons.startRecordingButton, &QPushButton::clicked, this, &QVideoRecorderWidget::handleRecording);
+    }
 }
