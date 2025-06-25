@@ -14,17 +14,30 @@ find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 
+add_subdirectory(../cpr cpr_build)
 add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
+add_executable(antenna src/Antenna/antenna.cpp)
+
+cpr_option(CPR_USE_SYSTEM_CURL "If enabled we will use the curl lib already installed on this system." ON)
 
 ament_target_dependencies(ddb_control
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
 target_link_libraries(ddb_control rover_shared_libs)
+
+ament_target_dependencies(antenna
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
+target_link_libraries(antenna 
+                          rover_shared_libs
+                          cpr::cpr)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
@@ -33,5 +46,9 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS
           ddb_control
         DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+          antenna
+      DESTINATION lib/${PROJECT_NAME})
   
 ament_package()
