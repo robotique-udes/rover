@@ -24,7 +24,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerIndex(playerIndex_),
     _playerWorkerThreadAruco(workerThreadAruco_),
     _playerWorkerThreadRecording(workerThreadRecording_),
-    _recorderWidget(url_, playerIndex_),
+    _recorderWidget(url_, playerIndex_, workerThreadRecording_),
     _reconnectTimer(),
     _frameTimeoutTimer(),
     _connectionTimeoutTimer()
@@ -35,7 +35,9 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.setupUi(this);
 
     this->setupUI();
-    this->initializeRecorder();
+
+    sRecordingButtons recordingButtons = {_ui.startRecordingButton, _ui.ScreenshotButton};
+    _recorderWidget.setButtons(recordingButtons);
 
     _gstreamerWorker = new GStreamerWorker();
     _gstreamerWorker->setTargetWidget(_ui.logDisplay);
