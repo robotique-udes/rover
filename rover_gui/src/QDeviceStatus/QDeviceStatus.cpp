@@ -40,17 +40,17 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     _ui.setupUi(this);
 
-    _canDevices[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = {0, 0, 0, 0, _ui.frontleftMotor, _ui.frontleftMotorInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = {0, 0, 0, 0, _ui.frontrightMotor, _ui.frontrightMotorInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = {0, 0, 0, 0, _ui.rearleftMotor, _ui.rearleftMotorInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = {0, 0, 0, 0, _ui.rearrightMotor, _ui.rearrightMotorInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::GNSS] = {0, 0, 0, 0, _ui.gnss, _ui.gnssInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = {0, 0, 0, 0, _ui.ddbController, _ui.ddbControllerInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = {0, 0, 0, 0, _ui.cameraMain, _ui.cameraMainInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = {0, 0, 0, 0, _ui.cameraAntenne, _ui.cameraAntenneInfo};
-    _canDevices[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = {0, 0, 0, 0, _ui.lightsMain, _ui.lightsMainInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH0] = {0, 0, 0, 0, _ui.switchETH0, _ui.switchETH0Info};
-    // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH1] = {0, 0, 0, 0, _ui.switchETH1, _ui.switchETH1Info};
+    _canDevices[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = {0, 0, _ui.frontleftMotor, _ui.frontleftMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = {0, 0, _ui.frontrightMotor, _ui.frontrightMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = {0, 0, _ui.rearleftMotor, _ui.rearleftMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = {0, 0, _ui.rearrightMotor, _ui.rearrightMotorInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::GNSS] = {0, 0, _ui.gnss, _ui.gnssInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = {0, 0, _ui.ddbController, _ui.ddbControllerInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = {0, 0, _ui.cameraMain, _ui.cameraMainInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = {0, 0, _ui.cameraAntenne, _ui.cameraAntenneInfo};
+    _canDevices[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = {0, 0, _ui.lightsMain, _ui.lightsMainInfo};
+    // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH0] = {0, 0, _ui.switchETH0, _ui.switchETH0Info};
+    // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH1] = {0, 0, _ui.switchETH1, _ui.switchETH1Info};
 
     _sub_deviceStatus
         = _node->create_subscription<rover_msgs::msg::CanDeviceStatus>("/rover/can/devices_status",
@@ -74,7 +74,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             this,
             [this]()
             {
-                this->setDefaultStyle();
+                this->resetWidget();
                 this->updateDeviceInfo();
             });
 
@@ -114,8 +114,6 @@ void QDeviceStatus::onRequestDeviceStatusSuccessful(bool success_, const std::st
 {
     if (success_)
     {
-        _numberOfCalls++;
-        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Number of calls: %d", _numberOfCalls);
         RCLCPP_INFO(rclcpp::get_logger("GUI"), "Service request succeeded: %s", response_.c_str());
     }
     else
@@ -154,24 +152,15 @@ void QDeviceStatus::callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& 
 void QDeviceStatus::updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_)
 {
     uint16_t& deviceReboots = _canDevices[deviceID_].numberOfDeviceReboots;
-    uint16_t& oldDeviceReboots = _canDevices[deviceID_].oldDeviceReboots;
-    const uint16_t& deviceRebootsFromButton = _canDevices[deviceID_].numberOfDeviceRebootsFromButton;
     const uint16_t& deviceMessageCount = _canDevices[deviceID_].deviceMessageCount;
+    const QString& currentStyle = _canDevices[deviceID_].deviceInfo->styleSheet();
 
-    if (_numberOfCalls < deviceMessageCount)
+    if (deviceMessageCount > 1U)
     {
-        oldDeviceReboots = 0;
-        deviceReboots = 0;
-        return;
-    }
-
-    deviceReboots = deviceRebootsFromButton + _numberOfCalls - deviceMessageCount;
-
-    if (deviceReboots != oldDeviceReboots)
-    {
-        oldDeviceReboots = deviceReboots;
+        deviceReboots = deviceMessageCount - 1U;
         uint16_t deviceID = TO_UNDERLYING(deviceID_);
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Device %d has rebooted since last call", deviceID);
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Device 0x%X has rebooted since last call", deviceID);
+        _canDevices[deviceID_].deviceInfo->setStyleSheet(STATUS_WARNING);
     }
 }
 
@@ -202,15 +191,18 @@ void QDeviceStatus::setStatusReport(RoverCan2::Constant::eDeviceId deviceID_)
 void QDeviceStatus::updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_)
 {
     QWidget* widgetInfo = _canDevices[deviceID_].deviceInfo;
+    const QString& currentStyle = widgetInfo->styleSheet();
 
     switch (msg_.error_state)
     {
         case rover_msgs::msg::CanDeviceStatus::STATUS_OK:
-            widgetInfo->setStyleSheet(STATUS_SUCCESS);
+            if (currentStyle != STATUS_WARNING && currentStyle != STATUS_ERROR)
+            {
+                widgetInfo->setStyleSheet(STATUS_SUCCESS);
+            }
             break;
         case rover_msgs::msg::CanDeviceStatus::STATUS_WARNING:
-            widgetInfo->setStyleSheet(STATUS_WARNING);
-            break;
+            [[fallthrough]];
         case rover_msgs::msg::CanDeviceStatus::STATUS_ERROR:
             widgetInfo->setStyleSheet(STATUS_ERROR);
             break;
@@ -221,16 +213,19 @@ void QDeviceStatus::updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, 
 }
 
 /**
- * @brief Sets the default style for all device labels.
+ * @brief Resets the widget to its initial state.
  *
  */
-void QDeviceStatus::setDefaultStyle()
+void QDeviceStatus::resetWidget()
 {
     for (auto& [key, value] : _canDevices)
     {
         if (value.deviceInfo)
         {
+            value.deviceMessageCount = 0U;
+            value.numberOfDeviceReboots = 0U;
             value.deviceInfo->setStyleSheet(STATUS_DEFAULT);
+            this->setStatusReport(key);
         }
     }
 }
