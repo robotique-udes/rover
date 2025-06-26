@@ -11,7 +11,7 @@ namespace CameraManager
     Arbitration::Arbitration()
     {
         _isPTZTopicActive.fill(false);
-        _highestPriorityLevel.fill(NUMBER_TOPIC - 1);
+        _highestPriorityLevelPtzCmd.fill(NUMBER_TOPIC - 1);
         _missingHighPriorityMsg.fill(0);
     }
 
@@ -27,51 +27,67 @@ namespace CameraManager
         }
     }
 
-    void Arbitration::CB_PTZcmdFiltering(rover_msgs::msg::CameraControl PTZcmd_, size_t priority)
+    std::optional<rover_msgs::msg::CameraControl> Arbitration::getValidPTZConfig(size_t camID_)
+    {
+        if (!_isPTZTopicActive.at(camID_))
+        {
+            return std::nullopt;
+        }
+        else
+        {
+            return _lastValidPTZcmd.at(camID_);
+        }
+    }
+
+
+    void Arbitration::CB_PTZCmdFiltering(rover_msgs::msg::CameraControl PTZcmd_, size_t priority)
     {
         size_t id = PTZcmd_.id_cam;
 
         if (_isPTZTopicActive.at(id) == false)
         {
             _isPTZTopicActive.at(id) = true;
-            _highestPriorityLevel.at(id) = priority;
+            _highestPriorityLevelPtzCmd.at(id) = priority;
             RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"), "Cam %ld is now managed by %s", id, PTZ_CMD_TOPIC[priority]);
             _activeTopicCount++;
         }
 
-        else if (priority < _highestPriorityLevel.at(id))
+        else if (priority < _highestPriorityLevelPtzCmd.at(id))
         {
-            _highestPriorityLevel.at(id) = priority;
+            _highestPriorityLevelPtzCmd.at(id) = priority;
             RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"),
                         "Priority has shifted up to %s on cam %ld",
                         PTZ_CMD_TOPIC[priority],
                         id);
         }
 
-        if (priority > _highestPriorityLevel.at(id) || !_isPTZTopicActive.at(id))
+        if (priority > _highestPriorityLevelPtzCmd.at(id) || !_isPTZTopicActive.at(id))
         {
             _missingHighPriorityMsg.at(id)++;
 
             size_t highPriorityMissingMsgThreshold = _activeTopicCount + HIGH_PRIORITY_MISSING_MSG_SAFETY_FACTOR;
-            RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"), "THRESH %ld ", highPriorityMissingMsgThreshold);
 
             if (_missingHighPriorityMsg.at(id) > highPriorityMissingMsgThreshold)
             {
-                
-                _highestPriorityLevel.at(id) = priority;
-            RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"),
-                        "Priority has shifted down to %s on cam %ld",
-                        PTZ_CMD_TOPIC[priority],
-                        id);
+                _highestPriorityLevelPtzCmd.at(id) = priority;
+                RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"),
+                            "Priority has shifted down to %s on cam %ld",
+                            PTZ_CMD_TOPIC[priority],
+                            id);
             }
-
-            #warning watchdog for the least prioritize topic
-
             return;
+
         }
 
+        RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"), "RESET ");
         _missingHighPriorityMsg.at(id) = 0;
         _lastValidPTZcmd.at(id) = PTZcmd_;
     }
 
+    void Arbitration::CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_, size_t priority)
+    {
+        size_t id = PTZConfig_.id_cam;
+
+        _highestPriorityLevelPtzConfig.at(id) = _highestPriorityLevelPtzCmd.at(id);
+    }
 }  // namespace CameraManager

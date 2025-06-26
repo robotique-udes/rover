@@ -66,7 +66,7 @@ void Camera::CB_ROS_powerCmd(const rover_msgs::msg::CameraControl& rosMsg_)
     if (!_timerCanSendPowerCmd && this->getAttachedNode())
     {
         _timerCanSendPowerCmd
-            = this->getAttachedNode()->create_wall_timer(std::chrono::milliseconds(CAMERA_POWER_STATUS_PUB_PERIOD_MS),
+            = this->getAttachedNode()->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000/CAMERA_POWER_STATUS_PUB_FREQ)),
                                                          [this](void)
                                                          {
                                                              this->CB_sendCanPowerCmd();
