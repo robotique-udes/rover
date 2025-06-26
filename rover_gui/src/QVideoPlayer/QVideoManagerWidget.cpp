@@ -167,10 +167,13 @@ void QVideoManagerWidget::initWidget(void)
 
         _playerWorkerThreadRecording[i] = std::make_shared<QRecordingWorker>();
         _playerWorkerThreadRecording[i]->start();
-        _playerWorkerThreadRecording[i]->setThreadName("WorkerRecord"+ std::to_string(i));
+        _playerWorkerThreadRecording[i]->setThreadName("WorkerRecord" + std::to_string(i));
 
-        _videoPlaysWidgets[i]
-            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording[i]);
+        _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node,
+                                                                     cameraUrl,
+                                                                     i,
+                                                                     _playerWorkerThreadAruco,
+                                                                     _playerWorkerThreadRecording[i]);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
