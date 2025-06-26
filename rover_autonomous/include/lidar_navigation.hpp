@@ -5,8 +5,10 @@
 #include <cmath>
 #include <array>
 #include <algorithm>
+
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <geometry_msgs/msg/twist.hpp>
+#include <nav_msgs/msg/occupancy_grid.hpp>
 #include <pcl_conversions/pcl_conversions.h>
 #include <pcl/point_types.h>
 #include <pcl/point_cloud.h>
@@ -18,10 +20,6 @@
 class LidarNavigation
 {
   public:
-    static constexpr float INFLUENCE_DISTANCE = 1.5F;
-    static constexpr float REPULSIVE_GAIN = 0.8F;
-    static constexpr float TURN_GAIN = 1.0F;
-
     enum class eWheelCmd
     {
         FRONT_LEFT = 0,
@@ -31,70 +29,104 @@ class LidarNavigation
         eLAST
     };
 
-    std::array<float, TO_UNDERLYING(NavigationController::eWheelCmd::eLAST)> _targetWheelCmd = {0.0F, 0.0F, 0.0F, 0.0F};
+    // Repulsion parameters
+    static constexpr float INFLUENCE_DISTANCE = 1.5F;
+    static constexpr float REPULSIVE_GAIN = 0.8F;
+    static constexpr float TURN_GAIN = 1.0F;
 
-    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> computeLidarNav(const sensor_msgs::msg::PointCloud2& msg_)
+    // Costmap parameters
+    static constexpr float GRID_SIZE_M = 10.0F;      // 10m x 10m
+    static constexpr float GRID_RES_METERS = 0.05F;  // 5cm resolution
+    static constexpr int GRID_CELLS = int(GRID_SIZE_M / GRID_RES_METERS);
+
+    LidarNavigation()
+    {
+        // Prepare static template for occupancy grid
+        _grid_template.header.frame_id = "unilidar_lidar";
+        _grid_template.info.resolution = GRID_RES_METERS;
+        _grid_template.info.width = GRID_CELLS;
+        _grid_template.info.height = GRID_CELLS;
+        _grid_template.info.origin.position.x = -GRID_SIZE_M / 2.0;
+        _grid_template.info.origin.position.y = -GRID_SIZE_M / 2.0;
+        _grid_template.info.origin.orientation.w = 1.0;
+        _grid_template.data.resize(GRID_CELLS * GRID_CELLS);
+    }
+
+    /**
+     * Compute wheel speed commands based purely on repulsive forces.
+     * @param msg Input 3D point cloud
+     * @return Array of four wheel speed factors
+     */
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> computeWheelCommands(const sensor_msgs::msg::PointCloud2& msg)
     {
         pcl::PointCloud<pcl::PointXYZ> cloud;
-        pcl::fromROSMsg(msg_, cloud);
+        pcl::fromROSMsg(msg, cloud);
 
-        // TODO determine necessary axis
-        float forceX = 0.0F;
-        float forceY = 0.0F;
-
-        for (const auto& pt : cloud.points)
+        float fx = 0.0F, fy = 0.0F;
+        for (auto const& pt : cloud.points)
         {
-            float x = pt.x;
-            float y = pt.y;
-            
-
+            float x = pt.x, y = pt.y;
             float r = std::hypot(x, y);
-
-            if (r < INFLUENCE_DISTANCE)
+            if (r > 0.0F && r < INFLUENCE_DISTANCE)
             {
-                float magnitude = REPULSIVE_GAIN * (1.0F / r - 1.0F / INFLUENCE_DISTANCE) / (r * r);
-
-                forceX += -magnitude * (x / r);
-                forceY += -magnitude * (y / r);
+                float mag = REPULSIVE_GAIN * (1.0F / r - 1.0F / INFLUENCE_DISTANCE) / (r * r);
+                fx += -mag * (x / r);
+                fy += -mag * (y / r);
             }
         }
+        float norm = std::hypot(fx, fy);
 
-        float normalForce = std::hypot(forceX, forceY);
-
-        if (normalForce < 1e-6F)
+        std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> cmds;
+        if (norm < 1e-6F)
         {
-            // No repulsive force detected, return normal speed
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            cmds.fill(Constants::DriveTrain::SPEED_FACTOR_NORMAL);
         }
         else
         {
-            float steer = std::atan2(forceY, forceX);
-
-            float forwardFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL * std::max(0.0F, 1.0F - normalForce);
-
-            float angularFactor = TURN_GAIN * steer;
-
-            float leftFactor = forwardFactor - angularFactor;
-            float rightFactor = forwardFactor + angularFactor;
-
-            // TODO check for constrain in helpers
-            leftFactor
-                = std::clamp(leftFactor, Constants::DriveTrain::SPEED_FACTOR_CRAWLER, Constants::DriveTrain::SPEED_FACTOR_NORMAL);
-            rightFactor = std::clamp(rightFactor,
-                                     Constants::DriveTrain::SPEED_FACTOR_CRAWLER,
-                                     Constants::DriveTrain::SPEED_FACTOR_NORMAL);
-
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = leftFactor;
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = leftFactor;
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = rightFactor;
-            _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = rightFactor;
+            float steer = std::atan2(fy, fx);
+            float forward = Constants::DriveTrain::SPEED_FACTOR_NORMAL * std::max(0.0F, 1.0F - norm);
+            float angular = TURN_GAIN * steer;
+            float left = forward - angular;
+            float right = forward + angular;
+            left = std::clamp(left, Constants::DriveTrain::SPEED_FACTOR_CRAWLER, Constants::DriveTrain::SPEED_FACTOR_NORMAL);
+            right = std::clamp(right, Constants::DriveTrain::SPEED_FACTOR_CRAWLER, Constants::DriveTrain::SPEED_FACTOR_NORMAL);
+            cmds[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = left;
+            cmds[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = left;
+            cmds[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = right;
+            cmds[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = right;
         }
-
-        return _targetWheelCmd;
+        return cmds;
     }
+
+    /**
+     * Generate a local occupancy grid centered on the robot.
+     * @param msg Input 3D point cloud
+     * @return OccupancyGrid in "base_link" frame
+     */
+    nav_msgs::msg::OccupancyGrid buildCostmap(const sensor_msgs::msg::PointCloud2& msg)
+    {
+        auto grid = _grid_template;  // copy template
+        pcl::PointCloud<pcl::PointXYZ> cloud;
+        pcl::fromROSMsg(msg, cloud);
+
+        std::fill(grid.data.begin(), grid.data.end(), 0);
+        for (auto const& pt : cloud.points)
+        {
+            if (!std::isfinite(pt.x) || !std::isfinite(pt.y))
+                continue;
+            if (std::fabs(pt.x) > GRID_SIZE_M / 2 || std::fabs(pt.y) > GRID_SIZE_M / 2)
+                continue;
+            int gx = int((pt.x + GRID_SIZE_M / 2.0F) / GRID_RES_METERS);
+            int gy = int((pt.y + GRID_SIZE_M / 2.0F) / GRID_RES_METERS);
+            int idx = gy * GRID_CELLS + gx;
+            grid.data[idx] = 100;
+        }
+        grid.header.stamp = rclcpp::Clock().now();
+        return grid;
+    }
+
+  private:
+    nav_msgs::msg::OccupancyGrid _grid_template;
 };
 
-#endif
+#endif  // LIDAR_NAVIGATION_HPP

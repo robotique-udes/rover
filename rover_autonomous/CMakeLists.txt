@@ -13,9 +13,10 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(sensor_msgs   REQUIRED)
+find_package(nav_msgs   REQUIRED)
+find_package(visualization_msgs   REQUIRED)
 find_package(pcl_conversions REQUIRED)
 find_package(PCL REQUIRED)
-
 
 add_subdirectory(../rover_shared_libs/ .build)
 
@@ -30,6 +31,8 @@ ament_target_dependencies(goal_manager_node
                           rclcpp
                           rover_msgs
                           sensor_msgs
+                          nav_msgs
+                          visualization_msgs
                           pcl_conversions
                           PCL)
                           
