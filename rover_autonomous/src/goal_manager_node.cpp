@@ -31,6 +31,11 @@ GoalManager::GoalManager():
                                                                             {
                                                                                 this->CB_aruco(arucoMsg_);
                                                                             });
+
+    _pub_auto_cmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD_NAME, QOS_DEFAULT);
+    _pub_marker = this->create_publisher<visualization_msgs::msg::Marker>(TOPIC_MARKER, QOS_DEFAULT);
+    _pub_map = this->create_publisher<nav_msgs::msg::OccupancyGrid>("/rover/goal/occupancy_grid", QOS_DEFAULT);
+
     _srv_desiredGps = this->create_service<rover_msgs::srv::DesiredGpsPosition>(
         SRV_GOAL_NAME,
         [this](const rover_msgs::srv::DesiredGpsPosition::Request::SharedPtr request_,
@@ -38,7 +43,6 @@ GoalManager::GoalManager():
         {
             this->CB_desiredGps(request_, response_);
         });
-    _pub_auto_cmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD_NAME, QOS_DEFAULT);
     _timer = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                      [this]()
                                      {
@@ -46,6 +50,17 @@ GoalManager::GoalManager():
                                      });
     _srv_arucoDetection = this->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_SERVER_NAME);
     _navigationController.headingBuffer_ = HEADING_BUFFER;  // TODO make this cleaner
+
+    nav_msgs::msg::OccupancyGrid _gridMsgs;
+
+    _gridMsgs.header.frame_id = "unilidar_lidar";
+    _gridMsgs.info.resolution = OCCUPENCY_GRID_RESOLUTION;
+    _gridMsgs.info.width = GRID_CELLS;
+    _gridMsgs.info.height = GRID_CELLS;
+    _gridMsgs.info.origin.position.x = -OCCUPENCY_GRID_SIZE / 2.0;
+    _gridMsgs.info.origin.position.y = -OCCUPENCY_GRID_SIZE / 2.0;
+    _gridMsgs.info.origin.position.z = 0.0;
+    _gridMsgs.info.origin.orientation.w = 1.0;
 }
 
 void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
@@ -59,6 +74,9 @@ void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
 void GoalManager::CB_pointCloud(const sensor_msgs::msg::PointCloud2& pointCloudMsg_)
 {
     _pointCloudMsg = pointCloudMsg_;
+
+    auto occupancyGrid = _lidarNavigation.buildCostmap(_pointCloudMsg);
+    _pub_map->publish(occupancyGrid);
 }
 
 void GoalManager::CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_)
@@ -90,6 +108,41 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
     response_->success = true;
 
     _navigationController.getDesiredGpsData(desiredGpsData);
+}
+
+void GoalManager::computeVector(void)
+{
+    float left = _targetWheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::FRONT_LEFT)];
+    float right = _targetWheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::FRONT_RIGHT)];
+    float forwardFactor = 0.5F * (left + right);
+
+    visualization_msgs::msg::Marker m;
+    m.header.frame_id = "unilidar_lidar";
+    m.header.stamp = now();
+    m.ns = "commanded_direction";
+    m.id = 0;
+    m.type = visualization_msgs::msg::Marker::ARROW;
+    m.action = visualization_msgs::msg::Marker::ADD;
+
+    m.scale.x = 0.05;
+    m.scale.y = 0.10;
+    m.scale.z = 0.10;
+
+    m.color.r = 1.0;
+    m.color.g = 1.0;
+    m.color.b = 0.0;
+    m.color.a = 1.0;
+
+    geometry_msgs::msg::Point p0, p1;
+    p0.x = p0.y = p0.z = 0.0;
+
+    p1.x = forwardFactor;
+    p1.y = 0.0;
+    p1.z = 0.0;
+
+    m.points = {p0, p1};
+
+    _pub_marker->publish(m);
 }
 
 void GoalManager::driveTrainPublisher(void)
@@ -124,8 +177,8 @@ void GoalManager::driveTrainPublisher(void)
             if (!_navigationController._endNodeReached)
             {
                 RCLCPP_INFO(this->get_logger(), "SET  WHEEL CMD");
-                // _targetWheelCmd = _navigationController.setWheelCmd();
-                _targetWheelCmd = _lidarNavigation.computeLidarNav(_pointCloudMsg);
+                _targetWheelCmd = _lidarNavigation.computeWheelCommands(_pointCloudMsg);
+                this->computeVector();
             }
             else
             {
