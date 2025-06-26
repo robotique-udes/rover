@@ -11,8 +11,10 @@
 
 // QT
 #include <QtWidgets/QGridLayout>
+#include <QLabel>
 #include "UI_DeviceStatus.h"
 #include "Worker/QStatusWorker.hpp"
+#include "Global/QFlowLayout.hpp"
 
 #include <unordered_map>
 
@@ -24,8 +26,8 @@ class QDeviceStatus : public QWidget
     {
         uint16_t deviceMessageCount;
         uint16_t numberOfDeviceReboots;
-        QWidget* deviceInfo;
-        QLabel* deviceReboot;
+        QWidget* deviceInfoContainer;
+        QLabel* deviceInfoLabel;
     };
 
   public:
@@ -37,6 +39,8 @@ class QDeviceStatus : public QWidget
     void showInfos();
 
   private:
+    void initializeDeviceWidget();
+    void addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId);
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
     void updateDeviceInfo();
     void updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_);
@@ -44,6 +48,7 @@ class QDeviceStatus : public QWidget
     void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
     void resetWidget();
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
+    std::string getDeviceIcon(RoverCan2::Constant::eDeviceId deviceID_) const;
 
   private slots:
     void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);
@@ -58,6 +63,7 @@ class QDeviceStatus : public QWidget
     std::unordered_map<RoverCan2::Constant::eDeviceId, sCanDeviceInfos> _canDevices;
 
     QStatusWorker _QStatusWorker;
+    QFlowLayout* _layout;
 };
 
 #endif  // QDEVICESTATUS_QDEVICESTATUS_HPP
