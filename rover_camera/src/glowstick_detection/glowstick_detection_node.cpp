@@ -1,6 +1,6 @@
 #include "glowstick_detection_node.hpp"
 #include "glowstick_detector.hpp"
-#include "glowstick_detection.hpp"
+#include "glowstick.hpp"
 
 
 GlowStickDetectionNode::GlowStickDetectionNode() : Node("glowstick_detection_node")
@@ -9,7 +9,7 @@ GlowStickDetectionNode::GlowStickDetectionNode() : Node("glowstick_detection_nod
 
     cv::Mat frameCam;
     cv::Mat frameGlowStick;
-    Glowstick glowstick;
+    GlowstickDetector glowsticks;
     std::vector<cv::Point> gsPosition;
 
     while (true)
@@ -17,7 +17,7 @@ GlowStickDetectionNode::GlowStickDetectionNode() : Node("glowstick_detection_nod
         _camera->_cap >> frameCam;
         frameGlowStick = frameCam.clone();
 
-        if (glowstick.drawGlowstick(frameGlowStick, frameCam))
+        if (glowsticks.drawGlowsticks(frameCam, frameGlowStick))
 
         cv::imshow("Laptop Camera", frameCam);
         cv::imshow("GlowStick Cam", frameGlowStick);

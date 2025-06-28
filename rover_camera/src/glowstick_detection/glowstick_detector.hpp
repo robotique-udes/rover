@@ -1,30 +1,24 @@
 #ifndef GLOWSTICK_DETECTOR_HPP
 #define GLOWSTICK_DETECTOR_HPP
 
-#include "image_capture_glowstick.hpp"
+#include "glowstick.hpp"
 
 class GlowstickDetector 
 {
+    enum {WHITE, BLUE, RED};
+
     public:
         GlowstickDetector();
+        bool drawGlowsticks(const cv::Mat& frame, cv::Mat& frameGlowsticks);
         bool detectGlowstick(const cv::Mat& frame);
-        bool filterFrame(const cv::Mat& frame);
-        std::vector<std::vector<cv::Point>> redContours;
-        std::vector<std::vector<cv::Point>> blueContours;
-        std::vector<std::vector<cv::Point>> whiteContours;
+        bool filterFrame(const cv::Mat& frame, cv::Mat masks[]);
+        bool findGlowsticks(cv::Mat masks[], std::vector<std::vector<cv::Point>> contours[]);
+        bool filterGlowsticks(std::vector<std::vector<cv::Point>> contours[]);
+        std::vector<cv::Rect> confirmedGlowsticks[3];
 
     private:
-        cv::Scalar lowerBlue = cv::Scalar(100, 150, 150);
-        cv::Scalar upperBlue = cv::Scalar(130, 255, 255);
-        cv::Scalar lowerRed1 = cv::Scalar(0, 150, 150);
-        cv::Scalar upperRed1 = cv::Scalar(10, 255, 255);
-        cv::Scalar lowerRed2 = cv::Scalar(170, 150, 150);
-        cv::Scalar upperRed2 = cv::Scalar(180, 255, 255);
-        cv::Scalar lowerWhite = cv::Scalar(0, 0, 240);
-        cv::Scalar upperWhite = cv::Scalar(180, 30, 255);
-        cv::Mat whiteMask;
-        cv::Mat blueMask;
-        cv::Mat redMask;
+        Glowstick glowsticks[3];
+        std::vector<cv::Mat> colorMasks;
 
 
 };
