@@ -7,6 +7,7 @@
 #include <vector>
 #include <optional>
 #include <iostream>
+#include <algorithm>
 
 class ImageCaptureGlowstick
 {

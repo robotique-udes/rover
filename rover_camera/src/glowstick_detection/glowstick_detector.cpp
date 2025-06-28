@@ -14,9 +14,12 @@ bool GlowstickDetector::drawGlowsticks(const cv::Mat& frame, cv::Mat& frameGlows
 
         for (uint16_t i=0;i<3;i++)
         {
-                if (!confirmedGlowsticks[i].empty())
+                for (uint16_t j = 0;j<maxAmountGlowsticks;j++)
                 {
-                        cv::rectangle(frameGlowsticks, confirmedGlowsticks[i][0], glowsticks[i].getColor(), 2);  
+                        if (!confirmedGlowsticks[i].empty())
+                        {
+                        cv::rectangle(frameGlowsticks, confirmedGlowsticks[i][j], glowsticks[i].getColor(), 2);  
+                        }
                 }
                 
         }
@@ -44,7 +47,6 @@ bool GlowstickDetector::filterFrame(const cv::Mat& frame, cv::Mat masks[])
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
 
     std::vector<cv::Mat> hsvChannels;
-    //cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3, 3));
 
     cv::split(hsv, hsvChannels);
     cv::equalizeHist(hsvChannels[2], hsvChannels[2]);
@@ -63,8 +65,6 @@ bool GlowstickDetector::filterFrame(const cv::Mat& frame, cv::Mat masks[])
 
         cv::GaussianBlur(masks[i], masks[i], cv::Size(5,5), 0);
     }
-    //cv::dilate(blueMask, blueMask, kernel);
-    //cv::dilate(redMask, redMask, kernel);
     
     return true;
 }
@@ -81,19 +81,29 @@ bool GlowstickDetector::findGlowsticks(cv::Mat masks[], std::vector<std::vector<
 
 bool GlowstickDetector::filterGlowsticks(std::vector<std::vector<cv::Point>> contours[])
 {
-        uint16_t largestArea[3] = {0,0,0};
 
         for (uint16_t i=0;i<3;i++)
         {
+                std::vector<std::pair<uint16_t, cv::Rect>> areaRect;
+
                 for (uint16_t j=0;j<contours[i].size();j++)
                 {
                         cv::Rect rect = cv::boundingRect(contours[i][j]);
-                        if (rect.area() > largestArea[i])
-                        {
-                                largestArea[i] = rect.area();
-                                confirmedGlowsticks[i].clear();
-                                confirmedGlowsticks[i].push_back(rect);
-                        }
+                        uint16_t area = rect.area();
+                        areaRect.emplace_back(area, rect);
+                }
+
+                std::sort(areaRect.begin(), areaRect.end(),
+                        [](const auto& a, const auto& b){
+                                return a.first > b.first;
+                        });
+
+                confirmedGlowsticks[i].clear();
+                size_t count = std::min<size_t>(maxAmountGlowsticks, areaRect.size());
+
+                for (int j=0;j<count;j++)
+                {
+                        confirmedGlowsticks[i].push_back(areaRect[j].second);
                 }
         }
 

@@ -19,6 +19,7 @@ class GlowstickDetector
     private:
         Glowstick glowsticks[3];
         std::vector<cv::Mat> colorMasks;
+        uint16_t maxAmountGlowsticks = 3;
 
 
 };
