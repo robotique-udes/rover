@@ -31,6 +31,7 @@ class LidarNavigation
 
     // Repulsion parameters
     static constexpr float INFLUENCE_DISTANCE = 1.5F;
+    static constexpr float MAX_DETECTION_DISTANCE = 2.0F;
     static constexpr float REPULSIVE_GAIN = 0.8F;
     static constexpr float TURN_GAIN = 1.0F;
 
@@ -65,7 +66,7 @@ class LidarNavigation
         float fx = 0.0F, fy = 0.0F;
         for (auto const& pt : cloud.points)
         {
-            float x = pt.x, y = pt.y;
+            float x = pt.y, y = pt.x;
             float r = std::hypot(x, y);
             if (r > 0.0F && r < INFLUENCE_DISTANCE)
             {
@@ -105,19 +106,22 @@ class LidarNavigation
      */
     nav_msgs::msg::OccupancyGrid buildCostmap(const sensor_msgs::msg::PointCloud2& msg)
     {
-        auto grid = _grid_template;  // copy template
+        auto grid = _grid_template;  // copy static template
         pcl::PointCloud<pcl::PointXYZ> cloud;
         pcl::fromROSMsg(msg, cloud);
 
         std::fill(grid.data.begin(), grid.data.end(), 0);
         for (auto const& pt : cloud.points)
         {
-            if (!std::isfinite(pt.x) || !std::isfinite(pt.y))
+            float rx = pt.y;
+            float ry = pt.x;
+            float r = std::hypot(rx, ry);
+            if (!std::isfinite(r) || r > MAX_DETECTION_DISTANCE)
                 continue;
-            if (std::fabs(pt.x) > GRID_SIZE_M / 2 || std::fabs(pt.y) > GRID_SIZE_M / 2)
+            if (std::fabs(rx) > GRID_SIZE_M / 2 || std::fabs(ry) > GRID_SIZE_M / 2)
                 continue;
-            int gx = int((pt.x + GRID_SIZE_M / 2.0F) / GRID_RES_METERS);
-            int gy = int((pt.y + GRID_SIZE_M / 2.0F) / GRID_RES_METERS);
+            int gx = int((rx + GRID_SIZE_M / 2.0F) / GRID_RES_METERS);
+            int gy = int((ry + GRID_SIZE_M / 2.0F) / GRID_RES_METERS);
             int idx = gy * GRID_CELLS + gx;
             grid.data[idx] = 100;
         }

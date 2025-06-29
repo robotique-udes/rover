@@ -9,20 +9,29 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-find_package(ament_cmake REQUIRED)
-find_package(rclcpp REQUIRED)
-find_package(rover_msgs REQUIRED)
-find_package(sensor_msgs   REQUIRED)
-find_package(nav_msgs   REQUIRED)
-find_package(visualization_msgs   REQUIRED)
-find_package(pcl_conversions REQUIRED)
-find_package(PCL REQUIRED)
+find_package(ament_cmake       REQUIRED)
+find_package(rclcpp            REQUIRED)
+find_package(rover_msgs        REQUIRED)
+find_package(sensor_msgs       REQUIRED)
+find_package(nav_msgs          REQUIRED)
+find_package(visualization_msgs REQUIRED)
+find_package(pcl_conversions   REQUIRED)
+find_package(tf2_ros           REQUIRED)
+find_package(tf2_sensor_msgs   REQUIRED)
+find_package(PCL               REQUIRED)
+
 
 add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(
   include
 )
+
+add_executable(costmap src/costmap.cpp)
+
+ament_target_dependencies(costmap 
+  rclcpp sensor_msgs nav_msgs geometry_msgs 
+  tf2_ros tf2_sensor_msgs pcl_conversions)
 
 add_executable(goal_manager_node src/goal_manager_node.cpp)
 
@@ -34,6 +43,7 @@ ament_target_dependencies(goal_manager_node
                           nav_msgs
                           visualization_msgs
                           pcl_conversions
+                          tf2_ros
                           PCL)
                           
 target_link_libraries(goal_manager_node rover_shared_libs)
@@ -44,6 +54,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
         goal_manager_node
+        costmap
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

@@ -1,11 +1,14 @@
 #include "goal_manager_node.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 
+#include <tf2/LinearMath/Quaternion.h>
+
 /* // TODO
  * Add sanity cehck for gps and heading
  * Add sanity check for aruco detection
  * Add teleop priority
  * Add error handling
+ * Add config file for lidar
  */
 
 GoalManager::GoalManager():
@@ -51,16 +54,27 @@ GoalManager::GoalManager():
     _srv_arucoDetection = this->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_SERVER_NAME);
     _navigationController.headingBuffer_ = HEADING_BUFFER;  // TODO make this cleaner
 
-    nav_msgs::msg::OccupancyGrid _gridMsgs;
+    _tf_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
 
-    _gridMsgs.header.frame_id = "unilidar_lidar";
-    _gridMsgs.info.resolution = OCCUPENCY_GRID_RESOLUTION;
-    _gridMsgs.info.width = GRID_CELLS;
-    _gridMsgs.info.height = GRID_CELLS;
-    _gridMsgs.info.origin.position.x = -OCCUPENCY_GRID_SIZE / 2.0;
-    _gridMsgs.info.origin.position.y = -OCCUPENCY_GRID_SIZE / 2.0;
-    _gridMsgs.info.origin.position.z = 0.0;
-    _gridMsgs.info.origin.orientation.w = 1.0;
+    geometry_msgs::msg::TransformStamped t;
+    t.header.stamp = this->now();
+    t.header.frame_id = "base_link";
+    t.child_frame_id = "unilidar_lidar";
+    t.transform.translation.x = 0.0;
+    t.transform.translation.y = 0.0;
+    t.transform.translation.z = 0.0;
+
+    tf2::Quaternion q;
+    // TODO this should be configurable
+    q.setRPY(-5.0 * M_PI/180.0 , M_PI/2.0,  -5.0 * M_PI/180.0);
+    q.normalize();
+
+    t.transform.rotation.x = q.x();
+    t.transform.rotation.y = q.y();
+    t.transform.rotation.z = q.z() - 0.25;
+    t.transform.rotation.w = q.w();
+
+    _tf_broadcaster_->sendTransform(t);
 }
 
 void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
@@ -151,7 +165,6 @@ void GoalManager::driveTrainPublisher(void)
     switch (_state)
     {
         case (eState::IDLE):
-            RCLCPP_INFO(this->get_logger(), "IDLE");
             if (goalRequested)
             {
                 _state = eState::ROTATING;
@@ -162,7 +175,6 @@ void GoalManager::driveTrainPublisher(void)
             }
             break;
         case (eState::ROTATING):
-            RCLCPP_INFO(this->get_logger(), "ROTATING");
             if (_navigationController._desiredHeadingReached)
             {
                 _state = eState::NAVIGATING_TO_POINT;
@@ -173,16 +185,13 @@ void GoalManager::driveTrainPublisher(void)
             }
             break;
         case (eState::NAVIGATING_TO_POINT):
-            RCLCPP_INFO(this->get_logger(), "NAVIGATING TO POINT");
             if (!_navigationController._endNodeReached)
             {
-                RCLCPP_INFO(this->get_logger(), "SET  WHEEL CMD");
                 _targetWheelCmd = _lidarNavigation.computeWheelCommands(_pointCloudMsg);
                 this->computeVector();
             }
             else
             {
-                RCLCPP_INFO(this->get_logger(), "POINT REACHED");
                 auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
                 arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
                 arucoRequest->camera_url = Constants::CameraInfo::CAMERA_URL_MAP.at(("Main"));  // TODO Make better
@@ -192,14 +201,12 @@ void GoalManager::driveTrainPublisher(void)
             }
             break;
         case (eState::DETECTING_ARUCO):
-            RCLCPP_INFO(this->get_logger(), "GOAL REACHED");
             if (!this->_arucoDetected)
             {
                 _targetWheelCmd = _navigationController.rotate();
             }
             else
             {
-                RCLCPP_INFO(this->get_logger(), "ARUCO DETECTED");
                 _targetWheelCmd = _navigationController.idleCmd();
                 goalRequested = false;
                 goalReached = true;
