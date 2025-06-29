@@ -10,6 +10,7 @@
 #include "sensor_msgs/msg/point_cloud2.hpp"
 #include <visualization_msgs/msg/marker.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
+#include <tf2_ros/static_transform_broadcaster.h>
 
 #include "navigation_controller.hpp"
 #include "lidar_navigation.hpp"
@@ -60,6 +61,8 @@ class GoalManager : public rclcpp::Node
     rclcpp::TimerBase::SharedPtr _timer;
 
     sensor_msgs::msg::PointCloud2 _pointCloudMsg; 
+
+    std::shared_ptr<tf2_ros::StaticTransformBroadcaster> _tf_broadcaster_;
 
     eState _state = eState::NAVIGATING_TO_POINT;
 
