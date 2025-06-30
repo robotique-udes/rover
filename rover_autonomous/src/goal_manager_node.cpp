@@ -20,13 +20,6 @@ GoalManager::GoalManager():
                                                                       {
                                                                           this->CB_currentGps(gpsMsg_);
                                                                       });
-    _sub_pointCloud
-        = this->create_subscription<sensor_msgs::msg::PointCloud2>(TOPIC_LIDAR_POINT_CLOUD,
-                                                                   QOS_DEFAULT,
-                                                                   [this](const sensor_msgs::msg::PointCloud2& pointCloudMsg_)
-                                                                   {
-                                                                       this->CB_pointCloud(pointCloudMsg_);
-                                                                   });
 
     _sub_arucoDetection = this->create_subscription<rover_msgs::msg::Aruco>(TOPIC_ARUCO_DETECTED,
                                                                             QOS_DEFAULT,
@@ -36,8 +29,6 @@ GoalManager::GoalManager():
                                                                             });
 
     _pub_auto_cmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD_NAME, QOS_DEFAULT);
-    _pub_marker = this->create_publisher<visualization_msgs::msg::Marker>(TOPIC_MARKER, QOS_DEFAULT);
-    _pub_map = this->create_publisher<nav_msgs::msg::OccupancyGrid>("/rover/goal/occupancy_grid", QOS_DEFAULT);
 
     _srv_desiredGps = this->create_service<rover_msgs::srv::DesiredGpsPosition>(
         SRV_GOAL_NAME,
@@ -53,28 +44,6 @@ GoalManager::GoalManager():
                                      });
     _srv_arucoDetection = this->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_SERVER_NAME);
     _navigationController.headingBuffer_ = HEADING_BUFFER;  // TODO make this cleaner
-
-    _tf_broadcaster_ = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
-
-    geometry_msgs::msg::TransformStamped t;
-    t.header.stamp = this->now();
-    t.header.frame_id = "base_link";
-    t.child_frame_id = "unilidar_lidar";
-    t.transform.translation.x = 0.0;
-    t.transform.translation.y = 0.0;
-    t.transform.translation.z = 0.0;
-
-    tf2::Quaternion q;
-    // TODO this should be configurable
-    q.setRPY(-5.0 * M_PI/180.0 , M_PI/2.0,  -5.0 * M_PI/180.0);
-    q.normalize();
-
-    t.transform.rotation.x = q.x();
-    t.transform.rotation.y = q.y();
-    t.transform.rotation.z = q.z() - 0.25;
-    t.transform.rotation.w = q.w();
-
-    _tf_broadcaster_->sendTransform(t);
 }
 
 void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
@@ -83,14 +52,6 @@ void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
     {
         this->_arucoDetected = true;
     }
-}
-
-void GoalManager::CB_pointCloud(const sensor_msgs::msg::PointCloud2& pointCloudMsg_)
-{
-    _pointCloudMsg = pointCloudMsg_;
-
-    auto occupancyGrid = _lidarNavigation.buildCostmap(_pointCloudMsg);
-    _pub_map->publish(occupancyGrid);
 }
 
 void GoalManager::CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_)
@@ -124,41 +85,6 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
     _navigationController.getDesiredGpsData(desiredGpsData);
 }
 
-void GoalManager::computeVector(void)
-{
-    float left = _targetWheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::FRONT_LEFT)];
-    float right = _targetWheelCmd[TO_UNDERLYING(NavigationController::eWheelCmd::FRONT_RIGHT)];
-    float forwardFactor = 0.5F * (left + right);
-
-    visualization_msgs::msg::Marker m;
-    m.header.frame_id = "unilidar_lidar";
-    m.header.stamp = now();
-    m.ns = "commanded_direction";
-    m.id = 0;
-    m.type = visualization_msgs::msg::Marker::ARROW;
-    m.action = visualization_msgs::msg::Marker::ADD;
-
-    m.scale.x = 0.05;
-    m.scale.y = 0.10;
-    m.scale.z = 0.10;
-
-    m.color.r = 1.0;
-    m.color.g = 1.0;
-    m.color.b = 0.0;
-    m.color.a = 1.0;
-
-    geometry_msgs::msg::Point p0, p1;
-    p0.x = p0.y = p0.z = 0.0;
-
-    p1.x = forwardFactor;
-    p1.y = 0.0;
-    p1.z = 0.0;
-
-    m.points = {p0, p1};
-
-    _pub_marker->publish(m);
-}
-
 void GoalManager::driveTrainPublisher(void)
 {
     // TODO Write getters/setters instead of accessing variables
@@ -187,8 +113,7 @@ void GoalManager::driveTrainPublisher(void)
         case (eState::NAVIGATING_TO_POINT):
             if (!_navigationController._endNodeReached)
             {
-                _targetWheelCmd = _lidarNavigation.computeWheelCommands(_pointCloudMsg);
-                this->computeVector();
+                // TODO
             }
             else
             {
