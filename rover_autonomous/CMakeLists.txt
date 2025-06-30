@@ -20,16 +20,15 @@ find_package(tf2_ros           REQUIRED)
 find_package(tf2_sensor_msgs   REQUIRED)
 find_package(PCL               REQUIRED)
 
-
 add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(
   include
 )
 
-add_executable(costmap src/costmap.cpp)
+add_executable(unitree_lidar src/unitree_lidar.cpp)
 
-ament_target_dependencies(costmap 
+ament_target_dependencies(unitree_lidar 
   rclcpp sensor_msgs nav_msgs geometry_msgs 
   tf2_ros tf2_sensor_msgs pcl_conversions)
 
@@ -47,6 +46,7 @@ ament_target_dependencies(goal_manager_node
                           PCL)
                           
 target_link_libraries(goal_manager_node rover_shared_libs)
+target_link_libraries(unitree_lidar rover_shared_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
@@ -54,7 +54,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
         goal_manager_node
-        costmap
+        unitree_lidar
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()
