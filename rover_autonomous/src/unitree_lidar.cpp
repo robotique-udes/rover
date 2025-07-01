@@ -5,11 +5,36 @@
 #include <pcl/filters/passthrough.h>
 #include <pcl/filters/voxel_grid.h>
 #include <rover_lib2/helpers/constants.hpp>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/static_transform_broadcaster.h>
+#include <tf2_sensor_msgs/tf2_sensor_msgs.hpp>
+#include <tf2/LinearMath/Quaternion.h>
+#include <geometry_msgs/msg/transform_stamped.hpp>
 #include <cmath>
 
 UnitreeLidar::UnitreeLidar():
     Node("unitree_lidar_node")
 {
+    // Set frame names from config
+    _base_frame = LIDAR_CONFIG::COSTMAP::BASE_FRAME;
+
+    // Initialize TF2
+    _tf_buffer = std::make_shared<tf2_ros::Buffer>(this->get_clock());
+    _tf_listener = std::make_shared<tf2_ros::TransformListener>(*_tf_buffer);
+
+    // Setup static transform if enabled in config
+    if (LIDAR_CONFIG::TF::PUBLISH_STATIC_TRANSFORM)
+    {
+        setupStaticTransform(LIDAR_CONFIG::TF::LIDAR_FRAME,
+                             LIDAR_CONFIG::TF::LIDAR_X,
+                             LIDAR_CONFIG::TF::LIDAR_Y,
+                             LIDAR_CONFIG::TF::LIDAR_Z,
+                             LIDAR_CONFIG::TF::LIDAR_ROLL,
+                             LIDAR_CONFIG::TF::LIDAR_PITCH,
+                             LIDAR_CONFIG::TF::LIDAR_YAW);
+    }
+
     _sub_pointCloud = this->create_subscription<sensor_msgs::msg::PointCloud2>(TOPIC_LIDAR_POINT_CLOUD,
                                                                                QOS_DEFAULT,
                                                                                [this](const sensor_msgs::msg::PointCloud2& pcMsg_)
@@ -20,6 +45,64 @@ UnitreeLidar::UnitreeLidar():
     _pub_costmap = this->create_publisher<nav_msgs::msg::OccupancyGrid>(TOPIC_COSTMAP, QOS_DEFAULT);
 
     this->initCostmap();
+}
+
+void UnitreeLidar::setupStaticTransform(const std::string& lidar_frame,
+                                        double x,
+                                        double y,
+                                        double z,
+                                        double roll_deg,
+                                        double pitch_deg,
+                                        double yaw_deg)
+{
+    _tf_broadcaster = std::make_shared<tf2_ros::StaticTransformBroadcaster>(this);
+
+    geometry_msgs::msg::TransformStamped transform;
+    transform.header.stamp = this->now();
+    transform.header.frame_id = _base_frame;
+    transform.child_frame_id = lidar_frame;
+
+    // Set translation
+    transform.transform.translation.x = x;
+    transform.transform.translation.y = y;
+    transform.transform.translation.z = z;
+
+    // Convert degrees to radians and set rotation
+    tf2::Quaternion q;
+    q.setRPY(roll_deg * M_PI / 180.0, pitch_deg * M_PI / 180.0, yaw_deg * M_PI / 180.0);
+    q.normalize();
+
+    transform.transform.rotation.x = q.x();
+    transform.transform.rotation.y = q.y();
+    transform.transform.rotation.z = q.z();
+    transform.transform.rotation.w = q.w();
+
+    _tf_broadcaster->sendTransform(transform);
+}
+
+bool UnitreeLidar::transformPointCloud(const sensor_msgs::msg::PointCloud2& input_cloud,
+                                       sensor_msgs::msg::PointCloud2& output_cloud)
+{
+    if (input_cloud.header.frame_id == _base_frame)
+    {
+        output_cloud = input_cloud;
+        return true;
+    }
+
+    // Wait for transform to be available
+    if (!_tf_buffer->canTransform(_base_frame,
+                                  input_cloud.header.frame_id,
+                                  input_cloud.header.stamp,
+                                  rclcpp::Duration::from_seconds(0.1)))
+    {
+        return false;
+    }
+
+    // Transform the point cloud
+    tf2::doTransform(input_cloud,
+                     output_cloud,
+                     _tf_buffer->lookupTransform(_base_frame, input_cloud.header.frame_id, input_cloud.header.stamp));
+    return true;
 }
 
 void UnitreeLidar::updateCostmap(const pcl::PointCloud<pcl::PointXYZ>& cloud)
@@ -50,8 +133,16 @@ void UnitreeLidar::updateCostmap(const pcl::PointCloud<pcl::PointXYZ>& cloud)
 
 void UnitreeLidar::CB_pointCloud(const sensor_msgs::msg::PointCloud2& pcMsg_)
 {
+    // Transform point cloud to base frame if needed
+    sensor_msgs::msg::PointCloud2 transformed_cloud;
+    if (!transformPointCloud(pcMsg_, transformed_cloud))
+    {
+        // If transform fails, try to use the original cloud
+        transformed_cloud = pcMsg_;
+    }
+
     pcl::PointCloud<pcl::PointXYZ>::Ptr pcl_cloud(new pcl::PointCloud<pcl::PointXYZ>);
-    pcl::fromROSMsg(pcMsg_, *pcl_cloud);
+    pcl::fromROSMsg(transformed_cloud, *pcl_cloud);
 
     this->filterPointcloud(pcl_cloud);
     this->updateCostmap(*pcl_cloud);
@@ -59,7 +150,7 @@ void UnitreeLidar::CB_pointCloud(const sensor_msgs::msg::PointCloud2& pcMsg_)
 
 void UnitreeLidar::initCostmap(void)
 {
-    _costmap.header.frame_id = LIDAR_CONFIG::COSTMAP::BASE_FRAME;
+    _costmap.header.frame_id = _base_frame;  // Use base frame instead of hardcoded frame
     _costmap.info.resolution = LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
     _costmap.info.width = LIDAR_CONFIG::COSTMAP::MAP_WIDTH;
     _costmap.info.height = LIDAR_CONFIG::COSTMAP::MAP_HEIGHT;
