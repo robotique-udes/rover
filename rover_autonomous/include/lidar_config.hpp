@@ -13,14 +13,15 @@ namespace LIDAR_CONFIG
         static constexpr double MAX_RANGE = 10.0F;
         static constexpr double OCCUPIED_THRESHOLD = 0.65F;
         static constexpr double FREE_THRESHOLD = 0.25F;
-        static constexpr const char* BASE_FRAME = "unilidar_lidar";
+        static constexpr const char* BASE_FRAME = "base_link";
     }  // namespace COSTMAP
 
     namespace TF
     {
-        static constexpr bool PUBLISH_STATIC_TRANSFORM = false;
+        static constexpr bool PUBLISH_STATIC_TRANSFORM = true;
+        static constexpr const char* LIDAR_FRAME = "unilidar_lidar";
         static constexpr double LIDAR_ROLL = 0.0F;
-        static constexpr double LIDAR_PITCH = 0.0F;
+        static constexpr double LIDAR_PITCH = 90.0F;
         static constexpr double LIDAR_YAW = 0.0F;
         static constexpr double LIDAR_X = 0.0F;
         static constexpr double LIDAR_Y = 0.0F;

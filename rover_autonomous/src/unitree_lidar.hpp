@@ -4,6 +4,10 @@
 #include <rclcpp/rclcpp.hpp>
 #include <sensor_msgs/msg/point_cloud2.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
+#include <geometry_msgs/msg/transform_stamped.hpp>
+#include <tf2_ros/transform_listener.h>
+#include <tf2_ros/buffer.h>
+#include <tf2_ros/static_transform_broadcaster.h>
 #include <pcl/point_cloud.h>
 #include <pcl/point_types.h>
 
@@ -18,6 +22,13 @@ class UnitreeLidar : public rclcpp::Node
 
     nav_msgs::msg::OccupancyGrid _costmap;
 
+    // Transform-related members
+    std::shared_ptr<tf2_ros::Buffer> _tf_buffer;
+    std::shared_ptr<tf2_ros::TransformListener> _tf_listener;
+    std::shared_ptr<tf2_ros::StaticTransformBroadcaster> _tf_broadcaster;
+
+    std::string _base_frame; // TODO fix this
+
   public:
     UnitreeLidar();
     ~UnitreeLidar() = default;
@@ -27,6 +38,15 @@ class UnitreeLidar : public rclcpp::Node
     void updateCostmap(const pcl::PointCloud<pcl::PointXYZ>& cloud);
     void initCostmap(void);
     void rayTrace(int sensorX_, int sensorY_, int obstacleX_, int obstacleY_);
+
+    void setupStaticTransform(const std::string& lidar_frame,
+                              double x,
+                              double y,
+                              double z,
+                              double roll_deg,
+                              double pitch_deg,
+                              double yaw_deg);
+    bool transformPointCloud(const sensor_msgs::msg::PointCloud2& input_cloud, sensor_msgs::msg::PointCloud2& output_cloud);
 };
 
 #endif
