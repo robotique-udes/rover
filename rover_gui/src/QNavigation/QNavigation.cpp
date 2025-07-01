@@ -174,27 +174,16 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
 {
     if (!item_)
     {
-        // RCLCPP_ERROR(_node->get_logger(), "Item is null in onWaypointVisibilityChanged");
         return;
     }
-
+    
     int index_ = _ui.waypointList->row(item_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const QString waypointId = _waypoints.at(index_).id;
+        const Waypoint& waypoint_ = _waypoints.at(index_);
+        bool isVisible = (item_->checkState() == Qt::Checked);
 
-        switch (item_->checkState())
-        {
-            case Qt::Checked:
-                emit this->waypointIsVisible(true, waypointId);
-                break;
-            case Qt::Unchecked:
-                emit this->waypointIsVisible(false, waypointId);
-                break;
-            default:
-                RCLCPP_WARN(_node->get_logger(), "Unexpected check state for waypoint: %s", waypointId.toStdString().c_str());
-                return;
-        }
+        emit this->waypointIsVisible(waypoint_.latitude, waypoint_.longitude, waypoint_.name, waypoint_.id, isVisible);
     }
 }
 
