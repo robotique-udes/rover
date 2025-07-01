@@ -16,6 +16,8 @@ class UnitreeLidar : public rclcpp::Node
     static constexpr const char* TOPIC_LIDAR_POINT_CLOUD = "/unilidar/cloud";
     static constexpr const char* TOPIC_COSTMAP = "/rover/autonomous/costmap";
 
+    static constexpr int OCCUPIED_CELL = 100;
+
   private:
     rclcpp::Subscription<sensor_msgs::msg::PointCloud2>::SharedPtr _sub_pointCloud;
     rclcpp::Publisher<nav_msgs::msg::OccupancyGrid>::SharedPtr _pub_costmap;

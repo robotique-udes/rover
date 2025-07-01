@@ -28,7 +28,15 @@ GoalManager::GoalManager():
                                                                                 this->CB_aruco(arucoMsg_);
                                                                             });
 
+    _sub_costmap = this->create_subscription<nav_msgs::msg::OccupancyGrid>(TOPIC_COSTMAP_NAME,
+                                                                           QOS_DEFAULT,
+                                                                           [this](const nav_msgs::msg::OccupancyGrid& costmapMsg_)
+                                                                           {
+                                                                               this->CB_costmap(costmapMsg_);
+                                                                           });
+
     _pub_auto_cmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD_NAME, QOS_DEFAULT);
+    _pub_marker = this->create_publisher<visualization_msgs::msg::Marker>(TOPIC_MARKER, QOS_DEFAULT);
 
     _srv_desiredGps = this->create_service<rover_msgs::srv::DesiredGpsPosition>(
         SRV_GOAL_NAME,
@@ -52,6 +60,11 @@ void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
     {
         this->_arucoDetected = true;
     }
+}
+
+void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& occupencyGridMsg_)
+{
+    _costmapData = occupencyGridMsg_.data;
 }
 
 void GoalManager::CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_)
@@ -85,6 +98,41 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
     _navigationController.getDesiredGpsData(desiredGpsData);
 }
 
+void GoalManager::computeDeisreHeading(void)
+{
+    visualization_msgs::msg::Marker marker;
+
+    auto [fx, fy] = _navigationController.computeNetForce(_costmapData);
+
+    marker.header.frame_id = "base_link";  // in robot frame
+    marker.header.stamp = now();
+    marker.ns = "heading";
+    marker.id = 0;
+    marker.type = visualization_msgs::msg::Marker::ARROW;
+    marker.action = visualization_msgs::msg::Marker::ADD;
+
+    // thickness / head size
+    marker.scale.x = 0.02;  // shaft diameter
+    marker.scale.y = 0.04;  // head diameter
+    marker.scale.z = 0.04;  // head length
+
+    // color
+    marker.color.r = 0.0;
+    marker.color.g = 1.0;
+    marker.color.b = 0.0;
+    marker.color.a = 1.0;
+
+    // start at (0,0), end at (fx,fy)
+    geometry_msgs::msg::Point p0, p1;
+    p0.x = p0.y = p0.z = 0.0;
+    p1.x = fx;
+    p1.y = fy;
+    p1.z = 0.0;
+    marker.points = {p0, p1};
+
+    _pub_marker->publish(marker);
+}
+
 void GoalManager::driveTrainPublisher(void)
 {
     // TODO Write getters/setters instead of accessing variables
@@ -113,7 +161,7 @@ void GoalManager::driveTrainPublisher(void)
         case (eState::NAVIGATING_TO_POINT):
             if (!_navigationController._endNodeReached)
             {
-                // TODO
+                this->computeDeisreHeading();
             }
             else
             {
