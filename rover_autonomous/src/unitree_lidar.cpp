@@ -89,7 +89,6 @@ bool UnitreeLidar::transformPointCloud(const sensor_msgs::msg::PointCloud2& inpu
         return true;
     }
 
-    // Wait for transform to be available
     if (!_tf_buffer->canTransform(_base_frame,
                                   input_cloud.header.frame_id,
                                   input_cloud.header.stamp,
@@ -98,7 +97,6 @@ bool UnitreeLidar::transformPointCloud(const sensor_msgs::msg::PointCloud2& inpu
         return false;
     }
 
-    // Transform the point cloud
     tf2::doTransform(input_cloud,
                      output_cloud,
                      _tf_buffer->lookupTransform(_base_frame, input_cloud.header.frame_id, input_cloud.header.stamp));
@@ -123,7 +121,7 @@ void UnitreeLidar::updateCostmap(const pcl::PointCloud<pcl::PointXYZ>& cloud)
             this->rayTrace(sensorX_, sensorY_, end_x, end_y);
 
             int obstacle_index = end_y * _costmap.info.width + end_x;
-            _costmap.data[obstacle_index] = 100;  // Occupied
+            _costmap.data[obstacle_index] = OCCUPIED_CELL;
         }
     }
 

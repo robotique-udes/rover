@@ -4,6 +4,7 @@
 #include <array>
 #include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/constants.hpp"
+#include "lidar_config.hpp"
 
 class NavigationController
 {
@@ -236,6 +237,105 @@ class NavigationController
         }
 
         return _targetWheelCmd;
+    }
+
+    std::array<float, 2> computeNetForce(const std::vector<int8_t>& costmapData)
+    {
+        // config unpacking
+        const float res = LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
+        const int width = LIDAR_CONFIG::COSTMAP::MAP_WIDTH;
+        const int height = LIDAR_CONFIG::COSTMAP::MAP_HEIGHT;
+        const float R0 = LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE;
+        const float Krep = LIDAR_CONFIG::NAVIGATION::REPULSIVE_GAIN;
+        const int OCC = 100;  // occupied cell value
+
+        // cluster threshold (min #cells)
+        constexpr int MIN_CLUSTER_SIZE = 4;
+
+        // precompute for centering
+        const float halfW = width * res * 0.5F;
+        const float halfH = height * res * 0.5F;
+
+        // 1) mark all occupied cells
+        std::vector<bool> occ(width * height, false);
+        for (int idx = 0; idx < width * height; ++idx)
+        {
+            occ[idx] = (costmapData[idx] == OCC);
+        }
+
+        // 2) find clusters via flood-fill
+        std::vector<bool> seen(width * height, false), valid(width * height, false);
+        std::vector<int> stack;
+        stack.reserve(width * height);
+
+        // 4-connected offsets
+        const int dx[4] = {1, -1, 0, 0};
+        const int dy[4] = {0, 0, 1, -1};
+
+        for (int idx0 = 0; idx0 < width * height; ++idx0)
+        {
+            if (!occ[idx0] || seen[idx0])
+                continue;
+            // new cluster
+            stack.clear();
+            stack.push_back(idx0);
+            seen[idx0] = true;
+
+            // grow it
+            for (size_t k = 0; k < stack.size(); ++k)
+            {
+                int idx = stack[k];
+                int x = idx % width;
+                int y = idx / width;
+                for (int d = 0; d < 4; ++d)
+                {
+                    int nx = x + dx[d], ny = y + dy[d];
+                    if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                    {
+                        int nidx = ny * width + nx;
+                        if (occ[nidx] && !seen[nidx])
+                        {
+                            seen[nidx] = true;
+                            stack.push_back(nidx);
+                        }
+                    }
+                }
+            }
+
+            // 3) if big enough, mark all members valid
+            if ((int)stack.size() >= MIN_CLUSTER_SIZE)
+            {
+                for (int idx : stack)
+                    valid[idx] = true;
+            }
+        }
+
+        // 4) accumulate forces from valid clusters only
+        float fx = 0.0F, fy = 0.0F;
+        for (int i = 0; i < height; ++i)
+        {
+            for (int j = 0; j < width; ++j)
+            {
+                int idx = i * width + j;
+                if (!valid[idx])
+                    continue;
+
+                // cell center in robot frame
+                float cx = (j + 0.5F) * res - halfW;
+                float cy = (i + 0.5F) * res - halfH;
+                float r = std::hypot(cx, cy);
+                if (r > 0.0F && r < R0)
+                {
+                    // linear repulsion
+                    float mag = Krep * (R0 - r);
+                    // push _away_ from obstacle
+                    fx += mag * (-cx / r);
+                    fy += mag * (-cy / r);
+                }
+            }
+        }
+
+        return {fx, fy};
     }
 };
 
