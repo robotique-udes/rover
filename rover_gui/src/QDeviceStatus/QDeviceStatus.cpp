@@ -113,6 +113,7 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
     iconLabel->setFixedSize(60, 60);  // Set appropriate size for your icon
+    iconLabel->setScaledContents(true);  // Ensure the icon scales to fit the label
 
     QPixmap defaultIcon(QString::fromStdString(getDeviceIcon(deviceId_)));  // Path to your default icon
     if (!defaultIcon.isNull())
