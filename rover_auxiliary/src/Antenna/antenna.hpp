@@ -28,6 +28,10 @@ class AntennaNode : public rclcpp::Node
     rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pub_antenna_status;
     rclcpp::TimerBase::SharedPtr _timer_pub;
 
+    bool _is_logged_in = false;
+    std::shared_ptr<cpr::Session> _session = nullptr;
+    bool login(void);
+
     void CB_antenna_publisher(void);
 
     std::string _AntennaCookie;

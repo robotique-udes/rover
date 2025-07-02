@@ -26,6 +26,58 @@ AntennaNode::AntennaNode():
 
 AntennaNode::~AntennaNode() {}
 
+// Add after constructor but before CB_antenna_publisher
+
+bool AntennaNode::login()
+{
+    if (_is_logged_in) {
+        return true;
+    }
+
+    if (!_session) {
+        _session = std::make_shared<cpr::Session>();
+    }
+
+    // Configure session with SSL settings
+    _session->SetVerifySsl(false);
+    
+    cpr::SslOptions ssl_options;
+    ssl_options.ciphers = "DEFAULT@SECLEVEL=1";
+    ssl_options.verify_peer = false;
+    ssl_options.verify_host = false;
+    _session->SetOption(ssl_options);
+    
+    // Set timeouts
+    _session->SetConnectTimeout(cpr::ConnectTimeout{5000});
+    _session->SetTimeout(cpr::Timeout{10000});
+    
+    // Set the login URL
+    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/login.cgi"});
+    
+    // Create the login payload
+    cpr::Payload payload{
+        {"username", username},
+        {"password", password}
+    };
+
+    _session->SetOption(payload);
+    
+    RCLCPP_INFO(this->get_logger(), "Attempting to login to antenna...");
+    
+    // Send the login POST request
+    cpr::Response response = _session->Post();
+    
+    if (response.status_code == 200) {
+        _is_logged_in = true;
+        RCLCPP_INFO(this->get_logger(), "Antenna login successful");
+        return true;
+    } else {
+        RCLCPP_ERROR(this->get_logger(), "Antenna login failed: %s (code: %ld)", 
+                    response.error.message.c_str(), response.status_code);
+        return false;
+    }
+}
+
 void AntennaNode::CB_antenna_publisher(void)
 {
     rover_msgs::msg::AntennaStatus msg;
@@ -38,35 +90,20 @@ void AntennaNode::CB_antenna_publisher(void)
         return;
     }
 
-    // Create a CPR session to configure the request
-    cpr::Session session;
+    // Try logging in if not already logged in
+    if (!_is_logged_in && !login()) {
+        msg.success = false;
+        msg.status = "Failed to login to antenna";
+        msg.http_code = 0;
+        _pub_antenna_status->publish(msg);
+        return;
+    }
 
-    // Set the URL
-    session.SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/status.cgi"});
-
-    // Set timeout for connection establishment (5 seconds)
-
-    session.SetConnectTimeout(cpr::ConnectTimeout{5000});
-
-    // Set timeout for the entire request (10 seconds)
-    session.SetTimeout(cpr::Timeout{10000});
-
-    // Disable SSL verification (equivalent to curl -k)
-    session.SetVerifySsl(false);
-
-    // Set specific SSL/TLS cipher options (equivalent to --ciphers DEFAULT@SECLEVEL=1)
-    // This requires setting CURLOPT_SSL_CIPHER_LIST directly with CPR's option
-    cpr::SslOptions ssl_options;
-    ssl_options.ciphers = "DEFAULT@SECLEVEL=1";
-    ssl_options.verify_peer = false;
-    ssl_options.verify_host = false;
-    session.SetOption(ssl_options);
-
-    // Instead of using cookie files, use authentication
-    // Replace "username" and "password" with your actual credentials
-    session.SetAuth(cpr::Authentication(username, password, cpr::AuthMode::BASIC));
-
-    session.SetDebugCallback(cpr::DebugCallback(
+    // Now use the existing session with stored cookies for the status request
+    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/status.cgi"});
+    
+    // Debug callback can be retained
+    _session->SetDebugCallback(cpr::DebugCallback(
         [this](cpr::DebugCallback::InfoType type, std::string data, intptr_t /*userdata*/)
         {
             switch (type)
@@ -94,13 +131,27 @@ void AntennaNode::CB_antenna_publisher(void)
             return true;  // Return true to continue receiving debug info
         }));
 
-    // Send the request
-    cpr::Response response = session.Get();
+    // Send the GET request using the same session (which has the cookies)
+    _session->SetOption(cpr::Payload{});
+    cpr::Response response = _session->Get();
+    
+    // Check if our session expired
+    if (response.status_code == 401 || response.status_code == 403) {
+        RCLCPP_WARN(this->get_logger(), "Session appears expired, attempting to re-login");
+        _is_logged_in = false;
+        
+        if (login()) {
+            // Retry the request with fresh session
+            _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/status.cgi"});
+            response = _session->Get();
+        }
+    }
 
-    // Print the status code
+    // Populate and publish the message
     msg.status = response.error.message;
     msg.raw_json = response.text;
     msg.http_code = response.status_code;
+    msg.success = (response.status_code >= 200 && response.status_code < 300);
 
     _pub_antenna_status->publish(msg);
 }
