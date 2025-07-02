@@ -73,6 +73,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             grid->addWidget(&_arbitrationWidget, 0, 1);
             grid->addWidget(&_deviceStatusWidget, 2, 0);
             _deviceStatusWidget.hideControls();
+            _deviceStatusWidget.hideInfos();
             break;
 
         case QSideBar::eTabIndex::NAVIGATION:
@@ -82,6 +83,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
         case QSideBar::eTabIndex::DEVICE_STATUS:
             grid->addWidget(&_deviceStatusWidget, 0, 1);
             _deviceStatusWidget.showControls();
+            _deviceStatusWidget.showInfos();
             break;
 
         case QSideBar::eTabIndex::FILE_TRANSFER:
