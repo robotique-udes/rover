@@ -2,7 +2,6 @@
 
 #include <rover_lib2/helpers/assert.hpp>
 #include <QStyle>
-//#include <utility>
 
 constexpr const char* STATUS_DEFAULT = "QWidget {"
                                        "background-color: #3c3f41;"
@@ -112,8 +111,8 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     deviceInfoContainer->setStyleSheet(STATUS_DEFAULT);
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
-    iconLabel->setFixedSize(60, 60);  // Set appropriate size for your icon
-    iconLabel->setScaledContents(true);  // Ensure the icon scales to fit the label
+    iconLabel->setFixedSize(60, 60);
+    iconLabel->setScaledContents(true);
 
     QPixmap defaultIcon(QString::fromStdString(getDeviceIcon(deviceId_)));  // Path to your default icon
     if (!defaultIcon.isNull())
