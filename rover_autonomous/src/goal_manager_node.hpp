@@ -11,6 +11,8 @@
 #include <visualization_msgs/msg/marker.hpp>
 #include <nav_msgs/msg/occupancy_grid.hpp>
 #include <tf2_ros/static_transform_broadcaster.h>
+#include <visualization_msgs/msg/marker_array.hpp>
+#include <visualization_msgs/msg/marker.hpp>
 
 #include "navigation_controller.hpp"
 
@@ -20,7 +22,7 @@ class GoalManager : public rclcpp::Node
     static constexpr const char* TOPIC_COSTMAP_NAME = "/rover/autonomous/costmap";
     static constexpr const char* TOPIC_WHEEL_CMD_NAME = "/rover/drive_train/wheels_cmd_auto";
     static constexpr const char* TOPIC_ARUCO_DETECTED = "/rover/autonomous/desired_headeing";
-    static constexpr const char* TOPIC_MARKER = "/rover/cameras/aruco_detected";
+    static constexpr const char* TOPIC_MARKER = "/rover/autonomous/marker";
     static constexpr const char* SRV_GOAL_NAME = "/rover/goal/position";
     static constexpr const char* SERVICE_SERVER_NAME = "/rover/cameras/aruco_detection_management";
 
@@ -46,7 +48,8 @@ class GoalManager : public rclcpp::Node
     rclcpp::Subscription<rover_msgs::msg::Aruco>::SharedPtr _sub_arucoDetection;
     rclcpp::Subscription<nav_msgs::msg::OccupancyGrid>::SharedPtr _sub_costmap;
     rclcpp::Publisher<rover_msgs::msg::PropulsionMotor>::SharedPtr _pub_auto_cmd;
-    rclcpp::Publisher<visualization_msgs::msg::Marker>::SharedPtr _pub_marker;
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr _pub_marker;
+    rclcpp::Publisher<visualization_msgs::msg::MarkerArray>::SharedPtr _pub_obstacleMarker;
     rclcpp::Service<rover_msgs::srv::DesiredGpsPosition>::SharedPtr _srv_desiredGps;
     rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr _srv_arucoDetection;
     rclcpp::TimerBase::SharedPtr _timer;
