@@ -157,11 +157,11 @@ def display_device_ids():
             ("0x305", "LIGHTS_IR")
         ],
         "FREE AUXILIARY": [
-            ("0x401", "CAMERA_ROVER_FPV"),
+            ("0x401", "CAMERA_ROVER_MAIN"),
             ("0x402", "CAMERA_ROVER_ANTENNA"),
-            ("0x403", "CAMERA_ROVER_FRONT"),
+            ("0x403", "CAMERA_ROVER_FRONT_SIDE"),
             ("0x404", "CAMERA_ROVER_SCIENCE"),
-            ("0x405", "CAMERA_ARM_CENTER"),
+            ("0x405", "CAMERA_ARM_TOP"),
             ("0x406", "CAMERA_ARM_SIDE"),
             ("0x407", "SPEAKERS")
         ],
@@ -198,14 +198,15 @@ def display_message_ids():
         ("0x19", "PROP_SPEED_STATUS"),
         ("0x1A", "ARM_SPEED_CMD"),
         ("0x1B", "ARM_POSITION_STATUS"),
-        ("0x1C", "ARM_JOINT_CONFIG"),
+        ("0x1C", "ARM_JOINT_CONFIG"), # Updated back to ARM_JOINT_CONFIG
         ("0x1D", "FIX_POSITION"),
         ("0x1E", "FIX_HEADING"),
         ("0x1F", "FIX_INFO"),
-        ("0x20", "CAM_POSITION_CMD"),
-        ("0x21", "CAM_POSITION_STATUS"),
-        ("0x22", "DDB_CMD"),
-        ("0x23", "DDB_STATUS")
+        ("0x20", "PTZ_CMD"),
+        ("0x21", "PTZ_STATUS"),
+        ("0x22", "PTZ_CONFIG"), # New message ID
+        ("0x23", "DDB_CMD"),
+        ("0x24", "DDB_STATUS") # Adjusted from 0x23 due to PTZ_CONFIG insertion
     ]
     
     print("Available Message IDs:")

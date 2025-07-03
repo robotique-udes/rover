@@ -18,7 +18,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                                        std::string url_,
                                        uint16_t playerIndex_,
                                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                                       std::shared_ptr<QPlayerWorker> workerThreadRecording_,
+                                       std::shared_ptr<QRecordingWorker> workerThreadRecording_,
                                        std::shared_ptr<QPanoramaWorker> workerThreadPanorama_):
     _node(guiNode_),
     _camURL(url_),
@@ -76,7 +76,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     connect(_ui.ScreenshotButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handleScreenshot);
     connect(_playerWorkerThreadRecording.get(),
-            &QPlayerWorker::screenshotHandledSuccessfully,
+            &QRecordingWorker::screenshotHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onScreenshotHandledSuccessfully);
 
@@ -85,12 +85,12 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_ui.cameraAngleBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::onCameraAngleBoxChanged);
 
     connect(_playerWorkerThreadRecording.get(),
-            &QPlayerWorker::startRecordingHandledSuccessfully,
+            &QRecordingWorker::startRecordingHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onStartRecordingHandledSuccessfully);
 
     connect(_playerWorkerThreadRecording.get(),
-            &QPlayerWorker::stopRecordingHandledSuccessfully,
+            &QRecordingWorker::stopRecordingHandledSuccessfully,
             this,
             &QVideoPlayerWidget::onStopRecordingHandledSuccessfully);
 
@@ -1128,13 +1128,6 @@ void QVideoPlayerWidget::CB_serviceCameraControlAvailable(bool available_)
     {
         _ui.ScreenshotButton->setEnabled(false);
         _ui.startRecordingButton->setEnabled(false);
-        if (_playerIndex == 1)
-        {
-            RCLCPP_ERROR_THROTTLE(rclcpp::get_logger("GUI"),
-                                  *_node->get_clock(),
-                                  THROTTLE_RATE_ERROR,
-                                  "Error, camera control client is unavailable ");
-        }
     }
     else if (!_ui.ScreenshotButton->isEnabled() || !_ui.startRecordingButton->isEnabled())
     {

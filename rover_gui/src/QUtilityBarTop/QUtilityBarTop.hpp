@@ -1,23 +1,25 @@
-#ifndef QTOP_UTILITY_BAR
-#define QTOP_UTILITY_BAR
+#ifndef Q_UTILITY_BAR_BOTTON_Q_UTILITY_BAR_TOP_HPP
+#define Q_UTILITY_BAR_BOTTON_Q_UTILITY_BAR_TOP_HPP
 
-#include "rclcpp/rclcpp.hpp"
-#include "rover_lib2/helpers/ip_pinging.hpp"
-#include "rover_msgs/msg/gps.hpp"
-#include "rover_lib2/helpers/watchdog.hpp"
-
-#include "rclcpp/duration.hpp"
 #include "UI_TopUtilityBar.h"
-#include <QtWidgets/QGridLayout>
-#include <QtWidgets/QWidget>
-#include <cstddef>
+
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/gps.hpp>
 #include <rover_msgs/msg/battery.hpp>
 #include <rover_msgs/msg/gps.hpp>
 #include <rover_msgs/msg/wifi_connection.hpp>
+
+#include <rover_lib2/helpers/ip_pinging.hpp>
+#include <rover_lib2/helpers/watchdog.hpp>
+
+#include <QtWidgets/QGridLayout>
+#include <QtWidgets/QWidget>
 #include <QDateTime>
 #include <QTimeZone>
 
-class QTopUtilityBar : public QWidget
+#include <cstddef>
+
+class QUtilityBarTop : public QWidget
 {
     Q_OBJECT
 
@@ -37,7 +39,7 @@ class QTopUtilityBar : public QWidget
     static constexpr const char* FILE_PATH = "TaskDateAndTime.txt";
 
   public:
-    QTopUtilityBar(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
+    QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
 
   signals:
     void updateBatteryUI(float _percent);

@@ -13,6 +13,7 @@
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QPanoramaWorker.hpp"
+#include "Worker/QRecordingWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
@@ -30,7 +31,10 @@ class QVideoPlayerWidget : public QWidget
     static int _instanceCounter;
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
-    static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
+  
+    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
+    static constexpr uint16_t CAMERA_MAX_ANGLE = 360;
+    static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100;
 
     static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
     static constexpr uint16_t CAMERA_MAX_ANGLE = 360;
@@ -52,7 +56,7 @@ class QVideoPlayerWidget : public QWidget
                        std::string url_,
                        uint16_t tag_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                       std::shared_ptr<QPlayerWorker> workerThreadRecording_,
+                       std::shared_ptr<QRecordingWorker> workerThreadRecording_,
                        std::shared_ptr<QPanoramaWorker> workerThreadPanorama_);
 
     ~QVideoPlayerWidget();
@@ -160,7 +164,7 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> _client_panoramaManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
+    std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
