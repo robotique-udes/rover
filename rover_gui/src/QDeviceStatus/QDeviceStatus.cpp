@@ -40,19 +40,10 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _ui.setupUi(this);
 
     _layout = new QFlowLayout(_ui.deviceInfos);
+    _layout->setSpacing(5);                   // Reduce spacing between widgets
+    _layout->setContentsMargins(5, 5, 5, 5);  // Reduce margins
     _ui.deviceInfos->setLayout(_layout);
 
-    // _canDevices[RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR] = {0, 0, _ui.frontleftMotor, _ui.frontleftMotorInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR] = {0, 0, _ui.frontrightMotor, _ui.frontrightMotorInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR] = {0, 0, _ui.rearleftMotor, _ui.rearleftMotorInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR] = {0, 0, _ui.rearrightMotor, _ui.rearrightMotorInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::GNSS] = {0, 0, _ui.gnss, _ui.gnssInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::DDB_CONTROLLER] = {0, 0, _ui.ddbController, _ui.ddbControllerInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN] = {0, 0, _ui.cameraMain, _ui.cameraMainInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA] = {0, 0, _ui.cameraAntenne, _ui.cameraAntenneInfo};
-    // _canDevices[RoverCan2::Constant::eDeviceId::LIGHTS_MAIN] = {0, 0, _ui.lightsMain, _ui.lightsMainInfo};
-    // // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH0] = {0, 0, _ui.switchETH0, _ui.switchETH0Info};
-    // // _canDevices[RoverCan2::Constant::eDeviceId::SWITCHETH1] = {0, 0, _ui.switchETH1, _ui.switchETH1Info};
     this->initializeDeviceWidget();
 
     _sub_deviceStatus
@@ -105,34 +96,38 @@ void QDeviceStatus::initializeDeviceWidget()
 void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 {
     QWidget* deviceInfoContainer = new QWidget(_ui.deviceInfos);
-    QHBoxLayout* containerLayout = new QHBoxLayout(deviceInfoContainer);
-    containerLayout->setContentsMargins(0, 0, 0, 0);
-    containerLayout->setSpacing(2);
+    deviceInfoContainer->setFixedSize(500, 80);
+    deviceInfoContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
     deviceInfoContainer->setStyleSheet(STATUS_DEFAULT);
+
+    QHBoxLayout* containerLayout = new QHBoxLayout(deviceInfoContainer);
+    containerLayout->setContentsMargins(5, 2, 2, 5);
+    containerLayout->setSpacing(5);
+    containerLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
     iconLabel->setFixedSize(60, 60);
     iconLabel->setScaledContents(true);
+    iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
-    QPixmap defaultIcon(QString::fromStdString(getDeviceIcon(deviceId_)));  // Path to your default icon
+    QPixmap defaultIcon(QString::fromStdString(this->getDeviceIcon(deviceId_)));
     if (!defaultIcon.isNull())
     {
         QPixmap scaledIcon = defaultIcon.scaled(iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
         iconLabel->setPixmap(scaledIcon);
-
-        // Set alignment for icon
         iconLabel->setAlignment(Qt::AlignCenter);
     }
 
     QLabel* deviceInfoLabel = new QLabel(deviceInfoContainer);
-    deviceInfoLabel->setWordWrap(true);
     deviceInfoLabel->setAlignment(Qt::AlignCenter);
+    deviceInfoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    deviceInfoLabel->setWordWrap(false);
 
-    QString infoText = QString::fromStdString(getDeviceName(deviceId_))
+    QString infoText = QString::fromStdString(this->getDeviceName(deviceId_))
                        + QString("\n\nID: 0x%1").arg(TO_UNDERLYING(deviceId_), 3, 16, QChar('0')) + "\n\nReboots: 0";
     deviceInfoLabel->setText(infoText);
 
-    containerLayout->addWidget(iconLabel, 0, Qt::AlignCenter);
+    containerLayout->addWidget(iconLabel);
     containerLayout->addWidget(deviceInfoLabel);
 
     _canDevices[deviceId_] = {0, 0, deviceInfoContainer, deviceInfoLabel};
