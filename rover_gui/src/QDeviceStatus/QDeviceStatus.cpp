@@ -103,10 +103,9 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     QHBoxLayout* containerLayout = new QHBoxLayout(deviceInfoContainer);
     containerLayout->setContentsMargins(5, 2, 2, 5);
     containerLayout->setSpacing(5);
-    containerLayout->setSizeConstraint(QLayout::SetFixedSize);
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
-    iconLabel->setFixedSize(60, 60);
+    iconLabel->setFixedSize(50, 50);
     iconLabel->setScaledContents(true);
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
@@ -114,8 +113,8 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     if (!defaultIcon.isNull())
     {
         QPixmap scaledIcon = defaultIcon.scaled(iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        iconLabel->setPixmap(scaledIcon);
         iconLabel->setAlignment(Qt::AlignCenter);
+        iconLabel->setPixmap(scaledIcon);
     }
 
     QLabel* deviceInfoLabel = new QLabel(deviceInfoContainer);
