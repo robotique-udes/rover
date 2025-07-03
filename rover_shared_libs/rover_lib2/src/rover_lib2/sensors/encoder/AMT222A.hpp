@@ -9,6 +9,7 @@
 #include "rover_lib2/helpers/one_shot_timer.hpp"
 
 #include <bit>
+#include <array>
 
 DEFINE_LOG_NODE(AMT222A, Logger::eNodeState::OFF);
 
@@ -31,6 +32,12 @@ class AMT222A : public Encoder<AMT222A>
     static constexpr std::array<uint8_t, 2U> CMD_READ_POSITION = {0x00, 0x00};
     static constexpr std::array<uint8_t, 2U> CMD_RESET = {0x00, 0x60};
     static constexpr std::array<uint8_t, 2U> CMD_CALIB = {0x00, 0x70};
+
+    static constexpr uint16_t VALID_DATA_BIT_MASK = 0b0011'1111'1111'1100;  // Only these bits contains the actual encoder message
+    static constexpr uint16_t EVEN_CHECKSUM_RESULT_BIT_MASK = 0b0100'0000'0000'0000U;  // bit where the even checksum result is
+    static constexpr uint16_t EVEN_CHECKSUM_BIT_MASK = 0b0001'0101'0101'0101U;  // bits on which the even checksum is calculated
+    static constexpr uint16_t ODD_CHECKSUM_RESULT_BIT_MASK = 0b1000'0000'0000'0000U;  // bit where the odd checksum result is
+    static constexpr uint16_t ODD_CHECKSUM_BIT_MASK = 0b0010'1010'1010'1010U;  // bits on which the odd checksum is calculated
 
     enum class eState : uint8_t
     {
@@ -188,7 +195,7 @@ class AMT222A : public Encoder<AMT222A>
         }
 
         uint16_t newPos = data[0] << 8 | data[1];
-        newPos &= 0b0011'1111'1111'1100;
+        newPos &= VALID_DATA_BIT_MASK;
         newPos >>= 2;
 
         if (_reversed)
@@ -197,14 +204,14 @@ class AMT222A : public Encoder<AMT222A>
                                    0.0F,
                                    static_cast<float>((1U << 12) - 1U),
                                    0.0F,
-                                   static_cast<float>(std::numbers::pi));
+                                   ((2.0F * std::numbers::pi_v<float>)-0.000'001F));
         }
         else
         {
             _currentPosition = MAP(static_cast<float>(newPos),
                                    0.0F,
                                    static_cast<float>((1U << 12) - 1U),
-                                   static_cast<float>(std::numbers::pi),
+                                   ((2.0F * std::numbers::pi_v<float>)-0.000'001F),
                                    0.0F);
         }
 
@@ -224,13 +231,13 @@ class AMT222A : public Encoder<AMT222A>
     {
         uint16_t word = bytes_[0] << 8 | bytes_[1];
 
-        bool evenCheckExpected = word & 0b0100'0000'0000'0000;
-        uint16_t evenBits = word & 0b0001'0101'0101'0101;
+        bool evenCheckExpected = word & EVEN_CHECKSUM_RESULT_BIT_MASK;
+        uint16_t evenBits = word & EVEN_CHECKSUM_BIT_MASK;
         bool evenXorResult = static_cast<bool>(std::popcount(evenBits) % 2);
         bool evenChecksumValid = (evenCheckExpected == (!evenXorResult));
 
-        bool oddCheckExpected = word & 0b1000'0000'0000'0000;
-        uint16_t oddBits = word & 0b0010'1010'1010'1010;
+        bool oddCheckExpected = word & ODD_CHECKSUM_RESULT_BIT_MASK;
+        uint16_t oddBits = word & ODD_CHECKSUM_BIT_MASK;
         bool oddXorResult = static_cast<bool>(std::popcount(oddBits) % 2);
         bool oddChecksumValid = (oddCheckExpected == (!oddXorResult));
 

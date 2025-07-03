@@ -28,9 +28,9 @@ namespace RoverCan2
             _dev_Master(ERROR_STATE_HANDLER_ID,
                         SubscriberMember<Msgs::ErrorState, ManagerSlave<DriverT, DevicesT...>>{
                             *this,
-                            &ManagerSlave<DriverT, DevicesT...>::CB_ErrorStateFromMaster}),
-            _errorStateReportingLoop(ERROR_STATE_REPORTING_PERIOD_S)
+                            &ManagerSlave<DriverT, DevicesT...>::CB_ErrorStateFromMaster})
         {
+            this->reportErrorStateToMaster();
         }
 
         void __update(void)
@@ -79,7 +79,7 @@ namespace RoverCan2
         }
 
         Device<SubscriberMember<Msgs::ErrorState, ManagerSlave<DriverT, DevicesT...>>> _dev_Master;
-        LoopTimer<uint64_t, Time::millis> _errorStateReportingLoop;
+        LoopTimer<uint64_t, &Time::millis> _errorStateReportingLoop = {ERROR_STATE_REPORTING_PERIOD_S};
     };
 
     template<typename DriverT, typename... DevicesT>

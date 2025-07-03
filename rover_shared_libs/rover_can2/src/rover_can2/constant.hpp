@@ -200,9 +200,9 @@ namespace RoverCan2::Constant
                 return "INVALID";
             case eDeviceId::TEST_DEVICE:
                 return "TEST_DEVICE";
+            default:
+                return "!!UNKNOWN!!";
         }
-
-        return "!!UNKNOWN!!";
     }
 
     namespace LedPatterns

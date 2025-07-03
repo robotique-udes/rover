@@ -102,6 +102,12 @@ class IFX007T : public MotorDriver<IFX007T<PwmGeneratorAT, PwmGeneratorBT>>
                 }
                 break;
             }
+            default:
+                _pwmA.setDutyCycle(FULL_STOP_CMD);
+                _pwmB.setDutyCycle(FULL_STOP_CMD);
+                _pwmA.update();
+                _pwmB.update();
+                ASSERT_MSG_ARGS("Unknown brake mode : %u, falling in error mode", std::to_underlying(_brakeMode));
         }
 
         _pwmA.update();
