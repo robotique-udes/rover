@@ -13,6 +13,7 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
+find_package(jsoncpp REQUIRED)
 
 add_subdirectory(../cpr cpr_build)
 add_subdirectory(../rover_shared_libs/ .build)
@@ -37,6 +38,7 @@ ament_target_dependencies(antenna
 
 target_link_libraries(antenna 
                           rover_shared_libs
+                          jsoncpp_lib
                           cpr::cpr)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

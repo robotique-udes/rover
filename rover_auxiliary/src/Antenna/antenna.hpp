@@ -8,7 +8,6 @@
 #include <rover_msgs/msg/antenna_status.hpp>
 #include <cpr/cpr.h>
 
-
 class AntennaNode : public rclcpp::Node
 {
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
@@ -25,19 +24,21 @@ class AntennaNode : public rclcpp::Node
     AntennaNode& operator=(const AntennaNode&) = delete;
 
   private:
+    void CB_antenna_publisher(void);
+    bool login(void);
+    bool getIfStats(rover_msgs::msg::AntennaStatus* msg_);
+    bool getStatus(rover_msgs::msg::AntennaStatus* msg_);
+
     rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pub_antenna_status;
     rclcpp::TimerBase::SharedPtr _timer_pub;
-
-    bool _is_logged_in = false;
     std::shared_ptr<cpr::Session> _session = nullptr;
-    bool login(void);
+    bool _is_logged_in = false;
+    uint32_t _lanRxBytes = 0;
+    uint32_t _lanTxBytes = 0;
+    uint32_t _wlanRxBytes = 0;
+    uint32_t _wlanTxBytes = 0;
 
-    void CB_antenna_publisher(void);
-
-    std::string _AntennaCookie;
-
-
-    //placeholders
+    // placeholders
     std::string username = "placeholder";
     std::string password = "placeholder";
 };
