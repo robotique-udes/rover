@@ -74,7 +74,7 @@ class GoalManager : public rclcpp::Node
     void CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Request::SharedPtr request_,
                        rover_msgs::srv::DesiredGpsPosition::Response::SharedPtr response_);
     void driveTrainPublisher(void);
-    void computeDeisreHeading(void);
+    void visualizeHeading(float heading_);
 };
 
 #endif
