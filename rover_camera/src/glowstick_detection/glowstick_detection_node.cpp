@@ -5,12 +5,18 @@
 
 GlowStickDetectionNode::GlowStickDetectionNode() : Node("glowstick_detection_node")
 {
-    _camera = std::make_unique<ImageCaptureGlowstick>("file:///dev/video0");
+    _camera = std::make_unique<ImageCaptureGlowstick>("rtspsrc location=rtsp://192.168.144.31:554/1/h264major latency=0 drop-on-latency=true protocols=tcp ! "
+                                            "decodebin ! "
+                                            "videorate max-rate=20 ! "
+                                            "videoconvert ! "
+                                            "queue max-size-buffers=1 leaky=downstream ! "
+                                            "appsink sync=false");
 
     cv::Mat frameCam;
     cv::Mat frameGlowStick;
     GlowstickDetector glowsticks;
     std::vector<cv::Point> gsPosition;
+
 
     while (true)
     {

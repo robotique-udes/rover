@@ -66,7 +66,7 @@ bool ImageCaptureGlowstick::initCam(void)
 {
     bool res;
 
-    res = _cap.open(0);
+    res = _cap.open(_cameraURL, cv::CAP_GSTREAMER);
 
     if (!res)
     {

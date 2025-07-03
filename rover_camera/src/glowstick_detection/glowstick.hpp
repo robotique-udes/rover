@@ -11,6 +11,8 @@ class Glowstick
         cv::Scalar getColor(void);
         cv::Scalar getLowerThreshold(void);
         cv::Scalar getHigherThreshold(void);
+        std::vector<cv::Rect> _glowstickRect;
+        std::vector<cv::Rect> _glowstickRectCenter;
     private:
         cv::Scalar _lowThreshold;
         cv::Scalar _highThreshold;

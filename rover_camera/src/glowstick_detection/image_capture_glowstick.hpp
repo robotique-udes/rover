@@ -8,6 +8,7 @@
 #include <optional>
 #include <iostream>
 #include <algorithm>
+#include <tuple>
 
 class ImageCaptureGlowstick
 {

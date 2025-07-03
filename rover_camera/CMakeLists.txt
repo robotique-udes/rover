@@ -37,7 +37,8 @@ ament_target_dependencies(aruco_detection
 add_executable(glowstick_detection src/glowstick_detection/glowstick_detection_node.cpp
                                    src/glowstick_detection/image_capture_glowstick.cpp
                                    src/glowstick_detection/glowstick_detector.cpp
-                                   src/glowstick_detection/glowstick.cpp)
+                                   src/glowstick_detection/glowstick.cpp
+                                   src/glowstick_detection/glowstick_position_estimator.cpp)
 ament_target_dependencies(glowstick_detection
                           rclcpp
                           OpenCV)
