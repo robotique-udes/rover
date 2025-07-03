@@ -23,7 +23,7 @@ class QVideoRecorderWidget : public QWidget
                          std::shared_ptr<QRecordingWorker> workerThreadRecording_);
 
     void updateCamURL(const std::string& url_);
-    void setButtons(sRecordingButtons& buttons_);
+    void setButtons(const sRecordingButtons& buttons_);
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
 
     void CB_cameraListUpdate(const std::vector<std::string>& urls_);
