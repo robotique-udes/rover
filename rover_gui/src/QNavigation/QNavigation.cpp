@@ -36,7 +36,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
     connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);
     connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected);
-    connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointVisibilityChanged);
+    connect(_ui.waypointList, &QListWidget::itemChanged, this, &QNavigation::onWaypointVisibilityChanged);
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
@@ -89,7 +89,7 @@ void QNavigation::onSetGoalClicked()
 
     this->addWaypointToList(name_, lat_, lon_, id_);
 
-    emit this->sendGoal(name_, lat_, lon_, id_);
+    emit this->sendGoal(name_, lat_, lon_);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -143,7 +143,7 @@ void QNavigation::onCalculatePathClicked(void)
     {
         const Waypoint& waypoint_ = _waypoints.at(index_);
 
-        emit this->calculatePath(waypoint_.latitude, waypoint_.longitude);
+        emit this->calculatePath(waypoint_.latitude, waypoint_.longitude, waypoint_.id);
     }
 }
 

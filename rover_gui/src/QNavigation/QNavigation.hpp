@@ -15,7 +15,7 @@
 class QNavigation : public QWidget
 {
     Q_OBJECT
-    //QML_ELEMENT
+    // QML_ELEMENT
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
@@ -29,8 +29,8 @@ class QNavigation : public QWidget
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
-    void sendGoal(QString name, double latitude, double longitude, QString id);
-    void calculatePath(double latitude_, double longitude_);
+    void sendGoal(QString name, double latitude, double longitude);
+    void calculatePath(double destLat, double destLon, QString waypointId);
     void waypointIsVisible(double latitude, double longitude, QString name, QString waypointId, bool visibility);
     void jsReady(void);
     void clearWaypoints(void);
