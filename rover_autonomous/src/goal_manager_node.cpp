@@ -42,6 +42,7 @@ GoalManager::GoalManager():
 
     _pub_auto_cmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD_NAME, QOS_DEFAULT);
     _pub_marker = this->create_publisher<visualization_msgs::msg::MarkerArray>(TOPIC_MARKER, QOS_DEFAULT);
+    _pub_avoidanceArrow = this->create_publisher<visualization_msgs::msg::Marker>(TOPIC_ARROW, QOS_DEFAULT);
 
     _srv_desiredGps = this->create_service<rover_msgs::srv::DesiredGpsPosition>(
         SRV_GOAL_NAME,
@@ -70,6 +71,8 @@ void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
 void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
 {
     _costmapData = grid.data;
+
+    // This is for debug purposes
     const auto& info = grid.info;
     int width = info.width;               // columns (world X)
     int height = info.height;             // rows    (world Y)
@@ -181,6 +184,7 @@ void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
         ma.markers.push_back(m);
     }
 
+    this->computeDeisreHeading();
     _pub_marker->publish(ma);
 }
 
@@ -215,7 +219,43 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
     _navigationController.getDesiredGpsData(desiredGpsData);
 }
 
-void GoalManager::computeDeisreHeading(void) {}
+void GoalManager::computeDeisreHeading(void)
+{
+    float avoidanceAngle = 45.0F;
+
+    visualization_msgs::msg::Marker m;
+    m.header.frame_id = "base_link";  // your lidar frame
+    m.header.stamp = now();
+    m.ns = "avoidance";
+    m.id = 0;
+    m.type = visualization_msgs::msg::Marker::ARROW;
+    m.action = visualization_msgs::msg::Marker::ADD;
+
+    // Place at lidar origin
+    m.pose.position.x = 0.0;
+    m.pose.position.y = 0.0;
+    m.pose.position.z = 0.0;
+
+    // Yaw the arrow by yaw_deg around Z
+    tf2::Quaternion q;
+    q.setRPY(0.0, 0.0, avoidanceAngle * M_PI / 180.0);
+    m.pose.orientation.x = q.x();
+    m.pose.orientation.y = q.y();
+    m.pose.orientation.z = q.z();
+    m.pose.orientation.w = q.w();
+
+    // Styling
+    m.scale.x = 1.0;  // length
+    m.scale.y = 0.1;  // shaft width
+    m.scale.z = 0.1;  // head width
+    m.color.r = 1.0;
+    m.color.g = 0.0;
+    m.color.b = 0.0;
+    m.color.a = 0.8;
+    m.lifetime = rclcpp::Duration::from_seconds(0.1);
+
+    _pub_avoidanceArrow->publish(m);
+}
 
 void GoalManager::driveTrainPublisher(void)
 {
@@ -245,7 +285,10 @@ void GoalManager::driveTrainPublisher(void)
         case (eState::NAVIGATING_TO_POINT):
             if (!_navigationController._endNodeReached)
             {
-                // this->computeDeisreHeading();
+                if (_navigationController.obstacleDetected(_costmapData))
+                {
+                    RCLCPP_WARN(this->get_logger(), "OBSTACLE");
+                }
             }
             else
             {
@@ -257,6 +300,9 @@ void GoalManager::driveTrainPublisher(void)
                 _state = eState::DETECTING_ARUCO;
             }
             break;
+        case (eState::AVOID_OBSTACLE):
+            // TODO
+
         case (eState::DETECTING_ARUCO):
             if (!this->_arucoDetected)
             {

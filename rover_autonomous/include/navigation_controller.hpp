@@ -2,6 +2,10 @@
 #define NAVIGATION_CONTROLLER_HPP
 
 #include <array>
+#include <queue>
+#include <cmath>
+#include <algorithm>
+
 #include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 #include "lidar_config.hpp"
@@ -239,103 +243,80 @@ class NavigationController
         return _targetWheelCmd;
     }
 
-    std::array<float, 2> computeNetForce(const std::vector<int8_t>& costmapData)
+    bool obstacleDetected(const std::vector<int8_t>& costmapData)
     {
-        // config unpacking
-        const float res = LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
-        const int width = LIDAR_CONFIG::COSTMAP::MAP_WIDTH;
-        const int height = LIDAR_CONFIG::COSTMAP::MAP_HEIGHT;
-        const float R0 = LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE;
-        const float Krep = LIDAR_CONFIG::NAVIGATION::REPULSIVE_GAIN;
-        const int OCC = 100;  // occupied cell value
+        static constexpr int WIDTH = LIDAR_CONFIG::COSTMAP::MAP_WIDTH;
+        static constexpr int HEIGHT = LIDAR_CONFIG::COSTMAP::MAP_HEIGHT;
+        static constexpr double RES = LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
+        static constexpr double RANGE = LIDAR_CONFIG::COSTMAP::MAX_RANGE;
+        static constexpr double OCC_THRESH = LIDAR_CONFIG::COSTMAP::OCCUPIED_THRESHOLD;
+        static constexpr float SIDE_DETECTION_WIDTH = 0.2F;
 
-        // cluster threshold (min #cells)
-        constexpr int MIN_CLUSTER_SIZE = 4;
+        int depth_cells = static_cast<int>(RANGE / RES);
 
-        // precompute for centering
-        const float halfW = width * res * 0.5F;
-        const float halfH = height * res * 0.5F;
+        int half_width_cells = static_cast<int>(SIDE_DETECTION_WIDTH / RES);
 
-        // 1) mark all occupied cells
-        std::vector<bool> occ(width * height, false);
-        for (int idx = 0; idx < width * height; ++idx)
-        {
-            occ[idx] = (costmapData[idx] == OCC);
-        }
+        int gx = WIDTH / 2;
+        int gy = HEIGHT / 2;
 
-        // 2) find clusters via flood-fill
-        std::vector<bool> seen(width * height, false), valid(width * height, false);
-        std::vector<int> stack;
-        stack.reserve(width * height);
+        int x_min = std::clamp(gx + 1, 0, WIDTH - 1);
+        int x_max = std::clamp(gx + depth_cells, 0, WIDTH - 1);
+        int y_min = std::clamp(gy - half_width_cells, 0, HEIGHT - 1);
+        int y_max = std::clamp(gy + half_width_cells, 0, HEIGHT - 1);
 
-        // 4-connected offsets
-        const int dx[4] = {1, -1, 0, 0};
-        const int dy[4] = {0, 0, 1, -1};
+        int occupied_threshold = static_cast<int>(OCC_THRESH * 100.0);
 
-        for (int idx0 = 0; idx0 < width * height; ++idx0)
-        {
-            if (!occ[idx0] || seen[idx0])
-                continue;
-            // new cluster
-            stack.clear();
-            stack.push_back(idx0);
-            seen[idx0] = true;
-
-            // grow it
-            for (size_t k = 0; k < stack.size(); ++k)
+        std::vector<std::pair<int, int>> occupied;
+        for (int x = x_min; x <= x_max; ++x)
+            for (int y = y_min; y <= y_max; ++y)
             {
-                int idx = stack[k];
-                int x = idx % width;
-                int y = idx / width;
-                for (int d = 0; d < 4; ++d)
+                int idx = y * WIDTH + x;
+                if (costmapData[idx] >= occupied_threshold)
+                    occupied.emplace_back(x, y);
+            }
+        if (occupied.empty())
+            return false;
+
+        static constexpr int MIN_CLUSTER_SIZE = 10;
+        static constexpr double MAX_CLUSTER_DIST_C = 1.5;  // in cells
+
+        std::vector<bool> visited(occupied.size(), false);
+        std::vector<std::vector<std::pair<int, int>>> clusters;
+
+        for (size_t i = 0; i < occupied.size(); ++i)
+        {
+            if (visited[i])
+                continue;
+            std::vector<std::pair<int, int>> cluster;
+            std::queue<size_t> q;
+            q.push(i);
+            visited[i] = true;
+
+            while (!q.empty())
+            {
+                size_t idx = q.front();
+                q.pop();
+                cluster.push_back(occupied[idx]);
+
+                for (size_t j = 0; j < occupied.size(); ++j)
                 {
-                    int nx = x + dx[d], ny = y + dy[d];
-                    if (nx >= 0 && nx < width && ny >= 0 && ny < height)
+                    if (visited[j])
+                        continue;
+                    double dx = occupied[idx].first - occupied[j].first;
+                    double dy = occupied[idx].second - occupied[j].second;
+                    if (std::hypot(dx, dy) <= MAX_CLUSTER_DIST_C)
                     {
-                        int nidx = ny * width + nx;
-                        if (occ[nidx] && !seen[nidx])
-                        {
-                            seen[nidx] = true;
-                            stack.push_back(nidx);
-                        }
+                        visited[j] = true;
+                        q.push(j);
                     }
                 }
             }
 
-            // 3) if big enough, mark all members valid
-            if ((int)stack.size() >= MIN_CLUSTER_SIZE)
-            {
-                for (int idx : stack)
-                    valid[idx] = true;
-            }
+            if (cluster.size() >= MIN_CLUSTER_SIZE)
+                clusters.emplace_back(std::move(cluster));
         }
 
-        // 4) accumulate forces from valid clusters only
-        float fx = 0.0F, fy = 0.0F;
-        for (int i = 0; i < height; ++i)
-        {
-            for (int j = 0; j < width; ++j)
-            {
-                int idx = i * width + j;
-                if (!valid[idx])
-                    continue;
-
-                // cell center in robot frame
-                float cx = (j + 0.5F) * res - halfW;
-                float cy = (i + 0.5F) * res - halfH;
-                float r = std::hypot(cx, cy);
-                if (r > 0.0F && r < R0)
-                {
-                    // linear repulsion
-                    float mag = Krep * (R0 - r);
-                    // push _away_ from obstacle
-                    fx += mag * (-cx / r);
-                    fy += mag * (-cy / r);
-                }
-            }
-        }
-
-        return {fx, fy};
+        return !clusters.empty();
     }
 };
 
