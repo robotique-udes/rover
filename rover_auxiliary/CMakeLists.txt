@@ -23,8 +23,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 add_executable(antenna src/Antenna/antenna.cpp)
 
-cpr_option(CPR_USE_SYSTEM_CURL "If enabled we will use the curl lib already installed on this system." ON)
-
 ament_target_dependencies(ddb_control
                           rclcpp
                           rover_msgs
