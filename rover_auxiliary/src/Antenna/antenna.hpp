@@ -11,7 +11,7 @@
 class AntennaNode : public rclcpp::Node
 {
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
-    static constexpr uint64_t PUBLISHER_PERIOD_MS = 5000UL;
+    static constexpr uint64_t PUBLISHER_PERIOD_MS = 250UL;
 
   public:
     // Constructor initializes curl once
@@ -33,10 +33,10 @@ class AntennaNode : public rclcpp::Node
     rclcpp::TimerBase::SharedPtr _timer_pub;
     std::shared_ptr<cpr::Session> _session = nullptr;
     bool _is_logged_in = false;
-    uint32_t _lanRxBytes = 0;
-    uint32_t _lanTxBytes = 0;
-    uint32_t _wlanRxBytes = 0;
-    uint32_t _wlanTxBytes = 0;
+    uint64_t _lanRxBytes = 0;
+    uint64_t _lanTxBytes = 0;
+    uint64_t _wlanRxBytes = 0;
+    uint64_t _wlanTxBytes = 0;
 
     // placeholders
     std::string username = "placeholder";
