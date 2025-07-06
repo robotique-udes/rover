@@ -56,7 +56,7 @@ class GoalManager : public rclcpp::Node
     rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr _srv_arucoDetection;
     rclcpp::TimerBase::SharedPtr _timer;
 
-    eState _state = eState::NAVIGATING_TO_POINT;
+    eState _state = eState::IDLE;
 
     bool goalRequested = false;
     bool goalReached = false;
@@ -64,8 +64,9 @@ class GoalManager : public rclcpp::Node
     bool _arucoDetected = false;
 
     std::vector<int8_t> _costmapData;
-
     std::array<float, TO_UNDERLYING(NavigationController::eWheelCmd::eLAST)> _targetWheelCmd = {0.0F, 0.0F, 0.0F, 0.0F};
+
+    float _obstacleHeading;
 
   public:
     void CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_);

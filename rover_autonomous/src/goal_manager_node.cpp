@@ -70,34 +70,24 @@ void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
 
 void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
 {
-    // —————————————————————————————————————————
-    // WINDOW & AVOIDANCE MARGIN CONSTANTS
-    // —————————————————————————————————————————
-    const double AVOID_WINDOW_FORWARD_M = 2.0;  // look 2 m ahead
-    const double AVOID_WINDOW_LATERAL_M = 0.3;  // ±0.3 m each side
-    const double AVOIDANCE_MARGIN_DEG = 15.0;   // extra clearance angle
-    constexpr int THRESH = 100;                 // occupancy threshold
-    constexpr int MIN_CLUSTER_SIZE = 10;        // drop noise
-    constexpr double MAX_CLUSTER_DIST_C = 1.5;  // clustering radius (cells)
+    const double AVOID_WINDOW_FORWARD_M = 2.0;
+    const double AVOID_WINDOW_LATERAL_M = 0.3;
+    const double AVOIDANCE_MARGIN_DEG = 15.0;
+    constexpr int THRESH = 100;
+    constexpr int MIN_CLUSTER_SIZE = 10;
+    constexpr double MAX_CLUSTER_DIST_C = 1.5;
 
-    // —————————————————————————————————————————
-    // EXTRACT GRID METADATA
-    // —————————————————————————————————————————
     const auto& info = grid.info;
     int width = info.width;
     int height = info.height;
     double res = info.resolution;
-    _costmapData = grid.data;  // store for later use
+    _costmapData = grid.data;
 
-    // robot’s grid cell (world origin = (0,0))
     int gx = int((0.0 - info.origin.position.x) / res);
     int gy = int((0.0 - info.origin.position.y) / res);
     gx = std::clamp(gx, 0, width - 1);
     gy = std::clamp(gy, 0, height - 1);
 
-    // —————————————————————————————————————————
-    // WINDOW IN CELLS
-    // —————————————————————————————————————————
     int forward_cells = std::max(1, int(AVOID_WINDOW_FORWARD_M / res));
     int lateral_cells = std::max(1, int(AVOID_WINDOW_LATERAL_M / res));
 
@@ -106,9 +96,6 @@ void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
     int y_min = std::clamp(gy - lateral_cells, 0, height - 1);
     int y_max = std::clamp(gy + lateral_cells, 0, height - 1);
 
-    // —————————————————————————————————————————
-    // GATHER OCCUPIED CELLS
-    // —————————————————————————————————————————
     std::vector<std::pair<int, int>> occupied;
     for (int x = x_min; x <= x_max; ++x)
     {
@@ -122,9 +109,6 @@ void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
         }
     }
 
-    // —————————————————————————————————————————
-    // CLUSTERING VIA BFS
-    // —————————————————————————————————————————
     std::vector<bool> visited(occupied.size(), false);
     std::vector<std::vector<std::pair<int, int>>> clusters;
 
@@ -164,12 +148,8 @@ void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
         }
     }
 
-    // —————————————————————————————————————————
-    // VISUALIZE CLUSTERS
-    // —————————————————————————————————————————
     visualization_msgs::msg::MarkerArray ma;
 
-    // clear old markers
     visualization_msgs::msg::Marker clear;
     clear.header = grid.header;
     clear.action = visualization_msgs::msg::Marker::DELETEALL;
@@ -205,12 +185,8 @@ void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
 
     _pub_marker->publish(ma);
 
-    // —————————————————————————————————————————
-    // COMPUTE & PUBLISH AVOIDANCE HEADING
-    // —————————————————————————————————————————
     if (!clusters.empty())
     {
-        // find nearest cluster centroid (in meters)
         size_t nearest = 0;
         double best_d = std::numeric_limits<double>::infinity();
         double ccx = 0, ccy = 0;
@@ -237,7 +213,6 @@ void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
             }
         }
 
-        // measure lateral width (meters)
         int min_y = INT_MAX, max_y = INT_MIN;
         for (auto& cell : clusters[nearest])
         {
@@ -246,16 +221,15 @@ void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
         }
         double width_m = (max_y - min_y + 1) * res;
 
-        // compute base half-angle
         double half_rad = std::atan2(width_m * 0.5, best_d);
         double half_deg = half_rad * 180.0 / M_PI;
 
-        // add margin and choose side
         double steer = half_deg + AVOIDANCE_MARGIN_DEG;
         double rel_y = (ccy - gy) * res;
         float desired_heading = (rel_y > 0) ? static_cast<float>(-steer) : static_cast<float>(steer);
 
-        // publish arrow
+        _obstacleHeading = -desired_heading;
+
         visualization_msgs::msg::Marker arrow;
         arrow.header.frame_id = "base_link";
         arrow.header.stamp = now();
@@ -357,9 +331,11 @@ void GoalManager::driveTrainPublisher(void)
     switch (_state)
     {
         case (eState::IDLE):
+            RCLCPP_INFO(this->get_logger(), "State: IDLE");
             if (goalRequested)
             {
-                _state = eState::ROTATING;
+                // _state = eState::ROTATING;
+                _state = eState::NAVIGATING_TO_POINT;
             }
             else
             {
@@ -367,24 +343,25 @@ void GoalManager::driveTrainPublisher(void)
             }
             break;
         case (eState::ROTATING):
+            RCLCPP_INFO(this->get_logger(), "State: ROTATING");
             if (_navigationController._desiredHeadingReached)
             {
                 _state = eState::NAVIGATING_TO_POINT;
             }
             else
             {
-                this->_targetWheelCmd = _navigationController.getToHeading();
+                double bearing = _navigationController.computeBearing();
+                float headingDiff = std::abs(bearing - _navigationController._currentHeading);
+
+                NavigationController::eRotationDirection rotationDirection
+                    = _navigationController.computeRotationDirection(headingDiff);
+
+                this->_targetWheelCmd = _navigationController.getToHeading(rotationDirection);
             }
             break;
         case (eState::NAVIGATING_TO_POINT):
-            if (!_navigationController._endNodeReached)
-            {
-                if (_navigationController.obstacleDetected(_costmapData))
-                {
-                    // RCLCPP_WARN(this->get_logger(), "OBSTACLE");
-                }
-            }
-            else
+            RCLCPP_INFO(this->get_logger(), "State: NAVIGATING_TO_POINT");
+            if (_navigationController._endNodeReached)
             {
                 auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
                 arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
@@ -393,17 +370,37 @@ void GoalManager::driveTrainPublisher(void)
                 goalReached = true;
                 _state = eState::DETECTING_ARUCO;
             }
+            else
+            {
+                if (_navigationController.obstacleDetected(_costmapData))
+                {
+                    _state = eState::AVOID_OBSTACLE;
+                }
+                else
+                {
+                    this->_targetWheelCmd = _navigationController.navigateToPoint();
+                }
+            }
             break;
         case (eState::AVOID_OBSTACLE):
-            // if(obstacle is no longer detected)
-            // {
-            //     _state = eState::ROTATING;
-            // }
-            // else
-            // {
-            //     follow desired heading until the obstacle is cleared
-            // }
+            RCLCPP_INFO(this->get_logger(), "State: AVOID_OBSTACLE");
+            if (!_navigationController.obstacleDetected(_costmapData))
+            {
+                _state = eState::ROTATING;
+            }
+            else
+            {
+                if (_obstacleHeading < 0.0)
+                {
+                    _obstacleHeading += 360.0F;
+                }
 
+                NavigationController::eRotationDirection rotationDirection
+                    = _navigationController.computeRotationDirection(_obstacleHeading);
+
+                this->_targetWheelCmd = _navigationController.getToHeading(rotationDirection);
+            }
+            break;
         case (eState::DETECTING_ARUCO):
             if (!this->_arucoDetected)
             {

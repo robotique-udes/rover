@@ -47,15 +47,14 @@ class NavigationController
     float headingBuffer_ = HEADING_BUFFER;
     bool _desiredHeadingReached = false;
     bool _endNodeReached = false;
+    double _currentLat = 0.0;
+    double _currentLon = 0.0;
+    double _currentHeading = 0.0;
+    double _targetLat = 0.0;
+    double _targetLon = 0.0;
 
   private:
     std::array<float, TO_UNDERLYING(eGpsData::eLAST)> _currentGpsData = {0.0F, 0.0F, 0.0F};
-
-    double _currentLat;
-    double _currentLon;
-    double _currentHeading;
-    double _targetLat;
-    double _targetLon;
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> _targetWheelCmd;
 
@@ -73,21 +72,21 @@ class NavigationController
         _currentHeading = currentGpsData_[TO_UNDERLYING(eGpsData::HEADING)];
     }
 
-    eRotationDirection computeRotationDirection(void)
+    eRotationDirection computeRotationDirection(double headingDiff_)
     {
-        double bearing = computeBearing();
-        float headingDiff = std::abs(bearing - _currentHeading);
-
-        if (headingDiff <= this->headingBuffer_)
+        printf("Heading diff: %.2f degrees\n", headingDiff_);
+        if (headingDiff_ <= this->headingBuffer_)
         {
             return eRotationDirection::NO_ROTATION;
         }
-        if (headingDiff > this->headingBuffer_ && headingDiff <= 180.0F)
+        if (headingDiff_ > this->headingBuffer_ && headingDiff_ <= 180.0F)
         {
+            printf("Clockwise \n");
             return eRotationDirection::CLOCKWISE;
         }
-        else if (headingDiff > this->headingBuffer_ && headingDiff > 180.0F)
+        else if (headingDiff_ > this->headingBuffer_ && headingDiff_ > 180.0F)
         {
+            printf("Counterclockwise \n");
             return eRotationDirection::COUNTERCLOCKWISE;
         }
     }
@@ -128,18 +127,16 @@ class NavigationController
         return _targetWheelCmd;
     }
 
-    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> getToHeading(void)
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> getToHeading(eRotationDirection rotationDirection_)
     {
-        eRotationDirection rotationDirection = this->computeRotationDirection();
-
-        if (rotationDirection == eRotationDirection::CLOCKWISE)
+        if (rotationDirection_ == eRotationDirection::CLOCKWISE)
         {
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
         }
-        else if (rotationDirection == eRotationDirection::COUNTERCLOCKWISE)
+        else if (rotationDirection_ == eRotationDirection::COUNTERCLOCKWISE)
         {
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
@@ -201,6 +198,8 @@ class NavigationController
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> setWheelCmd(void)
     {
+        double bearing = this->computeBearing();
+
         if (this->getDistance() <= POSITION_BUFFER)
         {
             _endNodeReached = true;
@@ -213,7 +212,7 @@ class NavigationController
         }
         else
         {
-            if (this->computeRotationDirection() == eRotationDirection::CLOCKWISE)
+            if (this->computeRotationDirection(bearing) == eRotationDirection::CLOCKWISE)
             {
                 _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
                 _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
@@ -222,7 +221,7 @@ class NavigationController
                 _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_RIGHT)]
                     = Constants::DriveTrain::SPEED_FACTOR_NORMAL * RECTIFICATION_FACTOR;
             }
-            else if (this->computeRotationDirection() == eRotationDirection::COUNTERCLOCKWISE)
+            else if (this->computeRotationDirection(bearing) == eRotationDirection::COUNTERCLOCKWISE)
             {
                 _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)]
                     = Constants::DriveTrain::SPEED_FACTOR_NORMAL * RECTIFICATION_FACTOR;
