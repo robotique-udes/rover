@@ -17,7 +17,7 @@ class PotentialFieldNav
         eLAST
     };
 
-    static constexpr float EXPONENTIAL_FACTOR = 2.0f;
+    static constexpr float EXPONENTIAL_FACTOR = 0.5f;
 
     std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateTotalForces(
         std::array<float, TO_UNDERLYING(eForceVector::eLAST)> attractiveForces_,
@@ -46,7 +46,7 @@ class PotentialFieldNav
 
     std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateRepulsiveForces(std::vector<int8_t, std::allocator<int8_t>> costmapData_)
     {
-        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces = {0.0f};
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces;
 
         int roverMapX = LIDAR_CONFIG::COSTMAP::MAP_WIDTH / 2;
         int roverMapY = LIDAR_CONFIG::COSTMAP::MAP_HEIGHT / 2;
