@@ -123,17 +123,10 @@ void GoalManager::potentialFieldNavigation()
     std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> totalForces
         = _potentialFieldNav.calculateTotalForces(attractiveForce, repulsiveForces);
 
-    float magnitude = std::hypot(attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
-                                 attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)]);
-    float yaw = std::atan2(attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
-                           attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)]);
-
-    RCLCPP_INFO(this->get_logger(), "Attractive force: yaw: %.2f", yaw * 180.0 / M_PI);
-    RCLCPP_INFO(this->get_logger(),
-                "Force X: %.2f, Force Y: %.2f, Magnitude: %.2f",
-                attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
-                attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
-                magnitude);
+    float magnitude = std::hypot(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
+                                 totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)]);
+    float yaw = std::atan2(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
+                           totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)]);
 
     visualization_msgs::msg::Marker arrow;
     arrow.header.frame_id = "base_link";
@@ -143,12 +136,10 @@ void GoalManager::potentialFieldNavigation()
     arrow.type = visualization_msgs::msg::Marker::ARROW;
     arrow.action = visualization_msgs::msg::Marker::ADD;
 
-    // Place arrow at robot origin
     arrow.pose.position.x = 0.0;
     arrow.pose.position.y = 0.0;
     arrow.pose.position.z = 0.0;
 
-    // Orient arrow: yaw around Z
     tf2::Quaternion q;
     q.setRPY(0, 0, yaw);
     arrow.pose.orientation.x = q.x();
@@ -156,10 +147,11 @@ void GoalManager::potentialFieldNavigation()
     arrow.pose.orientation.z = q.z();
     arrow.pose.orientation.w = q.w();
 
-    // Scale: length=magnitude, diameter=0.05m
-    arrow.scale.x = magnitude;  // arrow length
-    arrow.scale.y = 0.05f;      // shaft diameter
-    arrow.scale.z = 0.05f;      // head diameter
+    float length = std::min(magnitude, 1.0f);
+
+    arrow.scale.x = length;  
+    arrow.scale.y = 0.05f;      
+    arrow.scale.z = 0.05f;      
 
     // Color it red
     arrow.color.r = 1.0f;
