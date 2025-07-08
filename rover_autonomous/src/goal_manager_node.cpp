@@ -1,5 +1,7 @@
 #include "goal_manager_node.hpp"
+
 #include "rover_lib2/helpers/constants.hpp"
+#include "rover_lib2/helpers/macros.hpp"
 
 #include <tf2/LinearMath/Quaternion.h>
 
@@ -16,6 +18,7 @@
  * Add config file for lidar
  */
 
+// Simple 2D vector
 GoalManager::GoalManager():
     Node("Goal_manager")
 {
@@ -41,8 +44,7 @@ GoalManager::GoalManager():
                                                                            });
 
     _pub_auto_cmd = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD_NAME, QOS_DEFAULT);
-    _pub_marker = this->create_publisher<visualization_msgs::msg::MarkerArray>(TOPIC_MARKER, QOS_DEFAULT);
-    _pub_avoidanceArrow = this->create_publisher<visualization_msgs::msg::Marker>(TOPIC_ARROW, QOS_DEFAULT);
+    _pub_marker = this->create_publisher<visualization_msgs::msg::Marker>(TOPIC_MARKER, QOS_DEFAULT);
 
     _srv_desiredGps = this->create_service<rover_msgs::srv::DesiredGpsPosition>(
         SRV_GOAL_NAME,
@@ -58,6 +60,114 @@ GoalManager::GoalManager():
                                      });
     _srv_arucoDetection = this->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_SERVER_NAME);
     _navigationController.headingBuffer_ = HEADING_BUFFER;  // TODO make this cleaner
+
+    _currentPosition = Vector2D(0, 0);
+    _goalPosition = Vector2D(0, 0);
+}
+
+Vector2D GoalManager::calculateRepulsiveForce(const Vector2D& cur, const nav_msgs::msg::OccupancyGrid& grid)
+{
+    Vector2D totalRep(0, 0);
+    const auto& info = grid.info;
+    int width = info.width;
+    int height = info.height;
+    double res = info.resolution;
+
+    // Robot grid cell
+    int rx = static_cast<int>((cur.x - info.origin.position.x) / res);
+    int ry = static_cast<int>((cur.y - info.origin.position.y) / res);
+    int radius = static_cast<int>(_potentialFieldParams.repulsive_range / res);
+
+    for (int dx = -radius; dx <= radius; ++dx)
+    {
+        for (int dy = -radius; dy <= radius; ++dy)
+        {
+            int x = rx + dx;
+            int y = ry + dy;
+            if (x < 0 || x >= width || y < 0 || y >= height)
+                continue;
+            int idx = y * width + x;
+            if (grid.data[idx] <= _potentialFieldParams.obstacle_threshold)
+                continue;
+
+            // Obstacle position
+            Vector2D obst{x * res + info.origin.position.x + res / 2.0, y * res + info.origin.position.y + res / 2.0};
+            Vector2D diff = cur - obst;
+            double dist = diff.magnitude();
+            if (dist > 0 && dist < _potentialFieldParams.repulsive_range)
+            {
+                double mag = _potentialFieldParams.repulsive_gain * (1.0 / dist - 1.0 / _potentialFieldParams.repulsive_range)
+                             / (dist * dist);
+                totalRep = totalRep + diff.normalized() * mag;
+            }
+        }
+    }
+
+    if (totalRep.magnitude() > _potentialFieldParams.force_saturation)
+    {
+        totalRep = totalRep.normalized() * _potentialFieldParams.force_saturation;
+    }
+    return totalRep;
+}
+
+void GoalManager::potentialFieldNavigation()
+{
+    float bearingDeg = _navigationController.computeBearing();
+    float distanceToGoal = _navigationController.getDistanceBetweenPoints();
+
+    std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> attractiveForce
+        = _potentialFieldNav.calculateAttractiveForces(distanceToGoal, bearingDeg);
+    std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> repulsiveForces
+        = _potentialFieldNav.calculateRepulsiveForces(_currentCostmap.data);
+
+    std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> totalForces
+        = _potentialFieldNav.calculateTotalForces(attractiveForce, repulsiveForces);
+
+    float magnitude = std::hypot(attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
+                                 attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)]);
+    float yaw = std::atan2(attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
+                           attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)]);
+
+    RCLCPP_INFO(this->get_logger(), "Attractive force: yaw: %.2f", yaw * 180.0 / M_PI);
+    RCLCPP_INFO(this->get_logger(),
+                "Force X: %.2f, Force Y: %.2f, Magnitude: %.2f",
+                attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
+                attractiveForce[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
+                magnitude);
+
+    visualization_msgs::msg::Marker arrow;
+    arrow.header.frame_id = "base_link";
+    arrow.header.stamp = this->now();
+    arrow.ns = "potential_field";
+    arrow.id = 0;
+    arrow.type = visualization_msgs::msg::Marker::ARROW;
+    arrow.action = visualization_msgs::msg::Marker::ADD;
+
+    // Place arrow at robot origin
+    arrow.pose.position.x = 0.0;
+    arrow.pose.position.y = 0.0;
+    arrow.pose.position.z = 0.0;
+
+    // Orient arrow: yaw around Z
+    tf2::Quaternion q;
+    q.setRPY(0, 0, yaw);
+    arrow.pose.orientation.x = q.x();
+    arrow.pose.orientation.y = q.y();
+    arrow.pose.orientation.z = q.z();
+    arrow.pose.orientation.w = q.w();
+
+    // Scale: length=magnitude, diameter=0.05m
+    arrow.scale.x = magnitude;  // arrow length
+    arrow.scale.y = 0.05f;      // shaft diameter
+    arrow.scale.z = 0.05f;      // head diameter
+
+    // Color it red
+    arrow.color.r = 1.0f;
+    arrow.color.g = 0.0f;
+    arrow.color.b = 0.0f;
+    arrow.color.a = 1.0f;
+
+    _pub_marker->publish(arrow);
 }
 
 void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
@@ -70,203 +180,14 @@ void GoalManager::CB_aruco(const rover_msgs::msg::Aruco& arucoMsg_)
 
 void GoalManager::CB_costmap(const nav_msgs::msg::OccupancyGrid& grid)
 {
-    const double AVOID_WINDOW_FORWARD_M = 2.0;
-    const double AVOID_WINDOW_LATERAL_M = 0.3;
-    const double AVOIDANCE_MARGIN_DEG = 15.0;
-    constexpr int THRESH = 100;
-    constexpr int MIN_CLUSTER_SIZE = 10;
-    constexpr double MAX_CLUSTER_DIST_C = 1.5;
-
-    const auto& info = grid.info;
-    int width = info.width;
-    int height = info.height;
-    double res = info.resolution;
-    _costmapData = grid.data;
-
-    int gx = int((0.0 - info.origin.position.x) / res);
-    int gy = int((0.0 - info.origin.position.y) / res);
-    gx = std::clamp(gx, 0, width - 1);
-    gy = std::clamp(gy, 0, height - 1);
-
-    int forward_cells = std::max(1, int(AVOID_WINDOW_FORWARD_M / res));
-    int lateral_cells = std::max(1, int(AVOID_WINDOW_LATERAL_M / res));
-
-    int x_min = std::clamp(gx + 1, 0, width - 1);
-    int x_max = std::clamp(gx + forward_cells, 0, width - 1);
-    int y_min = std::clamp(gy - lateral_cells, 0, height - 1);
-    int y_max = std::clamp(gy + lateral_cells, 0, height - 1);
-
-    std::vector<std::pair<int, int>> occupied;
-    for (int x = x_min; x <= x_max; ++x)
-    {
-        for (int y = y_min; y <= y_max; ++y)
-        {
-            int idx = y * width + x;
-            if (_costmapData[idx] >= THRESH)
-            {
-                occupied.emplace_back(x, y);
-            }
-        }
-    }
-
-    std::vector<bool> visited(occupied.size(), false);
-    std::vector<std::vector<std::pair<int, int>>> clusters;
-
-    for (size_t i = 0; i < occupied.size(); ++i)
-    {
-        if (visited[i])
-            continue;
-
-        std::vector<std::pair<int, int>> cluster;
-        std::queue<size_t> q;
-        q.push(i);
-        visited[i] = true;
-
-        while (!q.empty())
-        {
-            size_t idx = q.front();
-            q.pop();
-            cluster.push_back(occupied[idx]);
-
-            for (size_t j = 0; j < occupied.size(); ++j)
-            {
-                if (visited[j])
-                    continue;
-                double dx = occupied[idx].first - occupied[j].first;
-                double dy = occupied[idx].second - occupied[j].second;
-                if (std::hypot(dx, dy) <= MAX_CLUSTER_DIST_C)
-                {
-                    visited[j] = true;
-                    q.push(j);
-                }
-            }
-        }
-
-        if (cluster.size() >= MIN_CLUSTER_SIZE)
-        {
-            clusters.push_back(std::move(cluster));
-        }
-    }
-
-    visualization_msgs::msg::MarkerArray ma;
-
-    visualization_msgs::msg::Marker clear;
-    clear.header = grid.header;
-    clear.action = visualization_msgs::msg::Marker::DELETEALL;
-    ma.markers.push_back(clear);
-
-    int id = 0;
-    for (auto& cl : clusters)
-    {
-        visualization_msgs::msg::Marker m;
-        m.header = grid.header;
-        m.ns = "obstacle_clusters";
-        m.id = id++;
-        m.type = visualization_msgs::msg::Marker::CUBE_LIST;
-        m.action = visualization_msgs::msg::Marker::ADD;
-        m.scale.x = res;
-        m.scale.y = res;
-        m.scale.z = 0.2;
-        m.color.r = 1.0;
-        m.color.g = 0.5;
-        m.color.b = 0.0;
-        m.color.a = 0.7;
-
-        for (auto [cx, cy] : cl)
-        {
-            geometry_msgs::msg::Point p;
-            p.x = cx * res + info.origin.position.x + res / 2.0;
-            p.y = cy * res + info.origin.position.y + res / 2.0;
-            p.z = info.origin.position.z + 0.1;
-            m.points.push_back(p);
-        }
-        ma.markers.push_back(m);
-    }
-
-    _pub_marker->publish(ma);
-
-    if (!clusters.empty())
-    {
-        size_t nearest = 0;
-        double best_d = std::numeric_limits<double>::infinity();
-        double ccx = 0, ccy = 0;
-
-        for (size_t i = 0; i < clusters.size(); ++i)
-        {
-            double sx = 0, sy = 0;
-            for (auto& cell : clusters[i])
-            {
-                sx += cell.first;
-                sy += cell.second;
-            }
-            double cx = sx / clusters[i].size();
-            double cy = sy / clusters[i].size();
-            double dx = (cx - gx) * res;
-            double dy = (cy - gy) * res;
-            double d = std::hypot(dx, dy);
-            if (d < best_d)
-            {
-                best_d = d;
-                nearest = i;
-                ccx = cx;
-                ccy = cy;
-            }
-        }
-
-        int min_y = INT_MAX, max_y = INT_MIN;
-        for (auto& cell : clusters[nearest])
-        {
-            min_y = std::min(min_y, cell.second);
-            max_y = std::max(max_y, cell.second);
-        }
-        double width_m = (max_y - min_y + 1) * res;
-
-        double half_rad = std::atan2(width_m * 0.5, best_d);
-        double half_deg = half_rad * 180.0 / M_PI;
-
-        double steer = half_deg + AVOIDANCE_MARGIN_DEG;
-        double rel_y = (ccy - gy) * res;
-        float desired_heading = (rel_y > 0) ? static_cast<float>(-steer) : static_cast<float>(steer);
-
-        _obstacleHeading = -desired_heading;
-
-        visualization_msgs::msg::Marker arrow;
-        arrow.header.frame_id = "base_link";
-        arrow.header.stamp = now();
-        arrow.ns = "avoidance";
-        arrow.id = 0;
-        arrow.type = visualization_msgs::msg::Marker::ARROW;
-        arrow.action = visualization_msgs::msg::Marker::ADD;
-        arrow.pose.position.x = 0;
-        arrow.pose.position.y = 0;
-        arrow.pose.position.z = 0;
-        {
-            tf2::Quaternion q;
-            q.setRPY(0, 0, desired_heading * M_PI / 180.0);
-            arrow.pose.orientation.x = q.x();
-            arrow.pose.orientation.y = q.y();
-            arrow.pose.orientation.z = q.z();
-            arrow.pose.orientation.w = q.w();
-        }
-        arrow.scale.x = 1.0;
-        arrow.scale.y = 0.1;
-        arrow.scale.z = 0.1;
-        arrow.color.r = 0.0;
-        arrow.color.g = 1.0;
-        arrow.color.b = 0.0;
-        arrow.color.a = 0.8;
-        arrow.lifetime = rclcpp::Duration::from_seconds(0.1);
-
-        _pub_avoidanceArrow->publish(arrow);
-    }
+    _currentCostmap = grid;
 }
 
 void GoalManager::CB_currentGps(const rover_msgs::msg::Gps& gpsMsg_)
 {
-    std::array<float, TO_UNDERLYING(NavigationController::eGpsData::eLAST)> currentGpsData
-        = {gpsMsg_.latitude, gpsMsg_.longitude, gpsMsg_.heading};
+    _currentGpsData = {gpsMsg_.latitude, gpsMsg_.longitude, gpsMsg_.heading};
 
-    _navigationController.getCurrentGpsData(currentGpsData);
+    _navigationController.getCurrentGpsData(_currentGpsData);
 }
 
 void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Request::SharedPtr request_,
@@ -277,53 +198,17 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
                 request_->desired_latitude,
                 request_->desired_longitude);
 
-    std::array<float, TO_UNDERLYING(NavigationController::eGpsData::eLAST)> desiredGpsData = {
-        request_->desired_latitude,
-        request_->desired_longitude,
-        0.0F  // Heading is not used in this context
-    };
+    _desiredGpsData = {request_->desired_latitude, request_->desired_longitude, 0.0F};
 
     this->goalReached = false;
     this->goalRequested = true;
 
-    // TODO : Add check
     response_->success = true;
 
-    _navigationController.getDesiredGpsData(desiredGpsData);
+    _navigationController.getDesiredGpsData(_desiredGpsData);
 }
 
-void GoalManager::visualizeHeading(float heading_)
-{
-    visualization_msgs::msg::Marker m;
-    m.header.frame_id = "base_link";
-    m.header.stamp = now();
-    m.ns = "avoidance";
-    m.id = 0;
-    m.type = visualization_msgs::msg::Marker::ARROW;
-    m.action = visualization_msgs::msg::Marker::ADD;
-
-    m.pose.position.x = 0.0;
-    m.pose.position.y = 0.0;
-    m.pose.position.z = 0.0;
-
-    tf2::Quaternion q;
-    q.setRPY(0.0, 0.0, heading_ * M_PI / 180.0);
-    m.pose.orientation.x = q.x();
-    m.pose.orientation.y = q.y();
-    m.pose.orientation.z = q.z();
-    m.pose.orientation.w = q.w();
-
-    m.scale.x = 1.0;
-    m.scale.y = 0.1;
-    m.scale.z = 0.1;
-    m.color.r = 1.0;
-    m.color.g = 0.0;
-    m.color.b = 0.0;
-    m.color.a = 0.8;
-    m.lifetime = rclcpp::Duration::from_seconds(0.1);
-
-    _pub_avoidanceArrow->publish(m);
-}
+void GoalManager::visualizeHeading(float heading_) {}
 
 void GoalManager::driveTrainPublisher(void)
 {
@@ -372,35 +257,28 @@ void GoalManager::driveTrainPublisher(void)
             }
             else
             {
-                if (_navigationController.obstacleDetected(_costmapData))
-                {
-                    _state = eState::AVOID_OBSTACLE;
-                }
-                else
-                {
-                    this->_targetWheelCmd = _navigationController.navigateToPoint();
-                }
+                this->potentialFieldNavigation();
             }
             break;
         case (eState::AVOID_OBSTACLE):
             RCLCPP_INFO(this->get_logger(), "State: AVOID_OBSTACLE");
-            if (!_navigationController.obstacleDetected(_costmapData))
-            {
-                _state = eState::ROTATING;
-            }
-            else
-            {
-                if (_obstacleHeading < 0.0)
-                {
-                    _obstacleHeading += 360.0F;
-                }
+            // if (!_navigationController.obstacleDetected(_costmapData))
+            // {
+            //     _state = eState::ROTATING;
+            // }
+            // else
+            // {
+            //     if (_obstacleHeading < 0.0)
+            //     {
+            //         _obstacleHeading += 360.0F;
+            //     }
 
-                NavigationController::eRotationDirection rotationDirection
-                    = _navigationController.computeRotationDirection(_obstacleHeading);
+            //     NavigationController::eRotationDirection rotationDirection
+            //         = _navigationController.computeRotationDirection(_obstacleHeading);
 
-                this->_targetWheelCmd = _navigationController.getToHeading(rotationDirection);
-            }
-            break;
+            //     this->_targetWheelCmd = _navigationController.getToHeading(rotationDirection);
+            // }
+            // break;
         case (eState::DETECTING_ARUCO):
             if (!this->_arucoDetected)
             {

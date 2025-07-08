@@ -30,7 +30,7 @@ namespace LIDAR_CONFIG
 
     namespace NAVIGATION
     {
-        static constexpr float REPULSIVE_GAIN = 0.5F;
+        static constexpr float REPULSIVE_GAIN = 1.0F;
         static constexpr float INFLUENCE_DISTANCE = 1.0F;
     }
 }  // namespace LIDAR_CONFIG

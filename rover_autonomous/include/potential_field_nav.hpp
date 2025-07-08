@@ -1,0 +1,102 @@
+#ifndef POTENTIAL_FIELD_NAV_HPP
+#define POTENTIAL_FIELD_NAV_HPP
+
+#include "rover_lib2/helpers/constants.hpp"
+#include "rover_lib2/helpers/macros.hpp"
+#include "lidar_config.hpp"
+
+#include <cmath>
+
+class PotentialFieldNav
+{
+  public:
+    enum class eForceVector
+    {
+        FORCE_X = 0,
+        FORCE_Y = 1,
+        eLAST
+    };
+
+    static constexpr float EXPONENTIAL_FACTOR = 2.0f;
+
+    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateTotalForces(
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> attractiveForces_,
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces_)
+    {
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> totalForces;
+
+        totalForces[TO_UNDERLYING(eForceVector::FORCE_X)] = attractiveForces_[TO_UNDERLYING(eForceVector::FORCE_X)]
+                                                             + repulsiveForces_[TO_UNDERLYING(eForceVector::FORCE_X)];
+        totalForces[TO_UNDERLYING(eForceVector::FORCE_Y)] = attractiveForces_[TO_UNDERLYING(eForceVector::FORCE_Y)]
+                                                             + repulsiveForces_[TO_UNDERLYING(eForceVector::FORCE_Y)];
+
+        return totalForces;
+    }
+
+    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateAttractiveForces(float distanceToGoal_, float bearingRad_)
+    {
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> attractiveForces;
+
+        float brearingRad = bearingRad_ * std::numbers::pi / 180.0F;
+        attractiveForces[TO_UNDERLYING(eForceVector::FORCE_X)] = distanceToGoal_ * std::cos(brearingRad);
+        attractiveForces[TO_UNDERLYING(eForceVector::FORCE_Y)] = distanceToGoal_ * std::sin(brearingRad);
+
+        return attractiveForces;
+    }
+
+    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateRepulsiveForces(std::vector<int8_t, std::allocator<int8_t>> costmapData_)
+    {
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces = {0.0f};
+
+        int roverMapX = LIDAR_CONFIG::COSTMAP::MAP_WIDTH / 2;
+        int roverMapY = LIDAR_CONFIG::COSTMAP::MAP_HEIGHT / 2;
+
+        int influenceRadiusCells
+            = static_cast<int>(LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE / LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION);
+
+        for (int dy = -influenceRadiusCells; dy <= influenceRadiusCells; ++dy)
+        {
+            for (int dx = -influenceRadiusCells; dx <= influenceRadiusCells; ++dx)
+            {
+                int checkX = roverMapX + dx;
+                int checkY = roverMapY + dy;
+
+                if (checkX < 0 || checkX >= LIDAR_CONFIG::COSTMAP::MAP_WIDTH || checkY < 0
+                    || checkY >= LIDAR_CONFIG::COSTMAP::MAP_HEIGHT)
+                {
+                    continue;
+                }
+
+                int mapIndex = checkY * LIDAR_CONFIG::COSTMAP::MAP_WIDTH + checkX;
+                int8_t cost = costmapData_[mapIndex];
+
+                if (cost >= 100.0F)
+                {
+                    float obstacleX = (checkX - roverMapX) * LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
+                    float obstacleY = (checkY - roverMapY) * LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
+                    float distanceToObstacle = std::sqrt(obstacleX * obstacleX + obstacleY * obstacleY);
+
+                    if (distanceToObstacle < 1e-6f || distanceToObstacle > LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE)
+                    {
+                        continue;
+                    }
+
+                    float bearingToObstacle = std::atan2(obstacleY, obstacleX);
+
+                    // Configurable exponential force
+                    float normalizedDistance = distanceToObstacle / LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE;
+                    float forceMagnitude = LIDAR_CONFIG::NAVIGATION::REPULSIVE_GAIN * (cost / 100.0f)
+                                           * std::exp(-EXPONENTIAL_FACTOR * normalizedDistance)
+                                           / (distanceToObstacle * distanceToObstacle);
+
+                    repulsiveForces[TO_UNDERLYING(eForceVector::FORCE_X)] -= forceMagnitude * std::cos(bearingToObstacle);
+                    repulsiveForces[TO_UNDERLYING(eForceVector::FORCE_Y)] -= forceMagnitude * std::sin(bearingToObstacle);
+                }
+            }
+        }
+
+        return repulsiveForces;
+    }
+};
+
+#endif

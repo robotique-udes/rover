@@ -59,13 +59,13 @@ class NavigationController
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> _targetWheelCmd;
 
   public:
-    void getDesiredGpsData(std::array<float, TO_UNDERLYING(eGpsData::eLAST)>& desiredGpsData_)
+    void getDesiredGpsData(std::array<double, TO_UNDERLYING(eGpsData::eLAST)>& desiredGpsData_)
     {
         _targetLat = desiredGpsData_[TO_UNDERLYING(eGpsData::LATITUDE)];
         _targetLon = desiredGpsData_[TO_UNDERLYING(eGpsData::LONGITUDE)];
     }
 
-    void getCurrentGpsData(std::array<float, TO_UNDERLYING(eGpsData::eLAST)>& currentGpsData_)
+    void getCurrentGpsData(std::array<double, TO_UNDERLYING(eGpsData::eLAST)>& currentGpsData_)
     {
         _currentLat = currentGpsData_[TO_UNDERLYING(eGpsData::LATITUDE)];
         _currentLon = currentGpsData_[TO_UNDERLYING(eGpsData::LONGITUDE)];
@@ -151,9 +151,9 @@ class NavigationController
         return _targetWheelCmd;
     }
 
-    double computeBearing(void)
+    float computeBearing(void)
     {
-        double currentLatRad = _currentLat * std::numbers::pi / 180.0;  // Remove F
+        double currentLatRad = _currentLat * std::numbers::pi / 180.0;  
         double targetLatRad = _targetLat * std::numbers::pi / 180.0;
         double deltaLonRad = (_targetLon - _currentLon) * std::numbers::pi / 180.0;
 
@@ -161,24 +161,23 @@ class NavigationController
         double x = cos(currentLatRad) * sin(targetLatRad) - sin(currentLatRad) * cos(targetLatRad) * cos(deltaLonRad);
 
         double bearing = atan2(y, x);
-        bearing = bearing * 180.0 / std::numbers::pi;  // Remove F
+        bearing = bearing * 180.0 / std::numbers::pi;  
 
         if (bearing < 0.0)
         {
-            bearing += 360.0;  // Remove F
+            bearing += 360.0;  
         }
 
-        // Convert from mathematical bearing to navigation bearing
-        bearing = 90.0 - bearing;  // Remove F
+        bearing = 90.0 - bearing;  
         if (bearing < 0.0)
         {
-            bearing += 360.0;  // Remove F
+            bearing += 360.0;  
         }
 
         return bearing;
     }
 
-    float getDistance(void)
+    float getDistanceBetweenPoints(void)
     {
         float lat1Rad = _currentLat * std::numbers::pi / 180.0F;
         float lat2Rad = _targetLat * std::numbers::pi / 180.0F;
@@ -191,8 +190,6 @@ class NavigationController
 
         float distance = EARTH_RADIUS_METERS * c;
 
-        printf("Distance to target: %.2f meters\n", distance);
-
         return distance;
     }
 
@@ -200,7 +197,7 @@ class NavigationController
     {
         double bearing = this->computeBearing();
 
-        if (this->getDistance() <= POSITION_BUFFER)
+        if (this->getDistanceBetweenPoints() <= POSITION_BUFFER)
         {
             _endNodeReached = true;
 
