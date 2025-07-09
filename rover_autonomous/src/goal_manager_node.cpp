@@ -60,74 +60,10 @@ GoalManager::GoalManager():
                                      });
     _srv_arucoDetection = this->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_SERVER_NAME);
     _navigationController.headingBuffer_ = HEADING_BUFFER;  // TODO make this cleaner
-
-    _currentPosition = Vector2D(0, 0);
-    _goalPosition = Vector2D(0, 0);
 }
 
-Vector2D GoalManager::calculateRepulsiveForce(const Vector2D& cur, const nav_msgs::msg::OccupancyGrid& grid)
+void GoalManager::visualizeHeading(std::array<float, TO_UNDERLYING(PotentialFieldNav::eTotalForce::eLAST)> totalForces_)
 {
-    Vector2D totalRep(0, 0);
-    const auto& info = grid.info;
-    int width = info.width;
-    int height = info.height;
-    double res = info.resolution;
-
-    // Robot grid cell
-    int rx = static_cast<int>((cur.x - info.origin.position.x) / res);
-    int ry = static_cast<int>((cur.y - info.origin.position.y) / res);
-    int radius = static_cast<int>(_potentialFieldParams.repulsive_range / res);
-
-    for (int dx = -radius; dx <= radius; ++dx)
-    {
-        for (int dy = -radius; dy <= radius; ++dy)
-        {
-            int x = rx + dx;
-            int y = ry + dy;
-            if (x < 0 || x >= width || y < 0 || y >= height)
-                continue;
-            int idx = y * width + x;
-            if (grid.data[idx] <= _potentialFieldParams.obstacle_threshold)
-                continue;
-
-            // Obstacle position
-            Vector2D obst{x * res + info.origin.position.x + res / 2.0, y * res + info.origin.position.y + res / 2.0};
-            Vector2D diff = cur - obst;
-            double dist = diff.magnitude();
-            if (dist > 0 && dist < _potentialFieldParams.repulsive_range)
-            {
-                double mag = _potentialFieldParams.repulsive_gain * (1.0 / dist - 1.0 / _potentialFieldParams.repulsive_range)
-                             / (dist * dist);
-                totalRep = totalRep + diff.normalized() * mag;
-            }
-        }
-    }
-
-    if (totalRep.magnitude() > _potentialFieldParams.force_saturation)
-    {
-        totalRep = totalRep.normalized() * _potentialFieldParams.force_saturation;
-    }
-    return totalRep;
-}
-
-void GoalManager::potentialFieldNavigation()
-{
-    float bearingDeg = _navigationController.computeBearing();
-    float distanceToGoal = _navigationController.getDistanceBetweenPoints();
-
-    std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> attractiveForce
-        = _potentialFieldNav.calculateAttractiveForces(distanceToGoal, bearingDeg);
-    std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> repulsiveForces
-        = _potentialFieldNav.calculateRepulsiveForces(_currentCostmap.data);
-
-    std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> totalForces
-        = _potentialFieldNav.calculateTotalForces(attractiveForce, repulsiveForces);
-
-    float magnitude = std::hypot(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
-                                 totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)]);
-    float yaw = std::atan2(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
-                           totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)]);
-
     visualization_msgs::msg::Marker arrow;
     arrow.header.frame_id = "base_link";
     arrow.header.stamp = this->now();
@@ -141,23 +77,22 @@ void GoalManager::potentialFieldNavigation()
     arrow.pose.position.z = 0.0;
 
     tf2::Quaternion q;
-    q.setRPY(0, 0, yaw);
+    q.setRPY(0, 0, totalForces_[TO_UNDERLYING(PotentialFieldNav::eTotalForce::YAW)]);
     arrow.pose.orientation.x = q.x();
     arrow.pose.orientation.y = q.y();
     arrow.pose.orientation.z = q.z();
     arrow.pose.orientation.w = q.w();
 
-    float length = std::min(magnitude, 1.0f);
+    float length = std::min(totalForces_[TO_UNDERLYING(PotentialFieldNav::eTotalForce::MAGNITUDE)], 1.0F);
 
-    arrow.scale.x = length;  
-    arrow.scale.y = 0.05f;      
-    arrow.scale.z = 0.05f;      
+    arrow.scale.x = length;
+    arrow.scale.y = 0.05F;
+    arrow.scale.z = 0.05F;
 
-    // Color it red
-    arrow.color.r = 1.0f;
-    arrow.color.g = 0.0f;
-    arrow.color.b = 0.0f;
-    arrow.color.a = 1.0f;
+    arrow.color.r = 1.0F;
+    arrow.color.g = 0.0F;
+    arrow.color.b = 0.0F;
+    arrow.color.a = 1.0F;
 
     _pub_marker->publish(arrow);
 }
@@ -200,8 +135,6 @@ void GoalManager::CB_desiredGps(const rover_msgs::srv::DesiredGpsPosition::Reque
     _navigationController.getDesiredGpsData(_desiredGpsData);
 }
 
-void GoalManager::visualizeHeading(float heading_) {}
-
 void GoalManager::driveTrainPublisher(void)
 {
     // TODO Write getters/setters instead of accessing variables
@@ -211,8 +144,7 @@ void GoalManager::driveTrainPublisher(void)
             RCLCPP_INFO(this->get_logger(), "State: IDLE");
             if (goalRequested)
             {
-                // _state = eState::ROTATING;
-                _state = eState::NAVIGATING_TO_POINT;
+                _state = eState::ROTATING;
             }
             else
             {
@@ -240,37 +172,25 @@ void GoalManager::driveTrainPublisher(void)
             RCLCPP_INFO(this->get_logger(), "State: NAVIGATING_TO_POINT");
             if (_navigationController._endNodeReached)
             {
-                auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
-                arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
-                arucoRequest->camera_url = Constants::CameraInfo::CAMERA_URL_MAP.at(("Main"));  // TODO Make better
-                goalRequested = false;
-                goalReached = true;
-                _state = eState::DETECTING_ARUCO;
+                RCLCPP_INFO(this->get_logger(), "Point reached");
+
+                // auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
+                // arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
+                // arucoRequest->camera_url = Constants::CameraInfo::CAMERA_URL_MAP.at(("Main"));  // TODO Make better
+                // goalRequested = false;
+                // goalReached = true;
+                // _state = eState::DETECTING_ARUCO;
             }
             else
             {
-                this->potentialFieldNavigation();
+                std::array<float, TO_UNDERLYING(PotentialFieldNav::eTotalForce::eLAST)> totalForces
+                    = _potentialFieldNav.computeHeading(_currentCostmap.data);
+                _targetWheelCmd = _navigationController.navigate(totalForces);
+
+                // THIS IS FOR DEBUG
+                this->visualizeHeading(totalForces);
             }
             break;
-        case (eState::AVOID_OBSTACLE):
-            RCLCPP_INFO(this->get_logger(), "State: AVOID_OBSTACLE");
-            // if (!_navigationController.obstacleDetected(_costmapData))
-            // {
-            //     _state = eState::ROTATING;
-            // }
-            // else
-            // {
-            //     if (_obstacleHeading < 0.0)
-            //     {
-            //         _obstacleHeading += 360.0F;
-            //     }
-
-            //     NavigationController::eRotationDirection rotationDirection
-            //         = _navigationController.computeRotationDirection(_obstacleHeading);
-
-            //     this->_targetWheelCmd = _navigationController.getToHeading(rotationDirection);
-            // }
-            // break;
         case (eState::DETECTING_ARUCO):
             if (!this->_arucoDetected)
             {
