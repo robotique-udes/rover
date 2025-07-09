@@ -80,15 +80,17 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
 void QDeviceStatus::initializeDeviceWidget()
 {
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::GNSS);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN);
-    addDeviceWidget(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::GNSS);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN);
+    this->addSpacer();
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::FRONTRIGHT_MOTOR);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::REARLEFT_MOTOR);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR);
+    this->addSpacer();
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA);
     // addDeviceWidget(RoverCan2::Constant::eDeviceId::SWITCHETH0);
     // addDeviceWidget(RoverCan2::Constant::eDeviceId::SWITCHETH1);
 }
@@ -101,7 +103,7 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 
     QHBoxLayout* containerLayout = new QHBoxLayout(deviceInfoContainer);
     containerLayout->setContentsMargins(2, 2, 2, 2);
-    containerLayout->setSpacing(5);
+    containerLayout->setSpacing(2);
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
     iconLabel->setFixedSize(50, 50);
@@ -135,6 +137,18 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     _layout->addWidget(deviceInfoContainer);
 }
 
+void QDeviceStatus::addSpacer()
+{
+    QWidget* spacerWidget = new QWidget(_ui.deviceInfos);
+    
+    spacerWidget->setMinimumSize(10000, 1);
+    spacerWidget->setMaximumSize(1, 1);
+    spacerWidget->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Fixed);
+
+    _layout->addWidget(spacerWidget);
+    _spacerWidgets.push_back(spacerWidget);
+}
+
 void QDeviceStatus::hideControls()
 {
     _ui.serviceCall->hide();
@@ -152,8 +166,27 @@ void QDeviceStatus::hideInfos()
         if (value.deviceInfoLabel)
         {
             value.deviceInfoLabel->hide();
+
+            value.deviceInfoContainer->setMinimumSize(0, 0);
+            value.deviceInfoContainer->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+
+            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+            value.deviceInfoContainer->adjustSize();        
         }
     }
+
+    for (QWidget* spacer : _spacerWidgets)
+    {
+        if (spacer != nullptr)
+        {
+            spacer->hide();
+        }
+    }
+
+    _layout->invalidate();
+    _layout->activate();
+    _ui.deviceInfos->updateGeometry();
+    this->updateGeometry();
 }
 
 void QDeviceStatus::showInfos()
@@ -163,8 +196,23 @@ void QDeviceStatus::showInfos()
         if (value.deviceInfoLabel)
         {
             value.deviceInfoLabel->show();
+            value.deviceInfoContainer->setFixedSize(210, 100);
+            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         }
     }
+
+    for (QWidget* spacer : _spacerWidgets)
+    {
+        if (spacer != nullptr)
+        {
+            spacer->show();
+        }
+    }
+
+    _layout->invalidate();
+    _layout->activate();
+    _ui.deviceInfos->updateGeometry();
+    this->updateGeometry();
 }
 
 /**

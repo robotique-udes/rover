@@ -17,6 +17,7 @@
 #include "Global/QFlowLayout.hpp"
 
 #include <unordered_map>
+#include <vector>
 
 class QDeviceStatus : public QWidget
 {
@@ -47,6 +48,7 @@ class QDeviceStatus : public QWidget
     void setStatusReport(RoverCan2::Constant::eDeviceId id_);
     void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
     void resetWidget();
+    void addSpacer();
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
     std::string getDeviceIcon(RoverCan2::Constant::eDeviceId deviceID_) const;
 
@@ -61,6 +63,7 @@ class QDeviceStatus : public QWidget
     rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client_requestErrorStatus;
 
     std::unordered_map<RoverCan2::Constant::eDeviceId, sCanDeviceInfos> _canDevices;
+    std::vector<QWidget*> _spacerWidgets;
 
     QStatusWorker _QStatusWorker;
     QFlowLayout* _layout;
