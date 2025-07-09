@@ -27,7 +27,7 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                                                                           this->CB_subscriberPowerStatus(msg_);
                                                                                       });
 
-        _sub_powerStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
+        _sub_PTZStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
                                                                                       QOS_DEFAULT,
                                                                                       [this](rover_msgs::msg::CameraControl msg_)
                                                                                       {

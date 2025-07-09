@@ -28,7 +28,7 @@ namespace CameraManager
 
 
         void CB_PTZCmdFiltering(rover_msgs::msg::CameraControl PTZCmd_, size_t priority);
-        void CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_, size_t priority);
+        void CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_);
 
       private:
         std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastValidPTZcmd;

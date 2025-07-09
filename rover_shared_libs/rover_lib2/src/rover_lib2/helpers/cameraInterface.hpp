@@ -15,8 +15,8 @@ class CameraInterface
     static constexpr float SEND_CONFIG_PTZ_FREQUENCY = 0.5F;
     static constexpr float RECEIVE_STATUS_FREQUENCY = 0.5F;
 
-    static constexpr const char* POWER_STATUS_TOPIC = "/rover/cameras/power_status";
-    static constexpr const char* PTZ_STATUS_TOPIC = "/rover/cameras/PTZ_status";
+    static constexpr const char* POWER_STATUS_TOPIC = "/rover/camera/power_status";
+    static constexpr const char* PTZ_STATUS_TOPIC = "/rover/camera/PTZ_status";
 
     static constexpr uint8_t NUMBER_CAM = 5;
 

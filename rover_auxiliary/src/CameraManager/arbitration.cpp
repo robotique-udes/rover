@@ -84,10 +84,15 @@ namespace CameraManager
         _lastValidPTZcmd.at(id) = PTZcmd_;
     }
 
-    void Arbitration::CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_, size_t priority)
+    void Arbitration::CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_)
     {
+        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "ptz config filtering");
+
         size_t id = PTZConfig_.id_cam;
 
         _highestPriorityLevelPtzConfig.at(id) = _highestPriorityLevelPtzCmd.at(id);
+
+        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "filtering end");
+
     }
 }  // namespace CameraManager
