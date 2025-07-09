@@ -96,12 +96,11 @@ void QDeviceStatus::initializeDeviceWidget()
 void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 {
     QWidget* deviceInfoContainer = new QWidget(_ui.deviceInfos);
-    deviceInfoContainer->setFixedSize(500, 80);
-    deviceInfoContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
+    deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     deviceInfoContainer->setStyleSheet(STATUS_DEFAULT);
 
     QHBoxLayout* containerLayout = new QHBoxLayout(deviceInfoContainer);
-    containerLayout->setContentsMargins(5, 2, 2, 5);
+    containerLayout->setContentsMargins(2, 2, 2, 2);
     containerLayout->setSpacing(5);
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
@@ -128,6 +127,8 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 
     containerLayout->addWidget(iconLabel);
     containerLayout->addWidget(deviceInfoLabel);
+
+    deviceInfoContainer->adjustSize();
 
     _canDevices[deviceId_] = {0, 0, deviceInfoContainer, deviceInfoLabel};
 
