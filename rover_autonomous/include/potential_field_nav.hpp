@@ -7,10 +7,14 @@
 #include "navigation_controller.hpp"
 
 #include <cmath>
+#include <deque>
+
+class NavigationController;
 
 class PotentialFieldNav
 {
-    NavigationController _navigationController;
+    std::deque<float> _yawHistory;
+    static constexpr size_t MOVING_AVERAGE_WINDOW_SIZE = 5;
 
   public:
     enum class eForceVector
@@ -26,7 +30,9 @@ class PotentialFieldNav
         YAW = 1,
         eLAST
     };
-
+  
+    NavigationController _navigationController;
+    
     static constexpr float EXPONENTIAL_FACTOR = 0.5f;
 
     std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateTotalForces(
@@ -108,31 +114,70 @@ class PotentialFieldNav
         return repulsiveForces;
     }
 
+    float normalizeAngle(float angle)
+    {
+        while (angle > std::numbers::pi)
+            angle -= 2.0f * std::numbers::pi;
+        while (angle < -std::numbers::pi)
+            angle += 2.0f * std::numbers::pi;
+        return angle;
+    }
+
+    float applyMovingAverageToYaw(float newYaw)
+    {
+        newYaw = normalizeAngle(newYaw);
+
+        _yawHistory.push_back(newYaw);
+
+        if (_yawHistory.size() > MOVING_AVERAGE_WINDOW_SIZE)
+        {
+            _yawHistory.pop_front();
+        }
+
+        if (_yawHistory.size() == 1)
+        {
+            return newYaw;
+        }
+
+        float sumSin = 0.0f;
+        float sumCos = 0.0f;
+
+        for (float yaw : _yawHistory)
+        {
+            sumSin += std::sin(yaw);
+            sumCos += std::cos(yaw);
+        }
+
+        float avgYaw = std::atan2(sumSin / _yawHistory.size(), sumCos / _yawHistory.size());
+        return normalizeAngle(avgYaw);
+    }
+
     std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> computeHeading(std::vector<int8_t, std::allocator<int8_t>> costmapData_)
     {
-        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> totalForces;
+        std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> result;
 
         float bearingDeg = _navigationController.computeBearing();
         float distanceToGoal = _navigationController.getDistanceBetweenPoints();
 
-        std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> attractiveForce
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> attractiveForce
             = this->calculateAttractiveForces(distanceToGoal, bearingDeg);
-        std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> repulsiveForces
-            = this->calculateRepulsiveForces(costmapData_);
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces = this->calculateRepulsiveForces(costmapData_);
 
-        std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> totalForces
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> totalForces
             = this->calculateTotalForces(attractiveForce, repulsiveForces);
 
-        float magnitude = std::hypot(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
-                                     totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)]);
-        float yaw = std::atan2(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
-                               totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)]);
+        float magnitude
+            = std::hypot(totalForces[TO_UNDERLYING(eForceVector::FORCE_X)], totalForces[TO_UNDERLYING(eForceVector::FORCE_Y)]);
+        float rawYaw
+            = std::atan2(totalForces[TO_UNDERLYING(eForceVector::FORCE_Y)], totalForces[TO_UNDERLYING(eForceVector::FORCE_X)]);
 
-        
-        totalForces[TO_UNDERLYING(eTotalForce::MAGNITUDE)] = magnitude;
-        totalForces[TO_UNDERLYING(eTotalForce::YAW)] = yaw;
+        // Apply moving average to yaw angle
+        float smoothedYaw = applyMovingAverageToYaw(rawYaw);
 
-        return totalForces;
+        result[TO_UNDERLYING(eTotalForce::MAGNITUDE)] = magnitude;
+        result[TO_UNDERLYING(eTotalForce::YAW)] = smoothedYaw;
+
+        return result;
     }
 };
 

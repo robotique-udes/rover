@@ -62,7 +62,7 @@ GoalManager::GoalManager():
     _navigationController.headingBuffer_ = HEADING_BUFFER;  // TODO make this cleaner
 }
 
-void GoalManager::visualizeHeading(std::array<float, TO_UNDERLYING(PotentialFieldNav::eTotalForce::eLAST)> totalForces_)
+void GoalManager::visualizeHeading(std::array<float, TO_UNDERLYING(NavigationController::eTotalForce::eLAST)> totalForces_)
 {
     visualization_msgs::msg::Marker arrow;
     arrow.header.frame_id = "base_link";
@@ -77,13 +77,13 @@ void GoalManager::visualizeHeading(std::array<float, TO_UNDERLYING(PotentialFiel
     arrow.pose.position.z = 0.0;
 
     tf2::Quaternion q;
-    q.setRPY(0, 0, totalForces_[TO_UNDERLYING(PotentialFieldNav::eTotalForce::YAW)]);
+    q.setRPY(0, 0, totalForces_[TO_UNDERLYING(NavigationController::eTotalForce::YAW)]);
     arrow.pose.orientation.x = q.x();
     arrow.pose.orientation.y = q.y();
     arrow.pose.orientation.z = q.z();
     arrow.pose.orientation.w = q.w();
 
-    float length = std::min(totalForces_[TO_UNDERLYING(PotentialFieldNav::eTotalForce::MAGNITUDE)], 1.0F);
+    float length = std::min(totalForces_[TO_UNDERLYING(NavigationController::eTotalForce::MAGNITUDE)], 1.0F);
 
     arrow.scale.x = length;
     arrow.scale.y = 0.05F;
@@ -144,7 +144,7 @@ void GoalManager::driveTrainPublisher(void)
             RCLCPP_INFO(this->get_logger(), "State: IDLE");
             if (goalRequested)
             {
-                _state = eState::ROTATING;
+                _state = eState::NAVIGATING_TO_POINT;
             }
             else
             {
@@ -183,8 +183,8 @@ void GoalManager::driveTrainPublisher(void)
             }
             else
             {
-                std::array<float, TO_UNDERLYING(PotentialFieldNav::eTotalForce::eLAST)> totalForces
-                    = _potentialFieldNav.computeHeading(_currentCostmap.data);
+                std::array<float, TO_UNDERLYING(NavigationController::eTotalForce::eLAST)> totalForces
+                    = _navigationController.computeHeading(_currentCostmap.data);
                 _targetWheelCmd = _navigationController.navigate(totalForces);
 
                 // THIS IS FOR DEBUG
