@@ -4,16 +4,26 @@
 #include "rover_lib2/helpers/constants.hpp"
 #include "rover_lib2/helpers/macros.hpp"
 #include "lidar_config.hpp"
+#include "navigation_controller.hpp"
 
 #include <cmath>
 
 class PotentialFieldNav
 {
+    NavigationController _navigationController;
+
   public:
     enum class eForceVector
     {
         FORCE_X = 0,
         FORCE_Y = 1,
+        eLAST
+    };
+
+    enum class eTotalForce
+    {
+        MAGNITUDE = 0,
+        YAW = 1,
         eLAST
     };
 
@@ -25,10 +35,10 @@ class PotentialFieldNav
     {
         std::array<float, TO_UNDERLYING(eForceVector::eLAST)> totalForces;
 
-        totalForces[TO_UNDERLYING(eForceVector::FORCE_X)] = attractiveForces_[TO_UNDERLYING(eForceVector::FORCE_X)]
-                                                             + repulsiveForces_[TO_UNDERLYING(eForceVector::FORCE_X)];
-        totalForces[TO_UNDERLYING(eForceVector::FORCE_Y)] = attractiveForces_[TO_UNDERLYING(eForceVector::FORCE_Y)]
-                                                             + repulsiveForces_[TO_UNDERLYING(eForceVector::FORCE_Y)];
+        totalForces[TO_UNDERLYING(eForceVector::FORCE_X)]
+            = attractiveForces_[TO_UNDERLYING(eForceVector::FORCE_X)] + repulsiveForces_[TO_UNDERLYING(eForceVector::FORCE_X)];
+        totalForces[TO_UNDERLYING(eForceVector::FORCE_Y)]
+            = attractiveForces_[TO_UNDERLYING(eForceVector::FORCE_Y)] + repulsiveForces_[TO_UNDERLYING(eForceVector::FORCE_Y)];
 
         return totalForces;
     }
@@ -44,7 +54,8 @@ class PotentialFieldNav
         return attractiveForces;
     }
 
-    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateRepulsiveForces(std::vector<int8_t, std::allocator<int8_t>> costmapData_)
+    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateRepulsiveForces(
+        std::vector<int8_t, std::allocator<int8_t>> costmapData_)
     {
         std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces;
 
@@ -83,7 +94,6 @@ class PotentialFieldNav
 
                     float bearingToObstacle = std::atan2(obstacleY, obstacleX);
 
-                    // Configurable exponential force
                     float normalizedDistance = distanceToObstacle / LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE;
                     float forceMagnitude = LIDAR_CONFIG::NAVIGATION::REPULSIVE_GAIN * (cost / 100.0f)
                                            * std::exp(-EXPONENTIAL_FACTOR * normalizedDistance)
@@ -96,6 +106,33 @@ class PotentialFieldNav
         }
 
         return repulsiveForces;
+    }
+
+    std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> computeHeading(std::vector<int8_t, std::allocator<int8_t>> costmapData_)
+    {
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> totalForces;
+
+        float bearingDeg = _navigationController.computeBearing();
+        float distanceToGoal = _navigationController.getDistanceBetweenPoints();
+
+        std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> attractiveForce
+            = this->calculateAttractiveForces(distanceToGoal, bearingDeg);
+        std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> repulsiveForces
+            = this->calculateRepulsiveForces(costmapData_);
+
+        std::array<float, TO_UNDERLYING(GoalManager::eForceVector::eLAST)> totalForces
+            = this->calculateTotalForces(attractiveForce, repulsiveForces);
+
+        float magnitude = std::hypot(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)],
+                                     totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)]);
+        float yaw = std::atan2(totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_Y)],
+                               totalForces[TO_UNDERLYING(GoalManager::eForceVector::FORCE_X)]);
+
+        
+        totalForces[TO_UNDERLYING(eTotalForce::MAGNITUDE)] = magnitude;
+        totalForces[TO_UNDERLYING(eTotalForce::YAW)] = yaw;
+
+        return totalForces;
     }
 };
 
