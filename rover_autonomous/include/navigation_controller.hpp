@@ -5,8 +5,10 @@
 #include <queue>
 #include <cmath>
 #include <algorithm>
+#include <deque>
+#include <vector>
+#include <numbers>
 
-#include <potential_field_nav.hpp>
 #include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 #include "lidar_config.hpp"
@@ -15,7 +17,7 @@ class NavigationController
 {
     static constexpr float HEADING_BUFFER = 1.0F;
     static constexpr float POSITION_BUFFER = 1.0F;
-    static constexpr float RECTIFICATION_FACTOR = 1.2F;
+    static constexpr float RECTIFICATION_FACTOR = 0.8F;
     static constexpr float EARTH_RADIUS_METERS = 6'378'137.0F;
 
   public:
@@ -40,6 +42,20 @@ class NavigationController
         REAR_LEFT = 1,
         FRONT_RIGHT = 2,
         REAR_RIGHT = 3,
+        eLAST
+    };
+
+    enum class eForceVector
+    {
+        FORCE_X = 0,
+        FORCE_Y = 1,
+        eLAST
+    };
+
+    enum class eTotalForce
+    {
+        MAGNITUDE = 0,
+        YAW = 1,
         eLAST
     };
 
@@ -91,14 +107,13 @@ class NavigationController
         }
     }
 
-    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> navigate(
-        std::array<float, TO_UNDERLYING(PotentialFieldNav::eTotalForce::eLAST)> totalForces_)
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> navigate(std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> totalForces_)
     {
-        float yaw = totalForces_[TO_UNDERLYING(PotentialFieldNav::eTotalForce::YAW)];
-        float magnitude = totalForces_[TO_UNDERLYING(PotentialFieldNav::eTotalForce::MAGNITUDE)];
+        float yaw = totalForces_[TO_UNDERLYING(eTotalForce::YAW)];
+        float magnitude = totalForces_[TO_UNDERLYING(eTotalForce::MAGNITUDE)];
 
-        constexpr float MAX_WHEEL_SPEED = Constants::DriveTrain::SPEED_FACTOR_NORMAL;  
-        constexpr float K_ROT = 0.5F;            
+        constexpr float MAX_WHEEL_SPEED = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+        constexpr float K_ROT = 0.5F;
 
         if (magnitude < POSITION_BUFFER)
         {
@@ -107,7 +122,7 @@ class NavigationController
         }
         else
         {
-            float v = magnitude;
+            float v = MAX_WHEEL_SPEED; 
             float omega = K_ROT * yaw;
 
             float leftCmd = v - omega;
@@ -115,6 +130,8 @@ class NavigationController
 
             leftCmd = std::clamp(leftCmd, -MAX_WHEEL_SPEED, MAX_WHEEL_SPEED);
             rightCmd = std::clamp(rightCmd, -MAX_WHEEL_SPEED, MAX_WHEEL_SPEED);
+
+            printf("Left wheel command: %.2f, Right wheel command: %.2f\n", leftCmd, rightCmd);
 
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = leftCmd;
             _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = leftCmd;
@@ -127,7 +144,6 @@ class NavigationController
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> rotate(void)
     {
-        // TODO Maybe define a SPEED FACTOR AUTO between crawler and normal
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::REAR_LEFT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
         _targetWheelCmd[TO_UNDERLYING(eWheelCmd::FRONT_RIGHT)] = Constants::DriveTrain::SPEED_FACTOR_NORMAL * -1.0F;
@@ -193,7 +209,7 @@ class NavigationController
             bearing += 360.0;
         }
 
-        return bearing;
+        return static_cast<float>(bearing);
     }
 
     float getDistanceBetweenPoints(void)
@@ -207,9 +223,7 @@ class NavigationController
                   + cos(lat1Rad) * cos(lat2Rad) * sin(deltaLonRad / 2.0F) * sin(deltaLonRad / 2.0F);
         float c = 2.0F * atan2(sqrt(a), sqrt(1 - a));
 
-        float distance = EARTH_RADIUS_METERS * c;
-
-        return distance;
+        return EARTH_RADIUS_METERS * c;
     }
 
     std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> setWheelCmd(void)
@@ -257,6 +271,109 @@ class NavigationController
 
         return _targetWheelCmd;
     }
+
+    // Potential-field methods added:
+
+  private:
+    // History buffer for smoothing yaw
+    std::deque<float> _yawHistory;
+    static constexpr size_t MOVING_AVERAGE_WINDOW_SIZE = 10;
+    static constexpr float EXPONENTIAL_FACTOR = 0.3f;
+
+  public:
+    // Normalize angle to [-pi, pi]
+    float normalizeAngle(float angle)
+    {
+        while (angle > std::numbers::pi)
+            angle -= 2.0f * std::numbers::pi;
+        while (angle < -std::numbers::pi)
+            angle += 2.0f * std::numbers::pi;
+        return angle;
+    }
+
+    // Apply moving average to yaw angle
+    float applyMovingAverageToYaw(float newYaw)
+    {
+        newYaw = normalizeAngle(newYaw);
+        _yawHistory.push_back(newYaw);
+        if (_yawHistory.size() > MOVING_AVERAGE_WINDOW_SIZE)
+        {
+            _yawHistory.pop_front();
+        }
+
+        float sumSin = 0.0f;
+        float sumCos = 0.0f;
+        for (float yawVal : _yawHistory)
+        {
+            sumSin += std::sin(yawVal);
+            sumCos += std::cos(yawVal);
+        }
+        return normalizeAngle(std::atan2(sumSin / _yawHistory.size(), sumCos / _yawHistory.size()));
+    }
+
+    // Calculate attractive forces towards goal
+    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateAttractiveForces(float distanceToGoal_, float bearingDeg_)
+    {
+        float bearingRad = bearingDeg_ * std::numbers::pi / 180.0f;
+        return {distanceToGoal_ * std::cos(bearingRad), distanceToGoal_ * std::sin(bearingRad)};
+    }
+
+    // Calculate repulsive forces from obstacles
+    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateRepulsiveForces(const std::vector<int8_t>& costmapData_)
+    {
+        std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces = {0.0f, 0.0f};
+        int midX = LIDAR_CONFIG::COSTMAP::MAP_WIDTH / 2;
+        int midY = LIDAR_CONFIG::COSTMAP::MAP_HEIGHT / 2;
+        int radius = static_cast<int>(LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE / LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION);
+        for (int dy = -radius; dy <= radius; ++dy)
+        {
+            for (int dx = -radius; dx <= radius; ++dx)
+            {
+                int x = midX + dx;
+                int y = midY + dy;
+                if (x < 0 || x >= LIDAR_CONFIG::COSTMAP::MAP_WIDTH || y < 0 || y >= LIDAR_CONFIG::COSTMAP::MAP_HEIGHT)
+                    continue;
+                int idx = y * LIDAR_CONFIG::COSTMAP::MAP_WIDTH + x;
+                int cost = costmapData_[idx];
+                if (cost < 100)
+                    continue;
+                float ox = dx * LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
+                float oy = dy * LIDAR_CONFIG::COSTMAP::MAP_RESOLUTION;
+                float dist = std::hypot(ox, oy);
+                if (dist < 1e-6f || dist > LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE)
+                    continue;
+                float bearing = std::atan2(oy, ox);
+                float normDist = dist / LIDAR_CONFIG::NAVIGATION::INFLUENCE_DISTANCE;
+                float mag = LIDAR_CONFIG::NAVIGATION::REPULSIVE_GAIN * (cost / 100.0f) * std::exp(-EXPONENTIAL_FACTOR * normDist)
+                            / (dist * dist);
+                repulsiveForces[0] -= mag * std::cos(bearing);
+                repulsiveForces[1] -= mag * std::sin(bearing);
+            }
+        }
+        return repulsiveForces;
+    }
+
+    // Combine attractive and repulsive forces
+    std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateTotalForces(
+        const std::array<float, TO_UNDERLYING(eForceVector::eLAST)>& attractive,
+        const std::array<float, TO_UNDERLYING(eForceVector::eLAST)>& repulsive)
+    {
+        return {attractive[0] + repulsive[0], attractive[1] + repulsive[1]};
+    }
+
+    // Compute magnitude and yaw using potential fields
+    std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> computeHeading(const std::vector<int8_t>& costmapData_)
+    {
+        float bear = computeBearing();
+        float dist = getDistanceBetweenPoints();
+        auto attr = calculateAttractiveForces(dist, bear);
+        auto rep = calculateRepulsiveForces(costmapData_);
+        auto tot = calculateTotalForces(attr, rep);
+        float mag = std::hypot(tot[0], tot[1]);
+        float raw = std::atan2(tot[1], tot[0]);
+        float smooth = applyMovingAverageToYaw(raw);
+        return {mag, smooth};
+    }
 };
 
-#endif
+#endif  // NAVIGATION_CONTROLLER_HPP

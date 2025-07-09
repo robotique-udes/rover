@@ -12,7 +12,6 @@
 #include <visualization_msgs/msg/marker.hpp>
 
 #include "navigation_controller.hpp"
-#include "potential_field_nav.hpp"
 
 class GoalManager : public rclcpp::Node
 {
@@ -52,7 +51,6 @@ class GoalManager : public rclcpp::Node
     ~GoalManager() override = default;
 
     NavigationController _navigationController;
-    PotentialFieldNav _potentialFieldNav;
 
   private:
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_currentGps;
@@ -87,7 +85,7 @@ class GoalManager : public rclcpp::Node
                        rover_msgs::srv::DesiredGpsPosition::Response::SharedPtr response);
 
     void driveTrainPublisher();
-    void visualizeHeading(std::array<float, TO_UNDERLYING(PotentialFieldNav::eTotalForce::eLAST)> totalForces_);
+    void visualizeHeading(std::array<float, TO_UNDERLYING(NavigationController::eTotalForce::eLAST)> totalForces_);
 };
 
 #endif  // GOAL_MANAGER_NODE_HPP
