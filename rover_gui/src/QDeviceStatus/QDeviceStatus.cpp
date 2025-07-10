@@ -157,7 +157,7 @@ void QDeviceStatus::hideInfos()
             value.deviceInfoContainer->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
             value.deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-            value.deviceInfoContainer->adjustSize();        
+            value.deviceInfoContainer->adjustSize();
         }
     }
 
