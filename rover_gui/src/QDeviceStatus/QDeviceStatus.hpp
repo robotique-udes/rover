@@ -48,7 +48,6 @@ class QDeviceStatus : public QWidget
     void setStatusReport(RoverCan2::Constant::eDeviceId id_);
     void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
     void resetWidget();
-    void addSpacer();
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
     std::string getDeviceIcon(RoverCan2::Constant::eDeviceId deviceID_) const;
 
