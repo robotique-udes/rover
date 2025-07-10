@@ -10,4 +10,3 @@ float32 lan_txrate
 bool success
 string status
 int32 http_code
-string raw_json

@@ -42,7 +42,7 @@ namespace Constants
     {
         const std::map<std::string, std::string> ANTENNA_URL_MAP
             = {{"Base", "https://192.168.144.55"}, {"Rover", "https://192.168.144.50"}};
-    }   // namespace AntennaInfo
+    }  // namespace AntennaInfo
 
     namespace DriveTrain
     {
