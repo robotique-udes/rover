@@ -44,6 +44,11 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _layout->setContentsMargins(2, 2, 2, 2);  // Reduce margins
     _ui.deviceInfos->setLayout(_layout);
 
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    _ui.deviceInfos->setStyleSheet(STATUS_ERROR);
+
     this->initializeDeviceWidget();
 
     _sub_deviceStatus
@@ -135,6 +140,32 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     _layout->addWidget(deviceInfoContainer);
 }
 
+void QDeviceStatus::onDashboardPage()
+{
+    _layout->setSizeConstraint(QLayout::SetMinimumSize);
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
+    this->setMinimumSize(150, 0);
+    this->setMaximumSize(200, QWIDGETSIZE_MAX);
+
+    this->hideControls();
+    this->hideInfos();
+}
+
+void QDeviceStatus::onDeviceStatusPage()
+{
+    _layout->setSizeConstraint(QLayout::SetDefaultConstraint);
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+
+    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+    this->setMinimumSize(0, 0);
+
+    this->showControls();
+    this->showInfos();
+}
+
 void QDeviceStatus::hideControls()
 {
     _ui.serviceCall->hide();
@@ -152,12 +183,11 @@ void QDeviceStatus::hideInfos()
         if (value.deviceInfoLabel)
         {
             value.deviceInfoLabel->hide();
-
-            value.deviceInfoContainer->setMinimumSize(0, 0);
-            value.deviceInfoContainer->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-
-            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-            value.deviceInfoContainer->adjustSize();
+        
+            uint8_t iconSize = 60U;
+            uint8_t margins = 4U;
+            value.deviceInfoContainer->setFixedSize(iconSize + margins, iconSize + margins);
+            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         }
     }
 

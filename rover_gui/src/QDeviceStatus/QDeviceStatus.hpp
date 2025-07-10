@@ -33,11 +33,8 @@ class QDeviceStatus : public QWidget
 
   public:
     QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-
-    void hideControls();
-    void showControls();
-    void hideInfos();
-    void showInfos();
+    void onDashboardPage();
+    void onDeviceStatusPage();
 
   private:
     void initializeDeviceWidget();
@@ -48,6 +45,12 @@ class QDeviceStatus : public QWidget
     void setStatusReport(RoverCan2::Constant::eDeviceId id_);
     void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
     void resetWidget();
+
+    void hideControls();
+    void showControls();
+    void hideInfos();
+    void showInfos();
+    
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
     std::string getDeviceIcon(RoverCan2::Constant::eDeviceId deviceID_) const;
 
