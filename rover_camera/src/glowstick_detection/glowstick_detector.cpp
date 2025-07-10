@@ -2,7 +2,7 @@
 
 GlowstickDetector::GlowstickDetector()
 {
-    glowsticks[WHITE] = Glowstick(cv::Scalar(0, 0, 240), cv::Scalar(180, 30, 255), cv::Scalar(0,255,0));
+    glowsticks[WHITE] = Glowstick(cv::Scalar(0, 0, 200), cv::Scalar(180, 180, 255), cv::Scalar(0,255,0));
     glowsticks[BLUE] = Glowstick(cv::Scalar(100, 150, 150), cv::Scalar(130, 255, 255), cv::Scalar(255,0,0)); 
     glowsticks[RED] = Glowstick(cv::Scalar(0, 150, 150), cv::Scalar(10, 255, 255), cv::Scalar(0,0,255));
 }
@@ -20,6 +20,8 @@ bool GlowstickDetector::drawGlowsticks(const cv::Mat& frame, cv::Mat& frameGlows
                         {
                         cv::rectangle(frameGlowsticks, glowsticks[i]._glowstickRect[j], glowsticks[i].getColor(), 2);  
                         cv::rectangle(frameGlowsticks, glowsticks[i]._glowstickRectCenter[j], cv::Scalar(0,255,0), 2);
+                        std::string angle = std::to_string(_positionEstimator.getAngle(frame, glowsticks[i], j));
+                        cv::putText(frameGlowsticks, angle,  _positionEstimator.getBotomRectPosition(glowsticks[i], j), cv::FONT_HERSHEY_SIMPLEX, 1, glowsticks[i].getColor(), 4);    
                         }
                 }
                 
@@ -47,6 +49,7 @@ bool GlowstickDetector::filterFrame(const cv::Mat& frame, cv::Mat masks[])
     cv::Mat red1, red2;
 
     cv::cvtColor(frame, hsv, cv::COLOR_BGR2HSV);
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_RECT, cv::Size(20,20));
 
     std::vector<cv::Mat> hsvChannels;
 
@@ -63,6 +66,11 @@ bool GlowstickDetector::filterFrame(const cv::Mat& frame, cv::Mat masks[])
                 cv::inRange(hsv, cv::Scalar(170, 150, 150), cv::Scalar(180, 255, 255), masks[i+1]);
                 cv::bitwise_or(masks[i], masks[i+1], masks[i]);
                 masks[i+1].release();
+        }
+
+        if (i==WHITE)
+        {
+                cv::dilate(masks[i], masks[i], kernel);
         }
 
         cv::GaussianBlur(masks[i], masks[i], cv::Size(5,5), 0);

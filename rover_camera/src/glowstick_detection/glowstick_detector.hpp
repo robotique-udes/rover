@@ -2,6 +2,7 @@
 #define GLOWSTICK_DETECTOR_HPP
 
 #include "glowstick.hpp"
+#include "glowstick_position_estimator.hpp"
 
 class GlowstickDetector 
 {
@@ -19,6 +20,8 @@ class GlowstickDetector
         Glowstick glowsticks[3];
         std::vector<cv::Mat> colorMasks;
         uint16_t maxAmountGlowsticks = 3;
+        PositionEstimator _positionEstimator;
+
 };
 
 #endif
