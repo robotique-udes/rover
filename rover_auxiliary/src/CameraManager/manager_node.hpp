@@ -16,6 +16,8 @@ namespace CameraManager
     {
         static constexpr const size_t NUMBER_TOPIC = 2;
         static constexpr const size_t NUMBER_CAM = 5;
+        static constexpr const double GOAL_MARGIN = 0.01;
+
 
         static constexpr float SEND_PTZ_COMMAND_FREQUENCY = 5.F;
         static constexpr float SEND_PTZ_CONFIG_FREQUENCY = .5F;
@@ -24,6 +26,9 @@ namespace CameraManager
         static constexpr const char* TOPIC_PTZ_COMMAND_MANAGER = "rover/camera/PTZ_cmd/manager";
         static constexpr const char* TOPIC_PTZ_CONFIG_MANAGER = "rover/camera/PTZ_config/manager";
         static constexpr const char* TOPIC_POWER_COMMAND_MANAGER = "rover/camera/power_cmd/manager";
+
+        static constexpr const char* TOPIC_PTZ_STATUS = "rover/camera/PTZ_status";
+
 
       public:
         ManagerNode();
@@ -45,6 +50,7 @@ namespace CameraManager
         rclcpp::TimerBase::SharedPtr _timer_filtredPTZCmdPub;
         rclcpp::TimerBase::SharedPtr _timer_filtredPTZConfigPub;
         rclcpp::TimerBase::SharedPtr _timer_filtredPowerCmdPub;
+
     };
 }  // namespace CameraManager
 #endif  // MANAGER_NODE_HPP

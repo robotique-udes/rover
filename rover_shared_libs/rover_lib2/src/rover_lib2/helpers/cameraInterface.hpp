@@ -1,6 +1,7 @@
 #ifndef CAMERA_INTERFACE_HPP
 #define CAMERA_INTERFACE_HPP
 
+#include <array>
 #include <cstddef>
 #include <cstdint>
 #include <rclcpp/subscription.hpp>
@@ -19,6 +20,7 @@ class CameraInterface
     static constexpr const char* PTZ_STATUS_TOPIC = "/rover/camera/PTZ_status";
 
     static constexpr uint8_t NUMBER_CAM = 5;
+    static constexpr float GOAL_MARGIN = 0.1;
 
 #warning unused
 
@@ -48,6 +50,8 @@ class CameraInterface
     rover_msgs::msg::CameraControl getLastPowerStatusMsg(size_t id_) const;
     rover_msgs::msg::CameraControl getLastPtzStatusMsg(size_t id_) const;
 
+    bool isGoalReached(size_t id_);
+
   private:
     void CB_publishPtzCmd(void);
     void CB_publishPtzConfig(void);
@@ -62,6 +66,7 @@ class CameraInterface
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_powerStatus;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_PTZStatus;
 
+
     rclcpp::TimerBase::SharedPtr _timer_pubPTZCmd;
     rclcpp::TimerBase::SharedPtr _timer_pubPTZConfig;
     rclcpp::TimerBase::SharedPtr _timer_pubPowerCmd;
@@ -74,6 +79,8 @@ class CameraInterface
 
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerStatusMsg;
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzStatusMsg;
+
+    std::array<bool, NUMBER_CAM> _isGoalReached = {false};
 
     std::shared_ptr<rclcpp::Node> _node;
 };

@@ -25,14 +25,24 @@ class CameraInterfaceTest : public rclcpp::Node
     CameraInterfaceTest():
         Node("camera_interface_test")
     {
-        _timer = this->create_wall_timer(std::chrono::milliseconds(10000),
+        _timer = this->create_wall_timer(std::chrono::milliseconds(20000),
                                          [this](void)
                                          {
                                              CB_cameraInterfaceTest();
                                          });
+
+        _timer_goalWatchdog = this->create_wall_timer(std::chrono::milliseconds(1000),
+                                         [this](void)
+                                         {
+                                            if(_testCameraInterfaceGUI->isGoalReached(TEST_CAM_B_ID))
+                                            {
+                                                RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "GOAL REACHED ON %ld !", TEST_CAM_B_ID);
+                                            }
+                                         });
     }
 
     rclcpp::TimerBase::SharedPtr _timer;
+    rclcpp::TimerBase::SharedPtr _timer_goalWatchdog;
     std::unique_ptr<CameraInterface> _testCameraInterfacePanorama;
     std::unique_ptr<CameraInterface> _testCameraInterfaceGUI;
 
@@ -41,14 +51,14 @@ class CameraInterfaceTest : public rclcpp::Node
     void init()
     {
         _testCameraInterfacePanorama = std::make_unique<CameraInterface>(shared_from_this(),
-                                                                    TOPIC_SEND_PTZ_COMMAND_PANORAMA,
-                                                                    TOPIC_SEND_CONFIG_COMMAND_PANORAMA,
-                                                                    TOPIC_SEND_POWER_COMMAND_PANORAMA);
+                                                                         TOPIC_SEND_PTZ_COMMAND_PANORAMA,
+                                                                         TOPIC_SEND_CONFIG_COMMAND_PANORAMA,
+                                                                         TOPIC_SEND_POWER_COMMAND_PANORAMA);
 
         _testCameraInterfaceGUI = std::make_unique<CameraInterface>(shared_from_this(),
-                                                                         TOPIC_SEND_PTZ_COMMAND_GUI,
-                                                                         TOPIC_SEND_CONFIG_COMMAND_GUI,
-                                                                         TOPIC_SEND_POWER_COMMAND_GUI);
+                                                                    TOPIC_SEND_PTZ_COMMAND_GUI,
+                                                                    TOPIC_SEND_CONFIG_COMMAND_GUI,
+                                                                    TOPIC_SEND_POWER_COMMAND_GUI);
 
         {
             rover_msgs::msg::CameraControl msg;

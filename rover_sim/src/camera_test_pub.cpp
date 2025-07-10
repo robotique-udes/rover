@@ -5,32 +5,72 @@
 
 class CameraTestPub : public rclcpp::Node
 {
-    /**/
+    static constexpr size_t SIMULATED_CAM_ID = 3;
+    static constexpr char* TOPIC_PTZ_STATUS = "/rover/camera/PTZ_status";
+
   public:
     CameraTestPub():
         Node("camera_test_pub")
     {
-        _publisher = this->create_publisher<rover_msgs::msg::CameraControl>("/rover/gps/position", 10);
-        //_subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(const std::string &topic_name, const rclcpp::QoS &qos, CallbackT &&callback)
-        //timer_ = this->create_wall_timer(std::chrono::milli(500), std::bind(&GpsPublisher::publish_gps, this));
+        _publisher = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_STATUS, 1);
+        _subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
+            "/rover/camera/PTZ_cmd/manager",
+            1,
+            [this](const rover_msgs::msg::CameraControl& PTZcmd_)
+            {
+                this->CB_receivePTZcmd(PTZcmd_);
+            });
     }
 
   private:
-    void CB_publishStatusPTZ()
+
+    void CB_receivePTZcmd(rover_msgs::msg::CameraControl PTZcmd_) 
     {
-        //auto msg = rover_msgs::msg::Gps();
+        size_t id = PTZcmd_.id_cam;
+        if(id != SIMULATED_CAM_ID)
+        {
+            return;
+        }
 
-        //_publisher->publish(msg);
-    }
+        double targetYaw = PTZcmd_.yaw;
 
-    void CB_receivePTZcmd()
-    {
-
+        if (targetYaw<currentYaw)
+        {
+            if(currentYaw-targetYaw<0.15)
+            {
+                currentYaw -= 0.05;
+            }
+            else
+            {
+                currentYaw -= 0.1;
+            }
+        }
+        if (targetYaw>currentYaw)
+        {
+            if(targetYaw-currentYaw<0.15)
+            {
+                currentYaw += 0.05; 
+            }
+            else
+            {
+                currentYaw += 0.1;
+            }
+        }
+        else
+        {
+        
+        }
+    
+        rover_msgs::msg::CameraControl statusMsg;
+        statusMsg.id_cam = id;
+        statusMsg.yaw = currentYaw;
+        _publisher->publish(statusMsg);
     }
 
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _publisher;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _subscriber;
 
+    double currentYaw = 0;
 };
 
 int main(int argc, char* argv[])

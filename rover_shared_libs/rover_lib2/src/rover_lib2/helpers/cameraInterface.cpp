@@ -2,6 +2,8 @@
 #include <cstddef>
 #include "rover_lib2/helpers/constants.hpp"
 
+#include <cstdlib>
+
 #warning QOS DEFAULT
 // for now
 
@@ -118,6 +120,11 @@ void CameraInterface::forgetPowerCmd(size_t id_)
     _isCamConcerned.at(id_) = false;
 }
 
+bool CameraInterface::isGoalReached(size_t id_)
+{
+    return _isGoalReached.at(id_);
+}
+
 rover_msgs::msg::CameraControl CameraInterface::getLastPowerStatusMsg(size_t id_) const
 {
     return _lastPowerStatusMsg.at(id_);
@@ -171,4 +178,14 @@ void CameraInterface::CB_subscriberPtzStatus(rover_msgs::msg::CameraControl stat
 {
     size_t id = statusMsg_.id_cam;
     _lastPowerStatusMsg.at(id) = statusMsg_;
+    double currentYaw = statusMsg_.yaw;
+    
+    if(std::abs(_lastPtzCmdMsg.at(id).yaw - currentYaw)  < GOAL_MARGIN)
+    {
+        _isGoalReached.at(id) = true;
+    }
+    else
+    {
+        _isGoalReached.at(id) = false;
+    }
 }

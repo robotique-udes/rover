@@ -78,8 +78,6 @@ namespace CameraManager
                                           CB_publishFilteredPtzCmd();
                                       });
 
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "okkook");
-
         _publisher_filteredPTZConfig
             = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_CONFIG_MANAGER, QOS_DEFAULT);
 
