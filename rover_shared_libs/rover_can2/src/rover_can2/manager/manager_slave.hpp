@@ -33,7 +33,7 @@ namespace RoverCan2
             this->reportErrorStateToMaster();
         }
 
-        void __update(void)
+        void _update(void)
         {
             if (HealthState::getInstance().getInError() && _errorStateReportingLoop.isReady())
             {

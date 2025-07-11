@@ -57,7 +57,7 @@ namespace RoverCan2::Drivers
         {
         }
 
-        void __init(void)
+        void _init(void)
         {
             this->installDriver();
             this->startDriver();
@@ -69,7 +69,7 @@ namespace RoverCan2::Drivers
             }
         }
 
-        void __update(void)
+        void _update(void)
         {
             if (_led)
             {

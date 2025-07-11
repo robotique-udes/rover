@@ -21,16 +21,15 @@ namespace LED
     };
 
     template<typename ImplT>
-    class LedBlinker : public RoverObject<LedBlinker<ImplT>>,
-                       public LedBlinkerT
+    class LedBlinker : public LedBlinkerT
     {
       public:
-        void _init(void)
+        void init(void)
         {
             static_cast<ImplT*>(this)->__init();
         }
 
-        void _update(void)
+        void update(void)
         {
             static_cast<ImplT*>(this)->__update();
         }
