@@ -12,6 +12,7 @@ class AntennaNode : public rclcpp::Node
 {
     static constexpr const char* ENV_PATH = "/ros2_ws/src/rover/.env";
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
+    static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 250UL;
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;
     static constexpr int HTTP_SUCCESS_MIN = 200;
@@ -21,9 +22,6 @@ class AntennaNode : public rclcpp::Node
 
   public:
     AntennaNode();
-    ~AntennaNode();
-    AntennaNode(const AntennaNode&) = delete;
-    AntennaNode& operator=(const AntennaNode&) = delete;
 
   private:
     void CB_antenna_publisher(void);

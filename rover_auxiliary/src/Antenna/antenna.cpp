@@ -39,25 +39,11 @@ AntennaNode::AntennaNode():
     }
 }
 
-AntennaNode::~AntennaNode()
-{
-    if (_session)
-    {
-        _session->SetDebugCallback(cpr::DebugCallback{});
-        _session.reset();
-    }
-}
-
 bool AntennaNode::login(void)
 {
     if (_is_logged_in)
     {
         return true;
-    }
-
-    if (!_session)
-    {
-        _session = std::make_shared<cpr::Session>();
     }
 
     if (_login_attempts > MAX_LOGIN_ATTEMPTS)
@@ -71,14 +57,14 @@ bool AntennaNode::login(void)
     _session->SetVerifySsl(false);
 
     cpr::SslOptions ssl_options;
-    ssl_options.ciphers = "DEFAULT@SECLEVEL=1";
+    ssl_options.ciphers = HTTP_CIPHER;
     ssl_options.verify_peer = false;
     ssl_options.verify_host = false;
     _session->SetOption(ssl_options);
 
     // Set timeouts
-    _session->SetConnectTimeout(cpr::ConnectTimeout{5000});
-    _session->SetTimeout(cpr::Timeout{10000});
+    _session->SetConnectTimeout(cpr::ConnectTimeout{500});
+    _session->SetTimeout(cpr::Timeout{1000});
 
     // Set the login URL
     _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/login.cgi"});
