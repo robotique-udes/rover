@@ -41,7 +41,7 @@ void CanMasterNode::CB_updateCan(void)
         _nodeAttachedToDevices = true;
     }
 
-    _canManager.__update();
+    _canManager._update();
 }
 
 void CanMasterNode::CB_ROS_canDeviceErrorStateRequest(rover_msgs::srv::Empty::Request::SharedPtr,
