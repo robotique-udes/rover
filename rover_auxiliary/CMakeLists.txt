@@ -15,7 +15,7 @@ find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(jsoncpp REQUIRED)
 
-add_subdirectory(../cpr cpr_build)
+add_subdirectory(../deps/cpr cpr_build)
 add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
