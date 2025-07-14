@@ -36,6 +36,7 @@ sudo apt -y install libgstreamer-plugins-base1.0-dev
 sudo apt -y install libgstrtspserver-1.0-dev
 sudo apt -y install libpsl-dev
 sudo apt -y install libjsoncpp-dev
+sudo apt -y install meson
 
 echo -e "\e[0;32m[OK]\e[0m"
 

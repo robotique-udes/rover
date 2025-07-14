@@ -13,10 +13,10 @@ class AntennaDriver
     static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr const char* LOGIN_PAGE = "/login.cgi";
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;
-    static constexpr int HTTP_SUCCESS_MIN = 200;
-    static constexpr int HTTP_SUCCESS_MAX = 300;
-    static constexpr int HTTP_UNAUTHORIZED = 401;
-    static constexpr int HTTP_FORBIDDEN = 403;
+    static constexpr uint16_t HTTP_SUCCESS_MIN = 200;
+    static constexpr uint16_t HTTP_SUCCESS_MAX = 300;
+    static constexpr uint16_t HTTP_UNAUTHORIZED = 401;
+    static constexpr uint16_t HTTP_FORBIDDEN = 403;
 
   public:
     AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_);

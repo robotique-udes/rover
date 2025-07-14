@@ -142,7 +142,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
             {
                 Json::Value interfaces = root["interfaces"];
 
-                // Look for the first interface (index 0)
+                // Index 0 is wlan and Index 1 is lan
                 if (interfaces.size() > 0 && interfaces[0].isObject())
                 {
                     Json::Value interface0 = interfaces[0];
@@ -188,54 +188,6 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
                             else
                             {
                                 RCLCPP_ERROR(_logger, "Failed to parse tx_bytes: %s", wlanTxBytesStr.c_str());
-                            }
-                        }
-                    }
-                }
-
-                if (interfaces.size() > 1 && interfaces[1].isObject())
-                {
-                    Json::Value interface1 = interfaces[1];
-
-                    if (interface1.isMember("stats") && interface1["stats"].isObject())
-                    {
-                        Json::Value stats = interface1["stats"];
-
-                        if (stats.isMember("rx_bytes"))
-                        {
-                            std::string lanRxBytesStr = stats["rx_bytes"].asString();
-                            uint64_t lanRxBytes;
-                            std::from_chars_result result
-                                = std::from_chars(lanRxBytesStr.data(), lanRxBytesStr.data() + lanRxBytesStr.size(), lanRxBytes);
-
-                            if (result.ec == std::errc{})
-                            {
-                                float lanRxRate = (lanRxBytes - _lanRxBytes) * 1000.0f / _publisherPeriodMs;
-                                msg_.lan_rxrate = lanRxRate;
-                                _lanRxBytes = lanRxBytes;
-                            }
-                            else
-                            {
-                                RCLCPP_ERROR(_logger, "Failed to parse rx_bytes: %s", lanRxBytesStr.c_str());
-                            }
-                        }
-
-                        if (stats.isMember("tx_bytes"))
-                        {
-                            std::string lanTxBytesStr = stats["tx_bytes"].asString();
-                            uint64_t lanTxBytes;
-                            std::from_chars_result result
-                                = std::from_chars(lanTxBytesStr.data(), lanTxBytesStr.data() + lanTxBytesStr.size(), lanTxBytes);
-
-                            if (result.ec == std::errc{})
-                            {
-                                float lanTxRate = (lanTxBytes - _lanTxBytes) * 1000.0f / _publisherPeriodMs;
-                                msg_.lan_txrate = lanTxRate;
-                                _lanTxBytes = lanTxBytes;
-                            }
-                            else
-                            {
-                                RCLCPP_ERROR(_logger, "Failed to parse tx_bytes: %s", lanTxBytesStr.c_str());
                             }
                         }
                     }
@@ -312,20 +264,8 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
 
                 if (wireless.isMember("rssi"))
                 {
-                    int rssi = wireless["rssi"].asInt();
+                    float rssi = wireless["rssi"].asFloat();
                     msg_.rssi = rssi;
-                }
-
-                if (wireless.isMember("txrate"))
-                {
-                    std::string txrate = wireless["txrate"].asString();
-                    msg_.txrate = txrate;
-                }
-
-                if (wireless.isMember("rxrate"))
-                {
-                    std::string rxrate = wireless["rxrate"].asString();
-                    msg_.rxrate = rxrate;
                 }
             }
         }
