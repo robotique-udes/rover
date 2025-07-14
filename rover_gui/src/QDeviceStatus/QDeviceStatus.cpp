@@ -140,27 +140,33 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     _layout->addWidget(deviceInfoContainer);
 }
 
+/**
+ * @brief Sets the layout and size constraints for the widget when it is displayed on the dashboard page.
+ *
+ */
 void QDeviceStatus::onDashboardPage()
 {
     _layout->setSizeConstraint(QLayout::SetMinimumSize);
-    _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-    this->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-    this->setMinimumSize(150, 0);
-    this->setMaximumSize(200, QWIDGETSIZE_MAX);
+    _ui.deviceInfos->setMinimumSize(0, 0);
+    _ui.deviceInfos->setMaximumSize(190, QWIDGETSIZE_MAX);
 
     this->hideControls();
     this->hideInfos();
 }
 
+/**
+ * @brief Sets the layout and size constraints for the widget when it is displayed on the device status page.
+ *
+ */
 void QDeviceStatus::onDeviceStatusPage()
 {
     _layout->setSizeConstraint(QLayout::SetDefaultConstraint);
     _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    this->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-    this->setMinimumSize(0, 0);
+    _ui.deviceInfos->setMinimumSize(0, 0);
+    _ui.deviceInfos->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
     this->showControls();
     this->showInfos();
@@ -183,11 +189,6 @@ void QDeviceStatus::hideInfos()
         if (value.deviceInfoLabel)
         {
             value.deviceInfoLabel->hide();
-        
-            uint8_t iconSize = 60U;
-            uint8_t margins = 4U;
-            value.deviceInfoContainer->setFixedSize(iconSize + margins, iconSize + margins);
-            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
         }
     }
 

@@ -50,7 +50,7 @@ class QDeviceStatus : public QWidget
     void showControls();
     void hideInfos();
     void showInfos();
-    
+
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
     std::string getDeviceIcon(RoverCan2::Constant::eDeviceId deviceID_) const;
 
