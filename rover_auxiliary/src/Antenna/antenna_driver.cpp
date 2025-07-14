@@ -4,13 +4,16 @@
 #include <rover_lib2/helpers/constants.hpp>
 #include <json/json.h>
 
-AntennaDriver::AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_) : _logger(logger_), _publisherPeriodMs(publisherPeriodMs_)
+AntennaDriver::AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_):
+    _logger(logger_),
+    _publisherPeriodMs(publisherPeriodMs_)
 {
     _session = std::make_shared<cpr::Session>();
+    this->setupSession();
     this->setDebugCB();
 }
 
-void AntennaDriver::setUser(const std::string& username_, const std::string& password_)
+void AntennaDriver::setUserInfo(const std::string& username_, const std::string& password_)
 {
     _username = username_;
     _password = password_;
@@ -30,30 +33,10 @@ bool AntennaDriver::login(void)
     }
     _loginAttempts++;
 
-    // Configure session with SSL settings
-    _session->SetVerifySsl(false);
-
-    cpr::SslOptions ssl_options;
-    ssl_options.ciphers = HTTP_CIPHER;
-    ssl_options.verify_peer = false;
-    ssl_options.verify_host = false;
-    _session->SetOption(ssl_options);
-
-    // Set timeouts
-    _session->SetConnectTimeout(cpr::ConnectTimeout{500});
-    _session->SetTimeout(cpr::Timeout{1000});
-
-    // Set the login URL
     _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + LOGIN_PAGE});
-
-    // Create the login payload
     cpr::Payload payload{{"username", _username}, {"password", _password}};
-
     _session->SetOption(payload);
-
     RCLCPP_INFO(_logger, "Attempting to login to antenna...");
-
-    // Send the login POST request
     cpr::Response response = _session->Post();
 
     if (response.status_code == HTTP_SUCCESS_MIN)
@@ -65,7 +48,7 @@ bool AntennaDriver::login(void)
     else
     {
         RCLCPP_ERROR(_logger,
-                     "AntennaDriver login failed: %s (code: %ld)",
+                     "AntennaDriver login failed, POST request was unsuccesfull: %s (code: %ld)",
                      response.error.message.c_str(),
                      response.status_code);
         return false;
@@ -89,21 +72,19 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
     if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
     {
         msg_.success = false;
-        msg_.status = "Couldn't find the Base antenna URL in the URL map";
+        msg_.info = "Couldn't find the Base antenna URL in the URL map";
         return false;
     }
-
-    // Try logging in if not already logged in
     if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
     {
         msg_.success = false;
-        msg_.status = "Failed to login to antenna";
+        msg_.info = "Failed to login to antenna";
         msg_.http_code = 0;
         return false;
     }
 
     // Now use the existing session with stored cookies for the status request
-    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/ifstats.cgi"});
+    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + IFSTATS_PAGE});
 
     _session->SetOption(cpr::Payload{});  // remove payload from login
     cpr::Response response = _session->Get();
@@ -122,7 +103,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
     }
 
     // Populate and publish the message
-    msg_.status = response.error.message;
+    msg_.info = response.error.message;
     msg_.http_code = response.status_code;
 
     if (!(response.status_code >= HTTP_SUCCESS_MIN && response.status_code < HTTP_SUCCESS_MAX))
@@ -208,14 +189,14 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
     if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
     {
         msg_.success = false;
-        msg_.status = "Couldn't find the Base antenna URL in the URL map";
+        msg_.info = "Couldn't find the Base antenna URL in the URL map";
         return false;
     }
 
     if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
     {
         msg_.success = false;
-        msg_.status = "Failed to login to antenna";
+        msg_.info = "Failed to login to antenna";
         msg_.http_code = 0;
         return false;
     }
@@ -236,13 +217,13 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
         if (login())
         {
             // Retry the request with fresh session
-            _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/status.cgi"});
+            _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + STATUS_PAGE});
             response = _session->Get();
         }
     }
 
     // Populate and publish the message
-    msg_.status = response.error.message;
+    msg_.info = response.error.message;
     msg_.http_code = response.status_code;
 
     if (!(response.status_code >= HTTP_SUCCESS_MIN && response.status_code < HTTP_SUCCESS_MAX))
@@ -315,4 +296,19 @@ void AntennaDriver::setDebugCB(void)
             }
             return true;  // Return true to continue receiving debug info
         }));
+}
+
+void AntennaDriver::setupSession(void)
+{
+    // RocketM2 general settings
+    _session->SetVerifySsl(false);
+
+    cpr::SslOptions ssl_options;
+    ssl_options.ciphers = HTTP_CIPHER;
+    ssl_options.verify_peer = false;
+    ssl_options.verify_host = false;
+    _session->SetOption(ssl_options);
+
+    _session->SetConnectTimeout(cpr::ConnectTimeout{SESSION_CONNECT_TIMEOUT_MS});
+    _session->SetTimeout(cpr::Timeout{SESSION_TIMEOUT_MS});
 }

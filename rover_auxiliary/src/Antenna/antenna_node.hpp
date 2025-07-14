@@ -14,7 +14,12 @@ class AntennaNode : public rclcpp::Node
     AntennaNode();
 
   private:
-    bool loadEnvFile(void);
+    /**
+     * @brief Loads the username and password variables from the .env file in /rover/
+     *
+     * @warning you need to add the fields "username" and "password" to your .env
+     */
+    bool loadUserInfo(void);
 
     AntennaDriver _driver;
 
@@ -24,7 +29,4 @@ class AntennaNode : public rclcpp::Node
     std::string _password;
 };
 
-
-
-
-#endif // ANTENNA_NODE_HPP
+#endif  // ANTENNA_NODE_HPP

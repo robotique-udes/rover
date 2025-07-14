@@ -40,9 +40,11 @@ namespace Constants
 
     namespace AntennaInfo
     {
+#if defined(__linux__)
         const std::map<std::string, std::string> ANTENNA_URL_MAP
             = {{"Base", "https://192.168.144.55"}, {"Rover", "https://192.168.144.50"}};
-    }  // namespace AntennaInfo
+#endif  // defined(__linux__)
+    }   // namespace AntennaInfo
 
     namespace DriveTrain
     {

@@ -14,17 +14,18 @@ int main(int argc, char* argv[])
 }
 
 AntennaNode::AntennaNode():
-    rclcpp::Node("antenna"), _driver(this->get_logger(), PUBLISHER_PERIOD_MS)
+    rclcpp::Node("antenna"),
+    _driver(this->get_logger(), PUBLISHER_PERIOD_MS)
 {
     _pubAntennaStatus = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
 
-    if (loadEnvFile())
+    if (loadUserInfo())
     {
-        _driver.setUser(_username, _password);
+        _driver.setUserInfo(_username, _password);
         _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                              [this](void)
                                              {
-                                                rover_msgs::msg::AntennaStatus msg;
+                                                 rover_msgs::msg::AntennaStatus msg;
                                                  _driver.CbAntennaPublisher(msg);
                                                  _pubAntennaStatus->publish(msg);
                                              });
@@ -32,12 +33,12 @@ AntennaNode::AntennaNode():
     else
     {
         rover_msgs::msg::AntennaStatus msg;
-        msg.status = "Error loading .env file";
+        msg.info = "Error loading .env file";
         _pubAntennaStatus->publish(msg);
     }
 }
 
-bool AntennaNode::loadEnvFile(void)
+bool AntennaNode::loadUserInfo(void)
 {
     const char* home = std::getenv("HOME");
     std::string homeStr;
