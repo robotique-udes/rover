@@ -47,7 +47,6 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    _ui.deviceInfos->setStyleSheet(STATUS_ERROR);
 
     this->initializeDeviceWidget();
 
@@ -133,8 +132,6 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     containerLayout->addWidget(iconLabel);
     containerLayout->addWidget(deviceInfoLabel);
 
-    deviceInfoContainer->adjustSize();
-
     _canDevices[deviceId_] = {0, 0, deviceInfoContainer, deviceInfoLabel};
 
     _layout->addWidget(deviceInfoContainer);
@@ -147,10 +144,10 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 void QDeviceStatus::onDashboardPage()
 {
     _layout->setSizeConstraint(QLayout::SetMinimumSize);
-    _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
 
-    _ui.deviceInfos->setMinimumSize(0, 0);
-    _ui.deviceInfos->setMaximumSize(190, QWIDGETSIZE_MAX);
+    _ui.deviceInfos->setMinimumSize(130, 0);
+    _ui.deviceInfos->setMaximumSize(200, QWIDGETSIZE_MAX);
 
     this->hideControls();
     this->hideInfos();
@@ -189,6 +186,12 @@ void QDeviceStatus::hideInfos()
         if (value.deviceInfoLabel)
         {
             value.deviceInfoLabel->hide();
+
+            value.deviceInfoContainer->setMinimumSize(0, 0);
+            value.deviceInfoContainer->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+
+            value.deviceInfoContainer->adjustSize(); // Recalculate size
         }
     }
 
