@@ -1,28 +1,57 @@
-#include "antenna_driver.hpp"
+#include "antenna.hpp"
 #include <iostream>
 #include <charconv>
+#include <fstream>
+#include <sstream>
 #include <rover_lib2/helpers/constants.hpp>
 #include <json/json.h>
 
-AntennaDriver::AntennaDriver(const std::string& username_, const std::string& password_, rclcpp::logger& logger_): _username(username_), _password(password_), _logger(logger_)
+int main(int argc, char* argv[])
 {
-    _session = std::make_shared<cpr::Session>();
-    this->setDebugCB();
+    rclcpp::init(argc, argv);
+
+    rclcpp::spin(std::make_shared<AntennaNode>());
+
+    rclcpp::shutdown();
+    return 0;
 }
 
-bool AntennaDriver::login(void)
+AntennaNode::AntennaNode():
+    rclcpp::Node("antenna")
 {
-    if (_isLoggedIn)
+    _pub_antenna_status = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
+
+    if (loadEnvFile())
+    {
+        _session = std::make_shared<cpr::Session>();
+        this->setDebugCB();
+        _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
+                                             [this]()
+                                             {
+                                                 CB_antenna_publisher();
+                                             });
+    }
+    else
+    {
+        RCLCPP_ERROR(
+            this->get_logger(),
+            "Antenna publisher not started, couldn't find \"username\" and \"password\" in .env file or it wasn't found");
+    }
+}
+
+bool AntennaNode::login(void)
+{
+    if (_is_logged_in)
     {
         return true;
     }
 
-    if (_loginAttempts > MAX_LOGIN_ATTEMPTS)
+    if (_login_attempts > MAX_LOGIN_ATTEMPTS)
     {
-        RCLCPP_ERROR(_logger, "Max login attempts reached");
+        RCLCPP_ERROR(this->get_logger(), "Max login attempts reached");
         return false;
     }
-    _loginAttempts++;
+    _login_attempts++;
 
     // Configure session with SSL settings
     _session->SetVerifySsl(false);
@@ -38,37 +67,38 @@ bool AntennaDriver::login(void)
     _session->SetTimeout(cpr::Timeout{1000});
 
     // Set the login URL
-    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + LOGIN_PAGE});
+    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/login.cgi"});
 
     // Create the login payload
     cpr::Payload payload{{"username", _username}, {"password", _password}};
 
     _session->SetOption(payload);
 
-    RCLCPP_INFO(_logger, "Attempting to login to antenna...");
+    RCLCPP_INFO(this->get_logger(), "Attempting to login to antenna...");
 
     // Send the login POST request
     cpr::Response response = _session->Post();
 
     if (response.status_code == HTTP_SUCCESS_MIN)
     {
-        _isLoggedIn = true;
-        RCLCPP_INFO(_logger, "Post was successful");
+        _is_logged_in = true;
+        RCLCPP_INFO(this->get_logger(), "Post was successful");
         return true;
     }
     else
     {
-        RCLCPP_ERROR(_logger,
-                     "AntennaDriver login failed: %s (code: %ld)",
+        RCLCPP_ERROR(this->get_logger(),
+                     "Antenna login failed: %s (code: %ld)",
                      response.error.message.c_str(),
                      response.status_code);
         return false;
     }
 }
 
-void AntennaDriver::CB_antenna_publisher(rover_msgs::msg::AntennaStatus msg_)
+void AntennaNode::CB_antenna_publisher(void)
 {
-    if (_loginAttempts < MAX_LOGIN_ATTEMPTS && this->getStatus(msg_) && this->getIfStats(msg_))
+    rover_msgs::msg::AntennaStatus msg;
+    if (_login_attempts < MAX_LOGIN_ATTEMPTS && this->getStatus(&msg) && this->getIfStats(&msg))
     {
         msg.success = true;
     }
@@ -76,9 +106,10 @@ void AntennaDriver::CB_antenna_publisher(rover_msgs::msg::AntennaStatus msg_)
     {
         msg.success = false;
     }
+    _pub_antenna_status->publish(msg);
 }
 
-bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
+bool AntennaNode::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
 {
     if (!msg_)
     {
@@ -93,7 +124,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
     }
 
     // Try logging in if not already logged in
-    if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
+    if (!_is_logged_in && !login() && _login_attempts < MAX_LOGIN_ATTEMPTS)
     {
         msg_->success = false;
         msg_->status = "Failed to login to antenna";
@@ -110,8 +141,8 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
     // Check if our session expired
     if (response.status_code == HTTP_UNAUTHORIZED || response.status_code == HTTP_FORBIDDEN)
     {
-        RCLCPP_WARN(_logger, "Session appears expired, attempting to re-login");
-        _isLoggedIn = false;
+        RCLCPP_WARN(this->get_logger(), "Session appears expired, attempting to re-login");
+        _is_logged_in = false;
 
         if (login())
         {
@@ -166,7 +197,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
                             }
                             else
                             {
-                                RCLCPP_ERROR(_logger, "Failed to parse rx_bytes: %s", wlanRxBytesStr.c_str());
+                                RCLCPP_ERROR(this->get_logger(), "Failed to parse rx_bytes: %s", wlanRxBytesStr.c_str());
                             }
                         }
 
@@ -186,7 +217,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
                             }
                             else
                             {
-                                RCLCPP_ERROR(_logger, "Failed to parse tx_bytes: %s", wlanTxBytesStr.c_str());
+                                RCLCPP_ERROR(this->get_logger(), "Failed to parse tx_bytes: %s", wlanTxBytesStr.c_str());
                             }
                         }
                     }
@@ -215,7 +246,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
                             }
                             else
                             {
-                                RCLCPP_ERROR(_logger, "Failed to parse rx_bytes: %s", lanRxBytesStr.c_str());
+                                RCLCPP_ERROR(this->get_logger(), "Failed to parse rx_bytes: %s", lanRxBytesStr.c_str());
                             }
                         }
 
@@ -234,7 +265,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
                             }
                             else
                             {
-                                RCLCPP_ERROR(_logger, "Failed to parse tx_bytes: %s", lanTxBytesStr.c_str());
+                                RCLCPP_ERROR(this->get_logger(), "Failed to parse tx_bytes: %s", lanTxBytesStr.c_str());
                             }
                         }
                     }
@@ -243,14 +274,14 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
         }
         else
         {
-            RCLCPP_ERROR(_logger, "Unable to parse JSON: %s", errors.c_str());
+            RCLCPP_ERROR(this->get_logger(), "Unable to parse JSON: %s", errors.c_str());
             return false;
         }
     }
     return true;
 }
 
-bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
+bool AntennaNode::getStatus(rover_msgs::msg::AntennaStatus* msg_)
 {
     if (!msg_)
     {
@@ -264,7 +295,7 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
         return false;
     }
 
-    if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
+    if (!_is_logged_in && !login() && _login_attempts < MAX_LOGIN_ATTEMPTS)
     {
         msg_->success = false;
         msg_->status = "Failed to login to antenna";
@@ -282,8 +313,8 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
     // Check if our session expired
     if (response.status_code == HTTP_UNAUTHORIZED || response.status_code == HTTP_FORBIDDEN)
     {
-        RCLCPP_WARN(_logger, "Session appears expired, attempting to re-login");
-        _isLoggedIn = false;
+        RCLCPP_WARN(this->get_logger(), "Session appears expired, attempting to re-login");
+        _is_logged_in = false;
 
         if (login())
         {
@@ -335,7 +366,7 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
         }
         else
         {
-            RCLCPP_ERROR_ONCE(_logger,
+            RCLCPP_ERROR_ONCE(this->get_logger(),
                               "Failed to parse JSON: %s, probable cause is invalid credentials, check your .env file",
                               errors.c_str());
             return false;
@@ -344,11 +375,80 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
     return true;
 }
 
-void AntennaDriver::setDebugCB(void)
+bool AntennaNode::loadEnvFile(void)
+{
+    const char* home = std::getenv("HOME");
+    std::string homeStr;
+    if (home)
+    {
+        homeStr = home;
+    }
+    else
+    {
+        RCLCPP_ERROR(this->get_logger(), "Unable to locate HOME folder to load env variable in antenna");
+        return false;
+    }
+
+    std::string filepath = homeStr + ENV_PATH;
+    bool userFound = false;
+    bool passwordFound = false;
+
+    std::ifstream file(filepath);
+    if (!file.is_open())
+    {
+        RCLCPP_WARN(this->get_logger(), "Could not open .env file: %s", filepath.c_str());
+        return false;
+    }
+
+    std::string line;
+    while (std::getline(file, line))
+    {
+        // Skip empty lines and comments
+        if (line.empty() || line[0] == '#')
+        {
+            continue;
+        }
+
+        // Find the '=' delimiter
+        size_t pos = line.find('=');
+        if (pos == std::string::npos)
+        {
+            continue;
+        }
+
+        std::string key = line.substr(0, pos);
+        std::string value = line.substr(pos + 1);
+
+        // Remove quotes if present
+        if (value.length() >= 2 && value.front() == '"' && value.back() == '"')
+        {
+            value = value.substr(1, value.length() - 2);
+        }
+
+        // Set the appropriate member variables
+        if (key == "username")
+        {
+            _username = value;
+            userFound = true;
+            RCLCPP_DEBUG(this->get_logger(), "Loaded username from .env");
+        }
+        else if (key == "password")
+        {
+            _password = value;
+            passwordFound = true;
+            RCLCPP_DEBUG(this->get_logger(), "Loaded password from .env");
+        }
+    }
+
+    file.close();
+    return passwordFound && userFound;
+}
+
+void AntennaNode::setDebugCB(void)
 {
     if (!_session)
     {
-        RCLCPP_ERROR(_logger, "Cannot set debug callback: session is null");
+        RCLCPP_ERROR(this->get_logger(), "Cannot set debug callback: session is null");
         return;
     }
 
@@ -358,19 +458,19 @@ void AntennaDriver::setDebugCB(void)
             switch (type)
             {
                 case cpr::DebugCallback::InfoType::TEXT:
-                    RCLCPP_DEBUG(_logger, "HTTP Debug: %s", data.c_str());
+                    RCLCPP_DEBUG(this->get_logger(), "HTTP Debug: %s", data.c_str());
                     break;
                 case cpr::DebugCallback::InfoType::HEADER_IN:
-                    RCLCPP_DEBUG(_logger, "HTTP Header In: %s", data.c_str());
+                    RCLCPP_DEBUG(this->get_logger(), "HTTP Header In: %s", data.c_str());
                     break;
                 case cpr::DebugCallback::InfoType::HEADER_OUT:
-                    RCLCPP_DEBUG(_logger, "HTTP Header Out: %s", data.c_str());
+                    RCLCPP_DEBUG(this->get_logger(), "HTTP Header Out: %s", data.c_str());
                     break;
                 case cpr::DebugCallback::InfoType::DATA_IN:
-                    RCLCPP_DEBUG(_logger, "HTTP Data In: %zu bytes", data.size());
+                    RCLCPP_DEBUG(this->get_logger(), "HTTP Data In: %zu bytes", data.size());
                     break;
                 case cpr::DebugCallback::InfoType::DATA_OUT:
-                    RCLCPP_DEBUG(_logger, "HTTP Data Out: %zu bytes", data.size());
+                    RCLCPP_DEBUG(this->get_logger(), "HTTP Data Out: %zu bytes", data.size());
                     break;
                 case cpr::DebugCallback::InfoType::SSL_DATA_IN:
                 case cpr::DebugCallback::InfoType::SSL_DATA_OUT:
