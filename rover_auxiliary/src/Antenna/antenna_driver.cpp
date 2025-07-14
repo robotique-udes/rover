@@ -4,10 +4,16 @@
 #include <rover_lib2/helpers/constants.hpp>
 #include <json/json.h>
 
-AntennaDriver::AntennaDriver(const std::string& username_, const std::string& password_, rclcpp::logger& logger_): _username(username_), _password(password_), _logger(logger_)
+AntennaDriver::AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_) : _logger(logger_), _publisherPeriodMs(publisherPeriodMs_)
 {
     _session = std::make_shared<cpr::Session>();
     this->setDebugCB();
+}
+
+void AntennaDriver::setUser(const std::string& username_, const std::string& password_)
+{
+    _username = username_;
+    _password = password_;
 }
 
 bool AntennaDriver::login(void)
@@ -66,38 +72,33 @@ bool AntennaDriver::login(void)
     }
 }
 
-void AntennaDriver::CB_antenna_publisher(rover_msgs::msg::AntennaStatus msg_)
+void AntennaDriver::CbAntennaPublisher(rover_msgs::msg::AntennaStatus& msg_)
 {
     if (_loginAttempts < MAX_LOGIN_ATTEMPTS && this->getStatus(msg_) && this->getIfStats(msg_))
     {
-        msg.success = true;
+        msg_.success = true;
     }
     else
     {
-        msg.success = false;
+        msg_.success = false;
     }
 }
 
-bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
+bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
 {
-    if (!msg_)
-    {
-        return false;
-    }
-
     if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
     {
-        msg_->success = false;
-        msg_->status = "Couldn't find the Base antenna URL in the URL map";
+        msg_.success = false;
+        msg_.status = "Couldn't find the Base antenna URL in the URL map";
         return false;
     }
 
     // Try logging in if not already logged in
     if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
     {
-        msg_->success = false;
-        msg_->status = "Failed to login to antenna";
-        msg_->http_code = 0;
+        msg_.success = false;
+        msg_.status = "Failed to login to antenna";
+        msg_.http_code = 0;
         return false;
     }
 
@@ -121,8 +122,8 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
     }
 
     // Populate and publish the message
-    msg_->status = response.error.message;
-    msg_->http_code = response.status_code;
+    msg_.status = response.error.message;
+    msg_.http_code = response.status_code;
 
     if (!(response.status_code >= HTTP_SUCCESS_MIN && response.status_code < HTTP_SUCCESS_MAX))
     {
@@ -160,8 +161,8 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
 
                             if (result.ec == std::errc{})
                             {
-                                float wlanRxRate = (wlanRxBytes - _wlanRxBytes) * 1000.0f / PUBLISHER_PERIOD_MS;
-                                msg_->wlan_rxrate = wlanRxRate;
+                                float wlanRxRate = (wlanRxBytes - _wlanRxBytes) * 1000.0f / _publisherPeriodMs;
+                                msg_.wlan_rxrate = wlanRxRate;
                                 _wlanRxBytes = wlanRxBytes;
                             }
                             else
@@ -180,8 +181,8 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
 
                             if (result.ec == std::errc{})
                             {
-                                float wlanTxRate = (wlanTxBytes - _wlanTxBytes) * 1000.0f / PUBLISHER_PERIOD_MS;
-                                msg_->wlan_txrate = wlanTxRate;
+                                float wlanTxRate = (wlanTxBytes - _wlanTxBytes) * 1000.0f / _publisherPeriodMs;
+                                msg_.wlan_txrate = wlanTxRate;
                                 _wlanTxBytes = wlanTxBytes;
                             }
                             else
@@ -209,8 +210,8 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
 
                             if (result.ec == std::errc{})
                             {
-                                float lanRxRate = (lanRxBytes - _lanRxBytes) * 1000.0f / PUBLISHER_PERIOD_MS;
-                                msg_->lan_rxrate = lanRxRate;
+                                float lanRxRate = (lanRxBytes - _lanRxBytes) * 1000.0f / _publisherPeriodMs;
+                                msg_.lan_rxrate = lanRxRate;
                                 _lanRxBytes = lanRxBytes;
                             }
                             else
@@ -228,8 +229,8 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
 
                             if (result.ec == std::errc{})
                             {
-                                float lanTxRate = (lanTxBytes - _lanTxBytes) * 1000.0f / PUBLISHER_PERIOD_MS;
-                                msg_->lan_txrate = lanTxRate;
+                                float lanTxRate = (lanTxBytes - _lanTxBytes) * 1000.0f / _publisherPeriodMs;
+                                msg_.lan_txrate = lanTxRate;
                                 _lanTxBytes = lanTxBytes;
                             }
                             else
@@ -250,25 +251,20 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus* msg_)
     return true;
 }
 
-bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
+bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
 {
-    if (!msg_)
-    {
-        return false;
-    }
-
     if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
     {
-        msg_->success = false;
-        msg_->status = "Couldn't find the Base antenna URL in the URL map";
+        msg_.success = false;
+        msg_.status = "Couldn't find the Base antenna URL in the URL map";
         return false;
     }
 
     if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
     {
-        msg_->success = false;
-        msg_->status = "Failed to login to antenna";
-        msg_->http_code = 0;
+        msg_.success = false;
+        msg_.status = "Failed to login to antenna";
+        msg_.http_code = 0;
         return false;
     }
 
@@ -294,8 +290,8 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
     }
 
     // Populate and publish the message
-    msg_->status = response.error.message;
-    msg_->http_code = response.status_code;
+    msg_.status = response.error.message;
+    msg_.http_code = response.status_code;
 
     if (!(response.status_code >= HTTP_SUCCESS_MIN && response.status_code < HTTP_SUCCESS_MAX))
     {
@@ -317,19 +313,19 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus* msg_)
                 if (wireless.isMember("rssi"))
                 {
                     int rssi = wireless["rssi"].asInt();
-                    msg_->rssi = rssi;
+                    msg_.rssi = rssi;
                 }
 
                 if (wireless.isMember("txrate"))
                 {
                     std::string txrate = wireless["txrate"].asString();
-                    msg_->txrate = txrate;
+                    msg_.txrate = txrate;
                 }
 
                 if (wireless.isMember("rxrate"))
                 {
                     std::string rxrate = wireless["rxrate"].asString();
-                    msg_->rxrate = rxrate;
+                    msg_.rxrate = rxrate;
                 }
             }
         }

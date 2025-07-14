@@ -1,4 +1,5 @@
 #include "antenna_node.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 #include <fstream>
 #include <sstream>
 
@@ -13,16 +14,19 @@ int main(int argc, char* argv[])
 }
 
 AntennaNode::AntennaNode():
-    rclcpp::Node("antenna")
+    rclcpp::Node("antenna"), _driver(this->get_logger(), PUBLISHER_PERIOD_MS)
 {
     _pubAntennaStatus = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
 
     if (loadEnvFile())
     {
+        _driver.setUser(_username, _password);
         _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
-                                             [this]()
+                                             [this](void)
                                              {
-                                                 CB_antenna_publisher();
+                                                rover_msgs::msg::AntennaStatus msg;
+                                                 _driver.CbAntennaPublisher(msg);
+                                                 _pubAntennaStatus->publish(msg);
                                              });
     }
     else
@@ -33,7 +37,7 @@ AntennaNode::AntennaNode():
     }
 }
 
-bool AntennaDriver::loadEnvFile(void)
+bool AntennaNode::loadEnvFile(void)
 {
     const char* home = std::getenv("HOME");
     std::string homeStr;
@@ -61,13 +65,11 @@ bool AntennaDriver::loadEnvFile(void)
     std::string line;
     while (std::getline(file, line))
     {
-        // Skip empty lines and comments
         if (line.empty() || line[0] == '#')
         {
             continue;
         }
 
-        // Find the '=' delimiter
         size_t pos = line.find('=');
         if (pos == std::string::npos)
         {
@@ -77,13 +79,11 @@ bool AntennaDriver::loadEnvFile(void)
         std::string key = line.substr(0, pos);
         std::string value = line.substr(pos + 1);
 
-        // Remove quotes if present
         if (value.length() >= 2 && value.front() == '"' && value.back() == '"')
         {
             value = value.substr(1, value.length() - 2);
         }
 
-        // Set the appropriate member variables
         if (key == "username")
         {
             _username = value;

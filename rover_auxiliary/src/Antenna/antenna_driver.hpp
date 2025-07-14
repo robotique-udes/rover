@@ -10,7 +10,6 @@
 
 class AntennaDriver
 {
-    static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
     static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr const char* LOGIN_PAGE = "/login.cgi";
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;
@@ -20,16 +19,17 @@ class AntennaDriver
     static constexpr int HTTP_FORBIDDEN = 403;
 
   public:
-    AntennaDriver(const std::string& username_, const std::string& password_, rclcpp::logger& logger_);
-    void CB_antenna_publisher(rover_msgs::msg::AntennaStatus& msg_);
+    AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_);
+    void setUser(const std::string& username_, const std::string& password_);
+    void CbAntennaPublisher(rover_msgs::msg::AntennaStatus& msg_);
 
   private:
     bool login(void);
-    bool getIfStats(rover_msgs::msg::AntennaStatus* msg_);
-    bool getStatus(rover_msgs::msg::AntennaStatus* msg_);
+    bool getIfStats(rover_msgs::msg::AntennaStatus& msg_);
+    bool getStatus(rover_msgs::msg::AntennaStatus& msg_);
     void setDebugCB(void);
 
-    rclcpp::Logger& _logger;
+    rclcpp::Logger _logger;
 
 
     std::shared_ptr<cpr::Session> _session;
@@ -39,6 +39,7 @@ class AntennaDriver
     uint64_t _lanTxBytes = 0;
     uint64_t _wlanRxBytes = 0;
     uint64_t _wlanTxBytes = 0;
+    uint64_t _publisherPeriodMs;
 
     std::string _username;
     std::string _password;
