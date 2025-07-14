@@ -1,3 +1,6 @@
 [submodule "cpr"]
-	path = cpr
+	path = deps/cpr
+	url = https://github.com/libcpr/cpr
+[submodule "deps/cpr"]
+	path = deps/cpr
 	url = https://github.com/libcpr/cpr
