@@ -1,16 +1,15 @@
 #ifndef GLOWSTICK_DETECTION_NODE_HPP
 #define GLOWSTICK_DETECTION_NODE_HPP
 
-#include "image_capture_glowstick.hpp"  
+#include "image_capture_glowstick.hpp"
 
-class GlowStickDetectionNode : public rclcpp::Node
+class GlowstickDetectionNode : public rclcpp::Node
 {
-public:
-    GlowStickDetectionNode();
-    ~GlowStickDetectionNode();
+  public:
+    GlowstickDetectionNode();
+    ~GlowstickDetectionNode();
 
-private:
-
+  private:
     std::unique_ptr<ImageCaptureGlowstick> _camera;
     rclcpp::TimerBase::SharedPtr _timer;
 };

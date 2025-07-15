@@ -1,7 +1,7 @@
 #include "image_capture_glowstick.hpp"
 
-
-ImageCaptureGlowstick::ImageCaptureGlowstick(std::string cameraURL_) : _cameraURL(cameraURL_)
+ImageCaptureGlowstick::ImageCaptureGlowstick(std::string cameraURL_):
+    _cameraURL(cameraURL_)
 {
     initCam();
 }
@@ -37,7 +37,6 @@ std::optional<cv::Mat> ImageCaptureGlowstick::getFrame(bool debugMode_)
     _firstTryPinningCam = true;
 
     return frame;
-
 }
 
 bool ImageCaptureGlowstick::changeStream(std::string URL_)
@@ -46,7 +45,7 @@ bool ImageCaptureGlowstick::changeStream(std::string URL_)
     {
         _cap.release();
         _cameraURL = URL_;
-        
+
         if (!initCam())
         {
             RCLCPP_WARN(rclcpp::get_logger("glowstick_stick_detection_node"), "Could not change streaming device");
@@ -90,4 +89,3 @@ bool ImageCaptureGlowstick::isValid(void) const
 {
     return _isValid;
 }
-

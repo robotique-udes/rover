@@ -5,15 +5,13 @@
 
 class PositionEstimator
 {
+  public:
+    PositionEstimator();
+    _Float32 getAngle(const cv::Mat& frame_, Glowstick glowstick_, uint16_t index);
+    cv::Point getBotomRectPosition(Glowstick glowstick_, uint16_t index);
 
-    public:
-        PositionEstimator();
-        _Float32 getAngle(const cv::Mat& frame_, Glowstick glowstick_, uint16_t index);
-        cv::Point getBotomRectPosition(Glowstick glowstick_, uint16_t index);
-
-    private:
-        uint16_t FOV = 90;
-
+  private:
+    uint16_t FOV = 90;
 };
 
 #endif
