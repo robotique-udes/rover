@@ -15,7 +15,7 @@
 
 class NavigationController
 {
-    static constexpr float HEADING_BUFFER = 1.0F;
+    static constexpr float HEADING_BUFFER =  20.0F;
     static constexpr float POSITION_BUFFER = 1.0F;
     static constexpr float RECTIFICATION_FACTOR = 0.8F;
     static constexpr float EARTH_RADIUS_METERS = 6'378'137.0F;
@@ -91,8 +91,11 @@ class NavigationController
     eRotationDirection computeRotationDirection(double headingDiff_)
     {
         printf("Heading diff: %.2f degrees\n", headingDiff_);
+        printf("Headind buffer: %.2f degrees\n", this->headingBuffer_);
         if (headingDiff_ <= this->headingBuffer_)
         {
+            printf("No rotation needed \n");
+            this->_desiredHeadingReached = true;
             return eRotationDirection::NO_ROTATION;
         }
         if (headingDiff_ > this->headingBuffer_ && headingDiff_ <= 180.0F)
@@ -122,7 +125,7 @@ class NavigationController
         }
         else
         {
-            float v = MAX_WHEEL_SPEED; 
+            float v = MAX_WHEEL_SPEED;
             float omega = K_ROT * yaw;
 
             float leftCmd = v - omega;
@@ -272,16 +275,12 @@ class NavigationController
         return _targetWheelCmd;
     }
 
-    // Potential-field methods added:
-
   private:
-    // History buffer for smoothing yaw
     std::deque<float> _yawHistory;
     static constexpr size_t MOVING_AVERAGE_WINDOW_SIZE = 10;
     static constexpr float EXPONENTIAL_FACTOR = 0.3f;
 
   public:
-    // Normalize angle to [-pi, pi]
     float normalizeAngle(float angle)
     {
         while (angle > std::numbers::pi)
@@ -291,7 +290,6 @@ class NavigationController
         return angle;
     }
 
-    // Apply moving average to yaw angle
     float applyMovingAverageToYaw(float newYaw)
     {
         newYaw = normalizeAngle(newYaw);
@@ -311,14 +309,12 @@ class NavigationController
         return normalizeAngle(std::atan2(sumSin / _yawHistory.size(), sumCos / _yawHistory.size()));
     }
 
-    // Calculate attractive forces towards goal
     std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateAttractiveForces(float distanceToGoal_, float bearingDeg_)
     {
         float bearingRad = bearingDeg_ * std::numbers::pi / 180.0f;
         return {distanceToGoal_ * std::cos(bearingRad), distanceToGoal_ * std::sin(bearingRad)};
     }
 
-    // Calculate repulsive forces from obstacles
     std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateRepulsiveForces(const std::vector<int8_t>& costmapData_)
     {
         std::array<float, TO_UNDERLYING(eForceVector::eLAST)> repulsiveForces = {0.0f, 0.0f};
@@ -353,7 +349,6 @@ class NavigationController
         return repulsiveForces;
     }
 
-    // Combine attractive and repulsive forces
     std::array<float, TO_UNDERLYING(eForceVector::eLAST)> calculateTotalForces(
         const std::array<float, TO_UNDERLYING(eForceVector::eLAST)>& attractive,
         const std::array<float, TO_UNDERLYING(eForceVector::eLAST)>& repulsive)
@@ -361,7 +356,6 @@ class NavigationController
         return {attractive[0] + repulsive[0], attractive[1] + repulsive[1]};
     }
 
-    // Compute magnitude and yaw using potential fields
     std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> computeHeading(const std::vector<int8_t>& costmapData_)
     {
         float bear = computeBearing();
