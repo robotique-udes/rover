@@ -144,7 +144,7 @@ void GoalManager::driveTrainPublisher(void)
             RCLCPP_INFO(this->get_logger(), "State: IDLE");
             if (goalRequested)
             {
-                _state = eState::NAVIGATING_TO_POINT;
+                _state = eState::ROTATING;
             }
             else
             {
@@ -153,6 +153,9 @@ void GoalManager::driveTrainPublisher(void)
             break;
         case (eState::ROTATING):
             RCLCPP_INFO(this->get_logger(), "State: ROTATING");
+            RCLCPP_INFO(this->get_logger(), "desired heading reached: %s",
+                        _navigationController._desiredHeadingReached ? "true" : "false");
+            
             if (_navigationController._desiredHeadingReached)
             {
                 _state = eState::NAVIGATING_TO_POINT;
@@ -161,6 +164,8 @@ void GoalManager::driveTrainPublisher(void)
             {
                 double bearing = _navigationController.computeBearing();
                 float headingDiff = std::abs(bearing - _navigationController._currentHeading);
+
+                RCLCPP_INFO(this->get_logger(), "heading diff", headingDiff);
 
                 NavigationController::eRotationDirection rotationDirection
                     = _navigationController.computeRotationDirection(headingDiff);
@@ -187,7 +192,7 @@ void GoalManager::driveTrainPublisher(void)
                     = _navigationController.computeHeading(_currentCostmap.data);
                 _targetWheelCmd = _navigationController.navigate(totalForces);
 
-                // THIS IS FOR DEBUG
+                // DEBUG PURPOSES
                 this->visualizeHeading(totalForces);
             }
             break;

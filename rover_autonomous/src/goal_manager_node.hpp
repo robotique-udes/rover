@@ -16,7 +16,6 @@
 class GoalManager : public rclcpp::Node
 {
   public:
-    // Topics & services
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
     static constexpr const char* TOPIC_COSTMAP_NAME = "/rover/autonomous/costmap";
     static constexpr const char* TOPIC_WHEEL_CMD_NAME = "/rover/drive_train/wheels_cmd_auto";
@@ -27,7 +26,7 @@ class GoalManager : public rclcpp::Node
     static constexpr const char* SERVICE_SERVER_NAME = "/rover/cameras/aruco_detection_management";
 
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
-    static constexpr float HEADING_BUFFER = 1.0F;
+    static constexpr float HEADING_BUFFER = 20.0F;
     static constexpr size_t MAG_WINDOW_SIZE = 10;
 
     enum class eState
