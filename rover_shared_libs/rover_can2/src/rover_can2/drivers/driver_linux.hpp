@@ -60,9 +60,9 @@ namespace RoverCan2::Drivers
         }
 
         // Useless in this case - required by DriverBase interface
-        void __init(void) {}
+        void _init(void) {}
 
-        void __update(void)
+        void _update(void)
         {
             this->handleWatchdogStatus();
 

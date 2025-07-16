@@ -47,6 +47,12 @@ constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
     static_assert((... && std::is_base_of_v<BaseT, std::remove_reference_t<__VA_ARGS__>>), \
                   "All template arguments must be derived from " #BaseT)
 
+/**
+ * @brief Checks if types implements correctly a concept
+ * @note Must be called at the end of the implementation's definition
+ */
+#define VALIDATE_CONCEPT(concept_, impl_) static_assert(concept_<impl_>, #impl_ " does not satisfy the concept " #concept_)
+
 template<typename T>
 constexpr T ABS(T var_) noexcept
 {
@@ -162,6 +168,18 @@ constexpr T ROUND_DOWN(T value_)
         return integerPart;
     }
     return (value_ < 0) ? integerPart - static_cast<T>(1) : integerPart;
+}
+
+template<std::floating_point T>
+constexpr T degToRad(T deg_)
+{
+    return deg_ * std::numbers::pi_v<T> / static_cast<T>(180.0);
+}
+
+template<std::floating_point T>
+constexpr T radToDeg(T rad_)
+{
+    return rad_ * static_cast<T>(180.0) / std::numbers::pi_v<T>;
 }
 
 template<std::floating_point T>
