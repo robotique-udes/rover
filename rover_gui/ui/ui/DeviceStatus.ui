@@ -92,7 +92,7 @@ QPushButton:hover {
 }</string>
         </property>
         <property name="text">
-         <string>Service Call</string>
+         <string>Update devices</string>
         </property>
        </widget>
       </item>
