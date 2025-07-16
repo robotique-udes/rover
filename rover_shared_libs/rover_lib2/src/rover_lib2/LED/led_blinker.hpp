@@ -10,7 +10,7 @@
 #include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/time.hpp"
 
-DEFINE_LOG_NODE(LedBlinker, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(LedBlinker, Logger::eNodeState::OFF);
 
 namespace LED
 {

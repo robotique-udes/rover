@@ -171,6 +171,18 @@ constexpr T ROUND_DOWN(T value_)
 }
 
 template<std::floating_point T>
+constexpr T degToRad(T deg_)
+{
+    return deg_ * std::numbers::pi_v<T> / static_cast<T>(180.0);
+}
+
+template<std::floating_point T>
+constexpr T radToDeg(T rad_)
+{
+    return rad_ * static_cast<T>(180.0) / std::numbers::pi_v<T>;
+}
+
+template<std::floating_point T>
 constexpr T MAP(T value_, T inMin_, T inMax_, T outMin_, T outMax_)
 {
     return ((value_ - inMin_) * (outMax_ - outMin_) / (inMax_ - inMin_) + outMin_);
