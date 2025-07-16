@@ -13,12 +13,12 @@ namespace RoverCan2::Drivers
     class DriverMock : public DriverBase<DriverMock>
     {
       public:
-        void __init(void)
+        void _init(void)
         {
             isInited = true;
         }
 
-        void __update(void)
+        void _update(void)
         {
             hasUpdated = true;
             // Must be done manually in tests

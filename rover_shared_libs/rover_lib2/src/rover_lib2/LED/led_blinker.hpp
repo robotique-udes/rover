@@ -10,7 +10,7 @@
 #include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/time.hpp"
 
-DEFINE_LOG_NODE(LedBlinker, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(LedBlinker, Logger::eNodeState::OFF);
 
 namespace LED
 {
@@ -21,16 +21,15 @@ namespace LED
     };
 
     template<typename ImplT>
-    class LedBlinker : public RoverObject<LedBlinker<ImplT>>,
-                       public LedBlinkerT
+    class LedBlinker : public LedBlinkerT
     {
       public:
-        void _init(void)
+        void init(void)
         {
             static_cast<ImplT*>(this)->__init();
         }
 
-        void _update(void)
+        void update(void)
         {
             static_cast<ImplT*>(this)->__update();
         }
