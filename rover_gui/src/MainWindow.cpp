@@ -70,8 +70,11 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
 
         case QSideBar::eTabIndex::DASHBOARD:
             grid->addWidget(&_navigationWidget, 0, 0, 2, 1);
-            grid->addWidget(&_arbitrationWidget, 0, 1, Qt::AlignTop | Qt::AlignLeft);
-            grid->addWidget(&_deviceStatusWidget, 1, 1, Qt::AlignTop | Qt::AlignLeft);
+            grid->addWidget(&_arbitrationWidget, 0, 1);
+            grid->addWidget(&_deviceStatusWidget, 1, 1);
+
+            grid->setColumnStretch(0, 6);
+            grid->setColumnStretch(1, 1);
             _deviceStatusWidget.onDashboardPage();
             break;
 
