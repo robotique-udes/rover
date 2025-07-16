@@ -22,6 +22,16 @@ class AntennaDriver
     static constexpr uint16_t HTTP_UNAUTHORIZED = 401;
     static constexpr uint16_t HTTP_FORBIDDEN = 403;
 
+    static constexpr char const* JSON_FIELD_WIRELESS = "wireless";
+    static constexpr char const* JSON_FIELD_RSSI = "rssi";
+    static constexpr char const* JSON_FIELD_INTERFACES = "interfaces";
+    static constexpr char const* JSON_FIELD_STATS = "stats";
+    static constexpr char const* JSON_FIELD_RX_BYTES = "rx_bytes";
+    static constexpr char const* JSON_FIELD_TX_BYTES = "tx_bytes";
+
+    static constexpr uint8_t INTERFACE_WLAN_INDEX = 0;
+    static constexpr uint8_t INTERFACE_LAN_INDEX = 1;
+
   public:
     AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_);
     void setUserInfo(const std::string& username_, const std::string& password_);

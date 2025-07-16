@@ -39,19 +39,20 @@ bool AntennaDriver::login(void)
     RCLCPP_INFO(_logger, "Attempting to login to antenna...");
     cpr::Response response = _session->Post();
 
-    if (response.status_code == HTTP_SUCCESS_MIN)
+    if (response.status_code >= HTTP_SUCCESS_MIN && response.status_code < HTTP_SUCCESS_MAX)
     {
         if (this->verifyAuthentication())
         {
             _isLoggedIn = true;
             RCLCPP_INFO(_logger, "Login was successful");
+            _loginAttempts = 0;
             return true;
         }
         else
         {
             _isLoggedIn = false;
             RCLCPP_INFO(_logger, "Login unsuccessful, antenna was reached but username/password was wrong");
-            return true;
+            return false;
         }
     }
     else
@@ -67,9 +68,12 @@ bool AntennaDriver::login(void)
 
 void AntennaDriver::CbAntennaPublisher(rover_msgs::msg::AntennaStatus& msg_)
 {
-    msg_.connected = this->isLoggedIn();
-    this->getStatus(msg_);
-    this->getIfStats(msg_);
+    // when status fails don't bother with ifStats it will fail too
+    // status is checked first because it's the shortest
+    if (this->getStatus(msg_))
+    {
+        this->getIfStats(msg_);
+    }
 }
 
 bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
@@ -80,7 +84,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
         msg_.info = "Couldn't find the Base antenna URL in the URL map";
         return false;
     }
-    if (!_isLoggedIn && this->isLoggedIn() && !login())
+    if (!this->isLoggedIn() && !login())
     {
         msg_.connected = false;
         msg_.info = "Failed to login to antenna";
@@ -88,7 +92,6 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
         return false;
     }
 
-    // Now use the existing session with stored cookies for the status request
     _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + IFSTATS_PAGE});
 
     _session->SetOption(cpr::Payload{});  // remove payload from login
@@ -102,8 +105,14 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
 
         if (login())
         {
-            _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/ifstats.cgi"});
+            _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + IFSTATS_PAGE});
             response = _session->Get();
+        }
+        else
+        {
+            msg_.connected = false;
+            msg_.info = "Failed to login to antenna";
+            return false;
         }
     }
 
@@ -124,22 +133,21 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
         std::istringstream stream(response.text);
         if (Json::parseFromStream(builder, stream, &root, &errors))
         {
-            if (root.isMember("interfaces") && root["interfaces"].isArray())
+            if (root.isMember(JSON_FIELD_INTERFACES) && root[JSON_FIELD_INTERFACES].isArray())
             {
-                Json::Value interfaces = root["interfaces"];
+                Json::Value interfaces = root[JSON_FIELD_INTERFACES];
 
-                // Index 0 is wlan and Index 1 is lan
-                if (interfaces.size() > 0 && interfaces[0].isObject())
+                if (interfaces.size() > 0 && interfaces[INTERFACE_WLAN_INDEX].isObject())
                 {
-                    Json::Value interface0 = interfaces[0];
+                    Json::Value interface0 = interfaces[INTERFACE_WLAN_INDEX];
 
-                    if (interface0.isMember("stats") && interface0["stats"].isObject())
+                    if (interface0.isMember(JSON_FIELD_STATS) && interface0[JSON_FIELD_STATS].isObject())
                     {
-                        Json::Value stats = interface0["stats"];
+                        Json::Value stats = interface0[JSON_FIELD_STATS];
 
-                        if (stats.isMember("rx_bytes"))
+                        if (stats.isMember(JSON_FIELD_RX_BYTES))
                         {
-                            std::string wlanRxBytesStr = stats["rx_bytes"].asString();
+                            std::string wlanRxBytesStr = stats[JSON_FIELD_RX_BYTES].asString();
                             uint64_t wlanRxBytes;
                             std::from_chars_result result = std::from_chars(wlanRxBytesStr.data(),
                                                                             wlanRxBytesStr.data() + wlanRxBytesStr.size(),
@@ -157,9 +165,9 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
                             }
                         }
 
-                        if (stats.isMember("tx_bytes"))
+                        if (stats.isMember(JSON_FIELD_TX_BYTES))
                         {
-                            std::string wlanTxBytesStr = stats["tx_bytes"].asString();
+                            std::string wlanTxBytesStr = stats[JSON_FIELD_TX_BYTES].asString();
                             uint64_t wlanTxBytes;
                             std::from_chars_result result = std::from_chars(wlanTxBytesStr.data(),
                                                                             wlanTxBytesStr.data() + wlanTxBytesStr.size(),
@@ -198,7 +206,7 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
         return false;
     }
 
-    if (!_isLoggedIn && _loginAttempts < MAX_LOGIN_ATTEMPTS && !login())
+    if (!this->isLoggedIn() && !login())
     {
         msg_.connected = false;
         msg_.info = "Failed to login to antenna";
@@ -207,7 +215,7 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
     }
 
     // Now use the existing session with stored cookies for the status request
-    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + "/status.cgi"});
+    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + STATUS_PAGE});
 
     // Send the GET request using the same session (which has the cookies)
     _session->SetOption(cpr::Payload{});
@@ -224,6 +232,12 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
             // Retry the request with fresh session
             _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + STATUS_PAGE});
             response = _session->Get();
+        }
+        else
+        {
+            msg_.connected = false;
+            msg_.info = "Failed to login to antenna";
+            return false;
         }
     }
 
@@ -244,13 +258,13 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
         std::istringstream stream(response.text);
         if (Json::parseFromStream(builder, stream, &root, &errors))
         {
-            if (root.isMember("wireless"))
+            if (root.isMember(JSON_FIELD_WIRELESS))
             {
-                Json::Value wireless = root["wireless"];
+                Json::Value wireless = root[JSON_FIELD_WIRELESS];
 
-                if (wireless.isMember("rssi"))
+                if (wireless.isMember(JSON_FIELD_RSSI))
                 {
-                    float rssi = wireless["rssi"].asFloat();
+                    float rssi = wireless[JSON_FIELD_RSSI].asFloat();
                     msg_.rssi = rssi;
                 }
             }
