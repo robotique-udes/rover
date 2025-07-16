@@ -86,6 +86,8 @@ namespace RoverCan2::Msgs
                               success ? "success" : "failed");
                     break;
 
+                case eMsgContentID::eLAST:
+                    [[fallthrough]];
                 default:
                     return eLoadMsgCode::ERROR_IMPLEMENTATION;
             }
@@ -130,7 +132,11 @@ namespace RoverCan2::Msgs
                     break;
 
                 case eMsgContentID::eLAST:
+                    [[fallthrough]];
+
+                default:
                     return std::nullopt;
+                    break;
             }
 
             return msg_;

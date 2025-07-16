@@ -18,8 +18,7 @@ namespace RoverCan2
     };
 
     template<typename ImplT, typename DriverT, typename... DevicesT>
-    class Manager : public RoverObject<Manager<ImplT, DriverT, DevicesT...>>,
-                    ManagerT
+    class Manager : public ManagerT
     {
         VALIDATE_BASE_TYPE(Drivers::DriverBaseT, DriverT);
         VALIDATE_BASE_TYPE_PACK(DeviceT, DevicesT);
@@ -28,12 +27,12 @@ namespace RoverCan2
         static constexpr uint8_t MAX_MSG_PARSE_PER_UPDATE = 10U;
 
       public:
-        void _init(void)
+        void init(void)
         {
             _driver.init();
         }
 
-        void _update(void)
+        void update(void)
         {
             _driver.update();
 
@@ -51,7 +50,7 @@ namespace RoverCan2
 
             this->publishAllQueuedMsgs();
 
-            static_cast<ImplT*>(this)->__update();
+            static_cast<ImplT*>(this)->_update();
         }
 
         /**
