@@ -40,13 +40,11 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _ui.setupUi(this);
 
     _layout = new QFlowLayout(_ui.deviceInfos);
-    _layout->setSpacing(2);                   // Reduce spacing between widgets
-    _layout->setContentsMargins(2, 2, 2, 2);  // Reduce margins
+    _layout->setSpacing(2);
+    _layout->setContentsMargins(2, 2, 2, 2);
     _ui.deviceInfos->setLayout(_layout);
 
-    _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
     this->initializeDeviceWidget();
 
@@ -108,7 +106,7 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
     containerLayout->setSpacing(1);
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
-    iconLabel->setFixedSize(60, 60);
+    iconLabel->setFixedSize(ICON_DIMENSION, ICON_DIMENSION);
     iconLabel->setScaledContents(true);
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
 
@@ -138,22 +136,6 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 }
 
 /**
- * @brief Sets the layout and size constraints for the widget when it is displayed on the dashboard page.
- *
- */
-void QDeviceStatus::onDashboardPage()
-{
-    _layout->setSizeConstraint(QLayout::SetMinimumSize);
-    _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Minimum);
-
-    _ui.deviceInfos->setMinimumSize(130, 0);
-    _ui.deviceInfos->setMaximumSize(200, QWIDGETSIZE_MAX);
-
-    this->hideControls();
-    this->hideInfos();
-}
-
-/**
  * @brief Sets the layout and size constraints for the widget when it is displayed on the device status page.
  *
  */
@@ -179,6 +161,21 @@ void QDeviceStatus::showControls()
     _ui.serviceCall->show();
 }
 
+/**
+ * @brief Sets the layout and size constraints for the widget when it is displayed on the dashboard page.
+ *
+ */
+void QDeviceStatus::onDashboardPage()
+{
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
+
+    _ui.deviceInfos->setMinimumSize(120, 0);
+    _ui.deviceInfos->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
+
+    this->hideControls();
+    this->hideInfos();
+}
+
 void QDeviceStatus::hideInfos()
 {
     for (auto& [key, value] : _canDevices)
@@ -191,7 +188,7 @@ void QDeviceStatus::hideInfos()
             value.deviceInfoContainer->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
             value.deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
 
-            value.deviceInfoContainer->adjustSize(); // Recalculate size
+            value.deviceInfoContainer->adjustSize();  // Recalculate size
         }
     }
 
