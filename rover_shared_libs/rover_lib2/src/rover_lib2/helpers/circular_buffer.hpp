@@ -7,7 +7,7 @@
 
 #include "rover_lib2/helpers/log.hpp"
 
-DEFINE_LOG_NODE(CircularBuffer, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(CircularBuffer, Logger::eNodeState::OFF);
 
 class CircularBufferT
 {
