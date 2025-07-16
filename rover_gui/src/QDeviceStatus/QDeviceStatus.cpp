@@ -44,7 +44,8 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _layout->setContentsMargins(2, 2, 2, 2);
     _ui.deviceInfos->setLayout(_layout);
 
-    _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
+    _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    _ui.deviceInfos->adjustSize();
 
     this->initializeDeviceWidget();
 
@@ -80,6 +81,10 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
             &QDeviceStatus::onRequestDeviceStatusSuccessful);
 }
 
+/**
+ * @brief Initializes the device widget by adding widgets for each device ID.
+ * 
+ */
 void QDeviceStatus::initializeDeviceWidget()
 {
     this->addDeviceWidget(RoverCan2::Constant::eDeviceId::DDB_CONTROLLER);
@@ -95,14 +100,18 @@ void QDeviceStatus::initializeDeviceWidget()
     // addDeviceWidget(RoverCan2::Constant::eDeviceId::SWITCHETH1);
 }
 
+/**
+ * @brief Adds a widget for the specified device ID to the device info container.
+ * 
+ * @param deviceId_ 
+ */
 void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 {
     QWidget* deviceInfoContainer = new QWidget(_ui.deviceInfos);
-    deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
     deviceInfoContainer->setStyleSheet(STATUS_DEFAULT);
 
     QHBoxLayout* containerLayout = new QHBoxLayout(deviceInfoContainer);
-    containerLayout->setContentsMargins(2, 2, 2, 2);
+    containerLayout->setContentsMargins(1, 1, 1, 1);
     containerLayout->setSpacing(1);
 
     QLabel* iconLabel = new QLabel(deviceInfoContainer);
@@ -144,16 +153,26 @@ void QDeviceStatus::onDeviceStatusPage()
     _layout->setSizeConstraint(QLayout::SetDefaultConstraint);
     _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
-    _ui.deviceInfos->setMinimumSize(0, 0);
-    _ui.deviceInfos->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-
     this->showControls();
     this->showInfos();
 }
 
-void QDeviceStatus::hideControls()
+/**
+ * @brief Adjusts the widget back to their normal size to show on Device Status Page
+ * 
+ */
+void QDeviceStatus::showInfos()
 {
-    _ui.serviceCall->hide();
+    for (auto& [key, value] : _canDevices)
+    {
+        if (value.deviceInfoLabel)
+        {
+            value.deviceInfoLabel->show();
+            value.deviceInfoContainer->setFixedSize(DEVICE_INFO_WIDTH, DEVICE_INFO_HEIGHT);
+        }
+    }
+
+    this->updateGeometry();
 }
 
 void QDeviceStatus::showControls()
@@ -167,10 +186,8 @@ void QDeviceStatus::showControls()
  */
 void QDeviceStatus::onDashboardPage()
 {
+    _layout->setSizeConstraint(QLayout::SetMinimumSize);
     _ui.deviceInfos->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Preferred);
-
-    _ui.deviceInfos->setMinimumSize(120, 0);
-    _ui.deviceInfos->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
 
     this->hideControls();
     this->hideInfos();
@@ -184,36 +201,16 @@ void QDeviceStatus::hideInfos()
         {
             value.deviceInfoLabel->hide();
 
-            value.deviceInfoContainer->setMinimumSize(0, 0);
-            value.deviceInfoContainer->setMaximumSize(QWIDGETSIZE_MAX, QWIDGETSIZE_MAX);
-            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Minimum, QSizePolicy::Minimum);
-
-            value.deviceInfoContainer->adjustSize();  // Recalculate size
+            value.deviceInfoContainer->setFixedSize(ICON_DIMENSION + 2, ICON_DIMENSION + 2);
         }
     }
 
-    _layout->invalidate();
-    _layout->activate();
-    _ui.deviceInfos->updateGeometry();
     this->updateGeometry();
 }
 
-void QDeviceStatus::showInfos()
+void QDeviceStatus::hideControls()
 {
-    for (auto& [key, value] : _canDevices)
-    {
-        if (value.deviceInfoLabel)
-        {
-            value.deviceInfoLabel->show();
-            value.deviceInfoContainer->setFixedSize(210, 100);
-            value.deviceInfoContainer->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-        }
-    }
-
-    _layout->invalidate();
-    _layout->activate();
-    _ui.deviceInfos->updateGeometry();
-    this->updateGeometry();
+    _ui.serviceCall->hide();
 }
 
 /**
