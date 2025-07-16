@@ -2,6 +2,7 @@
 #define GLOWSTICK_POSITION_ESTIMATOR_HPP
 
 #include "glowstick.hpp"
+#include "image_capture_glowstick.hpp"
 
 class PositionEstimator
 {
@@ -11,7 +12,7 @@ class PositionEstimator
     cv::Point getBotomRectPosition(Glowstick glowstick_, uint16_t index);
 
   private:
-    uint16_t FOV = 90;
+    static constexpr uint16_t FOV = 90;
 };
 
 #endif

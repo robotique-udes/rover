@@ -1,12 +1,11 @@
 #include "glowstick_detection_node.hpp"
-#include "glowstick_detector.hpp"
-#include "glowstick.hpp"
 
 GlowstickDetectionNode::GlowstickDetectionNode():
     Node("glowstick_detection_node")
 {
-    _camera = std::make_unique<ImageCaptureGlowstick>(
-        "rtspsrc location=rtsp://192.168.144.31:554/1/h264major latency=0 drop-on-latency=true protocols=tcp ! "
+    _camera = ImageCaptureGlowstick(
+        //"rtspsrc location=rtsp://192.168.144.31:554/1/h264major latency=0 drop-on-latency=true protocols=tcp ! "
+        "v4l2src device=/dev/video0 ! "
         "decodebin ! "
         "videorate max-rate=20 ! "
         "videoconvert ! "
@@ -20,7 +19,7 @@ GlowstickDetectionNode::GlowstickDetectionNode():
 
     while (true)
     {
-        _camera->_cap >> frameCam;
+        _camera._cap >> frameCam;
         frameGlowStick = frameCam.clone();
 
         if (glowsticks.drawGlowsticks(frameCam, frameGlowStick))
@@ -32,7 +31,7 @@ GlowstickDetectionNode::GlowstickDetectionNode():
             break;
     }
 
-    _camera->_cap.release();
+    _camera._cap.release();
     cv::destroyAllWindows();
 }
 

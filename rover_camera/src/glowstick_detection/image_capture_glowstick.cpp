@@ -1,5 +1,8 @@
 #include "image_capture_glowstick.hpp"
 
+ImageCaptureGlowstick::ImageCaptureGlowstick()
+{}
+
 ImageCaptureGlowstick::ImageCaptureGlowstick(std::string cameraURL_):
     _cameraURL(cameraURL_)
 {

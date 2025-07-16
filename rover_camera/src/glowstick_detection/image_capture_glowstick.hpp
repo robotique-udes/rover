@@ -9,10 +9,13 @@
 #include <iostream>
 #include <algorithm>
 #include <tuple>
+#include "glowstick_configuration.hpp"
+
 
 class ImageCaptureGlowstick
 {
   public:
+    ImageCaptureGlowstick();
     ImageCaptureGlowstick(std::string cameraURL_);
     ~ImageCaptureGlowstick(void);
 

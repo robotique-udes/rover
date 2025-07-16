@@ -2,23 +2,23 @@
 
 GlowstickDetector::GlowstickDetector()
 {
-    glowsticks[WHITE] = Glowstick(cv::Scalar(0, 0, 200), cv::Scalar(180, 180, 255), cv::Scalar(0, 255, 0));
-    glowsticks[BLUE] = Glowstick(cv::Scalar(100, 150, 150), cv::Scalar(130, 255, 255), cv::Scalar(255, 0, 0));
-    glowsticks[RED] = Glowstick(cv::Scalar(0, 150, 150), cv::Scalar(10, 255, 255), cv::Scalar(0, 0, 255));
+    glowsticks[WHITE] = Glowstick(GS_CONFIGURATION::WHITE::LOWT, GS_CONFIGURATION::WHITE::HIGHT, GS_CONFIGURATION::WHITE::COLOR);
+    glowsticks[BLUE] = Glowstick(GS_CONFIGURATION::BLUE::LOWT, GS_CONFIGURATION::BLUE::HIGHT, GS_CONFIGURATION::BLUE::COLOR);
+    glowsticks[RED] = Glowstick(GS_CONFIGURATION::RED::LOWT, GS_CONFIGURATION::RED::HIGHT, GS_CONFIGURATION::RED::COLOR);
 }
 
 bool GlowstickDetector::drawGlowsticks(const cv::Mat& frame, cv::Mat& frameGlowsticks)
 {
     detectGlowstick(frame);
 
-    for (uint16_t i = 1; i < 3; i++)  // JE VAIS DE 1 A 2 LIVE PCQ LE 1 CEST LE BLANC ET JE VEUX PAS LE VOIR
+    for (size_t i = 1; i < 3; i++)  // JE VAIS DE 1 A 2 LIVE PCQ LE 1 CEST LE BLANC ET JE VEUX PAS LE VOIR
     {
-        for (uint16_t j = 0; j < maxAmountGlowsticks; j++)
+        for (size_t j = 0; j < maxAmountGlowsticks; j++)
         {
             if (!glowsticks[i]._glowstickRect.empty() && !glowsticks[i]._glowstickRectCenter.empty())
             {
                 cv::rectangle(frameGlowsticks, glowsticks[i]._glowstickRect[j], glowsticks[i].getColor(), 2);
-                cv::rectangle(frameGlowsticks, glowsticks[i]._glowstickRectCenter[j], cv::Scalar(0, 255, 0), 2);
+                cv::rectangle(frameGlowsticks, glowsticks[i]._glowstickRectCenter[j], GS_CONFIGURATION::WHITE::COLOR, 2);
                 std::string angle = std::to_string(_positionEstimator.getAngle(frame, glowsticks[i], j));
                 cv::putText(frameGlowsticks,
                             angle,
@@ -61,13 +61,13 @@ bool GlowstickDetector::filterFrame(const cv::Mat& frame, cv::Mat masks[])
     cv::equalizeHist(hsvChannels[2], hsvChannels[2]);
     cv::merge(hsvChannels, hsv);
 
-    for (uint16_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 3; i++)
     {
         cv::inRange(hsv, glowsticks[i].getLowerThreshold(), glowsticks[i].getHigherThreshold(), masks[i]);
 
         if (i == RED)
         {
-            cv::inRange(hsv, cv::Scalar(170, 150, 150), cv::Scalar(180, 255, 255), masks[i + 1]);
+            cv::inRange(hsv, GS_CONFIGURATION::RED::LOWT2, GS_CONFIGURATION::RED::HIGHT2, masks[i + 1]);
             cv::bitwise_or(masks[i], masks[i + 1], masks[i]);
             masks[i + 1].release();
         }
@@ -87,7 +87,7 @@ bool GlowstickDetector::findGlowsticks(cv::Mat masks[],
                                        std::vector<std::vector<cv::Point>> contours[],
                                        std::vector<std::vector<cv::Point>> contoursWhite[])
 {
-    for (uint16_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 3; i++)
     {
         cv::findContours(masks[i], contours[i], cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
         cv::findContours(masks[0], contoursWhite[i], cv::RETR_EXTERNAL, cv::CHAIN_APPROX_SIMPLE);
@@ -99,15 +99,15 @@ bool GlowstickDetector::findGlowsticks(cv::Mat masks[],
 bool GlowstickDetector::filterGlowsticks(std::vector<std::vector<cv::Point>> contours[],
                                          std::vector<std::vector<cv::Point>> contoursWhite[])
 {
-    for (uint16_t i = 0; i < 3; i++)
+    for (size_t i = 0; i < 3; i++)
     {
         std::vector<std::tuple<uint16_t, cv::Rect, cv::Rect>> areaRect;
 
-        for (uint16_t j = 0; j < contours[i].size(); j++)
+        for (size_t j = 0; j < contours[i].size(); j++)
         {
             cv::Rect rect = cv::boundingRect(contours[i][j]);
 
-            for (uint16_t k = 0; k < contoursWhite[i].size(); k++)
+            for (size_t k = 0; k < contoursWhite[i].size(); k++)
             {
                 cv::Rect rectCenter = cv::boundingRect(contoursWhite[i][k]);
                 uint16_t area = rectCenter.area();
@@ -130,7 +130,7 @@ bool GlowstickDetector::filterGlowsticks(std::vector<std::vector<cv::Point>> con
         glowsticks[i]._glowstickRectCenter.clear();
         size_t count = std::min<size_t>(maxAmountGlowsticks, areaRect.size());
 
-        for (int j = 0; j < count; j++)
+        for (size_t j = 0; j < count; j++)
         {
             glowsticks[i]._glowstickRectCenter.push_back(std::get<1>(areaRect[j]));
             glowsticks[i]._glowstickRect.push_back(std::get<2>(areaRect[j]));
