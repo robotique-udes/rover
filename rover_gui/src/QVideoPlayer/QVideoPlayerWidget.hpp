@@ -38,10 +38,6 @@ class QVideoPlayerWidget : public QWidget
     static constexpr uint16_t CAMERA_MAX_ANGLE = 360;
     static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100;
 
-    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
-    static constexpr uint16_t CAMERA_MAX_ANGLE = 360;
-    static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100;
-
   public:
     enum class ePlayerState
     {
@@ -155,6 +151,7 @@ class QVideoPlayerWidget : public QWidget
 
     int _streamIndex;
     uint16_t _playerIndex;
+    std::string _sessionFolderPath;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> _client_panoramaManager;

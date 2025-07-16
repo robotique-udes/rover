@@ -1,5 +1,6 @@
 #include "QVideoPlayerWidget.hpp"
 #include "QLogManager.hpp"
+#include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
 #include <QStyle>
 #include <QDateTime>
 #include <QMessageBox>
@@ -94,6 +95,25 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
     _gstreamerThread.start();
+
+    // In the next implementation of panorama move this to QPanoramaHandler
+    std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
+    if (optionalSessionFolderPath.has_value())
+    {
+        _sessionFolderPath = *optionalSessionFolderPath;
+        if (_sessionFolderPath.empty())
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                           "SessionFolderManager returned an empty path",
+                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+        }
+    }
+    else
+    {
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                       "SessionFolderManager couldn't return a valid path",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
+    }
 
     UI_LOG_INFO(GENERAL, QString::fromStdString("VideoPlayer Widget initialized for camera: " + _camURL), _ui.logDisplay);
 }
@@ -929,107 +949,6 @@ void QVideoPlayerWidget::hideAngleSelector(void)
 {
     if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main")
         || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
-    {
-        _ui.cameraAngleSlider->show();
-        _ui.cameraAngleBox->show();
-        _ui.angleCenterButton->show();
-        _ui.panoramaButton->show();
-        _ui.actualAngleSlider->show();
-        _ui.panoramaDurationBox->show();
-    }
-    else
-    {
-        _ui.cameraAngleSlider->hide();
-        _ui.cameraAngleBox->hide();
-        _ui.angleCenterButton->hide();
-        _ui.panoramaButton->hide();
-        _ui.actualAngleSlider->hide();
-        _ui.panoramaDurationBox->hide();
-    }
-}
-
-void QVideoPlayerWidget::onCenterAngle(void)
-{
-    _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
-    _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
-    emit this->notifyCameraAnglePublisher(_camURL, CAMERA_CENTER_ANGLE);
-}
-
-void QVideoPlayerWidget::handlePanorama(void)
-{
-    if (_panoramaWorkerThread.get() != nullptr)
-    {
-        _panoramaWorkerThread->takePanoramaManager(_client_panoramaManager,
-                                                   _camURL,
-                                                   _playerIndex,
-                                                   _sessionFolderPath,
-                                                   _panoramaDuration);
-
-        this->panoramaTurnCamera();
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Error, couldn't access panorama worker");
-    }
-}
-
-void QVideoPlayerWidget::setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_)
-{
-    if (client_)
-    {
-        this->_client_panoramaManager = client_;
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Couldn't create panorama client");
-    }
-}
-
-void QVideoPlayerWidget::onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_)
-{
-    if (_playerIndex == playerIndex_)
-    {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama started",
-                                                                       "Duration: " + std::to_string(duration_ / 1000.0)
-                                                                           + " seconds",
-                                                                       QHelper::QToastNotification::eNotifType::SUCCESS);
-
-        QTimer::singleShot(duration_,
-                           this,
-                           [this]()
-                           {
-                               QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                                   "Panorama done",
-                                   "Picture was saved to the session folder under camera/panorama",
-                                   QHelper::QToastNotification::eNotifType::SUCCESS);
-                           });
-    }
-}
-
-void QVideoPlayerWidget::CB_srvCameraAvailable(bool available_)
-{
-    _recorderWidget.CB_srvAvailable(available_);
-}
-
-void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
-{
-    _ui.cameraAngleBox->setValue(_ui.cameraAngleSlider->value());
-    float angle = static_cast<float>(_ui.cameraAngleSlider->value());
-    emit this->notifyCameraAnglePublisher(_camURL, angle);
-}
-
-void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
-{
-    _ui.cameraAngleSlider->setValue(_ui.cameraAngleBox->value());
-    float angle = static_cast<float>(_ui.cameraAngleBox->value());
-    emit this->notifyCameraAnglePublisher(_camURL, angle);
-}
-
-void QVideoPlayerWidget::hideAngleSelector(void)
-{
-    if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main")
-    || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
-
     {
         _ui.cameraAngleSlider->show();
         _ui.cameraAngleBox->show();
