@@ -26,7 +26,7 @@ bool AntennaDriver::login(void)
         return true;
     }
 
-    if (_loginAttempts > MAX_LOGIN_ATTEMPTS)
+    if (_loginAttempts >= MAX_LOGIN_ATTEMPTS)
     {
         RCLCPP_ERROR(_logger, "Max login attempts reached");
         return false;
@@ -41,12 +41,22 @@ bool AntennaDriver::login(void)
 
     if (response.status_code == HTTP_SUCCESS_MIN)
     {
-        _isLoggedIn = true;
-        RCLCPP_INFO(_logger, "Post was successful");
-        return true;
+        if (this->verifyAuthentication())
+        {
+            _isLoggedIn = true;
+            RCLCPP_INFO(_logger, "Login was successful");
+            return true;
+        }
+        else
+        {
+            _isLoggedIn = false;
+            RCLCPP_INFO(_logger, "Login unsuccessful, antenna was reached but username/password was wrong");
+            return true;
+        }
     }
     else
     {
+        _isLoggedIn = false;
         RCLCPP_ERROR(_logger,
                      "AntennaDriver login failed, POST request was unsuccesfull: %s (code: %ld)",
                      response.error.message.c_str(),
@@ -57,27 +67,22 @@ bool AntennaDriver::login(void)
 
 void AntennaDriver::CbAntennaPublisher(rover_msgs::msg::AntennaStatus& msg_)
 {
-    if (_loginAttempts < MAX_LOGIN_ATTEMPTS && this->getStatus(msg_) && this->getIfStats(msg_))
-    {
-        msg_.success = true;
-    }
-    else
-    {
-        msg_.success = false;
-    }
+    msg_.connected = this->isLoggedIn();
+    this->getStatus(msg_);
+    this->getIfStats(msg_);
 }
 
 bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
 {
     if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
     {
-        msg_.success = false;
+        msg_.connected = false;
         msg_.info = "Couldn't find the Base antenna URL in the URL map";
         return false;
     }
-    if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
+    if (!_isLoggedIn && this->isLoggedIn() && !login())
     {
-        msg_.success = false;
+        msg_.connected = false;
         msg_.info = "Failed to login to antenna";
         msg_.http_code = 0;
         return false;
@@ -188,14 +193,14 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
 {
     if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
     {
-        msg_.success = false;
+        msg_.connected = false;
         msg_.info = "Couldn't find the Base antenna URL in the URL map";
         return false;
     }
 
-    if (!_isLoggedIn && !login() && _loginAttempts < MAX_LOGIN_ATTEMPTS)
+    if (!_isLoggedIn && _loginAttempts < MAX_LOGIN_ATTEMPTS && !login())
     {
-        msg_.success = false;
+        msg_.connected = false;
         msg_.info = "Failed to login to antenna";
         msg_.http_code = 0;
         return false;
@@ -311,4 +316,33 @@ void AntennaDriver::setupSession(void)
 
     _session->SetConnectTimeout(cpr::ConnectTimeout{SESSION_CONNECT_TIMEOUT_MS});
     _session->SetTimeout(cpr::Timeout{SESSION_TIMEOUT_MS});
+}
+
+bool AntennaDriver::isLoggedIn(void)
+{
+    return _isLoggedIn;
+}
+
+bool AntennaDriver::verifyAuthentication(void)
+{
+    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + STATUS_PAGE});
+    _session->SetOption(cpr::Payload{});
+    cpr::Response response = _session->Get();
+
+    if (response.status_code >= HTTP_SUCCESS_MIN && response.status_code < HTTP_SUCCESS_MAX && !response.text.empty())
+    {
+        // To validate authentification try to parse the GET response,
+        // with a valid authentification GET will return json whrereas an invalid one will return html
+        Json::Value root;
+        Json::CharReaderBuilder builder;
+        std::string errors;
+        std::istringstream stream(response.text);
+
+        if (Json::parseFromStream(builder, stream, &root, &errors) && root.isMember("wireless"))
+        {
+            return true;
+        }
+    }
+
+    return false;
 }

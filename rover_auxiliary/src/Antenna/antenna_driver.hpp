@@ -26,9 +26,11 @@ class AntennaDriver
     AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_);
     void setUserInfo(const std::string& username_, const std::string& password_);
     void CbAntennaPublisher(rover_msgs::msg::AntennaStatus& msg_);
+    bool isLoggedIn(void);
 
   private:
     bool login(void);
+    bool verifyAuthentication(void);
     void setupSession(void);
     bool getIfStats(rover_msgs::msg::AntennaStatus& msg_);
     bool getStatus(rover_msgs::msg::AntennaStatus& msg_);
