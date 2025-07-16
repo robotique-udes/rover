@@ -31,6 +31,8 @@ class QDeviceStatus : public QWidget
         QLabel* deviceInfoLabel;
     };
 
+    static constexpr uint8_t ICON_DIMENSION = 55;
+
   public:
     QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
     void onDashboardPage();
