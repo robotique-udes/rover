@@ -33,6 +33,7 @@ AntennaNode::AntennaNode():
     else
     {
         rover_msgs::msg::AntennaStatus msg;
+        msg.connected = false;
         msg.info = "Error loading .env file";
         _pubAntennaStatus->publish(msg);
     }
