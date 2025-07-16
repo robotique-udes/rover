@@ -9,7 +9,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     QWidget(parent_),
     _node(guiNode_),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
-    _playerWorkerThreadRecording(std::make_shared<QRecordingWorker>()),
     _panoramaWorkerThread(std::make_shared<QPanoramaWorker>()),
     _tabWidget(this),
     _gridContainer(nullptr),
@@ -27,10 +26,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::urlFoundInDetection,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
-    connect(_playerWorkerThreadRecording.get(),
-            &QRecordingWorker::setCursorWaiting,
-            this,
-            &QVideoManagerWidget::onSetCursorWaiting);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
@@ -38,6 +33,11 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                 &QVideoPlayerWidget::notifyCameraAnglePublisher,
                 this,
                 &QVideoManagerWidget::CB_pubCameraAngle);
+
+        connect(_playerWorkerThreadRecording[i].get(),
+                &QRecordingWorker::setCursorWaiting,
+                this,
+                &QVideoManagerWidget::onSetCursorWaiting);
     }
 
     connect(&_tabWidget, &QTabWidget::currentChanged, this, &QVideoManagerWidget::onTabChanged);
@@ -65,8 +65,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     _playerWorkerThreadAruco->start();
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
-    _playerWorkerThreadRecording->start();
-    _playerWorkerThreadRecording->setThreadName("WorkerRecord");
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
 }
@@ -172,11 +170,15 @@ void QVideoManagerWidget::initWidget(void)
                            nullptr);
         }
 
+        _playerWorkerThreadRecording[i] = std::make_shared<QRecordingWorker>();
+        _playerWorkerThreadRecording[i]->start();
+        _playerWorkerThreadRecording[i]->setThreadName("WorkerRecord" + std::to_string(i));
+
         _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node,
                                                                      cameraUrl,
                                                                      i,
                                                                      _playerWorkerThreadAruco,
-                                                                     _playerWorkerThreadRecording,
+                                                                     _playerWorkerThreadRecording[i],
                                                                      _panoramaWorkerThread);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
@@ -261,7 +263,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
             bool available = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
             for (auto& widget : _videoPlaysWidgets)
             {
-                widget->CB_serviceCameraControlAvailable(available);
+                widget->CB_srvCameraAvailable(available);
             }
         });
     return;

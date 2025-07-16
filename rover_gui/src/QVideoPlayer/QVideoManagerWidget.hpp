@@ -73,7 +73,7 @@ class QVideoManagerWidget : public QWidget
     std::shared_ptr<rclcpp::Node> _node;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
-    std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
+    std::array<std::shared_ptr<QRecordingWorker>, NBR_CAM_TO_TRACK> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
 
     QTabWidget _tabWidget;
