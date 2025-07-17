@@ -1,6 +1,7 @@
 #ifndef CAN_MASTER_NODE_HPP
 #define CAN_MASTER_NODE_HPP
 
+#include "can_master/devices/arm_joint.hpp"
 #include "can_master/devices/camera.hpp"
 #include "can_master/devices/propulsion_motors.hpp"
 #include "can_master/devices/gnss.hpp"
@@ -8,6 +9,7 @@
 
 #include <rover_msgs/msg/can_device_status.hpp>
 #include <rover_msgs/msg/detail/gps__struct.hpp>
+#include <rover_msgs/msg/arm_msg.hpp>
 #include <rover_msgs/srv/empty.hpp>
 
 #include <rover_can2/rover_can2.hpp>
@@ -48,6 +50,9 @@ class CanMasterNode : public rclcpp::Node
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::PropulsionMotor>> _propMotorMsg
         = std::make_shared<CanMaster::SharedRosMsg<rover_msgs::msg::PropulsionMotor>>();
 
+    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>> _armJointMsg
+        = std::make_shared<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>>();
+
     // CanDevices
     PropulsionMotor motorFL = PropulsionMotor(RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR,
                                               rover_msgs::msg::PropulsionMotor::MOTOR_FRONT_LEFT,
@@ -73,6 +78,17 @@ class CanMasterNode : public rclcpp::Node
 
     Gnss gnss = Gnss(RoverCan2::Constant::eDeviceId::GNSS);
 
+    ArmJoint JL = ArmJoint(RoverCan2::Constant::eDeviceId::JL_CONTROLLER, rover_msgs::msg::ArmMsg::JL, _armJointMsg);
+    ArmJoint J0 = ArmJoint(RoverCan2::Constant::eDeviceId::JR_CONTROLLER, rover_msgs::msg::ArmMsg::J0, _armJointMsg);
+    ArmJoint J1 = ArmJoint(RoverCan2::Constant::eDeviceId::J1_CONTROLLER, rover_msgs::msg::ArmMsg::J1, _armJointMsg);
+    ArmJoint J2 = ArmJoint(RoverCan2::Constant::eDeviceId::J2_CONTROLLER, rover_msgs::msg::ArmMsg::J2, _armJointMsg);
+    ArmJoint gripperTilt
+        = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER, rover_msgs::msg::ArmMsg::GRIPPER_TILT, _armJointMsg);
+    ArmJoint gripperRot
+        = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER, rover_msgs::msg::ArmMsg::GRIPPER_ROT, _armJointMsg);
+    ArmJoint gripperClose
+        = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER, rover_msgs::msg::ArmMsg::GRIPPER_CLOSE, _armJointMsg);
+
     // Can
     RoverCan2::Drivers::DriverLinux __canDriver;
     RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverLinux,
@@ -85,7 +101,14 @@ class CanMasterNode : public rclcpp::Node
                              Camera&,
                              Camera&,
                              Camera&,
-                             Gnss&>
+                             Gnss&,
+                             ArmJoint&,
+                             ArmJoint&,
+                             ArmJoint&,
+                             ArmJoint&,
+                             ArmJoint&,
+                             ArmJoint&,
+                             ArmJoint&>
         _canManager = RoverCan2::ManagerMaster(
             __canDriver,
             [this](RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& msg_)
@@ -101,9 +124,16 @@ class CanMasterNode : public rclcpp::Node
             cameraSideFront,
             cameraArmTop,
             cameraArmSide,
-            gnss);
+            gnss,
+            JL,
+            J0,
+            J1,
+            J2,
+            gripperTilt,
+            gripperRot,
+            gripperClose);
 
-    std::array<MasterDevice*, 10U> _deviceArray = {&motorFL,
+    std::array<MasterDevice*, 17U> _deviceArray = {&motorFL,
                                                    &motorFR,
                                                    &motorRL,
                                                    &motorRR,
@@ -112,7 +142,14 @@ class CanMasterNode : public rclcpp::Node
                                                    &cameraSideFront,
                                                    &cameraArmTop,
                                                    &cameraArmSide,
-                                                   &gnss};
+                                                   &gnss,
+                                                   &JL,
+                                                   &J0,
+                                                   &J1,
+                                                   &J2,
+                                                   &gripperTilt,
+                                                   &gripperRot,
+                                                   &gripperClose};
 };
 
 #endif  // CAN_MASTER_NODE_HPP

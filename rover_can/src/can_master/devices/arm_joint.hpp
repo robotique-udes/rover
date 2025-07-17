@@ -21,7 +21,7 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
 
     static constexpr const char* ARM_CMD_TOPIC = "/rover/arm/joints_cmd";
     static constexpr const char* ARM_POSITION_STATUS_TOPIC = "/rover/arm/joints_status";
-    static constexpr float ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ = 100.0F;
+    static constexpr float ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ = 20.0F;
     static constexpr uint32_t CAN_PUBLISH_PERIOD_MS
         = static_cast<uint32_t>(ROUND(1'000.0F / ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ));
 

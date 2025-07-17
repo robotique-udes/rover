@@ -58,7 +58,8 @@ std::vector<RoverCan2::Constant::eDeviceId> ArmJoint::getManagedDevicesIds(void)
 
 void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmPositionStatus& msg_)
 {
-    _rosSharedMsg->get().getThreadSafeAccess().current_position[_rosArmSpeedMsgId] = msg_.getData().current_position;
+    _rosSharedMsg->get().getThreadSafeAccess().current_position[_rosArmSpeedMsgId] = msg_.getData().position;
+    _rosSharedMsg->get().getThreadSafeAccess().current_speed[_rosArmSpeedMsgId] = msg_.getData().speed;
 }
 
 void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
