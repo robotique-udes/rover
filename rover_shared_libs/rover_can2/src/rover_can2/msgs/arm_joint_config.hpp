@@ -1,36 +1,36 @@
-#ifndef ARMSPEEDCMD_HPP
-#define ARMSPEEDCMD_HPP
+#ifndef ARM_JOINT_CONFIG_HPP
+#define ARM_JOINT_CONFIG_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
 
-DEFINE_LOG_NODE(Armspeedcmd_msg, Logger::eNodeState::OFF)
+DEFINE_LOG_NODE(ArmJointConfig_msg, Logger::eNodeState::OFF)
 
 namespace RoverCan2::Msgs
 {
-    class Armspeedcmd : public Msg<Armspeedcmd>
+    class ArmJointConfig : public Msg<ArmJointConfig>
     {
       public:
         enum class eMsgContentID : uint8_t
         {
-            TARGET_SPEED,
+
             eLAST,
         };
 
       private:
         struct sMsgData
         {
-            float targetSpeed;
+
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
-            = {eMsgContentID::TARGET_SPEED};
+            = {};
 
       public:
-        Armspeedcmd():
-            Msg(Constant::eMsgId::ARMSPEEDCMD)
+        ArmJointConfig():
+            Msg(Constant::eMsgId::ARM_JOINT_CONFIG)
         {
-            _data.targetSpeed = static_cast<decltype(_data.targetSpeed)>(0);
+
         }
 
         eLoadMsgCode _loadMsg(const CanMsg& msg_)
@@ -48,7 +48,7 @@ namespace RoverCan2::Msgs
             eMsgContentID msgContentId = static_cast<eMsgContentID>(msg_.getMsgContentID());
             if (!VALID_MSG_IDS.contains(msgContentId))
             {
-                LOG_DEBUG(Logger::Nodes::Armspeedcmd_msg,
+                LOG_DEBUG(Logger::Nodes::ArmJointConfig_msg,
                           "Mismatch between received message and local message definition. Received msgContentId: (%u), "
                           "expected lower than (%u) and none zero",
                           TO_UNDERLYING(msgContentId),
@@ -59,12 +59,6 @@ namespace RoverCan2::Msgs
             bool success = false;
             switch (msgContentId)
             {
-                case eMsgContentID::TARGET_SPEED:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.targetSpeed);
-                    LOG_DEBUG(Logger::Nodes::Armspeedcmd_msg,
-                              "switch (msgContentId) case eMsgContentID::TARGET_SPEED: %s",
-                              success ? "success" : "failed");
-                    break;
 
                 case eMsgContentID::eLAST:
                     [[fallthrough]];
@@ -99,9 +93,6 @@ namespace RoverCan2::Msgs
             CanMsg msg_;
             switch (static_cast<eMsgContentID>(msgContentId_))
             {
-                case eMsgContentID::TARGET_SPEED:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.targetSpeed, msg_);
-                    break;
 
                 case eMsgContentID::eLAST:
                     [[fallthrough]];
@@ -135,4 +126,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // ARMSPEEDCMD_HPP
+#endif  // ARM_JOINT_CONFIG_HPP
