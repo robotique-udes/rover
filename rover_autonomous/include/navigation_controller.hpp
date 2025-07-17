@@ -110,7 +110,7 @@ class NavigationController
         }
     }
 
-    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> navigate(std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> totalForces_)
+    std::array<float, TO_UNDERLYING(eWheelCmd::eLAST)> navigateTo(std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> totalForces_)
     {
         float yaw = totalForces_[TO_UNDERLYING(eTotalForce::YAW)];
         float magnitude = totalForces_[TO_UNDERLYING(eTotalForce::MAGNITUDE)];
@@ -356,8 +356,9 @@ class NavigationController
         return {attractive[0] + repulsive[0], attractive[1] + repulsive[1]};
     }
 
-    std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> computeHeading(const std::vector<int8_t>& costmapData_)
+    std::array<float, TO_UNDERLYING(eTotalForce::eLAST)> computeLidarHeading(const std::vector<int8_t>& costmapData_)
     {
+        // TODO fix this ugly code
         float bear = computeBearing();
         float dist = getDistanceBetweenPoints();
         auto attr = calculateAttractiveForces(dist, bear);
