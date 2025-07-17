@@ -11,6 +11,13 @@ find_package(rclpy REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 
+include_directories(
+  include
+  ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
+)
+
+add_subdirectory(../rover_shared_libs/ .build)
+
 install(PROGRAMS
   scripts/arm_sim.py
   DESTINATION lib/${PROJECT_NAME}
@@ -19,11 +26,15 @@ install(PROGRAMS
 add_executable(gps_test src/gps_test_pub.cpp)
 add_executable(battery_test src/battery_test_pub.cpp)
 add_executable(connection_speed_test src/connection_speed_test_pub.cpp)
+add_executable(can_test src/can_sim/arm_joint_sim.cpp)
+
+target_link_libraries(can_test rover_shared_libs)
 
 install(TARGETS
         battery_test
         connection_speed_test
         gps_test
+        can_test
         DESTINATION lib/${PROJECT_NAME}
   )
 
@@ -36,6 +47,10 @@ ament_target_dependencies(battery_test
                           rover_msgs)
 
 ament_target_dependencies(connection_speed_test
+                          rclcpp
+                          rover_msgs)
+
+ament_target_dependencies(can_test
                           rclcpp
                           rover_msgs)
 
