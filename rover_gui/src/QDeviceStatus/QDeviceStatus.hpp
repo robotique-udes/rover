@@ -24,8 +24,6 @@ class QDeviceStatus : public QWidget
     {
         uint16_t deviceMessageCount;
         uint16_t numberOfDeviceReboots;
-        uint16_t oldDeviceReboots;
-        uint16_t numberOfDeviceRebootsFromButton;
         QWidget* deviceInfo;
         QLabel* deviceReboot;
     };
@@ -42,7 +40,7 @@ class QDeviceStatus : public QWidget
     void updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_);
     void setStatusReport(RoverCan2::Constant::eDeviceId id_);
     void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
-    void setDefaultStyle();
+    void resetWidget();
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
 
   private slots:
@@ -51,15 +49,11 @@ class QDeviceStatus : public QWidget
   private:
     std::shared_ptr<rclcpp::Node> _node;
     Ui::DeviceStatus _ui;
-    QLabel* _imageLabel;
-    QPixmap _pixmap;
 
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
     rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client_requestErrorStatus;
 
     std::unordered_map<RoverCan2::Constant::eDeviceId, sCanDeviceInfos> _canDevices;
-
-    uint16_t _numberOfCalls = 0U;
 
     QStatusWorker _QStatusWorker;
 };

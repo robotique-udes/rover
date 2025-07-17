@@ -37,7 +37,7 @@ namespace RoverCan2
         {
         }
 
-        void __update(void) {}
+        void _update(void) {}
 
         bool sendErrorStateRequest(void)
         {

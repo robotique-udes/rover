@@ -13,7 +13,8 @@ DEFINE_LOG_NODE(MCPWM, Logger::eNodeState::OFF);
 
 namespace PWMGenerators
 {
-    class MCPWM : public PWMGenerator<MCPWM>
+
+    class MCPWM
     {
         static constexpr int DEFAULT_INTERUPT_PRIORITY = MCPWMTimer::DEFAULT_INTERUPT_PRIORITY;
 
@@ -87,11 +88,11 @@ namespace PWMGenerators
             ASSERT_MSG("Destructor should never be called at runtime, resources management is RAII");
         }
 
-        void __init(void) {}
+        void init(void) {}
 
-        void __update(void) {}
+        void update(void) {}
 
-        void _setDutyCycle(float duty_)
+        void setDutyCycle(float duty_)
         {
             if (_duty == duty_)
             {
@@ -110,7 +111,7 @@ namespace PWMGenerators
             ASSERT_COND_MSG_ARGS(retval == ESP_OK, "mcpwm_comparator_set_compare_value(0x%p, %u)", _comparatorH, activePeriodCtn);
         }
 
-        float _getDutyCycle(void) const
+        float getDutyCycle(void) const
         {
             return _duty;
         }
@@ -120,17 +121,17 @@ namespace PWMGenerators
          *
          * @param duty_
          */
-        void _setFrequency(float /*frequency_*/)
+        void setFrequency(float /*frequency_*/)
         {
             ASSERT_MSG("Changing frequency is not supported by MCPWM driver");
         }
 
-        float _getFrequency(void) const
+        float getFrequency(void) const
         {
             return _timer.getFrequency();
         }
 
-        void _setEnabled(bool enable_)
+        void setEnabled(bool enable_)
         {
             if (_enabled == enable_)
             {
@@ -153,7 +154,7 @@ namespace PWMGenerators
                                                      .action = mcpwm_generator_action_t::MCPWM_GEN_ACTION_LOW});
                 ASSERT_COND_MSG_ARGS(retVal == ESP_OK, "mcpwm_generator_set_action_on_timer_event() failed with %u", retVal);
 
-                _setDutyCycle(_duty);
+                this->setDutyCycle(_duty);
             }
             else
             {
@@ -162,7 +163,7 @@ namespace PWMGenerators
             }
         }
 
-        bool _isEnabled() const
+        bool isEnabled() const
         {
             return _enabled;
         }
@@ -174,6 +175,8 @@ namespace PWMGenerators
 
         mcpwm_cmpr_handle_t _comparatorH;
         mcpwm_gen_handle_t _generatorH;
+
+        VALIDATE_CONCEPT(PWMGenerator, MCPWM);
     };
 }  // namespace PWMGenerators
 

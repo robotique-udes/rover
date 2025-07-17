@@ -62,6 +62,10 @@ namespace RoverCan2
                     break;
                 case Msgs::eLoadMsgCode::ERROR_IMPLEMENTATION:
                     ASSERT_MSG("Message implementation is erroneous, expect undefined behavior");
+                    break;
+                default:
+                    ASSERT_MSG("Unknown return code, expect undefined behavior");
+                    break;
             }
 
             return loadCode;
