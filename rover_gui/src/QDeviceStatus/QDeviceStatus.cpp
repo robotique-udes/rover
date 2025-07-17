@@ -40,7 +40,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
     _ui.setupUi(this);
 
     _layout = std::make_unique<QFlowLayout>(_ui.deviceInfos);
-    
+
     _layout->setSpacing(2);
     _layout->setContentsMargins(2, 2, 2, 2);
     _ui.deviceInfos->setLayout(_layout.get());
