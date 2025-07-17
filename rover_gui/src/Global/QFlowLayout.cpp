@@ -1,3 +1,9 @@
+/****
+ * QFlowLayout.cpp
+ * From the official Qt project examples.
+ * Rearranges widgets in a flow layout.
+ */
+
 #include "QFlowLayout.hpp"
 #include <QtWidgets/QWidget>
 
