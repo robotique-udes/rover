@@ -179,18 +179,18 @@ void GoalManager::driveTrainPublisher(void)
             {
                 RCLCPP_INFO(this->get_logger(), "Point reached");
 
-                // auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
-                // arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
-                // arucoRequest->camera_url = Constants::CameraInfo::CAMERA_URL_MAP.at(("Main"));  // TODO Make better
-                // goalRequested = false;
-                // goalReached = true;
-                // _state = eState::DETECTING_ARUCO;
+                auto arucoRequest = std::make_shared<rover_msgs::srv::ArucoDetection::Request>();
+                arucoRequest->command = rover_msgs::srv::ArucoDetection::Request::START;
+                arucoRequest->camera_url = Constants::CameraInfo::CAMERA_URL_MAP.at(("Main"));  // TODO Make better
+                goalRequested = false;
+                goalReached = true;
+                _state = eState::DETECTING_ARUCO;
             }
             else
             {
-                std::array<float, TO_UNDERLYING(NavigationController::eTotalForce::eLAST)> totalForces
-                    = _navigationController.computeHeading(_currentCostmap.data);
-                _targetWheelCmd = _navigationController.navigate(totalForces);
+                std::array<float, TO_UNDERLYING(NavigationController::eTotalForce::eLAST)> desiredVector
+                    = _navigationController.computeLidarHeading(_currentCostmap.data);
+                _targetWheelCmd = _navigationController.navigateTo(desiredVector);
 
                 // DEBUG PURPOSES
                 this->visualizeHeading(totalForces);
