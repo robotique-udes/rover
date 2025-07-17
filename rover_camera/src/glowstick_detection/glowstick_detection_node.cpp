@@ -1,34 +1,35 @@
 #include "glowstick_detection_node.hpp"
+#include "../../../rover_shared_libs/rover_lib2/src/rover_lib2/helpers/constants.hpp"
 
 GlowstickDetectionNode::GlowstickDetectionNode():
     Node("glowstick_detection_node")
 {
     _camera = ImageCaptureGlowstick(
-        //"rtspsrc location=rtsp://192.168.144.31:554/1/h264major latency=0 drop-on-latency=true protocols=tcp ! "
-        "v4l2src device=/dev/video0 ! "
-        "decodebin ! "
-        "videorate max-rate=20 ! "
-        "videoconvert ! "
-        "queue max-size-buffers=1 leaky=downstream ! "
-        "appsink sync=false");
+        //"rtspsrc location=" + Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna") + _pipeline
+        _pipelineWebcam
+        );
 
     cv::Mat frameCam;
     cv::Mat frameGlowStick;
     GlowstickDetector glowsticks;
     std::vector<cv::Point> gsPosition;
+    bool stopProgram = false;
 
-    while (true)
+    while(!stopProgram)
     {
         _camera._cap >> frameCam;
         frameGlowStick = frameCam.clone();
 
         if (glowsticks.drawGlowsticks(frameCam, frameGlowStick))
-
+        {
             cv::imshow("Laptop Camera", frameCam);
-        cv::imshow("GlowStick Cam", frameGlowStick);
+            cv::imshow("GlowStick Cam", frameGlowStick);
+        }
 
-        if (cv::waitKey(27) >= 0)
-            break;
+        if (cv::waitKey(GS_CONFIGURATION::WAIT_KEY_DELAY_MS) >= 0)
+        {
+            stopProgram = true;
+        }
     }
 
     _camera._cap.release();

@@ -2,31 +2,32 @@
 #define GLOWSTICK_DETECTOR_HPP
 
 #include "glowstick.hpp"
-#include "glowstick_position_estimator.hpp"
+#include "glowstick_angle_estimator.hpp"
 
 class GlowstickDetector
 {
     enum
     {
-        WHITE,
-        BLUE,
-        RED
+        WHITE = 0,
+        BLUE = 1,
+        RED = 2,
+        eLAST
     };
 
   public:
     GlowstickDetector();
-    bool drawGlowsticks(const cv::Mat& frame, cv::Mat& frameGlowsticks);
-    bool detectGlowstick(const cv::Mat& frame);
-    bool filterFrame(const cv::Mat& frame, cv::Mat masks[]);
-    bool findGlowsticks(cv::Mat masks[],
-                        std::vector<std::vector<cv::Point>> contours[],
-                        std::vector<std::vector<cv::Point>> contoursWhite[]);
-    bool filterGlowsticks(std::vector<std::vector<cv::Point>> contours[], std::vector<std::vector<cv::Point>> contoursWhite[]);
+    bool drawGlowsticks(const cv::Mat& frame_, cv::Mat& frameGlowsticks_);
+    void detectGlowstick(const cv::Mat& frame_);
+    void filterFrame(const cv::Mat& frame_, cv::Mat masks_[]);
+    void findGlowsticks(cv::Mat masks_[],
+                        std::vector<std::vector<cv::Point>> contours_[],
+                        std::vector<std::vector<cv::Point>> contoursWhite_[]);
+    void filterGlowsticks(std::vector<std::vector<cv::Point>> contours_[], std::vector<std::vector<cv::Point>> contoursWhite_[]);
 
   private:
-    Glowstick glowsticks[3];
-    std::vector<cv::Mat> colorMasks;
-    static constexpr uint16_t maxAmountGlowsticks = 3;
+    Glowstick _glowsticks[eLAST];
+    std::vector<cv::Mat> _colorMasks;
+    static constexpr uint16_t _maxAmountGlowsticks = eLAST;
     PositionEstimator _positionEstimator;
 };
 

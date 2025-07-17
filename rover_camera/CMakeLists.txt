@@ -38,10 +38,11 @@ add_executable(glowstick_detection src/glowstick_detection/glowstick_detection_n
                                    src/glowstick_detection/image_capture_glowstick.cpp
                                    src/glowstick_detection/glowstick_detector.cpp
                                    src/glowstick_detection/glowstick.cpp
-                                   src/glowstick_detection/glowstick_position_estimator.cpp)
+                                   src/glowstick_detection/glowstick_angle_estimator.cpp)
 ament_target_dependencies(glowstick_detection
                           rclcpp
-                          OpenCV)
+                          OpenCV
+                          rover_msgs)
 
 target_link_libraries(media_server ${OpenCV_LIBS})
 target_link_libraries(aruco_detection 
