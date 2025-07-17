@@ -83,7 +83,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
 /**
  * @brief Initializes the device widget by adding widgets for each device ID.
- * 
+ *
  */
 void QDeviceStatus::initializeDeviceWidget()
 {
@@ -102,8 +102,8 @@ void QDeviceStatus::initializeDeviceWidget()
 
 /**
  * @brief Adds a widget for the specified device ID to the device info container.
- * 
- * @param deviceId_ 
+ *
+ * @param deviceId_
  */
 void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 {
@@ -159,7 +159,7 @@ void QDeviceStatus::onDeviceStatusPage()
 
 /**
  * @brief Adjusts the widget back to their normal size to show on Device Status Page
- * 
+ *
  */
 void QDeviceStatus::showInfos()
 {

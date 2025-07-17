@@ -26,7 +26,7 @@ class QDeviceStatus : public QWidget
     static constexpr uint8_t ICON_DIMENSION = 55U;
     static constexpr uint8_t DEVICE_INFO_HEIGHT = 100U;
     static constexpr uint8_t DEVICE_INFO_WIDTH = 210U;
-	
+
     struct sCanDeviceInfos
     {
         uint16_t deviceMessageCount;
