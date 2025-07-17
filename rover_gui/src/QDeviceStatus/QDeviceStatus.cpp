@@ -39,10 +39,11 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
 
     _ui.setupUi(this);
 
-    _layout = new QFlowLayout(_ui.deviceInfos);
+    _layout = std::make_unique<QFlowLayout>(_ui.deviceInfos);
+    
     _layout->setSpacing(2);
     _layout->setContentsMargins(2, 2, 2, 2);
-    _ui.deviceInfos->setLayout(_layout);
+    _ui.deviceInfos->setLayout(_layout.get());
 
     _ui.deviceInfos->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     _ui.deviceInfos->adjustSize();
@@ -107,14 +108,14 @@ void QDeviceStatus::initializeDeviceWidget()
  */
 void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
 {
-    QWidget* deviceInfoContainer = new QWidget(_ui.deviceInfos);
+    std::unique_ptr<QWidget> deviceInfoContainer = std::make_unique<QWidget>(_ui.deviceInfos);
     deviceInfoContainer->setStyleSheet(STATUS_DEFAULT);
 
-    QHBoxLayout* containerLayout = new QHBoxLayout(deviceInfoContainer);
+    std::unique_ptr<QHBoxLayout> containerLayout = std::make_unique<QHBoxLayout>(deviceInfoContainer.get());
     containerLayout->setContentsMargins(1, 1, 1, 1);
     containerLayout->setSpacing(1);
 
-    QLabel* iconLabel = new QLabel(deviceInfoContainer);
+    std::unique_ptr<QLabel> iconLabel = std::make_unique<QLabel>(deviceInfoContainer.get());
     iconLabel->setFixedSize(ICON_DIMENSION, ICON_DIMENSION);
     iconLabel->setScaledContents(true);
     iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
@@ -127,7 +128,7 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
         iconLabel->setPixmap(scaledIcon);
     }
 
-    QLabel* deviceInfoLabel = new QLabel(deviceInfoContainer);
+    std::unique_ptr<QLabel> deviceInfoLabel = std::make_unique<QLabel>(deviceInfoContainer.get());
     deviceInfoLabel->setAlignment(Qt::AlignCenter);
     deviceInfoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     deviceInfoLabel->setWordWrap(false);
@@ -136,12 +137,13 @@ void QDeviceStatus::addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId_)
                        + QString("\n\nID: 0x%1").arg(TO_UNDERLYING(deviceId_), 3, 16, QChar('0')) + "\n\nReboots: 0";
     deviceInfoLabel->setText(infoText);
 
-    containerLayout->addWidget(iconLabel);
-    containerLayout->addWidget(deviceInfoLabel);
+    containerLayout->addWidget(iconLabel.release());
+    containerLayout->addWidget(deviceInfoLabel.get());
 
-    _canDevices[deviceId_] = {0, 0, deviceInfoContainer, deviceInfoLabel};
+    _canDevices[deviceId_] = {0, 0, deviceInfoContainer.get(), deviceInfoLabel.release()};
 
-    _layout->addWidget(deviceInfoContainer);
+    deviceInfoContainer->setLayout(containerLayout.release());
+    _layout->addWidget(deviceInfoContainer.release());
 }
 
 /**

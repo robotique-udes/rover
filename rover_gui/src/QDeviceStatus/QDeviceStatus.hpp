@@ -72,7 +72,7 @@ class QDeviceStatus : public QWidget
     std::vector<QWidget*> _spacerWidgets;
 
     QStatusWorker _QStatusWorker;
-    QFlowLayout* _layout;
+    std::unique_ptr<QFlowLayout> _layout;
 };
 
 #endif  // QDEVICESTATUS_QDEVICESTATUS_HPP
