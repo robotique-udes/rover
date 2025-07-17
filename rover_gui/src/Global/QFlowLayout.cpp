@@ -1,6 +1,6 @@
 /****
- * QFlowLayout.cpp
  * From the official Qt project examples.
+ * https://doc.qt.io/qt-6/qtwidgets-layouts-flowlayout-example.html
  * Rearranges widgets in a flow layout.
  */
 
