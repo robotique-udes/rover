@@ -69,10 +69,13 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             [[fallthrough]];
 
         case QSideBar::eTabIndex::DASHBOARD:
-            grid->addWidget(&_navigationWidget, 0, 0);
+            grid->addWidget(&_navigationWidget, 0, 0, 2, 1);
             grid->addWidget(&_arbitrationWidget, 0, 1);
-            grid->addWidget(&_deviceStatusWidget, 2, 0);
-            _deviceStatusWidget.hideControls();
+            grid->addWidget(&_deviceStatusWidget, 1, 1);
+
+            grid->setColumnStretch(0, 6);
+            grid->setColumnStretch(1, 1);
+            _deviceStatusWidget.onDashboardPage();
             break;
 
         case QSideBar::eTabIndex::NAVIGATION:
@@ -81,7 +84,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
 
         case QSideBar::eTabIndex::DEVICE_STATUS:
             grid->addWidget(&_deviceStatusWidget, 0, 1);
-            _deviceStatusWidget.showControls();
+            _deviceStatusWidget.onDeviceStatusPage();
             break;
 
         case QSideBar::eTabIndex::FILE_TRANSFER:
