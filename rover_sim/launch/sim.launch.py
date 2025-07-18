@@ -67,13 +67,6 @@ def generate_launch_description():
         name="connection_speed_test"
     )
 
-    can_sim_node = Node(
-        package="rover_sim",
-        namespace="/rover/sim",
-        executable="can_test",
-        name="can_test"
-    )
-
     ld = LaunchDescription()
     ld.add_action(arm_arg)
     ld.add_action(gps_arg)
@@ -81,6 +74,5 @@ def generate_launch_description():
     ld.add_action(gps_sim_node)
     ld.add_action(battery_sim_node)
     ld.add_action(connection_speed_sim_node)
-    ld.add_action(can_sim_node)
 
     return ld
