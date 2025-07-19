@@ -186,16 +186,22 @@
       entity = viewer.entities.add({
         name: "Live Position Arrow",
         position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
-        billboard: {
-          image: 'qrc:/icons/arrow.png',
-          width: 20,
-          height: 20,
-          alignedAxis: Cesium.Cartesian3.UNIT_Z,
-		  heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+        model: {
+          uri: 'qrc:/model/direction_arrow.glb',
+          scale: 1.0,
+          minimumPixelSize: 40,
+          maximumScale: 45,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
           rotation: 0,
           color: Cesium.Color.RED,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM
-        }
+        },
+        orientation: new Cesium.CallbackProperty(function () {
+          const headingRad = Cesium.Math.toRadians(lastHeading || 0);
+          return Cesium.Transforms.headingPitchRollQuaternion(
+            Cesium.Cartesian3.fromDegrees(currentPosition.longitude, currentPosition.latitude),
+            new Cesium.HeadingPitchRoll(headingRad, 0, 0)
+          );
+        }, false)
       });
 
       setupEventHandlers();
@@ -534,15 +540,18 @@
         });
 
         bridge.gpsCallback.connect(function (lat, lon, headingDeg) {
-    currentPosition.latitude = lat;
-    currentPosition.longitude = lon;
+          currentPosition.latitude = lat;
+          currentPosition.longitude = lon;
+          lastHeading = headingDeg;
 
-    headingDeg = ((headingDeg % 360) + 360) % 360;
-    const headingRad = Cesium.Math.toRadians(headingDeg);
-    const cesiumRotation = headingRad - Math.PI/2;
-    entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
-    
-    entity.billboard.rotation = cesiumRotation % (2 * Math.PI);
+          entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
+
+          // headingDeg = ((headingDeg % 360) + 360) % 360;
+          // const headingRad = Cesium.Math.toRadians(headingDeg);
+          // const cesiumRotation = headingRad - Math.PI/2;
+          // entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
+
+          // entity.billboard.rotation = cesiumRotation % (2 * Math.PI);
 
           if (!viewInitialized) {
             try {

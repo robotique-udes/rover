@@ -12,6 +12,8 @@
     <file>icons/ethswitch.png</file>
     <file>icons/camera.png</file>
     <file>icons/arrow.png</file>
+
+    <file>model/direction_arrow.glb</file>
     
     <file>TaskDateAndTime.txt</file>
     
