@@ -5,11 +5,15 @@
 #include <functional>
 #include <memory>
 #include <rover_msgs/msg/antenna_status.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 #include <cpr/cpr.h>
 #include <rclcpp/logging.hpp>
 
 class AntennaDriver
 {
+    static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL(Constants::AntennaInfo::eAntennaType::Base);
+    static_assert(BASE_URL != nullptr, "Base url can't be nullptr");
+
     static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr const char* LOGIN_PAGE = "/login.cgi";
     static constexpr const char* STATUS_PAGE = "/status.cgi";

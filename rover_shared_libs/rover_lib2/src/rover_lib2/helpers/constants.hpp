@@ -4,6 +4,7 @@
 #if defined(__linux__)
 #include <map>
 #include <string>
+#include <optional>
 #endif  // defined(__linux__)
 
 #if defined(ROS)
@@ -41,8 +42,21 @@ namespace Constants
     namespace AntennaInfo
     {
 #if defined(__linux__)
-        const std::map<std::string, std::string> ANTENNA_URL_MAP
-            = {{"Base", "https://192.168.144.55"}, {"Rover", "https://192.168.144.50"}};
+        enum class eAntennaType : size_t
+        {
+            Base = 0,
+            Rover = 1,
+            eLast
+        };
+
+        static constexpr std::array<const char*, std::to_underlying(eAntennaType::eLast)> ANTENNA_URLS
+            = {"https://192.168.144.55", "https://192.168.144.50"};
+
+        constexpr const char* getURL(eAntennaType antenna_)
+        {
+            return (std::to_underlying(antenna_) < ANTENNA_URLS.size()) ? 
+            ANTENNA_URLS.at(std::to_underlying(antenna_)) : nullptr;
+        }
 #endif  // defined(__linux__)
     }   // namespace AntennaInfo
 

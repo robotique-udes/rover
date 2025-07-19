@@ -1,7 +1,6 @@
 #include "antenna_driver.hpp"
 #include <iostream>
 #include <charconv>
-#include <rover_lib2/helpers/constants.hpp>
 #include <json/json.h>
 
 AntennaDriver::AntennaDriver(const rclcpp::Logger& logger_, uint64_t publisherPeriodMs_):
@@ -33,7 +32,7 @@ bool AntennaDriver::login(void)
     }
     _loginAttempts++;
 
-    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + LOGIN_PAGE});
+    _session->SetUrl(cpr::Url{std::string(BASE_URL) + LOGIN_PAGE});
     cpr::Payload payload{{"username", _username}, {"password", _password}};
     _session->SetOption(payload);
     RCLCPP_INFO(_logger, "Attempting to login to antenna...");
@@ -78,12 +77,6 @@ void AntennaDriver::CbAntennaPublisher(rover_msgs::msg::AntennaStatus& msg_)
 
 bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
 {
-    if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
-    {
-        msg_.connected = false;
-        msg_.info = "Couldn't find the Base antenna URL in the URL map";
-        return false;
-    }
     if (!this->isLoggedIn() && !login())
     {
         msg_.connected = false;
@@ -92,7 +85,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
         return false;
     }
 
-    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + IFSTATS_PAGE});
+    _session->SetUrl(cpr::Url{std::string(BASE_URL) + IFSTATS_PAGE});
 
     _session->SetOption(cpr::Payload{});  // remove payload from login
     cpr::Response response = _session->Get();
@@ -105,7 +98,7 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
 
         if (login())
         {
-            _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + IFSTATS_PAGE});
+            _session->SetUrl(cpr::Url{std::string(BASE_URL)+ IFSTATS_PAGE});
             response = _session->Get();
         }
         else
@@ -199,12 +192,6 @@ bool AntennaDriver::getIfStats(rover_msgs::msg::AntennaStatus& msg_)
 
 bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
 {
-    if (Constants::AntennaInfo::ANTENNA_URL_MAP.find("Base") == Constants::AntennaInfo::ANTENNA_URL_MAP.end())
-    {
-        msg_.connected = false;
-        msg_.info = "Couldn't find the Base antenna URL in the URL map";
-        return false;
-    }
 
     if (!this->isLoggedIn() && !login())
     {
@@ -215,7 +202,7 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
     }
 
     // Now use the existing session with stored cookies for the status request
-    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + STATUS_PAGE});
+    _session->SetUrl(cpr::Url{std::string(BASE_URL) + STATUS_PAGE});
 
     // Send the GET request using the same session (which has the cookies)
     _session->SetOption(cpr::Payload{});
@@ -230,7 +217,7 @@ bool AntennaDriver::getStatus(rover_msgs::msg::AntennaStatus& msg_)
         if (login())
         {
             // Retry the request with fresh session
-            _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + STATUS_PAGE});
+            _session->SetUrl(cpr::Url{std::string(BASE_URL) + STATUS_PAGE});
             response = _session->Get();
         }
         else
@@ -339,7 +326,7 @@ bool AntennaDriver::isLoggedIn(void)
 
 bool AntennaDriver::verifyAuthentication(void)
 {
-    _session->SetUrl(cpr::Url{Constants::AntennaInfo::ANTENNA_URL_MAP.at("Base") + STATUS_PAGE});
+    _session->SetUrl(cpr::Url{std::string(BASE_URL) + STATUS_PAGE});
     _session->SetOption(cpr::Payload{});
     cpr::Response response = _session->Get();
 
