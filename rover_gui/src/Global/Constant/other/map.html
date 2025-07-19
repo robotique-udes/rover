@@ -546,13 +546,6 @@
 
           entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
 
-          // headingDeg = ((headingDeg % 360) + 360) % 360;
-          // const headingRad = Cesium.Math.toRadians(headingDeg);
-          // const cesiumRotation = headingRad - Math.PI/2;
-          // entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
-
-          // entity.billboard.rotation = cesiumRotation % (2 * Math.PI);
-
           if (!viewInitialized) {
             try {
               viewer.camera.setView({
