@@ -22,7 +22,9 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 add_executable(antenna src/Antenna/antenna_node.cpp
-                       src/Antenna/antenna_driver.cpp)
+                       src/Antenna/antenna_driver.cpp
+                       src/Antenna/antenna_commands/base/getStatus.cpp
+                       src/Antenna/antenna_commands/base/getInterfaceStats.cpp)
 
 ament_target_dependencies(ddb_control
                           rclcpp

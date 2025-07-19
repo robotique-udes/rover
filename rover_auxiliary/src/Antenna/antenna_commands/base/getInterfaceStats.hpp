@@ -1,0 +1,41 @@
+#ifndef GET_INTERFACE_STATS_HPP
+#define GET_INTERFACE_STATS_HPP
+
+#include "../antenna_command.hpp"
+#include <string>
+
+namespace Command
+{
+    class GetInterfaceStats : public AntennaCommand
+    {
+      private:
+        static constexpr const char* IFSTATS_PAGE = "/ifstats.cgi";
+        static constexpr char const* JSON_FIELD_INTERFACES = "interfaces";
+        static constexpr char const* JSON_FIELD_STATS = "stats";
+        static constexpr char const* JSON_FIELD_RX_BYTES = "rx_bytes";
+        static constexpr char const* JSON_FIELD_TX_BYTES = "tx_bytes";
+        static constexpr uint8_t INTERFACE_WLAN_INDEX = 0;
+        static constexpr uint8_t INTERFACE_LAN_INDEX = 1;
+
+      public:
+        GetInterfaceStats(const std::string baseURL_, uint64_t publisherPeriodMs_);
+        ~GetInterfaceStats() override = default;
+        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_);
+
+      private:
+        sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response);
+        sCommandResult parseResponse(const cpr::Response& response, sAntennaMsg& msg_);
+        bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate);
+
+        std::string _baseURL;
+        uint8_t _loginAttempts = 0;
+        uint64_t _lanRxBytes = 0;
+        uint64_t _lanTxBytes = 0;
+        uint64_t _wlanRxBytes = 0;
+        uint64_t _wlanTxBytes = 0;
+        uint64_t _publisherPeriodMs;
+    };
+
+}  // namespace Command
+
+#endif  // GET_INTERFACE_STATS_HPP
