@@ -1,12 +1,11 @@
 #include "getStatus.hpp"
 #include <json/json.h>
 
-Command::GetStatus::GetStatus(const std::string baseURL_):
-    _baseURL(baseURL_)
+Command::Base::GetStatus::GetStatus(const std::string baseURL_): AntennaCommand(baseURL_)
 {
 }
 
-sCommandResult Command::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
@@ -15,11 +14,11 @@ sCommandResult Command::GetStatus::execute(std::shared_ptr<cpr::Session> session
         return result;
     }
 
-    result = parseResponse(response, msg_);
+    result = this->parseResponse(response, msg_);
     return result;
 }
 
-sCommandResult Command::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response)
+sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response)
 {
     sCommandResult result;
     session_->SetUrl(cpr::Url{_baseURL + STATUS_PAGE});
@@ -45,7 +44,7 @@ sCommandResult Command::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> sessio
     }
 }
 
-sCommandResult Command::GetStatus::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
 {
     sCommandResult result;
     if (response_.text.empty())

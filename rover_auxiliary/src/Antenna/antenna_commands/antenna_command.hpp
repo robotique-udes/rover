@@ -15,9 +15,9 @@ struct sCommandResult
 
 enum class eHttpStatus : uint16_t
 {
-  OK = 200,
-  UNAUTHORIZED = 401,
-  FORBIDDEN = 403
+    OK = 200,
+    UNAUTHORIZED = 401,
+    FORBIDDEN = 403
 };
 
 /**
@@ -26,7 +26,14 @@ enum class eHttpStatus : uint16_t
  */
 class AntennaCommand
 {
+  protected:
+    std::string _baseURL;
+
   public:
+    AntennaCommand(const std::string& baseURL_):
+        _baseURL(baseURL_)
+    {
+    }
     virtual ~AntennaCommand() = default;
     virtual sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) = 0;
 };

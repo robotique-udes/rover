@@ -4,7 +4,7 @@
 #include "../antenna_command.hpp"
 #include <string>
 
-namespace Command
+namespace Command::Base
 {
     class GetInterfaceStats : public AntennaCommand
     {
@@ -20,14 +20,13 @@ namespace Command
       public:
         GetInterfaceStats(const std::string baseURL_, uint64_t publisherPeriodMs_);
         ~GetInterfaceStats() override = default;
-        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_);
+        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 
       private:
         sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response);
         sCommandResult parseResponse(const cpr::Response& response, sAntennaMsg& msg_);
         bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate);
 
-        std::string _baseURL;
         uint8_t _loginAttempts = 0;
         uint64_t _lanRxBytes = 0;
         uint64_t _lanTxBytes = 0;
@@ -36,6 +35,6 @@ namespace Command
         uint64_t _publisherPeriodMs;
     };
 
-}  // namespace Command
+}  // namespace Command::Base
 
 #endif  // GET_INTERFACE_STATS_HPP

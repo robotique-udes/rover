@@ -8,7 +8,7 @@ struct sAntennaMsg
     float rxRate = 0.0f;
     float txRate = 0.0f;
 
-    void reset(void)
+    void clear(void)
     {
         this->connected = false;
         this->rssi = 0.0f;

@@ -2,13 +2,13 @@
 #include <json/json.h>
 #include <charconv>
 
-Command::GetInterfaceStats::GetInterfaceStats(const std::string baseURL_, uint64_t publisherPeriodMs_):
-    _baseURL(baseURL_),
+Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string baseURL_, uint64_t publisherPeriodMs_):
+    AntennaCommand(baseURL_),
     _publisherPeriodMs(publisherPeriodMs_)
 {
 }
 
-sCommandResult Command::GetInterfaceStats::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
@@ -17,11 +17,11 @@ sCommandResult Command::GetInterfaceStats::execute(std::shared_ptr<cpr::Session>
         return result;
     }
 
-    result = parseResponse(response, msg_);
+    result = this->parseResponse(response, msg_);
     return result;
 }
 
-sCommandResult Command::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response)
+sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response)
 {
     sCommandResult result;
     session_->SetUrl(cpr::Url{_baseURL + IFSTATS_PAGE});
@@ -49,7 +49,7 @@ sCommandResult Command::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session
     }
 }
 
-sCommandResult Command::GetInterfaceStats::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
 {
     sCommandResult result;
     if (response_.text.empty())
@@ -112,7 +112,7 @@ sCommandResult Command::GetInterfaceStats::parseResponse(const cpr::Response& re
     return result;
 }
 
-bool Command::GetInterfaceStats::updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate)
+bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate)
 {
     uint64_t currentBytes;
     std::from_chars_result charResult = std::from_chars(byteStr_.data(), byteStr_.data() + byteStr_.size(), currentBytes);

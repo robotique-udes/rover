@@ -4,7 +4,7 @@
 #include "../antenna_command.hpp"
 #include <string>
 
-namespace Command
+namespace Command::Base
 {
     class GetStatus : public AntennaCommand
     {
@@ -16,15 +16,13 @@ namespace Command
       public:
         GetStatus(const std::string baseURL_);
         ~GetStatus() override = default;
-        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_);
+        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 
       private:
         sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response);
         sCommandResult parseResponse(const cpr::Response& response, sAntennaMsg& msg_);
-
-        std::string _baseURL;
     };
 
-}  // namespace Command
+}  // namespace Command::Base
 
 #endif  // GET_STATUS_HPP
