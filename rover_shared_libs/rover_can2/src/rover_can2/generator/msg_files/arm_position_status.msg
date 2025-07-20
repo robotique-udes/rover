@@ -1,2 +1,0 @@
-float position;
-float speed;
