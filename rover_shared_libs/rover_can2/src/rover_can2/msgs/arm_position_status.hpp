@@ -119,7 +119,7 @@ namespace RoverCan2::Msgs
 
                 case eMsgContentID::eLAST:
                     [[fallthrough]];
-                    
+
                 default:
                     return std::nullopt;
                     break;

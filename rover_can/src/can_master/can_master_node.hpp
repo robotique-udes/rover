@@ -86,8 +86,9 @@ class CanMasterNode : public rclcpp::Node
         = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER, rover_msgs::msg::ArmMsg::GRIPPER_TILT, _armJointMsg);
     ArmJoint gripperRot
         = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER, rover_msgs::msg::ArmMsg::GRIPPER_ROT, _armJointMsg);
-    ArmJoint gripperClose
-        = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER, rover_msgs::msg::ArmMsg::GRIPPER_CLOSE, _armJointMsg);
+    ArmJoint gripperClose = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER,
+                                     rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
+                                     _armJointMsg);
 
     // Can
     RoverCan2::Drivers::DriverLinux __canDriver;

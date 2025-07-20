@@ -32,6 +32,13 @@ void ArmJoint::rosElementInit(void)
                                                                                 {
                                                                                     this->CB_ROS_armSpeedCmd(rosMsg_);
                                                                                 });
+    _sub_ArmJointsConfig = this->getAttachedNode()->create_subscription<rover_msgs::msg::ArmJointConfig>(
+        ARM_JOINTS_CONFIG_TOPIC,
+        QOS_DEFAULT,
+        [this](const rover_msgs::msg::ArmJointConfig& rosMsg_)
+        {
+            this->CB_ROS_armJointsConfig(rosMsg_);
+        });
 }
 
 void ArmJoint::rosElementClean(void)
@@ -65,6 +72,17 @@ void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmPositionStatu
 void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
 {
     _nextArmCmdMsg.data().targetSpeed = rosMsg_.target_speed[_rosArmSpeedMsgId];
+}
+
+void ArmJoint::CB_ROS_armJointsConfig(const rover_msgs::msg::ArmJointConfig& rosMsg_)
+{
+    _nextArmConfigMsg.data().upperLimit = rosMsg_.upper_limit[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().lowerLimit = rosMsg_.lower_limit[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().maxSpeed = rosMsg_.max_speed[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().kpSpeed = rosMsg_.kp_speed[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().kiSpeed = rosMsg_.ki_speed[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().kdSpeed = rosMsg_.kd_speed[_rosArmSpeedMsgId];
+    this->sendMsg(_nextArmConfigMsg);
 }
 
 void ArmJoint::CB_ROS_canSend(void)
