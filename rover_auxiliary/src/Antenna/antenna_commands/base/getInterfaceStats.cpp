@@ -12,6 +12,7 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
+    result.httpStatus = response.status_code;
     if (!result)
     {
         return result;

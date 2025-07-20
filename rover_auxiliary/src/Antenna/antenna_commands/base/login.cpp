@@ -21,6 +21,7 @@ sCommandResult Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> ses
 
     session_->SetOption(cpr::Payload{});  // important to always clear payload after a post
 
+    result.httpStatus = response.status_code;
     switch (response.status_code)
     {
         case std::to_underlying(eHttpStatus::OK):
@@ -35,7 +36,7 @@ sCommandResult Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> ses
             break;
         default:
             result.success = false;
-            result.error = "POST attempt was unsuccessful, unexcpected http status code" + std::to_string(response.status_code);
+            result.error = "POST attempt was unsuccessful, unexpected http status code: " + std::to_string(response.status_code);
             break;
     }
     return result;

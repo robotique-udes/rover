@@ -12,6 +12,7 @@ sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
+    result.httpStatus = response.status_code;
     if (!result)
     {
         msg_.clear();

@@ -7,6 +7,7 @@ struct sCommandResult
 {
     bool success = false;
     std::string error;
+    uint16_t httpStatus = 0;
     operator bool() const
     {
         return success;
@@ -15,6 +16,7 @@ struct sCommandResult
 
 enum class eHttpStatus : uint16_t
 {
+    OFFLINE = 0,
     OK = 200,
     UNAUTHORIZED = 401,
     FORBIDDEN = 403
