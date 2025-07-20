@@ -351,12 +351,17 @@
       const currentPitch = viewer.camera.pitch;
       const desiredPitch = -Math.PI / 2;
       const pitchThreshold = 0.01;
+	  const desiredHeading = 0.0;
+	  const headingThreshold = 0.01;
 
-      if (Math.abs(currentPitch - desiredPitch) > pitchThreshold) {
+	  const needPitchAdjustment = Math.abs(currentPitch - desiredPitch) > pitchThreshold;
+	  const needHeadingAdjustment = Math.abs(viewer.camera.heading - desiredHeading) > headingThreshold
+
+      if (needHeadingAdjustment || needPitchAdjustment) {
         isAdjustingCamera = true;
         viewer.camera.setView({
           orientation: {
-            heading: viewer.camera.heading,
+            heading: desiredHeading,
             pitch: desiredPitch,
             roll: 0.0
           }
