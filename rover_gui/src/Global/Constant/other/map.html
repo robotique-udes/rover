@@ -210,6 +210,14 @@
         }, false)
       });
 
+	  viewer.camera.changed.addEventListener(function() 
+	  {
+        if (isTrackingNorth && !isAdjustingCamera) 
+		{
+            stillNorthPerspective();
+        }
+    });
+
       setupEventHandlers();
       setupControlButtons();
       setupBridgeConnection();
@@ -244,15 +252,12 @@
 			northTrackingButton.classList.add('active');
 			northTrackingText.textContent = 'Tracking North';
 			setNorthTracking();
-
-			viewer.camera.changed.addEventListener(maintainNorthPerspective);
 		}
 		else
 		{
 			northTrackingButton.classList.remove('active');
 			northTrackingText.textContent = 'Track North'
 			setNorthTracking();
-			viewer.camera.changed.removeEventListener(maintainNorthPerspective);
 		}
 	}
 
@@ -293,27 +298,22 @@
 			});
 			isAdjustingCamera = false;
 		}
+
+		
 	}
 
-	function maintainNorthPerspective() {
+	function stillNorthPerspective() {
       if (!isTrackingNorth || isAdjustingCamera) return;
 
 
 	  const currentHeading = viewer.camera.heading;
 	  const desiredHeading = 0.0;
-	  const headingThreshold = 0.01;
-	  const needHeadingAdjustment = Math.abs(currentHeading - desiredHeading) > headingThreshold;
+	  const headingThreshold = 0.0001;
+	  const notOnNorth = Math.abs(currentHeading - desiredHeading) > headingThreshold;
 
-      if (needHeadingAdjustment) {
-        isAdjustingCamera = true;
-        viewer.camera.setView({
-          orientation: {
-            heading: desiredHeading,
-            pitch: viewer.camera.pitch,
-            roll: 0.0
-          }
-        });
-        isAdjustingCamera = false;
+      if (notOnNorth) 
+	  {
+        toggleNorthTracking();
       }
     }
 
