@@ -73,14 +73,13 @@ sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& resp
                 msg_.rssi = rssi;
             }
         }
+        result.success = true;
     }
     else
     {
         result.success = false;
         result.error
             = std::string("Failed to parse JSON: ") + errors + ", probable cause is invalid credentials, check your .env file";
-        return result;
     }
-    result.success = true;
     return result;
 }

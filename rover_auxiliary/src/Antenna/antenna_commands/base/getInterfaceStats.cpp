@@ -99,15 +99,13 @@ sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Respon
                 }
             }
         }
+        result.success = true;
     }
     else
     {
         result.success = false;
         result.error = "Unabble to parse JSON for ifStats";
-        return result;
     }
-
-    result.success = true;
     return result;
 }
 

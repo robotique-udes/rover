@@ -76,12 +76,11 @@ sCommandResult Command::Base::ValidateAuth::validateFormat(const cpr::Response& 
     {
         msg_.connected = true;
         result.success = true;
-        return result;
     }
     else
     {
         result.success = false;
         result.error = "Antenna response was not valid JSON format, most likely cause: invalid credentials in .env";
-        return result;
     }
+    return result;
 }
