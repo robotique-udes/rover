@@ -83,12 +83,12 @@ void QUtilityBarTop::initWifiConnection(void)
     if (_node)
     {
         _sub_wifiConnection
-            = _node->create_subscription<rover_msgs::msg::WifiConnection>(TOPIC_WIFI_CONNECTION,
-                                                                          QOS_DEFAULT,
-                                                                          [this](rover_msgs::msg::WifiConnection msg)
-                                                                          {
-                                                                              this->CB_wifiConnection(msg);
-                                                                          });
+            = _node->create_subscription<rover_msgs::msg::AntennaStatus>(TOPIC_WIFI_CONNECTION,
+                                                                         QOS_DEFAULT,
+                                                                         [this](rover_msgs::msg::AntennaStatus msg)
+                                                                         {
+                                                                             this->CB_wifiConnection(msg);
+                                                                         });
 
         _timer_RSSIPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_RSSI_PUB_COUNT_MS),
                                                   [this](void)
@@ -155,12 +155,12 @@ void QUtilityBarTop::CB_battery(rover_msgs::msg::Battery& msg_)
     emit this->updateBatteryUI(msg_.state_of_charge);
 }
 
-void QUtilityBarTop::CB_wifiConnection(rover_msgs::msg::WifiConnection& msg_)
+void QUtilityBarTop::CB_wifiConnection(rover_msgs::msg::AntennaStatus& msg_)
 {
     QIcon icon(":/icons/RSSIError.svg");
     _ui.RSSILabel->setIcon(icon);
 
-    emit this->updateWifiUI(msg_.rssi, msg_.link_speed);
+    emit this->updateWifiUI(msg_.connected, msg_.rssi, msg_.txrate);
 }
 
 void QUtilityBarTop::CB_GNSS(rover_msgs::msg::Gps& msg_)
@@ -217,28 +217,36 @@ void QUtilityBarTop::onUpdateBatteryUI(float _percent)
     _ui.batteryIcon->setIcon(icon);
 }
 
-void QUtilityBarTop::onUpdateWifiUI(float rssi_, float speed_)
+void QUtilityBarTop::onUpdateWifiUI(bool connected_, float rssi_, float speed_)
 {
-    _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_)));
-    _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_), 'f', 1) + " Mb/s");
-
     QIcon icon;
+    if (connected_)
+    {
+        _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_)));
+        _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_ / 1000000.0f), 'f', 1) + " Mb/s");
 
-    if (rssi_ <= -85)
-    {
-        icon = QIcon(":/icons/RSSI_one.png");
-    }
-    else if (rssi_ > -85 && rssi_ <= -75)
-    {
-        icon = QIcon(":/icons/RSSI_two.png");
-    }
-    else if (rssi_ > -75 && rssi_ <= -65)
-    {
-        icon = QIcon(":/icons/RSSI_three.png");
+        if (rssi_ <= -85)
+        {
+            icon = QIcon(":/icons/RSSI_one.png");
+        }
+        else if (rssi_ > -85 && rssi_ <= -75)
+        {
+            icon = QIcon(":/icons/RSSI_two.png");
+        }
+        else if (rssi_ > -75 && rssi_ <= -65)
+        {
+            icon = QIcon(":/icons/RSSI_three.png");
+        }
+        else
+        {
+            icon = QIcon(":/icons/RSSI_four.png");
+        }
     }
     else
     {
-        icon = QIcon(":/icons/RSSI_four.png");
+        _ui.signalQualityLabel->setText("RSSI: ---");
+        _ui.connectionSpeedLabel->setText("--.- Mb/s");
+        icon = QIcon(":/icons/ErrorRSSI.png");
     }
 
     _ui.RSSILabel->setIcon(icon);
