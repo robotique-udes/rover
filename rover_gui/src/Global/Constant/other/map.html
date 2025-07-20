@@ -105,9 +105,9 @@
       </svg>
       <span id="trackingText">Track Position</span>
     </button>
-	<button id="northTrackingButton" class="controlButton" title="Toggle north tracking">
+	<button id="northFacingButton" class="controlButton" title="Toggle north facing">
 		<img id="northIcon" class="buttonIcon" src="qrc:/icons/arrow.png" viewBox="0 0 24 24" fill="white">
-		<span id="northTrackingText"> Track North</span>
+		<span id="northFacingText"> Face North</span>
 	</button>
   </div>
   <div id="connectionError">
@@ -129,8 +129,9 @@
     let isTopDownView = false;
     let lastHeading = 0;
     let lastCameraPosition = null;
-	let isTrackingNorth = false;
-	let lastHeadingCamera = 0.0;
+	let isFacingNorth = false;
+	let isAdjustingCamera = false;
+	let northFacingTimeout = null;
 
     function checkConnectivity() {
       const connectionError = document.getElementById('connectionError');
@@ -210,14 +211,6 @@
         }, false)
       });
 
-	  viewer.camera.changed.addEventListener(function() 
-	  {
-        if (isTrackingNorth && !isAdjustingCamera) 
-		{
-            stillNorthPerspective();
-        }
-    });
-
       setupEventHandlers();
       setupControlButtons();
       setupBridgeConnection();
@@ -226,7 +219,7 @@
     function setupControlButtons() {
       const trackingButton = document.getElementById('trackingButton');
       const topDownButton = document.getElementById('topDownButton');
-	  const northTrackingButton = document.getElementById('northTrackingButton');
+	  const northFacingButton = document.getElementById('northFacingButton');
 
       trackingButton.addEventListener('click', function () {
         toggleCameraTracking();
@@ -236,35 +229,47 @@
         toggleTopDownView();
       });
 
-	  northTrackingButton.addEventListener('click', function () {
-		toggleNorthTracking();
+	  northFacingButton.addEventListener('click', function () {
+		toggleNorthFacing();
 	  });
     }
 
-	function toggleNorthTracking() 
+	function toggleNorthFacing() 
 	{
-		isTrackingNorth = !isTrackingNorth;
-		const northTrackingButton = document.getElementById('northTrackingButton');
-		const northTrackingText = document.getElementById('northTrackingText');
+		isFacingNorth = !isFacingNorth;
+		const northFacingButton = document.getElementById('northFacingButton');
+		const northFacingText = document.getElementById('northFacingText');
 
-		if (isTrackingNorth)
+		if (isFacingNorth)
 		{
-			northTrackingButton.classList.add('active');
-			northTrackingText.textContent = 'Tracking North';
-			setNorthTracking();
+			northFacingButton.classList.add('active');
+			northFacingText.textContent = 'Facing North';
+			setNorthFacing();
+			
+        	setTimeout(() => {
+            	if (isFacingNorth) 
+				{
+                	viewer.camera.changed.addEventListener(stillFacingNorth);
+            	}
+        	}, 100);
 		}
 		else
 		{
-			northTrackingButton.classList.remove('active');
-			northTrackingText.textContent = 'Track North'
-			setNorthTracking();
+			northFacingButton.classList.remove('active');
+			northFacingText.textContent = 'Face North'
+			viewer.camera.changed.removeEventListener(stillFacingNorth);
+
+			if (northFacingTimeout) 
+			{
+            	clearTimeout(northFacingTimeout);
+            	northFacingTimeout = null;
+        	}
 		}
 	}
 
-	function setNorthTracking()
+	function setNorthFacing()
 	{
-		lastHeadingCamera = viewer.camera.heading;
-		if (isTrackingNorth)
+		if (isFacingNorth)
 		{
 			const desiredHeading = 0.0;
 			const headingThreshold = 0.01;
@@ -276,46 +281,40 @@
 				isAdjustingCamera = true;
 				viewer.camera.setView(
 				{
-					orientation: {
-					heading: desiredHeading,
-					pitch: viewer.camera.pitch,
-					roll: 0.0
+					orientation:
+					{
+						heading: desiredHeading,
+						pitch: viewer.camera.pitch,
+						roll: 0.0
 					}
 				});
 				isAdjustingCamera = false;
 			}
-		}
-		else
-		{
-			isAdjustingCamera = true;
-			viewer.camera.setView(
-			{
-				orientation: {
-				heading: lastHeadingCamera,
-				pitch: viewer.camera.pitch,
-				roll: 0.0
-				}
-			});
-			isAdjustingCamera = false;
-		}
-
-		
+		}	
 	}
 
-	function stillNorthPerspective() {
-      if (!isTrackingNorth || isAdjustingCamera) return;
+	function stillFacingNorth() 
+	{
+		if (!isFacingNorth || isAdjustingCamera) return;
 
+		if (northFacingTimeout)
+		{
+			clearTimeout(northFacingTimeout);
+		}
 
-	  const currentHeading = viewer.camera.heading;
-	  const desiredHeading = 0.0;
-	  const headingThreshold = 0.0001;
-	  const notOnNorth = Math.abs(currentHeading - desiredHeading) > headingThreshold;
+		northFacingTimeout = setTimeout(() => {
+			const currentHeading = viewer.camera.heading;
+			const desiredHeading = 0.0;
+			const headingThreshold = 0.05;
+			const notOnNorth = Math.abs(currentHeading - desiredHeading) > headingThreshold;
 
-      if (notOnNorth) 
-	  {
-        toggleNorthTracking();
-      }
-    }
+			if (notOnNorth) 
+			{
+				toggleNorthFacing();
+			}
+			northFacingTimeout = null;
+		}, 200);
+	}
 
 	function toggleTopDownView() {
       isTopDownView = !isTopDownView;
@@ -338,9 +337,9 @@
         try {
           setTopDownView();
 		  
-		  if(!isTrackingNorth)
+		  if(!isFacingNorth)
 		  {
-			toggleNorthTracking();
+			toggleNorthFacing();
 		  }
 
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
@@ -358,9 +357,9 @@
         topDownButton.classList.remove('active');
         topDownText.textContent = 'Top-Down View';
 
-		if (isTrackingNorth) 
+		if (isFacingNorth) 
 		{
-            toggleNorthTracking();
+            toggleNorthFacing();
         }
 
         try {
