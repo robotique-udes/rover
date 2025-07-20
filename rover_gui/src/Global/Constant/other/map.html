@@ -105,6 +105,10 @@
       </svg>
       <span id="trackingText">Track Position</span>
     </button>
+	<button id="northTrackingButton" class="controlButton" title="Toggle north tracking">
+		<img id="northIcon" class="buttonIcon" src="qrc:/icons/arrow.png" viewBox="0 0 24 24" fill="white">
+		<span id="northTrackingText"> Track North</span>
+	</button>
   </div>
   <div id="connectionError">
     <h2>Not able to connect to internet</h2>
@@ -125,6 +129,8 @@
     let isTopDownView = false;
     let lastHeading = 0;
     let lastCameraPosition = null;
+	let isTrackingNorth = false;
+	let lastHeadingCamera = 0.0;
 
     function checkConnectivity() {
       const connectionError = document.getElementById('connectionError');
@@ -212,6 +218,7 @@
     function setupControlButtons() {
       const trackingButton = document.getElementById('trackingButton');
       const topDownButton = document.getElementById('topDownButton');
+	  const northTrackingButton = document.getElementById('northTrackingButton');
 
       trackingButton.addEventListener('click', function () {
         toggleCameraTracking();
@@ -220,9 +227,97 @@
       topDownButton.addEventListener('click', function () {
         toggleTopDownView();
       });
+
+	  northTrackingButton.addEventListener('click', function () {
+		toggleNorthTracking();
+	  });
     }
 
-    function toggleTopDownView() {
+	function toggleNorthTracking() 
+	{
+		isTrackingNorth = !isTrackingNorth;
+		const northTrackingButton = document.getElementById('northTrackingButton');
+		const northTrackingText = document.getElementById('northTrackingText');
+
+		if (isTrackingNorth)
+		{
+			northTrackingButton.classList.add('active');
+			northTrackingText.textContent = 'Tracking North';
+			setNorthTracking();
+
+			viewer.camera.changed.addEventListener(maintainNorthPerspective);
+		}
+		else
+		{
+			northTrackingButton.classList.remove('active');
+			northTrackingText.textContent = 'Track North'
+			setNorthTracking();
+			viewer.camera.changed.removeEventListener(maintainNorthPerspective);
+		}
+	}
+
+	function setNorthTracking()
+	{
+		lastHeadingCamera = viewer.camera.heading;
+		if (isTrackingNorth)
+		{
+			const desiredHeading = 0.0;
+			const headingThreshold = 0.01;
+
+			const needHeadingAdjustment = Math.abs(viewer.camera.heading - desiredHeading) > headingThreshold
+
+			if (needHeadingAdjustment)
+			{
+				isAdjustingCamera = true;
+				viewer.camera.setView(
+				{
+					orientation: {
+					heading: desiredHeading,
+					pitch: viewer.camera.pitch,
+					roll: 0.0
+					}
+				});
+				isAdjustingCamera = false;
+			}
+		}
+		else
+		{
+			isAdjustingCamera = true;
+			viewer.camera.setView(
+			{
+				orientation: {
+				heading: lastHeadingCamera,
+				pitch: viewer.camera.pitch,
+				roll: 0.0
+				}
+			});
+			isAdjustingCamera = false;
+		}
+	}
+
+	function maintainNorthPerspective() {
+      if (!isTrackingNorth || isAdjustingCamera) return;
+
+
+	  const currentHeading = viewer.camera.heading;
+	  const desiredHeading = 0.0;
+	  const headingThreshold = 0.01;
+	  const needHeadingAdjustment = Math.abs(currentHeading - desiredHeading) > headingThreshold;
+
+      if (needHeadingAdjustment) {
+        isAdjustingCamera = true;
+        viewer.camera.setView({
+          orientation: {
+            heading: desiredHeading,
+            pitch: viewer.camera.pitch,
+            roll: 0.0
+          }
+        });
+        isAdjustingCamera = false;
+      }
+    }
+
+	function toggleTopDownView() {
       isTopDownView = !isTopDownView;
       const topDownButton = document.getElementById('topDownButton');
       const topDownText = document.getElementById('topDownText');
@@ -242,6 +337,11 @@
 
         try {
           setTopDownView();
+		  
+		  if(!isTrackingNorth)
+		  {
+			toggleNorthTracking();
+		  }
 
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
             viewer.scene.screenSpaceCameraController.enableTilt = false;
@@ -257,6 +357,11 @@
       } else {
         topDownButton.classList.remove('active');
         topDownText.textContent = 'Top-Down View';
+
+		if (isTrackingNorth) 
+		{
+            toggleNorthTracking();
+        }
 
         try {
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
@@ -313,7 +418,7 @@
             cameraHeight
           ),
           orientation: {
-            heading: viewer.camera.heading,
+            heading: 0.0,
             pitch: -Math.PI / 2,
             roll: 0.0
           }
@@ -351,17 +456,14 @@
       const currentPitch = viewer.camera.pitch;
       const desiredPitch = -Math.PI / 2;
       const pitchThreshold = 0.01;
-	  const desiredHeading = 0.0;
-	  const headingThreshold = 0.01;
 
 	  const needPitchAdjustment = Math.abs(currentPitch - desiredPitch) > pitchThreshold;
-	  const needHeadingAdjustment = Math.abs(viewer.camera.heading - desiredHeading) > headingThreshold
 
-      if (needHeadingAdjustment || needPitchAdjustment) {
+      if (needPitchAdjustment) {
         isAdjustingCamera = true;
         viewer.camera.setView({
           orientation: {
-            heading: desiredHeading,
+            heading: viewer.camera.heading,
             pitch: desiredPitch,
             roll: 0.0
           }
