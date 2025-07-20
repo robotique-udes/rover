@@ -79,7 +79,7 @@ class CanMasterNode : public rclcpp::Node
     Gnss gnss = Gnss(RoverCan2::Constant::eDeviceId::GNSS);
 
     ArmJoint JL = ArmJoint(RoverCan2::Constant::eDeviceId::JL_CONTROLLER, rover_msgs::msg::ArmMsg::JL, _armJointMsg);
-    ArmJoint J0 = ArmJoint(RoverCan2::Constant::eDeviceId::JR_CONTROLLER, rover_msgs::msg::ArmMsg::J0, _armJointMsg);
+    //ArmJoint J0 = ArmJoint(RoverCan2::Constant::eDeviceId::JR_CONTROLLER, rover_msgs::msg::ArmMsg::J0, _armJointMsg);
     ArmJoint J1 = ArmJoint(RoverCan2::Constant::eDeviceId::J1_CONTROLLER, rover_msgs::msg::ArmMsg::J1, _armJointMsg);
     ArmJoint J2 = ArmJoint(RoverCan2::Constant::eDeviceId::J2_CONTROLLER, rover_msgs::msg::ArmMsg::J2, _armJointMsg);
     ArmJoint gripperTilt
@@ -106,7 +106,7 @@ class CanMasterNode : public rclcpp::Node
                              ArmJoint&,
                              ArmJoint&,
                              ArmJoint&,
-                             ArmJoint&,
+                             //ArmJoint&,
                              ArmJoint&,
                              ArmJoint&,
                              ArmJoint&>
@@ -127,14 +127,14 @@ class CanMasterNode : public rclcpp::Node
             cameraArmSide,
             gnss,
             JL,
-            J0,
+            //J0,
             J1,
             J2,
             gripperTilt,
             gripperRot,
             gripperClose);
 
-    std::array<MasterDevice*, 17U> _deviceArray = {&motorFL,
+    std::array<MasterDevice*, 16U> _deviceArray = {&motorFL,
                                                    &motorFR,
                                                    &motorRL,
                                                    &motorRR,
@@ -145,7 +145,7 @@ class CanMasterNode : public rclcpp::Node
                                                    &cameraArmSide,
                                                    &gnss,
                                                    &JL,
-                                                   &J0,
+                                                   //&J0,
                                                    &J1,
                                                    &J2,
                                                    &gripperTilt,

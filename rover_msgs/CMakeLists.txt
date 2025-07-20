@@ -38,7 +38,6 @@ find_package(rclcpp REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AntennaCmd.msg"
-  "msg/ArmJointConfig.msg"
   "msg/ArmMsg.msg"
   "msg/Aruco.msg"
   "msg/Battery.msg"
@@ -59,6 +58,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/WifiConnection.msg"
 
   "srv/AntennaArbitration.srv"
+  "srv/ArmJointConfig.srv"
   "srv/ArucoDetection.srv"
   "srv/CameraControl.srv"
   "srv/CompassCalibration.srv"

@@ -6,7 +6,7 @@ ArmJoint::ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
                    uint8_t rosArmSpeedMsgId_,
                    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>> rosSharedMsg_):
     DeviceT(deviceId_,
-            RoverCan2::Publisher<RoverCan2::Msgs::ArmSpeedCmd>(),
+            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>(),
             RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus),
             RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>()),
     _rosArmSpeedMsgId(rosArmSpeedMsgId_),
@@ -33,12 +33,12 @@ void ArmJoint::rosElementInit(void)
                                                                                 {
                                                                                     this->CB_ROS_armSpeedCmd(rosMsg_);
                                                                                 });
-    _sub_ArmJointsConfig = this->getAttachedNode()->create_subscription<rover_msgs::msg::ArmJointConfig>(
-        ARM_JOINTS_CONFIG_TOPIC,
-        QOS_DEFAULT,
-        [this](const rover_msgs::msg::ArmJointConfig& rosMsg_)
+    _srv_ArmJointsConfig = this->getAttachedNode()->create_service<rover_msgs::srv::ArmJointConfig>(
+        ARM_JOINTS_CONFIG_SERVICE_NAME,
+        [this](const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
+               std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_)
         {
-            this->CB_ROS_armJointsConfig(rosMsg_);
+            this->CB_SRV_armJointsConfig(request_, response_);
         });
 }
 
@@ -57,6 +57,11 @@ void ArmJoint::rosElementClean(void)
     {
         _sub_ArmPositionStatus.reset();
     }
+
+    if (_srv_ArmJointsConfig)
+    {
+        _srv_ArmJointsConfig.reset();
+    }
 }
 
 std::vector<RoverCan2::Constant::eDeviceId> ArmJoint::getManagedDevicesIds(void)
@@ -64,10 +69,10 @@ std::vector<RoverCan2::Constant::eDeviceId> ArmJoint::getManagedDevicesIds(void)
     return {this->getCanId()};
 }
 
-void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmPositionStatus& msg_)
+void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmJointStatus& msg_)
 {
-    _rosSharedMsg->get().getThreadSafeAccess().current_position[_rosArmSpeedMsgId] = msg_.getData().position;
-    _rosSharedMsg->get().getThreadSafeAccess().current_speed[_rosArmSpeedMsgId] = msg_.getData().speed;
+    _rosSharedMsg->get().getThreadSafeAccess().current_position[_rosArmSpeedMsgId] = msg_.getData().currentPosition;
+    _rosSharedMsg->get().getThreadSafeAccess().current_speed[_rosArmSpeedMsgId] = msg_.getData().currentSpeed;
 }
 
 void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
@@ -75,15 +80,19 @@ void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
     _nextArmCmdMsg.data().targetSpeed = rosMsg_.target_speed[_rosArmSpeedMsgId];
 }
 
-void ArmJoint::CB_ROS_armJointsConfig(const rover_msgs::msg::ArmJointConfig& rosMsg_)
+void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request,
+                                      std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response)
 {
-    _nextArmConfigMsg.data().upperLimit = rosMsg_.upper_limit[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().lowerLimit = rosMsg_.lower_limit[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().maxSpeed = rosMsg_.max_speed[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().kpSpeed = rosMsg_.kp_speed[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().kiSpeed = rosMsg_.ki_speed[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().kdSpeed = rosMsg_.kd_speed[_rosArmSpeedMsgId];
-    this->sendMsg(_nextArmConfigMsg);
+    _nextArmConfigMsg.data().upperLimit = request->upper_limit[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().lowerLimit = request->lower_limit[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().maxSpeed = request->max_speed[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().kpSpeed = request->kp_speed[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().kiSpeed = request->ki_speed[_rosArmSpeedMsgId];
+    _nextArmConfigMsg.data().kdSpeed = request->kd_speed[_rosArmSpeedMsgId];
+
+    eReturnValue result = this->sendMsg(_nextArmConfigMsg);
+
+    response->success = (result == eReturnValue::SUCCESS);
 }
 
 void ArmJoint::CB_ROS_canSend(void)
