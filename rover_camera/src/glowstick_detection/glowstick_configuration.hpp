@@ -8,13 +8,13 @@ namespace GS_CONFIGURATION
     namespace WHITE
     {
         const cv::Scalar LOW_TH(0, 0, 200);
-        const cv::Scalar HIGH_TH(180, 30, 255);
+        const cv::Scalar HIGH_TH(180, 60, 255);
         const cv::Scalar COLOR(0, 255, 0);
     }
 
     namespace BLUE
     {
-        const cv::Scalar LOW_TH(100, 160, 50);
+        const cv::Scalar LOW_TH(100, 80, 50);
         const cv::Scalar HIGH_TH(130, 255, 255);
         const cv::Scalar COLOR(255, 0, 0);
     }
@@ -29,8 +29,10 @@ namespace GS_CONFIGURATION
     }
 
     constexpr u_int16_t WAIT_KEY_DELAY_MS = 20;
-    constexpr u_int16_t MAX_AREA_ACCEPTED = 100;
+    constexpr u_int16_t MAX_AREA_ACCEPTED = 2500;
     constexpr u_int16_t MAX_GLOWSTICK_TO_COMPARE = 2;
+    constexpr u_int16_t DIST_MASK_PRECISION = 3;
+    constexpr _Float32 CENTER_THRESHOLD_PERCENTAGE = 0.6;
 
 }
 

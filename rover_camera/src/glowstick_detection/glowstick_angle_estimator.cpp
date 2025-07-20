@@ -6,8 +6,8 @@ void PositionEstimator::calculateAngle(const cv::Mat& frame_, Glowstick &glowsti
 {
     _Float32 frameWidth = frame_.cols;
     _Float32 frameMiddleX = frame_.cols / 2;
-    cv::Point glowstickCenter(glowstick_._glowstickRectCenter[index_].x + glowstick_._glowstickRectCenter[index_].width / 2,
-                              glowstick_._glowstickRectCenter[index_].y + glowstick_._glowstickRectCenter[index_].height / 2);
+    cv::Point glowstickCenter(glowstick_._glowstickRect[index_].x + glowstick_._glowstickRect[index_].width / 2,
+                              glowstick_._glowstickRect[index_].y + glowstick_._glowstickRect[index_].height / 2);
 
     _Float32 dx = glowstickCenter.x - frameMiddleX;
 

@@ -22,7 +22,6 @@ void GlowstickDetector::detectGlowstick(const cv::Mat& frame_)
     this->filterFrame(frame_, masks);
     this->findGlowsticks(masks, contours, contoursWhite);
     this->filterGlowsticks(frame_, contours, contoursWhite);
-
 }
 
 void GlowstickDetector::filterFrame(const cv::Mat& frame_, cv::Mat masks_[])
@@ -49,13 +48,58 @@ void GlowstickDetector::filterFrame(const cv::Mat& frame_, cv::Mat masks_[])
             masks_[i + 1].release();
         }
 
-        if (i == WHITE)
+        if (i != WHITE)
         {
-            cv::dilate(masks_[i], masks_[i], kernel);
+            //applyWatershedSegmentation(masks_[i], frame_);
+        }
+    };
+}
+
+void GlowstickDetector::applyWatershedSegmentation(cv::Mat& mask_, const cv::Mat& originalImage_)
+{
+    if (cv::countNonZero(mask_) == 0) return;
+
+    cv::Mat pixDistanceFromBlack;
+    cv::distanceTransform(mask_, pixDistanceFromBlack, cv::DIST_L2, GS_CONFIGURATION::DIST_MASK_PRECISION);
+
+    double minVal, maxVal;
+    cv::minMaxLoc(pixDistanceFromBlack, &minVal, &maxVal);
+
+    cv::Mat peaks;
+    cv::threshold(pixDistanceFromBlack, peaks, GS_CONFIGURATION::CENTER_THRESHOLD_PERCENTAGE*maxVal, 255, cv::THRESH_BINARY);
+    peaks.convertTo(peaks, CV_8U);
+
+    cv::Mat kernelSmall = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
+    cv::morphologyEx(peaks, peaks, cv::MORPH_OPEN, kernelSmall);
+
+    cv::Mat watershedMarkers = cv::Mat::zeros(peaks.size(),  CV_32S);
+    int numComponents = cv::connectedComponents(peaks, watershedMarkers);
+
+    if (numComponents > 1)
+    {
+        watershedMarkers.setTo(1, mask_ == 0);
+
+        cv::Mat watershedImage;
+        originalImage_.copyTo(watershedImage);
+        cv::watershed(watershedImage, watershedMarkers);
+
+        cv::Mat watershedMask = cv::Mat::zeros(watershedMarkers.size(), CV_8U);
+        for (int i=0; i<watershedMarkers.rows; i++)
+        {
+            for (int j=0; j<watershedMarkers.cols; j++)
+            {
+                int label = watershedMarkers.at<int>(i, j);
+                if (label > 1)
+                {
+                    watershedMask.at<uchar>(i, j) = 255;
+                }
+            }
         }
 
-        cv::GaussianBlur(masks_[i], masks_[i], cv::Size(5, 5), 0);
-    };
+        watershedMask.copyTo(mask_);
+    }
+
+
 }
 
 void GlowstickDetector::findGlowsticks(cv::Mat masks_[],
@@ -105,62 +149,45 @@ void GlowstickDetector::filterGlowsticks(const cv::Mat& frame_,
         _glowsticks[i]._glowstickRectCenter.clear();
         size_t count = std::min<size_t>(_maxAmountGlowsticks, areaRect.size());
 
+        size_t vectorIndex = 0;
+
         for (size_t j = 0; j < count; j++)
         {
             if (std::get<0>(areaRect[j]) < GS_CONFIGURATION::MAX_AREA_ACCEPTED)
             {
                 _glowsticks[i]._glowstickRectCenter.push_back(std::get<1>(areaRect[j]));
                 _glowsticks[i]._glowstickRect.push_back(std::get<2>(areaRect[j]));
-                _positionEstimator.calculateAngle(frame_, _glowsticks[i], j);
+                _positionEstimator.calculateAngle(frame_, _glowsticks[i], vectorIndex);
+                vectorIndex++;
             }
             else if (count == j+1)
             {
                 _glowsticks[i]._glowstickRectCenter.push_back(std::get<1>(areaRect[j]));
                 _glowsticks[i]._glowstickRect.push_back(std::get<2>(areaRect[j]));
-                _positionEstimator.calculateAngle(frame_, _glowsticks[i], j);
+                _positionEstimator.calculateAngle(frame_, _glowsticks[i], vectorIndex);
+                vectorIndex++;
             }
         }
     }
 }
 
-bool GlowstickDetector::drawGlowsticks(const cv::Mat& frame_, cv::Mat& frameGlowsticks_)
+void GlowstickDetector::drawGlowsticks(const cv::Mat& frame_, cv::Mat& frameGlowsticks_)
 {
     this->detectGlowstick(frame_);
 
-    bool glowstickDetected[2] = {false, false};
-    bool noDetection = true;
-
-    for (size_t i = 0;i<2;i++)
+    for (size_t i = 1; i < eLAST; i++)  
     {
-        if (!_glowsticks[i]._glowstickRect.empty() && !_glowsticks[i]._glowstickRectCenter.empty())
+        for (size_t j = 0; j < _glowsticks[i]._glowstickRect.size(); j++)
         {
-            glowstickDetected[i] = true;
-            noDetection = false;
+            cv::rectangle(frameGlowsticks_, _glowsticks[i]._glowstickRect[j], _glowsticks[i].getColor(), 2);
+            cv::rectangle(frameGlowsticks_, _glowsticks[i]._glowstickRectCenter[j], GS_CONFIGURATION::WHITE::COLOR, 2);
+            cv::putText(frameGlowsticks_,
+                        std::to_string(_glowsticks[i].getAngle()),
+                        _positionEstimator.getBotomRectPosition(_glowsticks[i], j),
+                        cv::FONT_HERSHEY_SIMPLEX,
+                        1,
+                        _glowsticks[i].getColor(),
+                        4);
         }
     }
-
-    if (noDetection == true) return false;
-
-    for (size_t i = 0; i < 2; i++)  
-    {
-        if(glowstickDetected[i] == true)
-        {
-
-            for (size_t j = 0; j < _maxAmountGlowsticks; j++)
-            {
-                cv::rectangle(frameGlowsticks_, _glowsticks[i]._glowstickRect[j], _glowsticks[i].getColor(), 2);
-                cv::rectangle(frameGlowsticks_, _glowsticks[i]._glowstickRectCenter[j], GS_CONFIGURATION::WHITE::COLOR, 2);
-                cv::putText(frameGlowsticks_,
-                            std::to_string(_glowsticks[i].getAngle()),
-                            _positionEstimator.getBotomRectPosition(_glowsticks[i], j),
-                            cv::FONT_HERSHEY_SIMPLEX,
-                            1,
-                            _glowsticks[i].getColor(),
-                            4);
-            }
-
-        }
-    }
-
-    return true;
 }

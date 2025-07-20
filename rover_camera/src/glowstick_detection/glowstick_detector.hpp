@@ -16,7 +16,7 @@ class GlowstickDetector
 
   public:
     GlowstickDetector();
-    bool drawGlowsticks(const cv::Mat& frame_, cv::Mat& frameGlowsticks_);
+    void drawGlowsticks(const cv::Mat& frame_, cv::Mat& frameGlowsticks_);
     void detectGlowstick(const cv::Mat& frame_);
     void filterFrame(const cv::Mat& frame_, cv::Mat masks_[]);
     void findGlowsticks(cv::Mat masks_[],
@@ -24,6 +24,7 @@ class GlowstickDetector
                         std::vector<std::vector<cv::Point>> contoursWhite_[]);
     void filterGlowsticks(const cv::Mat& frame_, std::vector<std::vector<cv::Point>> contours_[], std::vector<std::vector<cv::Point>> contoursWhite_[]);
     _Float32 glowstickGoal(const cv::Mat& frame_, int color_);
+    void applyWatershedSegmentation(cv::Mat& masks_, const cv::Mat& originalImage_);
 
   private:
     Glowstick _glowsticks[eLAST];
