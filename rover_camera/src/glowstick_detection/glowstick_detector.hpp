@@ -22,12 +22,13 @@ class GlowstickDetector
     void findGlowsticks(cv::Mat masks_[],
                         std::vector<std::vector<cv::Point>> contours_[],
                         std::vector<std::vector<cv::Point>> contoursWhite_[]);
-    void filterGlowsticks(std::vector<std::vector<cv::Point>> contours_[], std::vector<std::vector<cv::Point>> contoursWhite_[]);
+    void filterGlowsticks(const cv::Mat& frame_, std::vector<std::vector<cv::Point>> contours_[], std::vector<std::vector<cv::Point>> contoursWhite_[]);
+    _Float32 glowstickGoal(const cv::Mat& frame_, int color_);
 
   private:
     Glowstick _glowsticks[eLAST];
     std::vector<cv::Mat> _colorMasks;
-    static constexpr uint16_t _maxAmountGlowsticks = eLAST;
+    static constexpr uint16_t _maxAmountGlowsticks = GS_CONFIGURATION::MAX_GLOWSTICK_TO_COMPARE;
     PositionEstimator _positionEstimator;
 };
 

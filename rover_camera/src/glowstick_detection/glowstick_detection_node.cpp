@@ -20,11 +20,10 @@ GlowstickDetectionNode::GlowstickDetectionNode():
         _camera._cap >> frameCam;
         frameGlowStick = frameCam.clone();
 
-        if (glowsticks.drawGlowsticks(frameCam, frameGlowStick))
-        {
-            cv::imshow("Laptop Camera", frameCam);
-            cv::imshow("GlowStick Cam", frameGlowStick);
-        }
+        glowsticks.drawGlowsticks(frameCam, frameGlowStick);
+ 
+        cv::imshow("Laptop Camera", frameCam);
+        cv::imshow("GlowStick Cam", frameGlowStick);
 
         if (cv::waitKey(GS_CONFIGURATION::WAIT_KEY_DELAY_MS) >= 0)
         {
