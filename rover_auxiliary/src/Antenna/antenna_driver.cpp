@@ -7,7 +7,8 @@
 AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_):
     _session(std::make_shared<cpr::Session>()),
     _publisherPeriodMs(publisherPeriodMs_),
-    _login(BASE_URL)
+    _login(BASE_URL),
+    _loginCooldownTimer(LOGIN_COOLDOWN_MS)
 {
     this->setupSession();
 
@@ -32,7 +33,7 @@ sCommandResult AntennaDriver::CbAntennaPublisher(sAntennaMsg& msg_)
 {
     sCommandResult result;
 
-    for (std::unique_ptr<AntennaCommand>& cmd : _commands)
+    for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
         if (!result)
@@ -44,6 +45,7 @@ sCommandResult AntennaDriver::CbAntennaPublisher(sAntennaMsg& msg_)
             else
             {
                 msg_.clear();
+                msg_.connected = false;
             }
 
             return result;
@@ -56,20 +58,31 @@ sCommandResult AntennaDriver::CbAntennaPublisher(sAntennaMsg& msg_)
 sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
 {
     sCommandResult result;
-    uint8_t loginAttemps;
-    for (loginAttemps = 0; loginAttemps < MAX_LOGIN_ATTEMPTS && !result; loginAttemps++)
+    if (_cooldownActive && !_loginCooldownTimer.isReady())
     {
-        _login.execute(_session, msg_);
+        result.success = false;
+        msg_.clear();
+        msg_.connected = false;
+        return result;
+    }
+    _cooldownActive = false;
+
+    uint8_t loginAttempts;
+    for (loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && !result; loginAttempts++)
+    {
+        result = _login.execute(_session, msg_);
     }
 
     if (!result)
     {
+        _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
+        _cooldownActive = true;
         msg_.clear();
         msg_.connected = false;
         return result;
     }
 
-    for (std::unique_ptr<AntennaCommand>& cmd : _commands)
+    for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
         if (!result)

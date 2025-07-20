@@ -8,7 +8,7 @@ namespace Command::Base
 {
     /**
      * @brief This class is responsible for getting the wlan rates from the antenna interface statistics
-     * 
+     *
      */
     class GetInterfaceStats : public AntennaCommand
     {

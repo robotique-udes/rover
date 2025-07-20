@@ -31,7 +31,6 @@ sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::S
     {
         case std::to_underlying(eHttpStatus::OK):
             result.success = true;
-            return result;
             break;
 
         case std::to_underlying(eHttpStatus::FORBIDDEN):
@@ -39,14 +38,13 @@ sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::S
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
             result.success = false;
             result.error = "Session expired";
-            return result;
             break;
         default:
             result.success = false;
             result.error = "Unexpected HTTP status using GET stats.cgi: " + std::to_string(response_.status_code);
-            return result;
             break;
     }
+    return result;
 }
 
 sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)

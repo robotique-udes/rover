@@ -17,4 +17,4 @@ struct sAntennaMsg
     }
 };
 
-#endif // ANTENNA_MSG_HPP
+#endif  // ANTENNA_MSG_HPP

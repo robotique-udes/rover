@@ -54,8 +54,7 @@ namespace Constants
 
         constexpr const char* getURL(eAntennaType antenna_)
         {
-            return (std::to_underlying(antenna_) < ANTENNA_URLS.size()) ? 
-            ANTENNA_URLS.at(std::to_underlying(antenna_)) : nullptr;
+            return (std::to_underlying(antenna_) < ANTENNA_URLS.size()) ? ANTENNA_URLS.at(std::to_underlying(antenna_)) : nullptr;
         }
 #endif  // defined(__linux__)
     }   // namespace AntennaInfo

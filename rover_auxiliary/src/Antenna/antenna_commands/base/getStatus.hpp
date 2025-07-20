@@ -6,10 +6,10 @@
 
 namespace Command::Base
 {
-  /**
-   * @brief This class is responsible for getting the rssi data from the antenna
-   * 
-   */
+    /**
+     * @brief This class is responsible for getting the rssi data from the antenna
+     *
+     */
     class GetStatus : public AntennaCommand
     {
       private:

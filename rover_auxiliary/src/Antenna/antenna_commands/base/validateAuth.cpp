@@ -71,7 +71,7 @@ sCommandResult Command::Base::ValidateAuth::validateFormat(const cpr::Response& 
     std::string errors;
     std::istringstream stream(response_.text);
 
-    if (Json::parseFromStream(builder, stream, &root, &errors) && root.isMember("wireless"))
+    if (Json::parseFromStream(builder, stream, &root, &errors) && root.isMember(JSON_FIELD_WIRELESS))
     {
         msg_.connected = true;
         result.success = true;
