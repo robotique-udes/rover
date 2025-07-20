@@ -15,11 +15,13 @@
 #include <vector>
 
 class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmSpeedCmd>,
-                                          RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmPositionStatus, ArmJoint>>,
+                                          RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmPositionStatus, ArmJoint>,
+                                          RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>>,
                  public MasterDevice
 {
     using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmSpeedCmd>,
-                                      RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmPositionStatus, ArmJoint>>;
+                                      RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmPositionStatus, ArmJoint>,
+                                      RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>>;
 
     static constexpr const char* ARM_CMD_TOPIC = "/rover/arm/joints_cmd";
     static constexpr const char* ARM_POSITION_STATUS_TOPIC = "/rover/arm/joints_status";

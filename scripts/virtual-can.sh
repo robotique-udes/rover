@@ -1,6 +1,6 @@
 #!/bin/bash
-# setup a virtual can session, valid until restart
-# use "candump canRovus" to intercept messages or cansend_helper.py to send messages
+# setup a virtual can session, valid until computer restart
+# use "candump canRovus" to intercept messages or the cansend_helper.py to send messages
 
 set -e
 

@@ -7,7 +7,8 @@ ArmJoint::ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
                    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>> rosSharedMsg_):
     DeviceT(deviceId_,
             RoverCan2::Publisher<RoverCan2::Msgs::ArmSpeedCmd>(),
-            RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus)),
+            RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus),
+            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>()),
     _rosArmSpeedMsgId(rosArmSpeedMsgId_),
     _rosSharedMsg(rosSharedMsg_)
 {
