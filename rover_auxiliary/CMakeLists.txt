@@ -25,7 +25,8 @@ add_executable(antenna src/Antenna/antenna_node.cpp
                        src/Antenna/antenna_driver.cpp
                        src/Antenna/antenna_commands/base/getStatus.cpp
                        src/Antenna/antenna_commands/base/getInterfaceStats.cpp
-                       src/Antenna/antenna_commands/base/login.cpp)
+                       src/Antenna/antenna_commands/base/login.cpp
+                       src/Antenna/antenna_commands/base/validateAuth.cpp)
 
 ament_target_dependencies(ddb_control
                           rclcpp

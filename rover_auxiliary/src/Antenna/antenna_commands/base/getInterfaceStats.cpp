@@ -2,7 +2,7 @@
 #include <json/json.h>
 #include <charconv>
 
-Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string baseURL_, uint64_t publisherPeriodMs_):
+Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& baseURL_, uint64_t publisherPeriodMs_):
     AntennaCommand(baseURL_),
     _publisherPeriodMs(publisherPeriodMs_)
 {
@@ -21,13 +21,13 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
     return result;
 }
 
-sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response)
+sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
     sCommandResult result;
     session_->SetUrl(cpr::Url{_baseURL + IFSTATS_PAGE});
-    response = session_->Get();
+    response_ = session_->Get();
 
-    switch (response.status_code)
+    switch (response_.status_code)
     {
         case std::to_underlying(eHttpStatus::OK):
             result.success = true;
@@ -43,7 +43,7 @@ sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::S
             break;
         default:
             result.success = false;
-            result.error = "Unexpected HTTP status: " + std::to_string(response.status_code);
+            result.error = "Unexpected HTTP status using GET stats.cgi: " + std::to_string(response_.status_code);
             return result;
             break;
     }
@@ -112,14 +112,14 @@ sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Respon
     return result;
 }
 
-bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate)
+bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_)
 {
     uint64_t currentBytes;
     std::from_chars_result charResult = std::from_chars(byteStr_.data(), byteStr_.data() + byteStr_.size(), currentBytes);
 
     if (charResult.ec == std::errc{})
     {
-        rate = (currentBytes - lastByte_) * 1000.0f / _publisherPeriodMs;
+        rate_ = (currentBytes - lastByte_) * 1000.0f / _publisherPeriodMs;
         lastByte_ = currentBytes;
         return true;
     }

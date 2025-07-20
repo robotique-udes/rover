@@ -6,6 +6,10 @@
 
 namespace Command::Base
 {
+    /**
+     * @brief This class is responsible for getting the wlan rates from the antenna interface statistics
+     * 
+     */
     class GetInterfaceStats : public AntennaCommand
     {
       private:
@@ -18,14 +22,14 @@ namespace Command::Base
         static constexpr uint8_t INTERFACE_LAN_INDEX = 1;
 
       public:
-        GetInterfaceStats(const std::string baseURL_, uint64_t publisherPeriodMs_);
+        GetInterfaceStats(const std::string& baseURL_, uint64_t publisherPeriodMs_);
         ~GetInterfaceStats() override = default;
         sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 
       private:
-        sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response);
+        sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
         sCommandResult parseResponse(const cpr::Response& response, sAntennaMsg& msg_);
-        bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate);
+        bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_);
 
         uint8_t _loginAttempts = 0;
         uint64_t _lanRxBytes = 0;

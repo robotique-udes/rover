@@ -1,7 +1,6 @@
 float32 rssi
-float32 wlan_rxrate
-float32 wlan_txrate
+float32 rxrate
+float32 txrate
 
 bool connected
-string info
-uint16 http_code
+

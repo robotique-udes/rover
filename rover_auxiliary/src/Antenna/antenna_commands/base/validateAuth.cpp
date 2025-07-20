@@ -1,25 +1,35 @@
+#include "validateAuth.hpp"
+
 #include "getStatus.hpp"
 #include <json/json.h>
 
-Command::Base::GetStatus::GetStatus(const std::string& baseURL_):
+Command::Base::ValidateAuth::ValidateAuth(const std::string baseURL_):
     AntennaCommand(baseURL_)
 {
 }
 
-sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     if (!result)
     {
+        msg_.clear();
+        msg_.connected = false;
         return result;
     }
 
-    result = this->parseResponse(response, msg_);
+    result = this->validateFormat(response, msg_);
+
+    if (!result)
+    {
+        msg_.clear();
+        msg_.connected = false;
+    }
     return result;
 }
 
-sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
+sCommandResult Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
     sCommandResult result;
     session_->SetUrl(cpr::Url{_baseURL + STATUS_PAGE});
@@ -37,6 +47,7 @@ sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> 
             result.success = false;
             result.error = "Session expired";
             break;
+
         default:
             result.success = false;
             result.error = "Unexpected HTTP status using GET stats.cgi: " + std::to_string(response_.status_code);
@@ -45,41 +56,31 @@ sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> 
     return result;
 }
 
-sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
+sCommandResult Command::Base::ValidateAuth::validateFormat(const cpr::Response& response_, sAntennaMsg& msg_)
 {
     sCommandResult result;
     if (response_.text.empty())
     {
         result.success = false;
-        result.error = "Response was empty";
+        result.error = "Antenna response was empty, authentification invalid";
         return result;
     }
 
     Json::Value root;
     Json::CharReaderBuilder builder;
     std::string errors;
-
     std::istringstream stream(response_.text);
-    if (Json::parseFromStream(builder, stream, &root, &errors))
-    {
-        if (root.isMember(JSON_FIELD_WIRELESS))
-        {
-            Json::Value wireless = root[JSON_FIELD_WIRELESS];
 
-            if (wireless.isMember(JSON_FIELD_RSSI))
-            {
-                float rssi = wireless[JSON_FIELD_RSSI].asFloat();
-                msg_.rssi = rssi;
-            }
-        }
+    if (Json::parseFromStream(builder, stream, &root, &errors) && root.isMember("wireless"))
+    {
+        msg_.connected = true;
+        result.success = true;
+        return result;
     }
     else
     {
         result.success = false;
-        result.error
-            = std::string("Failed to parse JSON: ") + errors + ", probable cause is invalid credentials, check your .env file";
+        result.error = "Antenna response was not valid JSON format, most likely cause: invalid credentials in .env";
         return result;
     }
-    result.success = true;
-    return result;
 }

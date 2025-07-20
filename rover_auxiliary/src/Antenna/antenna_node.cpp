@@ -5,8 +5,16 @@
 
 namespace
 {
-    
-}
+    rover_msgs::msg::AntennaStatus toRosMsg(const sAntennaMsg& msg_)
+    {
+        rover_msgs::msg::AntennaStatus rosMsg;
+        rosMsg.connected = msg_.connected;
+        rosMsg.rssi = msg_.rssi;
+        rosMsg.rxrate = msg_.rxRate;
+        rosMsg.txrate = msg_.txRate;
+        return rosMsg;
+    }
+}  // namespace
 
 int main(int argc, char* argv[])
 {
@@ -20,26 +28,42 @@ int main(int argc, char* argv[])
 
 AntennaNode::AntennaNode():
     rclcpp::Node("antenna"),
-    _driver(this->get_logger(), PUBLISHER_PERIOD_MS)
+    _driver(PUBLISHER_PERIOD_MS)
 {
     _pubAntennaStatus = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
 
     if (loadUserInfo())
     {
-        _driver.setUserInfo(_username, _password);
+        sCommandResult loginResult = _driver.setUserInfo(_username, _password);
+        RCLCPP_INFO(this->get_logger(), loginResult.error.c_str());
+
         _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                              [this](void)
                                              {
-                                                 rover_msgs::msg::AntennaStatus msg;
-                                                 _driver.CbAntennaPublisher(msg);
-                                                 _pubAntennaStatus->publish(msg);
+                                                 sAntennaMsg msg;
+                                                 sCommandResult result;
+                                                 result = _driver.CbAntennaPublisher(msg);
+
+                                                 rover_msgs::msg::AntennaStatus rosMsg = toRosMsg(msg);
+                                                 _pubAntennaStatus->publish(rosMsg);
+
+                                                 if (!result.error.empty())
+                                                 {
+                                                     if (result.success)
+                                                     {
+                                                         RCLCPP_INFO(this->get_logger(), result.error.c_str());
+                                                     }
+                                                     else
+                                                     {
+                                                         RCLCPP_ERROR(this->get_logger(), result.error.c_str());
+                                                     }
+                                                 }
                                              });
     }
     else
     {
         rover_msgs::msg::AntennaStatus msg;
         msg.connected = false;
-        msg.info = "Error loading .env file";
         _pubAntennaStatus->publish(msg);
     }
 }

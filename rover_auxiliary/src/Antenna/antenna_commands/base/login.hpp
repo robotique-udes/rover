@@ -11,7 +11,7 @@ namespace Command::Base
         static constexpr const char* LOGIN_PAGE = "/login.cgi";
 
       public:
-        Login(const std::string baseURL_, const std::string& username_, const std::string& password_);
+        Login(const std::string& baseURL_);
         ~Login() override = default;
         /**
          * @brief POSTs the username and password on the antenna's login page
@@ -21,10 +21,10 @@ namespace Command::Base
          */
         sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 
+        void setUserInfo(const std::string& username_, const std::string& password_);
       private:
         sCommandResult postHTTPS(std::shared_ptr<cpr::Session> session_);
 
-        std::string _baseURL;
         std::string _username;
         std::string _password;
     };
