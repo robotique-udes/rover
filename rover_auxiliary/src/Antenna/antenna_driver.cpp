@@ -38,13 +38,14 @@ sCommandResult AntennaDriver::CbAntennaPublisher(sAntennaMsg& msg_)
         result = cmd->execute(_session, msg_);
         if (!result)
         {
-            if (result.httpStatus == std::to_underlying(eHttpStatus::FORBIDDEN) || result.httpStatus == std::to_underlying(eHttpStatus::UNAUTHORIZED))
+            if (result.httpStatus == std::to_underlying(eHttpStatus::FORBIDDEN)
+                || result.httpStatus == std::to_underlying(eHttpStatus::UNAUTHORIZED))
             {
                 result = this->handleDisconnect(msg_);
             }
-            else if(result.httpStatus == std::to_underlying(eHttpStatus::OFFLINE))
+            else if (result.httpStatus == std::to_underlying(eHttpStatus::OFFLINE))
             {
-                //Clear result so no logging when offline
+                // Clear result so no logging when offline
                 result = sCommandResult{};
             }
             else
