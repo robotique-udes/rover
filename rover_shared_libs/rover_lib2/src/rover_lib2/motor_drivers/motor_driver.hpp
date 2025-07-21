@@ -9,6 +9,9 @@
 
 namespace MotorDrivers
 {
+    constexpr float MIN_CMD_OPEN_LOOP = -100.0F;
+    constexpr float MAX_CMD_OPEN_LOOP = 100.0F;
+    static_assert(MIN_CMD_OPEN_LOOP <= MAX_CMD_OPEN_LOOP);
 
     enum class eBrakeMode : uint8_t
     {
