@@ -28,7 +28,7 @@ namespace Command::Base
 
       private:
         sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        sCommandResult parseResponse(const cpr::Response& response, sAntennaMsg& msg_);
+        sCommandResult parseResponse(const cpr::Response& response_, sAntennaMsg& msg_);
         bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_);
 
         uint8_t _loginAttempts = 0;

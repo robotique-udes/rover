@@ -1,9 +1,8 @@
-#include "validateAuth.hpp"
+#include "validate_auth.hpp"
 
-#include "getStatus.hpp"
 #include <json/json.h>
 
-Command::Base::ValidateAuth::ValidateAuth(const std::string baseURL_):
+Command::Base::ValidateAuth::ValidateAuth(const std::string& baseURL_):
     AntennaCommand(baseURL_)
 {
 }
@@ -13,7 +12,7 @@ sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     result.httpStatus = response.status_code;
-    if(!result.success)
+    if (!result.success)
     {
         msg_ = sAntennaMsg{};
         msg_.connected = false;
@@ -22,7 +21,7 @@ sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session
 
     result = this->validateFormat(response, msg_);
 
-    if(!result.success)
+    if (!result.success)
     {
         msg_ = sAntennaMsg{};
         msg_.connected = false;
@@ -47,6 +46,10 @@ sCommandResult Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Sessio
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
             result.success = false;
             result.error = "Session expired";
+            break;
+        case std::to_underlying(eHttpStatus::OFFLINE):
+            result.success = false;
+            result.error = "Antenna is offline";
             break;
 
         default:

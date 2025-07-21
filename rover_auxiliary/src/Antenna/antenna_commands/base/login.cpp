@@ -34,6 +34,10 @@ sCommandResult Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> ses
             result.success = false;
             result.error = "Login forbidden or unauthorized: check your credentials in your .env";
             break;
+        case std::to_underlying(eHttpStatus::OFFLINE):
+            result.success = false;
+            result.error = "Antenna is offline";
+            break;
         default:
             result.success = false;
             result.error = "POST attempt was unsuccessful, unexpected http status code: " + std::to_string(response.status_code);

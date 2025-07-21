@@ -1,8 +1,5 @@
 #include "antenna_driver.hpp"
 #include "rover_lib2/helpers/assert.hpp"
-#include <iostream>
-#include <charconv>
-#include <json/json.h>
 
 AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_):
     _session(std::make_shared<cpr::Session>()),
@@ -20,13 +17,9 @@ AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_):
     ASSERT_COND_MSG(dynamic_cast<Command::Base::ValidateAuth*>(_commands.front().get()), "First command must be Validate Auth");
 }
 
-sCommandResult AntennaDriver::setUserInfo(const std::string& username_, const std::string& password_)
+void AntennaDriver::setUserInfo(const std::string& username_, const std::string& password_)
 {
-    sCommandResult result;
-    sAntennaMsg msg;
     _login.setUserInfo(username_, password_);
-    result = _login.execute(_session, msg);
-    return result;
 }
 
 sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
@@ -36,7 +29,7 @@ sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
     for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
-        if(!result.success)
+        if (!result.success)
         {
             if (result.httpStatus == std::to_underlying(eHttpStatus::FORBIDDEN)
                 || result.httpStatus == std::to_underlying(eHttpStatus::UNAUTHORIZED))
@@ -45,7 +38,17 @@ sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
             }
             else if (result.httpStatus == std::to_underlying(eHttpStatus::OFFLINE))
             {
-                
+                if (_loginCooldownTimer.isReady())  // retry and log if error
+                {
+                    result = this->handleDisconnect(msg_);
+                }
+                else  // no logging when on cooldown
+                {
+                    msg_ = sAntennaMsg{};
+                    msg_.connected = false;
+                    result = sCommandResult{};
+                    result.success = false;
+                }
             }
             else
             {
@@ -78,7 +81,7 @@ sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
         result = _login.execute(_session, msg_);
     }
 
-    if(!result.success)
+    if (!result.success)
     {
         _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
         _cooldownActive = true;
@@ -90,7 +93,7 @@ sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
     for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
-        if(!result.success)
+        if (!result.success)
         {
             return result;
         }
@@ -103,11 +106,11 @@ void AntennaDriver::setupSession(void)
     // RocketM2 general settings
     _session->SetVerifySsl(false);
 
-    cpr::SslOptions ssl_options;
-    ssl_options.ciphers = HTTP_CIPHER;
-    ssl_options.verify_peer = false;
-    ssl_options.verify_host = false;
-    _session->SetOption(ssl_options);
+    cpr::SslOptions sslOptions;
+    sslOptions.ciphers = HTTP_CIPHER;
+    sslOptions.verify_peer = false;
+    sslOptions.verify_host = false;
+    _session->SetOption(sslOptions);
 
     _session->SetConnectTimeout(cpr::ConnectTimeout{SESSION_CONNECT_TIMEOUT_MS});
     _session->SetTimeout(cpr::Timeout{SESSION_TIMEOUT_MS});

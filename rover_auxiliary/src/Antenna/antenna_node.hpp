@@ -20,10 +20,11 @@ class AntennaNode : public rclcpp::Node
      * @warning you need to add the fields "username" and "password" to your .env
      */
     bool loadUserInfo(void);
+    void executeDriver(void);
 
     AntennaDriver _driver;
 
-    rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pubAntennaStatus;
+    rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pub_antennaStatus;
     rclcpp::TimerBase::SharedPtr _timer_pub;
     std::string _username;
     std::string _password;

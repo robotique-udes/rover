@@ -1,4 +1,4 @@
-#include "getInterfaceStats.hpp"
+#include "get_interface_stats.hpp"
 #include <json/json.h>
 #include <charconv>
 
@@ -13,7 +13,7 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     result.httpStatus = response.status_code;
-    if(!result.success)
+    if (!result.success)
     {
         return result;
     }
@@ -39,6 +39,10 @@ sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::S
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
             result.success = false;
             result.error = "Session expired";
+            break;
+        case std::to_underlying(eHttpStatus::OFFLINE):
+            result.success = false;
+            result.error = "Antenna is offline";
             break;
         default:
             result.success = false;

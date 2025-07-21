@@ -7,10 +7,10 @@
 #include <rover_lib2/helpers/one_shot_timer.hpp>
 #include <cpr/cpr.h>
 #include "antenna_commands/antenna_command.hpp"
-#include "antenna_commands/base/getStatus.hpp"
-#include "antenna_commands/base/getInterfaceStats.hpp"
+#include "antenna_commands/base/get_status.hpp"
+#include "antenna_commands/base/get_interface_stats.hpp"
 #include "antenna_commands/base/login.hpp"
-#include "antenna_commands/base/validateAuth.hpp"
+#include "antenna_commands/base/validate_auth.hpp"
 
 class AntennaDriver
 {
@@ -26,7 +26,7 @@ class AntennaDriver
 
   public:
     AntennaDriver(uint64_t publisherPeriodMs_);
-    sCommandResult setUserInfo(const std::string& username_, const std::string& password_);
+    void setUserInfo(const std::string& username_, const std::string& password_);
     sCommandResult ExecuteAntennaCommands(sAntennaMsg& msg_);
 
   private:

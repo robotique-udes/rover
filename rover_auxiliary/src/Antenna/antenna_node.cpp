@@ -28,41 +28,20 @@ AntennaNode::AntennaNode():
     rclcpp::Node("antenna"),
     _driver(PUBLISHER_PERIOD_MS)
 {
-    _pubAntennaStatus = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
+    _pub_antennaStatus = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
 
-    if (loadUserInfo())
+    if (!loadUserInfo())
     {
-        sCommandResult loginResult = _driver.setUserInfo(_username, _password);
-        RCLCPP_INFO(this->get_logger(),"%s", loginResult.error.c_str());
-
-        _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
-                                             [this](void)
-                                             {
-                                                 sAntennaMsg msg;
-                                                 sCommandResult result;
-                                                 result = _driver.ExecuteAntennaCommands(msg);
-
-                                                 rover_msgs::msg::AntennaStatus rosMsg = toRosMsg(msg);
-                                                 _pubAntennaStatus->publish(rosMsg);
-
-                                                 if (!result.error.empty())
-                                                 {
-                                                     if (result.success)
-                                                     {
-                                                         RCLCPP_INFO(this->get_logger(), "%s", result.error.c_str());
-                                                     }
-                                                     else
-                                                     {
-                                                         RCLCPP_ERROR(this->get_logger(), "%s", result.error.c_str());
-                                                     }
-                                                 }
-                                             });
+        RCLCPP_ERROR(this->get_logger(), "Antenna credentials where not found in ENV, check your baschrc");
     }
     else
     {
-        rover_msgs::msg::AntennaStatus msg;
-        msg.connected = false;
-        _pubAntennaStatus->publish(msg);
+        _driver.setUserInfo(_username, _password);
+        _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
+                                             [this](void)
+                                             {
+                                                 this->executeDriver();
+                                             });
     }
 }
 
@@ -82,4 +61,26 @@ bool AntennaNode::loadUserInfo(void)
     _password = passwordEnv;
     RCLCPP_DEBUG(this->get_logger(), "Loaded username and password from environment variables");
     return true;
+}
+
+void AntennaNode::executeDriver(void)
+{
+    sAntennaMsg msg;
+    sCommandResult result;
+    result = _driver.ExecuteAntennaCommands(msg);
+
+    rover_msgs::msg::AntennaStatus rosMsg = toRosMsg(msg);
+    _pub_antennaStatus->publish(rosMsg);
+
+    if (!result.error.empty())
+    {
+        if (result.success)
+        {
+            RCLCPP_INFO(this->get_logger(), "%s", result.error.c_str());
+        }
+        else
+        {
+            RCLCPP_ERROR(this->get_logger(), "%s", result.error.c_str());
+        }
+    }
 }
