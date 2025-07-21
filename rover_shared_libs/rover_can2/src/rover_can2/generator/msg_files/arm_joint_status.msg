@@ -1,0 +1,2 @@
+float currentPosition;
+float currentSpeed;
