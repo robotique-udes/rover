@@ -40,7 +40,6 @@ class AntennaCommand
 
   private:
     std::string _apiUrl;
-
 };
 
 #endif  // ANTENNA_COMMAND_HPP
