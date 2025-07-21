@@ -18,5 +18,7 @@
     <file>TaskDateAndTime.txt</file>
     
     <file>other/map.html</file>
+    <file>other/JS/test.js</file>
+    <file>other/CSS/map.css</file>
   </qresource>
 </RCC>
