@@ -295,7 +295,10 @@
 
 	function stillFacingNorth() 
 	{
-		if (!isFacingNorth || isAdjustingCamera) return;
+		if (!isFacingNorth || isAdjustingCamera)
+    {
+      return;
+    } 
 
 		if (northFacingTimeout)
 		{
