@@ -1,6 +1,15 @@
 #include "antenna_driver.hpp"
 #include "rover_lib2/helpers/assert.hpp"
 
+namespace
+{
+    bool isAuthOrOfflineError(int status)
+    {
+        return status == std::to_underlying(eHttpStatus::FORBIDDEN) || status == std::to_underlying(eHttpStatus::UNAUTHORIZED)
+               || status == std::to_underlying(eHttpStatus::OFFLINE);
+    }
+}  // namespace
+
 AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_):
     _session(std::make_shared<cpr::Session>()),
     _publisherPeriodMs(publisherPeriodMs_),
@@ -10,11 +19,9 @@ AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_):
     this->setupSession();
 
     // Always put validate auth first
-    _commands.emplace_back(std::make_unique<Command::Base::ValidateAuth>(BASE_URL));
-    _commands.emplace_back(std::make_unique<Command::Base::GetStatus>(BASE_URL));
-    _commands.emplace_back(std::make_unique<Command::Base::GetInterfaceStats>(BASE_URL, _publisherPeriodMs));
-
-    ASSERT_COND_MSG(dynamic_cast<Command::Base::ValidateAuth*>(_commands.front().get()), "First command must be Validate Auth");
+    _commands[0] = (std::make_unique<Command::Base::ValidateAuth>(BASE_URL));
+    _commands[1] = (std::make_unique<Command::Base::GetStatus>(BASE_URL));
+    _commands[2] = (std::make_unique<Command::Base::GetInterfaceStats>(BASE_URL, _publisherPeriodMs));
 }
 
 void AntennaDriver::setUserInfo(const std::string& username_, const std::string& password_)
@@ -31,24 +38,9 @@ sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
         result = cmd->execute(_session, msg_);
         if (!result.success)
         {
-            if (result.httpStatus == std::to_underlying(eHttpStatus::FORBIDDEN)
-                || result.httpStatus == std::to_underlying(eHttpStatus::UNAUTHORIZED))
+            if (isAuthOrOfflineError(result.httpStatus))
             {
                 result = this->handleDisconnect(msg_);
-            }
-            else if (result.httpStatus == std::to_underlying(eHttpStatus::OFFLINE))
-            {
-                if (_loginCooldownTimer.isReady())  // retry and log if error
-                {
-                    result = this->handleDisconnect(msg_);
-                }
-                else  // no logging when on cooldown
-                {
-                    msg_ = sAntennaMsg{};
-                    msg_.connected = false;
-                    result = sCommandResult{};
-                    result.success = false;
-                }
             }
             else
             {

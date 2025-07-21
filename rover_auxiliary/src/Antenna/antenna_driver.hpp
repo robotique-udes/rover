@@ -44,7 +44,7 @@ class AntennaDriver
     std::string _password;
 
     Command::Base::Login _login;
-    std::vector<std::unique_ptr<AntennaCommand>> _commands;
+    std::array<std::unique_ptr<AntennaCommand>, 3> _commands;
 
     OneShotTimer<uint64_t, &Time::millis> _loginCooldownTimer;
     bool _cooldownActive = false;
