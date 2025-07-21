@@ -84,8 +84,8 @@ namespace RoverCan2::Constant
         PROP_SPEED_CMD,
         PROP_SPEED_STATUS,
         
-        ARM_SPEED_CMD,
-        ARM_POSITION_STATUS,
+        ARM_JOINT_CMD,
+        ARM_JOINT_STATUS,
         ARM_JOINT_CONFIG,
         
         FIX_POSITION,
@@ -105,11 +105,12 @@ namespace RoverCan2::Constant
      * @brief Array holding all valid and implemented msgs used on the network.
      *
      */
-    constexpr CompileTimeArray<eMsgId, 19UL> SUPPORTED_MSGS = {
+    constexpr CompileTimeArray<eMsgId, 21UL> SUPPORTED_MSGS = {
         eMsgId::TEST_MSG,          eMsgId::TEST_MSG_2, eMsgId::ERROR_STATE, eMsgId::HEARTBEAT,    eMsgId::POWER_CMD,
         eMsgId::POWER_STATUS,      eMsgId::PWM_CMD,    eMsgId::PWM_STATUS,  eMsgId::PWM_INFO,     eMsgId::PROP_SPEED_CMD,
         eMsgId::PROP_SPEED_STATUS, eMsgId::DDB_CMD,    eMsgId::DDB_STATUS,  eMsgId::FIX_POSITION, eMsgId::FIX_HEADING,
-        eMsgId::FIX_INFO,          eMsgId::PTZ_CMD,    eMsgId::PTZ_STATUS,  eMsgId::PTZ_CONFIG,
+        eMsgId::FIX_INFO,          eMsgId::PTZ_CMD,    eMsgId::PTZ_STATUS,  eMsgId::PTZ_CONFIG,   eMsgId::ARM_JOINT_CMD,
+        eMsgId::ARM_JOINT_STATUS,
     };
 
     /**
