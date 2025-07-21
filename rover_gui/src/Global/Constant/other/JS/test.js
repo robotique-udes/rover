@@ -858,8 +858,7 @@ function showWaypointDialog(lat, lon) {
   });
 }
 
-window.addEventListener('load', initializeMap);
-window.addEventListener('online', initializeMap);
+document.addEventListener('DOMContentLoaded', initializeMap);
 window.addEventListener('offline', function () {
   document.getElementById('connectionError').style.display = 'block';
 });
