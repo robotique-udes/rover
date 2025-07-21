@@ -389,7 +389,7 @@
 
       try {
         if (window.bridge && window.bridge.topDownViewChanged) {
-          window.bridge.topDownViewChanged(isTopDownView);
+          window.bridge.topDownViewChanged(isTopDownView); // #TODO: Not implemented in C++
         }
       } catch (error) {
         console.error("Error notifying bridge about top-down state:", error);
@@ -486,10 +486,6 @@
         try {
           updateCameraPosition();
 
-          if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
-            viewer.scene.screenSpaceCameraController.enableRotate = !isTopDownView;
-            viewer.scene.screenSpaceCameraController.enableTilt = !isTopDownView;
-          }
         } catch (error) {
           console.error("Error enabling tracking:", error);
           cameraTracking = false;
@@ -500,19 +496,11 @@
         trackingButton.classList.remove('active');
         trackingText.textContent = 'Track Position';
 
-        try {
-          if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
-            viewer.scene.screenSpaceCameraController.enableRotate = !isTopDownView;
-            viewer.scene.screenSpaceCameraController.enableTilt = !isTopDownView;
-          }
-        } catch (error) {
-          console.error("Error disabling tracking:", error);
-        }
       }
 
       try {
         if (window.bridge && window.bridge.cameraTrackingChanged) {
-          window.bridge.cameraTrackingChanged(cameraTracking);
+          window.bridge.cameraTrackingChanged(cameraTracking); // #TODO: Not implemented in C++
         }
       } catch (error) {
         console.error("Error notifying bridge about tracking state:", error);
@@ -532,9 +520,11 @@
           console.warn("Could not get camera height, using default:", e);
         }
 
-        const orientation = isTopDownView
-          ? { heading: viewer.camera.heading, pitch: -Math.PI / 2, roll: 0.0 }
-          : { heading: viewer.camera.heading, pitch: viewer.camera.pitch, roll: 0.0 };
+        const orientation = {
+								heading: viewer.camera.heading,
+								pitch: viewer.camera.pitch,
+								roll: 0.0 
+							};
 
         viewer.camera.setView({
           destination: Cesium.Cartesian3.fromDegrees(
