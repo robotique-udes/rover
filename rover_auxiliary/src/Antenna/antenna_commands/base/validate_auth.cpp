@@ -2,8 +2,8 @@
 
 #include <json/json.h>
 
-Command::Base::ValidateAuth::ValidateAuth(const std::string& baseURL_):
-    AntennaCommand(baseURL_)
+Command::Base::ValidateAuth::ValidateAuth(const std::string& apiUrl_):
+    AntennaCommand(apiUrl_)
 {
 }
 

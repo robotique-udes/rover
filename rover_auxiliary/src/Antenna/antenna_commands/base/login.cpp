@@ -1,7 +1,7 @@
 #include "login.hpp"
 
-Command::Base::Login::Login(const std::string& baseURL_):
-    AntennaCommand(baseURL_)
+Command::Base::Login::Login(const std::string& apiUrl_):
+    AntennaCommand(apiUrl_)
 {
 }
 

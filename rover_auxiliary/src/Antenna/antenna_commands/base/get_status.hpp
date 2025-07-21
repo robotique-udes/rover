@@ -18,7 +18,7 @@ namespace Command::Base
         static constexpr char const* JSON_FIELD_RSSI = "rssi";
 
       public:
-        GetStatus(const std::string& baseURL_);
+        GetStatus(const std::string& apiUrl_);
         ~GetStatus() override = default;
         sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 

@@ -2,8 +2,8 @@
 #include <json/json.h>
 #include <charconv>
 
-Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& baseURL_, uint64_t publisherPeriodMs_):
-    AntennaCommand(baseURL_),
+Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_):
+    AntennaCommand(apiUrl_),
     _publisherPeriodMs(publisherPeriodMs_)
 {
 }

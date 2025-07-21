@@ -11,7 +11,7 @@ namespace Command::Base
         static constexpr const char* LOGIN_PAGE = "/login.cgi";
 
       public:
-        Login(const std::string& baseURL_);
+        Login(const std::string& apiUrl_);
         ~Login() override = default;
         /**
          * @brief POSTs the username and password on the antenna's login page

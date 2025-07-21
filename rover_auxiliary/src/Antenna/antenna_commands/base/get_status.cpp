@@ -1,8 +1,8 @@
 #include "get_status.hpp"
 #include <json/json.h>
 
-Command::Base::GetStatus::GetStatus(const std::string& baseURL_):
-    AntennaCommand(baseURL_)
+Command::Base::GetStatus::GetStatus(const std::string& apiUrl_):
+    AntennaCommand(apiUrl_)
 {
 }
 

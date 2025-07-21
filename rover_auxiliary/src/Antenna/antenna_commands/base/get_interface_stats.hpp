@@ -22,7 +22,7 @@ namespace Command::Base
         static constexpr uint8_t INTERFACE_LAN_INDEX = 1;
 
       public:
-        GetInterfaceStats(const std::string& baseURL_, uint64_t publisherPeriodMs_);
+        GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_);
         ~GetInterfaceStats() override = default;
         sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 

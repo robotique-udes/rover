@@ -16,7 +16,7 @@ namespace Command::Base
         static constexpr char const* JSON_FIELD_WIRELESS = "wireless";
 
       public:
-        ValidateAuth(const std::string& baseURL_);
+        ValidateAuth(const std::string& apiUrl_);
         ~ValidateAuth() override = default;
         sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 
