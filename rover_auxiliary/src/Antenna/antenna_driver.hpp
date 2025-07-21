@@ -1,8 +1,6 @@
 #ifndef ANTENNA_DRIVER_HPP
 #define ANTENNA_DRIVER_HPP
 
-#include <string>
-#include <functional>
 #include <memory>
 #include <rover_lib2/helpers/constants.hpp>
 #include <rover_lib2/helpers/time.hpp>
@@ -16,19 +14,20 @@
 
 class AntennaDriver
 {
+  private:
     static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL(Constants::AntennaInfo::eAntennaType::Base);
     static_assert(BASE_URL != nullptr, "Base url can't be nullptr");
 
     static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;
-    static constexpr uint16_t SESSION_CONNECT_TIMEOUT_MS = 500;
-    static constexpr uint16_t SESSION_TIMEOUT_MS = 1000;
-    static constexpr uint64_t LOGIN_COOLDOWN_MS = 60000U;
+    static constexpr uint16_t SESSION_CONNECT_TIMEOUT_MS = 500U;
+    static constexpr uint16_t SESSION_TIMEOUT_MS = 1'000U;
+    static constexpr uint64_t LOGIN_COOLDOWN_MS = 60'000UL;
 
   public:
     AntennaDriver(uint64_t publisherPeriodMs_);
     sCommandResult setUserInfo(const std::string& username_, const std::string& password_);
-    sCommandResult CbAntennaPublisher(sAntennaMsg& msg_);
+    sCommandResult ExecuteAntennaCommands(sAntennaMsg& msg_);
 
   private:
     /**

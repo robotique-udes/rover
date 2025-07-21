@@ -40,20 +40,20 @@ ament_target_dependencies(antenna
                           rcl_interfaces)
 
 target_link_libraries(antenna 
-                          rover_shared_libs
-                          jsoncpp_lib
-                          cpr::cpr)
+                      rover_shared_libs
+                      jsoncpp_lib
+                      cpr::cpr)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          ddb_control
+        ddb_control
         DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS
-          antenna
-      DESTINATION lib/${PROJECT_NAME})
+        antenna
+        DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

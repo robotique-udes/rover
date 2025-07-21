@@ -14,7 +14,7 @@ sCommandResult Command::Base::Login::execute(std::shared_ptr<cpr::Session> sessi
 sCommandResult Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> session_)
 {
     sCommandResult result;
-    session_->SetUrl(cpr::Url{_baseURL + LOGIN_PAGE});
+    session_->SetUrl(cpr::Url{this->getApiUrl() + LOGIN_PAGE});
     cpr::Payload payload{{"username", _username}, {"password", _password}};
     session_->SetOption(payload);
     cpr::Response response = session_->Post();

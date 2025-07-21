@@ -29,14 +29,14 @@ sCommandResult AntennaDriver::setUserInfo(const std::string& username_, const st
     return result;
 }
 
-sCommandResult AntennaDriver::CbAntennaPublisher(sAntennaMsg& msg_)
+sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
 {
     sCommandResult result;
 
     for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
-        if (!result)
+        if(!result.success)
         {
             if (result.httpStatus == std::to_underlying(eHttpStatus::FORBIDDEN)
                 || result.httpStatus == std::to_underlying(eHttpStatus::UNAUTHORIZED))
@@ -45,12 +45,11 @@ sCommandResult AntennaDriver::CbAntennaPublisher(sAntennaMsg& msg_)
             }
             else if (result.httpStatus == std::to_underlying(eHttpStatus::OFFLINE))
             {
-                // Clear result so no logging when offline
-                result = sCommandResult{};
+                
             }
             else
             {
-                msg_.clear();
+                msg_ = sAntennaMsg{};
                 msg_.connected = false;
             }
 
@@ -67,23 +66,23 @@ sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
     if (_cooldownActive && !_loginCooldownTimer.isReady())
     {
         result.success = false;
-        msg_.clear();
+        msg_ = sAntennaMsg{};
         msg_.connected = false;
         return result;
     }
     _cooldownActive = false;
 
     uint8_t loginAttempts;
-    for (loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && !result; loginAttempts++)
+    for (loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && !result.success; loginAttempts++)
     {
         result = _login.execute(_session, msg_);
     }
 
-    if (!result)
+    if(!result.success)
     {
         _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
         _cooldownActive = true;
-        msg_.clear();
+        msg_ = sAntennaMsg{};
         msg_.connected = false;
         return result;
     }
@@ -91,7 +90,7 @@ sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
     for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
-        if (!result)
+        if(!result.success)
         {
             return result;
         }

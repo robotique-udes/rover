@@ -13,7 +13,7 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     result.httpStatus = response.status_code;
-    if (!result)
+    if(!result.success)
     {
         return result;
     }
@@ -25,7 +25,7 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
 sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
     sCommandResult result;
-    session_->SetUrl(cpr::Url{_baseURL + IFSTATS_PAGE});
+    session_->SetUrl(cpr::Url{this->getApiUrl() + IFSTATS_PAGE});
     response_ = session_->Get();
 
     switch (response_.status_code)
