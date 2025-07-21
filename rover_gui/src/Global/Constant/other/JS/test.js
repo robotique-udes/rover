@@ -1,0 +1,865 @@
+let viewer;
+let currentPosition = { latitude: 45.377755, longitude: -71.924652 };
+let pathEntity = null;
+let waypointEntities = [];
+let waypointCounter = 1;
+let activeWaypoint = null;
+let pathUpdateInterval = null;
+let entity;
+let isAddingWaypoint = false;
+let cameraTracking = false;
+let isTopDownView = false;
+let lastHeading = 0;
+let lastCameraPosition = null;
+let isFacingNorth = false;
+let isAdjustingCamera = false;
+let northFacingTimeout = null;
+
+function checkConnectivity() {
+  const connectionError = document.getElementById('connectionError');
+
+  if (!navigator.onLine) {
+    connectionError.style.display = 'block';
+    return false;
+  } else {
+    return fetch('https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js', {
+      method: 'HEAD',
+      mode: 'no-cors',
+      cache: 'no-store'
+    })
+      .then(() => {
+        connectionError.style.display = 'none';
+        return true;
+      })
+      .catch(() => {
+        connectionError.style.display = 'block';
+        return false;
+      });
+  }
+}
+
+function initializeMap() {
+  checkConnectivity().then(isConnected => {
+    if (isConnected) {
+      setupCesiumMap();
+    } else {
+      console.error("Unable to connect to the internet");
+    }
+  });
+}
+
+function setupCesiumMap() {
+  viewer = new Cesium.Viewer("cesiumContainer", {
+    terrain: Cesium.Terrain.fromWorldTerrain({
+      requestWaterMask: true,
+      requestVertexNormals: true,
+    }),
+    animation: false,
+    baseLayerPicker: false,
+    fullscreenButton: false,
+    vrButton: false,
+    geocoder: false,
+    homeButton: false,
+    infoBox: false,
+    sceneModePicker: false,
+    selectionIndicator: false,
+    timeline: false,
+    navigationHelpButton: false,
+    navigationInstructionsInitiallyVisible: false,
+    creditsDisplay: false,
+    shouldAnimate: true,
+  });
+
+  viewer._cesiumWidget._creditContainer.style.display = "none";
+
+  entity = viewer.entities.add({
+    name: "Live Position Arrow",
+    position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
+    model: {
+      uri: 'qrc:/model/direction_arrow.glb',
+      scale: 0.2,
+      minimumPixelSize: 30,
+      maximumScale: 60,
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      rotation: 0,
+      color: Cesium.Color.RED,
+    },
+    orientation: new Cesium.CallbackProperty(function () {
+      const headingRad = Cesium.Math.toRadians(lastHeading || 0);
+      return Cesium.Transforms.headingPitchRollQuaternion(
+        Cesium.Cartesian3.fromDegrees(currentPosition.longitude, currentPosition.latitude),
+        new Cesium.HeadingPitchRoll(headingRad, 0, 0)
+      );
+    }, false)
+  });
+
+  setupEventHandlers();
+  setupControlButtons();
+  setupBridgeConnection();
+}
+
+function setupControlButtons() {
+  const trackingButton = document.getElementById('trackingButton');
+  const topDownButton = document.getElementById('topDownButton');
+  const northFacingButton = document.getElementById('northFacingButton');
+
+  trackingButton.addEventListener('click', function () {
+    toggleCameraTracking();
+  });
+
+  topDownButton.addEventListener('click', function () {
+    toggleTopDownView();
+  });
+
+  northFacingButton.addEventListener('click', function () {
+    toggleNorthFacing();
+  });
+}
+
+function toggleNorthFacing() {
+  isFacingNorth = !isFacingNorth;
+  const northFacingButton = document.getElementById('northFacingButton');
+  const northFacingText = document.getElementById('northFacingText');
+
+  if (isFacingNorth) {
+    northFacingButton.classList.add('active');
+    northFacingText.textContent = 'Facing North';
+    setNorthFacing();
+
+    setTimeout(() => {
+      if (isFacingNorth) {
+        viewer.camera.changed.addEventListener(stillFacingNorth);
+      }
+    }, 100);
+  }
+  else {
+    northFacingButton.classList.remove('active');
+    northFacingText.textContent = 'Face North'
+    viewer.camera.changed.removeEventListener(stillFacingNorth);
+
+    if (northFacingTimeout) {
+      clearTimeout(northFacingTimeout);
+      northFacingTimeout = null;
+    }
+  }
+}
+
+function setNorthFacing() {
+  if (isFacingNorth) {
+    const desiredHeading = 0.0;
+    const headingThreshold = 0.01;
+
+    const needHeadingAdjustment = Math.abs(viewer.camera.heading - desiredHeading) > headingThreshold
+
+    if (needHeadingAdjustment) {
+      isAdjustingCamera = true;
+      viewer.camera.setView(
+        {
+          orientation:
+          {
+            heading: desiredHeading,
+            pitch: viewer.camera.pitch,
+            roll: 0.0
+          }
+        });
+      isAdjustingCamera = false;
+    }
+  }
+}
+
+function stillFacingNorth() {
+  if (!isFacingNorth || isAdjustingCamera) {
+    return;
+  }
+
+  if (northFacingTimeout) {
+    clearTimeout(northFacingTimeout);
+  }
+
+  northFacingTimeout = setTimeout(() => {
+    const currentHeading = viewer.camera.heading;
+    const desiredHeading = 0.0;
+    const headingThreshold = 0.05;
+    const notOnNorth = Math.abs(currentHeading - desiredHeading) > headingThreshold;
+
+    if (notOnNorth) {
+      toggleNorthFacing();
+    }
+    northFacingTimeout = null;
+  }, 200);
+}
+
+function toggleTopDownView() {
+  isTopDownView = !isTopDownView;
+  const topDownButton = document.getElementById('topDownButton');
+  const topDownText = document.getElementById('topDownText');
+
+  if (isTopDownView) {
+    if (!cameraTracking) {
+      lastCameraPosition = {
+        position: viewer.camera.position.clone(),
+        heading: viewer.camera.heading,
+        pitch: viewer.camera.pitch,
+        roll: viewer.camera.roll
+      };
+    }
+
+    topDownButton.classList.add('active');
+    topDownText.textContent = 'Exit Top-Down';
+
+    try {
+      setTopDownView();
+
+      if (!isFacingNorth) {
+        toggleNorthFacing();
+      }
+
+      if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
+        viewer.scene.screenSpaceCameraController.enableTilt = false;
+      }
+
+      viewer.camera.changed.addEventListener(maintainTopDownPerspective);
+    } catch (error) {
+      console.error("Error enabling top-down view:", error);
+      isTopDownView = false;
+      topDownButton.classList.remove('active');
+      topDownText.textContent = 'Top-Down View';
+    }
+  } else {
+    topDownButton.classList.remove('active');
+    topDownText.textContent = 'Top-Down View';
+
+    if (isFacingNorth) {
+      toggleNorthFacing();
+    }
+
+    try {
+      if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
+        viewer.scene.screenSpaceCameraController.enableTilt = true;
+      }
+
+      viewer.camera.changed.removeEventListener(maintainTopDownPerspective);
+
+      if (lastCameraPosition && !cameraTracking) {
+        viewer.camera.setView({
+          destination: lastCameraPosition.position,
+          orientation: {
+            heading: lastCameraPosition.heading,
+            pitch: lastCameraPosition.pitch,
+            roll: lastCameraPosition.roll
+          }
+        });
+      }
+    } catch (error) {
+      console.error("Error disabling top-down view:", error);
+    }
+  }
+
+  try {
+    if (window.bridge && window.bridge.topDownViewChanged) {
+      window.bridge.topDownViewChanged(isTopDownView); // #TODO: Not implemented in C++
+    }
+  } catch (error) {
+    console.error("Error notifying bridge about top-down state:", error);
+  }
+}
+
+function setTopDownView() {
+  if (!isTopDownView || !viewer || !viewer.camera) return;
+
+  try {
+    let cameraHeight = 1000.0;
+    try {
+      if (viewer.camera.positionCartographic) {
+        cameraHeight = Math.max(viewer.camera.positionCartographic.height, 1000.0);
+      }
+    } catch (e) {
+      console.warn("Could not get camera height, using default:", e);
+    }
+
+    const targetLongitude = cameraTracking ? currentPosition.longitude : viewer.camera.positionCartographic.longitude * 180.0 / Math.PI;
+    const targetLatitude = cameraTracking ? currentPosition.latitude : viewer.camera.positionCartographic.latitude * 180.0 / Math.PI;
+
+    isAdjustingCamera = true;
+    viewer.camera.setView({
+      destination: Cesium.Cartesian3.fromDegrees(
+        targetLongitude,
+        targetLatitude,
+        cameraHeight
+      ),
+      orientation: {
+        heading: 0.0,
+        pitch: -Math.PI / 2,
+        roll: 0.0
+      }
+    });
+    isAdjustingCamera = false;
+  } catch (error) {
+    console.error("Failed to update camera to top-down view:", error);
+    try {
+      isAdjustingCamera = true;
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(
+          currentPosition.longitude,
+          currentPosition.latitude,
+          1000.0
+        ),
+        orientation: {
+          heading: viewer.camera.heading,
+          pitch: -Math.PI / 2,
+          roll: 0.0
+        }
+      });
+      isAdjustingCamera = false;
+    } catch (flyError) {
+      console.error("Even fallback camera update failed:", flyError);
+      isTopDownView = false;
+      document.getElementById('topDownButton').classList.remove('active');
+      document.getElementById('topDownText').textContent = 'Top-Down View';
+    }
+  }
+}
+
+function maintainTopDownPerspective() {
+  if (!isTopDownView || isAdjustingCamera) return;
+
+  const currentPitch = viewer.camera.pitch;
+  const desiredPitch = -Math.PI / 2;
+  const pitchThreshold = 0.01;
+
+  const needPitchAdjustment = Math.abs(currentPitch - desiredPitch) > pitchThreshold;
+
+  if (needPitchAdjustment) {
+    isAdjustingCamera = true;
+    viewer.camera.setView({
+      orientation: {
+        heading: viewer.camera.heading,
+        pitch: desiredPitch,
+        roll: 0.0
+      }
+    });
+    isAdjustingCamera = false;
+  }
+}
+
+function toggleCameraTracking() {
+  cameraTracking = !cameraTracking;
+  const trackingButton = document.getElementById('trackingButton');
+  const trackingText = document.getElementById('trackingText');
+
+  if (cameraTracking) {
+    trackingButton.classList.add('active');
+    trackingText.textContent = 'Tracking On';
+
+    try {
+      updateCameraPosition();
+
+    } catch (error) {
+      console.error("Error enabling tracking:", error);
+      cameraTracking = false;
+      trackingButton.classList.remove('active');
+      trackingText.textContent = 'Track Position';
+    }
+  } else {
+    trackingButton.classList.remove('active');
+    trackingText.textContent = 'Track Position';
+
+  }
+
+  try {
+    if (window.bridge && window.bridge.cameraTrackingChanged) {
+      window.bridge.cameraTrackingChanged(cameraTracking); // #TODO: Not implemented in C++
+    }
+  } catch (error) {
+    console.error("Error notifying bridge about tracking state:", error);
+  }
+}
+
+function updateCameraPosition() {
+  if (!cameraTracking || !viewer || !viewer.camera) return;
+
+  try {
+    let cameraHeight = 1000.0;
+    try {
+      if (viewer.camera.positionCartographic) {
+        cameraHeight = viewer.camera.positionCartographic.height;
+      }
+    } catch (e) {
+      console.warn("Could not get camera height, using default:", e);
+    }
+
+    const orientation = {
+      heading: viewer.camera.heading,
+      pitch: viewer.camera.pitch,
+      roll: 0.0
+    };
+
+    viewer.camera.setView({
+      destination: Cesium.Cartesian3.fromDegrees(
+        currentPosition.longitude,
+        currentPosition.latitude,
+        cameraHeight
+      ),
+      orientation: orientation
+    });
+  } catch (error) {
+    console.error("Failed to update camera position:", error);
+    try {
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(
+          currentPosition.longitude,
+          currentPosition.latitude,
+          1000.0
+        )
+      });
+    } catch (flyError) {
+      console.error("Even fallback camera update failed:", flyError);
+      cameraTracking = false;
+      document.getElementById('trackingButton').classList.remove('active');
+      document.getElementById('trackingText').textContent = 'Track Position';
+    }
+  }
+}
+
+function setupEventHandlers() {
+  viewer.screenSpaceEventHandler.setInputAction(function (click) {
+    if (cameraTracking) {
+      toggleCameraTracking();
+    }
+
+    try {
+      let cartesian;
+      const scene = viewer.scene;
+
+      if (scene.terrainProvider.ready) {
+        cartesian = scene.pickPosition(click.position);
+
+        if (cartesian) {
+          const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+          if (cartographic.height > 10000 || cartographic.height < -1000) {
+            cartesian = undefined;
+          }
+        }
+      }
+
+      if (!Cesium.defined(cartesian)) {
+        const drillPickResult = scene.drillPick(click.position);
+        if (drillPickResult.length > 0) {
+          for (let i = 0; i < drillPickResult.length; i++) {
+            if (Cesium.defined(drillPickResult[i].primitive) &&
+              Cesium.defined(drillPickResult[i].primitive.position)) {
+              cartesian = drillPickResult[i].primitive.position;
+              break;
+            }
+          }
+        }
+      }
+
+      if (!Cesium.defined(cartesian)) {
+        const ray = viewer.camera.getPickRay(click.position);
+        if (Cesium.defined(ray)) {
+          cartesian = viewer.scene.globe.pick(ray, viewer.scene);
+        }
+      }
+
+      if (!Cesium.defined(cartesian)) {
+        cartesian = viewer.camera.pickEllipsoid(
+          click.position,
+          viewer.scene.globe.ellipsoid
+        );
+      }
+
+      if (Cesium.defined(cartesian)) {
+        const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        const lat = Cesium.Math.toDegrees(cartographic.latitude);
+        const lon = Cesium.Math.toDegrees(cartographic.longitude);
+
+        setTimeout(() => {
+          showWaypointDialog(lat, lon);
+        }, 50);
+      }
+    } catch (error) {
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+
+  viewer.screenSpaceEventHandler.setInputAction(function () {
+    if (cameraTracking) {
+      toggleCameraTracking();
+    }
+  }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+
+  viewer.screenSpaceEventHandler.setInputAction(function () {
+    if (cameraTracking) {
+      toggleCameraTracking();
+    }
+  }, Cesium.ScreenSpaceEventType.WHEEL);
+}
+
+function setupBridgeConnection() {
+  new QWebChannel(qt.webChannelTransport, function (channel) {
+    const bridge = channel.objects.bridge;
+    window.bridge = bridge;
+
+    let viewInitialized = false;
+
+    bridge.clearPath.connect(function () {
+      stopDynamicPathUpdates();
+    });
+
+    bridge.gpsCallback.connect(function (lat, lon, headingDeg) {
+      currentPosition.latitude = lat;
+      currentPosition.longitude = lon;
+      lastHeading = headingDeg;
+
+      entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
+
+      if (!viewInitialized) {
+        try {
+          viewer.camera.setView({
+            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
+            orientation: {
+              heading: 0.0,
+              pitch: -90.0,
+              roll: 0.0
+            }
+          });
+          viewInitialized = true;
+        } catch (error) {
+          console.error("Error initializing view:", error);
+        }
+      }
+
+      if (cameraTracking) {
+        try {
+          updateCameraPosition();
+        } catch (error) {
+          console.error("Error updating camera position:", error);
+          if (cameraTracking) {
+            toggleCameraTracking();
+          }
+        }
+      }
+
+      if (isTopDownView) {
+        try {
+          setTopDownView();
+        } catch (error) {
+          console.error("Error updating top-down view:", error);
+        }
+      }
+    });
+
+    bridge.sendGoal.connect(function (name, lat, lon) {
+      if (isAddingWaypoint) return;
+
+      isAddingWaypoint = true;
+      const id = `waypoint_${Date.now()}`;
+
+      const existingNameWaypoint = waypointEntities.find(wp =>
+        wp.name === name
+      );
+
+      if (existingNameWaypoint) {
+        Swal.fire({
+          title: 'Duplicate Waypoint',
+          text: `A waypoint named "${name}" already exists. Please use a different name.`,
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        isAddingWaypoint = false;
+        return;
+      }
+
+      const existingLocationWaypoint = waypointEntities.find(wp => {
+        const wpPosition = wp.position.getValue(Cesium.JulianDate.now());
+        const wpCartographic = Cesium.Cartographic.fromCartesian(wpPosition);
+        const wpLat = Cesium.Math.toDegrees(wpCartographic.latitude);
+        const wpLon = Cesium.Math.toDegrees(wpCartographic.longitude);
+
+        const epsilon = 0.00001;
+        return Math.abs(wpLat - lat) < epsilon && Math.abs(wpLon - lon) < epsilon;
+      });
+
+      if (existingLocationWaypoint) {
+        Swal.fire({
+          title: 'Duplicate Location',
+          text: `A waypoint already exists at this location. Please choose a different location.`,
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
+        isAddingWaypoint = false;
+        return;
+      }
+
+      addWaypoint(lat, lon, name, id);
+
+      const wasTracking = cameraTracking;
+      const wasTopDown = isTopDownView;
+
+      if (cameraTracking) {
+        toggleCameraTracking();
+      }
+
+      if (isTopDownView) {
+        toggleTopDownView();
+      }
+
+      viewer.camera.flyTo({
+        destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
+        complete: function () {
+          viewer.scene.requestRender();
+          isAddingWaypoint = false;
+
+          if (wasTracking) {
+            toggleCameraTracking();
+          }
+
+          if (wasTopDown) {
+            toggleTopDownView();
+          }
+        }
+      });
+
+      if (window.bridge && window.bridge.waypointCreated) {
+        window.bridge.waypointCreated(name, lat, lon, id);
+      }
+    });
+
+    bridge.calculatePath.connect(function (destLat, destLon, waypointId) {
+      startDynamicPathUpdates(destLat, destLon, waypointId);
+    });
+
+    bridge.clearWaypoints.connect(function () {
+      stopDynamicPathUpdates();
+      clearAllWaypoints();
+    });
+
+    bridge.deleteWaypoint.connect(function (waypointId) {
+      if (activeWaypoint && activeWaypoint.id === waypointId) {
+        stopDynamicPathUpdates();
+      }
+      deleteWaypoint(waypointId);
+    });
+
+    if (bridge.setCameraTracking) {
+      bridge.setCameraTracking.connect(function (enabled) {
+        if (cameraTracking !== enabled) {
+          toggleCameraTracking();
+        }
+      });
+    }
+
+    if (bridge.setTopDownView) {
+      bridge.setTopDownView.connect(function (enabled) {
+        if (isTopDownView !== enabled) {
+          toggleTopDownView();
+        }
+      });
+    }
+
+    if (bridge.jsReady) {
+      bridge.jsReady();
+    }
+  });
+}
+
+function clearAllWaypoints() {
+  waypointEntities.forEach(waypoint => {
+    viewer.entities.remove(waypoint);
+  });
+  waypointEntities = [];
+  waypointCounter = 1;
+
+  if (pathEntity) {
+    viewer.entities.remove(pathEntity);
+    pathEntity = null;
+  }
+}
+
+function deleteWaypoint(waypointId) {
+  const entity = viewer.entities.getById(waypointId);
+  if (entity) {
+    viewer.entities.remove(entity);
+    waypointEntities = waypointEntities.filter(wp => wp.id !== waypointId);
+    return true;
+  }
+  return false;
+}
+
+function drawPath(startLat, startLon, endLat, endLon) {
+  if (pathEntity) {
+    viewer.entities.remove(pathEntity);
+  }
+
+  pathEntity = viewer.entities.add({
+    name: "Path to Waypoint",
+    polyline: {
+      positions: Cesium.Cartesian3.fromDegreesArray([startLon, startLat, endLon, endLat]),
+      width: 3,
+      material: new Cesium.PolylineOutlineMaterialProperty({
+        color: Cesium.Color.YELLOW,
+        outlineWidth: 1,
+        outlineColor: Cesium.Color.BLACK
+      }),
+      clampToGround: true
+    }
+  });
+
+  const distance = calculateHaversineDistance(startLat, startLon, endLat, endLon);
+  if (window.bridge) {
+    window.bridge.pathDistanceCalculated(distance);
+  }
+  return distance;
+}
+
+function startDynamicPathUpdates(destLat, destLon, waypointId) {
+  activeWaypoint = {
+    latitude: destLat,
+    longitude: destLon,
+    id: waypointId
+  };
+
+  clearInterval(pathUpdateInterval);
+  pathUpdateInterval = setInterval(() => {
+    if (currentPosition && activeWaypoint) {
+      drawPath(
+        currentPosition.latitude,
+        currentPosition.longitude,
+        activeWaypoint.latitude,
+        activeWaypoint.longitude
+      );
+    }
+  }, 1000);
+
+  drawPath(
+    currentPosition.latitude,
+    currentPosition.longitude,
+    destLat,
+    destLon
+  );
+}
+
+function stopDynamicPathUpdates() {
+  clearInterval(pathUpdateInterval);
+  pathUpdateInterval = null;
+  activeWaypoint = null;
+
+  if (pathEntity) {
+    viewer.entities.remove(pathEntity);
+    pathEntity = null;
+  }
+}
+
+function calculateHaversineDistance(lat1, lon1, lat2, lon2) {
+  const R = 6371000;
+  const dLat = (lat2 - lat1) * Math.PI / 180;
+  const dLon = (lon2 - lon1) * Math.PI / 180;
+
+  const a = Math.sin(dLat / 2) ** 2 +
+    Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
+    Math.sin(dLon / 2) ** 2;
+
+  const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
+  return R * c;
+}
+
+function addWaypoint(lat, lon, name, waypointId) {
+  const waypointName = name || `Waypoint ${waypointCounter++}`;
+  const id = waypointId || `waypoint_${Date.now()}`;
+
+  const existingNameWaypoint = waypointEntities.find(wp => wp.name === waypointName);
+  if (existingNameWaypoint) {
+    console.log("Waypoint with name already exists:", waypointName);
+    return null;
+  }
+
+  const waypointEntity = viewer.entities.add({
+    id: id,
+    name: waypointName,
+    position: Cesium.Cartesian3.fromDegrees(lon, lat),
+    point: {
+      pixelSize: 10,
+      color: Cesium.Color.BLUE,
+      outlineColor: Cesium.Color.WHITE,
+      outlineWidth: 2,
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY
+    },
+    label: {
+      text: waypointName,
+      font: '14pt sans-serif',
+      style: Cesium.LabelStyle.FILL_AND_OUTLINE,
+      outlineWidth: 2,
+      verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
+      pixelOffset: new Cesium.Cartesian2(0, -10),
+      fillColor: Cesium.Color.WHITE,
+      outlineColor: Cesium.Color.BLACK,
+      showBackground: true,
+      backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
+      heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
+      disableDepthTestDistance: Number.POSITIVE_INFINITY
+    }
+  });
+
+  if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
+    waypointEntity._visualizers.forEach(visualizer => {
+      if (visualizer && visualizer.visualizersByDisplayID) {
+        for (const displayID in visualizer.visualizersByDisplayID) {
+          if (visualizer.visualizersByDisplayID[displayID]) {
+            visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
+          }
+        }
+      }
+    });
+  }
+
+  waypointEntities.push(waypointEntity);
+  return waypointEntity;
+}
+
+function showWaypointDialog(lat, lon) {
+  Swal.fire({
+    title: 'Add Waypoint',
+    input: 'text',
+    inputLabel: 'Waypoint Name',
+    inputValue: `Waypoint ${waypointCounter}`,
+    showCancelButton: true,
+    confirmButtonText: 'Add',
+    cancelButtonText: 'Cancel',
+    inputValidator: (value) => {
+      if (!value) return 'Please enter a name';
+
+      const existingNameWaypoint = waypointEntities.find(wp => wp.name === value);
+      if (existingNameWaypoint) {
+        return 'A waypoint with this name already exists. Please choose a different name.';
+      }
+    }
+  }).then((result) => {
+    if (result.isConfirmed) {
+      const name = result.value;
+      const id = `waypoint_${Date.now()}`;
+
+      const existingNameWaypoint = waypointEntities.find(wp => wp.name === name);
+      if (existingNameWaypoint) {
+        Swal.fire({
+          title: 'Error',
+          text: 'A waypoint with this name already exists. Please try again with a different name.',
+          icon: 'error'
+        });
+        return;
+      }
+
+      const waypoint = addWaypoint(lat, lon, name, id);
+
+      if (waypoint && window.bridge && window.bridge.waypointCreated) {
+        window.bridge.waypointCreated(name, lat, lon, id);
+      }
+    }
+  });
+}
+
+window.addEventListener('load', initializeMap);
+window.addEventListener('online', initializeMap);
+window.addEventListener('offline', function () {
+  document.getElementById('connectionError').style.display = 'block';
+});
