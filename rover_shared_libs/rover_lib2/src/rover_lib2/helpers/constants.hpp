@@ -4,7 +4,6 @@
 #if defined(__linux__)
 #include <map>
 #include <string>
-#include <optional>
 #endif  // defined(__linux__)
 
 #if defined(ROS)

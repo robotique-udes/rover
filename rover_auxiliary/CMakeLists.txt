@@ -9,6 +9,8 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
+set(ENV{CPR_USE_SYSTEM_CURL} "ON")
+
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
@@ -23,10 +25,10 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 add_executable(antenna src/Antenna/antenna_node.cpp
                        src/Antenna/antenna_driver.cpp
-                       src/Antenna/antenna_commands/base/getStatus.cpp
-                       src/Antenna/antenna_commands/base/getInterfaceStats.cpp
+                       src/Antenna/antenna_commands/base/get_status.cpp
+                       src/Antenna/antenna_commands/base/get_interface_stats.cpp
                        src/Antenna/antenna_commands/base/login.cpp
-                       src/Antenna/antenna_commands/base/validateAuth.cpp)
+                       src/Antenna/antenna_commands/base/validate_auth.cpp)
 
 ament_target_dependencies(ddb_control
                           rclcpp
@@ -40,20 +42,20 @@ ament_target_dependencies(antenna
                           rcl_interfaces)
 
 target_link_libraries(antenna 
-                          rover_shared_libs
-                          jsoncpp_lib
-                          cpr::cpr)
+                      rover_shared_libs
+                      jsoncpp_lib
+                      cpr::cpr)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
 install(TARGETS
-          ddb_control
+        ddb_control
         DESTINATION lib/${PROJECT_NAME})
 
 install(TARGETS
-          antenna
-      DESTINATION lib/${PROJECT_NAME})
+        antenna
+        DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

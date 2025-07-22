@@ -1,9 +1,9 @@
-#include "getInterfaceStats.hpp"
+#include "get_interface_stats.hpp"
 #include <json/json.h>
 #include <charconv>
 
-Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& baseURL_, uint64_t publisherPeriodMs_):
-    AntennaCommand(baseURL_),
+Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_):
+    AntennaCommand(apiUrl_),
     _publisherPeriodMs(publisherPeriodMs_)
 {
 }
@@ -13,7 +13,7 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     result.httpStatus = response.status_code;
-    if (!result)
+    if (!result.success)
     {
         return result;
     }
@@ -25,7 +25,7 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
 sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
     sCommandResult result;
-    session_->SetUrl(cpr::Url{_baseURL + IFSTATS_PAGE});
+    session_->SetUrl(cpr::Url{this->getApiUrl() + IFSTATS_PAGE});
     response_ = session_->Get();
 
     switch (response_.status_code)
@@ -39,6 +39,10 @@ sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::S
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
             result.success = false;
             result.error = "Session expired";
+            break;
+        case std::to_underlying(eHttpStatus::OFFLINE):
+            result.success = false;
+            result.error = "Antenna is offline";
             break;
         default:
             result.success = false;

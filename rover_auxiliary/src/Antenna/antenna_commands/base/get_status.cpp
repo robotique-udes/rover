@@ -1,8 +1,8 @@
-#include "getStatus.hpp"
+#include "get_status.hpp"
 #include <json/json.h>
 
-Command::Base::GetStatus::GetStatus(const std::string& baseURL_):
-    AntennaCommand(baseURL_)
+Command::Base::GetStatus::GetStatus(const std::string& apiUrl_):
+    AntennaCommand(apiUrl_)
 {
 }
 
@@ -11,7 +11,7 @@ sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> s
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     result.httpStatus = response.status_code;
-    if (!result)
+    if (!result.success)
     {
         return result;
     }
@@ -23,7 +23,7 @@ sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> s
 sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
     sCommandResult result;
-    session_->SetUrl(cpr::Url{_baseURL + STATUS_PAGE});
+    session_->SetUrl(cpr::Url{this->getApiUrl() + STATUS_PAGE});
     response_ = session_->Get();
 
     switch (response_.status_code)
@@ -37,6 +37,10 @@ sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> 
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
             result.success = false;
             result.error = "Session expired";
+            break;
+        case std::to_underlying(eHttpStatus::OFFLINE):
+            result.success = false;
+            result.error = "Antenna is offline";
             break;
         default:
             result.success = false;
@@ -78,8 +82,8 @@ sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& resp
     else
     {
         result.success = false;
-        result.error
-            = std::string("Failed to parse JSON: ") + errors + ", probable cause is invalid credentials, check your .env file";
+        result.error = std::string("Failed to parse JSON: ") + errors
+                       + ", probable cause is invalid credentials, check your env variables";
     }
     return result;
 }

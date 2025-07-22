@@ -6,7 +6,6 @@
 
 class AntennaNode : public rclcpp::Node
 {
-    static constexpr const char* ENV_PATH = "/ros2_ws/src/rover/.env";
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 250UL;
 
@@ -15,16 +14,15 @@ class AntennaNode : public rclcpp::Node
 
   private:
     /**
-     * @brief Loads the username and password variables from the .env file in /rover/
-     *
-     * @warning you need to add the fields "username" and "password" to your .env
+     * @brief Loads the username and password variables from environment varibles
      */
     bool loadUserInfo(void);
+    void executeDriver(void);
 
-    AntennaDriver _driver;
+    std::unique_ptr<AntennaDriver> _driver;
 
-    rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pubAntennaStatus;
-    rclcpp::TimerBase::SharedPtr _timer_pub;
+    rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pub_antennaStatus;
+    rclcpp::TimerBase::SharedPtr _timer_pubAntennaStatus;
     std::string _username;
     std::string _password;
 };

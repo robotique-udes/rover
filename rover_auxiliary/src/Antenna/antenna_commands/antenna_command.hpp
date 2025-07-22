@@ -8,10 +8,6 @@ struct sCommandResult
     bool success = false;
     std::string error;
     uint16_t httpStatus = 0;
-    operator bool() const
-    {
-        return success;
-    }
 };
 
 enum class eHttpStatus : uint16_t
@@ -28,16 +24,22 @@ enum class eHttpStatus : uint16_t
  */
 class AntennaCommand
 {
-  protected:
-    std::string _baseURL;
-
   public:
-    AntennaCommand(const std::string& baseURL_):
-        _baseURL(baseURL_)
+    AntennaCommand(const std::string& apiUrl_):
+        _apiUrl(apiUrl_)
     {
     }
     virtual ~AntennaCommand() = default;
     virtual sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) = 0;
+
+  protected:
+    const std::string& getApiUrl(void) const
+    {
+        return _apiUrl;
+    }
+
+  private:
+    std::string _apiUrl;
 };
 
 #endif  // ANTENNA_COMMAND_HPP

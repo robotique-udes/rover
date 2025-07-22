@@ -1,10 +1,9 @@
-#include "validateAuth.hpp"
+#include "validate_auth.hpp"
 
-#include "getStatus.hpp"
 #include <json/json.h>
 
-Command::Base::ValidateAuth::ValidateAuth(const std::string baseURL_):
-    AntennaCommand(baseURL_)
+Command::Base::ValidateAuth::ValidateAuth(const std::string& apiUrl_):
+    AntennaCommand(apiUrl_)
 {
 }
 
@@ -13,18 +12,18 @@ sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     result.httpStatus = response.status_code;
-    if (!result)
+    if (!result.success)
     {
-        msg_.clear();
+        msg_ = sAntennaMsg{};
         msg_.connected = false;
         return result;
     }
 
     result = this->validateFormat(response, msg_);
 
-    if (!result)
+    if (!result.success)
     {
-        msg_.clear();
+        msg_ = sAntennaMsg{};
         msg_.connected = false;
     }
     return result;
@@ -33,7 +32,7 @@ sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session
 sCommandResult Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
     sCommandResult result;
-    session_->SetUrl(cpr::Url{_baseURL + STATUS_PAGE});
+    session_->SetUrl(cpr::Url{this->getApiUrl() + STATUS_PAGE});
     response_ = session_->Get();
 
     switch (response_.status_code)
@@ -47,6 +46,10 @@ sCommandResult Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Sessio
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
             result.success = false;
             result.error = "Session expired";
+            break;
+        case std::to_underlying(eHttpStatus::OFFLINE):
+            result.success = false;
+            result.error = "Antenna is offline";
             break;
 
         default:
@@ -80,7 +83,7 @@ sCommandResult Command::Base::ValidateAuth::validateFormat(const cpr::Response& 
     else
     {
         result.success = false;
-        result.error = "Antenna response was not valid JSON format, most likely cause: invalid credentials in .env";
+        result.error = "Antenna response was not valid JSON format, most likely cause: invalid credentials in environment variables";
     }
     return result;
 }

@@ -1,29 +1,32 @@
-#ifndef VALIDATE_AUTH_HPP
-#define VALIDATE_AUTH_HPP
+#ifndef GET_STATUS_HPP
+#define GET_STATUS_HPP
 
 #include "../antenna_command.hpp"
+#include <string>
 
 namespace Command::Base
 {
     /**
-     * @brief This class validates the authentification by checking if response of get status.cgi is a valid json object
+     * @brief This class is responsible for getting the rssi data from the antenna
      *
      */
-    class ValidateAuth : public AntennaCommand
+    class GetStatus : public AntennaCommand
     {
       private:
         static constexpr const char* STATUS_PAGE = "/status.cgi";
         static constexpr char const* JSON_FIELD_WIRELESS = "wireless";
+        static constexpr char const* JSON_FIELD_RSSI = "rssi";
 
       public:
-        ValidateAuth(const std::string baseURL_);
-        ~ValidateAuth() override = default;
+        GetStatus(const std::string& apiUrl_);
+        ~GetStatus() override = default;
         sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
 
       private:
         sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        sCommandResult validateFormat(const cpr::Response& response, sAntennaMsg& msg_);
+        sCommandResult parseResponse(const cpr::Response& response_, sAntennaMsg& msg_);
     };
+
 }  // namespace Command::Base
 
-#endif  // VALIDATE_AUTH_CPP
+#endif  // GET_STATUS_HPP

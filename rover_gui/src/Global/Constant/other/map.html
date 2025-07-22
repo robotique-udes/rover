@@ -105,6 +105,10 @@
       </svg>
       <span id="trackingText">Track Position</span>
     </button>
+	<button id="northFacingButton" class="controlButton" title="Toggle north facing">
+		<img id="northIcon" class="buttonIcon" src="qrc:/icons/arrow.png" viewBox="0 0 24 24" fill="white">
+		<span id="northFacingText"> Face North</span>
+	</button>
   </div>
   <div id="connectionError">
     <h2>Not able to connect to internet</h2>
@@ -125,6 +129,9 @@
     let isTopDownView = false;
     let lastHeading = 0;
     let lastCameraPosition = null;
+	let isFacingNorth = false;
+	let isAdjustingCamera = false;
+	let northFacingTimeout = null;
 
     function checkConnectivity() {
       const connectionError = document.getElementById('connectionError');
@@ -186,15 +193,22 @@
       entity = viewer.entities.add({
         name: "Live Position Arrow",
         position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
-        billboard: {
-          image: 'qrc:/icons/arrow.png',
-          width: 20,
-          height: 20,
-          alignedAxis: Cesium.Cartesian3.UNIT_Z,
+        model: {
+          uri: 'qrc:/model/direction_arrow.glb',
+          scale: 0.2,
+          minimumPixelSize: 30,
+          maximumScale: 60,
+          heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
           rotation: 0,
           color: Cesium.Color.RED,
-          verticalOrigin: Cesium.VerticalOrigin.BOTTOM
-        }
+        },
+        orientation: new Cesium.CallbackProperty(function () {
+          const headingRad = Cesium.Math.toRadians(lastHeading || 0);
+          return Cesium.Transforms.headingPitchRollQuaternion(
+            Cesium.Cartesian3.fromDegrees(currentPosition.longitude, currentPosition.latitude),
+            new Cesium.HeadingPitchRoll(headingRad, 0, 0)
+          );
+        }, false)
       });
 
       setupEventHandlers();
@@ -205,6 +219,7 @@
     function setupControlButtons() {
       const trackingButton = document.getElementById('trackingButton');
       const topDownButton = document.getElementById('topDownButton');
+	  const northFacingButton = document.getElementById('northFacingButton');
 
       trackingButton.addEventListener('click', function () {
         toggleCameraTracking();
@@ -213,9 +228,98 @@
       topDownButton.addEventListener('click', function () {
         toggleTopDownView();
       });
+
+	  northFacingButton.addEventListener('click', function () {
+		toggleNorthFacing();
+	  });
     }
 
-    function toggleTopDownView() {
+	function toggleNorthFacing() 
+	{
+		isFacingNorth = !isFacingNorth;
+		const northFacingButton = document.getElementById('northFacingButton');
+		const northFacingText = document.getElementById('northFacingText');
+
+		if (isFacingNorth)
+		{
+			northFacingButton.classList.add('active');
+			northFacingText.textContent = 'Facing North';
+			setNorthFacing();
+			
+        	setTimeout(() => {
+            	if (isFacingNorth) 
+				{
+                	viewer.camera.changed.addEventListener(stillFacingNorth);
+            	}
+        	}, 100);
+		}
+		else
+		{
+			northFacingButton.classList.remove('active');
+			northFacingText.textContent = 'Face North'
+			viewer.camera.changed.removeEventListener(stillFacingNorth);
+
+			if (northFacingTimeout) 
+			{
+            	clearTimeout(northFacingTimeout);
+            	northFacingTimeout = null;
+        	}
+		}
+	}
+
+	function setNorthFacing()
+	{
+		if (isFacingNorth)
+		{
+			const desiredHeading = 0.0;
+			const headingThreshold = 0.01;
+
+			const needHeadingAdjustment = Math.abs(viewer.camera.heading - desiredHeading) > headingThreshold
+
+			if (needHeadingAdjustment)
+			{
+				isAdjustingCamera = true;
+				viewer.camera.setView(
+				{
+					orientation:
+					{
+						heading: desiredHeading,
+						pitch: viewer.camera.pitch,
+						roll: 0.0
+					}
+				});
+				isAdjustingCamera = false;
+			}
+		}	
+	}
+
+	function stillFacingNorth() 
+	{
+		if (!isFacingNorth || isAdjustingCamera)
+    {
+      return;
+    } 
+
+		if (northFacingTimeout)
+		{
+			clearTimeout(northFacingTimeout);
+		}
+
+		northFacingTimeout = setTimeout(() => {
+			const currentHeading = viewer.camera.heading;
+			const desiredHeading = 0.0;
+			const headingThreshold = 0.05;
+			const notOnNorth = Math.abs(currentHeading - desiredHeading) > headingThreshold;
+
+			if (notOnNorth) 
+			{
+				toggleNorthFacing();
+			}
+			northFacingTimeout = null;
+		}, 200);
+	}
+
+	function toggleTopDownView() {
       isTopDownView = !isTopDownView;
       const topDownButton = document.getElementById('topDownButton');
       const topDownText = document.getElementById('topDownText');
@@ -235,6 +339,11 @@
 
         try {
           setTopDownView();
+		  
+		  if(!isFacingNorth)
+		  {
+			toggleNorthFacing();
+		  }
 
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
             viewer.scene.screenSpaceCameraController.enableTilt = false;
@@ -250,6 +359,11 @@
       } else {
         topDownButton.classList.remove('active');
         topDownText.textContent = 'Top-Down View';
+
+		if (isFacingNorth) 
+		{
+            toggleNorthFacing();
+        }
 
         try {
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
@@ -275,7 +389,7 @@
 
       try {
         if (window.bridge && window.bridge.topDownViewChanged) {
-          window.bridge.topDownViewChanged(isTopDownView);
+          window.bridge.topDownViewChanged(isTopDownView); // #TODO: Not implemented in C++
         }
       } catch (error) {
         console.error("Error notifying bridge about top-down state:", error);
@@ -306,7 +420,7 @@
             cameraHeight
           ),
           orientation: {
-            heading: viewer.camera.heading,
+            heading: 0.0,
             pitch: -Math.PI / 2,
             roll: 0.0
           }
@@ -345,7 +459,9 @@
       const desiredPitch = -Math.PI / 2;
       const pitchThreshold = 0.01;
 
-      if (Math.abs(currentPitch - desiredPitch) > pitchThreshold) {
+	  const needPitchAdjustment = Math.abs(currentPitch - desiredPitch) > pitchThreshold;
+
+      if (needPitchAdjustment) {
         isAdjustingCamera = true;
         viewer.camera.setView({
           orientation: {
@@ -370,10 +486,6 @@
         try {
           updateCameraPosition();
 
-          if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
-            viewer.scene.screenSpaceCameraController.enableRotate = !isTopDownView;
-            viewer.scene.screenSpaceCameraController.enableTilt = !isTopDownView;
-          }
         } catch (error) {
           console.error("Error enabling tracking:", error);
           cameraTracking = false;
@@ -384,19 +496,11 @@
         trackingButton.classList.remove('active');
         trackingText.textContent = 'Track Position';
 
-        try {
-          if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
-            viewer.scene.screenSpaceCameraController.enableRotate = !isTopDownView;
-            viewer.scene.screenSpaceCameraController.enableTilt = !isTopDownView;
-          }
-        } catch (error) {
-          console.error("Error disabling tracking:", error);
-        }
       }
 
       try {
         if (window.bridge && window.bridge.cameraTrackingChanged) {
-          window.bridge.cameraTrackingChanged(cameraTracking);
+          window.bridge.cameraTrackingChanged(cameraTracking); // #TODO: Not implemented in C++
         }
       } catch (error) {
         console.error("Error notifying bridge about tracking state:", error);
@@ -416,9 +520,11 @@
           console.warn("Could not get camera height, using default:", e);
         }
 
-        const orientation = isTopDownView
-          ? { heading: viewer.camera.heading, pitch: -Math.PI / 2, roll: 0.0 }
-          : { heading: viewer.camera.heading, pitch: viewer.camera.pitch, roll: 0.0 };
+        const orientation = {
+								heading: viewer.camera.heading,
+								pitch: viewer.camera.pitch,
+								roll: 0.0 
+							};
 
         viewer.camera.setView({
           destination: Cesium.Cartesian3.fromDegrees(
@@ -533,15 +639,11 @@
         });
 
         bridge.gpsCallback.connect(function (lat, lon, headingDeg) {
-    currentPosition.latitude = lat;
-    currentPosition.longitude = lon;
+          currentPosition.latitude = lat;
+          currentPosition.longitude = lon;
+          lastHeading = headingDeg;
 
-    headingDeg = ((headingDeg % 360) + 360) % 360;
-    const headingRad = Cesium.Math.toRadians(headingDeg);
-    const cesiumRotation = headingRad - Math.PI/2;
-    entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
-    
-    entity.billboard.rotation = cesiumRotation % (2 * Math.PI);
+          entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
 
           if (!viewInitialized) {
             try {
