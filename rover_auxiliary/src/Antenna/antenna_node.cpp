@@ -37,7 +37,7 @@ AntennaNode::AntennaNode():
     else
     {
         _driver.setUserInfo(_username, _password);
-        _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
+        _timer_pubAntennaStatus = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                              [this](void)
                                              {
                                                  this->executeDriver();

@@ -14,9 +14,7 @@ class AntennaNode : public rclcpp::Node
 
   private:
     /**
-     * @brief Loads the username and password variables from the .env file in /rover/
-     *
-     * @warning you need to add the fields "username" and "password" to your .env
+     * @brief Loads the username and password variables from environment varibles
      */
     bool loadUserInfo(void);
     void executeDriver(void);
@@ -24,7 +22,7 @@ class AntennaNode : public rclcpp::Node
     AntennaDriver _driver;
 
     rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pub_antennaStatus;
-    rclcpp::TimerBase::SharedPtr _timer_pub;
+    rclcpp::TimerBase::SharedPtr _timer_pubAntennaStatus;
     std::string _username;
     std::string _password;
 };
