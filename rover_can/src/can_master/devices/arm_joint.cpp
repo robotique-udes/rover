@@ -88,7 +88,7 @@ void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::Arm
         response_->success = false;
         response_->message = "Invalid can id";
     }
-    else if (request_->can_id == _rosArmSpeedMsgId)
+    else if (request_->can_id == std::to_underlying(this->getCanId()))
     {
         _nextArmConfigMsg.data().upperLimit = request_->upper_limit;
         _nextArmConfigMsg.data().lowerLimit = request_->lower_limit;

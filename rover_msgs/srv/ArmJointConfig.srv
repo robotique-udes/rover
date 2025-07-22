@@ -4,7 +4,7 @@ float32 max_speed
 float32 kp_speed
 float32 kd_speed
 float32 ki_speed
-uint8 can_id
+uint16 can_id
 
 ---
 bool success

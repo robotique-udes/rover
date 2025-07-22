@@ -30,12 +30,13 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     static constexpr uint32_t CAN_PUBLISH_PERIOD_MS
         = static_cast<uint32_t>(ROUND(1'000.0F / ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ));
 
-    static constexpr std::array<uint8_t, 6> VALID_IDS = {rover_msgs::msg::ArmMsg::JL,
-                                                         rover_msgs::msg::ArmMsg::J1,
-                                                         rover_msgs::msg::ArmMsg::J2,
-                                                         rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
-                                                         rover_msgs::msg::ArmMsg::GRIPPER_ROT,
-                                                         rover_msgs::msg::ArmMsg::GRIPPER_TILT};
+    static constexpr std::array<uint16_t, 6> VALID_IDS
+        = {std::to_underlying(RoverCan2::Constant::eDeviceId::JL_CONTROLLER),
+           std::to_underlying(RoverCan2::Constant::eDeviceId::J1_CONTROLLER),
+           std::to_underlying(RoverCan2::Constant::eDeviceId::J2_CONTROLLER),
+           std::to_underlying(RoverCan2::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER),
+           std::to_underlying(RoverCan2::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER),
+           std::to_underlying(RoverCan2::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER)};
 
   public:
     ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
