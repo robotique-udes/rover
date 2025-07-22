@@ -6,7 +6,6 @@
 
 class AntennaNode : public rclcpp::Node
 {
-    static constexpr const char* ENV_PATH = "/ros2_ws/src/rover/.env";
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 250UL;
 
