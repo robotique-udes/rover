@@ -1,7 +1,9 @@
 #include "login.hpp"
 
-Command::Base::Login::Login(const std::string& apiUrl_):
-    AntennaCommand(apiUrl_)
+Command::Base::Login::Login(const std::string& apiUrl_, const std::string& username_, const std::string& password_):
+    AntennaCommand(apiUrl_),
+    _username(username_),
+    _password(password_)
 {
 }
 
@@ -44,10 +46,4 @@ sCommandResult Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> ses
             break;
     }
     return result;
-}
-
-void Command::Base::Login::setUserInfo(const std::string& username_, const std::string& password_)
-{
-    _username = username_;
-    _password = password_;
 }

@@ -3,30 +3,25 @@
 
 namespace
 {
-    bool isAuthOrOfflineError(int status)
+    bool isAuthOrOfflineError(int status_)
     {
-        return status == std::to_underlying(eHttpStatus::FORBIDDEN) || status == std::to_underlying(eHttpStatus::UNAUTHORIZED)
-               || status == std::to_underlying(eHttpStatus::OFFLINE);
+        return status_ == std::to_underlying(eHttpStatus::FORBIDDEN) || status_ == std::to_underlying(eHttpStatus::UNAUTHORIZED)
+               || status_ == std::to_underlying(eHttpStatus::OFFLINE);
     }
 }  // namespace
 
-AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_):
+AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_):
     _session(std::make_shared<cpr::Session>()),
     _publisherPeriodMs(publisherPeriodMs_),
-    _login(BASE_URL),
+    _login(BASE_URL, username_, password_),
     _loginCooldownTimer(LOGIN_COOLDOWN_MS)
 {
     this->setupSession();
 
-    // Always put validate auth first
+
     _commands[0] = (std::make_unique<Command::Base::ValidateAuth>(BASE_URL));
     _commands[1] = (std::make_unique<Command::Base::GetStatus>(BASE_URL));
     _commands[2] = (std::make_unique<Command::Base::GetInterfaceStats>(BASE_URL, _publisherPeriodMs));
-}
-
-void AntennaDriver::setUserInfo(const std::string& username_, const std::string& password_)
-{
-    _login.setUserInfo(username_, password_);
 }
 
 sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
@@ -67,8 +62,7 @@ sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
     }
     _cooldownActive = false;
 
-    uint8_t loginAttempts;
-    for (loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && !result.success; loginAttempts++)
+    for (uint8_t loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && !result.success; loginAttempts++)
     {
         result = _login.execute(_session, msg_);
     }

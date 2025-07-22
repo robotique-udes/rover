@@ -25,8 +25,7 @@ class AntennaDriver
     static constexpr uint64_t LOGIN_COOLDOWN_MS = 60'000UL;
 
   public:
-    AntennaDriver(uint64_t publisherPeriodMs_);
-    void setUserInfo(const std::string& username_, const std::string& password_);
+    AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_);
     sCommandResult ExecuteAntennaCommands(sAntennaMsg& msg_);
 
   private:
@@ -39,9 +38,6 @@ class AntennaDriver
 
     std::shared_ptr<cpr::Session> _session;
     uint64_t _publisherPeriodMs;
-
-    std::string _username;
-    std::string _password;
 
     Command::Base::Login _login;
     std::array<std::unique_ptr<AntennaCommand>, 3> _commands;

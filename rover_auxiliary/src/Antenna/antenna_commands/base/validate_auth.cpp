@@ -83,7 +83,7 @@ sCommandResult Command::Base::ValidateAuth::validateFormat(const cpr::Response& 
     else
     {
         result.success = false;
-        result.error = "Antenna response was not valid JSON format, most likely cause: invalid credentials in .env";
+        result.error = "Antenna response was not valid JSON format, most likely cause: invalid credentials in environment variables";
     }
     return result;
 }

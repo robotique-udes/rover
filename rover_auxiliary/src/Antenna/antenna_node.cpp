@@ -25,8 +25,7 @@ int main(int argc, char* argv[])
 }
 
 AntennaNode::AntennaNode():
-    rclcpp::Node("antenna"),
-    _driver(PUBLISHER_PERIOD_MS)
+    rclcpp::Node("antenna")
 {
     _pub_antennaStatus = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
 
@@ -36,12 +35,12 @@ AntennaNode::AntennaNode():
     }
     else
     {
-        _driver.setUserInfo(_username, _password);
+        _driver = std::make_unique<AntennaDriver>(PUBLISHER_PERIOD_MS, _username, _password);
         _timer_pubAntennaStatus = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
-                                             [this](void)
-                                             {
-                                                 this->executeDriver();
-                                             });
+                                                          [this](void)
+                                                          {
+                                                              this->executeDriver();
+                                                          });
     }
 }
 
@@ -67,7 +66,7 @@ void AntennaNode::executeDriver(void)
 {
     sAntennaMsg msg;
     sCommandResult result;
-    result = _driver.ExecuteAntennaCommands(msg);
+    result = _driver->ExecuteAntennaCommands(msg);
 
     rover_msgs::msg::AntennaStatus rosMsg = toRosMsg(msg);
     _pub_antennaStatus->publish(rosMsg);

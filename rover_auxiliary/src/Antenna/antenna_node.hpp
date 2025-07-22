@@ -19,7 +19,7 @@ class AntennaNode : public rclcpp::Node
     bool loadUserInfo(void);
     void executeDriver(void);
 
-    AntennaDriver _driver;
+    std::unique_ptr<AntennaDriver> _driver;
 
     rclcpp::Publisher<rover_msgs::msg::AntennaStatus>::SharedPtr _pub_antennaStatus;
     rclcpp::TimerBase::SharedPtr _timer_pubAntennaStatus;
