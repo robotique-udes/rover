@@ -1,9 +1,10 @@
-float32[7] upper_limit
-float32[7] lower_limit
-float32[7] max_speed
-float32[7] kp_speed
-float32[7] kd_speed
-float32[7] ki_speed
+float32 upper_limit
+float32 lower_limit
+float32 max_speed
+float32 kp_speed
+float32 kd_speed
+float32 ki_speed
+uint8 can_id
 
 ---
 bool success

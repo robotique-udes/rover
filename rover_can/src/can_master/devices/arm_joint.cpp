@@ -83,16 +83,19 @@ void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
 void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request,
                                       std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response)
 {
-    _nextArmConfigMsg.data().upperLimit = request->upper_limit[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().lowerLimit = request->lower_limit[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().maxSpeed = request->max_speed[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().kpSpeed = request->kp_speed[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().kiSpeed = request->ki_speed[_rosArmSpeedMsgId];
-    _nextArmConfigMsg.data().kdSpeed = request->kd_speed[_rosArmSpeedMsgId];
+    if (request->can_id == _rosArmSpeedMsgId)
+    {
+        _nextArmConfigMsg.data().upperLimit = request->upper_limit;
+        _nextArmConfigMsg.data().lowerLimit = request->lower_limit;
+        _nextArmConfigMsg.data().maxSpeed = request->max_speed;
+        _nextArmConfigMsg.data().kpSpeed = request->kp_speed;
+        _nextArmConfigMsg.data().kiSpeed = request->ki_speed;
+        _nextArmConfigMsg.data().kdSpeed = request->kd_speed;
 
-    eReturnValue result = this->sendMsg(_nextArmConfigMsg);
+        eReturnValue result = this->sendMsg(_nextArmConfigMsg);
 
-    response->success = (result == eReturnValue::SUCCESS);
+        response->success = (result == eReturnValue::SUCCESS);
+    }
 }
 
 void ArmJoint::CB_ROS_canSend(void)
