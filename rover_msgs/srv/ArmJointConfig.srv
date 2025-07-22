@@ -8,3 +8,4 @@ uint8 can_id
 
 ---
 bool success
+string message

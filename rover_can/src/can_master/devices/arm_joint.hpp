@@ -30,6 +30,13 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     static constexpr uint32_t CAN_PUBLISH_PERIOD_MS
         = static_cast<uint32_t>(ROUND(1'000.0F / ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ));
 
+    static constexpr std::array<uint8_t, 6> VALID_IDS = {rover_msgs::msg::ArmMsg::JL,
+                                                         rover_msgs::msg::ArmMsg::J1,
+                                                         rover_msgs::msg::ArmMsg::J2,
+                                                         rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
+                                                         rover_msgs::msg::ArmMsg::GRIPPER_ROT,
+                                                         rover_msgs::msg::ArmMsg::GRIPPER_TILT};
+
   public:
     ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
              uint8_t rosArmSpeedMsgId_,
@@ -42,8 +49,8 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
 
     void CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmJointStatus& msg_);
     void CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_);
-    void CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request,
-                                std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response);
+    void CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
+                                std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_);
     void CB_ROS_canSend(void);
 
     const uint8_t _rosArmSpeedMsgId;

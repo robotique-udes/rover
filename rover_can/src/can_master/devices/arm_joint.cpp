@@ -80,21 +80,44 @@ void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
     _nextArmCmdMsg.data().targetSpeed = rosMsg_.target_speed[_rosArmSpeedMsgId];
 }
 
-void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request,
-                                      std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response)
+void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
+                                      std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_)
 {
-    if (request->can_id == _rosArmSpeedMsgId)
+    if (std::find(VALID_IDS.begin(), VALID_IDS.end(), request_->can_id) == VALID_IDS.end())
     {
-        _nextArmConfigMsg.data().upperLimit = request->upper_limit;
-        _nextArmConfigMsg.data().lowerLimit = request->lower_limit;
-        _nextArmConfigMsg.data().maxSpeed = request->max_speed;
-        _nextArmConfigMsg.data().kpSpeed = request->kp_speed;
-        _nextArmConfigMsg.data().kiSpeed = request->ki_speed;
-        _nextArmConfigMsg.data().kdSpeed = request->kd_speed;
+        response_->success = false;
+        response_->message = "Invalid can id";
+    }
+    else if (request_->can_id == _rosArmSpeedMsgId)
+    {
+        _nextArmConfigMsg.data().upperLimit = request_->upper_limit;
+        _nextArmConfigMsg.data().lowerLimit = request_->lower_limit;
+        _nextArmConfigMsg.data().maxSpeed = request_->max_speed;
+        _nextArmConfigMsg.data().kpSpeed = request_->kp_speed;
+        _nextArmConfigMsg.data().kiSpeed = request_->ki_speed;
+        _nextArmConfigMsg.data().kdSpeed = request_->kd_speed;
 
         eReturnValue result = this->sendMsg(_nextArmConfigMsg);
 
-        response->success = (result == eReturnValue::SUCCESS);
+        switch (result)
+        {
+            case eReturnValue::SUCCESS:
+                response_->success = true;
+                response_->message = "Message sent";
+                break;
+            case eReturnValue::FAILED:
+                response_->success = false;
+                response_->message = "Failed to send the message";
+                break;
+            case eReturnValue::NOT_CONCERNED:
+                response_->success = false;
+                response_->message = "No message sent, not concerned";
+                break;
+            default:
+                response_->success = false;
+                response_->message = "Unknown error";
+                break;
+        }
     }
 }
 
