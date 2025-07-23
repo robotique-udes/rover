@@ -15,8 +15,7 @@
 class AntennaDriver
 {
   private:
-    static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL(Constants::AntennaInfo::eAntennaType::Base);
-    static_assert(BASE_URL != nullptr, "Base url can't be nullptr");
+    static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL<Constants::AntennaInfo::eAntennaType::Base>();
 
     static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;

@@ -51,9 +51,11 @@ namespace Constants
         static constexpr std::array<const char*, std::to_underlying(eAntennaType::eLast)> ANTENNA_URLS
             = {"https://192.168.144.55", "https://192.168.144.50"};
 
-        constexpr const char* getURL(eAntennaType antenna_)
+        template<eAntennaType antenna_>
+        constexpr const char* getURL()
         {
-            return (std::to_underlying(antenna_) < ANTENNA_URLS.size()) ? ANTENNA_URLS.at(std::to_underlying(antenna_)) : nullptr;
+            static_assert(static_cast<size_t>(antenna_) < ANTENNA_URLS.size(), "Invalid antenna index");
+            return ANTENNA_URLS[static_cast<size_t>(antenna_)];
         }
 #endif  // defined(__linux__)
     }   // namespace AntennaInfo

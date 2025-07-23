@@ -33,7 +33,7 @@ class AntennaCommand
     virtual sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) = 0;
 
   protected:
-    const std::string& getApiUrl(void) const
+    std::string getApiUrl(void) const
     {
         return _apiUrl;
     }
