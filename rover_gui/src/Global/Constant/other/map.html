@@ -691,8 +691,8 @@
           }
         });
 
-        bridge.waypointIsVisible.connect(function (lat, lon, name, waypointId, visibility) {
-          addWaypoint(lat, lon, name, waypointId, visibility);
+        bridge.waypointIsVisible.connect(function (name, waypointId, visibility) {
+          waypointVisibility(name, waypointId, visibility);
         });
 
         bridge.sendGoal.connect(function (name, lat, lon) {
@@ -728,7 +728,7 @@
           isAddingWaypoint = true;
           const id = `waypoint_${Date.now()}`;
 
-          addWaypoint(lat, lon, name, id, true);
+          addWaypoint(lat, lon, name, id);
 
           const wasTracking = cameraTracking;
           const wasTopDown = isTopDownView;
@@ -992,7 +992,7 @@
     }
 
 
-    function addWaypoint(lat, lon, name, waypointId, visibility) {
+    function addWaypoint(lat, lon, name, waypointId) {
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
 
@@ -1000,15 +1000,15 @@
           id: id,
           name: waypointName,
           position: Cesium.Cartesian3.fromDegrees(lon, lat),
-          point: visibility ? {
+          point:{
             pixelSize: 10,
             color: Cesium.Color.BLUE,
             outlineColor: Cesium.Color.WHITE,
             outlineWidth: 2,
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY
-          }: undefined,
-          label:  visibility ?{
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+          },
+          label: {
             text: waypointName,
             font: '14pt sans-serif',
             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
@@ -1020,31 +1020,32 @@
             showBackground: true,
             backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY
-           }: undefined
+            disableDepthTestDistance: Number.POSITIVE_INFINITY,
+           }
         });
 
-        if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
-          waypointEntity._visualizers.forEach(visualizer => {
-            if (visualizer && visualizer.visualizersByDisplayID) {
-              for (const displayID in visualizer.visualizersByDisplayID) {
-                if (visualizer.visualizersByDisplayID[displayID]) {
-                  visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
-                }
-              }
-            }
-          });
-        }
+        // if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
+        //   waypointEntity._visualizers.forEach(visualizer => {
+        //     if (visualizer && visualizer.visualizersByDisplayID) {
+        //       for (const displayID in visualizer.visualizersByDisplayID) {
+        //         if (visualizer.visualizersByDisplayID[displayID]) {
+        //           visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
+        //         }
+        //       }
+        //     }
+        //   });
+        // }
       waypointEntities.push(waypointEntity);
       return waypointEntity;
     }
 
-    // function waypointVisibility(visibility, waypointId) {
-    //   const waypointEntity = viewer.entities.getById(waypointId);
-    //   if (waypointEntity) {
-    //     waypointEntity.show = visibility;
-    //   }
-    // }
+    function waypointVisibility(name, id, visibility) {
+      const waypointEntity = viewer.entities.getById(id);
+      if (waypointEntity) {
+        waypointEntity.label.show = visibility;
+        waypointEntity.point.show = visibility;
+      }
+    }
 
 
     function showWaypointDialog(lat, lon) {
@@ -1086,85 +1087,6 @@
       });
     }
 
-    // Continuous styling enforcement system
-    let stylingInterval = null;
-    
-    function startStylingEnforcement() {
-      if (stylingInterval) {
-        clearInterval(stylingInterval);
-      }
-      
-      // Check and enforce styling every 500ms
-      stylingInterval = setInterval(() => {
-        enforceWaypointStyling();
-      }, 500);
-    }
-    
-    function stopStylingEnforcement() {
-      if (stylingInterval) {
-        clearInterval(stylingInterval);
-        stylingInterval = null;
-      }
-    }
-    
-    function enforceWaypointStyling() {
-      if (!waypointEntities || waypointEntities.length === 0) {
-        return;
-      }
-      
-      waypointEntities.forEach(waypoint => {
-        if (waypoint && waypoint.point) {
-          try {
-            // Get current colors
-            const currentColor = waypoint.point.color instanceof Cesium.ConstantProperty 
-              ? waypoint.point.color.getValue() 
-              : waypoint.point.color;
-            const currentOutlineColor = waypoint.point.outlineColor instanceof Cesium.ConstantProperty 
-              ? waypoint.point.outlineColor.getValue() 
-              : waypoint.point.outlineColor;
-            
-            const expectedBlue = Cesium.Color.BLUE;
-            const expectedWhite = Cesium.Color.WHITE;
-            
-            // Check if colors need fixing
-            const needsColorFix = !currentColor || !Cesium.Color.equals(currentColor, expectedBlue);
-            const needsOutlineFix = !currentOutlineColor || !Cesium.Color.equals(currentOutlineColor, expectedWhite);
-            
-            if (needsColorFix || needsOutlineFix) {
-              // Force correct styling - use ConstantProperty to prevent changes
-              waypoint.point.color = new Cesium.ConstantProperty(Cesium.Color.BLUE);
-              waypoint.point.outlineColor = new Cesium.ConstantProperty(Cesium.Color.WHITE);
-              waypoint.point.outlineWidth = new Cesium.ConstantProperty(2);
-              waypoint.point.pixelSize = new Cesium.ConstantProperty(10);
-              waypoint.point.show = new Cesium.ConstantProperty(true);
-              
-              // Force scene update
-              viewer.scene.requestRender();
-            }
-          } catch (error) {
-            console.warn(`Error enforcing styling for waypoint ${waypoint.id}:`, error);
-          }
-        }
-      });
-    }
-
-    // Debug function for testing waypoint visibility
-    window.testWaypointVisibility = function(waypointId, visibility) {
-      console.log(`Testing waypoint visibility: ${waypointId} -> ${visibility}`);
-      if (window.masterWaypointData && window.masterWaypointData[waypointId]) {
-        waypointVisibility(visibility, waypointId);
-      } else {
-        console.error(`Waypoint ${waypointId} not found in master data`);
-        console.log('Available waypoints:', Object.keys(window.masterWaypointData || {}));
-      }
-    };
-    
-    // Debug function to show master waypoint data
-    window.showMasterData = function() {
-      console.log('Master waypoint data:', window.masterWaypointData);
-      console.log('Waypoint entities:', waypointEntities.map(wp => ({ id: wp.id, name: wp.name, show: wp.show })));
-    };
-
     window.addEventListener('load', initializeMap);
     window.addEventListener('online', initializeMap);
     window.addEventListener('offline', function () {
@@ -1173,5 +1095,3 @@
 
   </script>
 </body>
-
-</html>
