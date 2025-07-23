@@ -692,35 +692,7 @@
         });
 
         bridge.waypointIsVisible.connect(function (lat, lon, name, waypointId, visibility) {
-          // Initialize master waypoint data storage if it doesn't exist
-          if (!window.masterWaypointData) {
-            window.masterWaypointData = {};
-          }
-          
-          // If waypoint doesn't exist in master data, create it
-          if (!window.masterWaypointData[waypointId]) {
-            window.masterWaypointData[waypointId] = {
-              id: waypointId,
-              name: name,
-              latitude: lat,
-              longitude: lon,
-              visible: visibility
-            };
-            
-            // Track that this waypoint was created by visibility signal
-            recentlyCreatedWaypoints.add(name);
-            
-            // Clear the flag after a short delay to allow sendGoal to process
-            setTimeout(() => {
-              recentlyCreatedWaypoints.delete(name);
-            }, 1000);
-          } else {
-            // Update existing waypoint visibility
-            window.masterWaypointData[waypointId].visible = visibility;
-          }
-          
-          // Force the visibility update
-          waypointVisibility(visibility, waypointId);
+          addWaypoint(lat, lon, name, waypointId, visibility);
         });
 
         bridge.sendGoal.connect(function (name, lat, lon) {
@@ -1024,46 +996,19 @@
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
 
-      // Ensure visibility is properly defined (default to true if undefined)
-      const isVisible = visibility !== undefined ? visibility : true;
-
-      // Initialize master waypoint data storage if it doesn't exist
-      if (!window.masterWaypointData) {
-        window.masterWaypointData = {};
-      }
-
-      // Check if waypoint already exists
-      const existingEntity = viewer.entities.getById(id);
-      if (existingEntity) {
-        return existingEntity;
-      }
-
-      // Store waypoint data in master data structure
-      window.masterWaypointData[id] = {
-        id: id,
-        name: waypointName,
-        latitude: lat,
-        longitude: lon,
-        visible: isVisible
-      };
-
-      // Only create the entity if it's visible
-      if (isVisible) {
         const waypointEntity = viewer.entities.add({
           id: id,
           name: waypointName,
           position: Cesium.Cartesian3.fromDegrees(lon, lat),
-          show: true,
-          point: {
-            pixelSize: new Cesium.ConstantProperty(10),
-            color: new Cesium.ConstantProperty(Cesium.Color.BLUE),
-            outlineColor: new Cesium.ConstantProperty(Cesium.Color.WHITE),
-            outlineWidth: new Cesium.ConstantProperty(2),
+          point: visibility ? {
+            pixelSize: 10,
+            color: Cesium.Color.BLUE,
+            outlineColor: Cesium.Color.WHITE,
+            outlineWidth: 2,
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            show: new Cesium.ConstantProperty(true)
-          },
-          label: {
+            disableDepthTestDistance: Number.POSITIVE_INFINITY
+          }: undefined,
+          label:  visibility ?{
             text: waypointName,
             font: '14pt sans-serif',
             style: Cesium.LabelStyle.FILL_AND_OUTLINE,
@@ -1075,139 +1020,31 @@
             showBackground: true,
             backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
             heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-            disableDepthTestDistance: Number.POSITIVE_INFINITY,
-            show: new Cesium.ConstantProperty(true)
-          }
+            disableDepthTestDistance: Number.POSITIVE_INFINITY
+           }: undefined
         });
 
-        // Force correct styling immediately after creation
-        setTimeout(() => {
-          if (waypointEntity.point) {
-            waypointEntity.point.color = Cesium.Color.BLUE;
-            waypointEntity.point.outlineColor = Cesium.Color.WHITE;
-            waypointEntity.point.outlineWidth = 2;
-            waypointEntity.point.pixelSize = 10;
-            waypointEntity.point.show = true;
-          }
-          viewer.scene.requestRender();
-        }, 50);
-
-        waypointEntities.push(waypointEntity);
-        
-        // Start continuous styling enforcement
-        startStylingEnforcement();
-        
-        return waypointEntity;
-      } else {
-        // Waypoint is hidden, just store in master data
-        return null;
-      }
+        if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
+          waypointEntity._visualizers.forEach(visualizer => {
+            if (visualizer && visualizer.visualizersByDisplayID) {
+              for (const displayID in visualizer.visualizersByDisplayID) {
+                if (visualizer.visualizersByDisplayID[displayID]) {
+                  visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
+                }
+              }
+            }
+          });
+        }
+      waypointEntities.push(waypointEntity);
+      return waypointEntity;
     }
 
-    // SIMPLIFIED WAYPOINT VISIBILITY FUNCTION
-    // ROBUST WAYPOINT VISIBILITY FUNCTION - RECREATE ALL WAYPOINTS
-    function waypointVisibility(visibility, waypointId) {
-      // Initialize master waypoint data storage if it doesn't exist
-      if (!window.masterWaypointData) {
-        window.masterWaypointData = {};
-      }
-      
-      // Check if we have data for this waypoint
-      if (!window.masterWaypointData[waypointId]) {
-        console.warn(`Waypoint ${waypointId} not found in master data`);
-        return;
-      }
-      
-      // Update visibility in master data
-      window.masterWaypointData[waypointId].visible = visibility;
-      
-      // ROBUST APPROACH: Clear and recreate all waypoints
-      // This ensures there are no hidden waypoints still in the scene
-      
-      // First, preserve non-waypoint entities
-      const nonWaypointEntities = [];
-      const allEntities = viewer.entities.values.slice();
-      
-      for (let i = 0; i < allEntities.length; i++) {
-        const entity = allEntities[i];
-        if (!entity.id.startsWith('waypoint_')) {
-          nonWaypointEntities.push(entity);
-        }
-      }
-      
-      // Clear all waypoints from the scene
-      const waypointIds = Object.keys(window.masterWaypointData);
-      for (let i = 0; i < waypointIds.length; i++) {
-        const wpId = waypointIds[i];
-        const existingEntity = viewer.entities.getById(wpId);
-        if (existingEntity) {
-          viewer.entities.remove(existingEntity);
-        }
-      }
-      
-      // Clear the waypoint entities array
-      waypointEntities = [];
-      
-      // Now recreate ONLY visible waypoints
-      for (const wpId in window.masterWaypointData) {
-        const data = window.masterWaypointData[wpId];
-        
-        if (data.visible === true) {
-          try {
-            const waypointEntity = viewer.entities.add({
-              id: data.id,
-              name: data.name,
-              position: Cesium.Cartesian3.fromDegrees(data.longitude, data.latitude),
-              show: true,
-              point: {
-                pixelSize: new Cesium.ConstantProperty(10),
-                color: new Cesium.ConstantProperty(Cesium.Color.BLUE),
-                outlineColor: new Cesium.ConstantProperty(Cesium.Color.WHITE),
-                outlineWidth: new Cesium.ConstantProperty(2),
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                show: new Cesium.ConstantProperty(true)
-              },
-              label: {
-                text: data.name,
-                font: '14pt sans-serif',
-                style: Cesium.LabelStyle.FILL_AND_OUTLINE,
-                outlineWidth: 2,
-                verticalOrigin: Cesium.VerticalOrigin.BOTTOM,
-                pixelOffset: new Cesium.Cartesian2(0, -10),
-                fillColor: Cesium.Color.WHITE,
-                outlineColor: Cesium.Color.BLACK,
-                showBackground: true,
-                backgroundColor: new Cesium.Color(0.165, 0.165, 0.165, 0.7),
-                heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                disableDepthTestDistance: Number.POSITIVE_INFINITY,
-                show: new Cesium.ConstantProperty(true)
-              }
-            });
-            
-            waypointEntities.push(waypointEntity);
-            
-            // Force correct styling immediately
-            setTimeout(() => {
-              if (waypointEntity.point) {
-                waypointEntity.point.color = new Cesium.ConstantProperty(Cesium.Color.BLUE);
-                waypointEntity.point.outlineColor = new Cesium.ConstantProperty(Cesium.Color.WHITE);
-                waypointEntity.point.outlineWidth = new Cesium.ConstantProperty(2);
-                waypointEntity.point.pixelSize = new Cesium.ConstantProperty(10);
-                waypointEntity.point.show = new Cesium.ConstantProperty(true);
-              }
-            }, 50);
-            
-          } catch (error) {
-            console.error(`Error recreating waypoint ${data.id}:`, error);
-          }
-        }
-      }
-      
-      // Force scene update
-      viewer.scene.requestRender();
-    }
-
+    // function waypointVisibility(visibility, waypointId) {
+    //   const waypointEntity = viewer.entities.getById(waypointId);
+    //   if (waypointEntity) {
+    //     waypointEntity.show = visibility;
+    //   }
+    // }
 
 
     function showWaypointDialog(lat, lon) {
