@@ -30,7 +30,7 @@ class AntennaCommand
     {
     }
     virtual ~AntennaCommand() = default;
-    virtual sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) = 0;
+    virtual sCommandResult execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) = 0;
 
   protected:
     std::string getApiUrl(void) const

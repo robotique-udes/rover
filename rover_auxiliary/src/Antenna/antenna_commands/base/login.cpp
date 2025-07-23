@@ -7,7 +7,7 @@ Command::Base::Login::Login(const std::string& apiUrl_, const std::string& usern
 {
 }
 
-sCommandResult Command::Base::Login::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+sCommandResult Command::Base::Login::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
 {
     (void)msg_;
     return this->postHTTPS(session_);

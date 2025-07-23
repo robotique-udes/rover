@@ -24,11 +24,11 @@ namespace Command::Base
       public:
         GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_);
         ~GetInterfaceStats() override = default;
-        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
+        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
 
       private:
         sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        sCommandResult parseResponse(const cpr::Response& response_, sAntennaMsg& msg_);
+        sCommandResult parseResponse(const cpr::Response& response_, sSignalInfos& msg_);
         bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_);
 
         uint8_t _loginAttempts = 0;

@@ -24,7 +24,7 @@ AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& use
     _commands[2] = (std::make_unique<Command::Base::GetInterfaceStats>(BASE_URL, _publisherPeriodMs));
 }
 
-sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
+sCommandResult AntennaDriver::retrieveDatalinkInfos(sSignalInfos& msg_)
 {
     sCommandResult result;
 
@@ -39,7 +39,7 @@ sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
             }
             else
             {
-                msg_ = sAntennaMsg{};
+                msg_ = sSignalInfos{};
                 msg_.connected = false;
             }
 
@@ -50,13 +50,13 @@ sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
     return result;
 }
 
-sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
+sCommandResult AntennaDriver::handleDisconnect(sSignalInfos& msg_)
 {
     sCommandResult result;
     if (_cooldownActive && !_loginCooldownTimer.isReady())
     {
         result.success = false;
-        msg_ = sAntennaMsg{};
+        msg_ = sSignalInfos{};
         msg_.connected = false;
         return result;
     }
@@ -71,7 +71,7 @@ sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
     {
         _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
         _cooldownActive = true;
-        msg_ = sAntennaMsg{};
+        msg_ = sSignalInfos{};
         msg_.connected = false;
         return result;
     }

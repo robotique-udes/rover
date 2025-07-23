@@ -8,7 +8,7 @@ Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_, 
 {
 }
 
-sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
@@ -52,7 +52,7 @@ sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::S
     return result;
 }
 
-sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_, sSignalInfos& msg_)
 {
     sCommandResult result;
     if (response_.text.empty())

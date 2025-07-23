@@ -3,7 +3,7 @@
 
 namespace
 {
-    rover_msgs::msg::AntennaStatus toRosMsg(const sAntennaMsg& msg_)
+    rover_msgs::msg::AntennaStatus toRosMsg(const sSignalInfos& msg_)
     {
         rover_msgs::msg::AntennaStatus rosMsg;
         rosMsg.connected = msg_.connected;
@@ -39,7 +39,7 @@ AntennaNode::AntennaNode():
         _timer_pubAntennaStatus = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                                           [this](void)
                                                           {
-                                                              this->executeDriver();
+                                                              this->retrieveDriverInfos();
                                                           });
     }
 }
@@ -62,11 +62,11 @@ bool AntennaNode::loadUserInfo(void)
     return true;
 }
 
-void AntennaNode::executeDriver(void)
+void AntennaNode::retrieveDriverInfos(void)
 {
-    sAntennaMsg msg;
+    sSignalInfos msg;
     sCommandResult result;
-    result = _driver->ExecuteAntennaCommands(msg);
+    result = _driver->retrieveDatalinkInfos(msg);
 
     rover_msgs::msg::AntennaStatus rosMsg = toRosMsg(msg);
     _pub_antennaStatus->publish(rosMsg);

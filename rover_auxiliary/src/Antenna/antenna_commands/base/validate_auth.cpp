@@ -7,14 +7,14 @@ Command::Base::ValidateAuth::ValidateAuth(const std::string& apiUrl_):
 {
 }
 
-sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
     result.httpStatus = response.status_code;
     if (!result.success)
     {
-        msg_ = sAntennaMsg{};
+        msg_ = sSignalInfos{};
         msg_.connected = false;
         return result;
     }
@@ -23,7 +23,7 @@ sCommandResult Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session
 
     if (!result.success)
     {
-        msg_ = sAntennaMsg{};
+        msg_ = sSignalInfos{};
         msg_.connected = false;
     }
     return result;
@@ -60,7 +60,7 @@ sCommandResult Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Sessio
     return result;
 }
 
-sCommandResult Command::Base::ValidateAuth::validateFormat(const cpr::Response& response_, sAntennaMsg& msg_)
+sCommandResult Command::Base::ValidateAuth::validateFormat(const cpr::Response& response_, sSignalInfos& msg_)
 {
     sCommandResult result;
     if (response_.text.empty())

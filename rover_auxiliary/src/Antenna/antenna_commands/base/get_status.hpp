@@ -20,11 +20,11 @@ namespace Command::Base
       public:
         GetStatus(const std::string& apiUrl_);
         ~GetStatus() override = default;
-        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
+        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
 
       private:
         sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        sCommandResult parseResponse(const cpr::Response& response_, sAntennaMsg& msg_);
+        sCommandResult parseResponse(const cpr::Response& response_, sSignalInfos& msg_);
     };
 
 }  // namespace Command::Base

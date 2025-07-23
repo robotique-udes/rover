@@ -6,7 +6,7 @@ Command::Base::GetStatus::GetStatus(const std::string& apiUrl_):
 {
 }
 
-sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
 {
     cpr::Response response;
     sCommandResult result = this->getHTTPS(session_, response);
@@ -50,7 +50,7 @@ sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> 
     return result;
 }
 
-sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
+sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& response_, sSignalInfos& msg_)
 {
     sCommandResult result;
     if (response_.text.empty())
