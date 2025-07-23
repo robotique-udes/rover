@@ -1,3 +1,14 @@
+class Waypoint {
+  #waypointCounter = 1;
+  #activeWaypoint = null;
+  #isAddingWaypoint = false;
+
+  constructor(viewer) 
+  {
+    this.viewer = viewer;
+  }
+}
+
 function clearAllWaypoints() {
   waypointEntities.forEach(waypoint => {
     viewer.entities.remove(waypoint);
