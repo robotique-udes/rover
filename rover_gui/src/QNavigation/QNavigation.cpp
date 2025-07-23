@@ -187,7 +187,7 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
         const Waypoint& waypoint = _waypoints.at(index_);
         bool isVisible = (item_->checkState() == Qt::Checked);
 
-        emit this->waypointIsVisible(waypoint.name, waypoint.id, isVisible);
+        emit this->waypointIsVisible(waypoint.id, isVisible);
     }
 }
 

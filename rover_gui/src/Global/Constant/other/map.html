@@ -168,6 +168,7 @@
     }
 
     function setupCesiumMap() {
+      
       viewer = new Cesium.Viewer("cesiumContainer", {
         terrain: Cesium.Terrain.fromWorldTerrain({
           requestWaterMask: true,
@@ -190,14 +191,6 @@
       });
 
       viewer._cesiumWidget._creditContainer.style.display = "none";
-
-      // Disable entity selection and highlighting to prevent styling conflicts
-      viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.LEFT_CLICK);
-      viewer.cesiumWidget.screenSpaceEventHandler.removeInputAction(Cesium.ScreenSpaceEventType.MOUSE_MOVE);
-      
-      // Disable selection and highlighting
-      viewer.selectedEntity = undefined;
-      viewer.trackedEntity = undefined;
 
       entity = viewer.entities.add({
         name: "Live Position Arrow",
@@ -691,8 +684,8 @@
           }
         });
 
-        bridge.waypointIsVisible.connect(function (name, waypointId, visibility) {
-          waypointVisibility(name, waypointId, visibility);
+        bridge.waypointIsVisible.connect(function (waypointId, visibility) {
+          waypointVisibility(waypointId, visibility);
         });
 
         bridge.sendGoal.connect(function (name, lat, lon) {
@@ -808,14 +801,6 @@
       waypointEntities = [];
       waypointCounter = 1;
 
-      // Clear master waypoint data as well
-      if (window.masterWaypointData) {
-        window.masterWaypointData = {};
-      }
-      
-      // Clear recently created waypoints
-      recentlyCreatedWaypoints.clear();
-
       if (pathEntity) {
         viewer.entities.remove(pathEntity);
         pathEntity = null;
@@ -826,15 +811,10 @@
       const entity = viewer.entities.getById(waypointId);
       if (entity) {
         viewer.entities.remove(entity);
-        waypointEntities = waypointEntities.filter(wp => wp.id !== waypointId);
-        
-        // Remove from master data as well
-        if (window.masterWaypointData && window.masterWaypointData[waypointId]) {
-          delete window.masterWaypointData[waypointId];
-        }
-        
+        waypointEntities = waypointEntities.filter(wp => wp.id !== waypointId);        
         return true;
       }
+
       return false;
     }
 
@@ -915,83 +895,6 @@
       return R * c;
     }
 
-    function waypointNameExists(name) {
-      // DO NOT increment counter here - just check the name as-is
-      const waypointName = name;
-      
-      // Check in visible entities
-      const existingNameWaypoint = waypointEntities.find(wp => wp.name === waypointName);
-      if (existingNameWaypoint) {
-        return true; // Name already exists
-      }
-      
-      // Check in master data
-      if (window.masterWaypointData) {
-        for (const wpId in window.masterWaypointData) {
-          if (window.masterWaypointData[wpId].name === waypointName) {
-            return true; // Name already exists
-          }
-        }
-      }
-      
-      return false; // Name is available
-    }
-
-    function visibleWaypointNameExists(name) {
-      // DO NOT increment counter here - just check the name as-is
-      const waypointName = name;
-      
-      // Initialize master waypoint data storage if it doesn't exist
-      if (!window.masterWaypointData) {
-        window.masterWaypointData = {};
-      }
-      
-      // Check master data for visible waypoints with the same name
-      for (const waypointId in window.masterWaypointData) {
-        const waypointData = window.masterWaypointData[waypointId];
-        if (waypointData.name === waypointName && waypointData.visible === true) {
-          return true; // Name already exists among visible waypoints
-        }
-      }
-      
-      return false; // Name is available
-    }
-
-    function isLocationAvailable(lat, lon, name) {
-      // Initialize master waypoint data storage if it doesn't exist
-      if (!window.masterWaypointData) {
-        window.masterWaypointData = {};
-      }
-      
-      // Check master data for visible waypoints at similar locations
-      for (const waypointId in window.masterWaypointData) {
-        const waypointData = window.masterWaypointData[waypointId];
-        
-        // Skip if waypoint is not visible or has the same name
-        if (!waypointData.visible || (name && waypointData.name === name)) {
-          continue;
-        }
-        
-        try {
-          const wpLat = waypointData.latitude;
-          const wpLon = waypointData.longitude;
-
-          const latDiff = Math.abs(wpLat - lat) * 111000;
-          const lonDiff = Math.abs(wpLon - lon) * 111000 * Math.cos(lat * Math.PI / 180);
-          const distance = Math.sqrt(latDiff * latDiff + lonDiff * lonDiff);
-          const distanceCm = distance * 100;            if (distanceCm < 20) {
-              return false;
-            }
-
-        } catch (error) {
-          console.warn(`Error checking location for waypoint ${waypointId}:`, error);
-        }
-      }
-      
-      return true;
-    }
-
-
     function addWaypoint(lat, lon, name, waypointId) {
       const waypointName = name || `Waypoint ${waypointCounter++}`;
       const id = waypointId || `waypoint_${Date.now()}`;
@@ -1039,7 +942,7 @@
       return waypointEntity;
     }
 
-    function waypointVisibility(name, id, visibility) {
+    function waypointVisibility(id, visibility) {
       const waypointEntity = viewer.entities.getById(id);
       if (waypointEntity) {
         waypointEntity.label.show = visibility;
