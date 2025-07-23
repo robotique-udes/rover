@@ -26,7 +26,7 @@ set(SOURCES_CAN_MASTER_CORE
 )
 
 set(SOURCES_CAN_MASTER_DEVICES
-    #src/can_master/devices/arm_joint.cpp
+    src/can_master/devices/arm_joint.cpp
     src/can_master/devices/camera.cpp
     src/can_master/devices/gnss.cpp
     src/can_master/devices/propulsion_motors.cpp

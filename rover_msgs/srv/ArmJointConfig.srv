@@ -1,0 +1,11 @@
+float32 upper_limit
+float32 lower_limit
+float32 max_speed
+float32 kp_speed
+float32 kd_speed
+float32 ki_speed
+uint16 can_id
+
+---
+bool success
+string message
