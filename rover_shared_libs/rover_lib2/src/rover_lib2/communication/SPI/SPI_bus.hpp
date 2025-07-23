@@ -65,7 +65,10 @@ class SPIBus
                 ASSERT_MSG("No more DMA channel for SPI communication... Implementation error");
                 break;
             case ESP_ERR_NO_MEM:
-                ASSERT_MSG_ARGS("No more memory to create SPI bus... Implementation error ", _spiHost, &config, SPI_DMA_CH_AUTO);
+                ASSERT_MSG("No more memory to create SPI bus... Implementation error");
+                break;
+            default:
+                ASSERT_MSG("Shouldn't fall here... Implementation error ");
                 break;
         }
     }

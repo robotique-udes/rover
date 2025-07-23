@@ -6,7 +6,7 @@
 #include "driver/mcpwm_prelude.h"
 #include "driver/gpio.h"
 
-DEFINE_LOG_NODE(MCPWMTimer, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(MCPWMTimer, Logger::eNodeState::OFF);
 
 /**
  * @brief Each timer instance can generate up to two distinct PWM output at the same frequency

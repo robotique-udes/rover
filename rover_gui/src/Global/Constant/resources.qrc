@@ -1,13 +1,22 @@
-<!DOCTYPE RCC>
 <RCC>
-    <qresource prefix="/">
-        <file>icons/camera.png</file>
-        <file>icons/record_on.png</file>
-        <file>icons/record_off.png</file>
-        <file>icons/log_view.png</file>
-        <file>icons/refresh.png</file>
-        <file>other/map.html</file>
-        <file>icons/arrow.png</file>
-        <file>TaskDateAndTime.txt</file>
-    </qresource>
+  <qresource prefix="/">
+    <file>icons/ddb.png</file>
+    <file>icons/refresh.png</file>
+    <file>icons/light.png</file>
+    <file>icons/gnss.png</file>
+    <file>icons/refresh.png</file>
+    <file>icons/record_on.png</file>
+    <file>icons/record_off.png</file>
+    <file>icons/motor.png</file>
+    <file>icons/log_view.png</file>
+    <file>icons/ethswitch.png</file>
+    <file>icons/camera.png</file>
+    <file>icons/arrow.png</file>
+
+    <file>model/direction_arrow.glb</file>
+    
+    <file>TaskDateAndTime.txt</file>
+    
+    <file>other/map.html</file>
+  </qresource>
 </RCC>

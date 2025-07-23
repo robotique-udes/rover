@@ -8,7 +8,7 @@ class QUtilityBarBottom : public QWidget
     Q_OBJECT
 
   public:
-    QUtilityBarBottom(QWidget* parent_);
+    explicit QUtilityBarBottom(QWidget* parent_);
 
   signals:
     void seeHistory();

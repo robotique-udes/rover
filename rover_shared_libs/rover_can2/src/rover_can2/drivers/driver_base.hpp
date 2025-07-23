@@ -15,22 +15,21 @@ namespace RoverCan2::Drivers
     };
 
     template<typename Impl_T>
-    class DriverBase : public RoverObject<DriverBase<Impl_T>>,
-                       DriverBaseT
+    class DriverBase : public DriverBaseT
     {
       private:
         friend Impl_T;
         DriverBase() = default;
 
       public:
-        void _init(void)
+        void init(void)
         {
-            static_cast<Impl_T*>(this)->__init();
+            static_cast<Impl_T*>(this)->_init();
         }
 
-        void _update(void)
+        void update(void)
         {
-            static_cast<Impl_T*>(this)->__update();
+            static_cast<Impl_T*>(this)->_update();
         }
 
         bool sendMsg(const CanMsg& msg_)

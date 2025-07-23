@@ -9,7 +9,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     QWidget(parent_),
     _node(guiNode_),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
-    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>()),
     _tabWidget(this),
     _gridContainer(nullptr),
     _vSubLayoutContainer(nullptr),
@@ -26,7 +25,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::urlFoundInDetection,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
-    connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
@@ -34,6 +32,11 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                 &QVideoPlayerWidget::notifyCameraAnglePublisher,
                 this,
                 &QVideoManagerWidget::CB_pubCameraAngle);
+
+        connect(_playerWorkerThreadRecording[i].get(),
+                &QRecordingWorker::setCursorWaiting,
+                this,
+                &QVideoManagerWidget::onSetCursorWaiting);
     }
 
     connect(&_tabWidget, &QTabWidget::currentChanged, this, &QVideoManagerWidget::onTabChanged);
@@ -59,8 +62,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     _playerWorkerThreadAruco->start();
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
-    _playerWorkerThreadRecording->start();
-    _playerWorkerThreadRecording->setThreadName("WorkerRecord");
 }
 
 void QVideoManagerWidget::onTabChanged(uint16_t index_)
@@ -68,7 +69,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     if (index_ == 0)
     {
         uint16_t index = 0;
-        for (auto& widget : _videoPlaysWidgets)
+        for (const auto& widget : _videoPlaysWidgets)
         {
             if (widget)
             {
@@ -83,9 +84,14 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     else
     {
         if (_videoPlaysWidgets[1])
+        {
             _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
+        }
+
         if (_videoPlaysWidgets[2])
+        {
             _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+        }
 
         _splitter.addWidget(&_vSubLayoutContainer);
 
@@ -159,8 +165,15 @@ void QVideoManagerWidget::initWidget(void)
                            nullptr);
         }
 
-        _videoPlaysWidgets[i]
-            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording);
+        _playerWorkerThreadRecording[i] = std::make_shared<QRecordingWorker>();
+        _playerWorkerThreadRecording[i]->start();
+        _playerWorkerThreadRecording[i]->setThreadName("WorkerRecord" + std::to_string(i));
+
+        _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node,
+                                                                     cameraUrl,
+                                                                     i,
+                                                                     _playerWorkerThreadAruco,
+                                                                     _playerWorkerThreadRecording[i]);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
@@ -241,10 +254,10 @@ void QVideoManagerWidget::initCameraControlClient(void)
         std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
         [this](void)
         {
-            bool availble = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
+            bool available = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
             for (auto& widget : _videoPlaysWidgets)
             {
-                widget->CB_serviceCameraControlAvailable(availble);
+                widget->CB_srvCameraAvailable(available);
             }
         });
     return;

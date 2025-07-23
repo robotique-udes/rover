@@ -1,23 +1,16 @@
 #ifndef ROVER_LIB2_ROVER_OBJECT_HPP
 #define ROVER_LIB2_ROVER_OBJECT_HPP
 
-template<typename Impl_T>
-class RoverObject
+#include <concepts>
+
+template<typename Implt>
+concept RoverObject = requires(Implt impl_)
 {
-  private:
-    RoverObject() = default;
-    friend Impl_T;
+    // clang-format off
+    { impl_.init() } -> std::same_as<void>;
 
-  public:
-    void init(void)
-    {
-        static_cast<Impl_T*>(this)->_init();
-    }
-
-    void update(void)
-    {
-        static_cast<Impl_T*>(this)->_update();
-    }
+    { impl_.update() } -> std::same_as<void>;
+    // clang-format on
 };
 
 #endif  // ROVER_LIB2_ROVER_OBJECT_HPP

@@ -1,8 +1,15 @@
 #include "QNavigation.hpp"
 
 #include "Global/Helpers/QHelpers.hpp"
+#include <QTimer>
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
+constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
+
+// Default to Studio de Création
+constexpr double DEFAULT_LATITUDE = 45.377755;
+constexpr double DEFAULT_LONGITUDE = -71.924652;
+constexpr double DEFAULT_HEADING = 0.0;
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -10,6 +17,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     _node(guiNode_)
 {
     _ui.setupUi(this);
+
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
         {
@@ -41,26 +49,24 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
 
-    _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
+    _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>(GPS_TOPIC_NAME,
                                                                1,
                                                                [this](const rover_msgs::msg::Gps& gpsMsg_)
                                                                {
                                                                    this->onGpsMessage(gpsMsg_);
                                                                });
+
+    // Hack | Todo: java script should send a signal when it's ready to update it's position
+    QTimer::singleShot(1'500,
+                       [this]()
+                       {
+                           emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
+                       });
 }
 
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
-    _currentLat = msg_.latitude;
-    _currentLon = msg_.longitude;
-    _currentHeading = msg_.heading;
-
-    QMetaObject::invokeMethod(this,
-                              "gpsCallback",
-                              Qt::QueuedConnection,
-                              Q_ARG(double, msg_.latitude),
-                              Q_ARG(double, msg_.longitude),
-                              Q_ARG(double, msg_.heading));
+    emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
 }
 
 void QNavigation::onSetGoalClicked()
@@ -261,6 +267,7 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     {
         return;
     }
+
     QString token = qgetenv("CESIUM_TOKEN");
     if (!token.isEmpty())
     {
@@ -268,7 +275,7 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     }
     else
     {
-        RCLCPP_WARN(_node->get_logger(), "CESIUM TOKEN NOT FOUND");
+        RCLCPP_WARN(_node->get_logger(), "Cesium token not found, can't load map");
     }
 }
 
