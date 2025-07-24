@@ -95,7 +95,7 @@ void QNavigation::onSetGoalClicked()
 
     this->addWaypointToList(name_, lat_, lon_, id_);
 
-    emit this->sendGoal(name_, lat_, lon_);
+    emit this->sendGoal(name_, lat_, lon_, id_);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -160,7 +160,7 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     waypoint_.latitude = latitude_;
     waypoint_.longitude = longitude_;
     waypoint_.id = id_;
-
+    
     QString displayText_ = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
 
     QListWidgetItem* waypointItem_ = new QListWidgetItem(displayText_);

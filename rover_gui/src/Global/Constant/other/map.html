@@ -672,13 +672,13 @@
           waypointVisibility(waypointId, visibility);
         });
 
-        bridge.sendGoal.connect(function (name, lat, lon) {
+        bridge.sendGoal.connect(function (name, lat, lon, waypointId) {
           if (isAddingWaypoint) {
             return;
           }
 
           isAddingWaypoint = true;
-          const id = `waypoint_${Date.now()}`;
+          id = waypointId || `waypoint_${Date.now()}`;
 
           const existingNameWaypoint = waypointEntities.find(wp =>
             wp.name === name
@@ -891,14 +891,13 @@
 
     function addWaypoint(lat, lon, name, waypointId) {
       const waypointName = name || `Waypoint ${waypointCounter++}`;
-      const id = waypointId || `waypoint_${Date.now()}`;
 
       const existingNameWaypoint = waypointEntities.find(wp => wp.name === waypointName);
       if (existingNameWaypoint) {
         Swal.fire({
           title: 'Duplicate Waypoint Name',
           text: `A waypoint with the name "${waypointName}" already exists. Please choose
-          a different name.`,
+          a different name."${Date.now()}"`,
           icon: 'warning',
           confirmButtonText: 'OK'
         });
@@ -906,7 +905,7 @@
       }
 
       const waypointEntity = viewer.entities.add({
-        id: id,
+        id: waypointId,
         name: waypointName,
         position: Cesium.Cartesian3.fromDegrees(lon, lat),
         point: {
@@ -932,7 +931,7 @@
           disableDepthTestDistance: Number.POSITIVE_INFINITY,
         }
       });
-
+      
       waypointEntities.push(waypointEntity);
       return waypointEntity;
     }
