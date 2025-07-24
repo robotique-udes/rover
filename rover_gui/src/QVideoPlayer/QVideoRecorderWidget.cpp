@@ -28,6 +28,8 @@ QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
             this,
             &QVideoRecorderWidget::onStopRecordingHandledSuccessfully);
 
+    connect(this, &QVideoRecorderWidget::onUpdateCameraList, this, &QVideoRecorderWidget::onUpdateCameraList);
+
     std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
     if (optionalSessionFolderPath.has_value())
     {
@@ -219,7 +221,7 @@ void QVideoRecorderWidget::onStopRecordingHandledSuccessfully(bool success_, con
 
 void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& urls)
 {
-    /*
+
     for (const std::string& url : urls)
     {
         if (url == _camURL && _sButtons.startRecordingButton)
@@ -246,7 +248,7 @@ void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& ur
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
                                                                        error_message,
                                                                        QHelper::QToastNotification::eNotifType::WARNING);
-    }*/
+    }
 }
 
 void QVideoRecorderWidget::CB_srvAvailable(bool available_)
@@ -275,4 +277,9 @@ void QVideoRecorderWidget::setButtons(const sRecordingButtons& buttons_)
         connect(_sButtons.screenshotButton, &QPushButton::clicked, this, &QVideoRecorderWidget::handleScreenshot);
         connect(_sButtons.startRecordingButton, &QPushButton::clicked, this, &QVideoRecorderWidget::handleRecording);
     }
+}
+
+void QVideoRecorderWidget::emitUpdateCameraList(const std::vector<std::string>& urls)
+{
+    emit this->updateCameraList(urls);
 }

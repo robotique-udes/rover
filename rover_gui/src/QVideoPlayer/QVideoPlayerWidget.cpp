@@ -893,7 +893,7 @@ void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::C
 
 void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls_)
 {
-    _recorderWidget.onUpdateCameraList(urls_);
+    _recorderWidget.emitUpdateCameraList(urls_);
 }
 
 void QVideoPlayerWidget::CB_srvCameraAvailable(bool available_)
