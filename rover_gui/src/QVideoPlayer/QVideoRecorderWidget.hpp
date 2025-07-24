@@ -26,7 +26,7 @@ class QVideoRecorderWidget : public QWidget
     void setButtons(const sRecordingButtons& buttons_);
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
 
-    void CB_cameraListUpdate(const std::vector<std::string>& urls_);
+    void onUpdateCameraList(const std::vector<std::string>& urls_);
     void CB_srvAvailable(bool available_);
 
   private slots:

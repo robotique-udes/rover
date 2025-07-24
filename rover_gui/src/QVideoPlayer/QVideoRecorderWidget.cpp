@@ -217,8 +217,9 @@ void QVideoRecorderWidget::onStopRecordingHandledSuccessfully(bool success_, con
     }
 }
 
-void QVideoRecorderWidget::CB_cameraListUpdate(const std::vector<std::string>& urls)
+void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& urls)
 {
+    /*
     for (const std::string& url : urls)
     {
         if (url == _camURL && _sButtons.startRecordingButton)
@@ -245,7 +246,7 @@ void QVideoRecorderWidget::CB_cameraListUpdate(const std::vector<std::string>& u
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
                                                                        error_message,
                                                                        QHelper::QToastNotification::eNotifType::WARNING);
-    }
+    }*/
 }
 
 void QVideoRecorderWidget::CB_srvAvailable(bool available_)
