@@ -25,7 +25,7 @@ class AntennaDriver
 
   public:
     AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_);
-    sCommandResult retrieveDatalinkInfos(sSignalInfos& msg_);
+    eAntennaCode retrieveDatalinkInfos(sSignalInfos& msg_);
 
   private:
     /**
@@ -33,7 +33,7 @@ class AntennaDriver
      *
      */
     void setupSession(void);
-    sCommandResult handleDisconnect(sSignalInfos& msg_);
+    eAntennaCode handleDisconnect(sSignalInfos& msg_);
 
     std::shared_ptr<cpr::Session> _session;
     uint64_t _publisherPeriodMs;

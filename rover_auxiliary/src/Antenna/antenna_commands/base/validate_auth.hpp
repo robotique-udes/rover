@@ -18,11 +18,11 @@ namespace Command::Base
       public:
         ValidateAuth(const std::string& apiUrl_);
         ~ValidateAuth() override = default;
-        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
+        eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
 
       private:
-        sCommandResult getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        sCommandResult validateFormat(const cpr::Response& response_, sSignalInfos& msg_);
+        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
+        eAntennaCode validateFormat(const cpr::Response& response_, sSignalInfos& msg_);
     };
 }  // namespace Command::Base
 
