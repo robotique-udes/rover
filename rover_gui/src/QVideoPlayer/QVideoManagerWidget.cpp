@@ -125,7 +125,7 @@ void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
     {
         if (widget && widget->getCamURL() == url)
         {
-            widget->displayDetectedArucos(detectedIds);
+            emit widget->displayDetectedArucos(detectedIds);
             emit widget->arucoCameraFailure(msg_.valid);
         }
     }

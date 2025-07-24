@@ -64,6 +64,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             this,
             &QVideoPlayerWidget::onArucoServerInfoFailed);
 
+    connect(this, &QVideoPlayerWidget::displayDetectedArucos, this, &QVideoPlayerWidget::onDisplayDetectedArucos);
+
     connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::updateCamURL);
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::setURLToDefault);
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
@@ -745,7 +747,7 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
     }
 }
 
-void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
+void QVideoPlayerWidget::onDisplayDetectedArucos(std::vector<uint16_t> ids_)
 {
     size_t nbr_ids_detected = ids_.size();
 
