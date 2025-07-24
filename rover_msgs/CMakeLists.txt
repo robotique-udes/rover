@@ -59,6 +59,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/WifiConnection.msg"
 
   "srv/AntennaArbitration.srv"
+  "srv/ArmJointConfig.srv"
   "srv/ArucoDetection.srv"
   "srv/CameraControl.srv"
   "srv/CompassCalibration.srv"
