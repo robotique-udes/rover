@@ -55,7 +55,7 @@ eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
         return eAntennaCode::FAILURE_ON_COOLDOWN;
     }
     _cooldownActive = false;
-    
+
     for (uint8_t loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && result != eAntennaCode::SUCCESS; loginAttempts++)
     {
         result = _login.execute(_session, msg_);

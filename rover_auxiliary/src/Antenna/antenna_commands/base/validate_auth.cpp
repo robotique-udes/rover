@@ -10,7 +10,7 @@ eAntennaCode Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session> 
 {
     cpr::Response response;
     eAntennaCode result = this->getHTTPS(session_, response);
-    //std::cout << response.text << std::endl;
+    // std::cout << response.text << std::endl;
     if (result != eAntennaCode::SUCCESS)
     {
         msg_ = sSignalInfos{};
