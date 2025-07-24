@@ -7,6 +7,8 @@
 class AntennaNode : public rclcpp::Node
 {
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
+    static constexpr const char* ANTENNA_BASE_USERNAME = "ROVER_ANTENNA_BASE_USERNAME";
+    static constexpr const char* ANTENNA_BASE_PASSWORD = "ROVER_ANTENNA_BASE_PASSWORD";
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 250UL;
 
   public:
@@ -17,7 +19,7 @@ class AntennaNode : public rclcpp::Node
      * @brief Loads the username and password variables from environment varibles
      */
     bool loadUserInfo(void);
-    void executeDriver(void);
+    void retrieveDriverInfos(void);
 
     std::unique_ptr<AntennaDriver> _driver;
 

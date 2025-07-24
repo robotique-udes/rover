@@ -3,7 +3,7 @@
 
 namespace
 {
-    rover_msgs::msg::AntennaStatus toRosMsg(const sAntennaMsg& msg_)
+    rover_msgs::msg::AntennaStatus toRosMsg(const sSignalInfos& msg_)
     {
         rover_msgs::msg::AntennaStatus rosMsg;
         rosMsg.connected = msg_.connected;
@@ -39,20 +39,21 @@ AntennaNode::AntennaNode():
         _timer_pubAntennaStatus = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                                           [this](void)
                                                           {
-                                                              this->executeDriver();
+                                                              this->retrieveDriverInfos();
                                                           });
     }
 }
 
 bool AntennaNode::loadUserInfo(void)
 {
-    const char* usernameEnv = std::getenv("ROVER_USERNAME");
-    const char* passwordEnv = std::getenv("ROVER_PASSWORD");
+    const char* usernameEnv = std::getenv(ANTENNA_BASE_USERNAME);
+    const char* passwordEnv = std::getenv(ANTENNA_BASE_PASSWORD);
 
     if (!usernameEnv || !passwordEnv)
     {
         RCLCPP_ERROR(this->get_logger(),
-                     "ROVER_USERNAME or ROVER_PASSWORD environment variable not set, see bashrc setup in rover doc");
+                     "ROVER_ANTENNA_BASE_USERNAME or ROVER_ANTENNA_BASE_PASSWORD environment variable not set, see bashrc setup "
+                     "in rover doc");
         return false;
     }
 
@@ -62,24 +63,37 @@ bool AntennaNode::loadUserInfo(void)
     return true;
 }
 
-void AntennaNode::executeDriver(void)
+void AntennaNode::retrieveDriverInfos(void)
 {
-    sAntennaMsg msg;
-    sCommandResult result;
-    result = _driver->ExecuteAntennaCommands(msg);
+    sSignalInfos msg;
+    eAntennaCode result;
+    result = _driver->retrieveDatalinkInfos(msg);
 
     rover_msgs::msg::AntennaStatus rosMsg = toRosMsg(msg);
     _pub_antennaStatus->publish(rosMsg);
 
-    if (!result.error.empty())
+    switch (result)
     {
-        if (result.success)
-        {
-            RCLCPP_INFO(this->get_logger(), "%s", result.error.c_str());
-        }
-        else
-        {
-            RCLCPP_ERROR(this->get_logger(), "%s", result.error.c_str());
-        }
+        case eAntennaCode::SUCCESS:
+            /*No log on success*/
+            break;
+        case eAntennaCode::FAILURE_DEVICE_OFFLINE:
+            RCLCPP_ERROR(this->get_logger(), "Base antenna is offline");
+            break;
+        case eAntennaCode::FAILURE_SESSION_EXPIRED:
+            RCLCPP_ERROR(this->get_logger(), "Access forbidden, check antenna connection or your credentials in doc");
+            break;
+        case eAntennaCode::FAILURE_PARSING_ERROR:
+            RCLCPP_ERROR(this->get_logger(),
+                         "Parsing error, wrong return type, probable cause: incorrect credentials. Refer to Documentation");
+            break;
+        case eAntennaCode::FAILURE_ON_COOLDOWN:
+            /*No log on cooldown*/
+            break;
+        case eAntennaCode::FAILURE_UNKNOWN:
+            [[fallthrough]];
+        default:
+            RCLCPP_ERROR(this->get_logger(), "Couln't retrieve data link info, unknown error");
+            break;
     }
 }

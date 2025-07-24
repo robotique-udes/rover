@@ -15,8 +15,7 @@
 class AntennaDriver
 {
   private:
-    static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL(Constants::AntennaInfo::eAntennaType::Base);
-    static_assert(BASE_URL != nullptr, "Base url can't be nullptr");
+    static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL<Constants::AntennaInfo::eAntennaType::Base>();
 
     static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;
@@ -26,7 +25,7 @@ class AntennaDriver
 
   public:
     AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_);
-    sCommandResult ExecuteAntennaCommands(sAntennaMsg& msg_);
+    eAntennaCode retrieveDatalinkInfos(sSignalInfos& msg_);
 
   private:
     /**
@@ -34,7 +33,7 @@ class AntennaDriver
      *
      */
     void setupSession(void);
-    sCommandResult handleDisconnect(sAntennaMsg& msg_);
+    eAntennaCode handleDisconnect(sSignalInfos& msg_);
 
     std::shared_ptr<cpr::Session> _session;
     uint64_t _publisherPeriodMs;

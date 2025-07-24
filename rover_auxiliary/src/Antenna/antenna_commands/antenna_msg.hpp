@@ -1,7 +1,7 @@
 #ifndef ANTENNA_MSG_HPP
 #define ANTENNA_MSG_HPP
 
-struct sAntennaMsg
+struct sSignalInfos
 {
     bool connected = false;
     float rssi = 0.0f;

@@ -1,15 +1,6 @@
 #include "antenna_driver.hpp"
 #include "rover_lib2/helpers/assert.hpp"
 
-namespace
-{
-    bool isAuthOrOfflineError(int status_)
-    {
-        return status_ == std::to_underlying(eHttpStatus::FORBIDDEN) || status_ == std::to_underlying(eHttpStatus::UNAUTHORIZED)
-               || status_ == std::to_underlying(eHttpStatus::OFFLINE);
-    }
-}  // namespace
-
 AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_):
     _session(std::make_shared<cpr::Session>()),
     _publisherPeriodMs(publisherPeriodMs_),
@@ -18,60 +9,63 @@ AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& use
 {
     this->setupSession();
 
-
     _commands[0] = (std::make_unique<Command::Base::ValidateAuth>(BASE_URL));
     _commands[1] = (std::make_unique<Command::Base::GetStatus>(BASE_URL));
     _commands[2] = (std::make_unique<Command::Base::GetInterfaceStats>(BASE_URL, _publisherPeriodMs));
 }
 
-sCommandResult AntennaDriver::ExecuteAntennaCommands(sAntennaMsg& msg_)
+eAntennaCode AntennaDriver::retrieveDatalinkInfos(sSignalInfos& msg_)
 {
-    sCommandResult result;
+    eAntennaCode result;
 
     for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
-        if (!result.success)
+        switch (result)
         {
-            if (isAuthOrOfflineError(result.httpStatus))
-            {
-                result = this->handleDisconnect(msg_);
-            }
-            else
-            {
-                msg_ = sAntennaMsg{};
-                msg_.connected = false;
-            }
+            case eAntennaCode::SUCCESS:
+                break;
 
-            return result;
+            case eAntennaCode::FAILURE_SESSION_EXPIRED:
+                [[fallthrough]];
+            case eAntennaCode::FAILURE_PARSING_ERROR:
+                [[fallthrough]];
+            case eAntennaCode::FAILURE_DEVICE_OFFLINE:
+                result = this->handleDisconnect(msg_);
+                return result;
+                break;
+            default:
+                msg_ = sSignalInfos{};
+                msg_.connected = false;
+                return result;
+                break;
         }
     }
 
     return result;
 }
 
-sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
+eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
 {
-    sCommandResult result;
+    eAntennaCode result = eAntennaCode::FAILURE_UNKNOWN;
     if (_cooldownActive && !_loginCooldownTimer.isReady())
     {
-        result.success = false;
-        msg_ = sAntennaMsg{};
+        msg_ = sSignalInfos{};
         msg_.connected = false;
-        return result;
+        return eAntennaCode::FAILURE_ON_COOLDOWN;
     }
     _cooldownActive = false;
 
-    for (uint8_t loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && !result.success; loginAttempts++)
+    for (uint8_t loginAttempts = 0; loginAttempts < MAX_LOGIN_ATTEMPTS && result != eAntennaCode::SUCCESS; loginAttempts++)
     {
         result = _login.execute(_session, msg_);
     }
 
-    if (!result.success)
+    if (result != eAntennaCode::SUCCESS)
     {
         _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
         _cooldownActive = true;
-        msg_ = sAntennaMsg{};
+        msg_ = sSignalInfos{};
         msg_.connected = false;
         return result;
     }
@@ -79,8 +73,10 @@ sCommandResult AntennaDriver::handleDisconnect(sAntennaMsg& msg_)
     for (const std::unique_ptr<AntennaCommand>& cmd : _commands)
     {
         result = cmd->execute(_session, msg_);
-        if (!result.success)
+        if (result != eAntennaCode::SUCCESS)
         {
+            _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
+            _cooldownActive = true;
             return result;
         }
     }

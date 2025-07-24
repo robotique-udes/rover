@@ -6,12 +6,11 @@ Command::Base::GetStatus::GetStatus(const std::string& apiUrl_):
 {
 }
 
-sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+eAntennaCode Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
 {
     cpr::Response response;
-    sCommandResult result = this->getHTTPS(session_, response);
-    result.httpStatus = response.status_code;
-    if (!result.success)
+    eAntennaCode result = this->getHTTPS(session_, response);
+    if (result != eAntennaCode::SUCCESS)
     {
         return result;
     }
@@ -20,44 +19,36 @@ sCommandResult Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> s
     return result;
 }
 
-sCommandResult Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
+eAntennaCode Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
-    sCommandResult result;
     session_->SetUrl(cpr::Url{this->getApiUrl() + STATUS_PAGE});
     response_ = session_->Get();
 
     switch (response_.status_code)
     {
         case std::to_underlying(eHttpStatus::OK):
-            result.success = true;
+            return eAntennaCode::SUCCESS;
             break;
 
         case std::to_underlying(eHttpStatus::FORBIDDEN):
             [[fallthrough]];
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
-            result.success = false;
-            result.error = "Session expired";
+            return eAntennaCode::FAILURE_SESSION_EXPIRED;
             break;
         case std::to_underlying(eHttpStatus::OFFLINE):
-            result.success = false;
-            result.error = "Antenna is offline";
+            return eAntennaCode::FAILURE_DEVICE_OFFLINE;
             break;
         default:
-            result.success = false;
-            result.error = "Unexpected HTTP status using GET stats.cgi: " + std::to_string(response_.status_code);
+            return eAntennaCode::FAILURE_UNKNOWN;
             break;
     }
-    return result;
 }
 
-sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
+eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& response_, sSignalInfos& msg_)
 {
-    sCommandResult result;
     if (response_.text.empty())
     {
-        result.success = false;
-        result.error = "Response was empty";
-        return result;
+        return eAntennaCode::FAILURE_PARSING_ERROR;
     }
 
     Json::Value root;
@@ -77,13 +68,10 @@ sCommandResult Command::Base::GetStatus::parseResponse(const cpr::Response& resp
                 msg_.rssi = rssi;
             }
         }
-        result.success = true;
+        return eAntennaCode::SUCCESS;
     }
     else
     {
-        result.success = false;
-        result.error = std::string("Failed to parse JSON: ") + errors
-                       + ", probable cause is invalid credentials, check your env variables";
+        return eAntennaCode::FAILURE_PARSING_ERROR;
     }
-    return result;
 }

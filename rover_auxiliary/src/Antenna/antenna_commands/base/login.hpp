@@ -19,10 +19,10 @@ namespace Command::Base
          * @note A true response only means the POST was successful not that the login was successful.
          * @note To check if credentials are valid use validateAuth  instead
          */
-        sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) override;
+        eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
 
       private:
-        sCommandResult postHTTPS(std::shared_ptr<cpr::Session> session_);
+        eAntennaCode postHTTPS(std::shared_ptr<cpr::Session> session_);
 
         std::string _username;
         std::string _password;

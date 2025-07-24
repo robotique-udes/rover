@@ -8,12 +8,11 @@ Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_, 
 {
 }
 
-sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_)
+eAntennaCode Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
 {
     cpr::Response response;
-    sCommandResult result = this->getHTTPS(session_, response);
-    result.httpStatus = response.status_code;
-    if (!result.success)
+    eAntennaCode result = this->getHTTPS(session_, response);
+    if (result != eAntennaCode::SUCCESS)
     {
         return result;
     }
@@ -22,44 +21,36 @@ sCommandResult Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Se
     return result;
 }
 
-sCommandResult Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
+eAntennaCode Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
 {
-    sCommandResult result;
     session_->SetUrl(cpr::Url{this->getApiUrl() + IFSTATS_PAGE});
     response_ = session_->Get();
 
     switch (response_.status_code)
     {
         case std::to_underlying(eHttpStatus::OK):
-            result.success = true;
+            return eAntennaCode::SUCCESS;
             break;
 
         case std::to_underlying(eHttpStatus::FORBIDDEN):
             [[fallthrough]];
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
-            result.success = false;
-            result.error = "Session expired";
+            return eAntennaCode::FAILURE_SESSION_EXPIRED;
             break;
         case std::to_underlying(eHttpStatus::OFFLINE):
-            result.success = false;
-            result.error = "Antenna is offline";
+            return eAntennaCode::FAILURE_DEVICE_OFFLINE;
             break;
         default:
-            result.success = false;
-            result.error = "Unexpected HTTP status using GET stats.cgi: " + std::to_string(response_.status_code);
+            return eAntennaCode::FAILURE_UNKNOWN;
             break;
     }
-    return result;
 }
 
-sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_, sAntennaMsg& msg_)
+eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_, sSignalInfos& msg_)
 {
-    sCommandResult result;
     if (response_.text.empty())
     {
-        result.success = false;
-        result.error = "Response was empty";
-        return result;
+        return eAntennaCode::FAILURE_PARSING_ERROR;
     }
 
     Json::Value root;
@@ -85,9 +76,7 @@ sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Respon
                     {
                         if (!updateRate(stats[JSON_FIELD_RX_BYTES].asString(), _wlanRxBytes, msg_.rxRate))
                         {
-                            result.success = false;
-                            result.error = "Failed to parse rx_bytes";
-                            return result;
+                            return eAntennaCode::FAILURE_PARSING_ERROR;
                         }
                     }
 
@@ -95,22 +84,18 @@ sCommandResult Command::Base::GetInterfaceStats::parseResponse(const cpr::Respon
                     {
                         if (!updateRate(stats[JSON_FIELD_TX_BYTES].asString(), _wlanTxBytes, msg_.txRate))
                         {
-                            result.success = false;
-                            result.error = "Failed to parse tx_bytes";
-                            return result;
+                            return eAntennaCode::FAILURE_PARSING_ERROR;
                         }
                     }
                 }
             }
         }
-        result.success = true;
+        return eAntennaCode::SUCCESS;
     }
     else
     {
-        result.success = false;
-        result.error = "Unabble to parse JSON for ifStats";
+        return eAntennaCode::FAILURE_PARSING_ERROR;
     }
-    return result;
 }
 
 bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_)

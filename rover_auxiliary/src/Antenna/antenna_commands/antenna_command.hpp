@@ -3,11 +3,14 @@
 #include <cpr/cpr.h>
 #include "antenna_msg.hpp"
 
-struct sCommandResult
+enum class eAntennaCode : uint8_t
 {
-    bool success = false;
-    std::string error;
-    uint16_t httpStatus = 0;
+    SUCCESS = 0,
+    FAILURE_DEVICE_OFFLINE,
+    FAILURE_SESSION_EXPIRED,
+    FAILURE_PARSING_ERROR,
+    FAILURE_ON_COOLDOWN,
+    FAILURE_UNKNOWN
 };
 
 enum class eHttpStatus : uint16_t
@@ -30,10 +33,10 @@ class AntennaCommand
     {
     }
     virtual ~AntennaCommand() = default;
-    virtual sCommandResult execute(std::shared_ptr<cpr::Session> session_, sAntennaMsg& msg_) = 0;
+    virtual eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) = 0;
 
   protected:
-    const std::string& getApiUrl(void) const
+    std::string getApiUrl(void) const
     {
         return _apiUrl;
     }
