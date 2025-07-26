@@ -6,8 +6,9 @@ ArmJoint::ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
                    uint8_t rosArmSpeedMsgId_,
                    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>> rosSharedMsg_):
     DeviceT(deviceId_,
-            RoverCan2::Publisher<RoverCan2::Msgs::ArmSpeedCmd>(),
-            RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus)),
+            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>(),
+            RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus),
+            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>()),
     _rosArmSpeedMsgId(rosArmSpeedMsgId_),
     _rosSharedMsg(rosSharedMsg_)
 {
@@ -32,6 +33,13 @@ void ArmJoint::rosElementInit(void)
                                                                                 {
                                                                                     this->CB_ROS_armSpeedCmd(rosMsg_);
                                                                                 });
+    _srv_ArmJointsConfig = this->getAttachedNode()->create_service<rover_msgs::srv::ArmJointConfig>(
+        ARM_JOINTS_CONFIG_SERVICE_NAME,
+        [this](const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
+               std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_)
+        {
+            this->CB_SRV_armJointsConfig(request_, response_);
+        });
 }
 
 void ArmJoint::rosElementClean(void)
@@ -49,6 +57,11 @@ void ArmJoint::rosElementClean(void)
     {
         _sub_ArmPositionStatus.reset();
     }
+
+    if (_srv_ArmJointsConfig)
+    {
+        _srv_ArmJointsConfig.reset();
+    }
 }
 
 std::vector<RoverCan2::Constant::eDeviceId> ArmJoint::getManagedDevicesIds(void)
@@ -56,14 +69,56 @@ std::vector<RoverCan2::Constant::eDeviceId> ArmJoint::getManagedDevicesIds(void)
     return {this->getCanId()};
 }
 
-void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmPositionStatus& msg_)
+void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmJointStatus& msg_)
 {
-    _rosSharedMsg->get().getThreadSafeAccess().current_position[_rosArmSpeedMsgId] = msg_.getData().current_position;
+    _rosSharedMsg->get().getThreadSafeAccess().current_position[_rosArmSpeedMsgId] = msg_.getData().currentPosition;
+    _rosSharedMsg->get().getThreadSafeAccess().current_speed[_rosArmSpeedMsgId] = msg_.getData().currentSpeed;
 }
 
 void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
 {
     _nextArmCmdMsg.data().targetSpeed = rosMsg_.target_speed[_rosArmSpeedMsgId];
+}
+
+void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
+                                      std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_)
+{
+    if (std::find(VALID_IDS.begin(), VALID_IDS.end(), request_->can_id) == VALID_IDS.end())
+    {
+        response_->success = false;
+        response_->message = "Invalid can id";
+    }
+    else if (request_->can_id == std::to_underlying(this->getCanId()))
+    {
+        _nextArmConfigMsg.data().upperLimit = request_->upper_limit;
+        _nextArmConfigMsg.data().lowerLimit = request_->lower_limit;
+        _nextArmConfigMsg.data().maxSpeed = request_->max_speed;
+        _nextArmConfigMsg.data().kpSpeed = request_->kp_speed;
+        _nextArmConfigMsg.data().kiSpeed = request_->ki_speed;
+        _nextArmConfigMsg.data().kdSpeed = request_->kd_speed;
+
+        eReturnValue result = this->sendMsg(_nextArmConfigMsg);
+
+        switch (result)
+        {
+            case eReturnValue::SUCCESS:
+                response_->success = true;
+                response_->message = "Message sent";
+                break;
+            case eReturnValue::FAILED:
+                response_->success = false;
+                response_->message = "Failed to send the message";
+                break;
+            case eReturnValue::NOT_CONCERNED:
+                response_->success = false;
+                response_->message = "No message sent, not concerned";
+                break;
+            default:
+                response_->success = false;
+                response_->message = "Unknown error";
+                break;
+        }
+    }
 }
 
 void ArmJoint::CB_ROS_canSend(void)

@@ -81,7 +81,6 @@ namespace RoverCan2
          * to sendPubsQueuedMsgs().
          * @attention It's suggested to let the Manager call the sendPubsQueuedMsgs in its update() loop instead of doing it
          * manually. The manager needs to be passed to the function anyway.
-         * @attention [WARNING] Internal use only
          */
         template<typename MsgT>
         eReturnValue sendMsg(const MsgT& msg_)
@@ -118,6 +117,7 @@ namespace RoverCan2
          * @brief Sends all the device's publishers queued msgs.
          * @attention It's suggested to let the Manager call this method in it's update() loop instead of doing it
          * manually.
+         * @attention [WARNING] Internal use only
          */
         template<typename ManagerT>
         bool sendPubsQueuedMsgs(ManagerT& manager_)
