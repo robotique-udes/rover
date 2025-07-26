@@ -110,7 +110,6 @@ namespace CameraManager
             std::optional<rover_msgs::msg::CameraControl> cmd = _arbitration.getValidPTZConfig(i);
             if (cmd.has_value())
             {
-                // config msg
                 size_t id = cmd.value().id_cam;
                 float yaw = cmd.value().yaw;
                 RCLCPP_INFO(this->get_logger(), "ID: %ld, YAW: %f", id, yaw);

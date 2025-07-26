@@ -22,12 +22,12 @@ namespace CameraManager
         static constexpr float SEND_PTZ_CONFIG_FREQUENCY = .5F;
         static constexpr float SEND_POWER_COMMAND_FREQUENCY = .5F;
 
-        static constexpr const char* TOPIC_PTZ_COMMAND_MANAGER = "rover/camera/PTZ_cmd/manager";
-        static constexpr const char* TOPIC_PTZ_CONFIG_MANAGER = "rover/camera/PTZ_config/manager";
-        static constexpr const char* TOPIC_POWER_COMMAND_MANAGER = "rover/camera/power_cmd/manager";
+        static constexpr const char* TOPIC_PTZ_COMMAND_MANAGER = "/rover/camera/PTZ_cmd/manager";
+        static constexpr const char* TOPIC_PTZ_CONFIG_MANAGER = "/rover/camera/PTZ_config/manager";
+        static constexpr const char* TOPIC_POWER_COMMAND_MANAGER = "/rover/camera/power_cmd/manager";
 
-        static constexpr const char* TOPIC_PTZ_STATUS = "rover/camera/PTZ_status";
-        static constexpr const char* TOPIC_POWWE_STATUS = "rover/camera/PTZ_status";
+        static constexpr const char* TOPIC_PTZ_STATUS = "/rover/camera/PTZ_status";
+        static constexpr const char* TOPIC_POWWE_STATUS = "/rover/camera/power_status";
 
       public:
         ManagerNode();

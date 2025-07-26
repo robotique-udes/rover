@@ -17,9 +17,9 @@ namespace CameraManager
         static constexpr const size_t HIGH_PRIORITY_MISSING_MSG_SAFETY_FACTOR = 2;
 
       public:
-        static constexpr const char* PTZ_CMD_TOPIC[NUMBER_TOPIC] = {"rover/camera/PTZ_cmd/panorama", "rover/camera/PTZ_cmd/GUI"};
-        static constexpr const char* PTZ_CONFIG_TOPIC[NUMBER_TOPIC] = {"rover/camera/PTZ_config/panorama", "rover/camera/PTZ_config/GUI"};
-        static constexpr const char* POWER_CMD_TOPIC[NUMBER_TOPIC] = {"rover/camera/power_cmd/panorama", "rover/camera/power_cmd/GUI"};
+        static constexpr const char* PTZ_CMD_TOPIC[NUMBER_TOPIC] = {"/rover/camera/PTZ_cmd/panorama", "/rover/camera/PTZ_cmd/GUI"};
+        static constexpr const char* PTZ_CONFIG_TOPIC[NUMBER_TOPIC] = {"/rover/camera/PTZ_config/panorama", "/rover/camera/PTZ_config/GUI"};
+        static constexpr const char* POWER_CMD_TOPIC[NUMBER_TOPIC] = {"/rover/camera/power_cmd/panorama", "/rover/camera/power_cmd/GUI"};
 
         Arbitration();
 

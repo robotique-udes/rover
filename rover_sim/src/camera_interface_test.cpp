@@ -10,13 +10,13 @@
 
 class CameraInterfaceTest : public rclcpp::Node
 {
-    static constexpr const char* TOPIC_SEND_PTZ_COMMAND_PANORAMA = "rover/camera/PTZ_cmd/panorama";
-    static constexpr const char* TOPIC_SEND_CONFIG_COMMAND_PANORAMA = "rover/camera/PTZ_config/panorama";
-    static constexpr const char* TOPIC_SEND_POWER_COMMAND_PANORAMA = "rover/camera/power_cmd/panorama";
+    static constexpr const char* TOPIC_SEND_PTZ_COMMAND_PANORAMA = "/rover/camera/PTZ_cmd/panorama";
+    static constexpr const char* TOPIC_SEND_CONFIG_COMMAND_PANORAMA = "/rover/camera/PTZ_config/panorama";
+    static constexpr const char* TOPIC_SEND_POWER_COMMAND_PANORAMA = "/rover/camera/power_cmd/panorama";
 
-    static constexpr const char* TOPIC_SEND_PTZ_COMMAND_GUI = "rover/camera/PTZ_cmd/GUI";
-    static constexpr const char* TOPIC_SEND_CONFIG_COMMAND_GUI = "rover/camera/PTZ_config/GUI";
-    static constexpr const char* TOPIC_SEND_POWER_COMMAND_GUI = "rover/camera/power_cmd/GUI";
+    static constexpr const char* TOPIC_SEND_PTZ_COMMAND_GUI = "/rover/camera/PTZ_cmd/GUI";
+    static constexpr const char* TOPIC_SEND_CONFIG_COMMAND_GUI = "/rover/camera/PTZ_config/GUI";
+    static constexpr const char* TOPIC_SEND_POWER_COMMAND_GUI = "/rover/camera/power_cmd/GUI";
 
     static constexpr const size_t TEST_CAM_A_ID = 0;
     static constexpr const size_t TEST_CAM_B_ID = 3;
@@ -64,7 +64,7 @@ class CameraInterfaceTest : public rclcpp::Node
             rover_msgs::msg::CameraControl msg;
             size_t id = TEST_CAM_A_ID;
             msg.id_cam = id;
-            msg.yaw = 3;
+            msg.yaw = 1;
             _testCameraInterfaceGUI->setPTZCmd(msg, id);
         }
     }
@@ -83,7 +83,7 @@ class CameraInterfaceTest : public rclcpp::Node
                 rover_msgs::msg::CameraControl msg;
                 size_t id = TEST_CAM_B_ID;
                 msg.id_cam = id;
-                msg.yaw = 22;
+                msg.yaw = 4;
                 _testCameraInterfacePanorama->setPTZCmd(msg, TEST_CAM_B_ID);
             }
             else
@@ -92,7 +92,7 @@ class CameraInterfaceTest : public rclcpp::Node
                 rover_msgs::msg::CameraControl msg;
                 size_t id = TEST_CAM_B_ID;
                 msg.id_cam = id;
-                msg.yaw = 14;
+                msg.yaw = 2;
                 _testCameraInterfaceGUI->setPTZCmd(msg, TEST_CAM_B_ID);
                 RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "Cam %ld SHOULD SWITCH DOWN TO PRIORITY TO GUI", TEST_CAM_B_ID);
             }
