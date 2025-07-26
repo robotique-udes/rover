@@ -20,8 +20,6 @@ namespace CameraManager
     {
         size_t index = 0;
 
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "1");
-
         for (auto& subscriber : _sub_PTZCmd)
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
@@ -33,25 +31,21 @@ namespace CameraManager
                 });
             ++index;
         }
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "2");
 
         index = 0;
 
         for (auto& subscriber : _sub_PTZConfig)
         {
-            RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "for loop");
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
                 Arbitration::PTZ_CONFIG_TOPIC[index],
                 QOS_DEFAULT,
                 [this](const rover_msgs::msg::CameraControl& PTZConfig_)
                 {
-                    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "lamda");
                     this->_arbitration.CB_PTZConfigFiltering(PTZConfig_);
                 });
             ++index;
         }
 
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "3");
 
         index = 0;
         for (auto& subscriber : _sub_powerCmd)
@@ -65,8 +59,6 @@ namespace CameraManager
                 });
             ++index;
         }
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "4");
-        
 
         _publisher_filteredPTZCmd
             = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_COMMAND_MANAGER, QOS_DEFAULT);

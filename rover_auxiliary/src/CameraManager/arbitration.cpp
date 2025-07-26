@@ -39,7 +39,6 @@ namespace CameraManager
         }
     }
 
-
     void Arbitration::CB_PTZCmdFiltering(rover_msgs::msg::CameraControl PTZcmd_, size_t priority)
     {
         size_t id = PTZcmd_.id_cam;
@@ -76,23 +75,15 @@ namespace CameraManager
                             id);
             }
             return;
-
         }
 
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"), "RESET ");
         _missingHighPriorityMsg.at(id) = 0;
         _lastValidPTZcmd.at(id) = PTZcmd_;
     }
 
     void Arbitration::CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_)
     {
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "ptz config filtering");
-
         size_t id = PTZConfig_.id_cam;
-
         _highestPriorityLevelPtzConfig.at(id) = _highestPriorityLevelPtzCmd.at(id);
-
-        RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "filtering end");
-
     }
 }  // namespace CameraManager

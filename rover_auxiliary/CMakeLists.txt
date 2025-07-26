@@ -21,7 +21,6 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 
 add_executable(camera_manager src/CameraManager/manager_node.cpp
-                              src/CameraManager/goal_manager.cpp
                               src/CameraManager/arbitration.cpp)
 
 ament_target_dependencies(ddb_control

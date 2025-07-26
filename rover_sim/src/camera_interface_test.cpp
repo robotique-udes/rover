@@ -94,7 +94,7 @@ class CameraInterfaceTest : public rclcpp::Node
                 msg.id_cam = id;
                 msg.yaw = 14;
                 _testCameraInterfaceGUI->setPTZCmd(msg, TEST_CAM_B_ID);
-                RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "Cam %ld SHOULD SWITCH DOWN PRIORITY TO GUI", TEST_CAM_B_ID);
+                RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "Cam %ld SHOULD SWITCH DOWN TO PRIORITY TO GUI", TEST_CAM_B_ID);
             }
         }
         simulationSwippingIndex++;

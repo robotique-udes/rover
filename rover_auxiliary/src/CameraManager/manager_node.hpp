@@ -1,7 +1,6 @@
 #ifndef MANAGER_NODE_HPP
 #define MANAGER_NODE_HPP
 
-#include "goal_manager.hpp"
 #include "arbitration.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include <rclcpp/node.hpp>
@@ -28,7 +27,7 @@ namespace CameraManager
         static constexpr const char* TOPIC_POWER_COMMAND_MANAGER = "rover/camera/power_cmd/manager";
 
         static constexpr const char* TOPIC_PTZ_STATUS = "rover/camera/PTZ_status";
-
+        static constexpr const char* TOPIC_POWWE_STATUS = "rover/camera/PTZ_status";
 
       public:
         ManagerNode();
