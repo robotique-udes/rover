@@ -1,7 +1,7 @@
 #ifndef ANTENNA_COMMAND_HPP
 #define ANTENNA_COMMAND_HPP
-#include <cpr/cpr.h>
 #include "antenna_msg.hpp"
+#include <string>
 
 enum class eAntennaCode : uint8_t
 {
@@ -33,7 +33,7 @@ class AntennaCommand
     {
     }
     virtual ~AntennaCommand() = default;
-    virtual eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) = 0;
+    virtual eAntennaCode execute(void) = 0;
 
   protected:
     std::string getApiUrl(void) const

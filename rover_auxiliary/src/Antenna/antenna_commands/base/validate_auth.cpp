@@ -1,29 +1,27 @@
 #include "validate_auth.hpp"
 #include <json/json.h>
 
-Command::Base::ValidateAuth::ValidateAuth(const std::string& apiUrl_):
-    AntennaCommand(apiUrl_)
+Command::Base::ValidateAuth::ValidateAuth(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_):
+    AntennaCommand(apiUrl_), _session(session_)
 {
 }
 
-eAntennaCode Command::Base::ValidateAuth::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
+eAntennaCode Command::Base::ValidateAuth::execute(void)
 {
     cpr::Response response;
-    eAntennaCode result = this->getHTTPS(session_, response);
+    eAntennaCode result = this->getHTTPS(_session, response);
     // std::cout << response.text << std::endl;
     if (result != eAntennaCode::SUCCESS)
     {
-        msg_ = sSignalInfos{};
-        msg_.connected = false;
+        _connected = false;
         return result;
     }
 
-    result = this->validateFormat(response, msg_);
+    result = this->validateFormat(response);
 
     if (result != eAntennaCode::SUCCESS)
     {
-        msg_ = sSignalInfos{};
-        msg_.connected = false;
+        _connected = false;
     }
     return result;
 }
@@ -54,7 +52,7 @@ eAntennaCode Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Session>
     }
 }
 
-eAntennaCode Command::Base::ValidateAuth::validateFormat(const cpr::Response& response_, sSignalInfos& msg_)
+eAntennaCode Command::Base::ValidateAuth::validateFormat(const cpr::Response& response_)
 {
     if (response_.text.empty())
     {
@@ -68,11 +66,16 @@ eAntennaCode Command::Base::ValidateAuth::validateFormat(const cpr::Response& re
 
     if (Json::parseFromStream(builder, stream, &root, &errors) && root.isMember(JSON_FIELD_WIRELESS))
     {
-        msg_.connected = true;
+        _connected = true;
         return eAntennaCode::SUCCESS;
     }
     else
     {
         return eAntennaCode::FAILURE_PARSING_ERROR;
     }
+}
+
+bool Command::Base::ValidateAuth::getConnectedStatus(void)
+{
+    return _connected;
 }

@@ -29,7 +29,7 @@ AntennaNode::AntennaNode():
 {
     _pub_antennaStatus = this->create_publisher<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS, QOS_DEFAULT);
 
-    if (!loadUserInfo())
+    if (!this->loadUserInfo())
     {
         RCLCPP_ERROR(this->get_logger(), "Antenna credentials where not found in ENV, check your baschrc");
     }
@@ -39,7 +39,7 @@ AntennaNode::AntennaNode():
         _timer_pubAntennaStatus = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                                           [this](void)
                                                           {
-                                                              this->retrieveDriverInfos();
+                                                              this->retrieveDriverInfosAndPublish();
                                                           });
     }
 }
@@ -63,7 +63,7 @@ bool AntennaNode::loadUserInfo(void)
     return true;
 }
 
-void AntennaNode::retrieveDriverInfos(void)
+void AntennaNode::retrieveDriverInfosAndPublish(void)
 {
     sSignalInfos msg;
     eAntennaCode result;

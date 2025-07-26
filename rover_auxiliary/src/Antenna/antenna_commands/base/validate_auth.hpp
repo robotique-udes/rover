@@ -2,6 +2,7 @@
 #define VALIDATE_AUTH_HPP
 
 #include "../antenna_command.hpp"
+#include <cpr/cpr.h>
 
 namespace Command::Base
 {
@@ -16,13 +17,16 @@ namespace Command::Base
         static constexpr char const* JSON_FIELD_WIRELESS = "wireless";
 
       public:
-        ValidateAuth(const std::string& apiUrl_);
+        ValidateAuth(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_);
         ~ValidateAuth() override = default;
-        eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
+        eAntennaCode execute(void) override;
+        bool getConnectedStatus(void);
 
       private:
+        std::shared_ptr<cpr::Session> _session;
         eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        eAntennaCode validateFormat(const cpr::Response& response_, sSignalInfos& msg_);
+        eAntennaCode validateFormat(const cpr::Response& response_);
+        bool _connected = false;
     };
 }  // namespace Command::Base
 

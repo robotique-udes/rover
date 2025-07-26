@@ -19,7 +19,7 @@ class AntennaNode : public rclcpp::Node
      * @brief Loads the username and password variables from environment varibles
      */
     bool loadUserInfo(void);
-    void retrieveDriverInfos(void);
+    void retrieveDriverInfosAndPublish(void);
 
     std::unique_ptr<AntennaDriver> _driver;
 

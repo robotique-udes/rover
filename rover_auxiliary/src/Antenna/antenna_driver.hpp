@@ -39,7 +39,10 @@ class AntennaDriver
     uint64_t _publisherPeriodMs;
 
     Command::Base::Login _login;
-    std::array<std::unique_ptr<AntennaCommand>, 3> _commands;
+    std::shared_ptr<Command::Base::ValidateAuth> _validateAuth;
+    std::shared_ptr<Command::Base::GetStatus> _getStatus;
+    std::shared_ptr<Command::Base::GetInterfaceStats> _getInterfaceStats;
+    std::array<std::weak_ptr<AntennaCommand>, 3> _commands;
 
     OneShotTimer<uint64_t, &Time::millis> _loginCooldownTimer;
     bool _cooldownActive = false;

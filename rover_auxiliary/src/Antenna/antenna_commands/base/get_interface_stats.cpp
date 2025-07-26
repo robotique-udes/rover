@@ -2,22 +2,23 @@
 #include <json/json.h>
 #include <charconv>
 
-Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_):
+Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_, std::shared_ptr<cpr::Session> session_):
     AntennaCommand(apiUrl_),
+    _session(session_),
     _publisherPeriodMs(publisherPeriodMs_)
 {
 }
 
-eAntennaCode Command::Base::GetInterfaceStats::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
+eAntennaCode Command::Base::GetInterfaceStats::execute(void)
 {
     cpr::Response response;
-    eAntennaCode result = this->getHTTPS(session_, response);
+    eAntennaCode result = this->getHTTPS(_session, response);
     if (result != eAntennaCode::SUCCESS)
     {
         return result;
     }
 
-    result = this->parseResponse(response, msg_);
+    result = this->parseResponse(response);
     return result;
 }
 
@@ -46,7 +47,7 @@ eAntennaCode Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Ses
     }
 }
 
-eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_, sSignalInfos& msg_)
+eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response& response_)
 {
     if (response_.text.empty())
     {
@@ -74,7 +75,7 @@ eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response
 
                     if (stats.isMember(JSON_FIELD_RX_BYTES))
                     {
-                        if (!updateRate(stats[JSON_FIELD_RX_BYTES].asString(), _wlanRxBytes, msg_.rxRate))
+                        if (!updateRate(stats[JSON_FIELD_RX_BYTES].asString(), _wlanRxBytes, _rxRate))
                         {
                             return eAntennaCode::FAILURE_PARSING_ERROR;
                         }
@@ -82,7 +83,7 @@ eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response
 
                     if (stats.isMember(JSON_FIELD_TX_BYTES))
                     {
-                        if (!updateRate(stats[JSON_FIELD_TX_BYTES].asString(), _wlanTxBytes, msg_.txRate))
+                        if (!updateRate(stats[JSON_FIELD_TX_BYTES].asString(), _wlanTxBytes, _txRate))
                         {
                             return eAntennaCode::FAILURE_PARSING_ERROR;
                         }
@@ -110,4 +111,14 @@ bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, u
         return true;
     }
     return false;
+}
+
+float Command::Base::GetInterfaceStats::getRxRate(void)
+{
+    return _rxRate;
+}
+
+float Command::Base::GetInterfaceStats::getTxRate(void)
+{
+    return _txRate;
 }
