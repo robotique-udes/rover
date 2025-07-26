@@ -15,7 +15,7 @@
 class AntennaDriver
 {
   private:
-    static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL<Constants::AntennaInfo::eAntennaType::Base>();
+    static constexpr const char* BASE_URL = Constants::AntennaInfo::getURL<Constants::AntennaInfo::eAntennaType::BASE>();
 
     static constexpr const char* HTTP_CIPHER = "DEFAULT@SECLEVEL=1";
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;
@@ -39,7 +39,10 @@ class AntennaDriver
     uint64_t _publisherPeriodMs;
 
     Command::Base::Login _login;
-    std::array<std::unique_ptr<AntennaCommand>, 3> _commands;
+    std::shared_ptr<Command::Base::ValidateAuth> _validateAuth;
+    std::shared_ptr<Command::Base::GetStatus> _getStatus;
+    std::shared_ptr<Command::Base::GetInterfaceStats> _getInterfaceStats;
+    std::array<std::weak_ptr<AntennaCommand>, 3> _commands;
 
     OneShotTimer<uint64_t, &Time::millis> _loginCooldownTimer;
     bool _cooldownActive = false;

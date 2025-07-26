@@ -1,21 +1,22 @@
 #include "get_status.hpp"
 #include <json/json.h>
 
-Command::Base::GetStatus::GetStatus(const std::string& apiUrl_):
-    AntennaCommand(apiUrl_)
+Command::Base::GetStatus::GetStatus(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_):
+    AntennaCommand(apiUrl_),
+    _session(session_)
 {
 }
 
-eAntennaCode Command::Base::GetStatus::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
+eAntennaCode Command::Base::GetStatus::execute(void)
 {
     cpr::Response response;
-    eAntennaCode result = this->getHTTPS(session_, response);
+    eAntennaCode result = this->getHTTPS(_session, response);
     if (result != eAntennaCode::SUCCESS)
     {
         return result;
     }
 
-    result = this->parseResponse(response, msg_);
+    result = this->parseResponse(response);
     return result;
 }
 
@@ -44,7 +45,7 @@ eAntennaCode Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> se
     }
 }
 
-eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& response_, sSignalInfos& msg_)
+eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& response_)
 {
     if (response_.text.empty())
     {
@@ -64,8 +65,7 @@ eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& respon
 
             if (wireless.isMember(JSON_FIELD_RSSI))
             {
-                float rssi = wireless[JSON_FIELD_RSSI].asFloat();
-                msg_.rssi = rssi;
+                _rssi = wireless[JSON_FIELD_RSSI].asFloat();
             }
         }
         return eAntennaCode::SUCCESS;
@@ -74,4 +74,9 @@ eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& respon
     {
         return eAntennaCode::FAILURE_PARSING_ERROR;
     }
+}
+
+float Command::Base::GetStatus::getRssi(void)
+{
+    return _rssi;
 }

@@ -1,15 +1,18 @@
 #include "login.hpp"
-Command::Base::Login::Login(const std::string& apiUrl_, const std::string& username_, const std::string& password_):
+Command::Base::Login::Login(const std::string& apiUrl_,
+                            const std::string& username_,
+                            const std::string& password_,
+                            std::shared_ptr<cpr::Session> session_):
     AntennaCommand(apiUrl_),
+    _session(session_),
     _username(username_),
     _password(password_)
 {
 }
 
-eAntennaCode Command::Base::Login::execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_)
+eAntennaCode Command::Base::Login::execute(void)
 {
-    (void)msg_;
-    return this->postHTTPS(session_);
+    return this->postHTTPS(_session);
 }
 
 eAntennaCode Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> session_)

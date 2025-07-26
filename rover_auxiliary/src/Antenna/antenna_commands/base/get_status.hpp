@@ -3,6 +3,7 @@
 
 #include "../antenna_command.hpp"
 #include <string>
+#include <cpr/cpr.h>
 
 namespace Command::Base
 {
@@ -18,13 +19,17 @@ namespace Command::Base
         static constexpr char const* JSON_FIELD_RSSI = "rssi";
 
       public:
-        GetStatus(const std::string& apiUrl_);
+        GetStatus(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_);
         ~GetStatus() override = default;
-        eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
+        eAntennaCode execute(void) override;
+        float getRssi(void);
 
       private:
         eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        eAntennaCode parseResponse(const cpr::Response& response_, sSignalInfos& msg_);
+        eAntennaCode parseResponse(const cpr::Response& response_);
+
+        std::shared_ptr<cpr::Session> _session;
+        float _rssi = 0.0f;
     };
 
 }  // namespace Command::Base

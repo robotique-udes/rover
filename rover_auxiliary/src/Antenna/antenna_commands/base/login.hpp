@@ -2,6 +2,7 @@
 #define LOGIN_BASE_HPP
 #include <string>
 #include "../antenna_command.hpp"
+#include <cpr/cpr.h>
 
 namespace Command::Base
 {
@@ -11,7 +12,10 @@ namespace Command::Base
         static constexpr const char* LOGIN_PAGE = "/login.cgi";
 
       public:
-        Login(const std::string& apiUrl_, const std::string& username_, const std::string& password_);
+        Login(const std::string& apiUrl_,
+              const std::string& username_,
+              const std::string& password_,
+              std::shared_ptr<cpr::Session> session_);
         ~Login() override = default;
         /**
          * @brief POSTs the username and password on the antenna's login page
@@ -19,11 +23,12 @@ namespace Command::Base
          * @note A true response only means the POST was successful not that the login was successful.
          * @note To check if credentials are valid use validateAuth  instead
          */
-        eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
+        eAntennaCode execute(void) override;
 
       private:
         eAntennaCode postHTTPS(std::shared_ptr<cpr::Session> session_);
 
+        std::shared_ptr<cpr::Session> _session;
         std::string _username;
         std::string _password;
     };

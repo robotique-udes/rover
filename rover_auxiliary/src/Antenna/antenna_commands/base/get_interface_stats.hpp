@@ -3,6 +3,7 @@
 
 #include "../antenna_command.hpp"
 #include <string>
+#include <cpr/cpr.h>
 
 namespace Command::Base
 {
@@ -22,14 +23,18 @@ namespace Command::Base
         static constexpr uint8_t INTERFACE_LAN_INDEX = 1;
 
       public:
-        GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_);
+        GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_, std::shared_ptr<cpr::Session> session_);
         ~GetInterfaceStats() override = default;
-        eAntennaCode execute(std::shared_ptr<cpr::Session> session_, sSignalInfos& msg_) override;
+        eAntennaCode execute(void) override;
+        float getRxRate(void);
+        float getTxRate(void);
 
       private:
         eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
-        eAntennaCode parseResponse(const cpr::Response& response_, sSignalInfos& msg_);
+        eAntennaCode parseResponse(const cpr::Response& response_);
         bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_);
+
+        std::shared_ptr<cpr::Session> _session;
 
         uint8_t _loginAttempts = 0;
         uint64_t _lanRxBytes = 0;
@@ -37,6 +42,9 @@ namespace Command::Base
         uint64_t _wlanRxBytes = 0;
         uint64_t _wlanTxBytes = 0;
         uint64_t _publisherPeriodMs;
+
+        float _rxRate = 0.0f;
+        float _txRate = 0.0f;
     };
 
 }  // namespace Command::Base
