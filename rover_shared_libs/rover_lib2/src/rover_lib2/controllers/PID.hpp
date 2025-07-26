@@ -40,7 +40,7 @@ namespace Controllers
                 return _lastcmd;
             }
 
-            if (IN_ERROR(input_, _errorTolerance, target_))
+            if (IN_ERROR(target_, _errorTolerance, 0.0F))
             {
                 return 0.0F;
             }
@@ -51,14 +51,14 @@ namespace Controllers
             float error = target_ - input_;
             if (std::isnan(error))
             {
-                error = 0.0f;
+                error = 0.0F;
             }
             if (std::isinf(error))
             {
                 error = std::numeric_limits<float>::max();
             }
 
-            float cmdD = 0.0f;
+            float cmdD = 0.0F;
             float dtSec = static_cast<float>(dt) / 1'000'000.0f;
             if (dtSec != 0.0F)
             {
@@ -69,6 +69,12 @@ namespace Controllers
             {
                 cmdD = 0.0F;
             }
+
+            if ((_lastTarget < 0.0F && target_ > 0.0F) || (_lastTarget > 0.0F && target_ < 0.0F))
+            {
+                _cmdI = -_cmdI;
+            }
+            _lastTarget = target_;
 
             _cmdI += _ki * error;
             _cmdI = std::clamp(_cmdI, -_integralLimit, _integralLimit);
@@ -119,9 +125,10 @@ namespace Controllers
 
         const float _errorTolerance;
 
-        float _lastcmd = 0.0f;
-        float _cmdI = 0.0f;
-        float _previousError = 0.0f;
+        float _lastTarget = 0.0F;
+        float _lastcmd = 0.0F;
+        float _cmdI = 0.0F;
+        float _previousError = 0.0F;
         uint64_t _lastMeasureTime = Time::micros();
     };
 
