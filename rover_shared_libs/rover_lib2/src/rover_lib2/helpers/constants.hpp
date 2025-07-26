@@ -40,11 +40,10 @@ namespace Constants
 
     namespace AntennaInfo
     {
-#if defined(__linux__)
         enum class eAntennaType : size_t
         {
-            Base = 0,
-            Rover = 1,
+            BASE = 0,
+            ROVER = 1,
             eLast
         };
 
@@ -57,8 +56,7 @@ namespace Constants
             static_assert(static_cast<size_t>(antenna_) < ANTENNA_URLS.size(), "Invalid antenna index");
             return ANTENNA_URLS[static_cast<size_t>(antenna_)];
         }
-#endif  // defined(__linux__)
-    }   // namespace AntennaInfo
+    }  // namespace AntennaInfo
 
     namespace DriveTrain
     {

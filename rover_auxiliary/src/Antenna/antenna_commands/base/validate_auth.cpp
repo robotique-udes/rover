@@ -2,7 +2,8 @@
 #include <json/json.h>
 
 Command::Base::ValidateAuth::ValidateAuth(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_):
-    AntennaCommand(apiUrl_), _session(session_)
+    AntennaCommand(apiUrl_),
+    _session(session_)
 {
 }
 

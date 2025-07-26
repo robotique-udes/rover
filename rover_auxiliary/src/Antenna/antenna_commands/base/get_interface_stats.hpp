@@ -34,7 +34,7 @@ namespace Command::Base
         eAntennaCode parseResponse(const cpr::Response& response_);
         bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_);
 
-      std::shared_ptr<cpr::Session> _session;
+        std::shared_ptr<cpr::Session> _session;
 
         uint8_t _loginAttempts = 0;
         uint64_t _lanRxBytes = 0;

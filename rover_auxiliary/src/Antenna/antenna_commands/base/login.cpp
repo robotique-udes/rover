@@ -1,5 +1,8 @@
 #include "login.hpp"
-Command::Base::Login::Login(const std::string& apiUrl_, const std::string& username_, const std::string& password_, std::shared_ptr<cpr::Session> session_):
+Command::Base::Login::Login(const std::string& apiUrl_,
+                            const std::string& username_,
+                            const std::string& password_,
+                            std::shared_ptr<cpr::Session> session_):
     AntennaCommand(apiUrl_),
     _session(session_),
     _username(username_),

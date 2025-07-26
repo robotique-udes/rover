@@ -2,7 +2,9 @@
 #include <json/json.h>
 #include <charconv>
 
-Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_, std::shared_ptr<cpr::Session> session_):
+Command::Base::GetInterfaceStats::GetInterfaceStats(const std::string& apiUrl_,
+                                                    uint64_t publisherPeriodMs_,
+                                                    std::shared_ptr<cpr::Session> session_):
     AntennaCommand(apiUrl_),
     _session(session_),
     _publisherPeriodMs(publisherPeriodMs_)
