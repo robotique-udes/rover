@@ -57,6 +57,7 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
                    src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.cpp
                    src/Global/Workers/QWorker.cpp
+                   src/Global/QFlowLayout.cpp
                    src/Global/QTmpFolderManager.cpp
                    
                    src/QArbitration/QArbitration.cpp
@@ -85,6 +86,8 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QGStreamerWorker.cpp
                    src/QVideoPlayer/QVideoManagerWidget.cpp
                    src/QVideoPlayer/QVideoPlayerWidget.cpp
+                   src/QVideoPlayer/QVideoRecorderWidget.cpp
+                   src/QVideoPlayer/QVideoRecorderWidget.hpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
                    src/QVideoPlayer/Worker/QRecordingWorker.cpp
 

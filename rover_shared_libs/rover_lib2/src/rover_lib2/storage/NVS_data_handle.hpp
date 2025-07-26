@@ -6,41 +6,45 @@
 #include "rover_lib2/helpers/assert.hpp"
 
 #include <cstring>
+#include <type_traits>
+#include <cstdint>
 
-DEFINE_LOG_NODE(NVSDataHandle, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(NVSDataHandle, Logger::eNodeState::OFF);
 
 template<typename Data_T>
 class NVSDataHandle
 {
-    static_assert(
-        std::is_same_v<
-            int8_t,
-            Data_T> || std::is_same_v<uint8_t, Data_T> || std::is_same_v<int16_t, Data_T> || std::is_same_v<uint16_t, Data_T> || std::is_same_v<int32_t, Data_T> || std::is_same_v<uint32_t, Data_T> || std::is_same_v<int64_t, Data_T> || std::is_same_v<uint64_t, Data_T>,
-        "Type not supported");
+    // clang-format off
+    static_assert(std::is_same_v<int8_t,Data_T> 
+                    || std::is_same_v<uint8_t, Data_T> 
+                    || std::is_same_v<int16_t, Data_T> 
+                    || std::is_same_v<uint16_t, Data_T> 
+                    || std::is_same_v<int32_t, Data_T> 
+                    || std::is_same_v<uint32_t, Data_T> 
+                    || std::is_same_v<int64_t, Data_T> 
+                    || std::is_same_v<uint64_t, Data_T> 
+                    || std::is_same_v<float, Data_T> 
+                    || std::is_same_v<double, Data_T>,
+                  "Type not supported");
+    // clang-format on
 
     static constexpr size_t NVS_MAX_LENGTH_STR = 15UL;
 
   public:
-    /**
-     * @brief
-     * @param namespace_ Isn't copied so must be valid until handle's end of life
-     * @param key_ Isn't copied so must be valid until handle's end of life
-     * @param defaultValue_ Used temporarily until the NVS data can be accessed
-     */
-    NVSDataHandle(const char* namespace_, const char* key_, Data_T defaultValue_ = 0UL):
+    NVSDataHandle(const char* namespace_, const char* key_, Data_T defaultValue_ = static_cast<Data_T>(0)):
         _namespace(namespace_),
         _key(key_),
         _defaultValue(defaultValue_),
-        _dataInSync(false),
         _currentValue(defaultValue_)
     {
         ASSERT_COND_MSG_ARGS(std::strlen(namespace_) <= NVS_MAX_LENGTH_STR,
-                             "NVS storage namespace must can't be more than %u chars",
-                             NVS_MAX_LENGTH_STR);
+                             "NVS storage namespace name can't be more than %u chars long, name: \"%s\"",
+                             NVS_MAX_LENGTH_STR,
+                             namespace_);
         ASSERT_COND_MSG(std::strcmp(namespace_, "") != 0, "NVS storage namespace can't be empty");
 
         ASSERT_COND_MSG_ARGS(std::strlen(key_) <= NVS_MAX_LENGTH_STR,
-                             "NVS storage name must can't be more than %u chars",
+                             "NVS storage name cannot be more than %u chars",
                              NVS_MAX_LENGTH_STR);
         ASSERT_COND_MSG(std::strcmp(key_, "") != 0, "NVS storage name can't be empty");
 
@@ -66,10 +70,6 @@ class NVSDataHandle
         nvs_close(_nvsHandle);
     }
 
-    /**
-     * @brief
-     * @param value_ Will not be overwritten on failure
-     */
     Data_T getValue(void)
     {
         if (_dataInSync)
@@ -111,6 +111,26 @@ class NVSDataHandle
         else if constexpr (std::is_same_v<Data_T, uint64_t>)
         {
             err = nvs_get_u64(_nvsHandle, _key, &retVal);
+        }
+        else if constexpr (std::is_same_v<Data_T, float>)
+        {
+            uint32_t tmp;
+            err = nvs_get_u32(_nvsHandle, _key, &tmp);
+            if (err == ESP_OK)
+            {
+                static_assert(sizeof(float) == sizeof(uint32_t), "Float must be 32 bits");
+                std::memcpy(&retVal, &tmp, sizeof(float));
+            }
+        }
+        else if constexpr (std::is_same_v<Data_T, double>)
+        {
+            uint64_t tmp;
+            err = nvs_get_u64(_nvsHandle, _key, &tmp);
+            if (err == ESP_OK)
+            {
+                static_assert(sizeof(double) == sizeof(uint64_t), "Double must be 64 bits");
+                std::memcpy(&retVal, &tmp, sizeof(double));
+            }
         }
         // TODO: Add blob support for compatibility with any datatype
 
@@ -167,6 +187,20 @@ class NVSDataHandle
         {
             err = nvs_set_u64(_nvsHandle, _key, value_);
         }
+        else if constexpr (std::is_same_v<Data_T, float>)
+        {
+            static_assert(sizeof(float) == sizeof(uint32_t), "Float must be 32 bits");
+            uint32_t tmp;
+            std::memcpy(&tmp, &value_, sizeof(float));
+            err = nvs_set_u32(_nvsHandle, _key, tmp);
+        }
+        else if constexpr (std::is_same_v<Data_T, double>)
+        {
+            static_assert(sizeof(double) == sizeof(uint64_t), "Double must be 64 bits");
+            uint64_t tmp;
+            std::memcpy(&tmp, &value_, sizeof(double));
+            err = nvs_set_u64(_nvsHandle, _key, tmp);
+        }
         // TODO: Add blob support for compatibility with any datatype
 
         if (err != ESP_OK)
@@ -199,6 +233,8 @@ class NVSDataHandle
   private:
     void logGetSetError(const esp_err_t& err_, const char* key_)
     {
+        (void)key_;
+
         switch (err_)
         {
             case ESP_FAIL:
@@ -249,7 +285,7 @@ class NVSDataHandle
     const char* _key;
     const Data_T _defaultValue;
 
-    bool _dataInSync;
+    bool _dataInSync = false;
     Data_T _currentValue;
     nvs_handle_t _nvsHandle;
 };

@@ -30,11 +30,9 @@ namespace Actuators
         };
     };
 
-    template<typename PwmGenerator_T>
-    class Servo : public Actuator<Servo<PwmGenerator_T>>
+    template<PWMGenerators::PWMGenerator PwmGeneratorT>
+    class Servo
     {
-        VALIDATE_BASE_TYPE(PWMGenerators::PWMGeneratorT, PwmGenerator_T);
-
         static constexpr float UPDATE_FREQUENCY = 1'000.0F;
         static constexpr uint64_t UPDATE_PERIOD = 1'000ULL / static_cast<uint64_t>(UPDATE_FREQUENCY);
 
@@ -42,7 +40,7 @@ namespace Actuators
 
       public:
         Servo(ServoT::sTimingConfig servoTimings_,
-              PwmGenerator_T& pwmGenerator_,
+              PwmGeneratorT& pwmGenerator_,
               bool reversed_ = false,
               float initialPos_ = 0.0F):
             _servoTimings(servoTimings_),
@@ -62,13 +60,13 @@ namespace Actuators
             _currentPos = _goalPos + 1.0E-6F;  // Creating a very small offset otherwise the update will return early
         }
 
-        void __init(void)
+        void init(void)
         {
             _pwmGenerator.init();
             _pwmGenerator.setEnabled(true);
         }
 
-        void __update(void)
+        void update(void)
         {
             if (_updateTimer.isReady())
             {
@@ -114,7 +112,7 @@ namespace Actuators
             }
         }
 
-        void _setPosition(float pos_)
+        void setPosition(float pos_)
         {
             pos_ = CONSTRAIN(pos_, _minPosition, _maxPosition);
             if (pos_ == this->getPosition())
@@ -143,7 +141,7 @@ namespace Actuators
             }
         }
 
-        float _getPosition(void)
+        float getPosition(void) const
         {
             if (!_reversed)
             {
@@ -159,12 +157,12 @@ namespace Actuators
             }
         }
 
-        void _setSpeed(float speed_)
+        void setSpeed(float speed_)
         {
             ASSERT_MSG("Not supported");
         }
 
-        float _getSpeed(void)
+        float getSpeed(void) const
         {
             if (_goalPos == _currentPos)
             {
@@ -180,13 +178,22 @@ namespace Actuators
             }
         }
 
-        void _setMaxSpeed(float max_speed_)
+        void setMaxSpeed(float max_speed_)
         {
             max_speed_ = std::abs(max_speed_);
             _maxSpeed = CONSTRAIN(max_speed_, 0.0F, _servoTimings.maxSpeed);
         }
 
-        void _setJointLimit(std::optional<float> min_, std::optional<float> max_)
+        /**
+         * @brief Not supported on Servo actuators
+         *
+         */
+        void calib(float)
+        {
+            // Not supported
+        }
+
+        void setJointLimit(std::optional<float> min_, std::optional<float> max_)
         {
             if (!min_ && !max_)
             {
@@ -225,7 +232,7 @@ namespace Actuators
 
       private:
         const ServoT::sTimingConfig _servoTimings;
-        PwmGenerator_T& _pwmGenerator;
+        PwmGeneratorT& _pwmGenerator;
 
         float _goalPos = 0.0F;
         float _currentPos = 0.0F;
@@ -238,6 +245,8 @@ namespace Actuators
         const float _msToDutyFactor;
         Chrono<uint64_t, Time::micros> _enlapsedSinceLastUpdate;
         LoopTimer<uint64_t, Time::millis> _updateTimer;
+
+        VALIDATE_CONCEPT(Actuator, Servo);
     };
 
 }  // namespace Actuators

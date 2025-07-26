@@ -11,39 +11,52 @@
 
 // QT
 #include <QtWidgets/QGridLayout>
+#include <QLabel>
 #include "UI_DeviceStatus.h"
 #include "Worker/QStatusWorker.hpp"
+#include "Global/QFlowLayout.hpp"
 
 #include <unordered_map>
+#include <vector>
 
 class QDeviceStatus : public QWidget
 {
     Q_OBJECT
 
+    static constexpr uint8_t ICON_DIMENSION = 55U;
+    static constexpr uint8_t DEVICE_INFO_HEIGHT = 100U;
+    static constexpr uint8_t DEVICE_INFO_WIDTH = 210U;
+
     struct sCanDeviceInfos
     {
         uint16_t deviceMessageCount;
         uint16_t numberOfDeviceReboots;
-        uint16_t oldDeviceReboots;
-        uint16_t numberOfDeviceRebootsFromButton;
-        QWidget* deviceInfo;
-        QLabel* deviceReboot;
+        QWidget* deviceInfoContainer;
+        QLabel* deviceInfoLabel;
     };
 
   public:
     QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-
-    void hideControls();
-    void showControls();
+    void onDashboardPage();
+    void onDeviceStatusPage();
 
   private:
+    void initializeDeviceWidget();
+    void addDeviceWidget(RoverCan2::Constant::eDeviceId deviceId);
     void callbackDeviceInfos(const rover_msgs::msg::CanDeviceStatus& msg_);
     void updateDeviceInfo();
     void updateDeviceColor(RoverCan2::Constant::eDeviceId deviceID_, const rover_msgs::msg::CanDeviceStatus& msg_);
     void setStatusReport(RoverCan2::Constant::eDeviceId id_);
     void updateRebootCounter(RoverCan2::Constant::eDeviceId deviceID_);
-    void setDefaultStyle();
+    void resetWidget();
+
+    void hideControls();
+    void showControls();
+    void hideInfos();
+    void showInfos();
+
     std::string getDeviceName(RoverCan2::Constant::eDeviceId deviceID_) const;
+    std::string getDeviceIcon(RoverCan2::Constant::eDeviceId deviceID_) const;
 
   private slots:
     void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);
@@ -51,17 +64,15 @@ class QDeviceStatus : public QWidget
   private:
     std::shared_ptr<rclcpp::Node> _node;
     Ui::DeviceStatus _ui;
-    QLabel* _imageLabel;
-    QPixmap _pixmap;
 
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
     rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr _client_requestErrorStatus;
 
     std::unordered_map<RoverCan2::Constant::eDeviceId, sCanDeviceInfos> _canDevices;
-
-    uint16_t _numberOfCalls = 0U;
+    std::vector<QWidget*> _spacerWidgets;
 
     QStatusWorker _QStatusWorker;
+    std::unique_ptr<QFlowLayout> _layout;
 };
 
 #endif  // QDEVICESTATUS_QDEVICESTATUS_HPP

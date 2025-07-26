@@ -70,7 +70,7 @@ class SPIDevice : public SPIDeviceT
     }
 
     template<size_t DATA_LENGTH>
-    bool writeData(std::array<uint8_t, DATA_LENGTH> data_)
+    bool writeData(const std::array<uint8_t, DATA_LENGTH>& data_)
     {
         static_assert(DATA_LENGTH <= MAX_MSG_LENGTH, "Trying to send too much SPI data for chosen MAX_MSG_LENGTH");
 
