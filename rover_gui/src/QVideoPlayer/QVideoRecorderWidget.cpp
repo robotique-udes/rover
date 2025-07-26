@@ -221,7 +221,6 @@ void QVideoRecorderWidget::onStopRecordingHandledSuccessfully(bool success_, con
 
 void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& urls)
 {
-
     for (const std::string& url : urls)
     {
         if (url == _camURL && _sButtons.startRecordingButton)

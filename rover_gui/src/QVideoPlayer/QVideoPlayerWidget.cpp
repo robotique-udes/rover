@@ -769,7 +769,6 @@ void QVideoPlayerWidget::onDisplayDetectedArucos(std::vector<uint16_t> ids_)
                         .arg(QString::fromStdString(_camURL))
                         .arg(_ui.arucoIdsTextBox->text().mid(5)),
                     _ui.logDisplay);
-        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
     }
 }
 
