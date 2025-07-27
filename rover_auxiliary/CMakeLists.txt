@@ -10,6 +10,7 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 set(ENV{CPR_USE_SYSTEM_CURL} "ON")
+set(BUILD_EXAMPLES OFF CACHE INTERNAL "" FORCE)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
