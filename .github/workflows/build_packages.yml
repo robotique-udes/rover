@@ -41,7 +41,6 @@ jobs:
           
           export CXXFLAGS="-Werror"
           echo -e "\e[0;34m=== Building ROS2 Packages ... ===\e[0m"
-          export CURL_DISABLE_EXAMPLES=ON
           if colcon build; then
             echo -e "\e[0;32m=== [SUCCESS] ===\e[0m"
           else
