@@ -10,7 +10,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
 endif()
 
 set(ENV{CPR_USE_SYSTEM_CURL} "ON")
-option(BUILD_EXAMPLES "Build libcurl examples" OFF)
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
