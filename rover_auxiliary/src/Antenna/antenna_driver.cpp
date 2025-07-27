@@ -1,5 +1,4 @@
 #include "antenna_driver.hpp"
-#include "rover_lib2/helpers/assert.hpp"
 
 AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_):
     _session(std::make_shared<cpr::Session>()),
@@ -19,7 +18,7 @@ AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& use
 
 eAntennaCode AntennaDriver::retrieveDatalinkInfos(sSignalInfos& msg_)
 {
-    eAntennaCode result;
+    eAntennaCode result = eAntennaCode::FAILURE_UNKNOWN;
 
     for (const std::weak_ptr<AntennaCommand>& cmd : _commands)
     {
