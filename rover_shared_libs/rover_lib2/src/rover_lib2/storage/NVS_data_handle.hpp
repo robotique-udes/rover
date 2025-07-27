@@ -70,7 +70,7 @@ class NVSDataHandle
         nvs_close(_nvsHandle);
     }
 
-    Data_T getValue(void)
+    Data_T getValue(void) const
     {
         if (_dataInSync)
         {
@@ -225,13 +225,13 @@ class NVSDataHandle
         return true;
     }
 
-    bool dataInSync(void)
+    bool dataInSync(void) const
     {
         return _dataInSync;
     }
 
   private:
-    void logGetSetError(const esp_err_t& err_, const char* key_)
+    void logGetSetError(const esp_err_t& err_, const char* key_) const
     {
         (void)key_;
 
@@ -285,8 +285,8 @@ class NVSDataHandle
     const char* _key;
     const Data_T _defaultValue;
 
-    bool _dataInSync = false;
-    Data_T _currentValue;
+    mutable bool _dataInSync = false;
+    mutable Data_T _currentValue;
     nvs_handle_t _nvsHandle;
 };
 

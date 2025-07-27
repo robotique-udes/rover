@@ -3,6 +3,7 @@
 
 #include <rover_lib2/rover_object.hpp>
 #include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/assert.hpp>
 
 #include <concepts>
 
@@ -13,11 +14,11 @@ namespace Encoders
     concept Encoder = RoverObject<ImplT> && requires(ImplT impl_)
     {
         // clang-format off
-        { impl_.dataIsValid() } -> std::same_as<bool>;
+        { std::as_const(impl_).dataIsValid() } -> std::same_as<bool>;
 
-        { impl_.getPosition() } -> std::same_as<float>;
+        { std::as_const(impl_).getPosition() } -> std::same_as<float>;
 
-        { impl_.getSpeed() } -> std::same_as<float>;
+        { std::as_const(impl_).getSpeed() } -> std::same_as<float>;
 
         { impl_.calib(float{}) } -> std::same_as<void>;
         // clang-format on
@@ -36,19 +37,19 @@ namespace Encoders
             ASSERT_MSG("Interface");
         }
 
-        bool dataIsValid()
+        bool dataIsValid() const
         {
             ASSERT_MSG("Interface");
             return false;
         }
 
-        float getPosition()
+        float getPosition() const
         {
             ASSERT_MSG("Interface");
             return 0.0F;
         }
 
-        float getSpeed()
+        float getSpeed() const
         {
             ASSERT_MSG("Interface");
             return 0.0F;
