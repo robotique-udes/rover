@@ -40,6 +40,8 @@ class QVideoRecorderWidget : public QWidget
     void onUpdateCameraList(const std::vector<std::string>& urls_);
 
   private:
+    void autoStartRecording(void);
+    
     uint16_t _playerIndex;
     std::string _camURL;
     std::string _sessionFolderPath;

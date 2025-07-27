@@ -86,6 +86,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
     _gstreamerThread.start();
+    this->autoStartGStreamer();
 
     UI_LOG_INFO(GENERAL, QString::fromStdString("VideoPlayer Widget initialized for camera: " + _camURL), _ui.logDisplay);
 }
@@ -660,6 +661,13 @@ void QVideoPlayerWidget::handlePlayPauseButton(void)
         _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
         this->startStream(QString::fromStdString(_camURL));
     }
+}
+
+void QVideoPlayerWidget::autoStartGStreamer(void)
+{
+    _ui.playPauseButton->setChecked(true);
+    _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
+    this->startStream(QString::fromStdString(_camURL));
 }
 
 void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)

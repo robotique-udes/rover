@@ -59,6 +59,7 @@ void QVideoRecorderWidget::setCameraControlClientManager(std::shared_ptr<rclcpp:
     if (client_)
     {
         _client_cameraControlManager = client_;
+        this->autoStartRecording();
     }
     else
     {
@@ -281,4 +282,16 @@ void QVideoRecorderWidget::setButtons(const sRecordingButtons& buttons_)
 void QVideoRecorderWidget::emitUpdateCameraList(const std::vector<std::string>& urls)
 {
     emit this->updateCameraList(urls);
+}
+
+void QVideoRecorderWidget::autoStartRecording(void)
+{
+    if (_sButtons.startRecordingButton)
+    {
+        _sButtons.startRecordingButton->setChecked(true);
+        _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager,
+                                                            _camURL,
+                                                            _playerIndex,
+                                                            _sessionFolderPath);
+    }
 }
