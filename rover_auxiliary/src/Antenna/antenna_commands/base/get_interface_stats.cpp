@@ -24,7 +24,7 @@ eAntennaCode Command::Base::GetInterfaceStats::execute(void)
     return result;
 }
 
-eAntennaCode Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
+eAntennaCode Command::Base::GetInterfaceStats::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + IFSTATS_PAGE});
     response_ = session_->Get();
@@ -115,12 +115,12 @@ bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, u
     return false;
 }
 
-float Command::Base::GetInterfaceStats::getRxRate(void)
+float Command::Base::GetInterfaceStats::getRxRate(void) const
 {
     return _rxRate;
 }
 
-float Command::Base::GetInterfaceStats::getTxRate(void)
+float Command::Base::GetInterfaceStats::getTxRate(void) const
 {
     return _txRate;
 }

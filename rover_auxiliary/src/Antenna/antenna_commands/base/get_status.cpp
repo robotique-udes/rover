@@ -20,7 +20,7 @@ eAntennaCode Command::Base::GetStatus::execute(void)
     return result;
 }
 
-eAntennaCode Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
+eAntennaCode Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + STATUS_PAGE});
     response_ = session_->Get();
@@ -76,7 +76,7 @@ eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& respon
     }
 }
 
-float Command::Base::GetStatus::getRssi(void)
+float Command::Base::GetStatus::getRssi(void) const
 {
     return _rssi;
 }

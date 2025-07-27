@@ -15,7 +15,7 @@ eAntennaCode Command::Base::Login::execute(void)
     return this->postHTTPS(_session);
 }
 
-eAntennaCode Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> session_)
+eAntennaCode Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> session_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + LOGIN_PAGE});
     cpr::Payload payload{{"username", _username}, {"password", _password}};

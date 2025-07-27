@@ -1,6 +1,5 @@
 #ifndef ANTENNA_COMMAND_HPP
 #define ANTENNA_COMMAND_HPP
-#include "antenna_msg.hpp"
 #include <string>
 
 enum class eAntennaCode : uint8_t
@@ -28,7 +27,7 @@ enum class eHttpStatus : uint16_t
 class AntennaCommand
 {
   public:
-    AntennaCommand(const std::string& apiUrl_):
+    explicit AntennaCommand(const std::string& apiUrl_):
         _apiUrl(apiUrl_)
     {
     }
@@ -42,7 +41,7 @@ class AntennaCommand
     }
 
   private:
-    std::string _apiUrl;
+    const std::string _apiUrl;
 };
 
 #endif  // ANTENNA_COMMAND_HPP

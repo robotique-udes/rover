@@ -2,6 +2,7 @@
 #define GET_STATUS_HPP
 
 #include "../antenna_command.hpp"
+#include "../antenna_msg.hpp"
 #include <string>
 #include <cpr/cpr.h>
 
@@ -22,10 +23,10 @@ namespace Command::Base
         GetStatus(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_);
         ~GetStatus() override = default;
         eAntennaCode execute(void) override;
-        float getRssi(void);
+        float getRssi(void) const;
 
       private:
-        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
+        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const;
         eAntennaCode parseResponse(const cpr::Response& response_);
 
         std::shared_ptr<cpr::Session> _session;

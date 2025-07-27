@@ -32,7 +32,7 @@ class AntennaDriver
      * @brief Specific session for the M2 rocket Antenna
      *
      */
-    void setupSession(void);
+    void setupSession(void) const;
     eAntennaCode handleDisconnect(sSignalInfos& msg_);
 
     std::shared_ptr<cpr::Session> _session;

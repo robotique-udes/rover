@@ -2,6 +2,7 @@
 #define LOGIN_BASE_HPP
 #include <string>
 #include "../antenna_command.hpp"
+#include "../antenna_msg.hpp"
 #include <cpr/cpr.h>
 
 namespace Command::Base
@@ -26,11 +27,11 @@ namespace Command::Base
         eAntennaCode execute(void) override;
 
       private:
-        eAntennaCode postHTTPS(std::shared_ptr<cpr::Session> session_);
+        eAntennaCode postHTTPS(std::shared_ptr<cpr::Session> session_) const;
 
         std::shared_ptr<cpr::Session> _session;
-        std::string _username;
-        std::string _password;
+        const std::string _username;
+        const std::string _password;
     };
 
 }  // namespace Command::Base

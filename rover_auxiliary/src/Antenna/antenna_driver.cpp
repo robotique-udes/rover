@@ -109,7 +109,7 @@ eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
     return result;
 }
 
-void AntennaDriver::setupSession(void)
+void AntennaDriver::setupSession(void) const
 {
     // RocketM2 general settings
     _session->SetVerifySsl(false);

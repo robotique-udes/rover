@@ -11,7 +11,6 @@ eAntennaCode Command::Base::ValidateAuth::execute(void)
 {
     cpr::Response response;
     eAntennaCode result = this->getHTTPS(_session, response);
-    // std::cout << response.text << std::endl;
     if (result != eAntennaCode::SUCCESS)
     {
         _connected = false;
@@ -27,7 +26,7 @@ eAntennaCode Command::Base::ValidateAuth::execute(void)
     return result;
 }
 
-eAntennaCode Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
+eAntennaCode Command::Base::ValidateAuth::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + STATUS_PAGE});
     response_ = session_->Get();
@@ -76,7 +75,7 @@ eAntennaCode Command::Base::ValidateAuth::validateFormat(const cpr::Response& re
     }
 }
 
-bool Command::Base::ValidateAuth::getConnectedStatus(void)
+bool Command::Base::ValidateAuth::getConnectedStatus(void) const
 {
     return _connected;
 }
