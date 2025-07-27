@@ -59,42 +59,38 @@ eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response
     Json::Value root;
     Json::CharReaderBuilder builder;
     std::string errors;
-
     std::istringstream stream(response_.text);
-    if (Json::parseFromStream(builder, stream, &root, &errors))
-    {
-        if (root.isMember(JSON_FIELD_INTERFACES) && root[JSON_FIELD_INTERFACES].isArray())
-        {
-            Json::Value interfaces = root[JSON_FIELD_INTERFACES];
 
-            if (!interfaces.empty() && interfaces[INTERFACE_WLAN_INDEX].isObject())
-            {
-                Json::Value interface0 = interfaces[INTERFACE_WLAN_INDEX];
-
-                if (interface0.isMember(JSON_FIELD_STATS) && interface0[JSON_FIELD_STATS].isObject())
-                {
-                    Json::Value stats = interface0[JSON_FIELD_STATS];
-
-                    if (stats.isMember(JSON_FIELD_RX_BYTES)
-                        && !updateRate(stats[JSON_FIELD_RX_BYTES].asString(), _wlanRxBytes, _rxRate))
-                    {
-                        return eAntennaCode::FAILURE_PARSING_ERROR;
-                    }
-
-                    if (stats.isMember(JSON_FIELD_TX_BYTES)
-                        && !updateRate(stats[JSON_FIELD_TX_BYTES].asString(), _wlanTxBytes, _txRate))
-                    {
-                        return eAntennaCode::FAILURE_PARSING_ERROR;
-                    }
-                }
-            }
-        }
-        return eAntennaCode::SUCCESS;
-    }
-    else
+    if (!Json::parseFromStream(builder, stream, &root, &errors) || !root.isMember(JSON_FIELD_INTERFACES)
+        || !root[JSON_FIELD_INTERFACES].isArray())
     {
         return eAntennaCode::FAILURE_PARSING_ERROR;
     }
+
+    const Json::Value& interfaces = root[JSON_FIELD_INTERFACES];
+    if (interfaces.empty() || !interfaces[INTERFACE_WLAN_INDEX].isObject())
+    {
+        return eAntennaCode::FAILURE_PARSING_ERROR;
+    }
+
+    const Json::Value& interface0 = interfaces[INTERFACE_WLAN_INDEX];
+    if (!interface0.isMember(JSON_FIELD_STATS) || !interface0[JSON_FIELD_STATS].isObject())
+    {
+        return eAntennaCode::FAILURE_PARSING_ERROR;
+    }
+
+    const Json::Value& stats = interface0[JSON_FIELD_STATS];
+    if (!stats.isMember(JSON_FIELD_RX_BYTES) || !updateRate(stats[JSON_FIELD_RX_BYTES].asString(), _wlanRxBytes, _rxRate))
+    {
+        return eAntennaCode::FAILURE_PARSING_ERROR;
+    }
+
+    if (!stats.isMember(JSON_FIELD_TX_BYTES) || !updateRate(stats[JSON_FIELD_TX_BYTES].asString(), _wlanTxBytes, _txRate))
+    {
+        return eAntennaCode::FAILURE_PARSING_ERROR;
+    }
+
+    return eAntennaCode::SUCCESS;
 }
 
 bool Command::Base::GetInterfaceStats::updateRate(std::string_view byteStr_, uint64_t& lastByte_, float& rate_)
