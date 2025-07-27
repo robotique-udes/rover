@@ -108,7 +108,7 @@ bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, u
 
     if (charResult.ec == std::errc{})
     {
-        rate_ = (currentBytes - lastByte_) * 1000.0f / _publisherPeriodMs;
+        rate_ = static_cast<float>(currentBytes - lastByte_) * 1000.0f / static_cast<float>(_publisherPeriodMs);
         lastByte_ = currentBytes;
         return true;
     }
