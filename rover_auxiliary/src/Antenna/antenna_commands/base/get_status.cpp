@@ -57,13 +57,17 @@ eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& respon
     std::string errors;
 
     std::istringstream stream(response_.text);
-    if (!Json::parseFromStream(builder, stream, &root, &errors) || !root.isMember(JSON_FIELD_WIRELESS)
-        || !wireless.isMember(JSON_FIELD_RSSI))
+    if (!Json::parseFromStream(builder, stream, &root, &errors) || !root.isMember(JSON_FIELD_WIRELESS))
     {
         return eAntennaCode::FAILURE_PARSING_ERROR;
     }
 
     Json::Value wireless = root[JSON_FIELD_WIRELESS];
+    if (!wireless.isMember(JSON_FIELD_RSSI))
+    {
+        return eAntennaCode::FAILURE_PARSING_ERROR;
+    }
+
     _rssi = wireless[JSON_FIELD_RSSI].asFloat();
     return eAntennaCode::SUCCESS;
 }
