@@ -33,7 +33,7 @@ namespace Command::Base
       private:
         eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const;
         eAntennaCode parseResponse(const cpr::Response& response_);
-        bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_);
+        bool updateRate(std::string_view byteStr_, uint64_t& lastByte_, float& rate_);
 
         std::shared_ptr<cpr::Session> _session;
 

@@ -67,7 +67,7 @@ eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response
         {
             Json::Value interfaces = root[JSON_FIELD_INTERFACES];
 
-            if (interfaces.size() > 0 && interfaces[INTERFACE_WLAN_INDEX].isObject())
+            if (!interfaces.empty() && interfaces[INTERFACE_WLAN_INDEX].isObject())
             {
                 Json::Value interface0 = interfaces[INTERFACE_WLAN_INDEX];
 
@@ -75,20 +75,16 @@ eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response
                 {
                     Json::Value stats = interface0[JSON_FIELD_STATS];
 
-                    if (stats.isMember(JSON_FIELD_RX_BYTES))
+                    if (stats.isMember(JSON_FIELD_RX_BYTES)
+                        && !updateRate(stats[JSON_FIELD_RX_BYTES].asString(), _wlanRxBytes, _rxRate))
                     {
-                        if (!updateRate(stats[JSON_FIELD_RX_BYTES].asString(), _wlanRxBytes, _rxRate))
-                        {
-                            return eAntennaCode::FAILURE_PARSING_ERROR;
-                        }
+                        return eAntennaCode::FAILURE_PARSING_ERROR;
                     }
 
-                    if (stats.isMember(JSON_FIELD_TX_BYTES))
+                    if (stats.isMember(JSON_FIELD_TX_BYTES)
+                        && !updateRate(stats[JSON_FIELD_TX_BYTES].asString(), _wlanTxBytes, _txRate))
                     {
-                        if (!updateRate(stats[JSON_FIELD_TX_BYTES].asString(), _wlanTxBytes, _txRate))
-                        {
-                            return eAntennaCode::FAILURE_PARSING_ERROR;
-                        }
+                        return eAntennaCode::FAILURE_PARSING_ERROR;
                     }
                 }
             }
@@ -101,7 +97,7 @@ eAntennaCode Command::Base::GetInterfaceStats::parseResponse(const cpr::Response
     }
 }
 
-bool Command::Base::GetInterfaceStats::updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_)
+bool Command::Base::GetInterfaceStats::updateRate(std::string_view byteStr_, uint64_t& lastByte_, float& rate_)
 {
     uint64_t currentBytes;
     std::from_chars_result charResult = std::from_chars(byteStr_.data(), byteStr_.data() + byteStr_.size(), currentBytes);
