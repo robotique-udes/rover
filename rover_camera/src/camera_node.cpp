@@ -38,7 +38,7 @@ CameraNode::CameraNode():
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                          [this](void)
                                          {
-                                             this->CB_url_publisher();
+                                             this->publishCameraUrls();
                                          });
 
     _sub_position = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
@@ -377,7 +377,7 @@ bool CameraNode::stopRecording(std::string cameraURL_)
             _recordingCv.notify_one();
         }
     }
-    this->CB_url_publisher();
+    this->publishCameraUrls();
     return true;
 }
 
@@ -428,11 +428,10 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
                 this->requestShutdown(cameraURL_);
                 RCLCPP_ERROR(this->get_logger(), "Failed to start recording for %s", cameraURL_.c_str());
             }
+            publishCameraUrls();
         });
 
     startRecordingThread.detach();
-
-    CB_url_publisher();
     return true;
 }
 
@@ -530,7 +529,7 @@ void CameraNode::videoWatchDogFunction(void)
     return;
 }
 
-void CameraNode::CB_url_publisher(void)
+void CameraNode::publishCameraUrls(void)
 {
     rover_msgs::msg::CameraList msg;
 

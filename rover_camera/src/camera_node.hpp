@@ -46,7 +46,7 @@ class CameraNode : public rclcpp::Node
                              rover_msgs::srv::CameraControl::Response& response_);
     void stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                             rover_msgs::srv::CameraControl::Response& response_);
-    void CB_url_publisher(void);
+    void publishCameraUrls(void);
 
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
     std::optional<std::string> getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
