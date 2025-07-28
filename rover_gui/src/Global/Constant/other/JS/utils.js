@@ -1,4 +1,4 @@
-function checkConnectivity() 
+async function checkConnectivity() 
 {
     const connectionError = document.getElementById('connectionError');
 
@@ -7,19 +7,18 @@ function checkConnectivity()
         connectionError.style.display = 'block';
         return false;
     } 
-    else 
-    {
-        return fetch('https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js', {
-        method: 'HEAD',
-        mode: 'no-cors',
-        cache: 'no-store'
-        }).then(() => {
-            connectionError.style.display = 'none';
-            return true;
-            }).catch(() => {
-                    connectionError.style.display = 'block';
-                    return false;
-                });
+    
+    try {
+        await fetch('https://cesium.com/downloads/cesiumjs/releases/1.114/Build/Cesium/Cesium.js', {
+            method: 'HEAD',
+            mode: 'no-cors',
+            cache: 'no-store'
+        });
+        connectionError.style.display = 'none';
+        return true;
+    } catch {
+        connectionError.style.display = 'block';
+        return false;
     }
 }
 
