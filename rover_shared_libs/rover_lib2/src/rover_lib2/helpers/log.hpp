@@ -27,6 +27,9 @@
 #include <cstdarg>
 #include <cstdio>
 
+#elif defined(ARDUINO_ESP32S3_DEV)
+#include <Arduino.h>
+
 #endif  // defined(__linux__) && defined(ROS)
 
 #include "rover_lib2/helpers/time.hpp"
