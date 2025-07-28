@@ -1,10 +1,4 @@
 let viewer;
 let currentPosition = { latitude: 45.377755, longitude: -71.924652 };
-let pathEntity = null;
-let waypointEntities = [];
-let waypointCounter = 1;
-let activeWaypoint = null;
-let pathUpdateInterval = null;
 let entity;
-let isAddingWaypoint = false;
 let lastHeading = 0;
