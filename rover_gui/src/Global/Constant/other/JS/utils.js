@@ -25,7 +25,7 @@ async function checkConnectivity()
 function setupCesiumMap() 
 {
     const initialPosition = { latitude: 45.377755, longitude: -71.924652 }
-    viewer = new Cesium.Viewer("cesiumContainer", {
+    window.viewer = new Cesium.Viewer("cesiumContainer", {
         terrain: Cesium.Terrain.fromWorldTerrain({
             requestWaterMask: true,
             requestVertexNormals: true,
@@ -54,7 +54,7 @@ function setupCesiumMap()
     window.waypointManager = new Waypoint(viewer);
     window.bridge = new Bridge(viewer, null, waypointManager, camera, initialPosition);
 
-    roverEntity = viewer.entities.add({
+    window.roverEntity = viewer.entities.add({
             name: "Live Position Arrow",
             position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
             model: {

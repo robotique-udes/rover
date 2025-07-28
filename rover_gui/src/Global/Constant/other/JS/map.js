@@ -1,6 +1,3 @@
-let viewer;
-let roverEntity;
-
 async function initializeMap() 
 {
     const isConnected = await checkConnectivity();
