@@ -112,13 +112,12 @@ class Bridge {
         const wasTracking = this.camera.isCameraTracking;
         const wasTopDown = this.camera.isTopDownView;
 
-        if (this.camera.isCameraTracking) 
+        if (wasTracking) 
         {
             this.camera.toggleCameraTracking();
         }
 
-        if (this.camera.isTopDownView)
-        {
+        if (wasTopDown) {
             this.camera.toggleTopDownView();
         }
 
@@ -126,21 +125,12 @@ class Bridge {
             destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
             complete: () => {
                 this.viewer.scene.requestRender();
-
-                if (wasTracking) 
-                {
-                    this.camera.toggleCameraTracking();
-                }
-
-                if (wasTopDown) {
-                    this.camera.toggleTopDownView();
-                }
             }
         });
 
-        if (window.bridge && window.bridge.waypointCreated) 
+        if (window.qtBridge && window.qtBridge.waypointCreated) 
         {
-            window.bridge.waypointCreated(name, lat, lon, id);
+            window.qtBridge.waypointCreated(name, lat, lon, id);
         }
     }
 
