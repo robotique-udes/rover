@@ -31,7 +31,7 @@ class Camera
         return this.#_isAdjustingCamera;
     }
 
-    get cameraTracking()
+    get isCameraTracking()
     {
         return this.#_isCameraTracking;
     }
