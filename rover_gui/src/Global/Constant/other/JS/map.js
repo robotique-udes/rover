@@ -1,12 +1,14 @@
 async function initializeMap() 
 {
     const isConnected = await checkConnectivity();
-    if (isConnected) {
+    if (isConnected) 
+    {
       setupCesiumMap();
-    } else {
+    } 
+    else 
+    {
       console.error("Unable to connect to the internet");
     }
-
 }
 
 document.addEventListener('DOMContentLoaded', initializeMap);

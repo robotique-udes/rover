@@ -23,18 +23,6 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
         {
         });
 
-    QString token = qgetenv("CESIUM_TOKEN");
-    if (!token.isEmpty())
-    {
-        _ui.webViewContainer->page()->runJavaScript("Cesium.Ion.defaultAccessToken = '" + token + "';");
-    }
-    else
-    {
-        RCLCPP_WARN(_node->get_logger(),
-                    "Cesium token not found. This access token is generated with the creation of a Ceisum account. Please refer "
-                    "to documentation for more detailed information");
-    }
-
     _ui.webViewContainer->load(QUrl(QRC_PATH_MAP_HTML));
 
     _webChannel.registerObject(QStringLiteral("bridge"), this);
