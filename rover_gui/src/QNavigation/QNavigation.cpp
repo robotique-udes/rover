@@ -160,10 +160,10 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     waypoint_.latitude = latitude_;
     waypoint_.longitude = longitude_;
     waypoint_.id = id_;
-    
+
     QString displayText_ = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
 
-    QListWidgetItem* waypointItem_ = new QListWidgetItem(displayText_);
+    std::unique_ptr<QListWidgetItem> waypointItem_ = std::make_unique<QListWidgetItem>(displayText_);
 
     waypointItem_->setFlags(waypointItem_->flags() | Qt::ItemIsUserCheckable);
     waypointItem_->setCheckState(Qt::Checked);
@@ -171,7 +171,7 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
 
     _waypoints.append(waypoint_);
 
-    _ui.waypointList->addItem(waypointItem_);
+    _ui.waypointList->addItem(waypointItem_.release());
 }
 
 void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
@@ -180,7 +180,7 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
     {
         return;
     }
-    
+
     int index_ = _ui.waypointList->row(item_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {

@@ -10,8 +10,7 @@
 
 class QNavigation : public QWidget
 {
-    Q_OBJECT
-    // QML_ELEMENT
+  Q_OBJECT
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
@@ -28,7 +27,7 @@ class QNavigation : public QWidget
     void gpsCallback(double latitude_, double longitude_, double heading_);
     void sendGoal(QString name, double latitude, double longitude, QString id);
     void calculatePath(double destLat, double destLon, QString waypointId);
-    void waypointIsVisible(QString waypointId, bool visibility);
+    void waypointIsVisible(QString waypointId_, bool visibility_);
     void jsReady(void);
     void clearWaypoints(void);
     void clearPath(void);
