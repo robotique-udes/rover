@@ -25,9 +25,6 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
 
     _ui.webViewContainer->load(QUrl(QRC_PATH_MAP_HTML));
 
-    _webChannel.registerObject(QStringLiteral("bridge"), this);
-    _ui.webViewContainer->page()->setWebChannel(&_webChannel);
-
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
     connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);
@@ -228,6 +225,9 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     {
         return;
     }
+
+    _webChannel.registerObject(QStringLiteral("bridge"), this);
+    _ui.webViewContainer->page()->setWebChannel(&_webChannel);
 
     QString token = qgetenv("CESIUM_TOKEN");
     if (!token.isEmpty())
