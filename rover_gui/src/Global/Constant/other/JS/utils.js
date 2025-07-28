@@ -24,6 +24,7 @@ async function checkConnectivity()
 
 function setupCesiumMap() 
 {
+    const initialPosition = { latitude: 45.377755, longitude: -71.924652 }
     viewer = new Cesium.Viewer("cesiumContainer", {
         terrain: Cesium.Terrain.fromWorldTerrain({
             requestWaterMask: true,
@@ -47,6 +48,12 @@ function setupCesiumMap()
 
     viewer._cesiumWidget._creditContainer.style.display = "none";
 
+    
+
+    window.camera = new Camera(viewer);
+    window.waypointManager = new Waypoint(viewer);
+    window.bridge = new Bridge(viewer, null, waypointManager, camera, initialPosition);
+
     roverEntity = viewer.entities.add({
             name: "Live Position Arrow",
             position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
@@ -60,17 +67,15 @@ function setupCesiumMap()
             color: Cesium.Color.RED,
         },
         orientation: new Cesium.CallbackProperty(function () {
-            const headingRad = Cesium.Math.toRadians(lastHeading || 0);
+            const headingRad = Cesium.Math.toRadians(window.bridge.lastHeading || 0);
             return Cesium.Transforms.headingPitchRollQuaternion(
-                Cesium.Cartesian3.fromDegrees(bridge.currentPosition().longitude, bridge.currentPosition().latitude),
+                Cesium.Cartesian3.fromDegrees(window.bridge.currentPosition.longitude, window.bridge.currentPosition.latitude),
                 new Cesium.HeadingPitchRoll(headingRad, 0, 0)
             );
         }, false)
     });
 
-    window.camera = new Camera(viewer);
-    window.waypointManager = new Waypoint(viewer);
-    window.bridge = new Bridge(viewer, roverEntity);
+    window.bridge.rover = roverEntity;
 
     setupEventHandlers();
     setupControlButtons();
@@ -98,10 +103,10 @@ function setupControlButtons()
 function setupEventHandlers() 
 {
     viewer.screenSpaceEventHandler.setInputAction(function (click) {
-        // if (camera.isCameraTracking())
-        // {
-        //     camera.toggleCameraTracking();
-        // }
+        if (camera.isCameraTracking)
+        {
+            camera.toggleCameraTracking();
+        }
 
         try {
             let cartesian;
@@ -170,14 +175,14 @@ function setupEventHandlers()
     }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
 
     viewer.screenSpaceEventHandler.setInputAction(function () {
-        if (camera.isCameraTracking()) 
+        if (camera.isCameraTracking) 
         {
             camera.toggleCameraTracking();
         }
     }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
     viewer.screenSpaceEventHandler.setInputAction(function () {
-        if (camera.isCameraTracking()) 
+        if (camera.isCameraTracking) 
         {
             camera.toggleCameraTracking();
         }
