@@ -1,8 +1,8 @@
 #ifndef LOGIN_BASE_HPP
 #define LOGIN_BASE_HPP
 #include <string>
-#include "../antenna_command.hpp"
-#include "../antenna_msg.hpp"
+#include "Antenna/antenna_commands/antenna_command.hpp"
+#include "Antenna/antenna_commands/antenna_msg.hpp"
 #include <cpr/cpr.h>
 
 namespace Command::Base

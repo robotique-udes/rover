@@ -34,6 +34,7 @@ class AntennaDriver
      */
     void setupSession(void) const;
     eAntennaCode handleDisconnect(sSignalInfos& msg_);
+    void startCooldown(void);
 
     std::shared_ptr<cpr::Session> _session;
     uint64_t _publisherPeriodMs;

@@ -9,8 +9,6 @@ if(CMAKE_COMPILER_IS_GNUCXX OR CMAKE_CXX_COMPILER_ID MATCHES "Clang")
   add_compile_options(-Wall -Wextra -Wpedantic)
 endif()
 
-set(ENV{CPR_USE_SYSTEM_CURL} "ON")
-
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
@@ -21,6 +19,7 @@ add_subdirectory(../deps/cpr cpr_build)
 add_subdirectory(../rover_shared_libs/ .build)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
+include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 add_executable(antenna src/Antenna/antenna_node.cpp

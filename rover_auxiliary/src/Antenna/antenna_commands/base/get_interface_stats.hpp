@@ -1,8 +1,8 @@
 #ifndef GET_INTERFACE_STATS_HPP
 #define GET_INTERFACE_STATS_HPP
 
-#include "../antenna_command.hpp"
-#include "../antenna_msg.hpp"
+#include "Antenna/antenna_commands/antenna_command.hpp"
+#include "Antenna/antenna_commands/antenna_msg.hpp"
 #include <string>
 #include <cpr/cpr.h>
 

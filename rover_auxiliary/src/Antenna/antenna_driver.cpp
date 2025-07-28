@@ -76,8 +76,7 @@ eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
 
     if (result != eAntennaCode::SUCCESS)
     {
-        _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
-        _cooldownActive = true;
+        this->startCooldown();
         msg_ = sSignalInfos{};
         msg_.connected = false;
         return result;
@@ -96,8 +95,7 @@ eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
 
         if (result != eAntennaCode::SUCCESS)
         {
-            _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
-            _cooldownActive = true;
+            this->startCooldown();
             return result;
         }
     }
@@ -122,4 +120,10 @@ void AntennaDriver::setupSession(void) const
 
     _session->SetConnectTimeout(cpr::ConnectTimeout{SESSION_CONNECT_TIMEOUT_MS});
     _session->SetTimeout(cpr::Timeout{SESSION_TIMEOUT_MS});
+}
+
+void AntennaDriver::startCooldown(void)
+{
+    _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
+    _cooldownActive = true;
 }
