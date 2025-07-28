@@ -2,7 +2,10 @@
 #define ROVER_LIB2_COMMUNICATION_SPI_SPI_DEVICE_HPP
 
 #include "rover_lib2/communication/SPI/SPI_bus.hpp"
+
+#include <array>
 #include <cstring>
+#include <esp32-hal-spi.h>
 
 DEFINE_LOG_NODE(SPIDevice, Logger::eNodeState::OFF);
 
