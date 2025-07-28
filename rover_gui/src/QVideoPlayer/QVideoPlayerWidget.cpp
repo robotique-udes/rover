@@ -68,6 +68,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             this,
             &QVideoPlayerWidget::onArucoServerInfoFailed);
 
+    connect(this, &QVideoPlayerWidget::displayDetectedArucos, this, &QVideoPlayerWidget::onDisplayDetectedArucos);
+
     connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::updateCamURL);
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::setURLToDefault);
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
@@ -775,7 +777,7 @@ void QVideoPlayerWidget::arucoStillAliveUpdate(bool urlFound_)
     }
 }
 
-void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
+void QVideoPlayerWidget::onDisplayDetectedArucos(std::vector<uint16_t> ids_)
 {
     size_t nbr_ids_detected = ids_.size();
 
@@ -797,11 +799,6 @@ void QVideoPlayerWidget::displayDetectedArucos(std::vector<uint16_t> ids_)
                         .arg(QString::fromStdString(_camURL))
                         .arg(_ui.arucoIdsTextBox->text().mid(5)),
                     _ui.logDisplay);
-        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
-    }
-    else
-    {
-        _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-pause"));
     }
 }
 
@@ -923,7 +920,7 @@ void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::C
 
 void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls_)
 {
-    _recorderWidget.CB_cameraListUpdate(urls_);
+    _recorderWidget.emitUpdateCameraList(urls_);
 }
 
 void QVideoPlayerWidget::CB_srvCameraAvailable(bool available_)

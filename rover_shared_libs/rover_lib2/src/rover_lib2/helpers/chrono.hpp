@@ -54,7 +54,7 @@ class Chrono
         }
     }
 
-    ClockT getTime(void)
+    ClockT getTime(void) const
     {
         if (_paused)
         {

@@ -64,7 +64,6 @@ class QVideoPlayerWidget : public QWidget
     void stopDetection(void);
     void handleArucoDetection(void);
     void arucoStillAliveUpdate(bool urlFound_);
-    void displayDetectedArucos(std::vector<uint16_t> ids_);
 
     void startStream(const QString& rtspUrl_);
     void stopStream(void);
@@ -103,12 +102,14 @@ class QVideoPlayerWidget : public QWidget
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
     void notifyCameraAnglePublisher(std::string camURL_, float angle_);
+    void displayDetectedArucos(std::vector<uint16_t> ids_);
 
   private slots:
     // Arucuo
     void onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex__);
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
+    void onDisplayDetectedArucos(std::vector<uint16_t> ids_);
     // Camera angle
     void onCameraAngleSliderChanged(void);
     void onCameraAngleBoxChanged(void);
