@@ -87,18 +87,27 @@ function setupControlButtons()
     const topDownButton = document.getElementById('topDownButton');
     const northFacingButton = document.getElementById('northFacingButton');
 
-    trackingButton.addEventListener('click', function () {
-        camera.toggleCameraTracking();
-    });
-
-    topDownButton.addEventListener('click', function () {
-        camera.toggleTopDownView();
-    });
-
-    northFacingButton.addEventListener('click', function () {
-        camera.toggleNorthFacing();
-    });
+    if (trackingButton)
+    {
+        trackingButton.addEventListener('click', function () {
+            camera.toggleCameraTracking();
+        });
     }
+
+    if (topDownButton)
+    {
+        topDownButton.addEventListener('click', function () {
+            camera.toggleTopDownView();
+        });
+    }
+
+    if (northFacingButton)
+    {
+        northFacingButton.addEventListener('click', function () {
+            camera.toggleNorthFacing();
+        });
+    }
+}
 
 function setupEventHandlers() 
 {
@@ -116,7 +125,7 @@ function onDoubleClick(event)
 
     try {
         const scene = viewer.scene;
-        
+
         let cartesian = pickPositionFromTerrain(scene, event)
             || pickPositionFromDrillPick(scene, event)
             || pickPositionFromRay(scene, event)
