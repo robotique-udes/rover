@@ -1,7 +1,8 @@
 #ifndef GET_INTERFACE_STATS_HPP
 #define GET_INTERFACE_STATS_HPP
 
-#include "../antenna_command.hpp"
+#include "Antenna/antenna_commands/antenna_command.hpp"
+#include "Antenna/antenna_commands/antenna_msg.hpp"
 #include <string>
 #include <cpr/cpr.h>
 
@@ -19,20 +20,20 @@ namespace Command::Base
         static constexpr char const* JSON_FIELD_STATS = "stats";
         static constexpr char const* JSON_FIELD_RX_BYTES = "rx_bytes";
         static constexpr char const* JSON_FIELD_TX_BYTES = "tx_bytes";
-        static constexpr uint8_t INTERFACE_WLAN_INDEX = 0;
-        static constexpr uint8_t INTERFACE_LAN_INDEX = 1;
+        static constexpr uint8_t INTERFACE_WLAN_INDEX = 0U;
+        static constexpr uint8_t INTERFACE_LAN_INDEX = 1U;
 
       public:
         GetInterfaceStats(const std::string& apiUrl_, uint64_t publisherPeriodMs_, std::shared_ptr<cpr::Session> session_);
         ~GetInterfaceStats() override = default;
         eAntennaCode execute(void) override;
-        float getRxRate(void);
-        float getTxRate(void);
+        float getRxRate(void) const;
+        float getTxRate(void) const;
 
       private:
-        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
+        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const;
         eAntennaCode parseResponse(const cpr::Response& response_);
-        bool updateRate(const std::string& byteStr_, uint64_t& lastByte_, float& rate_);
+        bool updateRate(std::string_view byteStr_, uint64_t& lastByte_, float& rate_);
 
         std::shared_ptr<cpr::Session> _session;
 
@@ -41,7 +42,7 @@ namespace Command::Base
         uint64_t _lanTxBytes = 0;
         uint64_t _wlanRxBytes = 0;
         uint64_t _wlanTxBytes = 0;
-        uint64_t _publisherPeriodMs;
+        const uint64_t _publisherPeriodMs;
 
         float _rxRate = 0.0f;
         float _txRate = 0.0f;

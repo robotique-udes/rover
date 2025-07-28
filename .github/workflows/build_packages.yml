@@ -39,6 +39,7 @@ jobs:
           source /opt/ros/humble/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
           
+          export CPR_USE_SYSTEM_CURL=ON
           export CXXFLAGS="-Werror"
           echo -e "\e[0;34m=== Building ROS2 Packages ... ===\e[0m"
           if colcon build; then

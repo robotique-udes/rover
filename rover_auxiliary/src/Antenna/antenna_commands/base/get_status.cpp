@@ -20,7 +20,7 @@ eAntennaCode Command::Base::GetStatus::execute(void)
     return result;
 }
 
-eAntennaCode Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_)
+eAntennaCode Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + STATUS_PAGE});
     response_ = session_->Get();
@@ -57,26 +57,22 @@ eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& respon
     std::string errors;
 
     std::istringstream stream(response_.text);
-    if (Json::parseFromStream(builder, stream, &root, &errors))
-    {
-        if (root.isMember(JSON_FIELD_WIRELESS))
-        {
-            Json::Value wireless = root[JSON_FIELD_WIRELESS];
-
-            if (wireless.isMember(JSON_FIELD_RSSI))
-            {
-                _rssi = wireless[JSON_FIELD_RSSI].asFloat();
-            }
-        }
-        return eAntennaCode::SUCCESS;
-    }
-    else
+    if (!Json::parseFromStream(builder, stream, &root, &errors) || !root.isMember(JSON_FIELD_WIRELESS))
     {
         return eAntennaCode::FAILURE_PARSING_ERROR;
     }
+
+    Json::Value wireless = root[JSON_FIELD_WIRELESS];
+    if (!wireless.isMember(JSON_FIELD_RSSI))
+    {
+        return eAntennaCode::FAILURE_PARSING_ERROR;
+    }
+
+    _rssi = wireless[JSON_FIELD_RSSI].asFloat();
+    return eAntennaCode::SUCCESS;
 }
 
-float Command::Base::GetStatus::getRssi(void)
+float Command::Base::GetStatus::getRssi(void) const
 {
     return _rssi;
 }

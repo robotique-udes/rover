@@ -1,7 +1,8 @@
 #ifndef VALIDATE_AUTH_HPP
 #define VALIDATE_AUTH_HPP
 
-#include "../antenna_command.hpp"
+#include "Antenna/antenna_commands/antenna_command.hpp"
+#include "Antenna/antenna_commands/antenna_msg.hpp"
 #include <cpr/cpr.h>
 
 namespace Command::Base
@@ -20,11 +21,11 @@ namespace Command::Base
         ValidateAuth(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_);
         ~ValidateAuth() override = default;
         eAntennaCode execute(void) override;
-        bool getConnectedStatus(void);
+        bool getConnectedStatus(void) const;
 
       private:
         std::shared_ptr<cpr::Session> _session;
-        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_);
+        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const;
         eAntennaCode validateFormat(const cpr::Response& response_);
         bool _connected = false;
     };

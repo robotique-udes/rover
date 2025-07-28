@@ -93,6 +93,7 @@ namespace Actuators
         void init()
         {
             _motorDriver.init();
+            _motorDriver.setEnabled(true);
 
             if (_pEncoder)
             {
@@ -240,7 +241,7 @@ namespace Actuators
                              this->getSpeed(),
                              cmd);
 
-                    LOG_PLOT(Logger::Nodes::ActuatorDcPlot, _goalSpeed, this->getSpeed());
+                    LOG_PLOT(Logger::Nodes::ActuatorDcPlot, _goalSpeed, cmd, this->getSpeed(), this->getPosition());
                     break;
                 }
 

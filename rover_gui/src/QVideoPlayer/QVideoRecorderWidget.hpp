@@ -26,8 +26,10 @@ class QVideoRecorderWidget : public QWidget
     void setButtons(const sRecordingButtons& buttons_);
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
 
-    void CB_cameraListUpdate(const std::vector<std::string>& urls_);
     void CB_srvAvailable(bool available_);
+    void emitUpdateCameraList(const std::vector<std::string>& urls);
+  signals:
+    void updateCameraList(const std::vector<std::string>& urls);
 
   private slots:
     void handleScreenshot(void) const;
@@ -35,6 +37,7 @@ class QVideoRecorderWidget : public QWidget
     void onScreenshotHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_);
     void onStartRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_);
     void onStopRecordingHandledSuccessfully(bool success_, const std::string& status_, uint16_t playerIndex_);
+    void onUpdateCameraList(const std::vector<std::string>& urls_);
 
   private:
     uint16_t _playerIndex;

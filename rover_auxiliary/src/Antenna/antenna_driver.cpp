@@ -1,5 +1,4 @@
 #include "antenna_driver.hpp"
-#include "rover_lib2/helpers/assert.hpp"
 
 AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_):
     _session(std::make_shared<cpr::Session>()),
@@ -19,7 +18,7 @@ AntennaDriver::AntennaDriver(uint64_t publisherPeriodMs_, const std::string& use
 
 eAntennaCode AntennaDriver::retrieveDatalinkInfos(sSignalInfos& msg_)
 {
-    eAntennaCode result;
+    eAntennaCode result = eAntennaCode::FAILURE_UNKNOWN;
 
     for (const std::weak_ptr<AntennaCommand>& cmd : _commands)
     {
@@ -77,8 +76,7 @@ eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
 
     if (result != eAntennaCode::SUCCESS)
     {
-        _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
-        _cooldownActive = true;
+        this->startCooldown();
         msg_ = sSignalInfos{};
         msg_.connected = false;
         return result;
@@ -97,8 +95,7 @@ eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
 
         if (result != eAntennaCode::SUCCESS)
         {
-            _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
-            _cooldownActive = true;
+            this->startCooldown();
             return result;
         }
     }
@@ -110,7 +107,7 @@ eAntennaCode AntennaDriver::handleDisconnect(sSignalInfos& msg_)
     return result;
 }
 
-void AntennaDriver::setupSession(void)
+void AntennaDriver::setupSession(void) const
 {
     // RocketM2 general settings
     _session->SetVerifySsl(false);
@@ -123,4 +120,10 @@ void AntennaDriver::setupSession(void)
 
     _session->SetConnectTimeout(cpr::ConnectTimeout{SESSION_CONNECT_TIMEOUT_MS});
     _session->SetTimeout(cpr::Timeout{SESSION_TIMEOUT_MS});
+}
+
+void AntennaDriver::startCooldown(void)
+{
+    _loginCooldownTimer = OneShotTimer<uint64_t, &Time::millis>{LOGIN_COOLDOWN_MS};
+    _cooldownActive = true;
 }
