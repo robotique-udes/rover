@@ -20,13 +20,12 @@ class QNavigation : public QWidget
         double latitude;
         double longitude;
         QString id;
-        bool visibility;
     };
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
-    void sendGoal(QString name, double latitude, double longitude, QString id);
-    void calculatePath(double destLat, double destLon, QString waypointId);
+    void sendGoal(QString name_, double latitude_, double longitude_, QString id_);
+    void calculatePath(double destLat_, double destLon_, QString waypointId_);
     void waypointIsVisible(QString waypointId_, bool visibility_);
     void jsReady(void);
     void clearWaypoints(void);
