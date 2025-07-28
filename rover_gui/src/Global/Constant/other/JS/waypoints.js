@@ -19,15 +19,9 @@ class Waypoint {
         this.#currentPosition = position;
     }
 
-    get getIsAddingWaypoint()
+    get isAddingWaypoint()
     {
         return this.#isAddingWaypoint;
-    }
-
-    // Temporary
-    set setIsAddingWaypoint(value)
-    {
-        this.#isAddingWaypoint = value;
     }
 
     get waypointEntities()
@@ -89,9 +83,9 @@ class Waypoint {
         });
 
         const distance = this.#calculateHaversineDistance(startLat, startLon, endLat, endLon);
-        if (window.bridge) 
+        if (window.qtBridge) 
         {
-            window.bridge.pathDistanceCalculated(distance);
+            window.qtBridge.pathDistanceCalculated(distance);
         }
         return distance;
     }
@@ -154,11 +148,13 @@ class Waypoint {
 
     addWaypoint(lat, lon, name, waypointId) 
     {
+        this.#isAddingWaypoint = true;
         const existingName = this.#checkName(name);
         const existingLocation = this.#checkLocation(lat, lon);
 
         if (existingName || existingLocation)
         {
+            this.#isAddingWaypoint = false;
             return;
         }
 
@@ -193,22 +189,24 @@ class Waypoint {
             }
         });
 
-        if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
+        if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) 
+        {
             waypointEntity._visualizers.forEach(visualizer => {
-            if (visualizer && visualizer.visualizersByDisplayID) 
-            {
-                for (const displayID in visualizer.visualizersByDisplayID)
+                if (visualizer && visualizer.visualizersByDisplayID) 
                 {
-                    if (visualizer.visualizersByDisplayID[displayID]) 
+                    for (const displayID in visualizer.visualizersByDisplayID)
                     {
-                        visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
+                        if (visualizer.visualizersByDisplayID[displayID]) 
+                        {
+                            visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
+                        }
                     }
                 }
-            }
             });
         }
 
         this.#waypointEntities.push(waypointEntity);
+        this.#isAddingWaypoint = false;
         return waypointEntity;
     }
 
@@ -228,7 +226,7 @@ class Waypoint {
                     return 'Please enter a name';
                 } 
 
-                const existingNameWaypoint = this.#waypointEntities.find(wp => wp.name === value);
+                const existingNameWaypoint = this.#waypointEntities.some(wp => wp.name === value);
                 if (existingNameWaypoint) 
                 {
                     return 'A waypoint with this name already exists. Please choose a different name.';
@@ -240,7 +238,7 @@ class Waypoint {
                 const name = result.value;
                 const id = `waypoint_${Date.now()}`;
 
-                const existingNameWaypoint = this.#waypointEntities.find(wp => wp.name === name);
+                const existingNameWaypoint = this.#waypointEntities.some(wp => wp.name === name);
                 if (existingNameWaypoint) 
                 {
                     Swal.fire({
@@ -253,9 +251,9 @@ class Waypoint {
 
                 const waypoint = this.addWaypoint(lat, lon, name, id);
 
-                if (waypoint && window.bridge && window.bridge.waypointCreated) 
+                if (waypoint && window.qtBridge && window.qtBridge.waypointCreated) 
                 {
-                    window.bridge.waypointCreated(name, lat, lon, id);
+                    window.qtBridge.waypointCreated(name, lat, lon, id);
                 }
             }
         });
@@ -263,7 +261,7 @@ class Waypoint {
 
     #checkName(name)
     {
-        const existingName = waypointEntities.find(wp =>
+        const existingName = this.#waypointEntities.find(wp =>
             wp.name === name
         );
 
@@ -275,15 +273,14 @@ class Waypoint {
                 icon: 'warning',
                 confirmButtonText: 'OK'
             });
-            waypointManager.setIsAddingWaypoint(false);
-            return existingName;
+            return true;
         }
-        return !existingName
+        return false
     }
 
     #checkLocation(lat, lon)
     {
-        const existingLocation = waypointEntities.find(wp => {
+        const existingLocation = this.#waypointEntities.find(wp => {
             const wpPosition = wp.position.getValue(Cesium.JulianDate.now());
             const wpCartographic = Cesium.Cartographic.fromCartesian(wpPosition);
             const wpLat = Cesium.Math.toDegrees(wpCartographic.latitude);
@@ -301,10 +298,9 @@ class Waypoint {
             icon: 'warning',
             confirmButtonText: 'OK'
             });
-            waypointManager.setIsAddingWaypoint(false);
-            return existingLocation;
+            return true;
         }
 
-        return !existingLocation;
+        return false;
     }
 }
