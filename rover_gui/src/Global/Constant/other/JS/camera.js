@@ -6,7 +6,7 @@ class Camera
     #_northFacingTimeout = null;
     #_lastCameraPosition = null;
     #_cameraTracking = false;
-    /* Remember about currentPosition and how to declare it later on */
+    #_currentPosition = { latitude: 45.377755, longitude: -71.924652 };
 
     #_boundStillFacingNorth = this.#stillFacingNorth.bind(this);
     #_boundMaintainTopDownPerspective = this.#maintainTopDownPerspective.bind(this);
@@ -29,6 +29,11 @@ class Camera
     get isAdjustingCamera()
     {
         return this.#_isAdjustingCamera;
+    }
+
+    set currentPosition(position)
+    {
+        this.#_currentPosition = position;
     }
 
     toggleNorthFacing()
@@ -207,8 +212,8 @@ class Camera
                 console.warn("Could not get camera height, using default:", e);
             }
 
-            const targetLongitude = this.#_cameraTracking ? currentPosition.longitude : this.viewer.camera.positionCartographic.longitude * 180.0 / Math.PI;
-            const targetLatitude = this.#_cameraTracking ? currentPosition.latitude : this.viewer.camera.positionCartographic.latitude * 180.0 / Math.PI;
+            const targetLongitude = this.#_cameraTracking ? this.#_currentPosition.longitude : this.viewer.camera.positionCartographic.longitude * 180.0 / Math.PI;
+            const targetLatitude = this.#_cameraTracking ? this.#_currentPosition.latitude : this.viewer.camera.positionCartographic.latitude * 180.0 / Math.PI;
 
             this.#_isAdjustingCamera = true;
             this.viewer.camera.setView({
@@ -231,8 +236,8 @@ class Camera
                 this.#_isAdjustingCamera = true;
                 this.viewer.camera.flyTo({
                                         destination: Cesium.Cartesian3.fromDegrees(
-                                            currentPosition.longitude,
-                                            currentPosition.latitude,
+                                            this.#_currentPosition.longitude,
+                                            this.#_currentPosition.latitude,
                                             1000.0
                                         ),
                     orientation: 
@@ -341,8 +346,8 @@ class Camera
 
             this.viewer.camera.setView({
                 destination: Cesium.Cartesian3.fromDegrees(
-                    currentPosition.longitude,
-                    currentPosition.latitude,
+                    this.#_currentPosition.longitude,
+                    this.#_currentPosition.latitude,
                     cameraHeight
                 ),
                 orientation: orientation
@@ -352,8 +357,8 @@ class Camera
             try {
                 this.viewer.camera.flyTo({
                     destination: Cesium.Cartesian3.fromDegrees(
-                        currentPosition.longitude,
-                        currentPosition.latitude,
+                        this.#_currentPosition.longitude,
+                        this.#_currentPosition.latitude,
                         1000.0
                     )
                 });
