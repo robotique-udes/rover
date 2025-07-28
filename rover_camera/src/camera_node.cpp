@@ -169,13 +169,13 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     if (this->newRecording(folderPath, captureName, cameraURL))
     {
         response_.success = true;
-        response_.status = "Recording started";
+        response_.status = "Starting GStreamer pipeline";
     }
     else
     {
         this->requestShutdown(cameraURL);
         response_.success = false;
-        response_.status = "Failed to take a video, check logs for reason";
+        response_.status = "Invalid request";
     }
 }
 
@@ -393,37 +393,47 @@ bool CameraNode::stopRecording(std::string cameraURL_)
 bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_)
 {
     {
+        std::lock_guard<std::mutex> lock(_recordingMapMutex);
+        if (_recordingMap.find(cameraURL_) != _recordingMap.end())
         {
-            std::lock_guard<std::mutex> lock(_recordingMapMutex);
-            if (_recordingMap.find(cameraURL_) != _recordingMap.end())
-            {
-                Recording& rRecording = _recordingMap.at(cameraURL_);
-                RCLCPP_WARN(this->get_logger(), "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
-                return false;
-            }
-            else
-            {
-                _recordingMap.emplace(cameraURL_,
-                                      Recording(videoFolderPath_,
-                                                filename_,
-                                                cameraURL_,
-                                                this->get_logger(),
-                                                [this](std::string url_)
-                                                {
-                                                    this->requestShutdown(url_);
-                                                }));
+            Recording& rRecording = _recordingMap.at(cameraURL_);
+            RCLCPP_WARN(this->get_logger(), "Recording already exist!\nSee file:\t%s", rRecording.getFilename().c_str());
+            return false;
+        }
+        else
+        {
+            _recordingMap.emplace(cameraURL_,
+                                  Recording(videoFolderPath_,
+                                            filename_,
+                                            cameraURL_,
+                                            this->get_logger(),
+                                            [this](std::string url_)
+                                            {
+                                                this->requestShutdown(url_);
+                                            }));
 
-                if (!_videoThread.joinable())
-                {
-                    startWatchDog();
-                }
-
+            if (!_videoThread.joinable())
+            {
+                startWatchDog();
             }
         }
-        Recording& rRecording = _recordingMap.at(cameraURL_);
-        return rRecording.startRecording();
     }
+    std::thread startRecordingThread(
+        [this, cameraURL_]()
+        {
+            Recording& rRecording = _recordingMap.at(cameraURL_);
+            bool ok = rRecording.startRecording();
+            if (!ok)
+            {
+                this->requestShutdown(cameraURL_);
+                RCLCPP_ERROR(this->get_logger(), "Failed to start recording for %s", cameraURL_.c_str());
+            }
+        });
+
+    startRecordingThread.detach();
+
     CB_url_publisher();
+    return true;
 }
 
 /**

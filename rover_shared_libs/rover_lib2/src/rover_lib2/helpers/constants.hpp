@@ -21,7 +21,7 @@ namespace Constants
     {
 #if defined(__linux__)
         const std::map<std::string, std::string, std::less<>> CAMERA_URL_MAP = {
-            {"Main", "rtsp://192.168.144.30:554/1/h264major"},
+            {"Main", "rtsp://127.0.0.1:8554/webcam"},
             {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
             {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
             {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},

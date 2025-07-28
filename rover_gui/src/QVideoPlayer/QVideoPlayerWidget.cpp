@@ -207,8 +207,6 @@ void QVideoPlayerWidget::initializeUIState(void)
     _ui.playPauseButton->setChecked(false);
     _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
     _ui.arucoPushButton->setEnabled(false);
-    _ui.ScreenshotButton->setEnabled(false);
-    _ui.startRecordingButton->setEnabled(false);
 
     QCheckBox* debugCheckbox = findChild<QCheckBox*>("_debugCheckbox");
     if (debugCheckbox)
@@ -302,8 +300,6 @@ void QVideoPlayerWidget::stopStream(void)
     _reconnectTimer.stop();
 
     _ui.arucoPushButton->setEnabled(false);
-    _ui.ScreenshotButton->setEnabled(false);
-    _ui.startRecordingButton->setEnabled(false);
 
     emit requestStopStream();
 
@@ -349,8 +345,6 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _wasEverConnected = true;
             _ui.arucoPushButton->setEnabled(true);
             _frameTimeoutTimer.start(2000);
-            _ui.ScreenshotButton->setEnabled(true);
-            _ui.startRecordingButton->setEnabled(true);
             UI_LOG_INFO_RTSP("Stream connected successfully", _ui.logDisplay);
             break;
 
@@ -368,8 +362,6 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
                 _ui.arucoIdsTextBox->setText("Ids: ");
             }
             _ui.arucoPushButton->setEnabled(false);
-            _ui.ScreenshotButton->setEnabled(false);
-            _ui.startRecordingButton->setEnabled(false);
             break;
 
         case ePlayerState::PAUSED:
@@ -377,8 +369,6 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.playPauseButton->setChecked(false);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             _ui.arucoPushButton->setEnabled(false);
-            _ui.ScreenshotButton->setEnabled(false);
-            _ui.startRecordingButton->setEnabled(false);
             break;
 
         case ePlayerState::CONNECTION_ERROR:
@@ -394,8 +384,6 @@ void QVideoPlayerWidget::setPlayerState(ePlayerState state_)
             _ui.playPauseButton->setChecked(false);
             _ui.playPauseButton->setIcon(QIcon::fromTheme("media-playback-start"));
             _ui.arucoPushButton->setEnabled(false);
-            _ui.ScreenshotButton->setEnabled(false);
-            _ui.startRecordingButton->setEnabled(false);
             UI_LOG_ERROR_RTSP("Connection failed permanently", _ui.logDisplay);
             break;
     }
@@ -586,8 +574,6 @@ void QVideoPlayerWidget::onFrameReceived(void)
         this->setPlayerState(ePlayerState::STREAMING);
 
         _ui.arucoPushButton->setEnabled(true);
-        _ui.ScreenshotButton->setEnabled(true);
-        _ui.startRecordingButton->setEnabled(true);
     }
     else
     {
@@ -602,8 +588,6 @@ void QVideoPlayerWidget::onFrameTimeout(void)
         UI_LOG_WARNING_RTSP("Frame timeout - no frames received", _ui.logDisplay);
 
         _ui.arucoPushButton->setEnabled(false);
-        _ui.ScreenshotButton->setEnabled(false);
-        _ui.startRecordingButton->setEnabled(false);
 
         if (_ui.arucoPushButton->isChecked())
         {
