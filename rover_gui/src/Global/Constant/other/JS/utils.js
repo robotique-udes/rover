@@ -62,7 +62,7 @@ function setupCesiumMap()
         orientation: new Cesium.CallbackProperty(function () {
             const headingRad = Cesium.Math.toRadians(lastHeading || 0);
             return Cesium.Transforms.headingPitchRollQuaternion(
-                Cesium.Cartesian3.fromDegrees(currentPosition.longitude, currentPosition.latitude),
+                Cesium.Cartesian3.fromDegrees(bridge.currentPosition().longitude, bridge.currentPosition().latitude),
                 new Cesium.HeadingPitchRoll(headingRad, 0, 0)
             );
         }, false)
@@ -70,10 +70,10 @@ function setupCesiumMap()
 
     window.camera = new Camera(viewer);
     window.waypointManager = new Waypoint(viewer);
+    window.bridge = new Bridge(viewer, roverEntity);
 
     setupEventHandlers();
     setupControlButtons();
-    setupBridgeConnection();
 }
 
 function setupControlButtons() 
