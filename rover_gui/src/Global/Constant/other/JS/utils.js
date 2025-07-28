@@ -102,89 +102,106 @@ function setupControlButtons()
 
 function setupEventHandlers() 
 {
-    viewer.screenSpaceEventHandler.setInputAction(function (click) {
-        if (camera.isCameraTracking)
+    viewer.screenSpaceEventHandler.setInputAction(onDoubleClick, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+    viewer.screenSpaceEventHandler.setInputAction(onLeftDown, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+    viewer.screenSpaceEventHandler.setInputAction(onWheel, Cesium.ScreenSpaceEventType.WHEEL);
+}
+
+function onDoubleClick(event)
+{
+    if (camera.isCameraTracking)
+    {
+        camera.toggleCameraTracking();
+    }
+
+    try {
+        const scene = viewer.scene;
+        
+        let cartesian = pickPositionFromTerrain(scene, event)
+            || pickPositionFromDrillPick(scene, event)
+            || pickPositionFromRay(scene, event)
+            || pickPositionFromEllipsoid(scene, event);
+
+        if (Cesium.defined(cartesian)) 
         {
-            camera.toggleCameraTracking();
+            const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+            const lat = Cesium.Math.toDegrees(cartographic.latitude);
+            const lon = Cesium.Math.toDegrees(cartographic.longitude);
+
+            setTimeout(() => {
+                waypointManager.showWaypointDialog(lat, lon);
+            }, 50);
         }
+    } catch (error) {
+        // #TODO: Wasnt implemented in the original code
+    }
+}
 
-        try {
-            let cartesian;
-            const scene = viewer.scene;
+function onLeftDown(event)
+{
+    if (camera.isCameraTracking) 
+    {
+        camera.toggleCameraTracking();
+    }
+}
 
-            if (scene.terrainProvider.ready) 
-            {
-                cartesian = scene.pickPosition(click.position);
+function onWheel(event)
+{
+    if (camera.isCameraTracking) 
+    {
+        camera.toggleCameraTracking();
+    }
+}
 
-                if (cartesian) 
-                {
-                    const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-                    if (cartographic.height > 10000 || cartographic.height < -1000) 
-                    {
-                        cartesian = undefined;
-                    }
-                }
-            }
+function pickPositionFromTerrain(scene, event) 
+{
+    if (!scene.terrainProvider.ready)
+    {
+        return undefined;
+    }
 
-            if (!Cesium.defined(cartesian)) 
-            {
-                const drillPickResult = scene.drillPick(click.position);
-                if (drillPickResult.length > 0) 
-                {
-                    for (let i = 0; i < drillPickResult.length; i++) 
-                    {
-                        if (Cesium.defined(drillPickResult[i].primitive) && Cesium.defined(drillPickResult[i].primitive.position)) 
-                        {
-                            cartesian = drillPickResult[i].primitive.position;
-                            break;
-                        }
-                    }
-                }
-            }
-
-            if (!Cesium.defined(cartesian)) 
-            {
-                const ray = viewer.camera.getPickRay(click.position);
-                if (Cesium.defined(ray)) 
-                {
-                    cartesian = viewer.scene.globe.pick(ray, viewer.scene);
-                }
-            }
-
-            if (!Cesium.defined(cartesian)) 
-            {
-                cartesian = viewer.camera.pickEllipsoid(
-                    click.position,
-                    viewer.scene.globe.ellipsoid
-                );
-            }
-
-            if (Cesium.defined(cartesian)) 
-            {
-                const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
-                const lat = Cesium.Math.toDegrees(cartographic.latitude);
-                const lon = Cesium.Math.toDegrees(cartographic.longitude);
-
-                setTimeout(() => {
-                    waypointManager.showWaypointDialog(lat, lon);
-                }, 50);
-            }
-        } catch (error) {
-            // #TODO: Wasnt implemented in the original code
-        }
-    }, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-
-    viewer.screenSpaceEventHandler.setInputAction(function () {
-        if (camera.isCameraTracking) 
+    let cartesian = scene.pickPosition(event.position);
+    if (cartesian) 
+    {
+        const cartographic = Cesium.Cartographic.fromCartesian(cartesian);
+        if (cartographic.height > 10000 || cartographic.height < -1000) 
         {
-            camera.toggleCameraTracking();
+            return undefined;
         }
-    }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
+    }
+    return cartesian;
+}
 
-    viewer.screenSpaceEventHandler.setInputAction(function () {
-        if (camera.isCameraTracking) 
+function pickPositionFromDrillPick(scene, event) 
+{
+    const drillPickResult = scene.drillPick(event.position);
+    if (drillPickResult.length > 0) 
+    {
+        for (let i = 0; i < drillPickResult.length; i++) 
         {
-            camera.toggleCameraTracking();
+            if (Cesium.defined(drillPickResult[i].primitive) && Cesium.defined(drillPickResult[i].primitive.position)) 
+            {
+                return drillPickResult[i].primitive.position;
+            }
         }
-    }, Cesium.ScreenSpaceEventType.WHEEL);
+    }
+    return undefined;
+}
+
+function pickPositionFromRay(scene, event) 
+{
+    const ray = viewer.camera.getPickRay(event.position);
+    if (Cesium.defined(ray)) 
+    {
+        return viewer.scene.globe.pick(ray, viewer.scene);
+    }
+    return undefined;
+}
+
+function pickPositionFromEllipsoid(scene, event) 
+{
+    return viewer.camera.pickEllipsoid(
+        event.position,
+        viewer.scene.globe.ellipsoid
+    );
 }
