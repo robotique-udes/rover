@@ -10,7 +10,7 @@
 
 class QNavigation : public QWidget
 {
-  Q_OBJECT
+    Q_OBJECT
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
