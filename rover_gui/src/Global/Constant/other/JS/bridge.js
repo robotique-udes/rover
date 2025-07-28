@@ -14,7 +14,7 @@ function setupBridgeConnection() {
       currentPosition.longitude = lon;
       lastHeading = headingDeg;
 
-      entity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
+      roverEntity.position = Cesium.Cartesian3.fromDegrees(lon, lat);
 
       if (!viewInitialized) {
         try {
