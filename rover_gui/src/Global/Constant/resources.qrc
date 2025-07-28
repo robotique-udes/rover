@@ -24,7 +24,6 @@
     <file>other/JS/bridge.js</file>
     <file>other/JS/camera.js</file>
     <file>other/JS/utils.js</file>
-    <file>other/JS/constant.js</file>
 
     <file>other/CSS/map.css</file>
   </qresource>
