@@ -19,9 +19,15 @@ class Waypoint {
         this.#currentPosition = position;
     }
 
-    get isAddingWaypoint()
+    get getIsAddingWaypoint()
     {
         return this.#isAddingWaypoint;
+    }
+
+    // Temporary
+    set setIsAddingWaypoint(value)
+    {
+        this.#isAddingWaypoint = value;
     }
 
     get waypointEntities()
@@ -148,15 +154,16 @@ class Waypoint {
 
     addWaypoint(lat, lon, name, waypointId) 
     {
+        const existingName = this.#checkName(name);
+        const existingLocation = this.#checkLocation(lat, lon);
+
+        if (existingName || existingLocation)
+        {
+            return;
+        }
+
         const waypointName = name || `Waypoint ${this.#waypointCounter++}`;
         const id = waypointId || `waypoint_${Date.now()}`;
-
-        const existingNameWaypoint = this.#waypointEntities.find(wp => wp.name === waypointName);
-        if (existingNameWaypoint) 
-        {
-            console.log("Waypoint with name already exists:", waypointName);
-            return null;
-        }
 
         const waypointEntity = this.viewer.entities.add({
             id: id,
@@ -252,5 +259,52 @@ class Waypoint {
                 }
             }
         });
+    }
+
+    #checkName(name)
+    {
+        const existingName = waypointEntities.find(wp =>
+            wp.name === name
+        );
+
+        if (existingName) 
+        {
+            Swal.fire({
+                title: 'Duplicate Waypoint',
+                text: `A waypoint named "${name}" already exists. Please use a different name.`,
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            waypointManager.setIsAddingWaypoint(false);
+            return existingName;
+        }
+        return !existingName
+    }
+
+    #checkLocation(lat, lon)
+    {
+        const existingLocation = waypointEntities.find(wp => {
+            const wpPosition = wp.position.getValue(Cesium.JulianDate.now());
+            const wpCartographic = Cesium.Cartographic.fromCartesian(wpPosition);
+            const wpLat = Cesium.Math.toDegrees(wpCartographic.latitude);
+            const wpLon = Cesium.Math.toDegrees(wpCartographic.longitude);
+
+            const epsilon = 0.00001;
+            return Math.abs(wpLat - lat) < epsilon && Math.abs(wpLon - lon) < epsilon;
+        });
+
+        if (existingLocation) 
+        {
+            Swal.fire({
+            title: 'Duplicate Location',
+            text: `A waypoint already exists at this location. Please choose a different location.`,
+            icon: 'warning',
+            confirmButtonText: 'OK'
+            });
+            waypointManager.setIsAddingWaypoint(false);
+            return existingLocation;
+        }
+
+        return !existingLocation;
     }
 }

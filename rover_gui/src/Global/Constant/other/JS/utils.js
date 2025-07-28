@@ -98,10 +98,10 @@ function setupControlButtons()
 function setupEventHandlers() 
 {
     viewer.screenSpaceEventHandler.setInputAction(function (click) {
-        if (camera.cameraTracking())
-        {
-            camera.toggleCameraTracking();
-        }
+        // if (camera.isCameraTracking())
+        // {
+        //     camera.toggleCameraTracking();
+        // }
 
         try {
             let cartesian;
@@ -177,7 +177,7 @@ function setupEventHandlers()
     }, Cesium.ScreenSpaceEventType.LEFT_DOWN);
 
     viewer.screenSpaceEventHandler.setInputAction(function () {
-        if (camera.cameraTracking()) 
+        if (camera.isCameraTracking()) 
         {
             camera.toggleCameraTracking();
         }
