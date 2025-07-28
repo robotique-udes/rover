@@ -1,12 +1,15 @@
 class Bridge {
     #viewInitialized = false;
     #lastHeading = 0;
-    #currentPosition = { latitude: 45.377755, longitude: -71.924652 };
+    #currentPosition = {};
 
-    constructor(viewer, roverEntity) 
+    constructor(viewer, roverEntity, waypointManager, cameraManager, initialPosition) 
     {
         this.viewer = viewer;
         this.rover = roverEntity;
+        this.waypoints = waypointManager;
+        this.camera = cameraManager;
+        this.#currentPosition = initialPosition || { latitude: 0, longitude: 0 };
         this.#setupBridgeConnection();
     }
 
@@ -24,44 +27,44 @@ class Bridge {
     {
         new QWebChannel(qt.webChannelTransport, (channel) => 
         {
-            const bridge = channel.objects.bridge;
-            window.bridge = bridge;
+            const qtBridge = channel.objects.bridge;
+            window.qtBridge = qtBridge;
 
             const self = this;
 
-            bridge.clearPath.connect(function () 
+            qtBridge.clearPath.connect(function () 
             {
-                waypointManager.stopDynamicPathUpdates();
+                self.waypoints.stopDynamicPathUpdates();
             });
 
-            bridge.gpsCallback.connect(function (lat, lon, headingDeg) 
+            qtBridge.gpsCallback.connect(function (lat, lon, headingDeg) 
             {
                 self.#gpsCallback(lat, lon, headingDeg);
             });
 
-            bridge.sendGoal.connect(function (name, lat, lon) 
+            qtBridge.sendGoal.connect(function (name, lat, lon) 
             {
                 self.#setGoal(name, lat, lon);
             });
 
-            bridge.calculatePath.connect(function (destLat, destLon, waypointId) 
+            qtBridge.calculatePath.connect(function (destLat, destLon, waypointId) 
             {
-                waypointManager.startDynamicPathUpdates(destLat, destLon, waypointId);
+                self.waypoints.startDynamicPathUpdates(destLat, destLon, waypointId);
             });
 
-            bridge.clearWaypoints.connect(function () 
+            qtBridge.clearWaypoints.connect(function () 
             {
-                waypointManager.stopDynamicPathUpdates();
-                waypointManager.clearAllWaypoints();
+                self.waypoints.stopDynamicPathUpdates();
+                self.waypoints.clearAllWaypoints();
             });
 
-            bridge.deleteWaypoint.connect(function (waypointId) 
+            qtBridge.deleteWaypoint.connect(function (waypointId) 
             {
-                if (activeWaypoint && activeWaypoint.id === waypointId) 
+                if (self.waypoints.activeWaypoint && self.waypoints.activeWaypoint.id === waypointId) 
                 {
-                    waypointManager.stopDynamicPathUpdates();
+                    self.waypoints.stopDynamicPathUpdates();
                 }
-                waypointManager.deleteWaypoint(waypointId);
+                self.waypoints.deleteWaypoint(waypointId);
             });
         });
     }
@@ -71,6 +74,8 @@ class Bridge {
         this.#currentPosition.latitude = lat;
         this.#currentPosition.longitude = lon;
         this.#lastHeading = headingDeg;
+        this.camera.currentPosition = this.#currentPosition;
+        this.waypoints.currentPosition = this.#currentPosition;
 
         this.rover.position = Cesium.Cartesian3.fromDegrees(lon, lat);
 
@@ -94,43 +99,41 @@ class Bridge {
 
     #setGoal(name, lat, lon)
     {
-        if (waypoint.getIsAddingWaypoint())
+        if (this.waypoints.isAddingWaypoint)
         {
             return;
         }
 
-        waypointManager.setIsAddingWaypoint(true);
         // PR Étienne
         const id = `waypoint_${Date.now()}`;
 
-        waypointManager.addWaypoint(lat, lon, name, id);
+        this.waypoints.addWaypoint(lat, lon, name, id);
 
-        const wasTracking = camera.getIsCameraTracking();
-        const wasTopDown = camera.isTopDownView();
+        const wasTracking = this.camera.isCameraTracking;
+        const wasTopDown = this.camera.isTopDownView;
 
-        if (camera.isCameraTracking()) 
+        if (this.camera.isCameraTracking) 
         {
-            camera.toggleCameraTracking();
+            this.camera.toggleCameraTracking();
         }
 
-        if (camera.isTopDownView())
+        if (this.camera.isTopDownView)
         {
-            camera.toggleTopDownView();
+            this.camera.toggleTopDownView();
         }
 
-        viewer.camera.flyTo({
+        this.viewer.camera.flyTo({
             destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
-            complete: function () {
-                viewer.scene.requestRender();
-                waypointManager.setIsAddingWaypoint(false);
+            complete: () => {
+                this.viewer.scene.requestRender();
 
                 if (wasTracking) 
                 {
-                    camera.toggleCameraTracking();
+                    this.camera.toggleCameraTracking();
                 }
 
                 if (wasTopDown) {
-                    camera.toggleTopDownView();
+                    this.camera.toggleTopDownView();
                 }
             }
         });
