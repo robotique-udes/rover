@@ -52,7 +52,6 @@ class Camera
     toggleNorthFacing()
     {
         this.#_isFacingNorth = !this.#_isFacingNorth;
-        qtBridge.jsLog(`Toggling north facing: ${this.#_isFacingNorth}`);
 
         if (this.#_isFacingNorth) 
         {
