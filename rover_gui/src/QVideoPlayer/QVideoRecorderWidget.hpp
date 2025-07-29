@@ -41,7 +41,7 @@ class QVideoRecorderWidget : public QWidget
 
   private:
     void autoStartRecording(void);
-    
+
     uint16_t _playerIndex;
     std::string _camURL;
     std::string _sessionFolderPath;
