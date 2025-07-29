@@ -428,7 +428,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
                 this->requestShutdown(cameraURL_);
                 RCLCPP_ERROR(this->get_logger(), "Failed to start recording for %s", cameraURL_.c_str());
             }
-            publishCameraUrls();
+            this->publishCameraUrls();
         });
 
     startRecordingThread.detach();
