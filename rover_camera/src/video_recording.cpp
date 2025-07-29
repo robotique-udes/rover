@@ -161,7 +161,7 @@ bool Recording::startRecording(void)
                                               _cap.open(_pipeline, cv::CAP_GSTREAMER);
                                               return _cap.isOpened();
                                           });
-    if (opened.wait_for(std::chrono::milliseconds(2000)) == std::future_status::ready)
+    if (opened.wait_for(std::chrono::milliseconds(PIPELINE_OPENING_TIMEOUT_MS)) == std::future_status::ready)
     {
         if (!opened.get())
         {

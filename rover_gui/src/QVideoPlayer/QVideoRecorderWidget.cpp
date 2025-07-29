@@ -205,7 +205,7 @@ void QVideoRecorderWidget::onStopRecordingHandledSuccessfully(bool success_, con
         }
         else
         {
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Stopping",
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Stopping video recorder",
                                                                            status_,
                                                                            QHelper::QToastNotification::eNotifType::SUCCESS);
         }
