@@ -66,6 +66,15 @@ class Bridge {
                 }
                 self.waypoints.deleteWaypoint(waypointId);
             });
+
+            if (qtBridge && typeof qtBridge.jsLog === 'function') 
+            {
+                const originalLog = console.log;
+                console.log = function(...args) {
+                    qtBridge.jsLog(args.map(String).join(' '));
+                    originalLog.apply(console, args);
+                };
+            }
         });
     }
 

@@ -246,3 +246,8 @@ void QNavigation::onClearPathClicked(void)
 
     emit this->clearPath();
 }
+
+void QNavigation::jsLog(const QString& message_)
+{
+    std::cout << "[JS] " << message_.toStdString() << std::endl;
+}

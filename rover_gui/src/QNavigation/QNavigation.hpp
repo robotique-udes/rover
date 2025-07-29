@@ -29,8 +29,8 @@ class QNavigation : public QWidget
     void clearWaypoints(void);
     void clearPath(void);
     void deleteWaypoint(QString waypointId_);
-
-  public slots:
+    
+    public slots:
     void pathDistanceCalculated(double distanceMeters_);
     void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
     void onCalculatePathClicked(void);
@@ -41,6 +41,7 @@ class QNavigation : public QWidget
     void onSetGoalClicked(void);
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
+    void jsLog(const QString& message_);
 
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
