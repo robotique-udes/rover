@@ -224,9 +224,9 @@ class Waypoint {
         return waypointEntity;
     }
 
-    showWaypointDialog(lat, lon) 
+    async showWaypointDialog(lat, lon) 
     {
-        Swal.fire({
+        const result = await Swal.fire({
             title: 'Add Waypoint',
             input: 'text',
             inputLabel: 'Waypoint Name',
@@ -240,21 +240,21 @@ class Waypoint {
                     return 'Please enter a name';
                 } 
             }
-        }).then((result) => {
-            if (result.isConfirmed) 
-            {
-                const name = result.value;
-                const id = `waypoint_${Date.now()}`;
-                this.#waypointCounter++;
-
-                const waypoint = this.addWaypoint(lat, lon, name, id);
-
-                if (waypoint && window.qtBridge && window.qtBridge.waypointCreated) 
-                {
-                    window.qtBridge.waypointCreated(name, lat, lon, id);
-                }
-            }
         });
+
+        if(result.isConfirmed)
+        {
+            const name = result.value;
+            const id = `waypoint_${Date.now()}`;
+            this.#waypointCounter++;
+
+            const waypoint = this.addWaypoint(lat, lon, name, id);
+
+            if (waypoint && window.qtBridge && window.qtBridge.waypointCreated) 
+            {
+                window.qtBridge.waypointCreated(name, lat, lon, id);
+            }
+        }
     }
 
     #checkName(name)
