@@ -48,7 +48,7 @@ function setupCesiumMap()
 
     viewer._cesiumWidget._creditContainer.style.display = "none";
 
-    
+    setupControlButtons();
 
     window.camera = new Camera(viewer);
     window.waypointManager = new Waypoint(viewer);
@@ -78,7 +78,6 @@ function setupCesiumMap()
     window.bridge.rover = roverEntity;
 
     setupEventHandlers();
-    setupControlButtons();
 }
 
 function setupControlButtons() 

@@ -369,7 +369,7 @@ class Camera
         }
     }
 
-    #changeButtonStyle(button, textElement, isActive, activeText, inactiveText) 
+    #changeButtonStyle(button, textElement, isActive, inactiveText, activeText) 
     {
         if (isActive) 
         {
