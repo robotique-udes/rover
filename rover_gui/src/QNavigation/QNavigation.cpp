@@ -147,9 +147,9 @@ void QNavigation::onCalculatePathClicked(void)
     int index_ = _ui.waypointList->row(currentItem_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint_ = _waypoints.at(index_);
+        const Waypoint& waypoint = _waypoints.at(index_);
 
-        emit this->calculatePath(waypoint_.latitude, waypoint_.longitude, waypoint_.id);
+        emit this->calculatePath(waypoint.latitude, waypoint.longitude, waypoint.id);
     }
 }
 
@@ -161,17 +161,17 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     waypoint_.longitude = longitude_;
     waypoint_.id = id_;
 
-    QString displayText_ = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
+    QString displayText = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
 
-    std::unique_ptr<QListWidgetItem> waypointItem_ = std::make_unique<QListWidgetItem>(displayText_);
+    std::unique_ptr<QListWidgetItem> waypointItem = std::make_unique<QListWidgetItem>(displayText);
 
-    waypointItem_->setFlags(waypointItem_->flags() | Qt::ItemIsUserCheckable);
-    waypointItem_->setCheckState(Qt::Checked);
-    waypointItem_->setData(Qt::UserRole, id_);
+    waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
+    waypointItem->setCheckState(Qt::Checked);
+    waypointItem->setData(Qt::UserRole, id_);
 
     _waypoints.append(waypoint_);
 
-    _ui.waypointList->addItem(waypointItem_.release());
+    _ui.waypointList->addItem(waypointItem.release());
 }
 
 void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
@@ -181,10 +181,10 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
         return;
     }
 
-    int index_ = _ui.waypointList->row(item_);
-    if (index_ >= 0 && index_ < _waypoints.size())
+    int index = _ui.waypointList->row(item_);
+    if (index >= 0 && index < _waypoints.size())
     {
-        const Waypoint& waypoint = _waypoints.at(index_);
+        const Waypoint& waypoint = _waypoints.at(index);
         bool isVisible = (item_->checkState() == Qt::Checked);
 
         emit this->waypointIsVisible(waypoint.id, isVisible);
