@@ -1,4 +1,5 @@
-class Bridge {
+class Bridge 
+{
     #viewInitialized = false;
     #lastHeading = 0;
     #currentPosition = {};

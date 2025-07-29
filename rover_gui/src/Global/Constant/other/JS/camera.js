@@ -2,16 +2,16 @@ class Camera
 {
     static DEFAULT_CAMERA_HEIGHT = 1000.0;
 
-    #_isFacingNorth = false;
-    #_isTopDownView = false;
-    #_isAdjustingCamera = false;
-    #_northFacingTimeout = null;
-    #_lastCameraPosition = null;
-    #_isCameraTracking = false;
-    #_currentPosition = { latitude: 45.377755, longitude: -71.924652 };
+    #isFacingNorth = false;
+    #isTopDownView = false;
+    #isAdjustingCamera = false;
+    #northFacingTimeout = null;
+    #lastCameraPosition = null;
+    #isCameraTracking = false;
+    #currentPosition = {};
 
-    #_boundStillFacingNorth = this.#stillFacingNorth.bind(this);
-    #_boundMaintainTopDownPerspective = this.#maintainTopDownPerspective.bind(this);
+    #boundStillFacingNorth = this.#stillFacingNorth.bind(this);
+    #boundMaintainTopDownPerspective = this.#maintainTopDownPerspective.bind(this);
 
     constructor(viewer) 
     {
@@ -26,61 +26,61 @@ class Camera
 
     get isFacingNorth() 
     {
-        return this.#_isFacingNorth;
+        return this.#isFacingNorth;
     }
 
     get isTopDownView()
     {
-        return this.#_isTopDownView;
+        return this.#isTopDownView;
     }
 
     get isAdjustingCamera()
     {
-        return this.#_isAdjustingCamera;
+        return this.#isAdjustingCamera;
     }
 
     get isCameraTracking()
     {
-        return this.#_isCameraTracking;
+        return this.#isCameraTracking;
     }
 
     set currentPosition(position)
     {
-        this.#_currentPosition = position;
+        this.#currentPosition = position;
     }
 
     toggleNorthFacing()
     {
-        this.#_isFacingNorth = !this.#_isFacingNorth;
+        this.#isFacingNorth = !this.#isFacingNorth;
 
-        if (this.#_isFacingNorth) 
+        if (this.#isFacingNorth) 
         {
             this.#changeButtonStyle(this.northFacingButton, this.northFacingText, true, 'Face North', 'Facing North');
             this.#setNorthFacing();
 
             setTimeout(() => {
-                if (this.#_isFacingNorth) 
+                if (this.#isFacingNorth) 
                 {
-                    this.viewer.camera.changed.addEventListener(this.#_boundStillFacingNorth);
+                    this.viewer.camera.changed.addEventListener(this.#boundStillFacingNorth);
                 }
             }, 100);
         }
         else 
         {
             this.#changeButtonStyle(this.northFacingButton, this.northFacingText, false, 'Face North', 'Facing North');
-            this.viewer.camera.changed.removeEventListener(this.#_boundStillFacingNorth);
+            this.viewer.camera.changed.removeEventListener(this.#boundStillFacingNorth);
 
-            if (this.#_northFacingTimeout) 
+            if (this.#northFacingTimeout) 
             {
-                clearTimeout(this.#_northFacingTimeout);
-                this.#_northFacingTimeout = null;
+                clearTimeout(this.#northFacingTimeout);
+                this.#northFacingTimeout = null;
             }
         }
     }
 
     #setNorthFacing()
     {
-        if (this.#_isFacingNorth)
+        if (this.#isFacingNorth)
         {
             const desiredHeading = 0.0;
             const headingThreshold = 0.01;
@@ -89,7 +89,7 @@ class Camera
 
             if (needHeadingAdjustment)
             {
-                this.#_isAdjustingCamera = true;
+                this.#isAdjustingCamera = true;
                 this.viewer.camera.setView({ orientation:
                                             {
                                                 heading: desiredHeading,
@@ -97,24 +97,24 @@ class Camera
                                                 roll: 0.0
                                             }
                 });
-                this.#_isAdjustingCamera = false;
+                this.#isAdjustingCamera = false;
             }
         }
     }
 
     #stillFacingNorth()
     {
-        if (!this.#_isFacingNorth || this.#_isAdjustingCamera) 
+        if (!this.#isFacingNorth || this.#isAdjustingCamera) 
         {
             return;
         }
 
-        if (this.#_northFacingTimeout) 
+        if (this.#northFacingTimeout) 
         {
-            clearTimeout(this.#_northFacingTimeout);
+            clearTimeout(this.#northFacingTimeout);
         }
 
-        this.#_northFacingTimeout = setTimeout(() => {
+        this.#northFacingTimeout = setTimeout(() => {
             const currentHeading = this.viewer.camera.heading;
             const desiredHeading = 0.0;
             const headingThreshold = 0.05;
@@ -124,18 +124,18 @@ class Camera
             {
                 this.toggleNorthFacing();
             }
-            this.#_northFacingTimeout = null;
+            this.#northFacingTimeout = null;
         }, 200);
     }
 
     toggleTopDownView()
     {
-        this.#_isTopDownView = !this.#_isTopDownView;
+        this.#isTopDownView = !this.#isTopDownView;
 
-        if (this.#_isTopDownView) {
-            if (!this.#_isCameraTracking) 
+        if (this.#isTopDownView) {
+            if (!this.#isCameraTracking) 
             {
-                this.#_lastCameraPosition = {
+                this.#lastCameraPosition = {
                     position: this.viewer.camera.position.clone(),
                     heading: this.viewer.camera.heading,
                     pitch: this.viewer.camera.pitch,
@@ -148,7 +148,7 @@ class Camera
             try {
                 this.#setTopDownView();
 
-                if (!this.#_isFacingNorth) 
+                if (!this.#isFacingNorth) 
                 {
                     this.toggleNorthFacing();
                 }
@@ -157,10 +157,10 @@ class Camera
                     this.viewer.scene.screenSpaceCameraController.enableTilt = false;
                 }
 
-                this.viewer.camera.changed.addEventListener(this.#_boundMaintainTopDownPerspective);
+                this.viewer.camera.changed.addEventListener(this.#boundMaintainTopDownPerspective);
             } catch (error) {
                 console.error("Error enabling top-down view:", error);
-                this.#_isTopDownView = false;
+                this.#isTopDownView = false;
                 this.#changeButtonStyle(this.topDownButton, this.topDownText, false, 'Top-Down View', 'Exit Top-Down');
             }
         } 
@@ -168,7 +168,7 @@ class Camera
         {
             this.#changeButtonStyle(this.topDownButton, this.topDownText, false, 'Top-Down View', 'Exit Top-Down');
 
-            if (this.#_isFacingNorth) 
+            if (this.#isFacingNorth) 
             {
                 this.toggleNorthFacing();
             }
@@ -178,17 +178,17 @@ class Camera
                     this.viewer.scene.screenSpaceCameraController.enableTilt = true;
                 }
 
-                this.viewer.camera.changed.removeEventListener(this.#_boundMaintainTopDownPerspective);
+                this.viewer.camera.changed.removeEventListener(this.#boundMaintainTopDownPerspective);
 
-                if (this.#_lastCameraPosition && !this.#_isCameraTracking) 
+                if (this.#lastCameraPosition && !this.#isCameraTracking) 
                 {
                     this.viewer.camera.setView({
-                        destination: this.#_lastCameraPosition.position,
+                        destination: this.#lastCameraPosition.position,
                         orientation: 
                         {
-                            heading: this.#_lastCameraPosition.heading,
-                            pitch: this.#_lastCameraPosition.pitch,
-                            roll: this.#_lastCameraPosition.roll
+                            heading: this.#lastCameraPosition.heading,
+                            pitch: this.#lastCameraPosition.pitch,
+                            roll: this.#lastCameraPosition.roll
                         }
                     });
                 }
@@ -200,7 +200,7 @@ class Camera
 
     #setTopDownView()
     {
-        if (!this.#_isTopDownView) 
+        if (!this.#isTopDownView) 
         {
             return;
         }
@@ -216,10 +216,10 @@ class Camera
                 console.warn("Could not get camera height, using default:", e);
             }
 
-            const targetLongitude = this.#_isCameraTracking ? this.#_currentPosition.longitude : this.viewer.camera.positionCartographic.longitude * 180.0 / Math.PI;
-            const targetLatitude = this.#_isCameraTracking ? this.#_currentPosition.latitude : this.viewer.camera.positionCartographic.latitude * 180.0 / Math.PI;
+            const targetLongitude = this.#isCameraTracking ? this.#currentPosition.longitude : this.viewer.camera.positionCartographic.longitude * 180.0 / Math.PI;
+            const targetLatitude = this.#isCameraTracking ? this.#currentPosition.latitude : this.viewer.camera.positionCartographic.latitude * 180.0 / Math.PI;
 
-            this.#_isAdjustingCamera = true;
+            this.#isAdjustingCamera = true;
             this.viewer.camera.setView({
                 destination: Cesium.Cartesian3.fromDegrees(
                     targetLongitude,
@@ -233,15 +233,15 @@ class Camera
                     roll: 0.0
                 }
             });
-            this.#_isAdjustingCamera = false;
+            this.#isAdjustingCamera = false;
         } catch (error) {
             console.error("Failed to update camera to top-down view:", error);
             try {
-                this.#_isAdjustingCamera = true;
+                this.#isAdjustingCamera = true;
                 this.viewer.camera.flyTo({
                                         destination: Cesium.Cartesian3.fromDegrees(
-                                            this.#_currentPosition.longitude,
-                                            this.#_currentPosition.latitude,
+                                            this.#currentPosition.longitude,
+                                            this.#currentPosition.latitude,
                                             Camera.DEFAULT_CAMERA_HEIGHT
                                         ),
                     orientation: 
@@ -251,10 +251,10 @@ class Camera
                         roll: 0.0
                     }
                 });
-                this.#_isAdjustingCamera = false;
+                this.#isAdjustingCamera = false;
             } catch (flyError) {
                 console.error("Even fallback camera update failed:", flyError);
-                this.#_isTopDownView = false;
+                this.#isTopDownView = false;
                 this.#changeButtonStyle(this.topDownButton, this.topDownText, false, 'Top-Down View', 'Exit Top-Down');
             }
         }
@@ -262,7 +262,7 @@ class Camera
 
     #maintainTopDownPerspective()
     {
-        if (!this.#_isTopDownView || this.#_isAdjustingCamera)
+        if (!this.#isTopDownView || this.#isAdjustingCamera)
         {
             return;
         }
@@ -274,7 +274,7 @@ class Camera
         const needPitchAdjustment = Math.abs(currentPitch - desiredPitch) > pitchThreshold;
 
         if (needPitchAdjustment) {
-            this.#_isAdjustingCamera = true;
+            this.#isAdjustingCamera = true;
             this.viewer.camera.setView({
                 orientation:
                 {
@@ -283,15 +283,15 @@ class Camera
                     roll: 0.0
                 }
             });
-            this.#_isAdjustingCamera = false;
+            this.#isAdjustingCamera = false;
         }
     }
 
     toggleCameraTracking()
     {
-        this.#_isCameraTracking = !this.#_isCameraTracking;
+        this.#isCameraTracking = !this.#isCameraTracking;
 
-        if (this.#_isCameraTracking)
+        if (this.#isCameraTracking)
         {
             this.#changeButtonStyle(this.trackingButton, this.trackingText, true, 'Track Position', 'Tracking On');
 
@@ -299,7 +299,7 @@ class Camera
                 this.#updateCameraPosition();
             } catch (error) {
                 console.error("Error enabling tracking:", error);
-                this.#_isCameraTracking = false;
+                this.#isCameraTracking = false;
                 this.#changeButtonStyle(this.trackingButton, this.trackingText, false, 'Track Position', 'Tracking On');
             }
         }
@@ -321,7 +321,7 @@ class Camera
 
     #updateCameraPosition()
     {
-        if (!this.#_isCameraTracking || !this.viewer || !this.viewer.camera)
+        if (!this.#isCameraTracking || !this.viewer || !this.viewer.camera)
         {
             return;
         }
@@ -345,8 +345,8 @@ class Camera
 
             this.viewer.camera.setView({
                 destination: Cesium.Cartesian3.fromDegrees(
-                    this.#_currentPosition.longitude,
-                    this.#_currentPosition.latitude,
+                    this.#currentPosition.longitude,
+                    this.#currentPosition.latitude,
                     cameraHeight
                 ),
                 orientation: orientation
@@ -356,14 +356,14 @@ class Camera
             try {
                 this.viewer.camera.flyTo({
                     destination: Cesium.Cartesian3.fromDegrees(
-                        this.#_currentPosition.longitude,
-                        this.#_currentPosition.latitude,
+                        this.#currentPosition.longitude,
+                        this.#currentPosition.latitude,
                         Camera.DEFAULT_CAMERA_HEIGHT
                     )
                 });
             } catch (flyError) {
                 console.error("Even fallback camera update failed:", flyError);
-                this.#_isCameraTracking = false;
+                this.#isCameraTracking = false;
                 this.#changeButtonStyle(this.trackingButton, this.trackingText, false, 'Track Position', 'Tracking On');
             }
         }

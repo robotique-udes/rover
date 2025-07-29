@@ -1,13 +1,12 @@
-class Waypoint {
+class Waypoint 
+{
     #waypointCounter = 1;
     #activeWaypoint = null;
     #isAddingWaypoint = false;
     #pathEntity = null;
     #waypointEntities = [];
     #pathUpdateInterval = null;
-    /* Maybe use a global currentPosition ---> to think about */
-    #currentPosition = { latitude: 45.377755, longitude: -71.924652 };
-
+    #currentPosition = {};
 
     constructor(viewer) 
     {
