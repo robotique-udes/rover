@@ -149,11 +149,25 @@ class Waypoint {
     addWaypoint(lat, lon, name, waypointId) 
     {
         this.#isAddingWaypoint = true;
-        const existingName = this.#checkName(name);
-        const existingLocation = this.#checkLocation(lat, lon);
-
-        if (existingName || existingLocation)
+        if (this.#checkName(name)) 
         {
+            Swal.fire({
+                title: 'Duplicate Waypoint',
+                text: `A waypoint named "${name}" already exists. Please use a different name.`,
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
+            this.#isAddingWaypoint = false;
+            return;
+        }
+        if (this.#checkLocation(lat, lon)) 
+        {
+            Swal.fire({
+                title: 'Duplicate Location',
+                text: `A waypoint already exists at this location. Please choose a different location.`,
+                icon: 'warning',
+                confirmButtonText: 'OK'
+            });
             this.#isAddingWaypoint = false;
             return;
         }
@@ -225,29 +239,13 @@ class Waypoint {
                 {
                     return 'Please enter a name';
                 } 
-
-                const existingNameWaypoint = this.#waypointEntities.some(wp => wp.name === value);
-                if (existingNameWaypoint) 
-                {
-                    return 'A waypoint with this name already exists. Please choose a different name.';
-                }
             }
         }).then((result) => {
             if (result.isConfirmed) 
             {
                 const name = result.value;
                 const id = `waypoint_${Date.now()}`;
-
-                const existingNameWaypoint = this.#waypointEntities.some(wp => wp.name === name);
-                if (existingNameWaypoint) 
-                {
-                    Swal.fire({
-                    title: 'Error',
-                    text: 'A waypoint with this name already exists. Please try again with a different name.',
-                    icon: 'error'
-                    });
-                    return;
-                }
+                this.#waypointCounter++;
 
                 const waypoint = this.addWaypoint(lat, lon, name, id);
 
@@ -261,26 +259,16 @@ class Waypoint {
 
     #checkName(name)
     {
-        const existingName = this.#waypointEntities.find(wp =>
+        const existingName = this.#waypointEntities.some(wp =>
             wp.name === name
         );
 
-        if (existingName) 
-        {
-            Swal.fire({
-                title: 'Duplicate Waypoint',
-                text: `A waypoint named "${name}" already exists. Please use a different name.`,
-                icon: 'warning',
-                confirmButtonText: 'OK'
-            });
-            return true;
-        }
-        return false
+        return existingName
     }
 
     #checkLocation(lat, lon)
     {
-        const existingLocation = this.#waypointEntities.find(wp => {
+        const existingLocation = this.#waypointEntities.some(wp => {
             const wpPosition = wp.position.getValue(Cesium.JulianDate.now());
             const wpCartographic = Cesium.Cartographic.fromCartesian(wpPosition);
             const wpLat = Cesium.Math.toDegrees(wpCartographic.latitude);
@@ -290,17 +278,6 @@ class Waypoint {
             return Math.abs(wpLat - lat) < epsilon && Math.abs(wpLon - lon) < epsilon;
         });
 
-        if (existingLocation) 
-        {
-            Swal.fire({
-            title: 'Duplicate Location',
-            text: `A waypoint already exists at this location. Please choose a different location.`,
-            icon: 'warning',
-            confirmButtonText: 'OK'
-            });
-            return true;
-        }
-
-        return false;
+        return existingLocation;
     }
 }
