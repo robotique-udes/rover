@@ -1,5 +1,7 @@
 class Camera 
 {
+    static DEFAULT_CAMERA_HEIGHT = 1000.0;
+
     #_isFacingNorth = false;
     #_isTopDownView = false;
     #_isAdjustingCamera = false;
@@ -14,6 +16,12 @@ class Camera
     constructor(viewer) 
     {
         this.viewer = viewer;
+        this.trackingButton = document.getElementById('trackingButton');
+        this.trackingText = document.getElementById('trackingText');
+        this.topDownButton = document.getElementById('topDownButton');
+        this.topDownText = document.getElementById('topDownText');
+        this.northFacingButton = document.getElementById('northFacingButton');
+        this.northFacingText = document.getElementById('northFacingText');
     }
 
     get isFacingNorth() 
@@ -44,13 +52,10 @@ class Camera
     toggleNorthFacing()
     {
         this.#_isFacingNorth = !this.#_isFacingNorth;
-        const northFacingButton = document.getElementById('northFacingButton');
-        const northFacingText = document.getElementById('northFacingText');
 
         if (this.#_isFacingNorth) 
         {
-            northFacingButton.classList.add('active');
-            northFacingText.textContent = 'Facing North';
+            this.#changeButtonStyle(this.northFacingButton, this.northFacingText, true, 'Face North', 'Facing North');
             this.#setNorthFacing();
 
             setTimeout(() => {
@@ -62,8 +67,7 @@ class Camera
         }
         else 
         {
-            northFacingButton.classList.remove('active');
-            northFacingText.textContent = 'Face North'
+            this.#changeButtonStyle(this.northFacingButton, this.northFacingText, false, 'Face North', 'Facing North');
             this.viewer.camera.changed.removeEventListener(this.#_boundStillFacingNorth);
 
             if (this.#_northFacingTimeout) 
@@ -127,8 +131,6 @@ class Camera
     toggleTopDownView()
     {
         this.#_isTopDownView = !this.#_isTopDownView;
-        const topDownButton = document.getElementById('topDownButton');
-        const topDownText = document.getElementById('topDownText');
 
         if (this.#_isTopDownView) {
             if (!this.#_isCameraTracking) 
@@ -141,8 +143,7 @@ class Camera
                 };
             }
 
-            topDownButton.classList.add('active');
-            topDownText.textContent = 'Exit Top-Down';
+            this.#changeButtonStyle(this.topDownButton, this.topDownText, true, 'Top-Down View', 'Exit Top-Down');
 
             try {
                 this.#setTopDownView();
@@ -160,14 +161,12 @@ class Camera
             } catch (error) {
                 console.error("Error enabling top-down view:", error);
                 this.#_isTopDownView = false;
-                topDownButton.classList.remove('active');
-                topDownText.textContent = 'Top-Down View';
+                this.#changeButtonStyle(this.topDownButton, this.topDownText, false, 'Top-Down View', 'Exit Top-Down');
             }
         } 
         else 
         {
-            topDownButton.classList.remove('active');
-            topDownText.textContent = 'Top-Down View';
+            this.#changeButtonStyle(this.topDownButton, this.topDownText, false, 'Top-Down View', 'Exit Top-Down');
 
             if (this.#_isFacingNorth) 
             {
@@ -201,17 +200,17 @@ class Camera
 
     #setTopDownView()
     {
-        if (!this.#_isTopDownView || !this.viewer || !this.viewer.camera) 
+        if (!this.#_isTopDownView) 
         {
             return;
         }
 
         try {
-            let cameraHeight = 1000.0;
+            let cameraHeight = Camera.DEFAULT_CAMERA_HEIGHT;
             try {
                 if (this.viewer.camera.positionCartographic) 
                 {
-                    cameraHeight = Math.max(this.viewer.camera.positionCartographic.height, 1000.0);
+                    cameraHeight = Math.max(this.viewer.camera.positionCartographic.height, Camera.DEFAULT_CAMERA_HEIGHT);
                 }
             } catch (e) {
                 console.warn("Could not get camera height, using default:", e);
@@ -243,7 +242,7 @@ class Camera
                                         destination: Cesium.Cartesian3.fromDegrees(
                                             this.#_currentPosition.longitude,
                                             this.#_currentPosition.latitude,
-                                            1000.0
+                                            Camera.DEFAULT_CAMERA_HEIGHT
                                         ),
                     orientation: 
                     {
@@ -256,8 +255,7 @@ class Camera
             } catch (flyError) {
                 console.error("Even fallback camera update failed:", flyError);
                 this.#_isTopDownView = false;
-                document.getElementById('topDownButton').classList.remove('active');
-                document.getElementById('topDownText').textContent = 'Top-Down View';
+                this.#changeButtonStyle(this.topDownButton, this.topDownText, false, 'Top-Down View', 'Exit Top-Down');
             }
         }
     }
@@ -292,33 +290,29 @@ class Camera
     toggleCameraTracking()
     {
         this.#_isCameraTracking = !this.#_isCameraTracking;
-        const trackingButton = document.getElementById('trackingButton');
-        const trackingText = document.getElementById('trackingText');
 
         if (this.#_isCameraTracking)
         {
-            trackingButton.classList.add('active');
-            trackingText.textContent = 'Tracking On';
+            this.#changeButtonStyle(this.trackingButton, this.trackingText, true, 'Track Position', 'Tracking On');
 
             try {
                 this.#updateCameraPosition();
             } catch (error) {
                 console.error("Error enabling tracking:", error);
                 this.#_isCameraTracking = false;
-                trackingButton.classList.remove('active');
-                trackingText.textContent = 'Track Position';
+                this.#changeButtonStyle(this.trackingButton, this.trackingText, false, 'Track Position', 'Tracking On');
             }
         }
         else
         {
-            trackingButton.classList.remove('active');
-            trackingText.textContent = 'Track Position';
+            this.#changeButtonStyle(this.trackingButton, this.trackingText, false, 'Track Position', 'Tracking On');
 
         }
 
+        // #TODO: Not implemented in C++
         // try {
         //     if (window.bridge && window.bridge.cameraTrackingChanged) {
-        //         window.bridge.cameraTrackingChanged(cameraTracking); // #TODO: Not implemented in C++
+        //         window.bridge.cameraTrackingChanged(cameraTracking); 
         //     }
         // } catch (error) {
         //     console.error("Error notifying bridge about tracking state:", error);
@@ -333,7 +327,7 @@ class Camera
         }
 
         try {
-            let cameraHeight = 1000.0;
+            let cameraHeight = Camera.DEFAULT_CAMERA_HEIGHT;
             try {
                 if (this.viewer.camera.positionCartographic)
                 {
@@ -364,15 +358,28 @@ class Camera
                     destination: Cesium.Cartesian3.fromDegrees(
                         this.#_currentPosition.longitude,
                         this.#_currentPosition.latitude,
-                        1000.0
+                        Camera.DEFAULT_CAMERA_HEIGHT
                     )
                 });
             } catch (flyError) {
                 console.error("Even fallback camera update failed:", flyError);
                 this.#_isCameraTracking = false;
-                document.getElementById('trackingButton').classList.remove('active');
-                document.getElementById('trackingText').textContent = 'Track Position';
+                this.#changeButtonStyle(this.trackingButton, this.trackingText, false, 'Track Position', 'Tracking On');
             }
+        }
+    }
+
+    #changeButtonStyle(button, textElement, isActive, activeText, inactiveText) 
+    {
+        if (isActive) 
+        {
+            button.classList.add('active');
+            textElement.textContent = activeText;
+        } 
+        else 
+        {
+            button.classList.remove('active');
+            textElement.textContent = inactiveText;
         }
     }
 }
