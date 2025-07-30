@@ -8,6 +8,7 @@
 #include "rover_lib2/helpers/watchdog.hpp"
 #include "rover_lib2/helpers/one_shot_timer.hpp"
 #include "rover_lib2/helpers/macros.hpp"
+#include "rover_lib2/filters/none.hpp"
 
 #include <bit>
 #include <array>
@@ -22,7 +23,8 @@ namespace Encoders
      * support one turn and will always return a position value between [0; 2PI[]
      *
      */
-    class AMT222A : public Encoder<AMT222A>
+    template<Filters::Filter FilterPosT = Filters::None, Filters::Filter FilterSpeedT = Filters::None>
+    class AMT222A
     {
         // Clock speed this low necessary because the ESP-IDF doesn't support adding clean delay between bytes in same
         // transaction... and AMT222X Requires 2.5us between bytes in same transaction.
@@ -57,18 +59,24 @@ namespace Encoders
         };
 
       public:
-        AMT222A(SPIBus& spiBus_, gpio_num_t pinCS_, bool reversed_ = false):
+        AMT222A(SPIBus& spiBus_,
+                gpio_num_t pinCS_,
+                bool reversed_ = false,
+                FilterPosT posFilter_ = Filters::None(),
+                FilterSpeedT speedFilter_ = Filters::None()):
             _spiDevice(spiBus_, pinCS_, SPI_CLOCK_SPEED_HZ, 3U, 3U, SPIDeviceT::eSPIMode::MODE_0),
+            _filterPos(posFilter_),
+            _filterSpeed(speedFilter_),
             _reversed(reversed_)
         {
         }
 
-        void __init(void)
+        void init(void)
         {
             _dtSpeedCalc.restart();
         }
 
-        void __update(void)
+        void update(void)
         {
             if (loopExec.isReady())
             {
@@ -116,30 +124,38 @@ namespace Encoders
                             _currentState = eState::READY;
                         }
                         break;
+                    default:
+                        ASSERT_MSG("Shouldn't fall here, implementation error");
+                        _currentState = eState::READY;  // TODO Set case failure
+                        break;
                 }
             }
         }
 
-        bool _dataIsValid(void)
+        bool dataIsValid(void) const
         {
             return _dataValidWatchdog.isOk();
         }
 
-        float _getPosition(void)
+        float getPosition(void) const
         {
             return CONSTRAIN_TO_CIRCLE(_calibOffset + _currentPosition);
         }
 
-        float _getSpeed(void)
+        float getSpeed(void) const
         {
             return _currentSpeed;
         }
 
-        void _calib(float offset_)
+        void calib(float offset_)
         {
+            LOG_DEBUG(Logger::Nodes::AMT222A, "Calibration requested with offset: %f", offset_);
             offset_ = CONSTRAIN_TO_CIRCLE(offset_);
+
+            float calibOffset = offset_ - _currentPosition;
+
             _calibRequested = true;
-            _calibOffset = offset_;
+            _calibOffset = calibOffset;
         }
 
       private:
@@ -185,6 +201,9 @@ namespace Encoders
                     return true;
                 case SPIDeviceT::eReturnCode::TRANSMISSION_DONE_SUCCESS:
                     break;
+                default:
+                    ASSERT_MSG("Shouldn't fall here, implementation error");
+                    return false;
             }
 
             if (!this->validateChecksum(std::array<uint8_t, 2U>{data[0], data[1]}))
@@ -196,31 +215,56 @@ namespace Encoders
             newPos &= VALID_DATA_BIT_MASK;
             newPos >>= 2;
 
+            float currentPosTemp = 0.0F;
+
             if (_reversed)
             {
-                _currentPosition = MAP(static_cast<float>(newPos),
-                                       0.0F,
-                                       static_cast<float>((1U << 12) - 1U),
-                                       0.0F,
-                                       ((2.0F * std::numbers::pi_v<float>)-0.000'001F));
+                currentPosTemp = MAP(static_cast<float>(newPos),
+                                     0.0F,
+                                     static_cast<float>((1U << 12) - 1U),
+                                     0.0F,
+                                     ((2.0F * std::numbers::pi_v<float>)-0.000'001F));
             }
             else
             {
-                _currentPosition = MAP(static_cast<float>(newPos),
-                                       0.0F,
-                                       static_cast<float>((1U << 12) - 1U),
-                                       ((2.0F * std::numbers::pi_v<float>)-0.000'001F),
-                                       0.0F);
+                currentPosTemp = MAP(static_cast<float>(newPos),
+                                     0.0F,
+                                     static_cast<float>((1U << 12) - 1U),
+                                     ((2.0F * std::numbers::pi_v<float>)-0.000'001F),
+                                     0.0F);
+            }
+
+            if (_isFirstRead)
+            {
+                _filterPos.reset(currentPosTemp);
+                _currentPosition = currentPosTemp;
+                _lastPosition = _currentPosition;
+            }
+            else
+            {
+                _currentPosition = _filterPos.addValue(currentPosTemp);
             }
 
             _dataValidWatchdog.reset();
 
             if (_dtSpeedCalc.getTime() >= MIN_TIME_BETWEEN_SPEED_CALC_US)
             {
-                _currentSpeed = (_currentPosition - _lastPosition) * (1'000'000.0F / static_cast<float>(_dtSpeedCalc.getTime()));
+                float currentSpeedTemp
+                    = (_currentPosition - _lastPosition) * (1'000'000.0F / static_cast<float>(_dtSpeedCalc.getTime()));
+                if (_isFirstRead)
+                {
+                    _filterSpeed.reset(currentSpeedTemp);
+                }
+                else
+                {
+                    _currentSpeed = _filterSpeed.addValue(currentSpeedTemp);
+                }
+
                 _dtSpeedCalc.restart();
                 _lastPosition = _currentPosition;
             }
+
+            _isFirstRead = false;
 
             return true;
         }
@@ -247,15 +291,22 @@ namespace Encoders
         LoopTimer<uint64_t, &Time::micros> loopExec = {LOOP_PERIOD_US};
 
         bool _calibRequested = false;
+        bool _isFirstRead = true;
         float _calibOffset = 0.0F;
         float _currentPosition = 0.0F;
         float _lastPosition = 0.0F;
         float _currentSpeed = 0.0F;
+
+        FilterPosT _filterPos;
+        FilterSpeedT _filterSpeed;
+
         Watchdog<uint64_t, &Time::micros> _dataValidWatchdog = {WATCHDOG_DATA_VALID_PERIOD};
         Chrono<uint64_t, &Time::micros> _dtSpeedCalc;
         OneShotTimer<uint64_t, &Time::micros> _timerTimingDelay = {0};
 
         bool _reversed;
+
+        VALIDATE_CONCEPT(Encoder, AMT222A);
     };
 
 }  // namespace Encoders

@@ -9,7 +9,6 @@
 
 namespace Encoders
 {
-
     template<typename ImplT>
     concept Encoder = RoverObject<ImplT> && requires(ImplT impl_)
     {
