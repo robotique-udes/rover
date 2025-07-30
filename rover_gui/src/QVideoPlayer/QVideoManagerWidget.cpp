@@ -59,6 +59,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _altLayout.addWidget(&_splitter);
     _tabWidget.addTab(&_gridContainer, "grid");
     _tabWidget.addTab(&_altLayoutContainer, "alt");
+    _tabWidget.setCurrentIndex(std::to_underlying(eTabIndex::ALT));
 
     _playerWorkerThreadAruco->start();
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
@@ -66,7 +67,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
 void QVideoManagerWidget::onTabChanged(uint16_t index_)
 {
-    if (index_ == 0)
+    if (index_ == std::to_underlying(eTabIndex::GRID))
     {
         uint16_t index = 0;
         for (const auto& widget : _videoPlaysWidgets)

@@ -125,6 +125,7 @@ class QVideoPlayerWidget : public QWidget
     void initializeUIState(void);
     void emitStateChanged(void);
     void cleanupResources(void);
+    void autoStartGStreamer(void);
 
     void hideAngleSelector(void);
     std::shared_ptr<rclcpp::Node> _node;
