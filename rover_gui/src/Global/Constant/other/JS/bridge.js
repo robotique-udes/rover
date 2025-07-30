@@ -110,7 +110,11 @@ class Bridge
             return;
         }
 
-        this.waypoints.addWaypoint(lat, lon, name, id);
+        const waypoint = this.waypoints.addWaypoint(lat, lon, name, id);
+        if (!waypoint) 
+        {
+            return;
+        }
 
         const wasTracking = this.camera.isCameraTracking;
         const wasTopDown = this.camera.isTopDownView;
