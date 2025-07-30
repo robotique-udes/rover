@@ -14,7 +14,7 @@ class QNavigation : public QWidget
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
-    struct Waypoint
+    struct sWaypoint
     {
         QString name;
         double latitude;
@@ -54,7 +54,7 @@ class QNavigation : public QWidget
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
-    QList<Waypoint> _waypoints;
+    QList<sWaypoint> _waypoints;
 };
 
 #endif  // QNAVIGATION_HPP
