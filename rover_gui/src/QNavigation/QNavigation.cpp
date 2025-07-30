@@ -132,7 +132,7 @@ void QNavigation::onCalculatePathClicked(void)
     int index_ = _ui.waypointList->row(currentItem_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint = _waypoints.at(index_);
+        const sWaypoint& waypoint = _waypoints.at(index_);
 
         emit this->calculatePath(waypoint.latitude, waypoint.longitude, waypoint.id);
     }
@@ -140,7 +140,7 @@ void QNavigation::onCalculatePathClicked(void)
 
 void QNavigation::addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_)
 {
-    Waypoint waypoint_;
+    sWaypoint waypoint_;
     waypoint_.name = name_;
     waypoint_.latitude = latitude_;
     waypoint_.longitude = longitude_;
@@ -169,7 +169,7 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
     int index = _ui.waypointList->row(item_);
     if (index >= 0 && index < _waypoints.size())
     {
-        const Waypoint& waypoint = _waypoints.at(index);
+        const sWaypoint& waypoint = _waypoints.at(index);
         bool isVisible = (item_->checkState() == Qt::Checked);
 
         emit this->waypointIsVisible(waypoint.id, isVisible);
@@ -186,7 +186,7 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
     int index_ = _ui.waypointList->row(item_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint_ = _waypoints.at(index_);
+        const sWaypoint& waypoint_ = _waypoints.at(index_);
 
         _ui.inputName->setText(waypoint_.name);
         _ui.inputLatitude->setText(QString::number(waypoint_.latitude, 'f', 6));
