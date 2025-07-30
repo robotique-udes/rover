@@ -69,9 +69,10 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             [[fallthrough]];
 
         case QSideBar::eTabIndex::DASHBOARD:
-            grid->addWidget(&_navigationWidget, 0, 0, 2, 1);
+            grid->addWidget(&_navigationWidget, 0, 0, 3, 1);
             grid->addWidget(&_arbitrationWidget, 0, 1);
-            grid->addWidget(&_deviceStatusWidget, 1, 1);
+            grid->addWidget(&_ligthsController, 1, 1);
+            grid->addWidget(&_deviceStatusWidget, 2, 1);
 
             grid->setColumnStretch(0, 6);
             grid->setColumnStretch(1, 1);

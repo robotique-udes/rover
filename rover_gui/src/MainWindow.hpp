@@ -9,6 +9,7 @@
 #include "QUtilityBarBottom/QUtilityBarBottom.hpp"
 #include "QUtilityBarTop/QUtilityBarTop.hpp"
 #include "QDeviceStatus/QDeviceStatus.hpp"
+#include "QLightsController/QLightsController.hpp"
 
 #include <QMainWindow>
 #include <QShortcut>
@@ -44,6 +45,7 @@ class MainWindow : public QMainWindow
     QNavigation _navigationWidget;
     QDeviceStatus _deviceStatusWidget;
     QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
+    QLightsController _ligthsController = QLightsController(this);
 
     QFrame _topBarSeperator = QFrame(this);
     QFrame _bottomBarSeperator = QFrame(this);
