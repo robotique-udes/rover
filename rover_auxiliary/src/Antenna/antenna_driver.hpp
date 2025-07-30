@@ -21,7 +21,7 @@ class AntennaDriver
     static constexpr uint8_t MAX_LOGIN_ATTEMPTS = 3U;
     static constexpr uint16_t SESSION_CONNECT_TIMEOUT_MS = 500U;
     static constexpr uint16_t SESSION_TIMEOUT_MS = 1'000U;
-    static constexpr uint64_t LOGIN_COOLDOWN_MS = 60'000UL;
+    static constexpr uint64_t LOGIN_COOLDOWN_MS = 1'000UL;
 
   public:
     AntennaDriver(uint64_t publisherPeriodMs_, const std::string& username_, const std::string& password_);
