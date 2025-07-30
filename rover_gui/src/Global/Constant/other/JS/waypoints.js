@@ -25,7 +25,11 @@ class Waypoint
 
     get waypointEntities()
     {
-        return this.#waypointEntities;
+        return this.#waypointEntities.map(wp => ({
+            id: wp.id,
+            name: wp.name,
+            position: wp.position
+        }));
     }
 
     get activeWaypoint()
@@ -202,22 +206,6 @@ class Waypoint
             }
         });
 
-        if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) 
-        {
-            waypointEntity._visualizers.forEach(visualizer => {
-                if (visualizer && visualizer.visualizersByDisplayID) 
-                {
-                    for (const displayID in visualizer.visualizersByDisplayID)
-                    {
-                        if (visualizer.visualizersByDisplayID[displayID]) 
-                        {
-                            visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
-                        }
-                    }
-                }
-            });
-        }
-
         this.#waypointEntities.push(waypointEntity);
         this.#isAddingWaypoint = false;
         return waypointEntity;
@@ -245,7 +233,6 @@ class Waypoint
         {
             const name = result.value;
             const id = `waypoint_${Date.now()}`;
-            this.#waypointCounter++;
 
             const waypoint = this.addWaypoint(lat, lon, name, id);
 
@@ -278,5 +265,15 @@ class Waypoint
         });
 
         return existingLocation;
+    }
+
+    waypointVisibility(id, visibility)
+    {
+        const waypointEntity = this.viewer.entities.getById(id);
+        if (waypointEntity)
+        {
+            waypointEntity.label.show = visibility;
+            waypointEntity.point.show = visibility;
+        }
     }
 }

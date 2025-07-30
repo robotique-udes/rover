@@ -43,9 +43,9 @@ class Bridge
                 self.#gpsCallback(lat, lon, headingDeg);
             });
 
-            qtBridge.sendGoal.connect(function (name, lat, lon) 
+            qtBridge.sendGoal.connect(function (name, lat, lon, id) 
             {
-                self.#setGoal(name, lat, lon);
+                self.#setGoal(name, lat, lon, id);
             });
 
             qtBridge.calculatePath.connect(function (destLat, destLon, waypointId) 
@@ -66,6 +66,11 @@ class Bridge
                     self.waypoints.stopDynamicPathUpdates();
                 }
                 self.waypoints.deleteWaypoint(waypointId);
+            });
+
+            qtBridge.waypointIsVisible.connect(function (waypointId, visibility)
+            {
+                self.waypoints.waypointVisibility(waypointId, visibility);
             });
         });
     }
@@ -98,15 +103,12 @@ class Bridge
         }
     }
 
-    #setGoal(name, lat, lon)
+    #setGoal(name, lat, lon, id)
     {
         if (this.waypoints.isAddingWaypoint)
         {
             return;
         }
-
-        // PR Étienne
-        const id = `waypoint_${Date.now()}`;
 
         this.waypoints.addWaypoint(lat, lon, name, id);
 
