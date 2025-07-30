@@ -18,5 +18,13 @@
     <file>TaskDateAndTime.txt</file>
     
     <file>other/map.html</file>
+    
+    <file>other/JS/map.js</file>
+    <file>other/JS/waypoints.js</file>
+    <file>other/JS/bridge.js</file>
+    <file>other/JS/camera.js</file>
+    <file>other/JS/mapManager.js</file>
+
+    <file>other/CSS/map.css</file>
   </qresource>
 </RCC>

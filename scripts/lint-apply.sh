@@ -16,6 +16,7 @@ fi
 
 # Detecting lint
 echo "=== Applying lint... ==="
-find "$SCRIPT_DIR/.." \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -style=file -i {} \;
+find "$SCRIPT_DIR/.." -type d -name deps -prune -o \
+    -type f \( -name "*.cpp" -o -name "*.h" -o -name "*.hpp" \) -exec clang-format -style=file -i {} \;
 
 echo -e "\e[0;32m[SUCCESS]\e[0m Linting applied successfully!"

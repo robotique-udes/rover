@@ -14,7 +14,7 @@ class QNavigation : public QWidget
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
-    struct Waypoint
+    struct sWaypoint
     {
         QString name;
         double latitude;
@@ -24,8 +24,9 @@ class QNavigation : public QWidget
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
-    void sendGoal(QString name, double latitude, double longitude, QString id);
-    void calculatePath(double latitude_, double longitude_);
+    void sendGoal(QString name_, double latitude_, double longitude_, QString id_);
+    void calculatePath(double destLat_, double destLon_, QString waypointId_);
+    void waypointIsVisible(QString waypointId_, bool visibility_);
     void jsReady(void);
     void clearWaypoints(void);
     void clearPath(void);
@@ -35,6 +36,7 @@ class QNavigation : public QWidget
     void pathDistanceCalculated(double distanceMeters_);
     void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
     void onCalculatePathClicked(void);
+    void onWaypointVisibilityChanged(QListWidgetItem* item_);
     void onWaypointSelected(QListWidgetItem* item_);
     void onClearWaypointsClicked(void);
     void onClearPathClicked(void);
@@ -52,7 +54,7 @@ class QNavigation : public QWidget
 
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
-    QList<Waypoint> _waypoints;
+    QList<sWaypoint> _waypoints;
 };
 
 #endif  // QNAVIGATION_HPP
