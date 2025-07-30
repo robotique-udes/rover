@@ -1,5 +1,8 @@
 #ifndef ROVER_LIB2_HELPERS_CONSTANTS_HPP
 #define ROVER_LIB2_HELPERS_CONSTANTS_HPP
+#include <array>
+#include <cstddef>
+#include <utility>
 
 #if defined(__linux__)
 #include <map>
@@ -37,6 +40,26 @@ namespace Constants
         bool getNameFromURL(const std::string& url_, std::string& rName_);
 #endif  // defined(__linux__)
     }   // namespace CameraInfo
+
+    namespace AntennaInfo
+    {
+        enum class eAntennaType : std::size_t
+        {
+            BASE = 0,
+            ROVER = 1,
+            eLast
+        };
+
+        static constexpr std::array<const char*, std::to_underlying(eAntennaType::eLast)> ANTENNA_URLS
+            = {"https://192.168.144.55", "https://192.168.144.50"};
+
+        template<eAntennaType antenna_>
+        constexpr const char* getURL()
+        {
+            static_assert(static_cast<size_t>(antenna_) < ANTENNA_URLS.size(), "Invalid antenna index");
+            return ANTENNA_URLS[static_cast<size_t>(antenna_)];
+        }
+    }  // namespace AntennaInfo
 
     namespace DriveTrain
     {

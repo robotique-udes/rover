@@ -34,6 +34,10 @@ sudo apt -y install gstreamer1.0-plugins-bad
 sudo apt -y install gstreamer1.0-plugins-ugly
 sudo apt -y install libgstreamer-plugins-base1.0-dev
 sudo apt -y install libgstrtspserver-1.0-dev
+sudo apt -y install libpsl-dev
+sudo apt -y install libcurl4-openssl-dev
+sudo apt -y install libjsoncpp-dev
+sudo apt -y install meson
 
 echo -e "\e[0;32m[OK]\e[0m"
 
