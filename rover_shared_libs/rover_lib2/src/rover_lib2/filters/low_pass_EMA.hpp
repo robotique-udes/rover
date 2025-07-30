@@ -32,7 +32,7 @@ namespace Filters
         static constexpr float MIN_ALPHA_VALUE = static_cast<float>(0.0);
 
       public:
-        explicit constexpr LowPassEMA(float alpha_ = 0.6F, float initialValue_ = 0.0F):
+        constexpr LowPassEMA(float alpha_ = 0.6F, float initialValue_ = 0.0F):
             _alpha(std::clamp(alpha_, MIN_ALPHA_VALUE, MAX_ALPHA_VALUE)),
             _lastOutput(initialValue_)
         {
