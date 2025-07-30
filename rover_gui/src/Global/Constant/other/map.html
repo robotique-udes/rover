@@ -977,7 +977,7 @@
             return;
           }
 
-          const waypoint = addWaypoint(lat, lon, name, id, true);
+          const waypoint = addWaypoint(lat, lon, name, id);
 
           if (waypoint && window.bridge && window.bridge.waypointCreated) {
             window.bridge.waypointCreated(name, lat, lon, id);
