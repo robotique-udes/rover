@@ -105,10 +105,10 @@
       </svg>
       <span id="trackingText">Track Position</span>
     </button>
-	<button id="northFacingButton" class="controlButton" title="Toggle north facing">
-		<img id="northIcon" class="buttonIcon" src="qrc:/icons/arrow.png" viewBox="0 0 24 24" fill="white">
-		<span id="northFacingText"> Face North</span>
-	</button>
+    <button id="northFacingButton" class="controlButton" title="Toggle north facing">
+      <img id="northIcon" class="buttonIcon" src="qrc:/icons/arrow.png" viewBox="0 0 24 24" fill="white">
+      <span id="northFacingText"> Face North</span>
+    </button>
   </div>
   <div id="connectionError">
     <h2>Not able to connect to internet</h2>
@@ -129,9 +129,10 @@
     let isTopDownView = false;
     let lastHeading = 0;
     let lastCameraPosition = null;
-	let isFacingNorth = false;
-	let isAdjustingCamera = false;
-	let northFacingTimeout = null;
+    let isFacingNorth = false;
+    let isAdjustingCamera = false;
+    let northFacingTimeout = null;
+    let recentlyCreatedWaypoints = new Set(); // Track waypoints created by visibility signal
 
     function checkConnectivity() {
       const connectionError = document.getElementById('connectionError');
@@ -219,7 +220,7 @@
     function setupControlButtons() {
       const trackingButton = document.getElementById('trackingButton');
       const topDownButton = document.getElementById('topDownButton');
-	  const northFacingButton = document.getElementById('northFacingButton');
+      const northFacingButton = document.getElementById('northFacingButton');
 
       trackingButton.addEventListener('click', function () {
         toggleCameraTracking();
@@ -229,97 +230,85 @@
         toggleTopDownView();
       });
 
-	  northFacingButton.addEventListener('click', function () {
-		toggleNorthFacing();
-	  });
+      northFacingButton.addEventListener('click', function () {
+        toggleNorthFacing();
+      });
     }
 
-	function toggleNorthFacing() 
-	{
-		isFacingNorth = !isFacingNorth;
-		const northFacingButton = document.getElementById('northFacingButton');
-		const northFacingText = document.getElementById('northFacingText');
+    function toggleNorthFacing() {
+      isFacingNorth = !isFacingNorth;
+      const northFacingButton = document.getElementById('northFacingButton');
+      const northFacingText = document.getElementById('northFacingText');
 
-		if (isFacingNorth)
-		{
-			northFacingButton.classList.add('active');
-			northFacingText.textContent = 'Facing North';
-			setNorthFacing();
-			
-        	setTimeout(() => {
-            	if (isFacingNorth) 
-				{
-                	viewer.camera.changed.addEventListener(stillFacingNorth);
-            	}
-        	}, 100);
-		}
-		else
-		{
-			northFacingButton.classList.remove('active');
-			northFacingText.textContent = 'Face North'
-			viewer.camera.changed.removeEventListener(stillFacingNorth);
+      if (isFacingNorth) {
+        northFacingButton.classList.add('active');
+        northFacingText.textContent = 'Facing North';
+        setNorthFacing();
 
-			if (northFacingTimeout) 
-			{
-            	clearTimeout(northFacingTimeout);
-            	northFacingTimeout = null;
-        	}
-		}
-	}
+        setTimeout(() => {
+          if (isFacingNorth) {
+            viewer.camera.changed.addEventListener(stillFacingNorth);
+          }
+        }, 100);
+      }
+      else {
+        northFacingButton.classList.remove('active');
+        northFacingText.textContent = 'Face North'
+        viewer.camera.changed.removeEventListener(stillFacingNorth);
 
-	function setNorthFacing()
-	{
-		if (isFacingNorth)
-		{
-			const desiredHeading = 0.0;
-			const headingThreshold = 0.01;
+        if (northFacingTimeout) {
+          clearTimeout(northFacingTimeout);
+          northFacingTimeout = null;
+        }
+      }
+    }
 
-			const needHeadingAdjustment = Math.abs(viewer.camera.heading - desiredHeading) > headingThreshold
+    function setNorthFacing() {
+      if (isFacingNorth) {
+        const desiredHeading = 0.0;
+        const headingThreshold = 0.01;
 
-			if (needHeadingAdjustment)
-			{
-				isAdjustingCamera = true;
-				viewer.camera.setView(
-				{
-					orientation:
-					{
-						heading: desiredHeading,
-						pitch: viewer.camera.pitch,
-						roll: 0.0
-					}
-				});
-				isAdjustingCamera = false;
-			}
-		}	
-	}
+        const needHeadingAdjustment = Math.abs(viewer.camera.heading - desiredHeading) > headingThreshold
 
-	function stillFacingNorth() 
-	{
-		if (!isFacingNorth || isAdjustingCamera)
-    {
-      return;
-    } 
+        if (needHeadingAdjustment) {
+          isAdjustingCamera = true;
+          viewer.camera.setView(
+            {
+              orientation:
+              {
+                heading: desiredHeading,
+                pitch: viewer.camera.pitch,
+                roll: 0.0
+              }
+            });
+          isAdjustingCamera = false;
+        }
+      }
+    }
 
-		if (northFacingTimeout)
-		{
-			clearTimeout(northFacingTimeout);
-		}
+    function stillFacingNorth() {
+      if (!isFacingNorth || isAdjustingCamera) {
+        return;
+      }
 
-		northFacingTimeout = setTimeout(() => {
-			const currentHeading = viewer.camera.heading;
-			const desiredHeading = 0.0;
-			const headingThreshold = 0.05;
-			const notOnNorth = Math.abs(currentHeading - desiredHeading) > headingThreshold;
+      if (northFacingTimeout) {
+        clearTimeout(northFacingTimeout);
+      }
 
-			if (notOnNorth) 
-			{
-				toggleNorthFacing();
-			}
-			northFacingTimeout = null;
-		}, 200);
-	}
+      northFacingTimeout = setTimeout(() => {
+        const currentHeading = viewer.camera.heading;
+        const desiredHeading = 0.0;
+        const headingThreshold = 0.05;
+        const notOnNorth = Math.abs(currentHeading - desiredHeading) > headingThreshold;
 
-	function toggleTopDownView() {
+        if (notOnNorth) {
+          toggleNorthFacing();
+        }
+        northFacingTimeout = null;
+      }, 200);
+    }
+
+    function toggleTopDownView() {
       isTopDownView = !isTopDownView;
       const topDownButton = document.getElementById('topDownButton');
       const topDownText = document.getElementById('topDownText');
@@ -339,11 +328,10 @@
 
         try {
           setTopDownView();
-		  
-		  if(!isFacingNorth)
-		  {
-			toggleNorthFacing();
-		  }
+
+          if (!isFacingNorth) {
+            toggleNorthFacing();
+          }
 
           if (viewer && viewer.scene && viewer.scene.screenSpaceCameraController) {
             viewer.scene.screenSpaceCameraController.enableTilt = false;
@@ -360,9 +348,8 @@
         topDownButton.classList.remove('active');
         topDownText.textContent = 'Top-Down View';
 
-		if (isFacingNorth) 
-		{
-            toggleNorthFacing();
+        if (isFacingNorth) {
+          toggleNorthFacing();
         }
 
         try {
@@ -459,7 +446,7 @@
       const desiredPitch = -Math.PI / 2;
       const pitchThreshold = 0.01;
 
-	  const needPitchAdjustment = Math.abs(currentPitch - desiredPitch) > pitchThreshold;
+      const needPitchAdjustment = Math.abs(currentPitch - desiredPitch) > pitchThreshold;
 
       if (needPitchAdjustment) {
         isAdjustingCamera = true;
@@ -521,10 +508,10 @@
         }
 
         const orientation = {
-								heading: viewer.camera.heading,
-								pitch: viewer.camera.pitch,
-								roll: 0.0 
-							};
+          heading: viewer.camera.heading,
+          pitch: viewer.camera.pitch,
+          roll: 0.0
+        };
 
         viewer.camera.setView({
           destination: Cesium.Cartesian3.fromDegrees(
@@ -681,11 +668,17 @@
           }
         });
 
-        bridge.sendGoal.connect(function (name, lat, lon) {
-          if (isAddingWaypoint) return;
+        bridge.waypointIsVisible.connect(function (waypointId, visibility) {
+          waypointVisibility(waypointId, visibility);
+        });
+
+        bridge.sendGoal.connect(function (name, lat, lon, waypointId) {
+          if (isAddingWaypoint) {
+            return;
+          }
 
           isAddingWaypoint = true;
-          const id = `waypoint_${Date.now()}`;
+          id = waypointId || `waypoint_${Date.now()}`;
 
           const existingNameWaypoint = waypointEntities.find(wp =>
             wp.name === name
@@ -815,6 +808,7 @@
         waypointEntities = waypointEntities.filter(wp => wp.id !== waypointId);
         return true;
       }
+
       return false;
     }
 
@@ -897,16 +891,21 @@
 
     function addWaypoint(lat, lon, name, waypointId) {
       const waypointName = name || `Waypoint ${waypointCounter++}`;
-      const id = waypointId || `waypoint_${Date.now()}`;
 
       const existingNameWaypoint = waypointEntities.find(wp => wp.name === waypointName);
       if (existingNameWaypoint) {
-        console.log("Waypoint with name already exists:", waypointName);
+        Swal.fire({
+          title: 'Duplicate Waypoint Name',
+          text: `A waypoint with the name "${waypointName}" already exists. Please choose
+          a different name."`,
+          icon: 'warning',
+          confirmButtonText: 'OK'
+        });
         return null;
       }
 
       const waypointEntity = viewer.entities.add({
-        id: id,
+        id: waypointId,
         name: waypointName,
         position: Cesium.Cartesian3.fromDegrees(lon, lat),
         point: {
@@ -933,21 +932,18 @@
         }
       });
 
-      if (waypointEntity._visualizers && waypointEntity._visualizers.length > 0) {
-        waypointEntity._visualizers.forEach(visualizer => {
-          if (visualizer && visualizer.visualizersByDisplayID) {
-            for (const displayID in visualizer.visualizersByDisplayID) {
-              if (visualizer.visualizersByDisplayID[displayID]) {
-                visualizer.visualizersByDisplayID[displayID]._zIndex = 999;
-              }
-            }
-          }
-        });
-      }
-
       waypointEntities.push(waypointEntity);
       return waypointEntity;
     }
+
+    function waypointVisibility(id, visibility) {
+      const waypointEntity = viewer.entities.getById(id);
+      if (waypointEntity) {
+        waypointEntity.label.show = visibility;
+        waypointEntity.point.show = visibility;
+      }
+    }
+
 
     function showWaypointDialog(lat, lon) {
       Swal.fire({
@@ -995,7 +991,6 @@
     window.addEventListener('offline', function () {
       document.getElementById('connectionError').style.display = 'block';
     });
+
   </script>
 </body>
-
-</html>
