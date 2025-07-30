@@ -29,6 +29,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
     connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);
     connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected);
+    connect(_ui.waypointList, &QListWidget::itemChanged, this, &QNavigation::onWaypointVisibilityChanged);
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
@@ -131,9 +132,9 @@ void QNavigation::onCalculatePathClicked(void)
     int index_ = _ui.waypointList->row(currentItem_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint_ = _waypoints.at(index_);
+        const Waypoint& waypoint = _waypoints.at(index_);
 
-        emit this->calculatePath(waypoint_.latitude, waypoint_.longitude);
+        emit this->calculatePath(waypoint.latitude, waypoint.longitude, waypoint.id);
     }
 }
 
@@ -145,10 +146,34 @@ void QNavigation::addWaypointToList(const QString& name_, double latitude_, doub
     waypoint_.longitude = longitude_;
     waypoint_.id = id_;
 
+    QString displayText = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
+
+    std::unique_ptr<QListWidgetItem> waypointItem = std::make_unique<QListWidgetItem>(displayText);
+
+    waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
+    waypointItem->setCheckState(Qt::Checked);
+    waypointItem->setData(Qt::UserRole, id_);
+
     _waypoints.append(waypoint_);
 
-    QString displayText_ = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
-    _ui.waypointList->addItem(displayText_);
+    _ui.waypointList->addItem(waypointItem.release());
+}
+
+void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
+{
+    if (!item_)
+    {
+        return;
+    }
+
+    int index = _ui.waypointList->row(item_);
+    if (index >= 0 && index < _waypoints.size())
+    {
+        const Waypoint& waypoint = _waypoints.at(index);
+        bool isVisible = (item_->checkState() == Qt::Checked);
+
+        emit this->waypointIsVisible(waypoint.id, isVisible);
+    }
 }
 
 void QNavigation::onWaypointSelected(QListWidgetItem* item_)
