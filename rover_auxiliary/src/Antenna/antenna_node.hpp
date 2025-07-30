@@ -10,6 +10,7 @@ class AntennaNode : public rclcpp::Node
     static constexpr const char* ANTENNA_BASE_USERNAME = "ROVER_ANTENNA_BASE_USERNAME";
     static constexpr const char* ANTENNA_BASE_PASSWORD = "ROVER_ANTENNA_BASE_PASSWORD";
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 250UL;
+    static constexpr uint64_t LOGGER_THROTTLE_MS = 60'000UL;
 
   public:
     AntennaNode();
