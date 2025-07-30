@@ -84,9 +84,9 @@ class MapManager
     
     #setupEventHandlers() 
     {
-        this.viewer.screenSpaceEventHandler.setInputAction(this.#onDoubleClick, Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
-        this.viewer.screenSpaceEventHandler.setInputAction(this.#onLeftDown, Cesium.ScreenSpaceEventType.LEFT_DOWN);
-        this.viewer.screenSpaceEventHandler.setInputAction(this.#onWheel, Cesium.ScreenSpaceEventType.WHEEL);
+        this.viewer.screenSpaceEventHandler.setInputAction(this.#onDoubleClick.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOUBLE_CLICK);
+        this.viewer.screenSpaceEventHandler.setInputAction(this.#onLeftDown.bind(this), Cesium.ScreenSpaceEventType.LEFT_DOWN);
+        this.viewer.screenSpaceEventHandler.setInputAction(this.#onWheel.bind(this), Cesium.ScreenSpaceEventType.WHEEL);
     }
 
     #onDoubleClick(event)
