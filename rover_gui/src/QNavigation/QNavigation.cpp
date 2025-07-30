@@ -23,22 +23,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
         {
         });
 
-    QString token = qgetenv("CESIUM_TOKEN");
-    if (!token.isEmpty())
-    {
-        _ui.webViewContainer->page()->runJavaScript("Cesium.Ion.defaultAccessToken = '" + token + "';");
-    }
-    else
-    {
-        RCLCPP_WARN(_node->get_logger(),
-                    "Cesium token not found. This access token is generated with the creation of a Ceisum account. Please refer "
-                    "to documentation for more detailed information");
-    }
-
     _ui.webViewContainer->load(QUrl(QRC_PATH_MAP_HTML));
-
-    _webChannel.registerObject(QStringLiteral("bridge"), this);
-    _ui.webViewContainer->page()->setWebChannel(&_webChannel);
 
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
@@ -77,13 +62,13 @@ void QNavigation::onSetGoalClicked()
         return;
     }
 
-    double lat_ = _ui.inputLatitude->text().toDouble();
-    double lon_ = _ui.inputLongitude->text().toDouble();
-    QString name_ = _ui.inputName->text();
+    double lat = _ui.inputLatitude->text().toDouble();
+    double lon = _ui.inputLongitude->text().toDouble();
+    QString name = _ui.inputName->text();
 
-    for (const auto& waypoint : _waypoints)
+    for (const sWaypoint& waypoint : _waypoints)
     {
-        if (waypoint.name == name_)
+        if (waypoint.name == name)
         {
             QHelper::QPopUp::sendQuestionPopUp("Duplicate Name",
                                                "A waypoint with this name already exists. Please choose a different name.");
@@ -91,11 +76,11 @@ void QNavigation::onSetGoalClicked()
         }
     }
 
-    QString id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
+    QString id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
 
-    this->addWaypointToList(name_, lat_, lon_, id_);
+    this->addWaypointToList(name, lat, lon, id);
 
-    emit this->sendGoal(name_, lat_, lon_, id_);
+    emit this->sendGoal(name, lat, lon, id);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -147,7 +132,7 @@ void QNavigation::onCalculatePathClicked(void)
     int index_ = _ui.waypointList->row(currentItem_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint = _waypoints.at(index_);
+        const sWaypoint& waypoint = _waypoints.at(index_);
 
         emit this->calculatePath(waypoint.latitude, waypoint.longitude, waypoint.id);
     }
@@ -155,7 +140,7 @@ void QNavigation::onCalculatePathClicked(void)
 
 void QNavigation::addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_)
 {
-    Waypoint waypoint_;
+    sWaypoint waypoint_;
     waypoint_.name = name_;
     waypoint_.latitude = latitude_;
     waypoint_.longitude = longitude_;
@@ -184,7 +169,7 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
     int index = _ui.waypointList->row(item_);
     if (index >= 0 && index < _waypoints.size())
     {
-        const Waypoint& waypoint = _waypoints.at(index);
+        const sWaypoint& waypoint = _waypoints.at(index);
         bool isVisible = (item_->checkState() == Qt::Checked);
 
         emit this->waypointIsVisible(waypoint.id, isVisible);
@@ -201,7 +186,7 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
     int index_ = _ui.waypointList->row(item_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint_ = _waypoints.at(index_);
+        const sWaypoint& waypoint_ = _waypoints.at(index_);
 
         _ui.inputName->setText(waypoint_.name);
         _ui.inputLatitude->setText(QString::number(waypoint_.latitude, 'f', 6));
@@ -265,6 +250,9 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     {
         return;
     }
+
+    _webChannel.registerObject(QStringLiteral("bridge"), this);
+    _ui.webViewContainer->page()->setWebChannel(&_webChannel);
 
     QString token = qgetenv("CESIUM_TOKEN");
     if (!token.isEmpty())
