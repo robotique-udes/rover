@@ -62,13 +62,13 @@ void QNavigation::onSetGoalClicked()
         return;
     }
 
-    double lat_ = _ui.inputLatitude->text().toDouble();
-    double lon_ = _ui.inputLongitude->text().toDouble();
-    QString name_ = _ui.inputName->text();
+    double lat = _ui.inputLatitude->text().toDouble();
+    double lon = _ui.inputLongitude->text().toDouble();
+    QString name = _ui.inputName->text();
 
-    for (const auto& waypoint : _waypoints)
+    for (const sWaypoint& waypoint : _waypoints)
     {
-        if (waypoint.name == name_)
+        if (waypoint.name == name)
         {
             QHelper::QPopUp::sendQuestionPopUp("Duplicate Name",
                                                "A waypoint with this name already exists. Please choose a different name.");
@@ -76,11 +76,11 @@ void QNavigation::onSetGoalClicked()
         }
     }
 
-    QString id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
+    QString id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
 
-    this->addWaypointToList(name_, lat_, lon_, id_);
+    this->addWaypointToList(name, lat, lon, id);
 
-    emit this->sendGoal(name_, lat_, lon_, id_);
+    emit this->sendGoal(name, lat, lon, id);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
