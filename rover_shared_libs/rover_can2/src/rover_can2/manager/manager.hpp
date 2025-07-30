@@ -1,5 +1,5 @@
-#ifndef MANAGER_HPP
-#define MANAGER_HPP
+#ifndef ROVER_CAN2_MANAGER_MANAGER_HPP
+#define ROVER_CAN2_MANAGER_MANAGER_HPP
 
 #include "rover_can2/drivers/driver_base.hpp"
 #include "rover_can2/device.hpp"
@@ -18,8 +18,7 @@ namespace RoverCan2
     };
 
     template<typename ImplT, typename DriverT, typename... DevicesT>
-    class Manager : public RoverObject<Manager<ImplT, DriverT, DevicesT...>>,
-                    ManagerT
+    class Manager : public ManagerT
     {
         VALIDATE_BASE_TYPE(Drivers::DriverBaseT, DriverT);
         VALIDATE_BASE_TYPE_PACK(DeviceT, DevicesT);
@@ -28,12 +27,12 @@ namespace RoverCan2
         static constexpr uint8_t MAX_MSG_PARSE_PER_UPDATE = 10U;
 
       public:
-        void _init(void)
+        void init(void)
         {
             _driver.init();
         }
 
-        void _update(void)
+        void update(void)
         {
             _driver.update();
 
@@ -51,7 +50,7 @@ namespace RoverCan2
 
             this->publishAllQueuedMsgs();
 
-            static_cast<ImplT*>(this)->__update();
+            static_cast<ImplT*>(this)->_update();
         }
 
         /**
@@ -161,4 +160,4 @@ namespace RoverCan2
 
 }  // namespace RoverCan2
 
-#endif  // MANAGER_HPP
+#endif  // ROVER_CAN2_MANAGER_MANAGER_HPP

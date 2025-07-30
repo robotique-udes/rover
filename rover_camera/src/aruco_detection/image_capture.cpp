@@ -1,6 +1,8 @@
 #include "image_capture.hpp"
 
-ImageCapture::ImageCapture(std::string cameraURL_):
+#include <rover_lib2/helpers/ip_pinging.hpp>
+
+ImageCapture::ImageCapture(const std::string& cameraURL_):
     _cameraURL(cameraURL_),
     _timer_cameraPinningRetries(DELAY_CAMERA_PINNING_RETRY_MS)
 {
@@ -16,26 +18,25 @@ ImageCapture::~ImageCapture(void)
 
 bool ImageCapture::initCam(void)
 {
-    bool res;
+    bool res = false;
     if (_cap.isOpened())
     {
         return true;
     }
 
-    if (_cameraURL.compare(0, 4, "rtsp", 0, 4) == 0)
+    if (_cameraURL.compare(0, 4, "rtsp", 0, 4) == 0
+        && this->isCameraReachable(_cameraURL, CAM_NETWORK_PORT, TIMEOUT_CAMERA_PINNING__MS))
     {
-        if (isCameraReachable(_cameraURL, CAM_NETWORK_PORT, TIMEOUT_CAMERA_PINNING__MS))
-            res = _cap.open(_rtspPipeline, cv::CAP_GSTREAMER);
-        else
-        {
-            res = false;
-        }
+        res = _cap.open(_rtspPipeline, cv::CAP_GSTREAMER);
     }
-
     else if (_cameraURL.compare(0, 8, "file:///", 0, 8) == 0)
     {
         _cameraURL = _cameraURL.substr(7);
         res = _cap.open(_cameraURL, cv::CAP_V4L2);
+    }
+    else
+    {
+        res = false;
     }
 
     if (!res)
@@ -44,11 +45,12 @@ bool ImageCapture::initCam(void)
         _isValid = false;
         return false;
     }
+
     _isValid = true;
     return true;
 }
 
-bool ImageCapture::changeStream(std::string URL_)
+bool ImageCapture::changeStream(std::string_view URL_)
 {
     if (URL_ != _cameraURL)
     {
@@ -100,7 +102,7 @@ std::optional<cv::Mat> ImageCapture::getFrame(bool debugMode_)
     return frame;
 }
 
-cv::Mat ImageCapture::getErrorFrame(void)
+cv::Mat ImageCapture::getErrorFrame(void) const
 {
     cv::Mat frame = cv::Mat::zeros(480, 640, CV_8UC3);
     std::string error_message = "Error: Stream not found!";

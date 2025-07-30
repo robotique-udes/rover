@@ -1,5 +1,5 @@
-#ifndef HELPERS_HPP
-#define HELPERS_HPP
+#ifndef ROVER_CAN2_HELPERS_HPP
+#define ROVER_CAN2_HELPERS_HPP
 
 #include "rover_lib2/helpers/macros.hpp"
 #include "rover_lib2/helpers/log.hpp"
@@ -101,4 +101,4 @@ namespace RoverCan2::Helpers
     }
 }  // namespace RoverCan2::Helpers
 
-#endif  // HELPERS_HPP
+#endif  // ROVER_CAN2_HELPERS_HPP

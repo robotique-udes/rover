@@ -1,8 +1,15 @@
 #include "QNavigation.hpp"
 
 #include "Global/Helpers/QHelpers.hpp"
+#include <QTimer>
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
+constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
+
+// Default to Studio de Création
+constexpr double DEFAULT_LATITUDE = 45.377755;
+constexpr double DEFAULT_LONGITUDE = -71.924652;
+constexpr double DEFAULT_HEADING = 0.0;
 
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -10,56 +17,41 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     _node(guiNode_)
 {
     _ui.setupUi(this);
+
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
         {
         });
 
-    QString token = qgetenv("CESIUM_TOKEN");
-    if (!token.isEmpty())
-    {
-        _ui.webViewContainer->page()->runJavaScript("Cesium.Ion.defaultAccessToken = '" + token + "';");
-    }
-    else
-    {
-        RCLCPP_WARN(_node->get_logger(),
-                    "Cesium token not found. This access token is generated with the creation of a Ceisum account. Please refer "
-                    "to documentation for more detailed information");
-    }
-
     _ui.webViewContainer->load(QUrl(QRC_PATH_MAP_HTML));
-
-    _webChannel.registerObject(QStringLiteral("bridge"), this);
-    _ui.webViewContainer->page()->setWebChannel(&_webChannel);
 
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
     connect(_ui.setGoalButton, &QPushButton::clicked, this, &QNavigation::onSetGoalClicked);
     connect(_ui.calculatePathButton, &QPushButton::clicked, this, &QNavigation::onCalculatePathClicked);
     connect(_ui.waypointList, &QListWidget::itemClicked, this, &QNavigation::onWaypointSelected);
+    connect(_ui.waypointList, &QListWidget::itemChanged, this, &QNavigation::onWaypointVisibilityChanged);
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
 
-    _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>("/rover/gps/position",
+    _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>(GPS_TOPIC_NAME,
                                                                1,
                                                                [this](const rover_msgs::msg::Gps& gpsMsg_)
                                                                {
                                                                    this->onGpsMessage(gpsMsg_);
                                                                });
+
+    // Hack | Todo: java script should send a signal when it's ready to update it's position
+    QTimer::singleShot(1'500,
+                       [this]()
+                       {
+                           emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
+                       });
 }
 
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
-    _currentLat = msg_.latitude;
-    _currentLon = msg_.longitude;
-    _currentHeading = msg_.heading;
-
-    QMetaObject::invokeMethod(this,
-                              "gpsCallback",
-                              Qt::QueuedConnection,
-                              Q_ARG(double, msg_.latitude),
-                              Q_ARG(double, msg_.longitude),
-                              Q_ARG(double, msg_.heading));
+    emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
 }
 
 void QNavigation::onSetGoalClicked()
@@ -70,13 +62,13 @@ void QNavigation::onSetGoalClicked()
         return;
     }
 
-    double lat_ = _ui.inputLatitude->text().toDouble();
-    double lon_ = _ui.inputLongitude->text().toDouble();
-    QString name_ = _ui.inputName->text();
+    double lat = _ui.inputLatitude->text().toDouble();
+    double lon = _ui.inputLongitude->text().toDouble();
+    QString name = _ui.inputName->text();
 
-    for (const auto& waypoint : _waypoints)
+    for (const sWaypoint& waypoint : _waypoints)
     {
-        if (waypoint.name == name_)
+        if (waypoint.name == name)
         {
             QHelper::QPopUp::sendQuestionPopUp("Duplicate Name",
                                                "A waypoint with this name already exists. Please choose a different name.");
@@ -84,11 +76,11 @@ void QNavigation::onSetGoalClicked()
         }
     }
 
-    QString id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
+    QString id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
 
-    this->addWaypointToList(name_, lat_, lon_, id_);
+    this->addWaypointToList(name, lat, lon, id);
 
-    emit this->sendGoal(name_, lat_, lon_, id_);
+    emit this->sendGoal(name, lat, lon, id);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -140,24 +132,48 @@ void QNavigation::onCalculatePathClicked(void)
     int index_ = _ui.waypointList->row(currentItem_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint_ = _waypoints.at(index_);
+        const sWaypoint& waypoint = _waypoints.at(index_);
 
-        emit this->calculatePath(waypoint_.latitude, waypoint_.longitude);
+        emit this->calculatePath(waypoint.latitude, waypoint.longitude, waypoint.id);
     }
 }
 
 void QNavigation::addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_)
 {
-    Waypoint waypoint_;
+    sWaypoint waypoint_;
     waypoint_.name = name_;
     waypoint_.latitude = latitude_;
     waypoint_.longitude = longitude_;
     waypoint_.id = id_;
 
+    QString displayText = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
+
+    std::unique_ptr<QListWidgetItem> waypointItem = std::make_unique<QListWidgetItem>(displayText);
+
+    waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
+    waypointItem->setCheckState(Qt::Checked);
+    waypointItem->setData(Qt::UserRole, id_);
+
     _waypoints.append(waypoint_);
 
-    QString displayText_ = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
-    _ui.waypointList->addItem(displayText_);
+    _ui.waypointList->addItem(waypointItem.release());
+}
+
+void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
+{
+    if (!item_)
+    {
+        return;
+    }
+
+    int index = _ui.waypointList->row(item_);
+    if (index >= 0 && index < _waypoints.size())
+    {
+        const sWaypoint& waypoint = _waypoints.at(index);
+        bool isVisible = (item_->checkState() == Qt::Checked);
+
+        emit this->waypointIsVisible(waypoint.id, isVisible);
+    }
 }
 
 void QNavigation::onWaypointSelected(QListWidgetItem* item_)
@@ -170,7 +186,7 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
     int index_ = _ui.waypointList->row(item_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const Waypoint& waypoint_ = _waypoints.at(index_);
+        const sWaypoint& waypoint_ = _waypoints.at(index_);
 
         _ui.inputName->setText(waypoint_.name);
         _ui.inputLatitude->setText(QString::number(waypoint_.latitude, 'f', 6));
@@ -234,6 +250,10 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     {
         return;
     }
+
+    _webChannel.registerObject(QStringLiteral("bridge"), this);
+    _ui.webViewContainer->page()->setWebChannel(&_webChannel);
+
     QString token = qgetenv("CESIUM_TOKEN");
     if (!token.isEmpty())
     {
@@ -241,7 +261,7 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     }
     else
     {
-        RCLCPP_WARN(_node->get_logger(), "CESIUM TOKEN NOT FOUND");
+        RCLCPP_WARN(_node->get_logger(), "Cesium token not found, can't load map");
     }
 }
 

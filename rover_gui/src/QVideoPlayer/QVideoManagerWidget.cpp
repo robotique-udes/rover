@@ -8,17 +8,23 @@ using namespace LogUtils;
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),
-    _videoPlayerLayout(this),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
-    _playerWorkerThreadRecording(std::make_shared<QPlayerWorker>())
+    _tabWidget(this),
+    _gridContainer(nullptr),
+    _vSubLayoutContainer(nullptr),
+    _altLayoutContainer(nullptr)
 {
     this->initWidget();
+
+    _resetLayout_PB.setIcon(QIcon(":/icons/refresh.png"));
+    _tabWidget.setCornerWidget(&_resetLayout_PB, Qt::TopRightCorner);
+
+    connect(&_resetLayout_PB, &QPushButton::clicked, this, &QVideoManagerWidget::setSplitterInitialGeometry);
 
     connect(_playerWorkerThreadAruco.get(),
             &QPlayerWorker::urlFoundInDetection,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
-    connect(_playerWorkerThreadRecording.get(), &QPlayerWorker::setCursorWaiting, this, &QVideoManagerWidget::onSetCursorWaiting);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
@@ -26,7 +32,14 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                 &QVideoPlayerWidget::notifyCameraAnglePublisher,
                 this,
                 &QVideoManagerWidget::CB_pubCameraAngle);
+
+        connect(_playerWorkerThreadRecording[i].get(),
+                &QRecordingWorker::setCursorWaiting,
+                this,
+                &QVideoManagerWidget::onSetCursorWaiting);
     }
+
+    connect(&_tabWidget, &QTabWidget::currentChanged, this, &QVideoManagerWidget::onTabChanged);
 
     this->initArucoClient();
     this->initArucoPublisher();
@@ -35,12 +48,61 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initCameraControlSubscriber();
     this->initCameraAnglePublisher();
 
-    this->setLayout(&_videoPlayerLayout);
+    _gridContainer.setLayout(&_gridLayout);
+    _altLayoutContainer.setLayout(&_altLayout);
+    _vSubLayoutContainer.setLayout(&_vSubLayout);
+    _altLayout.addWidget(&_vSubLayoutContainer);
+
+    _mainLayout.addWidget(&_tabWidget);
+    this->setLayout(&_mainLayout);
+
+    _altLayout.addWidget(&_splitter);
+    _tabWidget.addTab(&_gridContainer, "grid");
+    _tabWidget.addTab(&_altLayoutContainer, "alt");
+    _tabWidget.setCurrentIndex(std::to_underlying(eTabIndex::ALT));
 
     _playerWorkerThreadAruco->start();
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
-    _playerWorkerThreadRecording->start();
-    _playerWorkerThreadRecording->setThreadName("WorkerRecord");
+}
+
+void QVideoManagerWidget::onTabChanged(uint16_t index_)
+{
+    if (index_ == std::to_underlying(eTabIndex::GRID))
+    {
+        uint16_t index = 0;
+        for (const auto& widget : _videoPlaysWidgets)
+        {
+            if (widget)
+            {
+                int row = index / 3;
+                int col = index % 3;
+                _gridLayout.addWidget(widget.get(), row, col);
+                index++;
+            }
+        }
+        _resetLayout_PB.setVisible(false);
+    }
+    else
+    {
+        if (_videoPlaysWidgets[1])
+        {
+            _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
+        }
+
+        if (_videoPlaysWidgets[2])
+        {
+            _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+        }
+
+        _splitter.addWidget(&_vSubLayoutContainer);
+
+        if (_videoPlaysWidgets[0])
+        {
+            _splitter.insertWidget(0, _videoPlaysWidgets[0].get());
+        }
+        _resetLayout_PB.setVisible(true);
+        this->setSplitterInitialGeometry();
+    }
 }
 
 void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
@@ -64,7 +126,7 @@ void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
     {
         if (widget && widget->getCamURL() == url)
         {
-            widget->displayDetectedArucos(detectedIds);
+            emit widget->displayDetectedArucos(detectedIds);
             emit widget->arucoCameraFailure(msg_.valid);
         }
     }
@@ -104,8 +166,15 @@ void QVideoManagerWidget::initWidget(void)
                            nullptr);
         }
 
-        _videoPlaysWidgets[i]
-            = std::make_unique<QVideoPlayerWidget>(_node, cameraUrl, i, _playerWorkerThreadAruco, _playerWorkerThreadRecording);
+        _playerWorkerThreadRecording[i] = std::make_shared<QRecordingWorker>();
+        _playerWorkerThreadRecording[i]->start();
+        _playerWorkerThreadRecording[i]->setThreadName("WorkerRecord" + std::to_string(i));
+
+        _videoPlaysWidgets[i] = std::make_unique<QVideoPlayerWidget>(_node,
+                                                                     cameraUrl,
+                                                                     i,
+                                                                     _playerWorkerThreadAruco,
+                                                                     _playerWorkerThreadRecording[i]);
         _videoPlaysWidgets[i]->setObjectName(QString("camera%1_widget").arg(i + 1));
     }
 
@@ -116,7 +185,7 @@ void QVideoManagerWidget::initWidget(void)
         {
             int row = index / 3;
             int col = index % 3;
-            _videoPlayerLayout.addWidget(widget.get(), row, col);
+            _gridLayout.addWidget(widget.get(), row, col);
             index++;
         }
     }
@@ -186,10 +255,10 @@ void QVideoManagerWidget::initCameraControlClient(void)
         std::chrono::milliseconds(DELAY_DETECTION_MANAGER_UPDATE),
         [this](void)
         {
-            bool availble = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
+            bool available = _client_cameraControlManager->wait_for_service(std::chrono::milliseconds(TIMEOUT_SERVICE_AVAILABLE));
             for (auto& widget : _videoPlaysWidgets)
             {
-                widget->CB_serviceCameraControlAvailable(availble);
+                widget->CB_srvCameraAvailable(available);
             }
         });
     return;
@@ -211,6 +280,14 @@ void QVideoManagerWidget::initCameraControlSubscriber(void)
                                                                                       widget->CB_cameraListUpdate(msg.urls);
                                                                                   }
                                                                               });
+}
+
+void QVideoManagerWidget::setSplitterInitialGeometry()
+{
+    int total = _splitter.width();
+    int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
+    int right = total - left;
+    _splitter.setSizes(QList<int>({left, right}));
 }
 
 void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)

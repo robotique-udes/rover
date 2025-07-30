@@ -1,5 +1,5 @@
-#ifndef HEALTH_STATE_HPP
-#define HEALTH_STATE_HPP
+#ifndef ROVER_LIB2_HELPERS_HEALTH_STATE_HPP
+#define ROVER_LIB2_HELPERS_HEALTH_STATE_HPP
 
 /**
  * @brief Singleton instance to manage the execution health state of a controller.
@@ -55,4 +55,4 @@ class HealthState
     bool _inError = false;
 };
 
-#endif  // HEALTH_STATE_HPP
+#endif  // ROVER_LIB2_HELPERS_HEALTH_STATE_HPP

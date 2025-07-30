@@ -1,5 +1,5 @@
-#ifndef ERROR_STATE_HPP
-#define ERROR_STATE_HPP
+#ifndef ROVER_CAN2_MSGS_ERROR_STATE_HPP
+#define ROVER_CAN2_MSGS_ERROR_STATE_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
@@ -66,6 +66,8 @@ namespace RoverCan2::Msgs
                               success ? "success" : "failed");
                     break;
 
+                case eMsgContentID::eLAST:
+                    [[fallthrough]];
                 default:
                     return eLoadMsgCode::ERROR_IMPLEMENTATION;
             }
@@ -102,7 +104,11 @@ namespace RoverCan2::Msgs
                     break;
 
                 case eMsgContentID::eLAST:
+                    [[fallthrough]];
+
+                default:
                     return std::nullopt;
+                    break;
             }
 
             return msg_;
@@ -129,4 +135,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // ERROR_STATE_HPP
+#endif  // ROVER_CAN2_MSGS_ERROR_STATE_HPP

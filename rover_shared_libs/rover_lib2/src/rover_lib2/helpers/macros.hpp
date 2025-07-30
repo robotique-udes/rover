@@ -1,18 +1,21 @@
-#ifndef MACROS_HPP
-#define MACROS_HPP
+#ifndef ROVER_LIB2_HELPERS_MACROS_HPP
+#define ROVER_LIB2_HELPERS_MACROS_HPP
 
-#include <cmath>
+#include <concepts>
+#include <cstdint>
+#include <numbers>
 #include <type_traits>
+#include <utility>
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(__linux__) && defined(ROS)
 #include <ament_index_cpp/get_package_prefix.hpp>
-#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+#endif  // defined(__linux__) && defined(ROS)
 
 template<typename ENUM_T>
 constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 {
     static_assert(std::is_enum_v<ENUM_T>, "TO_UNDERLYING() can only be used with enum types");
-    return static_cast<std::underlying_type_t<ENUM_T>>(e);
+    return std::to_underlying(e);
 }
 
 #if !defined(ARDUINO_ESP32S3_DEV)
@@ -26,12 +29,6 @@ constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 #define IN
 #define OUT
 #define INOUT
-
-// Necessary for following macros because VSCode's Microsoft CPP language server doesn't work with template and throws a bunch of
-// false positive errors
-#ifdef __INTELLISENSE__
-#pragma diag_suppress 1919  // Parameter pack expension
-#endif
 
 /**
  * @brief Checks if types derive from a base
@@ -49,6 +46,12 @@ constexpr std::underlying_type_t<ENUM_T> TO_UNDERLYING(ENUM_T e) noexcept
 #define VALIDATE_BASE_TYPE_PACK(BaseT, ...)                                                \
     static_assert((... && std::is_base_of_v<BaseT, std::remove_reference_t<__VA_ARGS__>>), \
                   "All template arguments must be derived from " #BaseT)
+
+/**
+ * @brief Checks if types implements correctly a concept
+ * @note Must be called at the end of the implementation's definition
+ */
+#define VALIDATE_CONCEPT(concept_, impl_) static_assert(concept_<impl_>, #impl_ " does not satisfy the concept " #concept_)
 
 template<typename T>
 constexpr T ABS(T var_) noexcept
@@ -87,15 +90,40 @@ constexpr T CONSTRAIN(T value_, T min_, T max_)
     }
 }
 
+template<std::floating_point T>
+constexpr T CONSTRAIN_TO_CIRCLE(T value_)
+{
+    while (value_ >= static_cast<T>(2.0 * std::numbers::pi))
+    {
+        value_ -= static_cast<T>(2.0 * std::numbers::pi);
+    }
+
+    while (value_ < 0.0F)
+    {
+        value_ += static_cast<T>(2.0 * std::numbers::pi);
+    }
+
+    return value_;
+}
+
 /**
  * @brief Truncate a floating-point value (remove fractional part).
  */
 template<std::floating_point T>
 constexpr T TRUNC(T value_)
 {
-    return (value_ == 0) ? value_ :  // Handle ±0.0
-               (value_ > 0) ? static_cast<T>(static_cast<int64_t>(value_))
-                            : static_cast<T>(static_cast<int64_t>(value_ - static_cast<T>(1.0)) + static_cast<T>(1.0));
+    if (value_ == 0)
+    {
+        return value_;
+    }
+    else if (value_ > 0)
+    {
+        return static_cast<T>(static_cast<int64_t>(value_));
+    }
+    else
+    {
+        return static_cast<T>(static_cast<int64_t>(value_ - static_cast<T>(1.0)) + static_cast<T>(1.0));
+    }
 }
 
 /**
@@ -142,9 +170,23 @@ constexpr T ROUND_DOWN(T value_)
     return (value_ < 0) ? integerPart - static_cast<T>(1) : integerPart;
 }
 
-#define MAP(x, in_min, in_max, out_min, out_max)                                                                  \
-    (((float)(x) - (float)(in_min)) * ((float)(out_max) - (float)(out_min)) / ((float)(in_max) - (float)(in_min)) \
-     + (float)(out_min))
+template<std::floating_point T>
+constexpr T degToRad(T deg_)
+{
+    return deg_ * std::numbers::pi_v<T> / static_cast<T>(180.0);
+}
+
+template<std::floating_point T>
+constexpr T radToDeg(T rad_)
+{
+    return rad_ * static_cast<T>(180.0) / std::numbers::pi_v<T>;
+}
+
+template<std::floating_point T>
+constexpr T MAP(T value_, T inMin_, T inMax_, T outMin_, T outMax_)
+{
+    return ((value_ - inMin_) * (outMax_ - outMin_) / (inMax_ - inMin_) + outMin_);
+}
 
 #define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
 
@@ -152,12 +194,15 @@ constexpr T ROUND_DOWN(T value_)
 
 #define GET_WORSE_OF(A, B) (A == true && B == true)
 
-// Removes unused argument warning
-#define REMOVE_UNUSED(x) (void)(x)
-
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(__linux__) && defined(ROS)
 #define GET_PACKAGE_SOURCE_DIR(package_name) \
     (ament_index_cpp::get_package_prefix(package_name) + "/../../src/rover/" + package_name)
-#endif  // defined(_linux_) && defined(RCLCPP_DEBUG
+#endif  // defined(_linux_) && defined(ROS
 
-#endif  // MACROS_HPP
+// Necessary for following macros because VSCode's Microsoft CPP language server doesn't work with template and throws a bunch of
+// false positive errors
+#ifdef __INTELLISENSE__
+#pragma diag_suppress 1919  // Parameter pack expension
+#endif
+
+#endif  // ROVER_LIB2_HELPERS_MACROS_HPP

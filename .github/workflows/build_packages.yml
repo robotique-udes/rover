@@ -7,9 +7,12 @@ on:
   push:
     branches:
       - release/**
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   humble-build:
+    name: 'Build on ROS2 Humble (Ubuntu 22.04)'
     runs-on: ubuntu-22.04
 
     container:
@@ -18,7 +21,9 @@ jobs:
     steps:
       - name: Checkout code
         uses: actions/checkout@v2
-
+        with:
+          submodules: recursive
+          
       - name: Setup environment
         shell: bash
         run: |
@@ -34,6 +39,7 @@ jobs:
           source /opt/ros/humble/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
           
+          export CPR_USE_SYSTEM_CURL=ON
           export CXXFLAGS="-Werror"
           echo -e "\e[0;34m=== Building ROS2 Packages ... ===\e[0m"
           if colcon build; then

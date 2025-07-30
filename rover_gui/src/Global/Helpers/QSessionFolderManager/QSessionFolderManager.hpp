@@ -20,9 +20,5 @@ class QSessionFolderManager
     QSessionFolderManager(const QSessionFolderManager&) = delete;
     QSessionFolderManager& operator=(const QSessionFolderManager&) = delete;
 
-    std::string getCurrentTime(void);
-    bool createDirectory(const std::string& path_) const;
-
-    bool _valid;
     std::string _sessionFolderPath;
 };

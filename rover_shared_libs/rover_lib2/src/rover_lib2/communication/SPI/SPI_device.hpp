@@ -1,8 +1,11 @@
-#ifndef SPI_DEVICE_HPP
-#define SPI_DEVICE_HPP
+#ifndef ROVER_LIB2_COMMUNICATION_SPI_SPI_DEVICE_HPP
+#define ROVER_LIB2_COMMUNICATION_SPI_SPI_DEVICE_HPP
 
 #include "rover_lib2/communication/SPI/SPI_bus.hpp"
+
+#include <array>
 #include <cstring>
+#include <esp32-hal-spi.h>
 
 DEFINE_LOG_NODE(SPIDevice, Logger::eNodeState::OFF);
 
@@ -70,7 +73,7 @@ class SPIDevice : public SPIDeviceT
     }
 
     template<size_t DATA_LENGTH>
-    bool writeData(std::array<uint8_t, DATA_LENGTH> data_)
+    bool writeData(const std::array<uint8_t, DATA_LENGTH>& data_)
     {
         static_assert(DATA_LENGTH <= MAX_MSG_LENGTH, "Trying to send too much SPI data for chosen MAX_MSG_LENGTH");
 
@@ -182,4 +185,4 @@ class SPIDevice : public SPIDeviceT
     std::array<uint8_t, MAX_MSG_LENGTH> _rxBuff = {};
 };
 
-#endif  // SPI_DEVICE_HPP
+#endif  // ROVER_LIB2_COMMUNICATION_SPI_SPI_DEVICE_HPP

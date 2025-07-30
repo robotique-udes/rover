@@ -1,27 +1,29 @@
-#ifndef CONSTANTS_HPP
-#define CONSTANTS_HPP
+#ifndef ROVER_LIB2_HELPERS_CONSTANTS_HPP
+#define ROVER_LIB2_HELPERS_CONSTANTS_HPP
+#include <array>
+#include <cstddef>
+#include <utility>
 
 #if defined(__linux__)
 #include <map>
 #include <string>
 #endif  // defined(__linux__)
 
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
+#if defined(ROS)
 #include <rclcpp/qos.hpp>
-#define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
 #include <rover_msgs/msg/joy.hpp>
-#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+#endif  // defined(ROS)
+
+#if defined(ROS)
+#define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
+#endif  // defined(ROS)
 
 namespace Constants
 {
-    constexpr float PI_ = 3.14159265;
-    constexpr float TWO_PI_ = PI_ * 2.0F;
-    constexpr float HALF_PI_ = PI_ / 2.0F;
-
     namespace CameraInfo
     {
 #if defined(__linux__)
-        const std::map<std::string, std::string> CAMERA_URL_MAP = {
+        const std::map<std::string, std::string, std::less<>> CAMERA_URL_MAP = {
             {"Main", "rtsp://192.168.144.30:554/1/h264major"},
             {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
             {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
@@ -39,6 +41,26 @@ namespace Constants
 #endif  // defined(__linux__)
     }   // namespace CameraInfo
 
+    namespace AntennaInfo
+    {
+        enum class eAntennaType : std::size_t
+        {
+            BASE = 0,
+            ROVER = 1,
+            eLast
+        };
+
+        static constexpr std::array<const char*, std::to_underlying(eAntennaType::eLast)> ANTENNA_URLS
+            = {"https://192.168.144.55", "https://192.168.144.50"};
+
+        template<eAntennaType antenna_>
+        constexpr const char* getURL()
+        {
+            static_assert(static_cast<size_t>(antenna_) < ANTENNA_URLS.size(), "Invalid antenna index");
+            return ANTENNA_URLS[static_cast<size_t>(antenna_)];
+        }
+    }  // namespace AntennaInfo
+
     namespace DriveTrain
     {
         constexpr float SPEED_FACTOR_CRAWLER = 0.2f;
@@ -47,17 +69,17 @@ namespace Constants
         constexpr float SMALLEST_RADIUS = 0.3f;
     }  // namespace DriveTrain
 
+#if defined(__linux__) && defined(ROS)
     namespace DriveTrain::KeyBinding
     {
-#if defined(__linux__) && defined(RCLCPP_DEBUG)
-        constexpr float DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
-        constexpr float LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
-        constexpr float ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
-        constexpr float MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
-        constexpr float MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
-        constexpr float MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
-#endif  // defined(__linux__) && defined(RCLCPP_DEBUG)
+        constexpr uint8_t DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
+        constexpr uint8_t LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
+        constexpr uint8_t ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
+        constexpr uint8_t MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
+        constexpr uint8_t MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
+        constexpr uint8_t MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
     }   // namespace DriveTrain::KeyBinding
+#endif  // defined(__linux__) && defined(ROS)
 }  // namespace Constants
 
-#endif  // CONSTANTS_HPP
+#endif  // ROVER_LIB2_HELPERS_CONSTANTS_HPP

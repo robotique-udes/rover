@@ -38,8 +38,10 @@ find_package(rclcpp REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AntennaCmd.msg"
+  "msg/AntennaStatus.msg"
   "msg/ArmMsg.msg"
   "msg/Aruco.msg"
+  "msg/Battery.msg"
   "msg/CameraAngle.msg"
   "msg/CameraControl.msg"
   "msg/CanDeviceStatus.msg"  
@@ -48,15 +50,16 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/DevicePower.msg"
   "msg/DrivetrainArbitration.msg"
   "msg/Gps.msg"
-  "msg/GpsPosition.msg"
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   "msg/CameraList.msg"
   "msg/Light.msg"
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
+  "msg/WifiConnection.msg"
 
   "srv/AntennaArbitration.srv"
+  "srv/ArmJointConfig.srv"
   "srv/ArucoDetection.srv"
   "srv/CameraControl.srv"
   "srv/CompassCalibration.srv"
@@ -65,7 +68,6 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/Empty.srv"
   "srv/JoyDemuxSetState.srv"
   "srv/LightControl.srv"
-  "srv/NewGpsGoal.srv"
   "srv/PanoControl.srv"
   "srv/RtspStream.srv"
 )

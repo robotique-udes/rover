@@ -1,71 +1,73 @@
-#include "rclcpp/rclcpp.hpp"
-#include "rover_msgs/msg/joy.hpp"
-#include "rover_msgs/msg/joy_demux_status.hpp"
-#include "rover_msgs/msg/propulsion_motor.hpp"
-#include "std_msgs/msg/empty.hpp"
+#include <rclcpp/rclcpp.hpp>
+#include <rover_msgs/msg/joy.hpp>
+#include <rover_msgs/msg/joy_demux_status.hpp>
+#include <rover_msgs/msg/propulsion_motor.hpp>
+#include <std_msgs/msg/empty.hpp>
 #include <rover_lib2/helpers/constants.hpp>
+#include <rover_lib2/helpers/macros.hpp>
 
 // Class definition
 class Teleop : public rclcpp::Node
 {
     static constexpr const char* TOPIC_JOY = "/base/joy/drive_train";
     static constexpr const char* TOPIC_WHEEL_CMD = "/rover/drive_train/wheels_cmd_telelop";
+    static constexpr float CAR_CONTROL_MAP_FACTOR = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
+    static constexpr float CAR_MODE_INPUT_BYPASS_THREASHOLD = 0.05F;
+    static constexpr float CAR_MODE_TURN_DEADZONE = 0.50F / 2.0F;  // 50% total, 50%/2 right + 50%/2 left
 
   public:
     Teleop();
 
   private:
-    bool floatToBool(float variable)
+    bool floatToBool(float variable_) const
     {
-        return variable == 1.0f;
+        return variable_ == 1.0f;
     }
 
-    void CB_joy(const rover_msgs::msg::Joy& msg)
+    void CB_joy(const rover_msgs::msg::Joy& msg_) const
     {
         rover_msgs::msg::PropulsionMotor message;
 
-        float deadmanSwitch = msg.joy_data[Constants::DriveTrain::KeyBinding::DEADMAN_SWITCH];
-        float linearInput = msg.joy_data[Constants::DriveTrain::KeyBinding::LINEAR_INPUT];
-        float angularInput = msg.joy_data[Constants::DriveTrain::KeyBinding::ANGULAR_INPUT];
-        float modeTankAngularInput = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_TANK_ANGULAR_INPUT];
-        float modeNormalEnable = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_NORMAL_ENABLE];
-        float modeTurboEnable = msg.joy_data[Constants::DriveTrain::KeyBinding::MODE_TURBO_ENABLE];
+        float deadmanSwitch = msg_.joy_data[Constants::DriveTrain::KeyBinding::DEADMAN_SWITCH];
+        float linearInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::LINEAR_INPUT];
+        float angularInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::ANGULAR_INPUT];
+        float modeTankAngularInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_TANK_ANGULAR_INPUT];
+        float modeNormalEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_NORMAL_ENABLE];
+        float modeTurboEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_TURBO_ENABLE];
 
         if (floatToBool(deadmanSwitch))
         {
-            float speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+            float speedFactor = Constants::DriveTrain::SPEED_FACTOR_CRAWLER;
 
-            if (floatToBool(modeNormalEnable))
-            {
-                speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
-            }
             if (modeTurboEnable > 0.5f && floatToBool(modeNormalEnable))
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_TURBO;
+            }
+            else if (floatToBool(modeNormalEnable))
+            {
+                speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             }
 
             float speedLeftMotor = linearInput * speedFactor;
             float speedRightMotor = linearInput * speedFactor;
 
-            if (modeTankAngularInput != 0.0f)
+            if (!IN_ERROR(modeTankAngularInput, CAR_MODE_INPUT_BYPASS_THREASHOLD, 0.0F))
             {
                 speedLeftMotor += -1.0f * modeTankAngularInput * speedFactor;
                 speedRightMotor -= -1.0f * modeTankAngularInput * speedFactor;
             }
-
-            else
+            else if (!IN_ERROR(angularInput, CAR_MODE_TURN_DEADZONE, 0.0F))
             {
-                float controlMapFactor = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
-                float adjustedFactor;
+                float adjustedFactor = 0.0F;
 
                 if (angularInput > 0.0f)
                 {
-                    adjustedFactor = 1.0f - angularInput * controlMapFactor;
+                    adjustedFactor = 1.0f - angularInput * CAR_CONTROL_MAP_FACTOR;
                     speedLeftMotor *= adjustedFactor < 0.01f ? 0.01f : adjustedFactor;
                 }
                 else
                 {
-                    adjustedFactor = 1.0f + angularInput * controlMapFactor;
+                    adjustedFactor = 1.0f + angularInput * CAR_CONTROL_MAP_FACTOR;
                     speedRightMotor *= adjustedFactor < 0.01f ? 0.01f : adjustedFactor;
                 }
             }
@@ -89,7 +91,10 @@ Teleop::Teleop():
 {
     _sub_joy_formated = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY,
                                                                         QOS_DEFAULT,
-                                                                        std::bind(&Teleop::CB_joy, this, std::placeholders::_1));
+                                                                        [this](const rover_msgs::msg::Joy& msg_)
+                                                                        {
+                                                                            this->CB_joy(msg_);
+                                                                        });
 
     _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, QOS_DEFAULT);
 }

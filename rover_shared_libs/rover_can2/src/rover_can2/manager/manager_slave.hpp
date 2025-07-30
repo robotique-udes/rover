@@ -1,5 +1,5 @@
-#ifndef MANAGER_SLAVE_HPP
-#define MANAGER_SLAVE_HPP
+#ifndef ROVER_CAN2_MANAGER_MANAGER_SLAVE_HPP
+#define ROVER_CAN2_MANAGER_MANAGER_SLAVE_HPP
 
 #include "rover_can2/msgs/error_state.hpp"
 
@@ -28,12 +28,12 @@ namespace RoverCan2
             _dev_Master(ERROR_STATE_HANDLER_ID,
                         SubscriberMember<Msgs::ErrorState, ManagerSlave<DriverT, DevicesT...>>{
                             *this,
-                            &ManagerSlave<DriverT, DevicesT...>::CB_ErrorStateFromMaster}),
-            _errorStateReportingLoop(ERROR_STATE_REPORTING_PERIOD_S)
+                            &ManagerSlave<DriverT, DevicesT...>::CB_ErrorStateFromMaster})
         {
+            this->reportErrorStateToMaster();
         }
 
-        void __update(void)
+        void _update(void)
         {
             if (HealthState::getInstance().getInError() && _errorStateReportingLoop.isReady())
             {
@@ -79,7 +79,7 @@ namespace RoverCan2
         }
 
         Device<SubscriberMember<Msgs::ErrorState, ManagerSlave<DriverT, DevicesT...>>> _dev_Master;
-        LoopTimer<uint64_t, Time::millis> _errorStateReportingLoop;
+        LoopTimer<uint64_t, &Time::millis> _errorStateReportingLoop = {ERROR_STATE_REPORTING_PERIOD_S};
     };
 
     template<typename DriverT, typename... DevicesT>
@@ -87,4 +87,4 @@ namespace RoverCan2
 
 }  // namespace RoverCan2
 
-#endif  // MANAGER_SLAVE_HPP
+#endif  // ROVER_CAN2_MANAGER_MANAGER_SLAVE_HPP

@@ -2,17 +2,20 @@
 #define QVIDEOPLAYERWIDGER_HPP
 
 #include "rclcpp/rclcpp.hpp"
+
+#include "UI_VideoPlayer.h"
+#include "Worker/QPlayerWorker.hpp"
+#include "Worker/QRecordingWorker.hpp"
+#include "Worker/QGStreamerWorker.hpp"
+#include "QVideoRecorderWidget.hpp"
+
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
-
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QTextEdit>
 #include <QThread>
 #include <QTimer>
 #include <QDateTime>
-#include "UI_VideoPlayer.h"
-#include "Worker/QPlayerWorker.hpp"
-#include "Worker/QGStreamerWorker.hpp"
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 #include <rover_lib2/helpers/constants.hpp>
@@ -28,9 +31,6 @@ class QVideoPlayerWidget : public QWidget
     static int MAX_RECONNECT_ATTEMPTS;
     static int _instanceCounter;
 
-    static constexpr size_t STYLE_RESET_TIME = 2'000UL;
-    static constexpr size_t THROTTLE_RATE_ERROR = 2'000UL;
-
   public:
     enum class ePlayerState
     {
@@ -45,9 +45,9 @@ class QVideoPlayerWidget : public QWidget
 
     QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
                        std::string url_,
-                       uint16_t tag_,
+                       uint16_t playerIndex_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                       std::shared_ptr<QPlayerWorker> workerThreadRecording_);
+                       std::shared_ptr<QRecordingWorker> workerThreadRecording_);
 
     ~QVideoPlayerWidget();
 
@@ -56,7 +56,6 @@ class QVideoPlayerWidget : public QWidget
     void stopDetection(void);
     void handleArucoDetection(void);
     void arucoStillAliveUpdate(bool urlFound_);
-    void displayDetectedArucos(std::vector<uint16_t> ids_);
 
     void startStream(const QString& rtspUrl_);
     void stopStream(void);
@@ -85,7 +84,7 @@ class QVideoPlayerWidget : public QWidget
     bool isStreaming(void);
 
     void CB_cameraListUpdate(std::vector<std::string> urls_);
-    void CB_serviceCameraControlAvailable(bool available_);
+    void CB_srvCameraAvailable(bool available_);
 
   signals:
     void arucoCameraFailure(bool valid_);
@@ -93,18 +92,15 @@ class QVideoPlayerWidget : public QWidget
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
     void notifyCameraAnglePublisher(std::string camURL_, float angle_);
+    void displayDetectedArucos(std::vector<uint16_t> ids_);
 
   private slots:
     // Arucuo
-    void onDetectionHandledSuccessfully(bool success_, uint16_t tag_);
+    void onDetectionHandledSuccessfully(bool success_, uint16_t playerIndex__);
     void onArucoServerInfoFailed(bool success_);
     void onArucoCameraFailed(bool valid_);
-    // Camera server
-    void handleScreenshot(void);
-    void handleRecording(void);
-    void onScreenshotHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStartRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
-    void onStopRecordingHandledSuccessfully(bool success_, std::string status_, uint16_t tag_);
+    void onDisplayDetectedArucos(std::vector<uint16_t> ids_);
+    // Camera angle
     void onCameraAngleSliderChanged(void);
     void onCameraAngleBoxChanged(void);
 
@@ -129,22 +125,22 @@ class QVideoPlayerWidget : public QWidget
     void initializeUIState(void);
     void emitStateChanged(void);
     void cleanupResources(void);
+    void autoStartGStreamer(void);
 
-    void hideAngleSelecter(void);
+    void hideAngleSelector(void);
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 
     std::string _camURL = "";
     std::string _defaultCamUrl = "";
-    std::string _sessionFolderPath;
 
     int _streamIndex;
     int16_t _playerIndex;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
-    std::shared_ptr<QPlayerWorker> _playerWorkerThreadRecording;
+    std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
+    QVideoRecorderWidget _recorderWidget;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
     int _reconnectAttempts = 0;

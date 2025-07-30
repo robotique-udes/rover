@@ -7,9 +7,12 @@ on:
   push:
     branches:
       - release/**
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   Comparing-libs:
+    name: 'Libs in rover_shared_lib matches copy in rover_micro (Ubuntu 22.04)'
     runs-on: ubuntu-22.04
 
     steps:

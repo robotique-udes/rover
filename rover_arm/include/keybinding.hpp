@@ -1,7 +1,7 @@
 #ifndef __KEYBINDING__HPP__
 #define __KEYBINDING__HPP__
 
-#include "arm_configuration.hpp"
+#include <rover_msgs/msg/joy.hpp>
 
 enum class eJoyInput
 {

@@ -1,5 +1,5 @@
-#ifndef SUBSCRIBER_HPP
-#define SUBSCRIBER_HPP
+#ifndef ROVER_CAN2_SUBSCRIBER_HPP
+#define ROVER_CAN2_SUBSCRIBER_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 
@@ -62,6 +62,10 @@ namespace RoverCan2
                     break;
                 case Msgs::eLoadMsgCode::ERROR_IMPLEMENTATION:
                     ASSERT_MSG("Message implementation is erroneous, expect undefined behavior");
+                    break;
+                default:
+                    ASSERT_MSG("Unknown return code, expect undefined behavior");
+                    break;
             }
 
             return loadCode;
@@ -154,4 +158,4 @@ namespace RoverCan2
     SubscriberMember(CallerT&, void (CallerT::*)(const MsgT&)) -> SubscriberMember<MsgT, CallerT>;
 }  // namespace RoverCan2
 
-#endif  // SUBSCRIBER_HPP
+#endif  // ROVER_CAN2_SUBSCRIBER_HPP

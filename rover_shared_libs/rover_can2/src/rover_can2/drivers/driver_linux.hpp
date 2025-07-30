@@ -1,5 +1,5 @@
-#ifndef DRIVER_LINUX_HPP
-#define DRIVER_LINUX_HPP
+#ifndef ROVER_CAN2_DRIVERS_DRIVER_LINUX_HPP
+#define ROVER_CAN2_DRIVERS_DRIVER_LINUX_HPP
 
 #include "rover_can2/can_msg.hpp"
 #include "rover_can2/constant.hpp"
@@ -60,9 +60,9 @@ namespace RoverCan2::Drivers
         }
 
         // Useless in this case - required by DriverBase interface
-        void __init(void) {}
+        void _init(void) {}
 
-        void __update(void)
+        void _update(void)
         {
             this->handleWatchdogStatus();
 
@@ -395,4 +395,4 @@ namespace RoverCan2::Drivers
     };
 }  // namespace RoverCan2::Drivers
 
-#endif  // DRIVER_LINUX_HPP
+#endif  // ROVER_CAN2_DRIVERS_DRIVER_LINUX_HPP

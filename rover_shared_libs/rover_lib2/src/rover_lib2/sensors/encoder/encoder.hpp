@@ -1,50 +1,71 @@
-#ifndef ENCODER_HPP
-#define ENCODER_HPP
+#ifndef ROVER_LIB2_SENSORS_ENCODER_ENCODER_HPP
+#define ROVER_LIB2_SENSORS_ENCODER_ENCODER_HPP
 
 #include <rover_lib2/rover_object.hpp>
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/assert.hpp>
 
-template<typename Impl_T>
-class Encoder : public RoverObject<Encoder<Impl_T>>
+#include <concepts>
+
+namespace Encoders
 {
-  private:
-    friend Impl_T;
-    Encoder() = default;
-
-  public:
-    void _init(void)
+    template<typename ImplT>
+    concept Encoder = RoverObject<ImplT> && requires(ImplT impl_)
     {
-        static_cast<Impl_T*>(this)->__init();
-    }
+        // clang-format off
+        { std::as_const(impl_).dataIsValid() } -> std::same_as<bool>;
 
-    void _update(void)
+        { std::as_const(impl_).getPosition() } -> std::same_as<float>;
+
+        { std::as_const(impl_).getSpeed() } -> std::same_as<float>;
+
+        { impl_.calib(float{}) } -> std::same_as<void>;
+        // clang-format on
+    };
+
+    class None
     {
-        static_cast<Impl_T*>(this)->__update();
-    }
+      public:
+        void init()
+        {
+            ASSERT_MSG("Interface");
+        }
 
-    bool dataIsValid(void)
-    {
-        return static_cast<Impl_T*>(this)->_dataIsValid();
-    }
+        void update()
+        {
+            ASSERT_MSG("Interface");
+        }
 
-    float getPosition(void)
-    {
-        return static_cast<Impl_T*>(this)->_getPosition();
-    }
+        bool dataIsValid() const
+        {
+            ASSERT_MSG("Interface");
+            return false;
+        }
 
-    float getSpeed(void)
-    {
-        return static_cast<Impl_T*>(this)->_getSpeed();
-    }
+        float getPosition() const
+        {
+            ASSERT_MSG("Interface");
+            return 0.0F;
+        }
 
-    void calib(float offset_)
-    {
-        static_cast<Impl_T*>(this)->_calib(offset_);
-    }
+        float getSpeed() const
+        {
+            ASSERT_MSG("Interface");
+            return 0.0F;
+        }
 
-    void setReversed(bool reverse_)
-    {
-        static_cast<Impl_T*>(this)->_setReversed(reverse_);
-    }
-};
+        void calib(float /*offset_*/)
+        {
+            ASSERT_MSG("Interface");
+        }
 
-#endif  // ENCODER_HPP
+        void setReversed(bool /*reverse_*/)
+        {
+            ASSERT_MSG("Interface");
+        }
+
+        VALIDATE_CONCEPT(Encoder, None);
+    };
+
+}  // namespace Encoders
+#endif  // ROVER_LIB2_SENSORS_ENCODER_ENCODER_HPP

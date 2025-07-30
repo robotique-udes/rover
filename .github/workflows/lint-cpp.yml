@@ -7,9 +7,12 @@ on:
   push:
     branches:
       - release/**  # Triggers on pushes to release branches, including merges
+  merge_group:
+    types: [checks_requested]
 
 jobs:
   lint-cpp:
+    name: 'Lint C++ Files (Ubuntu 22.04)'
     runs-on: ubuntu-22.04
 
     steps:
