@@ -78,13 +78,13 @@ void AntennaNode::retrieveDriverInfosAndPublish(void)
             /*No log on success*/
             break;
         case eAntennaCode::FAILURE_DEVICE_OFFLINE:
-            RCLCPP_ERROR(this->get_logger(), "Base antenna is offline");
+            RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), LOGGER_COOLDOWN_MS, "Base antenna is offline");
             break;
         case eAntennaCode::FAILURE_SESSION_EXPIRED:
-            RCLCPP_ERROR(this->get_logger(), "Access forbidden, check antenna connection or your credentials in doc");
+            RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), LOGGER_COOLDOWN_MS, "Access forbidden, check antenna connection or your credentials in doc");
             break;
         case eAntennaCode::FAILURE_PARSING_ERROR:
-            RCLCPP_ERROR(this->get_logger(),
+            RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), LOGGER_COOLDOWN_MS,
                          "Parsing error, wrong return type, probable cause: incorrect credentials. Refer to Documentation");
             break;
         case eAntennaCode::FAILURE_ON_COOLDOWN:
@@ -93,7 +93,7 @@ void AntennaNode::retrieveDriverInfosAndPublish(void)
         case eAntennaCode::FAILURE_UNKNOWN:
             [[fallthrough]];
         default:
-            RCLCPP_ERROR(this->get_logger(), "Couln't retrieve data link info, unknown error");
+            RCLCPP_ERROR_THROTTLE(this->get_logger(), *this->get_clock(), LOGGER_COOLDOWN_MS, "Couln't retrieve data link info, unknown error");
             break;
     }
 }
