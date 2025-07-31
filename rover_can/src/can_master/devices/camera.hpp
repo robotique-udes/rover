@@ -17,10 +17,13 @@
 #include <rover_msgs/msg/detail/camera_control__struct.hpp>
 
 class Camera : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::PowerCmd, 1>,
-                                        RoverCan2::SubscriberMember<RoverCan2::Msgs::PowerStatus, Camera>>,
+                                        RoverCan2::Publisher<RoverCan2::Msgs::PtzCmd, 1>,
+                                        RoverCan2::Publisher<RoverCan2::Msgs::PtzConfig, 1>,
+                                        RoverCan2::SubscriberMember<RoverCan2::Msgs::PowerStatus, Camera>,
+                                        RoverCan2::SubscriberMember<RoverCan2::Msgs::PtzStatus, Camera>>,
                public MasterDevice
 {
-    static constexpr const char* TOPIC_CAMERA_POWER_STATUS = "/rover/cameras/power_status";
+    static constexpr const char* TOPIC_CAMERA_POWER_STATUS = "/rover/camera/power_status";
     static constexpr const char* TOPIC_CAMERA_POWER_COMMAND = "/rover/camera/power_cmd/manager";
 
     static constexpr float CAMERA_POWER_STATUS_PUB_FREQ = .5F;

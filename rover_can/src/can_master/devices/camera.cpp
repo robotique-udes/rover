@@ -1,4 +1,7 @@
 #include "camera.hpp"
+#include "rover_can2/msgs/PTZ_cmd.hpp"
+#include "rover_can2/msgs/PTZ_config.hpp"
+#include "rover_can2/msgs/PTZ_status.hpp"
 #include "rover_can2/msgs/power_cmd.hpp"
 #include <rover_lib2/helpers/constants.hpp>
 #include <rover_msgs/msg/detail/camera_config__struct.hpp>
@@ -6,7 +9,11 @@
 Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsgCam_):
     Device(IdCan_,
            RoverCan2::Publisher<RoverCan2::Msgs::PowerCmd, 1>(),
-           RoverCan2::SubscriberMember<RoverCan2::Msgs::PowerStatus, Camera>(*this, &Camera::CB_CAN_powerStatus)),
+           RoverCan2::Publisher<RoverCan2::Msgs::PtzCmd, 1>(),
+            RoverCan2::Publisher<RoverCan2::Msgs::PtzConfig, 1>(),
+           RoverCan2::SubscriberMember<RoverCan2::Msgs::PowerStatus, Camera>(*this, &Camera::CB_CAN_powerStatus),
+           RoverCan2::SubscriberMember<RoverCan2::Msgs::PtzStatus, Camera>(*this, &Camera::CB_CAN_ptzStatus)),
+
     _idCamCameraControlMsg(IdCameraControlMsgCam_)
 {
 }
