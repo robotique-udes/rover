@@ -1,12 +1,10 @@
 #include "rover_lib2/helpers/cameraInterface.hpp"
-#include <chrono>
 #include <cstddef>
 #include <cstdint>
-#include <memory>
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/camera_control.hpp>
 #include <rover_lib2/helpers/constants.hpp>
-#include <rover_msgs/msg/detail/camera_control__struct.hpp>
+#include <unistd.h>
 
 class CameraInterfaceTest : public rclcpp::Node
 {
@@ -18,6 +16,8 @@ class CameraInterfaceTest : public rclcpp::Node
     static constexpr const char* TOPIC_SEND_CONFIG_COMMAND_GUI = "/rover/camera/PTZ_config/GUI";
     static constexpr const char* TOPIC_SEND_POWER_COMMAND_GUI = "/rover/camera/power_cmd/GUI";
 
+    static constexpr const uint64_t GOAL_WATCHDOG_DELAY = 1000;
+
     static constexpr const size_t TEST_CAM_A_ID = 0;
     static constexpr const size_t TEST_CAM_B_ID = 3;
 
@@ -25,23 +25,24 @@ class CameraInterfaceTest : public rclcpp::Node
     CameraInterfaceTest():
         Node("camera_interface_test")
     {
-        _timer = this->create_wall_timer(std::chrono::milliseconds(20000),
-                                         [this](void)
-                                         {
-                                             CB_cameraInterfaceTest();
-                                         });
+        _timer_simulation = this->create_wall_timer(std::chrono::milliseconds(15000),
+                                                    [this](void)
+                                                    {
+                                                        CB_cameraInterfaceTest();
+                                                    });
 
-        _timer_goalWatchdog = this->create_wall_timer(std::chrono::milliseconds(1000),
-                                         [this](void)
-                                         {
-                                            if(_testCameraInterfaceGUI->isGoalReached(TEST_CAM_B_ID))
-                                            {
-                                                RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "GOAL REACHED ON %ld !", TEST_CAM_B_ID);
-                                            }
-                                         });
+        _timer_goalWatchdog = this->create_wall_timer(
+            std::chrono::milliseconds(GOAL_WATCHDOG_DELAY),
+            [this](void)
+            {
+                if (_testCameraInterfaceGUI->isGoalReached(TEST_CAM_B_ID))
+                {
+                    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "GOAL REACHED ON %ld ", TEST_CAM_B_ID);
+                }
+            });
     }
 
-    rclcpp::TimerBase::SharedPtr _timer;
+    rclcpp::TimerBase::SharedPtr _timer_simulation;
     rclcpp::TimerBase::SharedPtr _timer_goalWatchdog;
     std::unique_ptr<CameraInterface> _testCameraInterfacePanorama;
     std::unique_ptr<CameraInterface> _testCameraInterfaceGUI;
@@ -60,22 +61,25 @@ class CameraInterfaceTest : public rclcpp::Node
                                                                     TOPIC_SEND_CONFIG_COMMAND_GUI,
                                                                     TOPIC_SEND_POWER_COMMAND_GUI);
 
-        {
-            rover_msgs::msg::CameraControl msg;
-            size_t id = TEST_CAM_A_ID;
-            msg.id_cam = id;
-            msg.yaw = 1;
-            _testCameraInterfaceGUI->setPTZCmd(msg, id);
-        }
+        rover_msgs::msg::CameraControl msg;
+        size_t id = TEST_CAM_A_ID;
+        msg.id_cam = id;
+        msg.yaw = 1;
+        _testCameraInterfaceGUI->setPTZCmd(msg, id);
     }
 
     void CB_cameraInterfaceTest()
     {
         if (_testCameraInterfaceGUI && _testCameraInterfacePanorama)
         {
+            bool underControl = _testCameraInterfacePanorama->isCamUnderControl(TEST_CAM_B_ID);
+            ;
+
+            RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "Panorama as now control based on feedback?: %d", underControl);
+
             if (simulationSwippingIndex > 1)
             {
-                _testCameraInterfaceGUI->forgetPTZCmd(TEST_CAM_A_ID);
+                _testCameraInterfaceGUI->release(TEST_CAM_A_ID);
             }
 
             if (simulationSwippingIndex % 2)
@@ -88,13 +92,13 @@ class CameraInterfaceTest : public rclcpp::Node
             }
             else
             {
-                _testCameraInterfacePanorama->forgetPowerCmd(TEST_CAM_B_ID);
+                _testCameraInterfacePanorama->release(TEST_CAM_B_ID);
                 rover_msgs::msg::CameraControl msg;
                 size_t id = TEST_CAM_B_ID;
                 msg.id_cam = id;
                 msg.yaw = 2;
                 _testCameraInterfaceGUI->setPTZCmd(msg, TEST_CAM_B_ID);
-                RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "Cam %ld SHOULD SWITCH DOWN TO PRIORITY TO GUI", TEST_CAM_B_ID);
+                ;
             }
         }
         simulationSwippingIndex++;

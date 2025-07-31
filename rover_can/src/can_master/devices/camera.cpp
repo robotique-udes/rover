@@ -10,7 +10,7 @@ Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsg
     Device(IdCan_,
            RoverCan2::Publisher<RoverCan2::Msgs::PowerCmd, 1>(),
            RoverCan2::Publisher<RoverCan2::Msgs::PtzCmd, 1>(),
-            RoverCan2::Publisher<RoverCan2::Msgs::PtzConfig, 1>(),
+           RoverCan2::Publisher<RoverCan2::Msgs::PtzConfig, 1>(),
            RoverCan2::SubscriberMember<RoverCan2::Msgs::PowerStatus, Camera>(*this, &Camera::CB_CAN_powerStatus),
            RoverCan2::SubscriberMember<RoverCan2::Msgs::PtzStatus, Camera>(*this, &Camera::CB_CAN_ptzStatus)),
 

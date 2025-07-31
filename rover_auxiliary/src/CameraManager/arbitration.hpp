@@ -11,31 +11,37 @@ namespace CameraManager
 
     class Arbitration
     {
+      public:
+        static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
+
+      private:
         static constexpr const size_t NUMBER_CAM = 5;
-        static constexpr const size_t NUMBER_TOPIC = 2;
-        static constexpr const size_t LOWEST_PRIORITY_LEVEL = NUMBER_TOPIC - 1;
+        static constexpr const size_t LOWEST_PRIORITY_LEVEL = NUMBER_TOPIC_CAMERA_ARBITRATION - 1;
         static constexpr const size_t HIGH_PRIORITY_MISSING_MSG_SAFETY_FACTOR = 2;
 
       public:
-        static constexpr const char* PTZ_CMD_TOPIC[NUMBER_TOPIC] = {"/rover/camera/PTZ_cmd/panorama", "/rover/camera/PTZ_cmd/GUI"};
-        static constexpr const char* PTZ_CONFIG_TOPIC[NUMBER_TOPIC] = {"/rover/camera/PTZ_config/panorama", "/rover/camera/PTZ_config/GUI"};
-        static constexpr const char* POWER_CMD_TOPIC[NUMBER_TOPIC] = {"/rover/camera/power_cmd/panorama", "/rover/camera/power_cmd/GUI"};
+        static constexpr const char* PTZ_CMD_TOPIC[NUMBER_TOPIC_CAMERA_ARBITRATION]
+            = {"/rover/camera/PTZ_cmd/panorama", "/rover/camera/PTZ_cmd/GUI"};
+        static constexpr const char* PTZ_CONFIG_TOPIC[NUMBER_TOPIC_CAMERA_ARBITRATION]
+            = {"/rover/camera/PTZ_config/panorama", "/rover/camera/PTZ_config/GUI"};
+        static constexpr const char* POWER_CMD_TOPIC[NUMBER_TOPIC_CAMERA_ARBITRATION]
+            = {"/rover/camera/power_cmd/panorama", "/rover/camera/power_cmd/GUI"};
 
         Arbitration();
 
         std::optional<rover_msgs::msg::CameraControl> getValidPTZcmdMsg(size_t camID_);
         std::optional<rover_msgs::msg::CameraControl> getValidPTZConfig(size_t camID_);
 
-
         void CB_PTZCmdFiltering(rover_msgs::msg::CameraControl PTZCmd_, size_t priority);
         void CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_);
+
+        std::array<std::string, NUMBER_CAM> topicWithPriority;
 
       private:
         std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastValidPTZcmd;
 
         std::array<size_t, NUMBER_CAM> _highestPriorityLevelPtzCmd;
         std::array<size_t, NUMBER_CAM> _highestPriorityLevelPtzConfig;
-
 
         std::array<bool, NUMBER_CAM> _isPTZTopicActive;
 

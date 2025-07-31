@@ -17,7 +17,7 @@ class ArucoDetectionNode : public rclcpp::Node
     static constexpr uint64_t DELAY_DETECTION_MS = 200UL;
     static constexpr uint8_t ALLOWED_ERROR_FRAME = 50U;
     static constexpr cv::utils::logging::LogLevel OPENCV_LOG_LEVEL = cv::utils::logging::LOG_LEVEL_SILENT;
-    
+
   public:
     ArucoDetectionNode(int argc, char** argv);
 

@@ -1,11 +1,7 @@
 #include "cameraInterface.hpp"
-#include <cstddef>
 #include "rover_lib2/helpers/constants.hpp"
-
-#include <cstdlib>
-
-#warning QOS DEFAULT
-// for now
+#include <cstddef>
+#include <rover_msgs/msg/detail/topic_with_priority__struct.hpp>
 
 CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                  const std::string& ptzCommandTopic_,
@@ -13,49 +9,17 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                  const std::string& powerCommandTopic_)
 {
     _node = node_;
+    _ptzCommandTopic = ptzCommandTopic_;
+    _ptzConfigTopic = ptzConfigTopic_;
+    _powerCommandTopic = powerCommandTopic_;
 
     _isCamConcerned.fill(false);
 
     if (_node)
     {
-        _pub_PTZCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(ptzCommandTopic_, QOS_DEFAULT);
-        _pub_configCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(ptzConfigTopic_, QOS_DEFAULT);
-        _pub_powerCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(powerCommandTopic_, QOS_DEFAULT);
-
-        _sub_powerStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
-                                                                                      QOS_DEFAULT,
-                                                                                      [this](rover_msgs::msg::CameraControl msg_)
-                                                                                      {
-                                                                                          this->CB_subscriberPowerStatus(msg_);
-                                                                                      });
-
-        _sub_PTZStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
-                                                                                      QOS_DEFAULT,
-                                                                                      [this](rover_msgs::msg::CameraControl msg_)
-                                                                                      {
-                                                                                          this->CB_subscriberPtzStatus(msg_);
-                                                                                      });
-
-        _timer_pubPTZCmd
-            = _node->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000 / SEND_COMMAND_PTZ_FREQUENCY)),
-                                       [this](void)
-                                       {
-                                           this->CB_publishPtzCmd();
-                                       });
-
-        _timer_pubPowerCmd
-            = _node->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000 / SEND_COMMAND_POWER_FREQUENCY)),
-                                       [this](void)
-                                       {
-                                           this->CB_publishPowerCmd();
-                                       });
-
-        _timer_pubPTZConfig
-            = _node->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000 / SEND_CONFIG_PTZ_FREQUENCY)),
-                                       [this](void)
-                                       {
-                                           this->CB_publishPtzConfig();
-                                       });
+        this->initTimers();
+        this->initPub();
+        this->initSub();
     }
 }
 
@@ -104,18 +68,7 @@ rover_msgs::msg::CameraControl CameraInterface::getPowerCmd(size_t id_) const
     return _lastPowerMsg.at(id_);
 }
 
-
-void CameraInterface::forgetPTZCmd(size_t id_)
-{
-    _isCamConcerned.at(id_) = false;
-}
-
-void CameraInterface::forgetPTZConfig(size_t id_)
-{
-    _isCamConcerned.at(id_) = false;
-}
-
-void CameraInterface::forgetPowerCmd(size_t id_)
+void CameraInterface::release(size_t id_)
 {
     _isCamConcerned.at(id_) = false;
 }
@@ -123,6 +76,18 @@ void CameraInterface::forgetPowerCmd(size_t id_)
 bool CameraInterface::isGoalReached(size_t id_)
 {
     return _isGoalReached.at(id_);
+}
+
+bool CameraInterface::isCamUnderControl(size_t id_)
+{
+    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "top with priority %s", _topicWithPriority.at(id_).c_str());
+    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "ptz command topic %s", _ptzCommandTopic.c_str());
+
+    if (_topicWithPriority.at(id_) == _ptzCommandTopic)
+    {
+        return true;
+    }
+    return false;
 }
 
 rover_msgs::msg::CameraControl CameraInterface::getLastPowerStatusMsg(size_t id_) const
@@ -133,6 +98,62 @@ rover_msgs::msg::CameraControl CameraInterface::getLastPowerStatusMsg(size_t id_
 rover_msgs::msg::CameraControl CameraInterface::getLastPtzStatusMsg(size_t id_) const
 {
     return _lastPtzStatusMsg.at(id_);
+}
+
+void CameraInterface::initTimers()
+{
+    _timer_pubPTZCmd
+        = _node->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000.F / SEND_COMMAND_PTZ_FREQUENCY)),
+                                   [this](void)
+                                   {
+                                       this->CB_publishPtzCmd();
+                                   });
+
+    _timer_pubPowerCmd
+        = _node->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000.F / SEND_COMMAND_POWER_FREQUENCY)),
+                                   [this](void)
+                                   {
+                                       this->CB_publishPowerCmd();
+                                   });
+
+    _timer_pubPTZConfig
+        = _node->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000.F / SEND_CONFIG_PTZ_FREQUENCY)),
+                                   [this](void)
+                                   {
+                                       this->CB_publishPtzConfig();
+                                   });
+}
+
+void CameraInterface::initSub()
+{
+    _sub_powerStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
+                                                                                  QOS_DEFAULT,
+                                                                                  [this](rover_msgs::msg::CameraControl msg_)
+                                                                                  {
+                                                                                      this->CB_subscriberPowerStatus(msg_);
+                                                                                  });
+
+    _sub_PTZStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
+                                                                                QOS_DEFAULT,
+                                                                                [this](rover_msgs::msg::CameraControl msg_)
+                                                                                {
+                                                                                    this->CB_subscriberPtzStatus(msg_);
+                                                                                });
+
+    _sub_topicWithPriority
+        = _node->create_subscription<rover_msgs::msg::TopicWithPriority>(TOPIC_WITH_PRIORITY,
+                                                                         QOS_DEFAULT,
+                                                                         [this](rover_msgs::msg::TopicWithPriority msg_)
+                                                                         {
+                                                                             this->CB_subscriberTopicWithPriority(msg_);
+                                                                         });
+}
+
+void CameraInterface::initPub()
+{
+    _pub_PTZCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_ptzCommandTopic, QOS_DEFAULT);
+    _pub_configCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_ptzConfigTopic, QOS_DEFAULT);
+    _pub_powerCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_powerCommandTopic, QOS_DEFAULT);
 }
 
 void CameraInterface::CB_publishPtzCmd(void)
@@ -179,13 +200,21 @@ void CameraInterface::CB_subscriberPtzStatus(rover_msgs::msg::CameraControl stat
     size_t id = statusMsg_.id_cam;
     _lastPowerStatusMsg.at(id) = statusMsg_;
     double currentYaw = statusMsg_.yaw;
-    
-    if(std::abs(_lastPtzCmdMsg.at(id).yaw - currentYaw)  < GOAL_MARGIN)
+
+    if (std::abs(_lastPtzCmdMsg.at(id).yaw - currentYaw) < GOAL_MARGIN)
     {
         _isGoalReached.at(id) = true;
     }
     else
     {
         _isGoalReached.at(id) = false;
+    }
+}
+
+void CameraInterface::CB_subscriberTopicWithPriority(rover_msgs::msg::TopicWithPriority topicLists_)
+{
+    for (size_t i = 0; i < NUMBER_CAM; i++)
+    {
+        _topicWithPriority.at(i) = topicLists_.topics.at(i);
     }
 }

@@ -57,6 +57,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
   "msg/WifiConnection.msg"
+  "msg/TopicWithPriority.msg"
 
   "srv/AntennaArbitration.srv"
   "srv/ArmJointConfig.srv"

@@ -11,7 +11,7 @@ namespace CameraManager
     Arbitration::Arbitration()
     {
         _isPTZTopicActive.fill(false);
-        _highestPriorityLevelPtzCmd.fill(NUMBER_TOPIC - 1);
+        _highestPriorityLevelPtzCmd.fill(NUMBER_TOPIC_CAMERA_ARBITRATION - 1);
         _missingHighPriorityMsg.fill(0);
     }
 
@@ -47,6 +47,7 @@ namespace CameraManager
         {
             _isPTZTopicActive.at(id) = true;
             _highestPriorityLevelPtzCmd.at(id) = priority;
+            topicWithPriority.at(id) = PTZ_CMD_TOPIC[priority];
             RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"), "Cam %ld is now managed by %s", id, PTZ_CMD_TOPIC[priority]);
             _activeTopicCount++;
         }
@@ -54,6 +55,8 @@ namespace CameraManager
         else if (priority < _highestPriorityLevelPtzCmd.at(id))
         {
             _highestPriorityLevelPtzCmd.at(id) = priority;
+            topicWithPriority.at(id) = PTZ_CMD_TOPIC[priority];
+
             RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"),
                         "Priority has shifted up to %s on cam %ld",
                         PTZ_CMD_TOPIC[priority],
@@ -69,10 +72,12 @@ namespace CameraManager
             if (_missingHighPriorityMsg.at(id) > highPriorityMissingMsgThreshold)
             {
                 _highestPriorityLevelPtzCmd.at(id) = priority;
-                RCLCPP_INFO(rclcpp::get_logger("CAMERA_ARBITRATION"),
-                            "Priority has shifted down to %s on cam %ld",
-                            PTZ_CMD_TOPIC[priority],
-                            id);
+                topicWithPriority.at(id) = PTZ_CMD_TOPIC[priority];
+
+                RCLCPP_DEBUG(rclcpp::get_logger("CAMERA_ARBITRATION"),
+                             "Priority has shifted down to %s on cam %ld",
+                             PTZ_CMD_TOPIC[priority],
+                             id);
             }
             return;
         }

@@ -1,42 +1,42 @@
+#include <rclcpp/qos.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/subscription.hpp>
-#include <rover_msgs/msg/detail/camera_control__struct.hpp>
 #include <rover_msgs/msg/camera_control.hpp>
 
 class CameraTestPub : public rclcpp::Node
 {
     static constexpr size_t SIMULATED_CAM_ID = 3;
     static constexpr char* TOPIC_PTZ_STATUS = "/rover/camera/PTZ_status";
+    static constexpr char* TOPIC_PTZ_CMD = "/rover/camera/PTZ_cmd/manager";
 
   public:
     CameraTestPub():
         Node("camera_test_pub")
     {
         _publisher = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_STATUS, 1);
-        _subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
-            "/rover/camera/PTZ_cmd/manager",
-            1,
-            [this](const rover_msgs::msg::CameraControl& PTZcmd_)
-            {
-                this->CB_receivePTZcmd(PTZcmd_);
-            });
+        _subscriber
+            = this->create_subscription<rover_msgs::msg::CameraControl>(TOPIC_PTZ_CMD,
+                                                                        1,
+                                                                        [this](const rover_msgs::msg::CameraControl& PTZcmd_)
+                                                                        {
+                                                                            this->CB_receivePTZcmd(PTZcmd_);
+                                                                        });
     }
 
   private:
-
-    void CB_receivePTZcmd(rover_msgs::msg::CameraControl PTZcmd_) 
+    void CB_receivePTZcmd(rover_msgs::msg::CameraControl PTZcmd_)
     {
         size_t id = PTZcmd_.id_cam;
-        if(id != SIMULATED_CAM_ID)
+        if (id != SIMULATED_CAM_ID)
         {
             return;
         }
 
         double targetYaw = PTZcmd_.yaw;
 
-        if (targetYaw<currentYaw)
+        if (targetYaw < currentYaw)
         {
-            if(currentYaw-targetYaw<0.15)
+            if (currentYaw - targetYaw < 0.15)
             {
                 currentYaw -= 0.05;
             }
@@ -45,22 +45,18 @@ class CameraTestPub : public rclcpp::Node
                 currentYaw -= 0.1;
             }
         }
-        if (targetYaw>currentYaw)
+        else if (targetYaw > currentYaw)
         {
-            if(targetYaw-currentYaw<0.15)
+            if (targetYaw - currentYaw < 0.15)
             {
-                currentYaw += 0.05; 
+                currentYaw += 0.05;
             }
             else
             {
                 currentYaw += 0.1;
             }
         }
-        else
-        {
-        
-        }
-    
+
         rover_msgs::msg::CameraControl statusMsg;
         statusMsg.id_cam = id;
         statusMsg.yaw = currentYaw;

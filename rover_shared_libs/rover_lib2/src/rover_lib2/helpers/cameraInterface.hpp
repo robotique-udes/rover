@@ -3,30 +3,26 @@
 
 #include <array>
 #include <cstddef>
-#include <cstdint>
-#include <rclcpp/subscription.hpp>
+#include <rover_msgs/msg/detail/topic_with_priority__struct.hpp>
 #include <string>
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/topic_with_priority.hpp"
 
 class CameraInterface
 {
     static constexpr float SEND_COMMAND_PTZ_FREQUENCY = 5.F;
-    static constexpr float SEND_COMMAND_POWER_FREQUENCY = 0.5F;
     static constexpr float SEND_CONFIG_PTZ_FREQUENCY = 0.5F;
-    static constexpr float RECEIVE_STATUS_FREQUENCY = 0.5F;
+    static constexpr float SEND_COMMAND_POWER_FREQUENCY = 0.5F;
+    static constexpr float RECEIVE_PTZ_STATUS_FREQUENCY = 0.5F;
+    static constexpr float RECEIVE_POWER_STATUS_FREQUENCY = 0.5F;
 
     static constexpr const char* POWER_STATUS_TOPIC = "/rover/camera/power_status";
     static constexpr const char* PTZ_STATUS_TOPIC = "/rover/camera/PTZ_status";
+    static constexpr const char* TOPIC_WITH_PRIORITY = "/rover/camera/topic_with_priority";
 
     static constexpr uint8_t NUMBER_CAM = 5;
-    static constexpr float GOAL_MARGIN = 0.1;
-
-#warning unused
-
-#warning IF STATUS IS NOT RECEIVED A MESSAGE IS CREATED WITH ALL 0 (default) WE WOULD WANT TO MESSAGE IN THAT CASE...
-
-#warning WE WOULD WHAT TO BE ABLE TO HAVE A FCT TO STOP THE PUBLISHMENT...
+    static constexpr double GOAL_MARGIN = 0.1;
 
   public:
     CameraInterface(std::shared_ptr<rclcpp::Node> node_,
@@ -43,29 +39,37 @@ class CameraInterface
     void setPowerCmd(rover_msgs::msg::CameraControl goalMsg_, size_t id_);
     rover_msgs::msg::CameraControl getPowerCmd(size_t id_) const;
 
-    void forgetPTZCmd(size_t id_);
-    void forgetPTZConfig(size_t id_);
-    void forgetPowerCmd(size_t id_);
+    void release(size_t id_);
 
     rover_msgs::msg::CameraControl getLastPowerStatusMsg(size_t id_) const;
     rover_msgs::msg::CameraControl getLastPtzStatusMsg(size_t id_) const;
 
     bool isGoalReached(size_t id_);
+    bool isCamUnderControl(size_t id_);
 
   private:
+    void initTimers();
+    void initSub();
+    void initPub();
+
     void CB_publishPtzCmd(void);
     void CB_publishPtzConfig(void);
     void CB_publishPowerCmd(void);
 
     void CB_subscriberPowerStatus(rover_msgs::msg::CameraControl statusMsg_);
     void CB_subscriberPtzStatus(rover_msgs::msg::CameraControl statusMsg_);
+    void CB_subscriberTopicWithPriority(rover_msgs::msg::TopicWithPriority topicLists_);
 
-    rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_PTZCmd;
+    std::string _ptzCommandTopic;
+    std::string _ptzConfigTopic;
+    std::string _powerCommandTopic;
+
+            rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_PTZCmd;
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_configCmd;
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_powerCmd;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_powerStatus;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_PTZStatus;
-
+    rclcpp::Subscription<rover_msgs::msg::TopicWithPriority>::SharedPtr _sub_topicWithPriority;
 
     rclcpp::TimerBase::SharedPtr _timer_pubPTZCmd;
     rclcpp::TimerBase::SharedPtr _timer_pubPTZConfig;
@@ -74,6 +78,8 @@ class CameraInterface
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzCmdMsg;
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzConfigMsg;
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerMsg;
+
+    std::array<std::string, NUMBER_CAM> _topicWithPriority;
 
     std::array<bool, NUMBER_CAM> _isCamConcerned;
 
