@@ -22,6 +22,9 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
+add_executable(camera_manager src/CameraManager/manager_node.cpp
+                      src/CameraManager/arbitration.cpp)
+                      
 add_executable(antenna src/Antenna/antenna_node.cpp
                        src/Antenna/antenna_driver.cpp
                        src/Antenna/antenna_commands/base/get_status.cpp
@@ -34,6 +37,12 @@ ament_target_dependencies(ddb_control
                           rover_msgs
                           rcl_interfaces)
 target_link_libraries(ddb_control rover_shared_libs)
+target_link_libraries(camera_manager rover_shared_libs)
+
+ament_target_dependencies(camera_manager
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
 
 ament_target_dependencies(antenna
                           rclcpp
@@ -52,7 +61,10 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS
         ddb_control
         DESTINATION lib/${PROJECT_NAME})
-
+        
+install(TARGETS
+        camera_manager
+        DESTINATION lib/${PROJECT_NAME})
 install(TARGETS
         antenna
         DESTINATION lib/${PROJECT_NAME})
