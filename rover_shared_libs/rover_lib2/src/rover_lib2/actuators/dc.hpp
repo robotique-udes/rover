@@ -14,7 +14,7 @@
 #include "rover_lib2/controllers/PID.hpp"
 
 DEFINE_LOG_NODE(ActuatorDc, Logger::eNodeState::OFF);
-DEFINE_LOG_NODE(ActuatorDcPlot, Logger::eNodeState::OFF);
+DEFINE_LOG_NODE(ActuatorDcPlot, Logger::eNodeState::ON);
 
 namespace Actuators
 {
@@ -93,6 +93,7 @@ namespace Actuators
         void init()
         {
             _motorDriver.init();
+            _motorDriver.setEnabled(true);
 
             if (_pEncoder)
             {
@@ -155,6 +156,7 @@ namespace Actuators
                 return 0.0F;
             }
 
+            LOG_DEBUG(Logger::Nodes::ActuatorDc, "Position: %.3f", _pEncoder->getPosition());
             return _pEncoder->getPosition();
         }
 
@@ -240,7 +242,7 @@ namespace Actuators
                              this->getSpeed(),
                              cmd);
 
-                    LOG_PLOT(Logger::Nodes::ActuatorDcPlot, _goalSpeed, this->getSpeed());
+                    LOG_PLOT(Logger::Nodes::ActuatorDcPlot, _goalSpeed, cmd, this->getSpeed(), this->getPosition());
                     break;
                 }
 

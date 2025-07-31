@@ -13,7 +13,7 @@ class Watchdog
         this->reset();
     }
 
-    bool isOk(void)
+    bool isOk(void) const
     {
         return (chrono.getTime() < _interval);
     }

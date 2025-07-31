@@ -117,7 +117,7 @@ namespace MotorDrivers
         // Range is [-100; 100]
         void setCmd(float cmd_)
         {
-            _goalCmd = CONSTRAIN(cmd_, -100.0F, 100.0F);
+            _goalCmd = CONSTRAIN(cmd_, -_maxCommand, _maxCommand);
             if (_reversed)
             {
                 _goalCmd = -_goalCmd;
@@ -183,11 +183,33 @@ namespace MotorDrivers
             return _brakeMode;
         }
 
+        void setMaxCmd(float cmd_)
+        {
+            float newMax = std::abs(cmd_);
+            newMax = std::clamp(cmd_, 0.0F, MotorDrivers::MAX_CMD_OPEN_LOOP);
+
+            _maxCommand = newMax;
+            this->setCmd(this->getCmd());
+        }
+
+        void setMaxVoltage(float alim_, float maxVoltage_)
+        {
+            float absAlim = std::abs(alim_);
+            float absMaxVotlage = std::abs(maxVoltage_);
+
+            absMaxVotlage = std::clamp(absMaxVotlage, 0.0F, absAlim);
+
+            float newCmd = (absMaxVotlage / absAlim) * MotorDrivers::MAX_CMD_OPEN_LOOP;
+            this->setMaxCmd(newCmd);
+        }
+
       private:
         IO::DigitalOutput& _enableA;
         PwmGeneratorAT& _pwmA;
         IO::DigitalOutput& _enableB;
         PwmGeneratorBT& _pwmB;
+
+        float _maxCommand = MotorDrivers::MAX_CMD_OPEN_LOOP;
 
         float _goalCmd;
         bool _reversed;
