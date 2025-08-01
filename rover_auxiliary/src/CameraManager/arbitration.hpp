@@ -2,13 +2,12 @@
 #define ARBITRATION_HPP
 
 #include "rclcpp/rclcpp.hpp"
-#include <cstddef>
-#include <cstdint>
 #include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/camera_config.hpp"
+#include <rover_msgs/msg/detail/camera_config__struct.hpp>
 
 namespace CameraManager
 {
-
     class Arbitration
     {
       public:
@@ -30,15 +29,16 @@ namespace CameraManager
         Arbitration();
 
         std::optional<rover_msgs::msg::CameraControl> getValidPTZcmdMsg(size_t camID_);
-        std::optional<rover_msgs::msg::CameraControl> getValidPTZConfig(size_t camID_);
+        std::optional<rover_msgs::msg::CameraConfig> getValidPTZConfig(size_t camID_);
 
         void CB_PTZCmdFiltering(rover_msgs::msg::CameraControl PTZCmd_, size_t priority);
-        void CB_PTZConfigFiltering(rover_msgs::msg::CameraControl PTZConfig_);
+        void CB_PTZConfigFiltering(rover_msgs::msg::CameraConfig PTZConfig_);
 
         std::array<std::string, NUMBER_CAM> topicWithPriority;
 
       private:
-        std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastValidPTZcmd;
+        std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastValidPTZCmd;
+        std::array<rover_msgs::msg::CameraConfig, NUMBER_CAM> _lastValidPTZConfig;
 
         std::array<size_t, NUMBER_CAM> _highestPriorityLevelPtzCmd;
         std::array<size_t, NUMBER_CAM> _highestPriorityLevelPtzConfig;

@@ -1,5 +1,6 @@
 #include "cameraInterface.hpp"
 #include "rover_lib2/helpers/constants.hpp"
+#include <rover_msgs/msg/detail/camera_config__struct.hpp>
 
 CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                  const std::string& ptzCommandTopic_,
@@ -34,29 +35,29 @@ rover_msgs::msg::CameraControl CameraInterface::getPTZCmd(size_t id_) const
     return _lastPtzCmdMsg.at(id_);
 }
 
-void CameraInterface::setPTZConfig(rover_msgs::msg::CameraControl goalMsg_, size_t id_)
+void CameraInterface::setPTZConfig(rover_msgs::msg::CameraConfig configMsg_, size_t id_)
 {
     if (!_isCamConcerned.at(id_))
     {
         _isCamConcerned.at(id_) = true;
     }
 
-    _lastPtzConfigMsg.at(id_) = goalMsg_;
+    _lastPtzConfigMsg.at(id_) = configMsg_;
 }
 
-rover_msgs::msg::CameraControl CameraInterface::getPtzConfig(size_t id_) const
+rover_msgs::msg::CameraConfig CameraInterface::getPtzConfig(size_t id_) const
 {
     return _lastPtzConfigMsg.at(id_);
 }
 
-void CameraInterface::setPowerCmd(rover_msgs::msg::CameraControl goalMsg_, size_t id_)
+void CameraInterface::setPowerCmd(rover_msgs::msg::CameraControl powerMsg_, size_t id_)
 {
     if (!_isCamConcerned.at(id_))
     {
         _isCamConcerned.at(id_) = true;
     }
 
-    _lastPowerMsg.at(id_) = goalMsg_;
+    _lastPowerMsg.at(id_) = powerMsg_;
 }
 
 rover_msgs::msg::CameraControl CameraInterface::getPowerCmd(size_t id_) const
@@ -76,9 +77,6 @@ bool CameraInterface::isGoalReached(size_t id_)
 
 bool CameraInterface::isCamUnderControl(size_t id_)
 {
-    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "top with priority %s", _topicWithPriority.at(id_).c_str());
-    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "ptz command topic %s", _ptzCommandTopic.c_str());
-
     if (_topicWithPriority.at(id_) == _ptzCommandTopic)
     {
         return true;
@@ -148,7 +146,7 @@ void CameraInterface::initSub()
 void CameraInterface::initPub()
 {
     _pub_PTZCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_ptzCommandTopic, QOS_DEFAULT);
-    _pub_configCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_ptzConfigTopic, QOS_DEFAULT);
+    _pub_configCmd = _node->create_publisher<rover_msgs::msg::CameraConfig>(_ptzConfigTopic, QOS_DEFAULT);
     _pub_powerCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_powerCommandTopic, QOS_DEFAULT);
 }
 

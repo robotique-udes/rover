@@ -1,12 +1,7 @@
 #include "manager_node.hpp"
-#include "arbitration.hpp"
-#include <cstddef>
-#include <cstdint>
 #include <optional>
-#include <rclcpp/logging.hpp>
 #include <rover_lib2/helpers/constants.hpp>
-#include <rover_msgs/msg/detail/camera_control__struct.hpp>
-#include <rover_msgs/msg/detail/topic_with_priority__struct.hpp>
+#include <rover_msgs/msg/detail/camera_config__struct.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -32,14 +27,7 @@ namespace CameraManager
             std::optional<rover_msgs::msg::CameraControl> cmd = _arbitration.getValidPTZcmdMsg(i);
             if (cmd.has_value())
             {
-                size_t id = cmd.value().id_cam;
-                float yaw = cmd.value().yaw;
-                RCLCPP_INFO(this->get_logger(), "ID: %ld, YAW: %f", id, yaw);
-                rover_msgs::msg::CameraControl msg;
-                msg.id_cam = cmd.value().id_cam;
-                msg.yaw = cmd.value().yaw;
-
-                _publisher_filteredPTZCmd->publish(msg);
+                _publisher_filteredPTZCmd->publish(cmd.value());
             }
         }
     }
@@ -48,17 +36,10 @@ namespace CameraManager
     {
         for (size_t i = 0; i < NUMBER_CAM; i++)
         {
-            std::optional<rover_msgs::msg::CameraControl> cmd = _arbitration.getValidPTZConfig(i);
-            if (cmd.has_value())
+            std::optional<rover_msgs::msg::CameraConfig> config = _arbitration.getValidPTZConfig(i);
+            if (config.has_value())
             {
-                size_t id = cmd.value().id_cam;
-                float yaw = cmd.value().yaw;
-                RCLCPP_INFO(this->get_logger(), "ID: %ld, YAW: %f", id, yaw);
-                rover_msgs::msg::CameraControl msg;
-                msg.id_cam = cmd.value().id_cam;
-                msg.yaw = cmd.value().yaw;
-
-                _publisher_filteredPTZConfig->publish(msg);
+                _publisher_filteredPTZConfig->publish(config.value());
             }
         }
     }
@@ -72,13 +53,12 @@ namespace CameraManager
     {
         rover_msgs::msg::TopicWithPriority msg;
 
-        for(size_t i = 0; i<NUMBER_CAM; i++)
+        for (size_t i = 0; i < NUMBER_CAM; i++)
         {
             msg.topics.push_back(_arbitration.topicWithPriority.at(i));
         }
         _publisher_topicWithPriority->publish(msg);
     }
-
 
     void ManagerNode::initSub()
     {
@@ -100,10 +80,10 @@ namespace CameraManager
 
         for (auto& subscriber : _sub_PTZConfig)
         {
-            subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
+            subscriber = this->create_subscription<rover_msgs::msg::CameraConfig>(
                 Arbitration::PTZ_CONFIG_TOPIC[index],
                 QOS_DEFAULT,
-                [this](const rover_msgs::msg::CameraControl& PTZConfig_)
+                [this](const rover_msgs::msg::CameraConfig& PTZConfig_)
                 {
                     this->_arbitration.CB_PTZConfigFiltering(PTZConfig_);
                 });
@@ -137,7 +117,7 @@ namespace CameraManager
                                       });
 
         _publisher_filteredPTZConfig
-            = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_CONFIG_MANAGER, QOS_DEFAULT);
+            = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_PTZ_CONFIG_MANAGER, QOS_DEFAULT);
 
         _timer_filtredPTZConfigPub
             = this->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000.F / SEND_PTZ_COMMAND_FREQUENCY)),

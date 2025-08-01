@@ -3,7 +3,9 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
+#include "rover_msgs/msg/camera_config.hpp"
 #include "rover_msgs/msg/topic_with_priority.hpp"
+#include <rover_msgs/msg/detail/camera_config__struct.hpp>
 
 class CameraInterface
 {
@@ -30,10 +32,10 @@ class CameraInterface
     void setPTZCmd(rover_msgs::msg::CameraControl goalMsg_, size_t id_);
     rover_msgs::msg::CameraControl getPTZCmd(size_t id_) const;
 
-    void setPTZConfig(rover_msgs::msg::CameraControl goalMsg_, size_t id_);
-    rover_msgs::msg::CameraControl getPtzConfig(size_t id_) const;
+    void setPTZConfig(rover_msgs::msg::CameraConfig configMsg_, size_t id_);
+    rover_msgs::msg::CameraConfig getPtzConfig(size_t id_) const;
 
-    void setPowerCmd(rover_msgs::msg::CameraControl goalMsg_, size_t id_);
+    void setPowerCmd(rover_msgs::msg::CameraControl powerMsg_, size_t id_);
     rover_msgs::msg::CameraControl getPowerCmd(size_t id_) const;
 
     void release(size_t id_);
@@ -62,7 +64,7 @@ class CameraInterface
     std::string _powerCommandTopic;
 
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_PTZCmd;
-    rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_configCmd;
+    rclcpp::Publisher<rover_msgs::msg::CameraConfig>::SharedPtr _pub_configCmd;
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_powerCmd;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_powerStatus;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_PTZStatus;
@@ -73,7 +75,7 @@ class CameraInterface
     rclcpp::TimerBase::SharedPtr _timer_pubPowerCmd;
 
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzCmdMsg;
-    std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzConfigMsg;
+    std::array<rover_msgs::msg::CameraConfig, NUMBER_CAM> _lastPtzConfigMsg;
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerMsg;
 
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerStatusMsg;
