@@ -34,6 +34,9 @@ class GpsPublisher : public rclcpp::Node
         {
             heading_deg_ -= 360.0;
         }
+
+        latitude_ += 0.000'1;
+        longitude_ += 0.000'1;
     }
 
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr publisher_;
