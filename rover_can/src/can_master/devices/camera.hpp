@@ -4,17 +4,13 @@
 #include "can_master/master_device.hpp"
 
 #include <rover_can2/rover_can2.hpp>
-
 #include <rover_can2/msgs/power_cmd.hpp>
 #include <rover_can2/msgs/power_status.hpp>
-
 #include <rover_can2/msgs/PTZ_cmd.hpp>
 #include <rover_can2/msgs/PTZ_config.hpp>
 #include <rover_can2/msgs/PTZ_status.hpp>
-
 #include <rover_msgs/msg/camera_control.hpp>
 #include <rover_msgs/msg/camera_config.hpp>
-#include <rover_msgs/msg/detail/camera_control__struct.hpp>
 
 class Camera : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::PowerCmd, 1>,
                                         RoverCan2::Publisher<RoverCan2::Msgs::PtzCmd, 1>,

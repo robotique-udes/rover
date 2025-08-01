@@ -1,7 +1,6 @@
 #include "manager_node.hpp"
 #include <optional>
 #include <rover_lib2/helpers/constants.hpp>
-#include <rover_msgs/msg/detail/camera_config__struct.hpp>
 
 int main(int argc, char* argv[])
 {

@@ -4,7 +4,6 @@
 #include "rover_can2/msgs/PTZ_status.hpp"
 #include "rover_can2/msgs/power_cmd.hpp"
 #include <rover_lib2/helpers/constants.hpp>
-#include <rover_msgs/msg/detail/camera_config__struct.hpp>
 
 Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsgCam_):
     Device(IdCan_,

@@ -4,7 +4,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_msgs/msg/camera_config.hpp"
-#include <rover_msgs/msg/detail/camera_config__struct.hpp>
 
 namespace CameraManager
 {

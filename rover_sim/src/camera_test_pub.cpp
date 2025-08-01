@@ -1,6 +1,4 @@
-#include <rclcpp/qos.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <rclcpp/subscription.hpp>
 #include <rover_msgs/msg/camera_control.hpp>
 
 class CameraTestPub : public rclcpp::Node

@@ -1,10 +1,7 @@
 #include "rover_lib2/helpers/cameraInterface.hpp"
-#include <cstddef>
-#include <cstdint>
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/camera_control.hpp>
 #include <rover_lib2/helpers/constants.hpp>
-#include <unistd.h>
 
 class CameraInterfaceTest : public rclcpp::Node
 {

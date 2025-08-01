@@ -1,9 +1,6 @@
 #include "arbitration.hpp"
 #include <optional>
 #include <rover_lib2/helpers/constants.hpp>
-#include <rover_msgs/msg/detail/camera_control__builder.hpp>
-
-#warning active topic publisher
 
 namespace CameraManager
 {
