@@ -1,7 +1,5 @@
 #include "cameraInterface.hpp"
 #include "rover_lib2/helpers/constants.hpp"
-#include <cstddef>
-#include <rover_msgs/msg/detail/topic_with_priority__struct.hpp>
 
 CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                  const std::string& ptzCommandTopic_,
@@ -12,8 +10,6 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
     _ptzCommandTopic = ptzCommandTopic_;
     _ptzConfigTopic = ptzConfigTopic_;
     _powerCommandTopic = powerCommandTopic_;
-
-    _isCamConcerned.fill(false);
 
     if (_node)
     {

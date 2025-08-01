@@ -1,10 +1,6 @@
 #ifndef CAMERA_INTERFACE_HPP
 #define CAMERA_INTERFACE_HPP
 
-#include <array>
-#include <cstddef>
-#include <rover_msgs/msg/detail/topic_with_priority__struct.hpp>
-#include <string>
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_msgs/msg/topic_with_priority.hpp"
@@ -14,6 +10,7 @@ class CameraInterface
     static constexpr float SEND_COMMAND_PTZ_FREQUENCY = 5.F;
     static constexpr float SEND_CONFIG_PTZ_FREQUENCY = 0.5F;
     static constexpr float SEND_COMMAND_POWER_FREQUENCY = 0.5F;
+
     static constexpr float RECEIVE_PTZ_STATUS_FREQUENCY = 0.5F;
     static constexpr float RECEIVE_POWER_STATUS_FREQUENCY = 0.5F;
 
@@ -64,7 +61,7 @@ class CameraInterface
     std::string _ptzConfigTopic;
     std::string _powerCommandTopic;
 
-            rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_PTZCmd;
+    rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_PTZCmd;
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_configCmd;
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_powerCmd;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _sub_powerStatus;
@@ -79,13 +76,12 @@ class CameraInterface
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzConfigMsg;
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerMsg;
 
-    std::array<std::string, NUMBER_CAM> _topicWithPriority;
-
-    std::array<bool, NUMBER_CAM> _isCamConcerned;
-
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerStatusMsg;
     std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzStatusMsg;
 
+    std::array<std::string, NUMBER_CAM> _topicWithPriority;
+
+    std::array<bool, NUMBER_CAM> _isCamConcerned = {false};
     std::array<bool, NUMBER_CAM> _isGoalReached = {false};
 
     std::shared_ptr<rclcpp::Node> _node;
