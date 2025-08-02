@@ -35,15 +35,15 @@ class Teleop : public rclcpp::Node
         float modeNormalEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_NORMAL_ENABLE];
         float modeTurboEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_TURBO_ENABLE];
 
-        if (floatToBool(deadmanSwitch))
+        if (this->floatToBool(deadmanSwitch))
         {
             float speedFactor = Constants::DriveTrain::SPEED_FACTOR_CRAWLER;
 
-            if (modeTurboEnable > 0.5f && floatToBool(modeNormalEnable))
+            if (modeTurboEnable > 0.5f && this->floatToBool(modeNormalEnable))
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_TURBO;
             }
-            else if (floatToBool(modeNormalEnable))
+            else if (this->floatToBool(modeNormalEnable))
             {
                 speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
             }
@@ -62,11 +62,13 @@ class Teleop : public rclcpp::Node
 
                 if (angularInput > 0.0f)
                 {
+                    angularInput = MAP(angularInput, CAR_MODE_TURN_DEADZONE, 1.0F, 0.0F, 1.0F);
                     adjustedFactor = 1.0f - angularInput * CAR_CONTROL_MAP_FACTOR;
                     speedLeftMotor *= adjustedFactor < 0.01f ? 0.01f : adjustedFactor;
                 }
                 else
                 {
+                    angularInput = MAP(angularInput, -1.0F, -CAR_MODE_TURN_DEADZONE, -1.0F, 0.0F);
                     adjustedFactor = 1.0f + angularInput * CAR_CONTROL_MAP_FACTOR;
                     speedRightMotor *= adjustedFactor < 0.01f ? 0.01f : adjustedFactor;
                 }
