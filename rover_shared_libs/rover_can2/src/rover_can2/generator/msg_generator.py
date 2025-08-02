@@ -3,58 +3,37 @@
 import sys
 import re
 import os
-
+import glob
 
 def snake_to_camel(snake_str):
     components = snake_str.split('_')
     return components[0] + ''.join(x.title() for x in components[1:])
 
-
 def snake_to_capitalized_camel(snake_str):
     components = snake_str.split('_')
     return ''.join(x.title() for x in components)
 
-
 def camel_to_upper_snake(name):
-    # Convert camel case to snake case
     name = re.sub('(.)([A-Z][a-z]+)', r'\1_\2', name)
     name = re.sub('([a-z0-9])([A-Z])', r'\1_\2', name)
-    # Separate numbers by underscore
     name = re.sub(r'([0-9]+)([a-zA-Z])', r'\1_\2', name)
-    # Separate letters following numbers by underscore
     name = re.sub(r'([a-zA-Z])([0-9]+)', r'\1_\2', name)
-    # Remove underscore at the front or the end if any
-    name = name.lstrip('_')
-    name = name.rstrip('_')
-    return name.upper()
-
-
-def camel_to_snake(value):
-    return camel_to_upper_snake(value).lower()
-
+    return name.strip('_').upper()
 
 def generate_class_name(input_file_name):
     class_name_snake = input_file_name.split('.')[0]
-    class_name = snake_to_capitalized_camel(class_name_snake)
-    return class_name
-
+    return snake_to_capitalized_camel(class_name_snake)
 
 def generate_header_guard(class_name_camel):
     class_name_snake = camel_to_upper_snake(class_name_camel.split('.')[0])
-    return f"{class_name_snake.upper()}_HPP"
-
+    return f"{class_name_snake}_HPP"
 
 def generate_cpp_header(input_file_path):
     with open(input_file_path, 'r') as file:
         input_file_name = os.path.basename(input_file_path)
-        # Ensure output_file is placed correctly, possibly in the same dir as input or a specified output dir
-        # For simplicity, this example places it in the same directory as the input file.
-        output_file_dir = os.path.dirname(input_file_path)
-        if not output_file_dir: # Handle case where input_file_path is just a filename
-            output_file_dir = "."
+        output_file_dir = os.path.dirname(input_file_path) or "."
         output_file_basename = input_file_name.split('.')[0] + ".hpp"
         output_file = os.path.join(output_file_dir, output_file_basename)
-
 
         if os.path.exists(output_file):
             print(f"Output file {output_file} exists. Removing it.")
@@ -62,31 +41,38 @@ def generate_cpp_header(input_file_path):
 
         lines = file.readlines()
         members = []
+        custom_includes = []
 
         for line in lines:
-            if len(line.strip()) > 0:
-                members.append(line.strip())
+            line_strip = line.strip()
+            if line_strip.startswith("#include"):
+                custom_includes.append(line_strip)
+            elif len(line_strip) > 0:
+                members.append(line_strip)
 
         class_name = generate_class_name(input_file_name)
         class_name_upper_snake = camel_to_upper_snake(class_name)
-        header_guard = generate_header_guard(class_name) # Note: generate_header_guard expects class_name, not input_file_name
+        header_guard = generate_header_guard(class_name)
         logNodeName = class_name + "_msg"
+
         enum_class_eMsgContentID_members = ""
         struct_sMsgData_members = ""
+        static_asserts = ""
         valid_msg_ids_member = ""
         constructor_init_to_zero = ""
         loadMsg_switch_case_gen = ""
         getCanMsg_switch_case_gen = ""
 
-        for i, member in enumerate(members):
+        for member in members:
             member_parts = member.split()
             if len(member_parts) < 2:
                 print(f"Warning: Skipping malformed member line in {input_file_name}: '{member}'")
                 continue
-            member_name = member_parts[1].replace(";", "")  # Remove semicolon
+            member_name = member_parts[1].replace(";", "")
             member_name_capital_snake_case = camel_to_upper_snake(member_name)
             enum_class_eMsgContentID_members += f"{' ' * 12}{member_name_capital_snake_case},\n"
-            struct_sMsgData_members += f"{' ' * 12}{member}\n" # original member line with type and name
+            struct_sMsgData_members += f"{' ' * 12}{member}\n"
+            static_asserts += f"{' ' * 12}static_assert(sizeof({member_name}) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), \"Can messages cannot include field longer than 6 bytes\");\n"
             valid_msg_ids_member += f"eMsgContentID::{member_name_capital_snake_case}, "
             constructor_init_to_zero += f"{' ' * 12}_data.{member_name} = static_cast<decltype(_data.{member_name})>(0);\n"
 
@@ -105,22 +91,17 @@ f"""\
 {20*' '}Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.{member_name}, msg_);
 {20*' '}break;\n
 """
-        #end_for
 
-        # Removes unwanted trailing elements
-        if enum_class_eMsgContentID_members.endswith(",\n"):
-             enum_class_eMsgContentID_members = enum_class_eMsgContentID_members[:-1]
-        if struct_sMsgData_members.endswith("\n"):
-            struct_sMsgData_members = struct_sMsgData_members[:-1]
-        if constructor_init_to_zero.endswith("\n"):
-            constructor_init_to_zero = constructor_init_to_zero[:-1]
-        if valid_msg_ids_member.endswith(", "):
-            valid_msg_ids_member = valid_msg_ids_member[:-2]
-        if loadMsg_switch_case_gen.endswith("\n\n"): # It adds an extra \n
-             loadMsg_switch_case_gen = loadMsg_switch_case_gen[:-1]
-        if getCanMsg_switch_case_gen.endswith("\n\n"): # It adds an extra \n
-             getCanMsg_switch_case_gen = getCanMsg_switch_case_gen[:-1]
+        # Clean up trailing commas and newlines
+        enum_class_eMsgContentID_members = enum_class_eMsgContentID_members.rstrip("\n")
+        struct_sMsgData_members = struct_sMsgData_members.rstrip("\n")
+        static_asserts = static_asserts.rstrip("\n")
+        constructor_init_to_zero = constructor_init_to_zero.rstrip("\n")
+        valid_msg_ids_member = valid_msg_ids_member.rstrip(", ")
+        loadMsg_switch_case_gen = loadMsg_switch_case_gen.rstrip("\n\n")
+        getCanMsg_switch_case_gen = getCanMsg_switch_case_gen.rstrip("\n\n")
 
+        includes_block = "\n".join(custom_includes)
 
         cpp_template = \
 f"""\
@@ -129,6 +110,7 @@ f"""\
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
+{includes_block}
 
 DEFINE_LOG_NODE({logNodeName}, Logger::eNodeState::OFF)
 
@@ -147,6 +129,8 @@ namespace RoverCan2::Msgs
         struct sMsgData
         {{
 {struct_sMsgData_members}
+
+{static_asserts}
         }};
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
@@ -222,10 +206,8 @@ namespace RoverCan2::Msgs
 {getCanMsg_switch_case_gen}
                 case eMsgContentID::eLAST:
                     [[fallthrough]];
-                    
                 default:
                     return std::nullopt;
-                    break;
             }}
 
             return msg_;
@@ -253,27 +235,40 @@ namespace RoverCan2::Msgs
 }}  // namespace RoverCan2::Msgs
 
 #endif  // {header_guard}
-\
 """
+
         with open(output_file, 'w') as output_f:
             output_f.write(cpp_template)
         print(f"Generated C++ header: {output_file}")
 
 
 if __name__ == "__main__":
-    if len(sys.argv) < 2:
-        print("Usage: ./msg_generator.py <file1.txt> [file2.txt ...]")
-        print("       Wildcards like * can be used (e.g., ./msg_generator.py msg_files/*.txt)")
+    files_to_process = []
+
+    if len(sys.argv) > 1:
+        for arg in sys.argv[1:]:
+            expanded_files = glob.glob(arg)
+            if not expanded_files:
+                print(f"No file matches '{arg}'")
+            files_to_process.extend(expanded_files)
+    else:
+        print("No .msg file provided as argument.")
+        while True:
+            user_input = input("Enter path to .msg file (or press ENTER to finish): ").strip()
+            if not user_input:
+                break
+            if os.path.isfile(user_input):
+                files_to_process.append(user_input)
+            else:
+                print(f"File '{user_input}' does not exist.")
+
+    if not files_to_process:
+        print("No valid input files provided. Exiting.")
         sys.exit(1)
 
-    for input_file_arg in sys.argv[1:]:
-        # This script assumes shell expansion for wildcards like msg_files/*
-        # If a path doesn't resolve to a file, it will be caught here.
-        if os.path.isfile(input_file_arg):
-            try:
-                print(f"Processing file: {input_file_arg}")
-                generate_cpp_header(input_file_arg)
-            except Exception as e:
-                print(f"Error processing file {input_file_arg}: {e}")
-        else:
-            print(f"Skipping '{input_file_arg}': not a valid file or does not exist.")
+    for input_file in files_to_process:
+        try:
+            print(f"Processing file: {input_file}")
+            generate_cpp_header(input_file)
+        except Exception as e:
+            print(f"Error processing file {input_file}: {e}")
