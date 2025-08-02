@@ -45,7 +45,7 @@ class MainWindow : public QMainWindow
     QNavigation _navigationWidget;
     QDeviceStatus _deviceStatusWidget;
     QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
-    QLightsController _ligthsController = QLightsController(this);
+    QLightsController _ligthsController;
 
     QFrame _topBarSeperator = QFrame(this);
     QFrame _bottomBarSeperator = QFrame(this);

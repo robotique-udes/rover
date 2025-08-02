@@ -1,0 +1,46 @@
+#include "QLightsController.hpp"
+#include <rover_lib2/helpers/constants.hpp>
+#include <qpushbutton.h>
+#include <qslider.h>
+#include <qlabel.h>
+
+QLightsController::QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+    QWidget(parent_),
+    _node(guiNode_)
+{
+    _ui.setupUi(this);
+    _pub_LightCmd = _node->create_publisher<rover_msgs::msg::Light>(TOPIC_LIGHTS_CTRL, QOS_DEFAULT);
+    connect(_ui._slider_PWM, &QSlider::valueChanged, this, &QLightsController::updateLightPWM);
+    connect(_ui._pb_lights, &QPushButton::pressed, this, &QLightsController::toggleLightControl);
+}
+
+void QLightsController::toggleLightControl(void)
+{
+    rover_msgs::msg::Light msg;
+
+    if (_ui._pb_lights->isChecked())
+    {
+        _ui._pb_lights->setText("Front lights on");
+        msg.duty_cycle = static_cast<float>(_ui._slider_PWM->value()) / 100.0f;
+        msg.frequency = FREQUENCY;
+    }
+    else
+    {
+        _ui._pb_lights->setText("Front lights off");
+        msg.duty_cycle = 0.0f;
+        msg.frequency = 0.0f;
+    }
+    _pub_LightCmd->publish(msg);
+}
+
+void QLightsController::updateLightPWM(void)
+{
+    _ui._label_PWMprc->setText(QString::number(_ui._slider_PWM->value()) + "%");
+    if (_ui._pb_lights->isChecked())
+    {
+        rover_msgs::msg::Light msg;
+        msg.duty_cycle = static_cast<float>(_ui._slider_PWM->value()) / 100.0f;
+        msg.frequency = FREQUENCY;
+        _pub_LightCmd->publish(msg);
+    }
+}

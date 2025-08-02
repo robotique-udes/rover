@@ -8,7 +8,8 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _topUtilityBar(guiNode_, this),
     _arbitrationWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
-    _deviceStatusWidget(guiNode_, this)
+    _deviceStatusWidget(guiNode_, this),
+    _ligthsController(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
