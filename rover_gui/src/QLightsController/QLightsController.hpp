@@ -7,7 +7,7 @@ class QLightsController : public QWidget
 {
   private:
     static constexpr const char* TOPIC_LIGHTS_CTRL = "/rover/auxiliary/lights_control";
-    static constexpr float FREQUENCY = 0.0f;
+    static constexpr float FREQUENCY = 0.0F;
 
   public:
     explicit QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
