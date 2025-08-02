@@ -28,7 +28,7 @@ class Light : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Ms
                                        RoverCan2::Publisher<RoverCan2::Msgs::PwmCmd>>;
 
   public:
-    Light();
+    Light(RoverCan2::Constant::eDeviceId deviceId_);
 
   private:
     void CB_CAN_PwmStatus(const RoverCan2::Msgs::PwmStatus& msgCan_);

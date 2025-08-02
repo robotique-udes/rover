@@ -1,7 +1,7 @@
 #include "light.hpp"
 
-Light::Light():
-    DerivedT(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN,
+Light::Light(RoverCan2::Constant::eDeviceId deviceId_):
+    DerivedT(deviceId_,
              RoverCan2::SubscriberMember<RoverCan2::Msgs::PwmStatus, Light>(*this, &Light::CB_CAN_PwmStatus),
              RoverCan2::Publisher<RoverCan2::Msgs::PwmCmd>())
 {
