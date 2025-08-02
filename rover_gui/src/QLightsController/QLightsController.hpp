@@ -2,12 +2,11 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/light.hpp>
 
-
 class QLightsController : public QWidget
 {
   private:
     static constexpr const char* TOPIC_LIGHTS_CTRL = "/rover/auxiliary/lights_control";
-    static constexpr float FREQUENCY = 10.0f;
+    static constexpr float FREQUENCY = 0.0f;
 
   public:
     explicit QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
