@@ -1,3 +1,6 @@
 [submodule "deps/cpr"]
 	path = deps/cpr
 	url = https://github.com/libcpr/cpr
+[submodule "deps/jsoncpp"]
+	path = deps/jsoncpp
+	url = git@github.com:open-source-parsers/jsoncpp.git
