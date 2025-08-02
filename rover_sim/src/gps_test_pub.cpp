@@ -29,8 +29,6 @@ class GpsPublisher : public rclcpp::Node
 
         publisher_->publish(msg);
 
-        latitude_ += 0.00001;
-
         heading_deg_ += 20.0F;
         if (heading_deg_ >= 360.0)
         {
