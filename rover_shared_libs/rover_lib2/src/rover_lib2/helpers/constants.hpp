@@ -44,11 +44,11 @@ namespace Constants
         };
 
         constexpr std::array<std::array<const char*, 2>, static_cast<std::size_t>(eCamNames::eLast)> CAMERA_INFO = {{
-            {"Main",       "rtsp://192.168.144.30:554/1/h264major"},
-            {"Antenna",    "rtsp://192.168.144.31:554/1/h264major"},
+            {"Main", "rtsp://192.168.144.30:554/1/h264major"},
+            {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
             {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
-            {"Arm-Top",    "rtsp://192.168.144.35:554/1/h264major"},
-            {"Arm-Side",   "rtsp://192.168.144.36:554/1/h264major"},
+            {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},
+            {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
         }};
 
         /**
@@ -58,6 +58,14 @@ namespace Constants
          * @return Success on camera name found
          */
         bool getNameFromURL(const std::string& url_, std::string& rName_);
+        eCamNames getIndexFromName(const std::string& name_);
+
+        static constexpr float SEND_COMMAND_PTZ_FREQUENCY = 5.F;
+        static constexpr float SEND_CONFIG_PTZ_FREQUENCY = 0.5F;
+        static constexpr float SEND_COMMAND_POWER_FREQUENCY = 0.5F;
+
+        static constexpr float RECEIVE_PTZ_STATUS_FREQUENCY = 0.5F;
+        static constexpr float RECEIVE_POWER_STATUS_FREQUENCY = 0.5F;
 #endif  // defined(__linux__)
     }   // namespace CameraInfo
 

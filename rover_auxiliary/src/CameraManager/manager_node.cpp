@@ -16,13 +16,13 @@ namespace CameraManager
     ManagerNode::ManagerNode():
         Node("camera_manager")
     {
-        this->initSub();
-        this->initPub();
+        this->initSubs();
+        this->initPubs();
     }
 
     void ManagerNode::CB_publishFilteredPtzCmd()
     {
-        for (size_t i = 0; i < NUMBER_CAM; i++)
+        for (size_t i = 0; i < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); i++)
         {
             std::optional<rover_msgs::msg::CameraControl> cmd = _arbitration.getValidPTZcmdMsg(i);
             if (cmd.has_value())
@@ -34,7 +34,7 @@ namespace CameraManager
 
     void ManagerNode::CB_publishFilteredZPtzConfig()
     {
-        for (size_t i = 0; i < NUMBER_CAM; i++)
+        for (size_t i = 0; i < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); i++)
         {
             std::optional<rover_msgs::msg::CameraConfig> config = _arbitration.getValidPTZConfig(i);
             if (config.has_value())
@@ -44,8 +44,14 @@ namespace CameraManager
         }
     }
 
-    void ManagerNode::CB_publishFilteredPowerCmd(rover_msgs::msg::CameraControl msg_)
+    void ManagerNode::CB_storePowerCmd(rover_msgs::msg::CameraControl msg_, size_t index_)
     {
+        if (index_ >= std::to_underlying(Constants::CameraInfo::eCamNames::eLast))
+        {
+            return;
+        }
+        _lastPowerMsg[index_] = msg_;
+
         _publisher_filteredPowerCmd->publish(msg_);
     }
 
@@ -53,14 +59,29 @@ namespace CameraManager
     {
         rover_msgs::msg::TopicWithPriority msg;
 
-        for (size_t i = 0; i < NUMBER_CAM; i++)
+        for (size_t i = 0; i < _arbitration.topicWithPriority.size(); i++)
         {
-            msg.topics.push_back(_arbitration.topicWithPriority.at(i));
+            msg.topics.push_back(_arbitration.topicWithPriority[i]);
         }
         _publisher_topicWithPriority->publish(msg);
     }
 
-    void ManagerNode::initSub()
+    void ManagerNode::CB_publishFilteredPowerCmd()
+    {
+        bool power_on = false;
+        for (size_t i = 0; i < _lastPowerMsg.size(); i++)
+        {
+            if (_lastPowerMsg[i].power_on)
+            {
+                power_on = true;
+            }
+        }
+        rover_msgs::msg::CameraControl nextMsg;
+        nextMsg.power_on = power_on;
+        _publisher_filteredPowerCmd->publish(nextMsg);
+    }
+
+    void ManagerNode::initSubs()
     {
         size_t index = 0;
 
@@ -96,47 +117,54 @@ namespace CameraManager
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
                 Arbitration::POWER_CMD_TOPIC[index],
                 QOS_DEFAULT,
-                [this](const rover_msgs::msg::CameraControl& powerCmd_)
+                [this, index](const rover_msgs::msg::CameraControl& powerCmd_)
                 {
-                    CB_publishFilteredPowerCmd(powerCmd_);
+                    CB_storePowerCmd(powerCmd_, index);
                 });
             ++index;
         }
     }
 
-    void ManagerNode::initPub()
+    void ManagerNode::initPubs()
     {
         _publisher_filteredPTZCmd
             = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_COMMAND_MANAGER, QOS_DEFAULT);
 
-        _timer_filtredPTZCmdPub
-            = this->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000 / SEND_PTZ_COMMAND_FREQUENCY)),
-                                      [this](void)
-                                      {
-                                          CB_publishFilteredPtzCmd();
-                                      });
+        _timer_filtredPTZCmdPub = this->create_wall_timer(
+            std::chrono::milliseconds(static_cast<size_t>(1000 / Constants::CameraInfo::SEND_COMMAND_PTZ_FREQUENCY)),
+            [this](void)
+            {
+                CB_publishFilteredPtzCmd();
+            });
 
         _publisher_filteredPTZConfig
             = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_PTZ_CONFIG_MANAGER, QOS_DEFAULT);
 
-        _timer_filtredPTZConfigPub
-            = this->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000.F / SEND_PTZ_COMMAND_FREQUENCY)),
-                                      [this](void)
-                                      {
-                                          CB_publishFilteredZPtzConfig();
-                                      });
+        _timer_filtredPTZConfigPub = this->create_wall_timer(
+            std::chrono::milliseconds(static_cast<size_t>(1000.F / Constants::CameraInfo::SEND_CONFIG_PTZ_FREQUENCY)),
+            [this](void)
+            {
+                CB_publishFilteredZPtzConfig();
+            });
 
         _publisher_filteredPowerCmd
             = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_POWER_COMMAND_MANAGER, QOS_DEFAULT);
 
+        _timer_filtredPowerCmdPub = this->create_wall_timer(
+            std::chrono::milliseconds(static_cast<size_t>(1000.F / Constants::CameraInfo::SEND_COMMAND_POWER_FREQUENCY)),
+            [this](void)
+            {
+                CB_publishFilteredPowerCmd();
+            });
+
         _publisher_topicWithPriority
             = this->create_publisher<rover_msgs::msg::TopicWithPriority>(TOPIC_WITH_PRIORITY, QOS_DEFAULT);
 
-        _timer_topicWithPriorityPub
-            = this->create_wall_timer(std::chrono::milliseconds(static_cast<size_t>(1000.F / SEND_TOPIC_PRIORITY_FREQUENCY)),
-                                      [this](void)
-                                      {
-                                          CB_publishTopicWithPriority();
-                                      });
+        _timer_topicWithPriorityPub = this->create_wall_timer(
+            std::chrono::milliseconds(static_cast<size_t>(1000.F / Constants::CameraInfo::SEND_COMMAND_PTZ_FREQUENCY)),
+            [this](void)
+            {
+                CB_publishTopicWithPriority();
+            });
     }
 }  // namespace CameraManager

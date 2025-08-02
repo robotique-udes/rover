@@ -20,8 +20,7 @@ class CameraInterface
     static constexpr const char* PTZ_STATUS_TOPIC = "/rover/camera/PTZ_status";
     static constexpr const char* TOPIC_WITH_PRIORITY = "/rover/camera/topic_with_priority";
 
-    static constexpr uint8_t NUMBER_CAM = 5;
-    static constexpr double GOAL_MARGIN = 0.1;
+    static constexpr float EPSILON = 0.1;
 
   public:
     CameraInterface(std::shared_ptr<rclcpp::Node> node_,
@@ -75,11 +74,14 @@ class CameraInterface
     rclcpp::TimerBase::SharedPtr _timer_pubPowerCmd;
 
     std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPtzCmdMsg;
-    std::array<rover_msgs::msg::CameraConfig, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPtzConfigMsg;
+    std::array<rover_msgs::msg::CameraConfig, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)>
+        _lastPtzConfigMsg;
     std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPowerMsg;
 
-    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPowerStatusMsg;
-    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPtzStatusMsg;
+    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)>
+        _lastPowerStatusMsg;
+    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)>
+        _lastPtzStatusMsg;
 
     std::array<std::string, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _topicWithPriority;
 

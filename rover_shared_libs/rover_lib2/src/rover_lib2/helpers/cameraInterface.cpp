@@ -1,7 +1,7 @@
 #include "cameraInterface.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 #include "rover_lib2/helpers/constants.hpp"
-
+#include "rover_lib2/helpers/macros.hpp"
 
 CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                  const std::string& ptzCommandTopic_,
@@ -153,7 +153,7 @@ void CameraInterface::initPub()
 
 void CameraInterface::CB_publishPtzCmd(void)
 {
-    for (size_t i = 0; i < NUMBER_CAM; i++)
+    for (size_t i = 0; i < _isCamConcerned.size(); i++)
     {
         if (_node && _isCamConcerned.at(i))
         {
@@ -164,7 +164,7 @@ void CameraInterface::CB_publishPtzCmd(void)
 
 void CameraInterface::CB_publishPtzConfig(void)
 {
-    for (size_t i = 0; i < NUMBER_CAM; i++)
+    for (size_t i = 0; i < _isCamConcerned.size(); i++)
     {
         if (_node && _isCamConcerned.at(i))
         {
@@ -175,7 +175,7 @@ void CameraInterface::CB_publishPtzConfig(void)
 
 void CameraInterface::CB_publishPowerCmd(void)
 {
-    for (size_t i = 0; i < NUMBER_CAM; i++)
+    for (size_t i = 0; i < _isCamConcerned.size(); i++)
     {
         if (_node && _isCamConcerned.at(i))
         {
@@ -194,9 +194,9 @@ void CameraInterface::CB_subscriberPtzStatus(rover_msgs::msg::CameraControl stat
 {
     size_t id = statusMsg_.id_cam;
     _lastPowerStatusMsg.at(id) = statusMsg_;
-    double currentYaw = statusMsg_.yaw;
+    float currentYaw = statusMsg_.yaw;
 
-    if (std::abs(_lastPtzCmdMsg.at(id).yaw - currentYaw) < GOAL_MARGIN)
+    if (IN_ERROR(currentYaw, EPSILON, _lastPtzCmdMsg.at(id).yaw))
     {
         _isGoalReached.at(id) = true;
     }
@@ -208,7 +208,7 @@ void CameraInterface::CB_subscriberPtzStatus(rover_msgs::msg::CameraControl stat
 
 void CameraInterface::CB_subscriberTopicWithPriority(rover_msgs::msg::TopicWithPriority topicLists_)
 {
-    for (size_t i = 0; i < NUMBER_CAM; i++)
+    for (size_t i = 0; i < _topicWithPriority.size(); i++)
     {
         _topicWithPriority.at(i) = topicLists_.topics.at(i);
     }
