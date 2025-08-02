@@ -10,11 +10,9 @@ namespace CameraManager
 {
     class Arbitration
     {
-      public:
-        static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
-        static_assert(NUMBER_TOPIC_CAMERA_ARBITRATION > 1, "Number of topic managing PTZ on cameras lower than 1");
-
       private:
+        static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION;
+        static_assert(NUMBER_TOPIC_CAMERA_ARBITRATION > 1, "Number of topic managing PTZ on cameras lower than 1");
         static constexpr const size_t LOWEST_PRIORITY_LEVEL = NUMBER_TOPIC_CAMERA_ARBITRATION - 1;
         static constexpr const size_t HIGH_PRIORITY_MISSING_MSG_SAFETY_FACTOR = 2;
 

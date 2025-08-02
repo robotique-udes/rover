@@ -311,7 +311,7 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     }
 }
 
-void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float pitch_)
+void QVideoManagerWidget::CB_pubCameraAngle(const std::string& camURL_, float pitch_)
 {
     if (Constants::CameraInfo::getIndexFromName("Main") == Constants::CameraInfo::eCamNames::eLast
         || Constants::CameraInfo::getIndexFromName("Antenna") == Constants::CameraInfo::eCamNames::eLast)

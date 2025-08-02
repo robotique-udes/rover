@@ -60,6 +60,8 @@ namespace Constants
         bool getNameFromURL(const std::string& url_, std::string& rName_);
         eCamNames getIndexFromName(const std::string& name_);
 
+        static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
+
         static constexpr float SEND_COMMAND_PTZ_FREQUENCY = 5.F;
         static constexpr float SEND_CONFIG_PTZ_FREQUENCY = 0.5F;
         static constexpr float SEND_COMMAND_POWER_FREQUENCY = 0.5F;

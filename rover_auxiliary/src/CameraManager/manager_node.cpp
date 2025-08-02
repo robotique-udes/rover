@@ -68,17 +68,20 @@ namespace CameraManager
 
     void ManagerNode::CB_publishFilteredPowerCmd()
     {
-        bool power_on = false;
-        for (size_t i = 0; i < _lastPowerMsg.size(); i++)
+        for (const auto& msgsOnEachCamera : _lastPowerMsg)
         {
-            if (_lastPowerMsg[i].power_on)
+            bool power_on = false;
+            for (const auto msgOnEachtopic : msgsOnEachCamera)
             {
-                power_on = true;
+                if (msgOnEachtopic.power_on)
+                {
+                    power_on = true;
+                }
             }
+            rover_msgs::msg::CameraControl nextMsg;
+            nextMsg.power_on = power_on;
+            _publisher_filteredPowerCmd->publish(nextMsg);
         }
-        rover_msgs::msg::CameraControl nextMsg;
-        nextMsg.power_on = power_on;
-        _publisher_filteredPowerCmd->publish(nextMsg);
     }
 
     void ManagerNode::initSubs()

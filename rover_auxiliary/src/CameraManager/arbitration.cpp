@@ -9,7 +9,7 @@ namespace CameraManager
 
     Arbitration::Arbitration()
     {
-        _currentPriorityLevelPtzCmd.fill(NUMBER_TOPIC_CAMERA_ARBITRATION - 1);
+        _currentPriorityLevelPtzCmd.fill(LOWEST_PRIORITY_LEVEL);
         _missedHighPriorityMsg.fill(0);
     }
 

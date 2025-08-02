@@ -7,6 +7,7 @@
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_msgs/msg/camera_config.hpp"
 #include "rover_msgs/msg/topic_with_priority.hpp"
+#include <utility>
 
 namespace CameraManager
 {
@@ -36,14 +37,19 @@ namespace CameraManager
         void initSubs(void);
         void initPubs(void);
 
-        std::array<rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr, Arbitration::NUMBER_TOPIC_CAMERA_ARBITRATION>
+        std::array<rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr,
+                   Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION>
             _sub_PTZCmd;
-        std::array<rclcpp::Subscription<rover_msgs::msg::CameraConfig>::SharedPtr, Arbitration::NUMBER_TOPIC_CAMERA_ARBITRATION>
+        std::array<rclcpp::Subscription<rover_msgs::msg::CameraConfig>::SharedPtr,
+                   Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION>
             _sub_PTZConfig;
-        std::array<rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr, Arbitration::NUMBER_TOPIC_CAMERA_ARBITRATION>
+        std::array<rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr,
+                   Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION>
             _sub_powerCmd;
 
-        std::array<rover_msgs::msg::CameraControl, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _lastPowerMsg;
+        std::array<std::array<rover_msgs::msg::CameraControl, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)>,
+                   Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION>
+            _lastPowerMsg;
 
         rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _publisher_filteredPTZCmd;
         rclcpp::Publisher<rover_msgs::msg::CameraConfig>::SharedPtr _publisher_filteredPTZConfig;
