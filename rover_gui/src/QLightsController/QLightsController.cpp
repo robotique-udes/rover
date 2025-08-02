@@ -20,13 +20,13 @@ void QLightsController::toggleLightControl(void)
 
     if (_ui._pb_lights->isChecked())
     {
-        _ui._pb_lights->setText("Front lights on");
+        _ui._pb_lights->setText("Turn front lights off");
         msg.duty_cycle = static_cast<float>(_ui._slider_PWM->value()) / 100.0f;
         msg.frequency = FREQUENCY;
     }
     else
     {
-        _ui._pb_lights->setText("Front lights off");
+        _ui._pb_lights->setText("Turn front lights on");
         msg.duty_cycle = 0.0f;
         msg.frequency = 0.0f;
     }

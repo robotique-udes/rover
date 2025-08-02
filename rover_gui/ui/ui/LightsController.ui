@@ -20,7 +20,7 @@
       <bool>true</bool>
      </property>
      <property name="text">
-      <string>Front lights off</string>
+      <string>Turn front lights on</string>
      </property>
      <property name="checkable">
       <bool>true</bool>
