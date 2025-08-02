@@ -16,42 +16,32 @@
 #include <rover_msgs/msg/detail/light__struct.hpp>
 #include <rover_msgs/msg/light.hpp>
 
-class Light : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msgs::PwmStatus, Light>>,
+class Light : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msgs::PwmStatus, Light>,
+                                       RoverCan2::Publisher<RoverCan2::Msgs::PwmCmd>>,
               public MasterDevice
 {
     static constexpr const char* TOPIC_LIGHTS_CTRL = "/rover/auxiliary/lights_control";
+    static constexpr const char* TOPIC_LIGHTS_STATUS = "/rover/auxiliary/light_status";
+    static constexpr const uint8_t LIGHT_PUBLISH_PERIOD_MS = 100U;
 
-    using DerivedT = RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msgs::PwmStatus, Light>>;
+    using DerivedT = RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msgs::PwmStatus, Light>,
+                                       RoverCan2::Publisher<RoverCan2::Msgs::PwmCmd>>;
 
   public:
-    Light():
-        DerivedT(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN,
-                 RoverCan2::SubscriberMember<RoverCan2::Msgs::PwmStatus, Light>(*this, &Light::CB_CAN_PwmStatus))
-    {
-    }
+    Light();
 
   private:
-    void CB_CAN_PwmStatus(const RoverCan2::Msgs::PwmStatus& /*msgCan_*/) {}
+    void CB_CAN_PwmStatus(const RoverCan2::Msgs::PwmStatus& msgCan_);
+    void CB_ROS_lightControl(const rover_msgs::msg::Light& msgRos_);
+    void rosElementInit(void);
+    void rosElementClean(void);
 
-    void CB_ROS_lightControl(const rover_msgs::msg::Light& /*msgRos_*/) {}
+    std::vector<RoverCan2::Constant::eDeviceId> getManagedDevicesIds(void);
 
-    void rosElementInit(void)
-    {
-        sub_lightCmd
-            = this->getAttachedNode()->create_subscription<rover_msgs::msg::Light>(TOPIC_LIGHTS_CTRL,
-                                                                                   QOS_DEFAULT,
-                                                                                   [this](const rover_msgs::msg::Light& msg_)
-                                                                                   {
-                                                                                       this->CB_ROS_lightControl(msg_);
-                                                                                   });
-    }
-
-    void rosElementClean(void) {}
-
-    virtual std::vector<RoverCan2::Constant::eDeviceId> getManagedDevicesIds(void) = 0;
-
-    rclcpp::Subscription<rover_msgs::msg::Light>::SharedPtr sub_lightCmd;
-    rclcpp::Publisher<rover_msgs::msg::Light>::SharedPtr pub_lightStatus;
+    rclcpp::Subscription<rover_msgs::msg::Light>::SharedPtr _sub_lightCmd;
+    rclcpp::Publisher<rover_msgs::msg::Light>::SharedPtr _pub_lightStatus;
+    rclcpp::TimerBase::SharedPtr _lightStatusPublishTimer;
+    rover_msgs::msg::Light _msgRos;
 };
 
 #endif  // LIGHT_HPP
