@@ -21,7 +21,7 @@ class Light : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Ms
               public MasterDevice
 {
     static constexpr const char* TOPIC_LIGHTS_CTRL = "/rover/auxiliary/lights_control";
-    static constexpr const char* TOPIC_LIGHTS_STATUS = "/rover/auxiliary/light_status";
+    static constexpr const char* TOPIC_LIGHTS_STATUS = "/rover/auxiliary/lights_status";
     static constexpr const uint8_t LIGHT_PUBLISH_PERIOD_MS = 100U;
 
     using DerivedT = RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msgs::PwmStatus, Light>,
