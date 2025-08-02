@@ -2,6 +2,8 @@
 #define ROVER_LIB2_HELPERS_CONSTANTS_HPP
 #include <array>
 #include <cstddef>
+#include <cstdint>
+#include <iterator>
 #include <utility>
 
 #if defined(__linux__)
@@ -23,13 +25,31 @@ namespace Constants
     namespace CameraInfo
     {
 #if defined(__linux__)
-        const std::map<std::string, std::string, std::less<>> CAMERA_URL_MAP = {
-            {"Main", "rtsp://192.168.144.30:554/1/h264major"},
-            {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
-            {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
-            {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},
-            {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
+
+        enum class eCamNames : size_t
+        {
+            MAIN,
+            ANTENNA,
+            FRONT_SIDE,
+            ARM_TOP,
+            ARM_SIDE,
+            eLast
         };
+
+        enum class eInfoType : size_t
+        {
+            NAME,
+            URL,
+            eLast
+        };
+
+        constexpr std::array<std::array<const char*, 2>, static_cast<std::size_t>(eCamNames::eLast)> CAMERA_INFO = {{
+            {"Main",       "rtsp://192.168.144.30:554/1/h264major"},
+            {"Antenna",    "rtsp://192.168.144.31:554/1/h264major"},
+            {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
+            {"Arm-Top",    "rtsp://192.168.144.35:554/1/h264major"},
+            {"Arm-Side",   "rtsp://192.168.144.36:554/1/h264major"},
+        }};
 
         /**
          * @brief

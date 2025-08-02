@@ -5,7 +5,7 @@
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_msgs/msg/camera_config.hpp"
 #include "rover_msgs/msg/topic_with_priority.hpp"
-#include <rover_msgs/msg/detail/camera_config__struct.hpp>
+#include "rover_lib2/helpers/constants.hpp"
 
 class CameraInterface
 {
@@ -74,17 +74,17 @@ class CameraInterface
     rclcpp::TimerBase::SharedPtr _timer_pubPTZConfig;
     rclcpp::TimerBase::SharedPtr _timer_pubPowerCmd;
 
-    std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzCmdMsg;
-    std::array<rover_msgs::msg::CameraConfig, NUMBER_CAM> _lastPtzConfigMsg;
-    std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerMsg;
+    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPtzCmdMsg;
+    std::array<rover_msgs::msg::CameraConfig, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPtzConfigMsg;
+    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPowerMsg;
 
-    std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPowerStatusMsg;
-    std::array<rover_msgs::msg::CameraControl, NUMBER_CAM> _lastPtzStatusMsg;
+    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPowerStatusMsg;
+    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPtzStatusMsg;
 
-    std::array<std::string, NUMBER_CAM> _topicWithPriority;
+    std::array<std::string, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _topicWithPriority;
 
-    std::array<bool, NUMBER_CAM> _isCamConcerned = {false};
-    std::array<bool, NUMBER_CAM> _isGoalReached = {false};
+    std::array<bool, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _isCamConcerned = {false};
+    std::array<bool, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _isGoalReached = {false};
 
     std::shared_ptr<rclcpp::Node> _node;
 };

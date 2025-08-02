@@ -1,6 +1,7 @@
 #include "cameraInterface.hpp"
 #include "rover_lib2/helpers/constants.hpp"
-#include <rover_msgs/msg/detail/camera_config__struct.hpp>
+#include "rover_lib2/helpers/constants.hpp"
+
 
 CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                  const std::string& ptzCommandTopic_,
