@@ -1,4 +1,5 @@
 #include "light.hpp"
+
 #include "rover_can2/constant.hpp"
 
 Light::Light(RoverCan2::Constant::eDeviceId deviceId_):

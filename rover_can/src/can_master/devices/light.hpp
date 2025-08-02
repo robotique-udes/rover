@@ -2,7 +2,8 @@
 #define LIGHT_HPP
 
 #include "can_master/master_device.hpp"
-#include "rover_can2/subscriber.hpp"
+
+#include <rover_can2/subscriber.hpp>
 #include <rclcpp/publisher.hpp>
 #include <rclcpp/subscription.hpp>
 #include <rover_can2/rover_can2.hpp>
@@ -26,15 +27,16 @@ class Light : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Ms
                                        RoverCan2::Publisher<RoverCan2::Msgs::PwmCmd>>;
 
   public:
-    Light(RoverCan2::Constant::eDeviceId deviceId_);
+    explicit Light(RoverCan2::Constant::eDeviceId deviceId_);
+    virtual ~Light() = default;
 
   private:
     void CB_CAN_PwmStatus(const RoverCan2::Msgs::PwmStatus& msgCan_);
     void CB_ROS_lightControl(const rover_msgs::msg::Light& msgRos_);
-    void rosElementInit(void);
-    void rosElementClean(void);
+    void rosElementInit() override;
+    void rosElementClean() override;
 
-    std::vector<RoverCan2::Constant::eDeviceId> getManagedDevicesIds(void);
+    std::vector<RoverCan2::Constant::eDeviceId> getManagedDevicesIds() override;
 
     rclcpp::Subscription<rover_msgs::msg::Light>::SharedPtr _sub_lightCmd;
     rclcpp::Publisher<rover_msgs::msg::Light>::SharedPtr _pub_lightStatus;

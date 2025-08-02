@@ -1,8 +1,10 @@
 #include "QLightsController.hpp"
+
 #include <rover_lib2/helpers/constants.hpp>
-#include <qpushbutton.h>
-#include <qslider.h>
-#include <qlabel.h>
+#include <QPushButton>
+#include <QSlider>
+#include <QLabel>
+#include <QStyle>
 
 QLightsController::QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -21,16 +23,21 @@ void QLightsController::toggleLightControl(bool checked_)
     if (checked_)
     {
         _ui._pb_lights->setText("Turn front lights off");
+        _ui._pb_lights->setProperty("class", "success");
         msg.duty_cycle = std::clamp(static_cast<float>(_ui._slider_PWM->value()), 0.0f, 100.0f);
         msg.frequency = FREQUENCY;
     }
     else
     {
         _ui._pb_lights->setText("Turn front lights on");
+        _ui._pb_lights->setProperty("class", "normal");
         msg.duty_cycle = 0.0f;
         msg.frequency = 0.0f;
     }
     _pub_LightCmd->publish(msg);
+
+    _ui._pb_lights->style()->unpolish(_ui._pb_lights);
+    _ui._pb_lights->style()->polish(_ui._pb_lights);
 }
 
 void QLightsController::updateLightPWM(void)
