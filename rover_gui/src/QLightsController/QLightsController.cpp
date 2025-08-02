@@ -11,17 +11,17 @@ QLightsController::QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWi
     _ui.setupUi(this);
     _pub_LightCmd = _node->create_publisher<rover_msgs::msg::Light>(TOPIC_LIGHTS_CTRL, QOS_DEFAULT);
     connect(_ui._slider_PWM, &QSlider::valueChanged, this, &QLightsController::updateLightPWM);
-    connect(_ui._pb_lights, &QPushButton::pressed, this, &QLightsController::toggleLightControl);
+    connect(_ui._pb_lights, &QPushButton::clicked, this, &QLightsController::toggleLightControl);
 }
 
-void QLightsController::toggleLightControl(void)
+void QLightsController::toggleLightControl(bool checked_)
 {
     rover_msgs::msg::Light msg;
 
-    if (_ui._pb_lights->isChecked())
+    if (checked_)
     {
         _ui._pb_lights->setText("Turn front lights off");
-        msg.duty_cycle = static_cast<float>(_ui._slider_PWM->value()) / 100.0f;
+        msg.duty_cycle = std::clamp(static_cast<float>(_ui._slider_PWM->value()), 0.0f, 100.0f);
         msg.frequency = FREQUENCY;
     }
     else
@@ -39,8 +39,15 @@ void QLightsController::updateLightPWM(void)
     if (_ui._pb_lights->isChecked())
     {
         rover_msgs::msg::Light msg;
-        msg.duty_cycle = static_cast<float>(_ui._slider_PWM->value()) / 100.0f;
+        msg.duty_cycle = std::clamp(static_cast<float>(_ui._slider_PWM->value()), 0.0f, 100.0f);
         msg.frequency = FREQUENCY;
+        _pub_LightCmd->publish(msg);
+    }
+    else
+    {
+        rover_msgs::msg::Light msg;
+        msg.duty_cycle = 0.0f;
+        msg.frequency = 0.0f;
         _pub_LightCmd->publish(msg);
     }
 }

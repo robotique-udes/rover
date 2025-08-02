@@ -10,8 +10,8 @@ class QLightsController : public QWidget
 
   public:
     explicit QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-    void toggleLightControl(void);
-    void updateLightPWM(void);
+    void toggleLightControl(bool checked_);
+    void updateLightPWM();
 
   private:
     Ui::LightsController _ui;
