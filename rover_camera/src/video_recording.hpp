@@ -27,6 +27,7 @@ class Recording
     static constexpr uint8_t RECORDING_INTERVAL_SHORT_S = 20U;   // in seconds
     static constexpr uint16_t RECORDING_INTERVAL_LONG_S = 900U;  // in seconds (15 minutes)
     static constexpr int CODEC_MJPG = ('M') | ('J' << 8) | ('P' << 16) | ('G' << 24);
+    static constexpr uint16_t PIPELINE_OPENING_TIMEOUT_MS = 2'000U;
 
   public:
     Recording() = delete;

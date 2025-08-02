@@ -66,6 +66,8 @@ add_executable(main_gui src/gui.cpp
                    src/QDeviceStatus/QDeviceStatus.cpp
                    src/QDeviceStatus/Worker/QStatusWorker.cpp
 
+                   src/QLightsController/QLightsController.cpp
+
                    src/QNavigation/QNavigation.cpp
 
                    src/QSideBar/QSideBar.cpp

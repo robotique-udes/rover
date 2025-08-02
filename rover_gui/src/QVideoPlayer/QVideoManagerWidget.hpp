@@ -16,6 +16,12 @@
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 
+enum class eTabIndex : uint8_t
+{
+    GRID = 0,
+    ALT
+};
+
 class QVideoManagerWidget : public QWidget
 {
     Q_OBJECT

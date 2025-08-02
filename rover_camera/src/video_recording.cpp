@@ -155,10 +155,23 @@ bool Recording::startRecording(void)
     _pipeline = "rtspsrc location=" + _camURL
                 + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
-    _cap.open(_pipeline, cv::CAP_GSTREAMER);
-    if (!_cap.isOpened())
+    std::future<bool> opened = std::async(std::launch::async,
+                                          [this]()
+                                          {
+                                              _cap.open(_pipeline, cv::CAP_GSTREAMER);
+                                              return _cap.isOpened();
+                                          });
+    if (opened.wait_for(std::chrono::milliseconds(PIPELINE_OPENING_TIMEOUT_MS)) == std::future_status::ready)
     {
-        RCLCPP_ERROR(rLogger, "Failed to open camera stream.");
+        if (!opened.get())
+        {
+            RCLCPP_ERROR(rLogger, "Failed to open camera stream.");
+            return false;
+        }
+    }
+    else
+    {
+        RCLCPP_ERROR(rLogger, "Timeout while opening camera stream.");
         return false;
     }
 

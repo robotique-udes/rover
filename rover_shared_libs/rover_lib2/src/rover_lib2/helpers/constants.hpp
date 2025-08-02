@@ -1,5 +1,10 @@
 #ifndef ROVER_LIB2_HELPERS_CONSTANTS_HPP
 #define ROVER_LIB2_HELPERS_CONSTANTS_HPP
+#include <array>
+#include <cstddef>
+#include <utility>
+
+#include <cstdint>
 
 #if defined(__linux__)
 #include <map>
@@ -38,6 +43,26 @@ namespace Constants
 #endif  // defined(__linux__)
     }   // namespace CameraInfo
 
+    namespace AntennaInfo
+    {
+        enum class eAntennaType : std::size_t
+        {
+            BASE = 0,
+            ROVER = 1,
+            eLast
+        };
+
+        static constexpr std::array<const char*, std::to_underlying(eAntennaType::eLast)> ANTENNA_URLS
+            = {"https://192.168.144.55", "https://192.168.144.50"};
+
+        template<eAntennaType antenna_>
+        constexpr const char* getURL()
+        {
+            static_assert(static_cast<size_t>(antenna_) < ANTENNA_URLS.size(), "Invalid antenna index");
+            return ANTENNA_URLS[static_cast<size_t>(antenna_)];
+        }
+    }  // namespace AntennaInfo
+
     namespace DriveTrain
     {
         constexpr float SPEED_FACTOR_CRAWLER = 0.2f;
@@ -57,6 +82,22 @@ namespace Constants
         constexpr uint8_t MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
     }   // namespace DriveTrain::KeyBinding
 #endif  // defined(__linux__) && defined(ROS)
+
+    enum class eGGAQuality : uint8_t
+    {
+        NO_FIX = 0U,
+        GPS = 1U,
+        GNSS = 2U,
+        RTK = 3U,
+    };
+
+    enum class eHeadingQuality : uint8_t
+    {
+        NO_HEADING = 0U,
+        UNRELIABLE = 1U,
+        RELIABLE = 2U,
+        BEST = 4U,
+    };
 }  // namespace Constants
 
 #endif  // ROVER_LIB2_HELPERS_CONSTANTS_HPP

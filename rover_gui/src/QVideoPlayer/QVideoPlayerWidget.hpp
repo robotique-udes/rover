@@ -141,6 +141,7 @@ class QVideoPlayerWidget : public QWidget
     void initializeUIState(void);
     void emitStateChanged(void);
     void cleanupResources(void);
+    void autoStartGStreamer(void);
     void panoramaTurnCamera(void);
 
     void hideAngleSelector(void);

@@ -23,7 +23,6 @@ DEFINE_LOG_NODE(AMT222XPlot, Logger::eNodeState::OFF);
 
 namespace Encoders
 {
-
     /**
      * @brief AMT222X is meant to provide a universal encoder object for any type of AMT222* encoders by keeping track of the
      * position data between power cycle. This is meant to mimick a absolute multiturn encoder. The position data will stay valid

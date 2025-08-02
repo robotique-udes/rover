@@ -28,7 +28,7 @@ QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
             this,
             &QVideoRecorderWidget::onStopRecordingHandledSuccessfully);
 
-    connect(this, &QVideoRecorderWidget::onUpdateCameraList, this, &QVideoRecorderWidget::onUpdateCameraList);
+    connect(this, &QVideoRecorderWidget::updateCameraList, this, &QVideoRecorderWidget::onUpdateCameraList);
 
     std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
     if (optionalSessionFolderPath.has_value())
@@ -59,6 +59,7 @@ void QVideoRecorderWidget::setCameraControlClientManager(std::shared_ptr<rclcpp:
     if (client_)
     {
         _client_cameraControlManager = client_;
+        this->autoStartRecording();
     }
     else
     {
@@ -172,11 +173,7 @@ void QVideoRecorderWidget::onStartRecordingHandledSuccessfully(bool success_, co
         }
         else
         {
-            _sButtons.startRecordingButton->setProperty("class", "success");
-            _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
-            _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-            _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Video started",
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Starting video recorder",
                                                                            status_,
                                                                            QHelper::QToastNotification::eNotifType::SUCCESS);
         }
@@ -208,11 +205,7 @@ void QVideoRecorderWidget::onStopRecordingHandledSuccessfully(bool success_, con
         }
         else
         {
-            _sButtons.startRecordingButton->setProperty("class", "normal");
-            _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
-            _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
-            _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Stopping video recorder",
                                                                            status_,
                                                                            QHelper::QToastNotification::eNotifType::SUCCESS);
         }
@@ -228,11 +221,10 @@ void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& ur
             if (!_sButtons.startRecordingButton->isChecked())
             {
                 _sButtons.startRecordingButton->setChecked(true);
-                _sButtons.startRecordingButton->setProperty("class", "success");
-                _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-playback-stop"));
                 _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
                 _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
             }
+            return;
         }
     }
 
@@ -240,8 +232,8 @@ void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& ur
     if (_sButtons.startRecordingButton && _sButtons.startRecordingButton->isChecked())
     {
         std::string error_message = "Recording on " + _camURL + " was stopped unexpectedly";
+        _sButtons.startRecordingButton->setProperty("class", "normal");
         _sButtons.startRecordingButton->setChecked(false);
-        _sButtons.startRecordingButton->setIcon(QIcon::fromTheme("media-record"));
         _sButtons.startRecordingButton->style()->unpolish(_sButtons.startRecordingButton);
         _sButtons.startRecordingButton->style()->polish(_sButtons.startRecordingButton);
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("Recording stopped",
@@ -281,4 +273,16 @@ void QVideoRecorderWidget::setButtons(const sRecordingButtons& buttons_)
 void QVideoRecorderWidget::emitUpdateCameraList(const std::vector<std::string>& urls)
 {
     emit this->updateCameraList(urls);
+}
+
+void QVideoRecorderWidget::autoStartRecording(void)
+{
+    if (_sButtons.startRecordingButton)
+    {
+        _sButtons.startRecordingButton->setChecked(true);
+        _playerWorkerThreadRecording->startRecordingManager(_client_cameraControlManager,
+                                                            _camURL,
+                                                            _playerIndex,
+                                                            _sessionFolderPath);
+    }
 }

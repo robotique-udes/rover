@@ -38,6 +38,7 @@ find_package(rclcpp REQUIRED)
 
 rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/AntennaCmd.msg"
+  "msg/AntennaStatus.msg"
   "msg/ArmMsg.msg"
   "msg/Aruco.msg"
   "msg/Battery.msg"
@@ -52,10 +53,9 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Joy.msg"
   "msg/JoyDemuxStatus.msg"
   "msg/CameraList.msg"
-  "msg/LightControl.msg"
+  "msg/Light.msg"
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
-  "msg/WifiConnection.msg"
 
   "srv/AntennaArbitration.srv"
   "srv/ArmJointConfig.srv"

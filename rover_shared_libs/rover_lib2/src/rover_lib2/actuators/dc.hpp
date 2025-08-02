@@ -14,7 +14,7 @@
 #include "rover_lib2/controllers/PID.hpp"
 
 DEFINE_LOG_NODE(ActuatorDc, Logger::eNodeState::OFF);
-DEFINE_LOG_NODE(ActuatorDcPlot, Logger::eNodeState::OFF);
+DEFINE_LOG_NODE(ActuatorDcPlot, Logger::eNodeState::ON);
 
 namespace Actuators
 {
@@ -156,6 +156,7 @@ namespace Actuators
                 return 0.0F;
             }
 
+            LOG_DEBUG(Logger::Nodes::ActuatorDc, "Position: %.3f", _pEncoder->getPosition());
             return _pEncoder->getPosition();
         }
 

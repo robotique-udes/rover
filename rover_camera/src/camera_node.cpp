@@ -8,7 +8,10 @@ int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
 
-    rclcpp::spin(std::make_shared<CameraNode>());
+    std::shared_ptr<CameraNode> node = std::make_shared<CameraNode>();
+    rclcpp::executors::MultiThreadedExecutor executor;
+    executor.add_node(node);
+    executor.spin();
 
     rclcpp::shutdown();
     return 0;
@@ -35,7 +38,7 @@ CameraNode::CameraNode():
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                          [this](void)
                                          {
-                                             this->CB_url_publisher();
+                                             this->publishCameraUrls();
                                          });
 
     _sub_position = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
@@ -166,13 +169,13 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     if (this->newRecording(folderPath, captureName, cameraURL))
     {
         response_.success = true;
-        response_.status = "Recording started";
+        response_.status = "Starting GStreamer pipeline";
     }
     else
     {
         this->requestShutdown(cameraURL);
         response_.success = false;
-        response_.status = "Failed to take a video, check logs for reason";
+        response_.status = "Invalid request";
     }
 }
 
@@ -246,8 +249,8 @@ std::optional<std::string> CameraNode::getFolderPath(const std::string& basePath
     }
     else
     {
-        return std::nullopt;
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, $HOME env variable wasn't found");
+        return std::nullopt;
     }
 
     std::string folderPath;
@@ -374,7 +377,7 @@ bool CameraNode::stopRecording(std::string cameraURL_)
             _recordingCv.notify_one();
         }
     }
-    this->CB_url_publisher();
+    this->publishCameraUrls();
     return true;
 }
 
@@ -413,13 +416,23 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
             {
                 startWatchDog();
             }
-
-            Recording& rRecording = _recordingMap.at(cameraURL_);
-
-            return rRecording.startRecording();
         }
     }
-    CB_url_publisher();
+    std::thread startRecordingThread(
+        [this, cameraURL_]()
+        {
+            Recording& rRecording = _recordingMap.at(cameraURL_);
+            bool ok = rRecording.startRecording();
+            if (!ok)
+            {
+                this->requestShutdown(cameraURL_);
+                RCLCPP_ERROR(this->get_logger(), "Failed to start recording for %s", cameraURL_.c_str());
+            }
+            this->publishCameraUrls();
+        });
+
+    startRecordingThread.detach();
+    return true;
 }
 
 /**
@@ -516,7 +529,7 @@ void CameraNode::videoWatchDogFunction(void)
     return;
 }
 
-void CameraNode::CB_url_publisher(void)
+void CameraNode::publishCameraUrls(void)
 {
     rover_msgs::msg::CameraList msg;
 

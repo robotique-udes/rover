@@ -51,7 +51,7 @@ void Gnss::CB_CAN_FixHeading(const RoverCan2::Msgs::FixHeading& canMsg_)
 void Gnss::CB_CAN_FixInfo(const RoverCan2::Msgs::FixInfo& canMsg_)
 {
     _rosGpsMsg.satellite = canMsg_.getData().satelliteCount;
-    _rosGpsMsg.fix_quality = canMsg_.getData().fixQuality;
+    _rosGpsMsg.fix_quality = std::to_underlying(canMsg_.getData().fixQuality);
 }
 
 void Gnss::CB_CAN_FixPosition(const RoverCan2::Msgs::FixPosition& canMsg_)
