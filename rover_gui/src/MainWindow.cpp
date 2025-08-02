@@ -8,7 +8,8 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _topUtilityBar(guiNode_, this),
     _arbitrationWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
-    _deviceStatusWidget(guiNode_, this)
+    _deviceStatusWidget(guiNode_, this),
+    _ligthsController(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
@@ -69,9 +70,10 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             [[fallthrough]];
 
         case QSideBar::eTabIndex::DASHBOARD:
-            grid->addWidget(&_navigationWidget, 0, 0, 2, 1);
+            grid->addWidget(&_navigationWidget, 0, 0, 3, 1);
             grid->addWidget(&_arbitrationWidget, 0, 1);
-            grid->addWidget(&_deviceStatusWidget, 1, 1);
+            grid->addWidget(&_ligthsController, 1, 1);
+            grid->addWidget(&_deviceStatusWidget, 2, 1);
 
             grid->setColumnStretch(0, 6);
             grid->setColumnStretch(1, 1);
