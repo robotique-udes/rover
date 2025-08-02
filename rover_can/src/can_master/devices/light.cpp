@@ -1,4 +1,5 @@
 #include "light.hpp"
+#include "rover_can2/constant.hpp"
 
 Light::Light(RoverCan2::Constant::eDeviceId deviceId_):
     DerivedT(deviceId_,
@@ -32,14 +33,14 @@ void Light::rosElementInit(void)
                                                                                });
     _pub_lightStatus = this->getAttachedNode()->create_publisher<rover_msgs::msg::Light>(TOPIC_LIGHTS_STATUS, QOS_DEFAULT);
 
-    _lightStatusPublishTimer = this->getAttachedNode()->create_wall_timer(std::chrono::milliseconds(LIGHT_PUBLISH_PERIOD_MS),
-                                                                          [this]()
-                                                                          {
-                                                                              if (_pub_lightStatus)
-                                                                              {
-                                                                                  _pub_lightStatus->publish(_msgRos);
-                                                                              }
-                                                                          });
+    _timer_statusPublisher = this->getAttachedNode()->create_wall_timer(std::chrono::milliseconds(LIGHT_PUBLISH_PERIOD_MS),
+                                                                        [this]()
+                                                                        {
+                                                                            if (_pub_lightStatus)
+                                                                            {
+                                                                                _pub_lightStatus->publish(_msgRos);
+                                                                            }
+                                                                        });
 }
 
 void Light::rosElementClean(void)
@@ -52,6 +53,11 @@ void Light::rosElementClean(void)
     if (_pub_lightStatus)
     {
         _pub_lightStatus.reset();
+    }
+
+    if (_timer_statusPublisher)
+    {
+        _timer_statusPublisher.reset();
     }
 }
 
