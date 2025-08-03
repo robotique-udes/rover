@@ -33,7 +33,7 @@ class Panorama : public rclcpp::Node
 
   private:
     void handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_);
+                               std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_);
     bool validateRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
                          std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_);
     bool captureFrames(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,

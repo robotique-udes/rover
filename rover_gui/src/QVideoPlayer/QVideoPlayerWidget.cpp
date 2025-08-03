@@ -85,7 +85,8 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     connect(_ui.angleCenterButton, &QPushButton::clicked, this, &QVideoPlayerWidget::onCenterAngle);
     connect(_ui.panoramaButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePanorama);
-    connect(_panoramaWorkerThread.get(), &QPanoramaWorker::PanoramaStarted, this, &QVideoPlayerWidget::onPanoramaStarted);
+    connect(_panoramaWorkerThread.get(), &QPanoramaWorker::panoramaStarted, this, &QVideoPlayerWidget::onPanoramaStarted);
+    connect(_panoramaWorkerThread.get(), &QPanoramaWorker::panoramaFinished, this, &QVideoPlayerWidget::onPanoramaFinished);
     connect(_ui.panoramaDurationBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::setPanoramaDuration);
 
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
@@ -1002,16 +1003,25 @@ void QVideoPlayerWidget::onPanoramaStarted(uint16_t duration_, uint16_t playerIn
                                                                        "Duration: " + std::to_string(duration_ / 1000.0)
                                                                            + " seconds",
                                                                        QHelper::QToastNotification::eNotifType::SUCCESS);
+    }
+}
 
-        QTimer::singleShot(duration_,
-                           this,
-                           [this]()
-                           {
-                               QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                                   "Panorama done",
-                                   "Picture was saved to the session folder under camera/panorama",
-                                   QHelper::QToastNotification::eNotifType::SUCCESS);
-                           });
+void QVideoPlayerWidget::onPanoramaFinished(bool success_, const std::string& status_, uint16_t playerIndex_)
+{
+    if (_playerIndex == playerIndex_)
+    {
+        if (success_)
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama finished successfully",
+                                                                           status_,
+                                                                           QHelper::QToastNotification::eNotifType::SUCCESS);
+        }
+        else
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Panorama failed",
+                                                                           status_,
+                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+        }
     }
 }
 

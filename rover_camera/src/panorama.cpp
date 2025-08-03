@@ -14,15 +14,15 @@ Panorama::Panorama():
         });
 
     sub_gps = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
-                                                                   QOS_DEFAULT,
-                                                                   [this](const rover_msgs::msg::Gps& gpsMsg_)
-                                                                   {
-                                                                       this->SetGpsPosition(gpsMsg_);
-                                                                   });
+                                                              QOS_DEFAULT,
+                                                              [this](const rover_msgs::msg::Gps& gpsMsg_)
+                                                              {
+                                                                  this->SetGpsPosition(gpsMsg_);
+                                                              });
 }
 
 void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                      std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_)
+                                     std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_)
 {
     response_->success = false;
     if (!validateRequest(request_, response_))
@@ -172,7 +172,7 @@ bool Panorama::captureFrames(const std::shared_ptr<rover_msgs::srv::PhotoPanoram
         return false;
     }
     RCLCPP_DEBUG(this->get_logger(), "Starting panorama for camera: %s", request_->camera_url.c_str());
-    
+
     cv::Mat frame;
     uint8_t invalidFramesCounter = 0U;
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();

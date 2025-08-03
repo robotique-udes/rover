@@ -33,7 +33,7 @@ class QVideoPlayerWidget : public QWidget
     static int _instanceCounter;
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
-  
+
     static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
     static constexpr uint16_t CAMERA_MAX_ANGLE = 360;
     static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100;
@@ -116,6 +116,7 @@ class QVideoPlayerWidget : public QWidget
 
     void handlePanorama(void);
     void onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_);
+    void onPanoramaFinished(bool success_, const std::string& status_, uint16_t playerIndex_);
     void setPanoramaDuration(void);
 
     void onPipelineStarted(GstElement* pipeline_);

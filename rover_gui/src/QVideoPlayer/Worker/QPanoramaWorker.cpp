@@ -40,7 +40,8 @@ void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_
 
     if (!client_panoramique_)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "ERROR: couldn't take panorama \npanorama client is invalid");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "ERROR: couldn't take panorama, panorama client is invalid");
+        emit this->panoramaFinished(false, "Panorama client was invalid", playerIndex_);
         return;
     }
 
@@ -50,5 +51,16 @@ void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_
     std::future<std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response>> future_result
         = std::move(future_and_request.future);
 
-    emit this->PanoramaStarted(duration_, playerIndex_);
+    emit this->panoramaStarted(duration_, playerIndex_);
+
+    if (future_result.wait_for(std::chrono::milliseconds(2U * request->duration)) == std::future_status::ready)
+    {
+        std::shared_ptr<rover_msgs::srv::PhotoPanoramique_Response> response = future_result.get();
+        emit this->panoramaFinished(response->success, response->status, playerIndex_);
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Panorama service call timed out");
+        emit this->panoramaFinished(false, "Panorama service call timed out", playerIndex_);
+    }
 }
