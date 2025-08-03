@@ -36,6 +36,7 @@ void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_
 
     request->camera_url = cameraUrl_;
     request->base_path = basePath_ + "/camera";
+    request->duration = duration_;
 
     if (!client_panoramique_)
     {
