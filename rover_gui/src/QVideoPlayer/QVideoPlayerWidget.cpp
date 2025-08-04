@@ -38,7 +38,6 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.setupUi(this);
 
     this->setupUI();
-    this->initActualAngleSlider();
 
     sRecordingButtons recordingButtons = {_ui.startRecordingButton, _ui.ScreenshotButton};
     _recorderWidget.setButtons(recordingButtons);
@@ -1035,7 +1034,6 @@ void QVideoPlayerWidget::panoramaTurnCamera(void)
     _ui.cameraAngleSlider->setEnabled(false);
     _ui.cameraAngleBox->setEnabled(false);
 
-    emit this->notifyCameraAnglePublisher(_camURL, CAMERA_MAX_ANGLE);
     _ui.cameraAngleSlider->setValue(CAMERA_MAX_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_MAX_ANGLE);
 
@@ -1046,33 +1044,6 @@ void QVideoPlayerWidget::panoramaTurnCamera(void)
                            _ui.cameraAngleSlider->setEnabled(true);
                            _ui.cameraAngleBox->setEnabled(true);
                        });
-}
-
-void QVideoPlayerWidget::initActualAngleSlider(void)
-{
-    _ui.actualAngleSlider->setStyleSheet(R"(
-    QSlider::handle:horizontal {
-        image: url(:/icons/arrow.png);
-        background: transparent;
-        border: none;
-        width: 16px;
-        height: 16px;
-        margin: -8px 0;  /* adjust to align vertically */
-    }
-
-    QSlider::groove:horizontal {
-        background: transparent;
-        height: 4px;  /* or whatever you want */
-    }
-
-    QSlider::sub-page:horizontal,
-    QSlider::add-page:horizontal {
-        background: transparent;
-    }
-    )");
-
-    _ui.actualAngleSlider->setEnabled(false);
-    _ui.actualAngleSlider->setValue(CAMERA_CENTER_ANGLE);
 }
 
 void QVideoPlayerWidget::CB_updateActualAngle(std::string camURL_, float yaw_)

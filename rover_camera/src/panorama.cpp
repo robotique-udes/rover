@@ -1,6 +1,9 @@
 #include "panorama.hpp"
+#include <sys/stat.h>
 #include <rover_lib2/helpers/folders.hpp>
 #include <rover_lib2/helpers/date.hpp>
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
 
 Panorama::Panorama():
     Node("Panorama")
@@ -25,13 +28,13 @@ void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Pano
                                      std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
 {
     response_->success = false;
-    if (!validateRequest(request_, response_))
+    if (!this->validateRequest(request_, response_))
     {
         return;
     }
 
     std::vector<cv::Mat> frames;
-    if (!captureFrames(request_, response_, frames))
+    if (!this->captureFrames(request_, response_, frames))
     {
         return;
     }
@@ -92,7 +95,7 @@ cv::Mat Panorama::warpCorrection(const cv::Mat& pano)
     if (cropWidth <= 0 || cropHeight <= 0)
     {
         RCLCPP_ERROR(this->get_logger(), "Invalid dimensions for cropping.");
-        return pano;
+        return cv::Mat();
     }
 
     cv::Rect roi(marginX, marginY, cropWidth, cropHeight);
@@ -132,10 +135,10 @@ cv::Mat Panorama::stitching(std::vector<cv::Mat>& frames_)
     return pano;
 }
 
-void Panorama::SetGpsPosition(const rover_msgs::msg::Gps& gpsMessage_)
+void Panorama::SetGpsPosition(const rover_msgs::msg::Gps& gpsMsg_)
 {
-    _sCoordoneesGps.latitude = gpsMessage_.latitude;
-    _sCoordoneesGps.longitude = gpsMessage_.longitude;
+    _sGpsCoordinates.latitude = gpsMsg_.latitude;
+    _sGpsCoordinates.longitude = gpsMsg_.longitude;
 }
 
 std::optional<std::string> Panorama::getFolderPath(const std::string& basePath_)
@@ -181,7 +184,7 @@ bool Panorama::captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Re
         response_->status = "Failed to open camera stream (cap)";
         return false;
     }
-    RCLCPP_DEBUG(this->get_logger(), "Starting panorama for camera: %s", request_->camera_url.c_str());
+    RCLCPP_DEBUG(this->get_logger(), "Starting frame capture for camera: %s", request_->camera_url.c_str());
 
     cv::Mat frame;
     uint8_t invalidFramesCounter = 0U;
@@ -194,7 +197,6 @@ bool Panorama::captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Re
         {
             RCLCPP_ERROR(this->get_logger(), "Blank frame grabbed");
             invalidFramesCounter++;
-            continue;
         }
         else if (frames_.size() == 0 || (frames_.back().data != frame.data))  // avoid duplicates
         {
@@ -211,17 +213,17 @@ bool Panorama::captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Re
     return true;
 }
 
-void Panorama::annotatePanorama(cv::Mat& pano, const std::string& name_)
+void Panorama::annotatePanorama(cv::Mat& pano_, const std::string& name_)
 {
-    float latitude = _sCoordoneesGps.latitude;
-    float longitude = _sCoordoneesGps.longitude;
+    float latitude = _sGpsCoordinates.latitude;
+    float longitude = _sGpsCoordinates.longitude;
     std::string gpsCoord = "latitude: " + std::to_string(latitude) + ", longitude: " + std::to_string(longitude);
     std::string text = name_.empty() ? Date::getCurrentTime() : name_ + " " + Date::getCurrentTime();
 
-    cv::Size dimensions = pano.size();
+    cv::Size dimensions = pano_.size();
     int height = dimensions.height;
-    cv::putText(pano, gpsCoord, cv::Point(10, height - 20), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
-    cv::putText(pano, text, cv::Point(10, height), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
+    cv::putText(pano_, gpsCoord, cv::Point(10, height - 20), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
+    cv::putText(pano_, text, cv::Point(10, height), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
 }
 
 bool Panorama::prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,

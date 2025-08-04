@@ -1,13 +1,8 @@
 #include <opencv2/opencv.hpp>
-#include <opencv2/stitching.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/srv/panorama.hpp>
 #include <rover_msgs/msg/gps.hpp>
-#include <iostream>
 #include <vector>
-#include <sys/stat.h>
-#include <rover_lib2/helpers/macros.hpp>
-#include <rover_lib2/helpers/constants.hpp>
 #include <optional>
 
 struct sCoordinate
@@ -39,7 +34,7 @@ class Panorama : public rclcpp::Node
     bool captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
                        std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                        std::vector<cv::Mat>& frames_);
-    void annotatePanorama(cv::Mat& pano, const std::string& name_);
+    void annotatePanorama(cv::Mat& pano_, const std::string& name_);
     bool prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
                            std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                            std::string& filename_);
@@ -54,5 +49,5 @@ class Panorama : public rclcpp::Node
 
     rclcpp::Service<rover_msgs::srv::Panorama>::SharedPtr srv_panorama;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr sub_gps;
-    sCoordinate _sCoordoneesGps;
+    sCoordinate _sGpsCoordinates;
 };

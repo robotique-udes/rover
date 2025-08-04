@@ -272,7 +272,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
 
 void QVideoManagerWidget::initCameraAnglePublisher(void)
 {
-    _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_ANGLE_CONTROL_TOPIC, QOS_DEFAULT);
+    _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_CMD_TOPIC_GUI, QOS_DEFAULT);
 }
 
 void QVideoManagerWidget::initCameraListSubscriber(void)
@@ -308,7 +308,7 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     }
 }
 
-void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float pitch_)
+void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float yaw_)
 {
     if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
         || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
@@ -332,8 +332,8 @@ void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float pitch_)
         return;
     }
 
-    msg.pitch = pitch_;
-    msg.yaw = 0.0f;
+    msg.pitch = 0.0f;
+    msg.yaw = yaw_;
 
     _pub_cameraAngle->publish(msg);
 }
@@ -350,7 +350,7 @@ void QVideoManagerWidget::initPanoramaClient(void)
     }
 
     ASSERT_COND(_node != nullptr);
-    for (auto& widget : _videoPlaysWidgets)
+    for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
     {
         widget->setPanoramaClientManager(_client_panoramique);
     }

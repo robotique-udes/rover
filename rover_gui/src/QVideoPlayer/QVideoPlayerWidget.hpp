@@ -137,7 +137,6 @@ class QVideoPlayerWidget : public QWidget
 
   private:
     void setupUI(void);
-    void initActualAngleSlider(void);
     void connectUISignals(void);
     void initializeUIState(void);
     void emitStateChanged(void);

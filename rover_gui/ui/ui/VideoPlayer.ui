@@ -456,8 +456,34 @@
        </item>
        <item>
         <widget class="QSlider" name="actualAngleSlider">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QSlider::handle:horizontal {
+        image: url(:/icons/arrow.png);
+        background: transparent;
+        border: none;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0;  /* adjust to align vertically */
+    }
+
+    QSlider::groove:horizontal {
+        background: transparent;
+        height: 4px;  /* or whatever you want */
+    }
+
+    QSlider::sub-page:horizontal,
+    QSlider::add-page:horizontal {
+        background: transparent;
+    }</string>
+         </property>
          <property name="maximum">
           <number>360</number>
+         </property>
+         <property name="value">
+          <number>180</number>
          </property>
          <property name="orientation">
           <enum>Qt::Horizontal</enum>

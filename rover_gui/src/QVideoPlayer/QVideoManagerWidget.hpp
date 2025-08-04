@@ -30,7 +30,7 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* TOPIC_ARUCO_DETECTIONS = "/rover/cameras/aruco_detected";
     static constexpr const char* SERVICE_RECORDING_NAME = "/rover/cameras/media_server_control";
     static constexpr const char* TOPIC_RECORDING_INFO = "/rover/camera/recordings_info";
-    static constexpr const char* CAMERA_ANGLE_CONTROL_TOPIC = "/rover/cameras/pos_control";
+    static constexpr const char* CAMERA_CMD_TOPIC_GUI = "/rover/camera/PTZ_cmd/GUI";
     static constexpr const char* CAMERA_STATUS_TOPIC = "/rover/cameras/status";
     static constexpr const char* SERVICE_PANORAMA_NAME = "/rover/video/panorama";
 
@@ -57,7 +57,7 @@ class QVideoManagerWidget : public QWidget
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
-    void CB_pubCameraAngle(std::string camURL_, float pitch_);
+    void CB_pubCameraAngle(std::string camURL_, float yaw_);
     void onTabChanged(uint16_t index_);
 
   private:
