@@ -16,10 +16,10 @@ class ArmSimulation(Node):
         super().__init__("arm_simulation")
         
         self.goal_velocity = self.create_subscription(
-            ArmMsg, "/rover/arm/joints_cmd", self.goalVelocityCallback, 10)        
-        
+            ArmMsg, "/rover/arm/joints_cmd", self.goalVelocityCallback, 10)
+
         self.current_position_publisher = self.create_publisher(
-            ArmMsg, "/rover/arm/status/current_positions", 10)
+            ArmMsg, "/rover/arm/joints_status", 10)
                 
         self.fig = plt.figure(figsize=(8, 8))
         self.ax_top = self.fig.add_subplot(2, 2, 1)
