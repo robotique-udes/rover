@@ -115,7 +115,7 @@ cv::Mat Panorama::stitching(std::vector<cv::Mat>& frames_)
 
     if (status != cv::Stitcher::OK)
     {
-        RCLCPP_ERROR(this->get_logger(), "Échec du stitching. Code erreur : %d", static_cast<int>(status));
+        RCLCPP_ERROR(this->get_logger(), "Stitching failed. Error code: %d", static_cast<int>(status));
         return cv::Mat();  // retourne une image vide en cas d'échec
     }
 
