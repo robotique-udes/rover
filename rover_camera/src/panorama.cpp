@@ -3,12 +3,12 @@
 #include <rover_lib2/helpers/date.hpp>
 
 Panorama::Panorama():
-    Node("photo_panoramique")
+    Node("Panorama")
 {
-    srv_panorama = this->create_service<rover_msgs::srv::PhotoPanoramique>(
+    srv_panorama = this->create_service<rover_msgs::srv::Panorama>(
         PANORAMA_SERVICE_NAME,
-        [this](const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-               std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_)
+        [this](const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+               std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
         {
             this->handlePanoramaRequest(request_, response_);
         });
@@ -21,8 +21,8 @@ Panorama::Panorama():
                                                               });
 }
 
-void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                                     std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_)
+void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                                     std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
 {
     response_->success = false;
     if (!validateRequest(request_, response_))
@@ -108,7 +108,6 @@ cv::Mat Panorama::stitching(std::vector<cv::Mat>& frames_)
     }
 
     cv::Mat pano;
-    RCLCPP_DEBUG(this->get_logger(), "Maintenant en essai de stitching");
     cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
 
     cv::Stitcher::Status status = stitcher->stitch(frames_, pano);
@@ -146,8 +145,8 @@ std::optional<std::string> Panorama::getFolderPath(const std::string& basePath_)
     return folderPath;
 }
 
-bool Panorama::validateRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                               std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_)
+bool Panorama::validateRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                               std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
 {
     if (request_->duration <= 0)
     {
@@ -158,8 +157,8 @@ bool Panorama::validateRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanor
     return true;
 }
 
-bool Panorama::captureFrames(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                             std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_,
+bool Panorama::captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                             std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                              std::vector<cv::Mat>& frames_)
 {
     std::string pipeline = "rtspsrc location=" + request_->camera_url + PIPELINE;
@@ -214,8 +213,8 @@ void Panorama::annotatePanorama(cv::Mat& pano, const std::string& name_)
     cv::putText(pano, text, cv::Point(10, height), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
 }
 
-bool Panorama::prepareOutputPath(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                                 std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_,
+bool Panorama::prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                                 std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                                  std::string& filename_)
 {
     std::optional<std::string> pathFolderOptional = this->getFolderPath(request_->base_path);
@@ -246,7 +245,7 @@ bool Panorama::prepareOutputPath(const std::shared_ptr<rover_msgs::srv::PhotoPan
     return true;
 }
 
-bool Panorama::savePanorama(std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_,
+bool Panorama::savePanorama(std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                             const std::string& filename_,
                             const cv::Mat& pano_)
 {

@@ -21,7 +21,7 @@ def generate_launch_description():
     
      node_panorama = Node(
         package="rover_camera",
-        namespace="/rover/auxiliary",
+        namespace="/rover/camera",
         executable="panorama",
         name="panorama"
     )

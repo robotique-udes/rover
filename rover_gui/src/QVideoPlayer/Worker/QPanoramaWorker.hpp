@@ -4,7 +4,7 @@
 #include <QObject>
 #include <QString>
 #include "rclcpp/rclcpp.hpp"
-#include <rover_msgs/srv/photo_panoramique.hpp>
+#include <rover_msgs/srv/panorama.hpp>
 #include "Global/Workers/QWorker.hpp"
 
 class QPanoramaWorker : public QWorker
@@ -12,14 +12,15 @@ class QPanoramaWorker : public QWorker
     Q_OBJECT
 
   private:
+    static constexpr const char* CAMERA_PATH = "/camera";
   public:
     QPanoramaWorker(bool start_ = false, QObject* parent_ = nullptr);
     ~QPanoramaWorker();
 
-    void takePanoramaManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_panoramique_,
-                             std::string cameraUrl_,
+    void takePanoramaManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_panoramique_,
+                             const std::string& cameraUrl_,
                              uint16_t playerIndex_,
-                             std::string basePath_,
+                             const std::string& basePath_,
                              uint16_t duration_);
 
   signals:
@@ -27,10 +28,10 @@ class QPanoramaWorker : public QWorker
     void panoramaFinished(bool success_, const std::string& status_, uint16_t playerIndex_);
 
   private:
-    void takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_panoramique_,
-                              std::string cameraUrl_,
+    void takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_panoramique_,
+                              const std::string& cameraUrl_,
                               uint16_t playerIndex_,
-                              std::string basePath_,
+                              const std::string& basePath_,
                               uint16_t duration_);
 };
 

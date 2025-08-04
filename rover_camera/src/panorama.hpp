@@ -1,7 +1,7 @@
 #include <opencv2/opencv.hpp>
 #include <opencv2/stitching.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <rover_msgs/srv/photo_panoramique.hpp>
+#include <rover_msgs/srv/panorama.hpp>
 #include <rover_msgs/msg/gps.hpp>
 #include <iostream>
 #include <vector>
@@ -19,7 +19,6 @@ struct sCoordinate
 class Panorama : public rclcpp::Node
 {
   private:
-    static constexpr uint8_t FPS = 30U;
     static constexpr float CROP_PERCENT = 0.10f;
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
     static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";
@@ -32,18 +31,18 @@ class Panorama : public rclcpp::Node
     Panorama();
 
   private:
-    void handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                               std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_);
-    bool validateRequest(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                         std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_);
-    bool captureFrames(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                       std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_,
+    void handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                               std::shared_ptr<rover_msgs::srv::Panorama::Response> response_);
+    bool validateRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                         std::shared_ptr<rover_msgs::srv::Panorama::Response> response_);
+    bool captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                       std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                        std::vector<cv::Mat>& frames_);
     void annotatePanorama(cv::Mat& pano, const std::string& name_);
-    bool prepareOutputPath(const std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Request> request_,
-                           std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_,
+    bool prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
+                           std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                            std::string& filename_);
-    bool savePanorama(std::shared_ptr<rover_msgs::srv::PhotoPanoramique::Response> response_,
+    bool savePanorama(std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
                       const std::string& filename_,
                       const cv::Mat& pano_);
     cv::Mat warpCorrection(const cv::Mat& pano_);
@@ -52,7 +51,7 @@ class Panorama : public rclcpp::Node
     cv::Mat stitching(std::vector<cv::Mat>& frames_);
     void SetGpsPosition(const rover_msgs::msg::Gps& gpsMessage_);
 
-    rclcpp::Service<rover_msgs::srv::PhotoPanoramique>::SharedPtr srv_panorama;
+    rclcpp::Service<rover_msgs::srv::Panorama>::SharedPtr srv_panorama;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr sub_gps;
     sCoordinate _sCoordoneesGps;
 };

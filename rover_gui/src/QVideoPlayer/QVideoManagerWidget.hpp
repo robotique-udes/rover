@@ -11,7 +11,7 @@
 #include "rover_msgs/msg/camera_list.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_lib2/helpers/constants.hpp"
-#include <rover_msgs/srv/photo_panoramique.hpp>
+#include <rover_msgs/srv/panorama.hpp>
 
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
@@ -107,7 +107,7 @@ class QVideoManagerWidget : public QWidget
     rclcpp::TimerBase::SharedPtr _timer_clientCameraControlHealth;
     rclcpp::TimerBase::SharedPtr _timer_pubCameraAngle;
 
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> _client_panoramique;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramique;
 
     std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };

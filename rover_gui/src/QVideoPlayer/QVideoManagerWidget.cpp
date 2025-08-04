@@ -342,7 +342,7 @@ void QVideoManagerWidget::initPanoramaClient(void)
 {
     if (_node)
     {
-        _client_panoramique = _node->create_client<rover_msgs::srv::PhotoPanoramique>(SERVICE_PANORAMA_NAME);
+        _client_panoramique = _node->create_client<rover_msgs::srv::Panorama>(SERVICE_PANORAMA_NAME);
     }
     else
     {
@@ -371,7 +371,7 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
                     QHelper::QToastNotification::eNotifType::ERROR);
                 return;
             }
-            for (auto& widget : _videoPlaysWidgets)
+            for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
             {
                 std::map<std::string, std::string>::const_iterator camInfo = Constants::CameraInfo::CAMERA_URL_MAP.begin();
                 std::advance(camInfo, msg.id_cam);

@@ -983,7 +983,7 @@ void QVideoPlayerWidget::handlePanorama(void)
     }
 }
 
-void QVideoPlayerWidget::setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_)
+void QVideoPlayerWidget::setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_)
 {
     if (client_)
     {

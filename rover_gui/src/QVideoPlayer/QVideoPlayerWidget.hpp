@@ -76,7 +76,7 @@ class QVideoPlayerWidget : public QWidget
     void handlePlayPauseButton(void);
 
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
-    void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> client_);
+    void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_);
 
     std::string getCamURL(void);
     float getCameraAngle(void);
@@ -157,7 +157,7 @@ class QVideoPlayerWidget : public QWidget
     std::string _sessionFolderPath;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::PhotoPanoramique>> _client_panoramaManager;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramaManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
