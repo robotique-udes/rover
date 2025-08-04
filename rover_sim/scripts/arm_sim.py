@@ -16,7 +16,7 @@ class ArmSimulation(Node):
         super().__init__("arm_simulation")
         
         self.goal_velocity = self.create_subscription(
-            ArmMsg, "/rover/arm/cmd/goal_speed", self.goalVelocityCallback, 10)        
+            ArmMsg, "/rover/arm/joints_cmd", self.goalVelocityCallback, 10)        
         
         self.current_position_publisher = self.create_publisher(
             ArmMsg, "/rover/arm/status/current_positions", 10)
@@ -42,12 +42,12 @@ class ArmSimulation(Node):
         self.dt = 0.1
 
     def goalVelocityCallback(self, msg):
-        assert len(msg.data) >= 5, f"Expected at least 5 elements in ArmMsg.data, got {len(msg.data)}"
+        assert len(msg.target_speed) >= 5, f"Expected at least 5 elements in ArmMsg.data, got {len(msg.target_speed)}"
 
-        self.linearJointVelocity = msg.data[ArmMsg.JL]
-        self.shoulderJointVelocity = msg.data[ArmMsg.J1]
-        self.elbowJointVelocity = msg.data[ArmMsg.J2]
-        self.gripperJointVelocity = msg.data[ArmMsg.GRIPPER_TILT]
+        self.linearJointVelocity = msg.target_speed[ArmMsg.JL]
+        self.shoulderJointVelocity = msg.target_speed[ArmMsg.J1]
+        self.elbowJointVelocity = msg.target_speed[ArmMsg.J2]
+        self.gripperJointVelocity = msg.target_speed[ArmMsg.GRIPPER_TILT]
 
         self.JL_pos += self.linearJointVelocity * self.dt
         self.J1_pos += self.shoulderJointVelocity * self.dt
@@ -67,7 +67,7 @@ class ArmSimulation(Node):
 
     def publish_joint_positions(self):
         msg = ArmMsg()
-        msg.data = [
+        msg.target_speed = [
             self.JL_pos,    # JL
             0.0,            # BASE (unused)
             self.J1_pos,    # J1
@@ -80,10 +80,10 @@ class ArmSimulation(Node):
         self.current_position_publisher.publish(msg)
 
         qPosition = np.array([
-            msg.data[ArmMsg.JL],
-            msg.data[ArmMsg.J1],
-            msg.data[ArmMsg.J2],
-            msg.data[ArmMsg.GRIPPER_TILT]
+            msg.target_speed[ArmMsg.JL],
+            msg.target_speed[ArmMsg.J1],
+            msg.target_speed[ArmMsg.J2],
+            msg.target_speed[ArmMsg.GRIPPER_TILT]
         ])
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
