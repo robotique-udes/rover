@@ -76,7 +76,7 @@ cv::Mat Panorama::warpCorrection(const cv::Mat& pano)
 {
     if (pano.empty())
     {
-        RCLCPP_ERROR(this->get_logger(), "Empty image was received for croping");
+        RCLCPP_ERROR(this->get_logger(), "Empty image was received for cropping");
         return pano;
     }
 
