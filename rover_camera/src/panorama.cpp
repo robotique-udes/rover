@@ -138,8 +138,8 @@ std::optional<std::string> Panorama::getFolderPath(const std::string& basePath_)
     }
     else
     {
-        return std::nullopt;
         RCLCPP_ERROR(this->get_logger(), "Unable to create session folder, $HOME env variable wasn't found");
+        return std::nullopt;
     }
 
     std::string folderPath = homeStr + basePath_ + PATH_FOR_PANORAMA;
