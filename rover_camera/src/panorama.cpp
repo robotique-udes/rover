@@ -91,7 +91,7 @@ cv::Mat Panorama::warpCorrection(const cv::Mat& pano)
 
     if (cropWidth <= 0 || cropHeight <= 0)
     {
-        RCLCPP_ERROR(this->get_logger(), "Invalid dimensions for croping.");
+        RCLCPP_ERROR(this->get_logger(), "Invalid dimensions for cropping.");
         return pano;
     }
 
