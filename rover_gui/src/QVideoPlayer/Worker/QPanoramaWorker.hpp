@@ -13,6 +13,7 @@ class QPanoramaWorker : public QWorker
 
   private:
     static constexpr const char* CAMERA_PATH = "/camera";
+
   public:
     QPanoramaWorker(bool start_ = false, QObject* parent_ = nullptr);
     ~QPanoramaWorker();

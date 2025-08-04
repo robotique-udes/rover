@@ -29,8 +29,7 @@ void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_
                                            const std::string& basePath_,
                                            uint16_t duration_)
 {
-    std::shared_ptr<rover_msgs::srv::Panorama::Request> request
-        = std::make_shared<rover_msgs::srv::Panorama::Request>();
+    std::shared_ptr<rover_msgs::srv::Panorama::Request> request = std::make_shared<rover_msgs::srv::Panorama::Request>();
 
     request->camera_url = cameraUrl_;
     request->base_path = basePath_ + CAMERA_PATH;
@@ -46,8 +45,7 @@ void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_
     rclcpp::Client<rover_msgs::srv::Panorama>::FutureAndRequestId future_and_request
         = client_panoramique_->async_send_request(request);
 
-    std::future<std::shared_ptr<rover_msgs::srv::Panorama::Response>> future_result
-        = std::move(future_and_request.future);
+    std::future<std::shared_ptr<rover_msgs::srv::Panorama::Response>> future_result = std::move(future_and_request.future);
 
     emit this->panoramaStarted(duration_, playerIndex_);
 

@@ -19,6 +19,7 @@ struct sCoordinate
 class Panorama : public rclcpp::Node
 {
   private:
+    static constexpr uint16_t STITCH_TIMEOUT_MS = 2'000U;
     static constexpr float CROP_PERCENT = 0.10f;
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
     static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";

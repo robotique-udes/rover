@@ -108,14 +108,25 @@ cv::Mat Panorama::stitching(std::vector<cv::Mat>& frames_)
     }
 
     cv::Mat pano;
-    cv::Ptr<cv::Stitcher> stitcher = cv::Stitcher::create(cv::Stitcher::PANORAMA);
+    std::future<cv::Stitcher::Status> future = std::async(std::launch::async,
+                                                          [&frames_, &pano](void)
+                                                          {
+                                                              cv::Ptr<cv::Stitcher> stitcher
+                                                                  = cv::Stitcher::create(cv::Stitcher::PANORAMA);
+                                                              cv::Stitcher::Status status = stitcher->stitch(frames_, pano);
+                                                              return status;
+                                                          });
 
-    cv::Stitcher::Status status = stitcher->stitch(frames_, pano);
-
-    if (status != cv::Stitcher::OK)
+    if (future.wait_for(std::chrono::milliseconds(STITCH_TIMEOUT_MS)) != std::future_status::ready)
     {
-        RCLCPP_ERROR(this->get_logger(), "Stitching failed. Error code: %d", static_cast<int>(status));
-        return cv::Mat();  // retourne une image vide en cas d'échec
+        RCLCPP_ERROR(this->get_logger(), "Stitching timed out after %d seconds", STITCH_TIMEOUT_MS);
+        return cv::Mat();
+    }
+
+    if (future.get() != cv::Stitcher::OK)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Stitching failed. Error code: %d", static_cast<int>(future.get()));
+        return cv::Mat();
     }
 
     return pano;
