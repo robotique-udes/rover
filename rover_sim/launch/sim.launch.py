@@ -34,6 +34,8 @@ def generate_launch_description():
     GNSS_arg = LaunchConfiguration("gnss")
     battery_arg = LaunchConfiguration(" battery")
 
+
+
     arm_sim_node = Node(
         package="rover_sim",
         namespace="/rover/sim",
