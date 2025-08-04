@@ -47,6 +47,10 @@ class Camera
     set currentPosition(position)
     {
         this.#currentPosition = position;
+        if (this.#isCameraTracking)
+        {
+            this.#updateCameraPosition();
+        }
     }
 
     toggleNorthFacing()

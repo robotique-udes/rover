@@ -4,6 +4,7 @@
 #include "can_master/devices/arm_joint.hpp"
 #include "can_master/devices/camera.hpp"
 #include "can_master/devices/propulsion_motors.hpp"
+#include "can_master/devices/light.hpp"
 #include "can_master/devices/gnss.hpp"
 #include "rover_can2/drivers/driver_linux.hpp"
 
@@ -90,6 +91,7 @@ class CanMasterNode : public rclcpp::Node
                                      rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
                                      _armJointMsg);
 
+    Light lightMain = Light(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN);
     // Can
     RoverCan2::Drivers::DriverLinux __canDriver;
     RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverLinux,
@@ -109,7 +111,8 @@ class CanMasterNode : public rclcpp::Node
                              // ArmJoint&,
                              ArmJoint&,
                              ArmJoint&,
-                             ArmJoint&>
+                             ArmJoint&,
+                             Light&>
         _canManager = RoverCan2::ManagerMaster(
             __canDriver,
             [this](RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& msg_)
@@ -132,9 +135,10 @@ class CanMasterNode : public rclcpp::Node
             J2,
             gripperTilt,
             gripperRot,
-            gripperClose);
+            gripperClose,
+            lightMain);
 
-    std::array<MasterDevice*, 16U> _deviceArray = {&motorFL,
+    std::array<MasterDevice*, 17U> _deviceArray = {&motorFL,
                                                    &motorFR,
                                                    &motorRL,
                                                    &motorRR,
@@ -150,7 +154,8 @@ class CanMasterNode : public rclcpp::Node
                                                    &J2,
                                                    &gripperTilt,
                                                    &gripperRot,
-                                                   &gripperClose};
+                                                   &gripperClose,
+                                                   &lightMain};
 };
 
 #endif  // CAN_MASTER_NODE_HPP
