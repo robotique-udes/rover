@@ -22,6 +22,8 @@ namespace ARM_CONFIGURATION
     // namespace <JOINT_NAME>
     // {
     //     constexpr float MAX_VELOCITY = <VALUE>
+    //     constexpr float JOG_VELOCITY = <VALUE>
+
     //     namespace LEN
     //     {
     //         constexpr float x = <VALUE>
@@ -33,7 +35,8 @@ namespace ARM_CONFIGURATION
     namespace JL
     {
         constexpr eJointIndex ID = eJointIndex::JL;
-        constexpr float MAX_VELOCITY = 0.05F;  // mm/s
+        constexpr float MAX_VELOCITY = 0.035F;  // m/s
+        constexpr float JOG_VELOCITY = 0.03F;   // m/s
         namespace LEN
         {
             constexpr float x = 0.0f;
@@ -45,7 +48,8 @@ namespace ARM_CONFIGURATION
     namespace J0
     {
         constexpr eJointIndex ID = eJointIndex::J0;
-        constexpr float MAX_VELOCITY = 0.05F;  // mm/s
+        constexpr float MAX_VELOCITY = 0.05F;  // m/s
+        constexpr float JOG_VELOCITY = 0.05F;  // m/s
         namespace LEN
         {
             constexpr float x = 0.0f;
@@ -57,7 +61,9 @@ namespace ARM_CONFIGURATION
     namespace J1
     {
         constexpr eJointIndex ID = eJointIndex::J1;
-        constexpr float MAX_VELOCITY = 1.0F;  // rad/s
+        constexpr float MAX_VELOCITY = 0.7F;  // rad/s
+        constexpr float JOG_VELOCITY = 0.7F;  // rad/s
+
         namespace LEN
         {
             constexpr float x = 0.0F;
@@ -70,6 +76,7 @@ namespace ARM_CONFIGURATION
     {
         constexpr eJointIndex ID = eJointIndex::J2;
         constexpr float MAX_VELOCITY = 1.0F;  // rad/s
+        constexpr float JOG_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0F;
@@ -82,6 +89,7 @@ namespace ARM_CONFIGURATION
     {
         constexpr eJointIndex ID = eJointIndex::GRIPPER_TILT;
         constexpr float MAX_VELOCITY = 1.0F;  // rad/s
+        constexpr float JOG_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0F;
@@ -94,6 +102,7 @@ namespace ARM_CONFIGURATION
     {
         constexpr eJointIndex ID = eJointIndex::GRIPPER_ROT;
         constexpr float MAX_VELOCITY = 1.0F;  // rad/s
+        constexpr float JOG_VELOCITY = 1.0F;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0F;
@@ -106,6 +115,7 @@ namespace ARM_CONFIGURATION
     {
         constexpr eJointIndex ID = eJointIndex::GRIPPER_CLOSE;
         constexpr float MAX_VELOCITY = 0.0F;  // rad/s
+        constexpr float JOG_VELOCITY = 0.0F;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0F;

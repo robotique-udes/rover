@@ -89,15 +89,6 @@ class Teleop : public rclcpp::Node
         // JOINT CONTROL -- DEFAULT MODE
         if (_controlMode == eControlMode::JOINT)
         {
-            if (_joyManager.isTriggered(KEYBINDINGS::JOINT::JOINT_SELECT_INC))
-            {
-                _jointController.setControlledJoint(KEYBINDINGS::JOINT::JOINT_SELECT_INC);
-            }
-            if (_joyManager.isTriggered(KEYBINDINGS::JOINT::JOINT_SELECT_DEC))
-            {
-                _jointController.setControlledJoint(KEYBINDINGS::JOINT::JOINT_SELECT_DEC);
-            }
-
             armMsg.target_speed = _jointController.getJointCmdFromInput(joyArray);
         }
 

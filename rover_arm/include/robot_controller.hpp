@@ -42,6 +42,27 @@ class RobotController
         }
     }
 
+    constexpr float getJogVelocity(eJointIndex joint_) const
+    {
+        switch (joint_)
+        {
+            case eJointIndex::JL:
+                return ARM_CONFIGURATION::JL::JOG_VELOCITY;
+            case eJointIndex::J0:
+                return ARM_CONFIGURATION::J0::JOG_VELOCITY;
+            case eJointIndex::J1:
+                return ARM_CONFIGURATION::J1::JOG_VELOCITY;
+            case eJointIndex::J2:
+                return ARM_CONFIGURATION::J2::JOG_VELOCITY;
+            case eJointIndex::GRIPPER_TILT:
+                return ARM_CONFIGURATION::GRIPPER_TILT::JOG_VELOCITY;
+            case eJointIndex::GRIPPER_ROT:
+                return ARM_CONFIGURATION::GRIPPER_ROT::JOG_VELOCITY;
+            default:
+                return 0.0F;
+        }
+    }
+
   protected:
     JoyManager& _joyManager;
 };
