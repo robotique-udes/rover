@@ -13,6 +13,7 @@ class QPanoramaWorker : public QWorker
 
   private:
     static constexpr const char* CAMERA_PATH = "/camera";
+    static constexpr uint16_t STITCH_TIMEOUT_MS = 2'000U;
 
   public:
     QPanoramaWorker(bool start_ = false, QObject* parent_ = nullptr);
