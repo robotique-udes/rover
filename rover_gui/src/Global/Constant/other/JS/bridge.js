@@ -72,6 +72,11 @@ class Bridge
             {
                 self.waypoints.waypointVisibility(waypointId, visibility);
             });
+
+            qtBridge.addWaypoint.connect(function (name, lat, lon, waypointId)
+            {
+                self.waypoints.addWaypoint(lat, lon, name, waypointId);
+            });
         });
     }
 
