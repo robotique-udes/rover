@@ -13,13 +13,6 @@ def generate_launch_description():
         executable="ddb_control",
         name="ddb_control"
     )
-    
-     node_panorama = Node(
-        package="rover_auxiliary",
-        namespace="/rover/auxiliary",
-        executable="panorama",
-        name="panorama"
-    )
     ld.add_action(node_ddb_control)
 
     return ld
