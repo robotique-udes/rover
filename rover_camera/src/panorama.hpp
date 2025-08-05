@@ -31,8 +31,7 @@ class Panorama : public rclcpp::Node
   private:
     void handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
                                rover_msgs::srv::Panorama::Response& response_);
-    bool validateRequest(const rover_msgs::srv::Panorama::Request& request_,
-                         rover_msgs::srv::Panorama::Response& response_);
+    bool validateRequest(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_);
     bool captureFrames(const rover_msgs::srv::Panorama::Request& request_,
                        rover_msgs::srv::Panorama::Response& response_,
                        std::vector<cv::Mat>& frames_);
@@ -40,14 +39,12 @@ class Panorama : public rclcpp::Node
     bool prepareOutputPath(const rover_msgs::srv::Panorama::Request& request_,
                            rover_msgs::srv::Panorama::Response& response_,
                            std::string& filename_);
-    bool savePanorama(rover_msgs::srv::Panorama::Response& response_,
-                      const std::string& filename_,
-                      const cv::Mat& pano_);
-    cv::Mat warpCorrection(const cv::Mat& pano_);
+    bool savePanorama(rover_msgs::srv::Panorama::Response& response_, const std::string& filename_, const cv::Mat& pano_);
+    std::optional<cv::Mat> warpCorrection(const cv::Mat& pano_);
     void rotateCamera(uint16_t duration_);
 
     std::optional<std::string> getFolderPath(const std::string& basePath_);
-    cv::Mat stitching(std::vector<cv::Mat>& frames_);
+    std::optional<cv::Mat> stitching(std::vector<cv::Mat>& frames_);
     void SetGpsPosition(const rover_msgs::msg::Gps& gpsMessage_);
 
     rclcpp::Service<rover_msgs::srv::Panorama>::SharedPtr _srv_panorama;

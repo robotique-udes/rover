@@ -41,23 +41,23 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
         return;
     }
 
-    cv::Mat pano = this->stitching(frames);
-    if (pano.empty())
+    std::optional<cv::Mat> pano = this->stitching(frames);
+    if (!pano.has_value())
     {
         RCLCPP_ERROR(this->get_logger(), "Stitching failed, panorama image is empty.");
         response_.status = "Stitching failed, panorama image is empty.";
         return;
     }
 
-    cv::Mat panoRect = this->warpCorrection(pano);
-    if (panoRect.empty())
+    std::optional<cv::Mat> panoRect = this->warpCorrection(*pano);
+    if (!panoRect.has_value())
     {
         RCLCPP_ERROR(this->get_logger(), "Warp correction failed, panorama image is empty.");
         response_.status = "Warp correction failed, panorama image is empty.";
         return;
     }
 
-    this->annotatePanorama(panoRect, request_.panorama_name);
+    this->annotatePanorama(*panoRect, request_.panorama_name);
 
     std::string filename;
     if (!this->prepareOutputPath(request_, response_, filename))
@@ -65,7 +65,7 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
         return;
     }
 
-    if (!this->savePanorama(response_, filename, panoRect))
+    if (!this->savePanorama(response_, filename, *panoRect))
     {
         return;
     }
@@ -75,12 +75,12 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
     response_.success = true;
 }
 
-cv::Mat Panorama::warpCorrection(const cv::Mat& pano)
+std::optional<cv::Mat> Panorama::warpCorrection(const cv::Mat& pano)
 {
     if (pano.empty())
     {
         RCLCPP_ERROR(this->get_logger(), "Empty image was received for cropping");
-        return pano;
+        return std::nullopt;
     }
 
     int width = pano.cols;
@@ -95,19 +95,19 @@ cv::Mat Panorama::warpCorrection(const cv::Mat& pano)
     if (cropWidth <= 0 || cropHeight <= 0)
     {
         RCLCPP_ERROR(this->get_logger(), "Invalid dimensions for cropping.");
-        return cv::Mat();
+        return std::nullopt;
     }
 
     cv::Rect roi(marginX, marginY, cropWidth, cropHeight);
     return pano(roi).clone();
 }
 
-cv::Mat Panorama::stitching(std::vector<cv::Mat>& frames_)
+std::optional<cv::Mat> Panorama::stitching(std::vector<cv::Mat>& frames_)
 {
     if (frames_.size() < 2)
     {
         RCLCPP_WARN(this->get_logger(), "Not enough images for stitching (need at least 2)");
-        return cv::Mat();
+        return std::nullopt;
     }
 
     cv::Mat pano;
@@ -123,13 +123,13 @@ cv::Mat Panorama::stitching(std::vector<cv::Mat>& frames_)
     if (future.wait_for(std::chrono::milliseconds(STITCH_TIMEOUT_MS)) != std::future_status::ready)
     {
         RCLCPP_ERROR(this->get_logger(), "Stitching timed out after %d seconds", STITCH_TIMEOUT_MS);
-        return cv::Mat();
+        return std::nullopt;
     }
 
     if (future.get() != cv::Stitcher::OK)
     {
         RCLCPP_ERROR(this->get_logger(), "Stitching failed. Error code: %d", static_cast<int>(future.get()));
-        return cv::Mat();
+        return std::nullopt;
     }
 
     return pano;
@@ -240,7 +240,7 @@ bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& reque
         response_.status = "Failed to find home environment for saving screenshot on camera: " + request_.camera_url;
         return false;
     }
-    std::string pathFolder = pathFolderOptional.value();
+    std::string pathFolder = *pathFolderOptional;
     if (!Folders::createFolder(pathFolder))
     {
         RCLCPP_ERROR(this->get_logger(),
