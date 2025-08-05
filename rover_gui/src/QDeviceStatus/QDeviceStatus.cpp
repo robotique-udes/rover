@@ -97,6 +97,12 @@ void QDeviceStatus::initializeDeviceWidget()
     this->addDeviceWidget(RoverCan2::Constant::eDeviceId::REARRIGHT_MOTOR);
     this->addDeviceWidget(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN);
     this->addDeviceWidget(RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::JL_CONTROLLER);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::J1_CONTROLLER);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::J2_CONTROLLER);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER);
+    this->addDeviceWidget(RoverCan2::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER);
+
     // addDeviceWidget(RoverCan2::Constant::eDeviceId::SWITCHETH0);
     // addDeviceWidget(RoverCan2::Constant::eDeviceId::SWITCHETH1);
 }
@@ -368,11 +374,21 @@ std::string QDeviceStatus::getDeviceName(RoverCan2::Constant::eDeviceId deviceID
         case RoverCan2::Constant::eDeviceId::DDB_CONTROLLER:
             return "DDB Controller";
         case RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN:
-            return "Camera Rover Main";
+            return "Camera Main";
         case RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA:
-            return "Camera Rover Antenna";
+            return "Camera Antenna";
         case RoverCan2::Constant::eDeviceId::LIGHTS_MAIN:
             return "Lights Main";
+        case RoverCan2::Constant::eDeviceId::JL_CONTROLLER:
+            return "JL";
+        case RoverCan2::Constant::eDeviceId::J1_CONTROLLER:
+            return "J1";
+        case RoverCan2::Constant::eDeviceId::J2_CONTROLLER:
+            return "J2";
+        case RoverCan2::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER:
+            return "Gripper Rotation";
+        case RoverCan2::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER:
+            return "Gripper Tilt";
         default:
             return "Unknown Device";
     }
@@ -390,21 +406,26 @@ std::string QDeviceStatus::getDeviceIcon(RoverCan2::Constant::eDeviceId deviceID
             [[fallthrough]];
         case RoverCan2::Constant::eDeviceId::FRONTLEFT_MOTOR:
             return ":/icons/motor.png";
-
         case RoverCan2::Constant::eDeviceId::GNSS:
             return ":/icons/gnss.png";
-
         case RoverCan2::Constant::eDeviceId::DDB_CONTROLLER:
             return ":/icons/ddb.png";
-
         case RoverCan2::Constant::eDeviceId::CAMERA_ROVER_ANTENNA:
             [[fallthrough]];
         case RoverCan2::Constant::eDeviceId::CAMERA_ROVER_MAIN:
             return ":/icons/camera.png";
-
         case RoverCan2::Constant::eDeviceId::LIGHTS_MAIN:
             return ":/icons/light.png";
-
+        case RoverCan2::Constant::eDeviceId::JL_CONTROLLER:
+            [[fallthrough]];
+        case RoverCan2::Constant::eDeviceId::J1_CONTROLLER:
+            [[fallthrough]];
+        case RoverCan2::Constant::eDeviceId::J2_CONTROLLER:
+            return ":/icons/arm.png";
+        case RoverCan2::Constant::eDeviceId::GRIPPER_ROT_CONTROLLER:
+            [[fallthrough]];
+        case RoverCan2::Constant::eDeviceId::GRIPPER_TILT_CONTROLLER:
+            return ":/icons/gripper.png";
             // case RoverCan2::Constant::eDeviceId::SWITCHETH0:
             //     [[fallthrough]];
             // case RoverCan2::Constant::eDeviceId::SWITCHETH1:

@@ -51,11 +51,28 @@ void Gnss::CB_CAN_FixHeading(const RoverCan2::Msgs::FixHeading& canMsg_)
 void Gnss::CB_CAN_FixInfo(const RoverCan2::Msgs::FixInfo& canMsg_)
 {
     _rosGpsMsg.satellite = canMsg_.getData().satelliteCount;
-    _rosGpsMsg.fix_quality = canMsg_.getData().fixQuality;
+    _rosGpsMsg.fix_quality = fixQualityEnumToUint8(canMsg_.getData().fixQuality);
 }
 
 void Gnss::CB_CAN_FixPosition(const RoverCan2::Msgs::FixPosition& canMsg_)
 {
     _rosGpsMsg.latitude = canMsg_.getData().latitude;
     _rosGpsMsg.longitude = canMsg_.getData().longitude;
+}
+
+uint8_t Gnss::fixQualityEnumToUint8(Constants::eGGAQuality fixQuality_)
+{
+    switch (fixQuality_)
+    {
+        case Constants::eGGAQuality::NO_FIX:
+            return _rosGpsMsg.FIX_QUALITY_NO_FIX;
+        case Constants::eGGAQuality::GPS:
+            return _rosGpsMsg.FIX_QUALITY_GPS;
+        case Constants::eGGAQuality::GNSS:
+            return _rosGpsMsg.FIX_QUALITY_GNSS;
+        case Constants::eGGAQuality::RTK:
+            return _rosGpsMsg.FIX_QUALITY_RTK;
+        default:
+            return _rosGpsMsg.FIX_QUALITY_NO_FIX;
+    }
 }

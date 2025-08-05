@@ -42,6 +42,7 @@ echo -e "\e[0;32m[OK]\e[0m"
 echo "=== Installing dep from pip ... ==="
 pip install --upgrade setuptools==58.2.0
 pip install python-can
+pip install matplotlib
 echo -e "\e[0;32m[OK]\e[0m"
 
 echo -e "=== \e[0;32m[SUCCESS]\e[0m Depedencies updated ==="
