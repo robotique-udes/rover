@@ -968,7 +968,6 @@ void QVideoPlayerWidget::handlePanorama(void)
                                                    _playerIndex,
                                                    _sessionFolderPath,
                                                    _panoramaDuration);
-
     }
     else
     {

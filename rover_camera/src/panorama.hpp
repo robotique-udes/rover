@@ -18,8 +18,8 @@ class Panorama : public rclcpp::Node
   private:
     static constexpr float MAX_TILT_SPEED_PANORAMA = 15.0F;  // deg/s
     static constexpr float MAX_TILT_SPEED_GUI = 10.0F;       // rad/s
-    static constexpr float MAX_TILT_ANGLE = 360.0F; // deg
-    static constexpr float POSITION_TOLERANCE = 0.05F;  // rad
+    static constexpr float MAX_TILT_ANGLE = 360.0F;          // deg
+    static constexpr float POSITION_TOLERANCE = 0.05F;       // rad
     static constexpr uint16_t STITCH_TIMEOUT_MS = 2'000U;
     static constexpr uint16_t ANGLE_WAIT_TIMEOUT_MS = 2'500;
     static constexpr uint8_t PUBLISHER_CMD_PERIOD_MS = 50U;
