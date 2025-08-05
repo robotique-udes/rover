@@ -94,7 +94,7 @@ class QVideoPlayerWidget : public QWidget
 
     void CB_cameraListUpdate(std::vector<std::string> urls_);
     void CB_srvCameraAvailable(bool available_);
-    void CB_updateActualAngle(std::string camURL_, float yaw_);
+    void CB_updateActualAngle(const std::string& camURL_, float yaw_);
 
   signals:
     void arucoCameraFailure(bool valid_);
@@ -141,7 +141,6 @@ class QVideoPlayerWidget : public QWidget
     void emitStateChanged(void);
     void cleanupResources(void);
     void autoStartGStreamer(void);
-    void panoramaTurnCamera(void);
 
     void hideAngleSelector(void);
     std::shared_ptr<rclcpp::Node> _node;
