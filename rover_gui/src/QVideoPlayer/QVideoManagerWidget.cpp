@@ -29,11 +29,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
-        connect(_videoPlaysWidgets[i].get(),
-                &QVideoPlayerWidget::notifyCameraAnglePublisher,
-                this,
-                &QVideoManagerWidget::CB_pubCameraAngle);
-
         connect(_playerWorkerThreadRecording[i].get(),
                 &QRecordingWorker::setCursorWaiting,
                 this,
@@ -273,6 +268,11 @@ void QVideoManagerWidget::initCameraControlClient(void)
 void QVideoManagerWidget::initCameraAnglePublisher(void)
 {
     _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_CMD_TOPIC_GUI, QOS_DEFAULT);
+    _timer_pubCameraAngle = _node->create_wall_timer(std::chrono::milliseconds(ANGLE_PUBLISHER_PERIOD_MS),
+                                                    [this](void)
+                                                    {
+                                                        this->CB_pubCameraAngle();
+                                                    });
 }
 
 void QVideoManagerWidget::initCameraListSubscriber(void)
@@ -308,7 +308,7 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     }
 }
 
-void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float yaw_)
+void QVideoManagerWidget::CB_pubCameraAngle(void)
 {
     if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
         || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
@@ -317,25 +317,29 @@ void QVideoManagerWidget::CB_pubCameraAngle(std::string camURL_, float yaw_)
         return;
     }
 
-    rover_msgs::msg::CameraControl msg;
-
-    if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))
+    for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
     {
-        msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_MAIN;
-    }
-    else if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
-    {
-        msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
-    }
-    else
-    {
-        return;
-    }
+        std::string camURL = widget->getCamURL();
+        rover_msgs::msg::CameraControl msg;
 
-    msg.pitch = 0.0f;
-    msg.yaw = yaw_;
+        if (camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))
+        {
+            msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_MAIN;
+        }
+        else if (camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+        {
+            msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
+        }
+        else
+        {
+            continue;
+        }
 
-    _pub_cameraAngle->publish(msg);
+        msg.pitch = 0.0f;
+        msg.yaw = widget->getCameraAngle();
+
+        _pub_cameraAngle->publish(msg);
+    }
 }
 
 void QVideoManagerWidget::initPanoramaClient(void)

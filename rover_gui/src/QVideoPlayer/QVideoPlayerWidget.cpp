@@ -923,15 +923,11 @@ void QVideoPlayerWidget::CB_srvCameraAvailable(bool available_)
 void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
 {
     _ui.cameraAngleBox->setValue(_ui.cameraAngleSlider->value());
-    float angle = static_cast<float>(_ui.cameraAngleSlider->value());
-    emit this->notifyCameraAnglePublisher(_camURL, angle);
 }
 
 void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
 {
     _ui.cameraAngleSlider->setValue(_ui.cameraAngleBox->value());
-    float angle = static_cast<float>(_ui.cameraAngleBox->value());
-    emit this->notifyCameraAnglePublisher(_camURL, angle);
 }
 
 void QVideoPlayerWidget::hideAngleSelector(void)
@@ -961,7 +957,6 @@ void QVideoPlayerWidget::onCenterAngle(void)
 {
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
-    emit this->notifyCameraAnglePublisher(_camURL, CAMERA_CENTER_ANGLE);
 }
 
 void QVideoPlayerWidget::handlePanorama(void)

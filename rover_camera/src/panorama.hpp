@@ -2,6 +2,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/srv/panorama.hpp>
 #include <rover_msgs/msg/gps.hpp>
+#include <rover_msgs/msg/camera_control.hpp>
 #include <vector>
 #include <optional>
 
@@ -14,6 +15,7 @@ struct sCoordinate
 class Panorama : public rclcpp::Node
 {
   private:
+    static constexpr const char* TOPIC_CAMERA_PTZ_CMD_PANORAMA = "/rover/camera/PTZ_cmd/panorama";
     static constexpr uint16_t STITCH_TIMEOUT_MS = 2'000U;
     static constexpr float CROP_PERCENT = 0.10f;
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
@@ -42,12 +44,14 @@ class Panorama : public rclcpp::Node
                       const std::string& filename_,
                       const cv::Mat& pano_);
     cv::Mat warpCorrection(const cv::Mat& pano_);
+    void rotateCamera(uint16_t duration_);
 
     std::optional<std::string> getFolderPath(const std::string& basePath_);
     cv::Mat stitching(std::vector<cv::Mat>& frames_);
     void SetGpsPosition(const rover_msgs::msg::Gps& gpsMessage_);
 
-    rclcpp::Service<rover_msgs::srv::Panorama>::SharedPtr srv_panorama;
-    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr sub_gps;
+    rclcpp::Service<rover_msgs::srv::Panorama>::SharedPtr _srv_panorama;
+    rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps;
+    rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _pub_cameraAngle;
     sCoordinate _sGpsCoordinates;
 };

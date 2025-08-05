@@ -101,7 +101,6 @@ class QVideoPlayerWidget : public QWidget
     void streamStateChanged(bool isRunning_, int streamIndex_);
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
-    void notifyCameraAnglePublisher(std::string camURL_, float angle_);
     void displayDetectedArucos(std::vector<uint16_t> ids_);
 
   private slots:

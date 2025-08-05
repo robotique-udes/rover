@@ -8,7 +8,7 @@
 Panorama::Panorama():
     Node("Panorama")
 {
-    srv_panorama = this->create_service<rover_msgs::srv::Panorama>(
+    _srv_panorama = this->create_service<rover_msgs::srv::Panorama>(
         PANORAMA_SERVICE_NAME,
         [this](const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
                std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
@@ -16,12 +16,13 @@ Panorama::Panorama():
             this->handlePanoramaRequest(request_, response_);
         });
 
-    sub_gps = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
+    _sub_gps = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
                                                               QOS_DEFAULT,
                                                               [this](const rover_msgs::msg::Gps& gpsMsg_)
                                                               {
                                                                   this->SetGpsPosition(gpsMsg_);
                                                               });
+    _pub_cameraAngle = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
 }
 
 void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
@@ -34,6 +35,7 @@ void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Pano
     }
 
     std::vector<cv::Mat> frames;
+    this->rotateCamera(request_->duration);
     if (!this->captureFrames(request_, response_, frames))
     {
         return;
@@ -43,7 +45,6 @@ void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Pano
     if (pano.empty())
     {
         RCLCPP_ERROR(this->get_logger(), "Stitching failed, panorama image is empty.");
-        response_->success = false;
         response_->status = "Stitching failed, panorama image is empty.";
         return;
     }
@@ -52,7 +53,6 @@ void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Pano
     if (panoRect.empty())
     {
         RCLCPP_ERROR(this->get_logger(), "Warp correction failed, panorama image is empty.");
-        response_->success = false;
         response_->status = "Warp correction failed, panorama image is empty.";
         return;
     }
@@ -280,6 +280,14 @@ bool Panorama::savePanorama(std::shared_ptr<rover_msgs::srv::Panorama::Response>
         return false;
     }
     return true;
+}
+
+void Panorama::rotateCamera(uint16_t duration_)
+{
+    rover_msgs::msg::CameraControl msg;
+    /* config speed */
+    /* call max angle */
+    _pub_cameraAngle->publish(msg);
 }
 
 int main(int argc, char* argv[])
