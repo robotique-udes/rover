@@ -10,7 +10,8 @@
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
-static constexpr const char* WAYPOINT_PATH = "/Navigation/waypoints.json";  // À revoir
+constexpr const char* NAVIGATION_PATH = "/Navigation";
+constexpr const char* FILE_NAME = "/waypoints.json";
 
 // Default to Studio de Création
 constexpr double DEFAULT_LATITUDE = 45.377755;
@@ -54,11 +55,35 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                            emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
                        });
 
+    
+
+    if (this->createNavigationFolder())
+    {
+        this->waypointsFromJson();
+    }
+    else
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to create navigation folder. No waypoints found");
+    }
+}
+
+void QNavigation::closeEvent(QCloseEvent* event)
+{
+    this->addWaypointsToJson();
+    QWidget::closeEvent(event);
+}
+
+bool QNavigation::createNavigationFolder(void)
+{
+    bool success = false;
     std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
+    std::string homePath;
+    std::string sessionPath;
+
     if (optionalSessionFolderPath.has_value())
     {
-        _sessionFolderPath = *optionalSessionFolderPath;
-        if (_sessionFolderPath.empty())
+        sessionPath = *optionalSessionFolderPath;
+        if (sessionPath.empty())
         {
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
                                                                            "SessionFolderManager returned an empty path",
@@ -72,19 +97,32 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                                                                        QHelper::QToastNotification::eNotifType::ERROR);
     }
 
-    std::string filePath = _sessionFolderPath + WAYPOINT_PATH;
-    if (!Folders::folderExists(filePath))
+    std::optional<std::string> optionalHomePath = Folders::getHome();
+    if (optionalHomePath.has_value())
     {
-        bool success = Folders::createFolder(filePath);
+        homePath = *optionalHomePath;
+        if (homePath.empty())
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                           "HomePath returned an empty path",
+                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+        }
+    }
+    else
+    {
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                       "HomePath couldn't return a valid path",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
     }
 
-    this->waypointsFromJson();
-}
+    _sessionFolderPath = homePath + sessionPath + NAVIGATION_PATH;
+    RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Current navigation folder path: %s", _sessionFolderPath.c_str());
+    if (!Folders::folderExists(_sessionFolderPath))
+    {
+        success = Folders::createFolder(_sessionFolderPath);
+    }
 
-void QNavigation::closeEvent(QCloseEvent* event)
-{
-    this->addWaypointsToJson();
-    QWidget::closeEvent(event);
+    return success;
 }
 
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
@@ -332,7 +370,7 @@ void QNavigation::addWaypointsToJson(void)
     }
 
     root["waypoints"] = waypointsArray;
-    std::string filePath = _sessionFolderPath + WAYPOINT_PATH;  // Adjust path as needed
+    std::string filePath = _sessionFolderPath + NAVIGATION_PATH;  // Adjust path as needed
     std::ofstream file(filePath);
 
     if (file.is_open())

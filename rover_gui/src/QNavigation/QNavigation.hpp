@@ -52,6 +52,7 @@ class QNavigation : public QWidget
 
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
+    bool createNavigationFolder(void);
     void addWaypointsToJson(void);
     void waypointsFromJson(void);
 
