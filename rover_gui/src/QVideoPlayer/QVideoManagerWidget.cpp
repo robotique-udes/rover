@@ -367,10 +367,10 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
         QOS_DEFAULT,
         [this](const rover_msgs::msg::CameraControl msg)
         {
-            if (msg.id_cam > (NBR_CAM_TO_TRACK - 1))
+            if (msg.id_cam >= rover_msgs::msg::CameraControl::ID_CAM_MAX)
             {
                 QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                    "Invalid message was received from /rover/cameras/status",
+                    "Invalid message was received from /rover/camera/PTZ_status",
                     "cam_id was out of bound",
                     QHelper::QToastNotification::eNotifType::ERROR);
                 return;

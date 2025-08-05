@@ -23,6 +23,7 @@ Panorama::Panorama():
                                                                    this->SetGpsPosition(gpsMsg_);
                                                                });
     _pub_cameraAngle = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
+    _pub_cameraConfig = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_CAMERA_CONFIG_PANORAM, QOS_DEFAULT);
 }
 
 void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
@@ -34,14 +35,24 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
         return;
     }
 
-    std::vector<cv::Mat> frames;
-    this->rotateCamera(request_.duration);
-    if (!this->captureFrames(request_, response_, frames))
+    std::optional<uint8_t> idCam = this->getIdCam(request_.camera_url);
+    if (!idCam.has_value())
     {
         return;
     }
 
-    std::optional<cv::Mat> pano = this->stitching(frames);
+    this->rotateCamera(request_.duration, *idCam);
+
+    std::vector<cv::Mat> frames;
+    if (!this->captureFrames(request_, response_, frames))
+    {
+        _timer_ptzCmd->cancel();
+        return;
+    }
+
+    _timer_ptzCmd->cancel();
+
+    std::optional<cv::Mat> pano = this->stitchFrames(frames);
     if (!pano.has_value())
     {
         RCLCPP_ERROR(this->get_logger(), "Stitching failed, panorama image is empty.");
@@ -73,6 +84,7 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
     RCLCPP_DEBUG(this->get_logger(), "Panorama saved to %s", filename.c_str());
     response_.status = "Panorama saved to: " + filename;
     response_.success = true;
+    this->configPtz(*idCam, 10.0F /*= As fast as possible*/);
 }
 
 std::optional<cv::Mat> Panorama::warpCorrection(const cv::Mat& pano)
@@ -102,7 +114,7 @@ std::optional<cv::Mat> Panorama::warpCorrection(const cv::Mat& pano)
     return pano(roi).clone();
 }
 
-std::optional<cv::Mat> Panorama::stitching(std::vector<cv::Mat>& frames_)
+std::optional<cv::Mat> Panorama::stitchFrames(std::vector<cv::Mat>& frames_)
 {
     if (frames_.size() < 2)
     {
@@ -279,12 +291,100 @@ bool Panorama::savePanorama(rover_msgs::srv::Panorama::Response& response_, cons
     return true;
 }
 
-void Panorama::rotateCamera(uint16_t duration_)
+void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
 {
-    rover_msgs::msg::CameraControl msg;
-    /* config speed */
-    /* call max angle */
-    _pub_cameraAngle->publish(msg);
+    float totalPanDeg = static_cast<float>(duration_) / 1000.0F * MAX_TILT_SPEED_PANORAMA;
+    float targetRotationSpeed = MAX_TILT_SPEED_PANORAMA;
+    if (totalPanDeg > MAX_TILT_ANGLE)
+    {
+        totalPanDeg = MAX_TILT_ANGLE;
+        targetRotationSpeed = MAX_TILT_ANGLE / (static_cast<float>(duration_) / 1000.0F);
+    }
+
+    // Move to Start Angle
+    rover_msgs::msg::CameraControl ptzMsg;
+    float startAngle = degToRad(180.0F - totalPanDeg / 2.0F);
+    ptzMsg.pitch = 0.0F;
+    ptzMsg.power_on = true;
+    ptzMsg.yaw = startAngle;
+    ptzMsg.id_cam = idCam_;
+
+    _timer_ptzCmd = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_CMD_PERIOD_MS),
+                                            [this, ptzMsg](void)
+                                            {
+                                                _pub_cameraAngle->publish(ptzMsg);
+                                            });
+
+    _pub_cameraAngle->publish(ptzMsg);
+
+    this->waitForAngle(idCam_, startAngle);
+
+    this->configPtz(idCam_, degToRad(targetRotationSpeed));
+
+    // Move to Target Angle
+    ptzMsg.yaw = degToRad(180.0F + totalPanDeg / 2.0F);
+
+    _timer_ptzCmd = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_CMD_PERIOD_MS),
+                                            [this, ptzMsg](void)
+                                            {
+                                                _pub_cameraAngle->publish(ptzMsg);
+                                            });
+}
+
+void Panorama::waitForAngle(uint8_t idCam_, float angle_)
+{
+    std::promise<void> angleReachedPromise;
+    std::future<void> angleReachedFuture = angleReachedPromise.get_future();
+
+    rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr sub_ptzStatusTemp
+        = this->create_subscription<rover_msgs::msg::CameraControl>(
+            TOPIC_CAMERA_PTZ_STATUS,
+            QOS_DEFAULT,
+            [this, &idCam_, &angle_, &angleReachedPromise](const rover_msgs::msg::CameraControl& msg_)
+            {
+                if (msg_.id_cam == idCam_ && std::fabs(msg_.yaw - angle_) < POSITION_TOLERANCE)
+                {
+                    angleReachedPromise.set_value();
+                }
+            });
+
+    if (angleReachedFuture.wait_for(std::chrono::milliseconds(ANGLE_WAIT_TIMEOUT_MS)) == std::future_status::timeout)
+    {
+        RCLCPP_INFO(this->get_logger(), "Desired start angle for panorama wasn't reached in time, starting panorama");
+    }
+}
+
+void Panorama::configPtz(uint8_t idCam_, float tiltSpeed_)
+{
+    rover_msgs::msg::CameraConfig configMsg;
+    configMsg.tilt_max_speed = tiltSpeed_;
+    configMsg.pan_max_position = degToRad(MAX_TILT_ANGLE);
+    configMsg.pan_min_position = 0.0F;
+    configMsg.pan_max_speed = MAX_TILT_SPEED_GUI;
+    configMsg.tilt_max_position = degToRad(MAX_TILT_ANGLE);
+    configMsg.tilt_min_position = 0.0F;
+    configMsg.id_cam = idCam_;
+    _pub_cameraConfig->publish(configMsg);
+}
+
+std::optional<uint8_t> Panorama::getIdCam(const std::string& camURL_)
+{
+    if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
+        || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
+    {
+        RCLCPP_ERROR(this->get_logger(), "Can't publish camera angles. Coulnd't find 'Main' or 'Antenna' in camera map!");
+        return std::nullopt;
+    }
+
+    if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))
+    {
+        return rover_msgs::msg::CameraControl::ID_CAM_MAIN;
+    }
+    else if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    {
+        return rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
+    }
+    return std::nullopt;
 }
 
 int main(int argc, char* argv[])

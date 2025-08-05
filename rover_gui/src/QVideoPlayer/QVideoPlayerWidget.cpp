@@ -969,7 +969,6 @@ void QVideoPlayerWidget::handlePanorama(void)
                                                    _sessionFolderPath,
                                                    _panoramaDuration);
 
-        this->panoramaTurnCamera();
     }
     else
     {
@@ -1024,24 +1023,7 @@ void QVideoPlayerWidget::setPanoramaDuration(void)
     _panoramaDuration = _ui.panoramaDurationBox->value() * 1000;
 }
 
-void QVideoPlayerWidget::panoramaTurnCamera(void)
-{
-    _ui.cameraAngleSlider->setEnabled(false);
-    _ui.cameraAngleBox->setEnabled(false);
-
-    _ui.cameraAngleSlider->setValue(CAMERA_MAX_ANGLE);
-    _ui.cameraAngleBox->setValue(CAMERA_MAX_ANGLE);
-
-    QTimer::singleShot(_panoramaDuration,
-                       this,
-                       [this]()
-                       {
-                           _ui.cameraAngleSlider->setEnabled(true);
-                           _ui.cameraAngleBox->setEnabled(true);
-                       });
-}
-
-void QVideoPlayerWidget::CB_updateActualAngle(std::string camURL_, float yaw_)
+void QVideoPlayerWidget::CB_updateActualAngle(const std::string& camURL_, float yaw_)
 {
     if (camURL_ == _camURL)
     {

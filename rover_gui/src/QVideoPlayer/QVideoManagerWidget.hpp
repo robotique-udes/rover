@@ -31,7 +31,7 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* SERVICE_RECORDING_NAME = "/rover/cameras/media_server_control";
     static constexpr const char* TOPIC_RECORDING_INFO = "/rover/camera/recordings_info";
     static constexpr const char* CAMERA_CMD_TOPIC_GUI = "/rover/camera/PTZ_cmd/GUI";
-    static constexpr const char* CAMERA_STATUS_TOPIC = "/rover/cameras/status";
+    static constexpr const char* CAMERA_STATUS_TOPIC = "/rover/camera/PTZ_status";
     static constexpr const char* SERVICE_PANORAMA_NAME = "/rover/video/panorama";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 5000U;
