@@ -59,7 +59,7 @@ void QVideoRecorderWidget::setCameraControlClientManager(std::shared_ptr<rclcpp:
     if (client_)
     {
         _client_cameraControlManager = client_;
-        this->autoStartRecording();
+        //this->autoStartRecording();
     }
     else
     {
