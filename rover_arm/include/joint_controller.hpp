@@ -40,7 +40,7 @@ class JointController : public RobotController
         if (_joyManager.isPressed(KEYBINDINGS::JOINT::J2))
         {
             jointCommands[TO_UNDERLYING(eJointIndex::J2)]
-                = inputArray_[TO_UNDERLYING(KEYBINDINGS::JOINT::J2)] * -getJogVelocity(ARM_CONFIGURATION::J2::ID);
+                = inputArray_[TO_UNDERLYING(KEYBINDINGS::JOINT::J2)] * getJogVelocity(ARM_CONFIGURATION::J2::ID);
         }
 
         if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_UP))

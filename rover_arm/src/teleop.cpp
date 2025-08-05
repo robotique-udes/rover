@@ -96,36 +96,44 @@ class Teleop : public rclcpp::Node
         else if (_controlMode == eControlMode::CARTESIAN)
         {
             _cartesianController.getJointPositions(_jointPositions);
+
+            RCLCPP_INFO(this->get_logger(),
+                         "Joint positions: JL: %f, J1: %f, J2: %f, GRIPPER_TILT: %f",
+                         _jointPositions[TO_UNDERLYING(eJointIndex::JL)],
+                         _jointPositions[TO_UNDERLYING(eJointIndex::J1)],
+                         _jointPositions[TO_UNDERLYING(eJointIndex::J2)],
+                         _jointPositions[TO_UNDERLYING(eJointIndex::GRIPPER_TILT)]);
+
             armMsg.target_speed = _cartesianController.getJointCmdFromInput(joyArray);
 
-            if (_joyManager.isTriggered(KEYBINDINGS::CARTESIAN::RECORD))
-            {
-                if (_cartesianController.getRecordedPoints() == TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
-                {
-                    RCLCPP_WARN(this->get_logger(), "No more points can be recorded. Create a plan or clear all points");
-                }
-                else
-                {
-                    _cartesianController.addPoint(_cartesianController.getEndEffectorPose(_jointPositions));
-                    RCLCPP_INFO(this->get_logger(), "Point has been added to array");
-                }
-            }
+            // if (_joyManager.isTriggered(KEYBINDINGS::CARTESIAN::RECORD))
+            // {
+            //     if (_cartesianController.getRecordedPoints() == TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
+            //     {
+            //         RCLCPP_WARN(this->get_logger(), "No more points can be recorded. Create a plan or clear all points");
+            //     }
+            //     else
+            //     {
+            //         _cartesianController.addPoint(_cartesianController.getEndEffectorPose(_jointPositions));
+            //         RCLCPP_INFO(this->get_logger(), "Point has been added to array");
+            //     }
+            // }
 
-            if (_joyManager.isTriggered(KEYBINDINGS::CARTESIAN::CREATE_PLAN))
-            {
-                if (_cartesianController.getRecordedPoints() != TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
-                {
-                    RCLCPP_WARN(this->get_logger(), "Cannot create plan since not enough points have been gathered");
-                }
-                else if (_cartesianController.applyPlan())
-                {
-                    RCLCPP_INFO(this->get_logger(), "Applying plan");
-                }
-                else
-                {
-                    RCLCPP_INFO(this->get_logger(), "Unapplying");
-                }
-            }
+            // if (_joyManager.isTriggered(KEYBINDINGS::CARTESIAN::CREATE_PLAN))
+            // {
+            //     if (_cartesianController.getRecordedPoints() != TO_UNDERLYING(CartesianController::eCartesianCoord::eLAST))
+            //     {
+            //         RCLCPP_WARN(this->get_logger(), "Cannot create plan since not enough points have been gathered");
+            //     }
+            //     else if (_cartesianController.applyPlan())
+            //     {
+            //         RCLCPP_INFO(this->get_logger(), "Applying plan");
+            //     }
+            //     else
+            //     {
+            //         RCLCPP_INFO(this->get_logger(), "Unapplying");
+            //     }
+            // }
         }
 
         _pubArmCmd->publish(armMsg);
