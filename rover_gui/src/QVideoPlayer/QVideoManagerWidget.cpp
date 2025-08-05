@@ -269,10 +269,10 @@ void QVideoManagerWidget::initCameraAnglePublisher(void)
 {
     _pub_cameraAngle = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_CMD_TOPIC_GUI, QOS_DEFAULT);
     _timer_pubCameraAngle = _node->create_wall_timer(std::chrono::milliseconds(ANGLE_PUBLISHER_PERIOD_MS),
-                                                    [this](void)
-                                                    {
-                                                        this->CB_pubCameraAngle();
-                                                    });
+                                                     [this](void)
+                                                     {
+                                                         this->CB_pubCameraAngle();
+                                                     });
 }
 
 void QVideoManagerWidget::initCameraListSubscriber(void)

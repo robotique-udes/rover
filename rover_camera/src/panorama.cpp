@@ -17,11 +17,11 @@ Panorama::Panorama():
         });
 
     _sub_gps = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
-                                                              QOS_DEFAULT,
-                                                              [this](const rover_msgs::msg::Gps& gpsMsg_)
-                                                              {
-                                                                  this->SetGpsPosition(gpsMsg_);
-                                                              });
+                                                               QOS_DEFAULT,
+                                                               [this](const rover_msgs::msg::Gps& gpsMsg_)
+                                                               {
+                                                                   this->SetGpsPosition(gpsMsg_);
+                                                               });
     _pub_cameraAngle = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
 }
 
@@ -159,8 +159,7 @@ std::optional<std::string> Panorama::getFolderPath(const std::string& basePath_)
     return folderPath;
 }
 
-bool Panorama::validateRequest(const rover_msgs::srv::Panorama::Request& request_,
-                               rover_msgs::srv::Panorama::Response& response_)
+bool Panorama::validateRequest(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_)
 {
     if (request_.duration <= 0)
     {
@@ -248,8 +247,8 @@ bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& reque
                      pathFolder.c_str(),
                      request_.camera_url.c_str());
         response_.success = false;
-        response_.status = "Failed to create screenshots folder or it already exists at " + pathFolder
-                            + " for camera: " + request_.camera_url;
+        response_.status
+            = "Failed to create screenshots folder or it already exists at " + pathFolder + " for camera: " + request_.camera_url;
         return false;
     }
 
@@ -258,9 +257,7 @@ bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& reque
     return true;
 }
 
-bool Panorama::savePanorama(rover_msgs::srv::Panorama::Response& response_,
-                            const std::string& filename_,
-                            const cv::Mat& pano_)
+bool Panorama::savePanorama(rover_msgs::srv::Panorama::Response& response_, const std::string& filename_, const cv::Mat& pano_)
 {
     try
     {
