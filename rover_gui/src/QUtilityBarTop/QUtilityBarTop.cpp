@@ -268,29 +268,20 @@ void QUtilityBarTop::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
 
     switch (fix_)
     {
-        case 0:
-            fixQuality = "NV";  // Not valid
+        case rover_msgs::msg::Gps::FIX_QUALITY_NO_FIX:
+            fixQuality = "No Fix";
             break;
-        case 1:
-            fixQuality = "GPSF";  // GPS fix
+        case rover_msgs::msg::Gps::FIX_QUALITY_GPS:
+            fixQuality = "GPS";
             break;
-        case 2:
-            fixQuality = "DGPS";  // Differentiel GPS
+        case rover_msgs::msg::Gps::FIX_QUALITY_GNSS:
+            fixQuality = "GNSS";
             break;
-        case 3:
-            fixQuality = "NA";  // Not Applicable
-            break;
-        case 4:
-            fixQuality = "RF";  // RTK Fixed (xFill)
-            break;
-        case 5:
-            fixQuality = "FL";  // RTK Float
-            break;
-        case 6:
-            fixQuality = "DR";  // INS Dead Reckoning
+        case rover_msgs::msg::Gps::FIX_QUALITY_RTK:
+            fixQuality = "RTK";
             break;
         default:
-            fixQuality = "NV";
+            fixQuality = "No Fix";
             break;
     }
 
