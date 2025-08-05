@@ -16,11 +16,11 @@ def generate_launch_description():
     return LaunchDescription([
         with_sim_arg,
 
-        # IncludeLaunchDescription(
-        #     PythonLaunchDescriptionSource([
-        #         PathJoinSubstitution([FindPackageShare('rover_can'), 'launch', 'can.launch.py'])
-        #     ])
-        # ),
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
+                PathJoinSubstitution([FindPackageShare('rover_can'), 'launch', 'can.launch.py'])
+            ])
+        ),
         
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
