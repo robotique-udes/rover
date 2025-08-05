@@ -36,8 +36,8 @@ namespace Folders
 
     /**
      * @brief Get the Home environment variable
-     * 
-     * @return std::optional<std::string> 
+     *
+     * @return std::optional<std::string>
      */
     std::optional<std::string> getHome();
 }  // namespace Folders

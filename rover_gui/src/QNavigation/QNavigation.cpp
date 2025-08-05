@@ -1,10 +1,16 @@
 #include "QNavigation.hpp"
 
 #include "Global/Helpers/QHelpers.hpp"
+#include <Global/Helpers/QToastNotification/QToastNotification.hpp>
+#include "Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp"
+#include <rover_lib2/helpers/folders.hpp>
 #include <QTimer>
+#include <json/json.h>
+#include <fstream>
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
+static constexpr const char* WAYPOINT_PATH = "/Navigation/waypoints.json";  // À revoir
 
 // Default to Studio de Création
 constexpr double DEFAULT_LATITUDE = 45.377755;
@@ -47,6 +53,38 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                        {
                            emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
                        });
+
+    std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
+    if (optionalSessionFolderPath.has_value())
+    {
+        _sessionFolderPath = *optionalSessionFolderPath;
+        if (_sessionFolderPath.empty())
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                           "SessionFolderManager returned an empty path",
+                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+        }
+    }
+    else
+    {
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                       "SessionFolderManager couldn't return a valid path",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
+    }
+
+    std::string filePath = _sessionFolderPath + WAYPOINT_PATH;
+    if (!Folders::folderExists(filePath))
+    {
+        bool success = Folders::createFolder(filePath);
+    }
+
+    this->waypointsFromJson();
+}
+
+void QNavigation::closeEvent(QCloseEvent* event)
+{
+    this->addWaypointsToJson();
+    QWidget::closeEvent(event);
 }
 
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
@@ -270,4 +308,92 @@ void QNavigation::onClearPathClicked(void)
     _ui.distanceLabel->setText("N/A");
 
     emit this->clearPath();
+}
+
+void QNavigation::addWaypointsToJson(void)
+{
+    if (_waypoints.isEmpty())
+    {
+        return;
+    }
+
+    Json::Value root;
+    Json::Value waypointsArray(Json::arrayValue);
+
+    for (const sWaypoint& waypoint : _waypoints)
+    {
+        Json::Value waypointObj;
+        waypointObj["name"] = waypoint.name.toStdString();
+        waypointObj["latitude"] = waypoint.latitude;
+        waypointObj["longitude"] = waypoint.longitude;
+        waypointObj["id"] = waypoint.id.toStdString();
+
+        waypointsArray.append(waypointObj);
+    }
+
+    root["waypoints"] = waypointsArray;
+    std::string filePath = _sessionFolderPath + WAYPOINT_PATH;  // Adjust path as needed
+    std::ofstream file(filePath);
+
+    if (file.is_open())
+    {
+        Json::StreamWriterBuilder builder;
+        builder["indentation"] = "  ";  // Pretty print with 2 spaces
+        std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+        writer->write(root, &file);
+        file.close();
+
+        RCLCPP_INFO(_node->get_logger(), "Waypoints saved to %s", filePath.c_str());
+    }
+    else
+    {
+        RCLCPP_ERROR(_node->get_logger(), "Failed to open file for writing: %s", filePath.c_str());
+    }
+}
+
+void QNavigation::waypointsFromJson(void)
+{
+    std::string filePath = "/home/anibal/ros2_ws/src/rover/rover_gui/src/QNavigation/waypoints.json";
+    std::ifstream file(filePath);
+
+    if (!file.is_open())
+    {
+        RCLCPP_INFO(_node->get_logger(), "No waypoints file found at %s", filePath.c_str());
+        return;
+    }
+
+    Json::Value root;
+    Json::CharReaderBuilder builder;
+    std::string errors;
+
+    if (Json::parseFromStream(builder, file, &root, &errors))
+    {
+        if (root.isMember("waypoints") && root["waypoints"].isArray())
+        {
+            const Json::Value& waypointsArray = root["waypoints"];
+
+            for (const Json::Value& waypointObj : waypointsArray)
+            {
+                if (waypointObj.isMember("name") && waypointObj.isMember("latitude") && waypointObj.isMember("longitude")
+                    && waypointObj.isMember("id"))
+                {
+                    QString name = QString::fromStdString(waypointObj["name"].asString());
+                    double latitude = waypointObj["latitude"].asDouble();
+                    double longitude = waypointObj["longitude"].asDouble();
+                    QString id = QString::fromStdString(waypointObj["id"].asString());
+
+                    this->addWaypointToList(name, latitude, longitude, id);
+                    emit addWaypoint(name, latitude, longitude, id);
+                }
+            }
+
+            RCLCPP_INFO(_node->get_logger(), "Loaded %d waypoints from file", waypointsArray.size());
+        }
+    }
+    else
+    {
+        RCLCPP_ERROR(_node->get_logger(), "Failed to parse JSON file: %s", errors.c_str());
+    }
+
+    file.close();
 }

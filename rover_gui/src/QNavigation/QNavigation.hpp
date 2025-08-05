@@ -11,6 +11,7 @@
 class QNavigation : public QWidget
 {
     Q_OBJECT
+
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
@@ -31,6 +32,7 @@ class QNavigation : public QWidget
     void clearWaypoints(void);
     void clearPath(void);
     void deleteWaypoint(QString waypointId_);
+    void addWaypoint(QString name_, double latitude_, double longitude_, QString id_);
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_);
@@ -45,10 +47,16 @@ class QNavigation : public QWidget
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
 
+  protected:
+    void closeEvent(QCloseEvent* event) override;
+
   private:
     void addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_);
+    void addWaypointsToJson(void);
+    void waypointsFromJson(void);
 
     QWebChannel _webChannel;
+    std::string _sessionFolderPath;
     std::shared_ptr<rclcpp::Node> _node;
     Ui::Navigation _ui;
 
