@@ -29,18 +29,18 @@ class Panorama : public rclcpp::Node
     Panorama();
 
   private:
-    void handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                               std::shared_ptr<rover_msgs::srv::Panorama::Response> response_);
-    bool validateRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                         std::shared_ptr<rover_msgs::srv::Panorama::Response> response_);
-    bool captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                       std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
+    void handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
+                               rover_msgs::srv::Panorama::Response& response_);
+    bool validateRequest(const rover_msgs::srv::Panorama::Request& request_,
+                         rover_msgs::srv::Panorama::Response& response_);
+    bool captureFrames(const rover_msgs::srv::Panorama::Request& request_,
+                       rover_msgs::srv::Panorama::Response& response_,
                        std::vector<cv::Mat>& frames_);
     void annotatePanorama(cv::Mat& pano_, const std::string& name_);
-    bool prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                           std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
+    bool prepareOutputPath(const rover_msgs::srv::Panorama::Request& request_,
+                           rover_msgs::srv::Panorama::Response& response_,
                            std::string& filename_);
-    bool savePanorama(std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
+    bool savePanorama(rover_msgs::srv::Panorama::Response& response_,
                       const std::string& filename_,
                       const cv::Mat& pano_);
     cv::Mat warpCorrection(const cv::Mat& pano_);

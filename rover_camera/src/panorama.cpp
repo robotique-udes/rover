@@ -13,7 +13,7 @@ Panorama::Panorama():
         [this](const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
                std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
         {
-            this->handlePanoramaRequest(request_, response_);
+            this->handlePanoramaRequest(*request_, *response_);
         });
 
     _sub_gps = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
@@ -25,17 +25,17 @@ Panorama::Panorama():
     _pub_cameraAngle = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
 }
 
-void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                                     std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
+void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
+                                     rover_msgs::srv::Panorama::Response& response_)
 {
-    response_->success = false;
+    response_.success = false;
     if (!this->validateRequest(request_, response_))
     {
         return;
     }
 
     std::vector<cv::Mat> frames;
-    this->rotateCamera(request_->duration);
+    this->rotateCamera(request_.duration);
     if (!this->captureFrames(request_, response_, frames))
     {
         return;
@@ -45,7 +45,7 @@ void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Pano
     if (pano.empty())
     {
         RCLCPP_ERROR(this->get_logger(), "Stitching failed, panorama image is empty.");
-        response_->status = "Stitching failed, panorama image is empty.";
+        response_.status = "Stitching failed, panorama image is empty.";
         return;
     }
 
@@ -53,11 +53,11 @@ void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Pano
     if (panoRect.empty())
     {
         RCLCPP_ERROR(this->get_logger(), "Warp correction failed, panorama image is empty.");
-        response_->status = "Warp correction failed, panorama image is empty.";
+        response_.status = "Warp correction failed, panorama image is empty.";
         return;
     }
 
-    this->annotatePanorama(panoRect, request_->panorama_name);
+    this->annotatePanorama(panoRect, request_.panorama_name);
 
     std::string filename;
     if (!this->prepareOutputPath(request_, response_, filename))
@@ -71,8 +71,8 @@ void Panorama::handlePanoramaRequest(const std::shared_ptr<rover_msgs::srv::Pano
     }
 
     RCLCPP_DEBUG(this->get_logger(), "Panorama saved to %s", filename.c_str());
-    response_->status = "Panorama saved to: " + filename;
-    response_->success = true;
+    response_.status = "Panorama saved to: " + filename;
+    response_.success = true;
 }
 
 cv::Mat Panorama::warpCorrection(const cv::Mat& pano)
@@ -159,38 +159,38 @@ std::optional<std::string> Panorama::getFolderPath(const std::string& basePath_)
     return folderPath;
 }
 
-bool Panorama::validateRequest(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                               std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
+bool Panorama::validateRequest(const rover_msgs::srv::Panorama::Request& request_,
+                               rover_msgs::srv::Panorama::Response& response_)
 {
-    if (request_->duration <= 0)
+    if (request_.duration <= 0)
     {
         RCLCPP_ERROR(this->get_logger(), "Requested duration is zero or negative, aborting panorama.");
-        response_->status = "Requested duration is zero or negative.";
+        response_.status = "Requested duration is zero or negative.";
         return false;
     }
     return true;
 }
 
-bool Panorama::captureFrames(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                             std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
+bool Panorama::captureFrames(const rover_msgs::srv::Panorama::Request& request_,
+                             rover_msgs::srv::Panorama::Response& response_,
                              std::vector<cv::Mat>& frames_)
 {
-    std::string pipeline = "rtspsrc location=" + request_->camera_url + PIPELINE;
+    std::string pipeline = "rtspsrc location=" + request_.camera_url + PIPELINE;
     cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
 
     if (!cap.isOpened())
     {
         RCLCPP_ERROR(this->get_logger(), "Failed to open camera");
-        response_->status = "Failed to open camera stream (cap)";
+        response_.status = "Failed to open camera stream (cap)";
         return false;
     }
-    RCLCPP_DEBUG(this->get_logger(), "Starting frame capture for camera: %s", request_->camera_url.c_str());
+    RCLCPP_DEBUG(this->get_logger(), "Starting frame capture for camera: %s", request_.camera_url.c_str());
 
     cv::Mat frame;
     uint8_t invalidFramesCounter = 0U;
     std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
     while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count()
-           < request_->duration)
+           < request_.duration)
     {
         cap >> frame;
         if (frame.empty())
@@ -226,18 +226,18 @@ void Panorama::annotatePanorama(cv::Mat& pano_, const std::string& name_)
     cv::putText(pano_, text, cv::Point(10, height), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
 }
 
-bool Panorama::prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
-                                 std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
+bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& request_,
+                                 rover_msgs::srv::Panorama::Response& response_,
                                  std::string& filename_)
 {
-    std::optional<std::string> pathFolderOptional = this->getFolderPath(request_->base_path);
+    std::optional<std::string> pathFolderOptional = this->getFolderPath(request_.base_path);
     if (!pathFolderOptional)
     {
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to find home environment when capturing panorama on camera %s",
-                     request_->camera_url.c_str());
-        response_->success = false;
-        response_->status = "Failed to find home environment for saving screenshot on camera: " + request_->camera_url;
+                     request_.camera_url.c_str());
+        response_.success = false;
+        response_.status = "Failed to find home environment for saving screenshot on camera: " + request_.camera_url;
         return false;
     }
     std::string pathFolder = pathFolderOptional.value();
@@ -246,10 +246,10 @@ bool Panorama::prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to create panorama folder at %s for camera: %s",
                      pathFolder.c_str(),
-                     request_->camera_url.c_str());
-        response_->success = false;
-        response_->status = "Failed to create screenshots folder or it already exists at " + pathFolder
-                            + " for camera: " + request_->camera_url;
+                     request_.camera_url.c_str());
+        response_.success = false;
+        response_.status = "Failed to create screenshots folder or it already exists at " + pathFolder
+                            + " for camera: " + request_.camera_url;
         return false;
     }
 
@@ -258,7 +258,7 @@ bool Panorama::prepareOutputPath(const std::shared_ptr<rover_msgs::srv::Panorama
     return true;
 }
 
-bool Panorama::savePanorama(std::shared_ptr<rover_msgs::srv::Panorama::Response> response_,
+bool Panorama::savePanorama(rover_msgs::srv::Panorama::Response& response_,
                             const std::string& filename_,
                             const cv::Mat& pano_)
 {
@@ -267,16 +267,16 @@ bool Panorama::savePanorama(std::shared_ptr<rover_msgs::srv::Panorama::Response>
         if (!cv::imwrite(filename_, pano_))
         {
             RCLCPP_ERROR(this->get_logger(), "Failed to save panorama image to file: %s", filename_.c_str());
-            response_->success = false;
-            response_->status = "Failed to save panorama image to file: " + filename_;
+            response_.success = false;
+            response_.status = "Failed to save panorama image to file: " + filename_;
             return false;
         }
     }
     catch (const cv::Exception& e)
     {
         RCLCPP_ERROR(this->get_logger(), "OpenCV exception during imwrite: %s", e.what());
-        response_->success = false;
-        response_->status = std::string("OpenCV exception during imwrite: ") + e.what();
+        response_.success = false;
+        response_.status = std::string("OpenCV exception during imwrite: ") + e.what();
         return false;
     }
     return true;
