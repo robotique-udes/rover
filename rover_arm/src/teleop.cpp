@@ -128,12 +128,6 @@ class Teleop : public rclcpp::Node
             }
         }
 
-        // // GRIPPER CONTROL
-        // if (_joyManager.isPressed(KEYBINDINGS::GRIPPER::ACTIVATE_GRIPPER)]))
-        // {
-        //     armMsg.data = _gripperController.setCmd(joyArray);
-        // }
-
         _pubArmCmd->publish(armMsg);
     }
 

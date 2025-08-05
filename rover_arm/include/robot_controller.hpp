@@ -58,6 +58,8 @@ class RobotController
                 return ARM_CONFIGURATION::GRIPPER_TILT::JOG_VELOCITY;
             case eJointIndex::GRIPPER_ROT:
                 return ARM_CONFIGURATION::GRIPPER_ROT::JOG_VELOCITY;
+            case eJointIndex::GRIPPER_CLOSE:
+                return ARM_CONFIGURATION::GRIPPER_ROT::JOG_VELOCITY;
             default:
                 return 0.0F;
         }
