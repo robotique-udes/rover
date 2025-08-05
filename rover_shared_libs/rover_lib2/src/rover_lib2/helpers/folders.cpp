@@ -4,6 +4,7 @@
 #include "log.hpp"
 #include <sstream>
 #include <sys/stat.h>
+#include <cstdlib>
 
 constexpr size_t MAX_SUBDIR_COUNT = 1024UL;
 
@@ -62,6 +63,19 @@ std::vector<std::string> Folders::splitPath(const std::string& path_)
     }
 
     return subdirectories;
+}
+
+std::optional<std::string> Folders::getHome()
+{
+    const char* home = std::getenv("HOME");
+    std::string homeStr;
+    if (home != nullptr)
+    {
+        homeStr = home;
+        return homeStr;
+    }
+
+    return std::nullopt;
 }
 
 #endif  //(__linux__)
