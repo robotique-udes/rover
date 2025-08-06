@@ -1,17 +1,24 @@
 #include "QNavigation.hpp"
 
+// QT
+#include <QTimer>
 #include "Global/Helpers/QHelpers.hpp"
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 #include "Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp"
+
+// Helpers
 #include <rover_lib2/helpers/folders.hpp>
-#include <QTimer>
 #include <json/json.h>
+
 #include <fstream>
+#include <vector>
+#include <algorithm>
+#include <filesystem>
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
 constexpr const char* NAVIGATION_PATH = "/Navigation";
-constexpr const char* JSON_NAME = "/waypoints.json";
+constexpr const char* JSON_FILE_NAME = "/waypoints.json";
 
 // Default to Studio de Création
 constexpr double DEFAULT_LATITUDE = 45.377755;
@@ -55,20 +62,20 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                            emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
                        });
 
-    if (!this->createNavigationFolder())
+    this->createNavigationFolder();
+    if (!Folders::folderExists(_sessionFolderPath))
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to create navigation folder");
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to create navigation folder. No waypoint extracted");
     }
     else
     {
-        this->findLastSessionFolder();
         this->waypointsFromJson();
     }
-
 }
 
 void QNavigation::closeEvent(QCloseEvent* event)
 {
+    RCLCPP_INFO(rclcpp::get_logger("GUI"), "closeEvent called - saving waypoints");
     this->addWaypointsToJson();
     QWidget::closeEvent(event);
 }
@@ -117,10 +124,8 @@ bool QNavigation::createNavigationFolder(void)
 
     _sessionFolderPath = homePath + sessionPath + NAVIGATION_PATH;
     RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Current navigation folder path: %s", _sessionFolderPath.c_str());
-    if (!Folders::folderExists(_sessionFolderPath))
-    {
-        success = Folders::createFolder(_sessionFolderPath);
-    }
+    
+    success = Folders::createFolder(_sessionFolderPath);
 
     return success;
 }
@@ -284,7 +289,10 @@ void QNavigation::onDeleteWaypointClicked(void)
     {
         const QString waypointId_ = _waypoints.at(index_).id;
 
-        delete _ui.waypointList->takeItem(index_);
+        QListWidgetItem* item = _ui.waypointList->takeItem(index_);
+        if (item) {
+            delete item;
+        }
 
         emit this->deleteWaypoint(waypointId_);
 
@@ -370,13 +378,13 @@ void QNavigation::addWaypointsToJson(void)
     }
 
     root["waypoints"] = waypointsArray;
-    std::string filePath = _sessionFolderPath + JSON_NAME;
+    std::string filePath = _sessionFolderPath + JSON_FILE_NAME;
     std::ofstream file(filePath);
 
     if (file.is_open())
     {
         Json::StreamWriterBuilder builder;
-        builder["indentation"] = "  ";  // Pretty print with 2 spaces
+        builder["indentation"] = "  ";
         std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
         writer->write(root, &file);
         file.close();
@@ -391,14 +399,14 @@ void QNavigation::addWaypointsToJson(void)
 
 void QNavigation::waypointsFromJson(void)
 {
-    std::string lastSessionFolderPath;
+    std::string lastSessionFolderPath = this->findLastSessionFolder();
 
-    if (lastSessionFolderPath == "")
+    if (lastSessionFolderPath.empty())
     {
         return;
     }
-    
-    std::string filePath = lastSessionFolderPath + JSON_NAME;
+
+    std::string filePath = lastSessionFolderPath + JSON_FILE_NAME;
     std::ifstream file(filePath);
 
     if (!file.is_open())
@@ -445,17 +453,17 @@ void QNavigation::waypointsFromJson(void)
 
 std::string QNavigation::findLastSessionFolder(void)
 {
-    std::string parentFolder = _sessionFolderPath + "/../..";
-    std::vector<std::string> sessionFolders;
-    std::string lastSessionFolderPath;
-
-    if (!std::filesystem::exists(parentFolder))
+    std::filesystem::path currentPath(_sessionFolderPath);
+    std::filesystem::path sessionBasePath = currentPath.parent_path().parent_path();
+    
+    if (!std::filesystem::exists(sessionBasePath))
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Session base path doesn't exist: %s", parentFolder.c_str());
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Session base path doesn't exist: %s", sessionBasePath.c_str());
         return "";
     }
-
-    for (const auto& entry : std::filesystem::directory_iterator(parentFolder))
+    
+    std::vector<std::string> sessionFolders;
+    for (const auto& entry : std::filesystem::directory_iterator(sessionBasePath))
     {
         if (entry.is_directory())
         {
@@ -467,13 +475,14 @@ std::string QNavigation::findLastSessionFolder(void)
 
     if (sessionFolders.size() > 1)
     {
-        lastSessionFolderPath = sessionFolders[1] + NAVIGATION_PATH;
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Found latest session folder: %s", _sessionFolderPath.c_str());
+        std::string lastSessionFolderPath = sessionFolders[1] + NAVIGATION_PATH;
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Found latest session folder: %s", _sessionFolderPath.c_str());
+        return lastSessionFolderPath;
     }
     else
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Couldn't find last sessions");
+        return "";
     }
 
-    return lastSessionFolderPath;
 }
