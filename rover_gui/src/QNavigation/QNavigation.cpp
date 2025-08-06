@@ -11,7 +11,7 @@
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
 constexpr const char* NAVIGATION_PATH = "/Navigation";
-constexpr const char* FILE_NAME = "/waypoints.json";
+constexpr const char* JSON_NAME = "/waypoints.json";
 
 // Default to Studio de Création
 constexpr double DEFAULT_LATITUDE = 45.377755;
@@ -55,16 +55,16 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                            emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
                        });
 
-    
-
-    if (this->createNavigationFolder())
+    if (!this->createNavigationFolder())
     {
-        this->waypointsFromJson();
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to create navigation folder");
     }
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to create navigation folder. No waypoints found");
+        this->findLastSessionFolder();
+        this->waypointsFromJson();
     }
+
 }
 
 void QNavigation::closeEvent(QCloseEvent* event)
@@ -337,7 +337,7 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     }
     else
     {
-        RCLCPP_WARN(_node->get_logger(), "Cesium token not found, can't load map");
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Cesium token not found, can't load map");
     }
 }
 
@@ -370,7 +370,7 @@ void QNavigation::addWaypointsToJson(void)
     }
 
     root["waypoints"] = waypointsArray;
-    std::string filePath = _sessionFolderPath + NAVIGATION_PATH;  // Adjust path as needed
+    std::string filePath = _sessionFolderPath + JSON_NAME;
     std::ofstream file(filePath);
 
     if (file.is_open())
@@ -381,22 +381,29 @@ void QNavigation::addWaypointsToJson(void)
         writer->write(root, &file);
         file.close();
 
-        RCLCPP_INFO(_node->get_logger(), "Waypoints saved to %s", filePath.c_str());
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Waypoints saved to %s", filePath.c_str());
     }
     else
     {
-        RCLCPP_ERROR(_node->get_logger(), "Failed to open file for writing: %s", filePath.c_str());
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to open file for writing: %s", filePath.c_str());
     }
 }
 
 void QNavigation::waypointsFromJson(void)
 {
-    std::string filePath = "/home/anibal/ros2_ws/src/rover/rover_gui/src/QNavigation/waypoints.json";
+    std::string lastSessionFolderPath;
+
+    if (lastSessionFolderPath == "")
+    {
+        return;
+    }
+    
+    std::string filePath = lastSessionFolderPath + JSON_NAME;
     std::ifstream file(filePath);
 
     if (!file.is_open())
     {
-        RCLCPP_INFO(_node->get_logger(), "No waypoints file found at %s", filePath.c_str());
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "No waypoints file found at %s", filePath.c_str());
         return;
     }
 
@@ -425,13 +432,48 @@ void QNavigation::waypointsFromJson(void)
                 }
             }
 
-            RCLCPP_INFO(_node->get_logger(), "Loaded %d waypoints from file", waypointsArray.size());
+            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Loaded %d waypoints from file", waypointsArray.size());
         }
     }
     else
     {
-        RCLCPP_ERROR(_node->get_logger(), "Failed to parse JSON file: %s", errors.c_str());
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to parse JSON file: %s", errors.c_str());
     }
 
     file.close();
+}
+
+std::string QNavigation::findLastSessionFolder(void)
+{
+    std::string parentFolder = _sessionFolderPath + "/../..";
+    std::vector<std::string> sessionFolders;
+    std::string lastSessionFolderPath;
+
+    if (!std::filesystem::exists(parentFolder))
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Session base path doesn't exist: %s", parentFolder.c_str());
+        return "";
+    }
+
+    for (const auto& entry : std::filesystem::directory_iterator(parentFolder))
+    {
+        if (entry.is_directory())
+        {
+            sessionFolders.push_back(entry.path().string());
+        }
+    }
+
+    std::sort(sessionFolders.begin(), sessionFolders.end(), std::greater<std::string>());
+
+    if (sessionFolders.size() > 1)
+    {
+        lastSessionFolderPath = sessionFolders[1] + NAVIGATION_PATH;
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Found latest session folder: %s", _sessionFolderPath.c_str());
+    }
+    else
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Couldn't find last sessions");
+    }
+
+    return lastSessionFolderPath;
 }

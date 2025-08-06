@@ -55,6 +55,7 @@ class QNavigation : public QWidget
     bool createNavigationFolder(void);
     void addWaypointsToJson(void);
     void waypointsFromJson(void);
+    std::string findLastSessionFolder(void);
 
     QWebChannel _webChannel;
     std::string _sessionFolderPath;
