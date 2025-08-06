@@ -36,7 +36,7 @@ class Panorama : public rclcpp::Node
     static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
     static constexpr const char* PATH_FOR_PANORAMA = "/panorama";
-    static constexpr const char* PIPELINE
+    static constexpr const char* PANORAMA_FILE_NAME = "panorama_" static constexpr const char* PIPELINE
         = " latency=0 drop=true ! decodebin ! videorate max-rate=2 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
   public:
@@ -61,7 +61,7 @@ class Panorama : public rclcpp::Node
     std::optional<uint8_t> getIdCam(const std::string& camURL_);
     std::optional<std::string> getFolderPath(const std::string& basePath_);
     std::optional<cv::Mat> stitchFrames(std::vector<cv::Mat>& frames_);
-    void SetGpsPosition(const rover_msgs::msg::Gps& gpsMessage_);
+    void setGpsPosition(const rover_msgs::msg::Gps& gpsMessage_);
 
     rclcpp::Service<rover_msgs::srv::Panorama>::SharedPtr _srv_panorama;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps;

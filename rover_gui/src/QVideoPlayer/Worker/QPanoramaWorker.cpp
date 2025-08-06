@@ -49,7 +49,7 @@ void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_
 
     emit this->panoramaStarted(duration_, playerIndex_);
 
-    if (future.wait_for(std::chrono::milliseconds(duration_  + SERVICE_TIMEOUT_MS)) == std::future_status::ready)
+    if (future.wait_for(std::chrono::milliseconds(duration_ + SERVICE_TIMEOUT_MS)) == std::future_status::ready)
     {
         std::shared_ptr<rover_msgs::srv::Panorama_Response> response = future.get();
         emit this->panoramaFinished(response->success, response->status, playerIndex_);

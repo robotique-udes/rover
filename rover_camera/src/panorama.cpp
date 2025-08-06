@@ -20,7 +20,7 @@ Panorama::Panorama():
                                                                QOS_DEFAULT,
                                                                [this](const rover_msgs::msg::Gps& gpsMsg_)
                                                                {
-                                                                   this->SetGpsPosition(gpsMsg_);
+                                                                   this->setGpsPosition(gpsMsg_);
                                                                });
     _pub_cameraCmd = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
     _pub_cameraConfig = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_CAMERA_CONFIG_PANORAM, QOS_DEFAULT);
@@ -147,7 +147,7 @@ std::optional<cv::Mat> Panorama::stitchFrames(std::vector<cv::Mat>& frames_)
     return pano;
 }
 
-void Panorama::SetGpsPosition(const rover_msgs::msg::Gps& gpsMsg_)
+void Panorama::setGpsPosition(const rover_msgs::msg::Gps& gpsMsg_)
 {
     _sGpsCoordinates.latitude = gpsMsg_.latitude;
     _sGpsCoordinates.longitude = gpsMsg_.longitude;
@@ -232,9 +232,8 @@ bool Panorama::captureFrames(const rover_msgs::srv::Panorama::Request& request_,
 
 void Panorama::annotatePanorama(cv::Mat& pano_, const std::string& name_)
 {
-    float latitude = _sGpsCoordinates.latitude;
-    float longitude = _sGpsCoordinates.longitude;
-    std::string gpsCoord = "latitude: " + std::to_string(latitude) + ", longitude: " + std::to_string(longitude);
+    std::string gpsCoord
+        = "latitude: " + std::to_string(_sGpsCoordinates.latitude) + ", longitude: " + std::to_string(_sGpsCoordinates.longitude);
     std::string text = name_.empty() ? Date::getCurrentTime() : name_ + " " + Date::getCurrentTime();
 
     cv::Size dimensions = pano_.size();
@@ -270,7 +269,7 @@ bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& reque
         return false;
     }
 
-    std::string resultName = "panorama_" + Date::getCurrentTime() + ".jpg";
+    std::string resultName = PANORAMA_FILE_NAME + Date::getCurrentTime() + ".jpg";
     filename_ = pathFolder + "/" + resultName;
     return true;
 }

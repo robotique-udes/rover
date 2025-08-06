@@ -65,7 +65,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
 
-    for (const std::string& url : CAMERA_NAME_ORDER)
+    for (const char* url : CAMERA_NAME_ORDER)
     {
         _cameraUrls.push_back(Constants::CameraInfo::CAMERA_URL_MAP.at(url));
     }
