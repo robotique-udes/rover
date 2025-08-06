@@ -42,16 +42,16 @@ void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_
         return;
     }
 
-    rclcpp::Client<rover_msgs::srv::Panorama>::FutureAndRequestId future_and_request
+    rclcpp::Client<rover_msgs::srv::Panorama>::FutureAndRequestId futureAndRequest
         = client_panoramique_->async_send_request(request);
 
-    std::future<std::shared_ptr<rover_msgs::srv::Panorama::Response>> future_result = std::move(future_and_request.future);
+    std::future<std::shared_ptr<rover_msgs::srv::Panorama::Response>> future = std::move(futureAndRequest.future);
 
     emit this->panoramaStarted(duration_, playerIndex_);
 
-    if (future_result.wait_for(std::chrono::milliseconds(request->duration + STITCH_TIMEOUT_MS)) == std::future_status::ready)
+    if (future.wait_for(std::chrono::milliseconds(request->duration + SERVICE_TIMEOUT_MS)) == std::future_status::ready)
     {
-        std::shared_ptr<rover_msgs::srv::Panorama_Response> response = future_result.get();
+        std::shared_ptr<rover_msgs::srv::Panorama_Response> response = future.get();
         emit this->panoramaFinished(response->success, response->status, playerIndex_);
     }
     else
