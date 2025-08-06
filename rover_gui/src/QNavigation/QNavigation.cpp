@@ -271,11 +271,12 @@ void QNavigation::onDeleteWaypointClicked(void)
     int index_ = _ui.waypointList->row(currentItem_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const QString waypointId_ = _waypoints.at(index_).id;
+        const QString waypointId = _waypoints.at(index_).id;
+        this->deleteWaypointFromJson(waypointId);
 
         delete _ui.waypointList->takeItem(index_);
 
-        emit this->deleteWaypoint(waypointId_);
+        emit this->deleteWaypoint(waypointId);
 
         _waypoints.removeAt(index_);
 
@@ -383,6 +384,65 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
         outputFile.close();
 
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Waypoints saved to %s", filePath.c_str());
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to open file for writing: %s", filePath.c_str());
+    }
+}
+
+void QNavigation::deleteWaypointFromJson(const QString index_)
+{
+    std::string filePath = _sessionFolderPath + JSON_FILE_NAME;
+    Json::Value root;
+
+    std::ifstream inputFile(filePath);
+
+    if (inputFile.is_open())
+    {
+        Json::CharReaderBuilder builder;
+        std::string errors;
+
+        if (!Json::parseFromStream(builder, inputFile, &root, &errors))
+        {
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to properly parse JSON: %s", errors.c_str());
+        }
+        inputFile.close();
+    }
+    else
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open JSON file");
+        return;
+    }
+
+    if (!root.isMember("waypoints") || !root["waypoints"].isArray())
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "No waypoints array found in JSON");
+        return;
+    }
+
+    Json::Value& waypointsArray = root["waypoints"];
+    Json::Value newWaypoints(Json::arrayValue);
+    std::string idToRemove = index_.toStdString();
+
+    for (const Json::Value& waypoint : waypointsArray)
+    {
+        if (!waypoint.isMember("id") || waypoint["id"].asString() != idToRemove)
+        {
+            newWaypoints.append(waypoint);
+        }
+    }
+
+    root["waypoints"] = newWaypoints;
+
+    std::ofstream outputFile(filePath);
+    if (outputFile.is_open())
+    {
+        Json::StreamWriterBuilder builder;
+        builder["indentation"] = "  ";
+        std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+        writer->write(root, &outputFile);
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Waypoint with id %s deleted from JSON", idToRemove.c_str());
     }
     else
     {

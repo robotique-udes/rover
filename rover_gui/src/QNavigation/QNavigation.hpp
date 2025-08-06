@@ -7,6 +7,7 @@
 
 #include <QWebChannel>
 #include <QListWidgetItem>
+#include <iostream>
 
 class QNavigation : public QWidget
 {
@@ -54,7 +55,7 @@ class QNavigation : public QWidget
     void addWaypointToJson(const sWaypoint waypoint_);
     void loadWaypointsFromJson(void);
     std::string findLastSessionFolder(void);
-    bool checkFilePath(std::string filePath_);
+    void deleteWaypointFromJson(const QString index_);
 
     QWebChannel _webChannel;
     std::string _sessionFolderPath;
