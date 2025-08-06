@@ -22,7 +22,7 @@ Panorama::Panorama():
                                                                {
                                                                    this->SetGpsPosition(gpsMsg_);
                                                                });
-    _pub_cameraAngle = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
+    _pub_cameraCmd = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
     _pub_cameraConfig = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_CAMERA_CONFIG_PANORAM, QOS_DEFAULT);
 }
 
@@ -179,6 +179,12 @@ bool Panorama::validateRequest(const rover_msgs::srv::Panorama::Request& request
         response_.status = "Requested duration is zero or negative.";
         return false;
     }
+    if (request_.camera_url.rfind("rtsp://", 0) != 0)
+    {
+        RCLCPP_ERROR(this->get_logger(), "Camera URL does not start with rtsp://, aborting panorama.");
+        response_.status = "Camera URL must start with rtsp:// because pipeline is rtsp specific";
+        return false;
+    }
     return true;
 }
 
@@ -233,8 +239,8 @@ void Panorama::annotatePanorama(cv::Mat& pano_, const std::string& name_)
 
     cv::Size dimensions = pano_.size();
     int height = dimensions.height;
-    cv::putText(pano_, gpsCoord, cv::Point(10, height - 20), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
-    cv::putText(pano_, text, cv::Point(10, height), cv::FONT_HERSHEY_SIMPLEX, 0.7, cv::Scalar(34, 139, 34), 3);
+    cv::putText(pano_, gpsCoord, cv::Point(10, height - 20), cv::FONT_HERSHEY_SIMPLEX, FONT_SCALE, TEXT_COLOR, TEXT_THICKNESS);
+    cv::putText(pano_, text, cv::Point(10, height), cv::FONT_HERSHEY_SIMPLEX, FONT_SCALE, TEXT_COLOR, TEXT_THICKNESS);
 }
 
 bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& request_,
@@ -293,8 +299,8 @@ bool Panorama::savePanorama(rover_msgs::srv::Panorama::Response& response_, cons
 
 void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
 {
-    float totalPanDeg = static_cast<float>(duration_) / 1000.0F * MAX_TILT_SPEED_PANORAMA;
-    float targetRotationSpeed = MAX_TILT_SPEED_PANORAMA;
+    float totalPanDeg = static_cast<float>(duration_) / 1000.0F * MAX_ROTATION_SPEED_PANORAMA;
+    float targetRotationSpeed = MAX_ROTATION_SPEED_PANORAMA;
     if (totalPanDeg > MAX_TILT_ANGLE)
     {
         totalPanDeg = MAX_TILT_ANGLE;
@@ -312,10 +318,10 @@ void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
     _timer_ptzCmd = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_CMD_PERIOD_MS),
                                             [this, ptzMsg](void)
                                             {
-                                                _pub_cameraAngle->publish(ptzMsg);
+                                                _pub_cameraCmd->publish(ptzMsg);
                                             });
 
-    _pub_cameraAngle->publish(ptzMsg);
+    _pub_cameraCmd->publish(ptzMsg);
 
     this->waitForAngle(idCam_, startAngle);
 
@@ -327,7 +333,7 @@ void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
     _timer_ptzCmd = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_CMD_PERIOD_MS),
                                             [this, ptzMsg](void)
                                             {
-                                                _pub_cameraAngle->publish(ptzMsg);
+                                                _pub_cameraCmd->publish(ptzMsg);
                                             });
 }
 
@@ -350,17 +356,17 @@ void Panorama::waitForAngle(uint8_t idCam_, float angle_)
 
     if (angleReachedFuture.wait_for(std::chrono::milliseconds(ANGLE_WAIT_TIMEOUT_MS)) == std::future_status::timeout)
     {
-        RCLCPP_INFO(this->get_logger(), "Desired start angle for panorama wasn't reached in time, starting panorama");
+        RCLCPP_INFO(this->get_logger(), "Desired start angle for panorama wasn't reached in time, starting panorama anyway");
     }
 }
 
-void Panorama::configPtz(uint8_t idCam_, float tiltSpeed_)
+void Panorama::configPtz(uint8_t idCam_, float rotationSpeed_)
 {
     rover_msgs::msg::CameraConfig configMsg;
-    configMsg.tilt_max_speed = tiltSpeed_;
+    configMsg.tilt_max_speed = rotationSpeed_;
     configMsg.pan_max_position = degToRad(MAX_TILT_ANGLE);
     configMsg.pan_min_position = 0.0F;
-    configMsg.pan_max_speed = MAX_TILT_SPEED_GUI;
+    configMsg.pan_max_speed = rotationSpeed_;
     configMsg.tilt_max_position = degToRad(MAX_TILT_ANGLE);
     configMsg.tilt_min_position = 0.0F;
     configMsg.id_cam = idCam_;

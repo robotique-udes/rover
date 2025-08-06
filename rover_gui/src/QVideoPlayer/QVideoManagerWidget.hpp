@@ -103,7 +103,7 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraList>> _sub_cameraList;
-    std::shared_ptr<rclcpp::Publisher<rover_msgs::msg::CameraControl>> _pub_cameraAngle;
+    std::shared_ptr<rclcpp::Publisher<rover_msgs::msg::CameraControl>> _pub_cameraCmd;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraControl>> _sub_cameraStatus;
     rclcpp::TimerBase::SharedPtr _timer_clientCameraControlHealth;
     rclcpp::TimerBase::SharedPtr _timer_pubCameraAngle;
