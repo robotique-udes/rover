@@ -43,6 +43,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     this->initCameraControlClient();
     this->initCameraListSubscriber();
     this->initCameraAnglePublisher();
+    this->initCameraStatusSubscriber();
 
     _gridContainer.setLayout(&_gridLayout);
     _altLayoutContainer.setLayout(&_altLayout);
@@ -63,6 +64,11 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
+
+    for (const std::string& url : CAMERA_NAME_ORDER)
+    {
+        _cameraUrls.push_back(Constants::CameraInfo::CAMERA_URL_MAP.at(url));
+    }
 }
 
 void QVideoManagerWidget::onTabChanged(uint16_t index_)
@@ -368,7 +374,8 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
         QOS_DEFAULT,
         [this](const rover_msgs::msg::CameraControl msg)
         {
-            if (msg.id_cam >= rover_msgs::msg::CameraControl::ID_CAM_MAX)
+            if (msg.id_cam >= rover_msgs::msg::CameraControl::ID_CAM_MAX
+                || msg.id_cam >= Constants::CameraInfo::CAMERA_URL_MAP.size())
             {
                 QHelper::QToastNotification::getInstance().notifyFromAnyThread(
                     "Invalid message was received from /rover/camera/PTZ_status",
@@ -378,9 +385,7 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
             }
             for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
             {
-                std::map<std::string, std::string>::const_iterator camInfo = Constants::CameraInfo::CAMERA_URL_MAP.begin();
-                std::advance(camInfo, msg.id_cam);
-                widget->CB_updateActualAngle(camInfo->second, msg.yaw);
+                emit widget->updateActualAngle(_cameraUrls[msg.id_cam], msg.yaw);
             }
         });
 }

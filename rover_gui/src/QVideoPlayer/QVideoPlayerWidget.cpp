@@ -87,7 +87,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_panoramaWorkerThread.get(), &QPanoramaWorker::panoramaStarted, this, &QVideoPlayerWidget::onPanoramaStarted);
     connect(_panoramaWorkerThread.get(), &QPanoramaWorker::panoramaFinished, this, &QVideoPlayerWidget::onPanoramaFinished);
     connect(_ui.panoramaDurationBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::setPanoramaDuration);
-
+    connect(this, &QVideoPlayerWidget::updateActualAngle, this, &QVideoPlayerWidget::onUpdateActualAngle);
     _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
     _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
     _ui.arucoIdsTextBox->setText("Ids: ");
@@ -1022,10 +1022,10 @@ void QVideoPlayerWidget::setPanoramaDuration(void)
     _panoramaDuration = _ui.panoramaDurationBox->value() * 1000;
 }
 
-void QVideoPlayerWidget::CB_updateActualAngle(const std::string& camURL_, float yaw_)
+void QVideoPlayerWidget::onUpdateActualAngle(const std::string& camURL_, float yaw_)
 {
     if (camURL_ == _camURL)
     {
-        _ui.actualAngleSlider->setValue(static_cast<uint16_t>(yaw_));
+        _ui.actualAngleSlider->setValue(static_cast<int>(yaw_));
     }
 }

@@ -94,7 +94,6 @@ class QVideoPlayerWidget : public QWidget
 
     void CB_cameraListUpdate(std::vector<std::string> urls_);
     void CB_srvCameraAvailable(bool available_);
-    void CB_updateActualAngle(const std::string& camURL_, float yaw_);
 
   signals:
     void arucoCameraFailure(bool valid_);
@@ -102,6 +101,7 @@ class QVideoPlayerWidget : public QWidget
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
     void displayDetectedArucos(std::vector<uint16_t> ids_);
+    void updateActualAngle(const std::string& camURL_, float yaw_);
 
   private slots:
     // Arucuo
@@ -117,6 +117,7 @@ class QVideoPlayerWidget : public QWidget
     void onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_);
     void onPanoramaFinished(bool success_, const std::string& status_, uint16_t playerIndex_);
     void setPanoramaDuration(void);
+    void onUpdateActualAngle(const std::string& camURL_, float yaw_);
 
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);

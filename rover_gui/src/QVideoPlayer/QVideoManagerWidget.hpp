@@ -83,6 +83,8 @@ class QVideoManagerWidget : public QWidget
     std::array<std::shared_ptr<QRecordingWorker>, NBR_CAM_TO_TRACK> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
 
+    std::vector<std::string> _cameraUrls;
+
     QTabWidget _tabWidget;
     QVBoxLayout _mainLayout;
 
