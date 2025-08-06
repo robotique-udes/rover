@@ -301,15 +301,15 @@ void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
 {
     float totalPanDeg = static_cast<float>(duration_) / 1000.0F * MAX_ROTATION_SPEED_PANORAMA;
     float targetRotationSpeed = MAX_ROTATION_SPEED_PANORAMA;
-    if (totalPanDeg > MAX_TILT_ANGLE)
+    if (totalPanDeg > MAX_PAN_ANGLE)
     {
-        totalPanDeg = MAX_TILT_ANGLE;
-        targetRotationSpeed = MAX_TILT_ANGLE / (static_cast<float>(duration_) / 1000.0F);
+        totalPanDeg = MAX_PAN_ANGLE;
+        targetRotationSpeed = MAX_PAN_ANGLE / (static_cast<float>(duration_) / 1000.0F);
     }
 
     // Move to Start Angle
     rover_msgs::msg::CameraControl ptzMsg;
-    float startAngle = degToRad(180.0F - totalPanDeg / 2.0F);
+    float startAngle = degToRad(MIDDLE_PAN_ANGLE - totalPanDeg / 2.0F);
     ptzMsg.pitch = 0.0F;
     ptzMsg.power_on = true;
     ptzMsg.yaw = startAngle;
@@ -328,7 +328,7 @@ void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
     this->configPtz(idCam_, degToRad(targetRotationSpeed));
 
     // Move to Target Angle
-    ptzMsg.yaw = degToRad(180.0F + totalPanDeg / 2.0F);
+    ptzMsg.yaw = degToRad(MIDDLE_PAN_ANGLE + totalPanDeg / 2.0F);
 
     _timer_ptzCmd = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_CMD_PERIOD_MS),
                                             [this, ptzMsg](void)
@@ -364,10 +364,10 @@ void Panorama::configPtz(uint8_t idCam_, float rotationSpeed_)
 {
     rover_msgs::msg::CameraConfig configMsg;
     configMsg.tilt_max_speed = rotationSpeed_;
-    configMsg.pan_max_position = degToRad(MAX_TILT_ANGLE);
+    configMsg.pan_max_position = degToRad(MAX_PAN_ANGLE);
     configMsg.pan_min_position = 0.0F;
     configMsg.pan_max_speed = rotationSpeed_;
-    configMsg.tilt_max_position = degToRad(MAX_TILT_ANGLE);
+    configMsg.tilt_max_position = degToRad(MAX_PAN_ANGLE);
     configMsg.tilt_min_position = 0.0F;
     configMsg.id_cam = idCam_;
     _pub_cameraConfig->publish(configMsg);
