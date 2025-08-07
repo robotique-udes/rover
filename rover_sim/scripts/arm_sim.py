@@ -16,10 +16,10 @@ class ArmSimulation(Node):
         super().__init__("arm_simulation")
         
         self.goal_velocity = self.create_subscription(
-            ArmMsg, "/rover/arm/joints_cmd", self.goalVelocityCallback, 10)        
-        
+            ArmMsg, "/rover/arm/joints_cmd", self.goalVelocityCallback, 10)
+
         self.current_position_publisher = self.create_publisher(
-            ArmMsg, "/rover/arm/status/current_positions", 10)
+            ArmMsg, "/rover/arm/joints_status", 10)
                 
         self.fig = plt.figure(figsize=(8, 8))
         self.ax_top = self.fig.add_subplot(2, 2, 1)
@@ -43,6 +43,8 @@ class ArmSimulation(Node):
 
     def goalVelocityCallback(self, msg):
         assert len(msg.target_speed) >= 5, f"Expected at least 5 elements in ArmMsg.data, got {len(msg.target_speed)}"
+
+        self.get_logger().info(f"Received target speeds: {msg.target_speed}")
 
         self.linearJointVelocity = msg.target_speed[ArmMsg.JL]
         self.shoulderJointVelocity = msg.target_speed[ArmMsg.J1]
@@ -91,9 +93,9 @@ class ArmSimulation(Node):
     def computeDirectKin(self, qPosition):
         pointPos = np.zeros((4, 3))
         
-        J1 = 0.435
-        J2 = 0.371
-        J3 = 0.185
+        J1 = 0.41
+        J2 = 0.41
+        J3 = 0.15
         
         q0 = qPosition[0]  # JL
         q1 = qPosition[1]  # J1
