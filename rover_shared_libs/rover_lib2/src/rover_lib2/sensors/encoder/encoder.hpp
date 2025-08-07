@@ -59,11 +59,6 @@ namespace Encoders
             ASSERT_MSG("Interface");
         }
 
-        void setReversed(bool /*reverse_*/)
-        {
-            ASSERT_MSG("Interface");
-        }
-
         VALIDATE_CONCEPT(Encoder, None);
     };
 

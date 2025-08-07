@@ -3,6 +3,9 @@
 
 #include "robot_controller.hpp"
 #include "Eigen/Dense"
+#include "rover_lib2/helpers/log.hpp"
+
+DEFINE_LOG_NODE(CartesianController, Logger::eNodeState::ON);
 
 class CartesianController : public RobotController
 {
@@ -92,6 +95,25 @@ class CartesianController : public RobotController
                 _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
                     = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE)];
             }
+        }
+
+        if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_ROT_LEFT))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
+        }
+        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_ROT_RIGHT))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
+        }
+
+        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        }
+        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
         }
 
         if (_planApplied)
@@ -187,10 +209,10 @@ class CartesianController : public RobotController
         std::array<float, TO_UNDERLYING(eCartesianQ::eLAST)> velocities_) const
     {
         double velocityRationDouble = std::max({
-            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q0)]) / this->getMaxVelocity(ARM_CONFIGURATION::JL::ID),
-            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q1)]) / this->getMaxVelocity(ARM_CONFIGURATION::J1::ID),
-            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q2)]) / this->getMaxVelocity(ARM_CONFIGURATION::J2::ID),
-            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q3)]) / this->getMaxVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID),
+            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q0)]) / this->getCartVelocity(ARM_CONFIGURATION::JL::ID),
+            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q1)]) / this->getCartVelocity(ARM_CONFIGURATION::J1::ID),
+            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q2)]) / this->getCartVelocity(ARM_CONFIGURATION::J2::ID),
+            fabs(velocities_[TO_UNDERLYING(eCartesianQ::Q3)]) / this->getCartVelocity(ARM_CONFIGURATION::GRIPPER_TILT::ID),
         });
         float velocityRatio = static_cast<float>(velocityRationDouble);
 
