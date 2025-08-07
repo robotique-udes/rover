@@ -21,26 +21,26 @@ class QNavigation : public QWidget
 
     struct sWaypoint
     {
-        QString name;
+        std::string name;
         double latitude;
         double longitude;
-        QString id;
+        std::string id;
     };
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
-    void sendGoal(QString name_, double latitude_, double longitude_, QString id_, bool flyTo);
-    void calculatePath(double destLat_, double destLon_, QString waypointId_);
-    void waypointIsVisible(QString waypointId_, bool visibility_);
+    void sendGoal(const QString& name_, double latitude_, double longitude_, const QString& id_, bool flyTo_);
+    void calculatePath(double destLat_, double destLon_, const QString& waypointId_);
+    void waypointIsVisible(const QString& waypointId_, bool visibility_);
     void jsReady(void);
     void clearWaypoints(void);
     void clearPath(void);
-    void deleteWaypoint(QString waypointId_);
-    void addWaypoint(QString name_, double latitude_, double longitude_, QString id_);
+    void deleteWaypoint(const QString& waypointId_);
+    void addWaypoint(const QString& name_, double latitude_, double longitude_, const QString& id_);
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_);
-    void waypointCreated(QString name_, double latitude_, double longitude_, QString id_);
+    void waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_);
     void onCalculatePathClicked(void);
     void onWaypointVisibilityChanged(QListWidgetItem* item_);
     void onWaypointSelected(QListWidgetItem* item_);
@@ -50,15 +50,15 @@ class QNavigation : public QWidget
     void onSetGoalClicked(void);
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
-    void onJsBridgeReady();
+    void onJsBridgeReady(void);
 
   private:
-    void addWaypointToList(const sWaypoint waypoint_);
+    void addWaypointToList(const sWaypoint& waypoint_);
     void createNavigationFolder(void);
-    void addWaypointToJson(const sWaypoint waypoint_);
+    void addWaypointToJson(const sWaypoint& waypoint_);
     void loadWaypointsFromJson(void);
     std::string findLastSessionFolder(void);
-    void deleteWaypointFromJson(const QString index_);
+    void deleteWaypointFromJson(const std::string& index_);
     void initializeWaypoints();
     std::optional<Json::Value> readJsonFile(const std::string& filePath);
     void writeJsonFile(const std::string& filePath, const Json::Value& root);

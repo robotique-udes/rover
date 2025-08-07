@@ -64,11 +64,11 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                        });
 }
 
-void QNavigation::onJsBridgeReady()
+void QNavigation::onJsBridgeReady(void)
 {
     for (const sWaypoint& waypoint : _waypoints)
     {
-        emit sendGoal(waypoint.name, waypoint.latitude, waypoint.longitude, waypoint.id, false);
+        emit this->sendGoal(QString::fromStdString(waypoint.name), waypoint.latitude, waypoint.longitude, QString::fromStdString(waypoint.id), false);
     }
 }
 
@@ -80,7 +80,7 @@ void QNavigation::createNavigationFolder(void)
 
     if (optionalSessionFolderPath.has_value())
     {
-        sessionPath = *optionalSessionFolderPath;
+        sessionPath = optionalSessionFolderPath.value();
         if (sessionPath.empty())
         {
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty session folder path",
@@ -134,7 +134,7 @@ void QNavigation::onSetGoalClicked()
     sWaypoint waypoint;
     waypoint.latitude = _ui.inputLatitude->text().toDouble();
     waypoint.longitude = _ui.inputLongitude->text().toDouble();
-    waypoint.name = _ui.inputName->text();
+    waypoint.name = _ui.inputName->text().toStdString();
 
     for (const sWaypoint& waypointIt : _waypoints)
     {
@@ -146,11 +146,11 @@ void QNavigation::onSetGoalClicked()
         }
     }
 
-    waypoint.id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
+    waypoint.id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
 
     this->addWaypointToList(waypoint);
     this->addWaypointToJson(waypoint);
-    emit this->sendGoal(waypoint.name, waypoint.latitude, waypoint.longitude, waypoint.id, true);
+    emit this->sendGoal(QString::fromStdString(waypoint.name), waypoint.latitude, waypoint.longitude, QString::fromStdString(waypoint.id), true);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -172,11 +172,11 @@ void QNavigation::pathDistanceCalculated(double distanceMeters_)
     _ui.distanceLabel->setText(distanceText_);
 }
 
-void QNavigation::waypointCreated(QString name_, double latitude_, double longitude_, QString id_)
+void QNavigation::waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_)
 {
     for (const auto& waypoint : _waypoints)
     {
-        if (waypoint.id == id_ || waypoint.name == name_)
+        if (waypoint.id == id_.toStdString() || waypoint.name == name_.toStdString())
         {
             return;
         }
@@ -186,7 +186,7 @@ void QNavigation::waypointCreated(QString name_, double latitude_, double longit
     {
         id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
     }
-    sWaypoint waypoint = {name_, latitude_, longitude_, id_};
+    sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
     this->addWaypointToList(waypoint);
     this->addWaypointToJson(waypoint);
 }
@@ -205,20 +205,20 @@ void QNavigation::onCalculatePathClicked(void)
     {
         const sWaypoint& waypoint = _waypoints.at(index_);
 
-        emit this->calculatePath(waypoint.latitude, waypoint.longitude, waypoint.id);
+        emit this->calculatePath(waypoint.latitude, waypoint.longitude, QString::fromStdString(waypoint.id));
     }
 }
 
-void QNavigation::addWaypointToList(const sWaypoint waypoint_)
+void QNavigation::addWaypointToList(const sWaypoint& waypoint_)
 {
     QString displayText
-        = QString("%1 (%2, %3)").arg(waypoint_.name).arg(waypoint_.latitude, 0, 'f', 6).arg(waypoint_.longitude, 0, 'f', 6);
+        = QString("%1 (%2, %3)").arg(QString::fromStdString(waypoint_.name)).arg(waypoint_.latitude, 0, 'f', 6).arg(waypoint_.longitude, 0, 'f', 6);
 
     std::unique_ptr<QListWidgetItem> waypointItem = std::make_unique<QListWidgetItem>(displayText);
 
     waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
     waypointItem->setCheckState(Qt::Checked);
-    waypointItem->setData(Qt::UserRole, waypoint_.id);
+    waypointItem->setData(Qt::UserRole, QString::fromStdString(waypoint_.id));
 
     _waypoints.append(waypoint_);
     _ui.waypointList->addItem(waypointItem.release());
@@ -237,7 +237,7 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
         const sWaypoint& waypoint = _waypoints.at(index);
         bool isVisible = (item_->checkState() == Qt::Checked);
 
-        emit this->waypointIsVisible(waypoint.id, isVisible);
+        emit this->waypointIsVisible(QString::fromStdString(waypoint.id), isVisible);
     }
 }
 
@@ -253,7 +253,7 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
     {
         const sWaypoint& waypoint_ = _waypoints.at(index_);
 
-        _ui.inputName->setText(waypoint_.name);
+        _ui.inputName->setText(QString::fromStdString(waypoint_.name));
         _ui.inputLatitude->setText(QString::number(waypoint_.latitude, 'f', 6));
         _ui.inputLongitude->setText(QString::number(waypoint_.longitude, 'f', 6));
     }
@@ -271,12 +271,12 @@ void QNavigation::onDeleteWaypointClicked(void)
     int index_ = _ui.waypointList->row(currentItem_);
     if (index_ >= 0 && index_ < _waypoints.size())
     {
-        const QString waypointId = _waypoints.at(index_).id;
+        const std::string waypointId = _waypoints.at(index_).id;
         this->deleteWaypointFromJson(waypointId);
 
         delete _ui.waypointList->takeItem(index_);
 
-        emit this->deleteWaypoint(waypointId);
+        emit this->deleteWaypoint(QString::fromStdString(waypointId));
 
         _waypoints.removeAt(index_);
 
@@ -343,7 +343,7 @@ void QNavigation::onClearPathClicked(void)
     emit this->clearPath();
 }
 
-void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
+void QNavigation::addWaypointToJson(const sWaypoint& waypoint_)
 {
     std::string filePath = _sessionFolderPath + JSON_FILE_NAME;
     Json::Value root;
@@ -357,16 +357,16 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
     }
     else
     {
-        root = *rootOpt;
+        root = rootOpt.value();
     }
 
     waypointsArray = root["waypoints"];
 
     Json::Value waypointObj;
-    waypointObj["name"] = waypoint_.name.toStdString();
+    waypointObj["name"] = waypoint_.name;
     waypointObj["latitude"] = waypoint_.latitude;
     waypointObj["longitude"] = waypoint_.longitude;
-    waypointObj["id"] = waypoint_.id.toStdString();
+    waypointObj["id"] = waypoint_.id;
 
     waypointsArray.append(waypointObj);
 
@@ -375,7 +375,7 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
     this->writeJsonFile(filePath, root);
 }
 
-void QNavigation::deleteWaypointFromJson(const QString index_)
+void QNavigation::deleteWaypointFromJson(const std::string& index_)
 {
     std::string filePath = _sessionFolderPath + JSON_FILE_NAME;
     Json::Value root;
@@ -386,7 +386,7 @@ void QNavigation::deleteWaypointFromJson(const QString index_)
         return;
     }
 
-    root = *rootOpt;
+    root = rootOpt.value();
 
     if (!root.isMember("waypoints") || !root["waypoints"].isArray())
     {
@@ -396,7 +396,7 @@ void QNavigation::deleteWaypointFromJson(const QString index_)
 
     Json::Value& waypointsArray = root["waypoints"];
     Json::Value newWaypoints(Json::arrayValue);
-    std::string idToRemove = index_.toStdString();
+    std::string idToRemove = index_;
 
     for (const Json::Value& waypoint : waypointsArray)
     {
@@ -437,7 +437,7 @@ void QNavigation::loadWaypointsFromJson(void)
         return;
     }
 
-    Json::Value root = *rootOpt;
+    Json::Value root = rootOpt.value();
 
     if (root.isMember("waypoints") && root["waypoints"].isArray())
     {
