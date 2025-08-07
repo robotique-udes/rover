@@ -85,7 +85,7 @@ namespace CameraManager
 
     void ManagerNode::initSubs()
     {
-        size_t topicIndex = 0; // == priority
+        size_t topicIndex = 0;  // == priority
 
         for (auto& subscriber : _sub_PTZCmd)
         {
