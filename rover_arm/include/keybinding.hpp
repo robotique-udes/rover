@@ -56,11 +56,8 @@ namespace KEYBINDINGS
 
     namespace JOINT
     {
-        constexpr eJoyInput JOINT_SELECT_INC = eJoyInput::CROSS_UP;
-        constexpr eJoyInput JOINT_SELECT_DEC = eJoyInput::CROSS_DOWN;
-
-        constexpr eJoyInput JL_RIGHT = eJoyInput::CROSS_RIGHT;
-        constexpr eJoyInput JL_LEFT = eJoyInput::CROSS_LEFT;
+        constexpr eJoyInput JL_RIGHT = eJoyInput::B;
+        constexpr eJoyInput JL_LEFT = eJoyInput::X;
 
         constexpr eJoyInput J0 = eJoyInput::eLAST;  // Is set to eLAST since rotating joint is not implemented
 
@@ -68,8 +65,12 @@ namespace KEYBINDINGS
 
         constexpr eJoyInput J2 = eJoyInput::JOYSTICK_RIGHT_FRONT;
 
-        constexpr eJoyInput WRIST_UP = eJoyInput::L2;
-        constexpr eJoyInput WRIST_DOWN = eJoyInput::R2;
+        constexpr eJoyInput WRIST_UP = eJoyInput::CROSS_UP;
+        constexpr eJoyInput WRIST_DOWN = eJoyInput::CROSS_DOWN;
+        constexpr eJoyInput WRIST_ROT_LEFT = eJoyInput::CROSS_LEFT;
+        constexpr eJoyInput WRIST_ROT_RIGHT = eJoyInput::CROSS_RIGHT;
+        constexpr eJoyInput GRIPPER_CLOSE = eJoyInput::R2;
+        constexpr eJoyInput GRIPPER_OPEN = eJoyInput::L2;
 
     }  // namespace JOINT
 
