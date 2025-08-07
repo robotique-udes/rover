@@ -4,8 +4,8 @@
 class CameraTestPub : public rclcpp::Node
 {
     static constexpr size_t SIMULATED_CAM_ID = 3;
-    static constexpr char* TOPIC_PTZ_STATUS = "/rover/camera/PTZ_status";
-    static constexpr char* TOPIC_PTZ_CMD = "/rover/camera/PTZ_cmd/manager";
+    static constexpr const char* TOPIC_PTZ_STATUS = "/rover/camera/PTZ_status";
+    static constexpr const char* TOPIC_PTZ_CMD = "/rover/camera/PTZ_cmd/manager";
 
   public:
     CameraTestPub():

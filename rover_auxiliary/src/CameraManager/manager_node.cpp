@@ -44,13 +44,13 @@ namespace CameraManager
         }
     }
 
-    void ManagerNode::CB_storePowerCmd(rover_msgs::msg::CameraControl msg_, size_t index_)
+    void ManagerNode::CB_storePowerCmd(rover_msgs::msg::CameraControl msg_, size_t topicIndex_)
     {
-        if (index_ >= std::to_underlying(Constants::CameraInfo::eCamNames::eLast))
+        if (msg_.id_cam >= std::to_underlying(Constants::CameraInfo::eCamNames::eLast))
         {
             return;
         }
-        _lastPowerMsg[index_] = msg_;
+        _lastPowerMsg[topicIndex_][msg_.id_cam] = msg_;
 
         _publisher_filteredPowerCmd->publish(msg_);
     }
@@ -86,45 +86,45 @@ namespace CameraManager
 
     void ManagerNode::initSubs()
     {
-        size_t index = 0;
+        size_t topicIndex = 0;
 
         for (auto& subscriber : _sub_PTZCmd)
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
-                Arbitration::PTZ_CMD_TOPIC[index],
+                Arbitration::PTZ_CMD_TOPIC[topicIndex],
                 QOS_DEFAULT,
-                [this, index](const rover_msgs::msg::CameraControl& PTZcmd_)
+                [this, topicIndex](const rover_msgs::msg::CameraControl& PTZcmd_)
                 {
-                    this->_arbitration.CB_PTZCmdFiltering(PTZcmd_, index);
+                    this->_arbitration.CB_PTZCmdFiltering(PTZcmd_, topicIndex);
                 });
-            ++index;
+            ++topicIndex;
         }
 
-        index = 0;
+        topicIndex = 0;
 
         for (auto& subscriber : _sub_PTZConfig)
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraConfig>(
-                Arbitration::PTZ_CONFIG_TOPIC[index],
+                Arbitration::PTZ_CONFIG_TOPIC[topicIndex],
                 QOS_DEFAULT,
                 [this](const rover_msgs::msg::CameraConfig& PTZConfig_)
                 {
                     this->_arbitration.CB_PTZConfigFiltering(PTZConfig_);
                 });
-            ++index;
+            ++topicIndex;
         }
 
-        index = 0;
+        topicIndex = 0;
         for (auto& subscriber : _sub_powerCmd)
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
-                Arbitration::POWER_CMD_TOPIC[index],
+                Arbitration::POWER_CMD_TOPIC[topicIndex],
                 QOS_DEFAULT,
-                [this, index](const rover_msgs::msg::CameraControl& powerCmd_)
+                [this, topicIndex](const rover_msgs::msg::CameraControl& powerCmd_)
                 {
-                    CB_storePowerCmd(powerCmd_, index);
+                    CB_storePowerCmd(powerCmd_, topicIndex);
                 });
-            ++index;
+            ++topicIndex;
         }
     }
 
