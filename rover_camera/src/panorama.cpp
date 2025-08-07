@@ -49,7 +49,7 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
         _timer_ptzCmd->cancel();
         return;
     }
-
+    this->configPtz(*idCam, 10.0F /*= As fast as possible*/);
     _timer_ptzCmd->cancel();
 
     std::optional<cv::Mat> pano = this->stitchFrames(frames);
@@ -84,7 +84,6 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
     RCLCPP_DEBUG(this->get_logger(), "Panorama saved to %s", filename.c_str());
     response_.status = "Panorama saved to: " + filename;
     response_.success = true;
-    this->configPtz(*idCam, 10.0F /*= As fast as possible*/);
 }
 
 std::optional<cv::Mat> Panorama::warpCorrection(const cv::Mat& pano)
@@ -210,20 +209,19 @@ bool Panorama::captureFrames(const rover_msgs::srv::Panorama::Request& request_,
            < request_.duration)
     {
         cap >> frame;
-        if (frame.empty())
-        {
-            RCLCPP_ERROR(this->get_logger(), "Blank frame grabbed");
-            invalidFramesCounter++;
-        }
-        else if (frames_.size() == 0 || (frames_.back().data != frame.data))  // avoid duplicates
+        if (!frame.empty())
         {
             frames_.push_back(frame.clone());
         }
-
-        if (invalidFramesCounter >= MAX_INVALID_FRAMES)
+        else
         {
-            RCLCPP_ERROR(this->get_logger(), "Too many blank frame grabbed, stopping capture");
-            break;
+            RCLCPP_ERROR(this->get_logger(), "Blank frame grabbed");
+            invalidFramesCounter++;
+            if (invalidFramesCounter >= MAX_INVALID_FRAMES)
+            {
+                RCLCPP_ERROR(this->get_logger(), "Too many blank frame grabbed, stopping capture");
+                break;
+            }
         }
     }
     cap.release();
