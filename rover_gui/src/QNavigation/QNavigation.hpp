@@ -27,7 +27,7 @@ class QNavigation : public QWidget
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
-    void sendGoal(QString name_, double latitude_, double longitude_, QString id_);
+    void sendGoal(QString name_, double latitude_, double longitude_, QString id_, bool flyTo);
     void calculatePath(double destLat_, double destLon_, QString waypointId_);
     void waypointIsVisible(QString waypointId_, bool visibility_);
     void jsReady(void);
@@ -48,6 +48,7 @@ class QNavigation : public QWidget
     void onSetGoalClicked(void);
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
+    void onJsBridgeReady();
 
   private:
     void addWaypointToList(const sWaypoint waypoint_);

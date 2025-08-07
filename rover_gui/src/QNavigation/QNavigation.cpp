@@ -37,7 +37,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
         [](QtMsgType, const QMessageLogContext&, const QString&)
         {
         });
-        
+
     _ui.webViewContainer->load(QUrl(QRC_PATH_MAP_HTML));
 
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
@@ -62,7 +62,14 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                        {
                            emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
                        });
+}
 
+void QNavigation::onJsBridgeReady()
+{
+    for (const sWaypoint& waypoint : _waypoints)
+    {
+        emit sendGoal(waypoint.name, waypoint.latitude, waypoint.longitude, waypoint.id, false);
+    }
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -143,7 +150,7 @@ void QNavigation::onSetGoalClicked()
 
     this->addWaypointToList(waypoint);
     this->addWaypointToJson(waypoint);
-    emit this->sendGoal(waypoint.name, waypoint.latitude, waypoint.longitude, waypoint.id);
+    emit this->sendGoal(waypoint.name, waypoint.latitude, waypoint.longitude, waypoint.id, true);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -505,7 +512,6 @@ void QNavigation::loadWaypointsFromJson(void)
                     waypoint.id = QString::fromStdString(waypointObj["id"].asString());
 
                     this->addWaypointToList(waypoint);
-                    emit sendGoal(waypoint.name, waypoint.latitude, waypoint.longitude, waypoint.id);
                 }
             }
 
