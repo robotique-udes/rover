@@ -30,9 +30,14 @@ target_link_libraries(joy_formator rover_shared_libs)
 add_executable(joy_demux src/joy_demux.cpp)
 ament_target_dependencies(joy_demux
                           rclcpp
-                          joy
                           rover_msgs)
 target_link_libraries(joy_demux rover_shared_libs)
+
+add_executable(joy_demux_controller src/joy_demux_controller.cpp)
+ament_target_dependencies(joy_demux_controller
+                          rclcpp
+                          rover_msgs)
+target_link_libraries(joy_demux_controller rover_shared_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
@@ -40,6 +45,7 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS
           joy_formator
           joy_demux
+          joy_demux_controller
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()
