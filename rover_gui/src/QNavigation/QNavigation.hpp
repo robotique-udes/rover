@@ -62,6 +62,7 @@ class QNavigation : public QWidget
     void initializeWaypoints();
     std::optional<Json::Value> readJsonFile(const std::string& filePath);
     void writeJsonFile(const std::string& filePath, const Json::Value& root);
+    void registerWaypoint(const sWaypoint& waypoint_);
 
     QWebChannel _webChannel;
     std::string _sessionFolderPath;
