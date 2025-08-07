@@ -50,7 +50,7 @@ namespace CameraManager
         {
             return;
         }
-        _lastPowerMsg[topicIndex_][msg_.id_cam] = msg_;
+        _lastPowerMsg[msg_.id_cam][topicIndex_] = msg_;
 
         _publisher_filteredPowerCmd->publish(msg_);
     }
@@ -71,9 +71,9 @@ namespace CameraManager
         for (const auto& msgsOnEachCamera : _lastPowerMsg)
         {
             bool power_on = false;
-            for (const auto msgOnEachtopic : msgsOnEachCamera)
+            for (const auto msgOnEachTopic : msgsOnEachCamera)
             {
-                if (msgOnEachtopic.power_on)
+                if (msgOnEachTopic.power_on)
                 {
                     power_on = true;
                 }

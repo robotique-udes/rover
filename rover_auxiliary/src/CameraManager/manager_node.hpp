@@ -30,8 +30,8 @@ namespace CameraManager
 
         void CB_publishFilteredPtzCmd(void);
         void CB_publishFilteredZPtzConfig(void);
-        void CB_storePowerCmd(rover_msgs::msg::CameraControl msg_, size_t index_);
-        void CB_publishFilteredPowerCmd();
+        void CB_storePowerCmd(rover_msgs::msg::CameraControl msg_, size_t topicIndex_);
+        void CB_publishFilteredPowerCmd(void);
         void CB_publishTopicWithPriority(void);
 
         void initSubs(void);
@@ -47,8 +47,8 @@ namespace CameraManager
                    Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION>
             _sub_powerCmd;
 
-        std::array<std::array<rover_msgs::msg::CameraControl, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)>,
-                   Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION>
+        std::array<std::array<rover_msgs::msg::CameraControl, Constants::CameraInfo::NUMBER_TOPIC_CAMERA_ARBITRATION>,
+                   std::to_underlying(Constants::CameraInfo::eCamNames::eLast)>
             _lastPowerMsg;
 
         rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _publisher_filteredPTZCmd;
