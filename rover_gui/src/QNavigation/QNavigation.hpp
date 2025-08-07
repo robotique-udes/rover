@@ -56,6 +56,7 @@ class QNavigation : public QWidget
     void loadWaypointsFromJson(void);
     std::string findLastSessionFolder(void);
     void deleteWaypointFromJson(const QString index_);
+    void initializeWaypoints();
 
     QWebChannel _webChannel;
     std::string _sessionFolderPath;

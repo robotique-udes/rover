@@ -31,12 +31,13 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     _node(guiNode_)
 {
     _ui.setupUi(this);
+    this->createNavigationFolder();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
         {
         });
-
+        
     _ui.webViewContainer->load(QUrl(QRC_PATH_MAP_HTML));
 
     connect(_ui.webViewContainer, &QWebEngineView::loadFinished, this, &QNavigation::onWebViewLoadFinished);
@@ -62,15 +63,6 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                            emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
                        });
 
-    this->createNavigationFolder();
-    if (!Folders::folderExists(_sessionFolderPath))
-    {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to create navigation folder.");
-    }
-    else
-    {
-        this->loadWaypointsFromJson();
-    }
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -150,6 +142,7 @@ void QNavigation::onSetGoalClicked()
     waypoint.id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
 
     this->addWaypointToList(waypoint);
+    this->addWaypointToJson(waypoint);
     emit this->sendGoal(waypoint.name, waypoint.latitude, waypoint.longitude, waypoint.id);
 
     _ui.inputName->clear();
@@ -188,6 +181,7 @@ void QNavigation::waypointCreated(QString name_, double latitude_, double longit
     }
     sWaypoint waypoint = {name_, latitude_, longitude_, id_};
     this->addWaypointToList(waypoint);
+    this->addWaypointToJson(waypoint);
 }
 
 void QNavigation::onCalculatePathClicked(void)
@@ -220,7 +214,6 @@ void QNavigation::addWaypointToList(const sWaypoint waypoint_)
     waypointItem->setData(Qt::UserRole, waypoint_.id);
 
     _waypoints.append(waypoint_);
-    this->addWaypointToJson(waypoint_);
     _ui.waypointList->addItem(waypointItem.release());
 }
 
@@ -329,6 +322,13 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Cesium token not found, can't load map");
     }
+
+    if (!Folders::folderExists(_sessionFolderPath))
+    {
+        Folders::createFolder(_sessionFolderPath);
+    }
+
+    this->initializeWaypoints();
 }
 
 void QNavigation::onClearPathClicked(void)
@@ -351,7 +351,7 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
         std::string errors;
         if (!Json::parseFromStream(builder, inputFile, &root, &errors))
         {
-            RCLCPP_WARN(rclcpp::get_logger("GUI"), "Failed to parse existing waypoints JSON: %s", errors.c_str());
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to parse existing waypoints JSON: %s", errors.c_str());
             root["waypoints"] = Json::arrayValue;
         }
         inputFile.close();
@@ -372,7 +372,7 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
     waypointsArray.append(waypointObj);
 
     root["waypoints"] = waypointsArray;
-    RCLCPP_WARN(rclcpp::get_logger("GUI"), "Attempting to write to: %s", filePath.c_str());
+    RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Attempting to write to: %s", filePath.c_str());
     std::ofstream outputFile(filePath);
 
     if (outputFile.is_open())
@@ -383,7 +383,7 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
         writer->write(root, &outputFile);
         outputFile.close();
 
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Waypoints saved to %s", filePath.c_str());
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Waypoint saved to %s", filePath.c_str());
     }
     else
     {
@@ -448,6 +448,21 @@ void QNavigation::deleteWaypointFromJson(const QString index_)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to open file for writing: %s", filePath.c_str());
     }
+}
+
+void QNavigation::initializeWaypoints()
+{
+    std::string currentFilePath = _sessionFolderPath + JSON_FILE_NAME;
+    if (!std::filesystem::exists(currentFilePath))
+    {
+        std::string lastSessionFolderPath = this->findLastSessionFolder();
+        std::string lastFilePath = lastSessionFolderPath + JSON_FILE_NAME;
+        if (std::filesystem::exists(lastFilePath))
+        {
+            std::filesystem::copy_file(lastFilePath, currentFilePath);
+        }
+    }
+    this->loadWaypointsFromJson();
 }
 
 void QNavigation::loadWaypointsFromJson(void)
@@ -530,7 +545,7 @@ std::string QNavigation::findLastSessionFolder(void)
     if (sessionFolders.size() > 1)
     {
         std::string lastSessionFolderPath = sessionFolders[1] + NAVIGATION_PATH;
-        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Found latest session folder: %s", _sessionFolderPath.c_str());
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Found latest session folder: %s", lastSessionFolderPath.c_str());
         return lastSessionFolderPath;
     }
     else
