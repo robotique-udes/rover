@@ -57,7 +57,7 @@ class Panorama : public rclcpp::Node
     bool savePanorama(rover_msgs::srv::Panorama::Response& response_, const std::string& filename_, const cv::Mat& pano_);
     std::optional<cv::Mat> warpCorrection(const cv::Mat& pano_);
     void rotateCamera(uint16_t duration_, uint8_t idCam_);
-    void waitForAngle(uint8_t idCam_, float angle);
+    void waitForAngle(uint8_t idCam_, float angle_);
     void configPtz(uint8_t idCam_, float rotationSpeed_);
     std::optional<uint8_t> getIdCam(const std::string& camURL_);
     std::optional<std::string> getFolderPath(const std::string& basePath_);
