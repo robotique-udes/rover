@@ -360,7 +360,6 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
         root = *rootOpt;
     }
 
-
     waypointsArray = root["waypoints"];
 
     Json::Value waypointObj;
