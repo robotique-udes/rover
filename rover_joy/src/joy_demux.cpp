@@ -27,7 +27,7 @@ class JoyDemux : public rclcpp::Node
     JoyDemux();
 
   private:
-    void callbackJoy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const;
+    void CB_Joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const;
     void callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
                        std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_);
     void callbackStatus() const;
