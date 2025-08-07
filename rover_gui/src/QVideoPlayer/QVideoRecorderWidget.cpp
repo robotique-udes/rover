@@ -33,7 +33,7 @@ QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
     std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
     if (optionalSessionFolderPath.has_value())
     {
-        _sessionFolderPath = *optionalSessionFolderPath;
+        _sessionFolderPath = optionalSessionFolderPath.value();
         if (_sessionFolderPath.empty())
         {
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",

@@ -345,11 +345,6 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     {
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Cesium token not found, can't load map");
     }
-
-    if (!Folders::folderExists(_sessionFolderPath))
-    {
-        Folders::createFolder(_sessionFolderPath);
-    }
 }
 
 void QNavigation::onClearPathClicked(void)
@@ -406,7 +401,9 @@ void QNavigation::deleteWaypointFromJson(const std::string& index_)
 
     if (!root.isMember(WAYPOINT_JSON) || !root[WAYPOINT_JSON].isArray())
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "No waypoints array found in JSON");
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No waypoints found",
+                                                                       "Unable to find previous waypoints from JSON",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
         return;
     }
 
