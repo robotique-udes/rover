@@ -67,7 +67,8 @@ class JointController : public RobotController
         }
         else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
         {
-            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
         }
 
         return jointCommands;
