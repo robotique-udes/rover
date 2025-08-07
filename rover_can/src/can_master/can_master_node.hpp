@@ -9,7 +9,6 @@
 #include "rover_can2/drivers/driver_linux.hpp"
 
 #include <rover_msgs/msg/can_device_status.hpp>
-#include <rover_msgs/msg/detail/gps__struct.hpp>
 #include <rover_msgs/msg/arm_msg.hpp>
 #include <rover_msgs/srv/empty.hpp>
 
@@ -19,7 +18,7 @@
 DEFINE_LOG_NODE(Main, Logger::eNodeState::ON);
 
 /**
- * @brief TODO when adding new devices:
+ * @brief When adding new devices:
  * 1. Create device as member object
  * 2. Add the device type to _canManager template list
  * 3. Add device object reference to _canManager constructor arguments

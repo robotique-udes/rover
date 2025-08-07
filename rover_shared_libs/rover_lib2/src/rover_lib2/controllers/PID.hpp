@@ -3,8 +3,11 @@
 
 #include "rover_lib2/helpers/time.hpp"
 #include "rover_lib2/helpers/macros.hpp"
+#include "rover_lib2/helpers/log.hpp"
 
 #include <cmath>
+
+DEFINE_LOG_NODE(PID, Logger::eNodeState::OFF);
 
 namespace Controllers
 {

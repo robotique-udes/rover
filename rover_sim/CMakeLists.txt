@@ -15,6 +15,7 @@ add_subdirectory(../rover_shared_libs/ .build)
 
 install(PROGRAMS
   scripts/arm_sim.py
+  scripts/arm_viz.py
   DESTINATION lib/${PROJECT_NAME}
 )
 
