@@ -30,7 +30,7 @@ namespace CameraManager
         std::optional<rover_msgs::msg::CameraConfig> getValidPTZConfig(size_t camID_) const;
 
         void CB_PTZCmdFiltering(rover_msgs::msg::CameraControl PTZCmd_, size_t priority_);
-        void CB_PTZConfigFiltering(rover_msgs::msg::CameraConfig PTZConfig_);
+        void CB_PTZConfigFiltering(rover_msgs::msg::CameraConfig PTZConfig_, size_t priority_);
 
         std::array<std::string, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> topicWithPriority;
 
@@ -40,7 +40,6 @@ namespace CameraManager
             _lastValidPTZConfig;
 
         std::array<size_t, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _currentPriorityLevelPtzCmd;
-        std::array<size_t, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _currentPriorityLevelPtzConfig;
 
         std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isPTZTopicActive = {false};
 

@@ -74,7 +74,7 @@ namespace CameraManager
                         id);
         }
 
-        if (priority_ > _currentPriorityLevelPtzCmd[id] || !_isPTZTopicActive[id])
+        if (priority_ > _currentPriorityLevelPtzCmd[id])
         {
             _missedHighPriorityMsg[id]++;
 
@@ -97,9 +97,19 @@ namespace CameraManager
         _lastValidPTZCmd[id] = PTZcmd_;
     }
 
-    void Arbitration::CB_PTZConfigFiltering(rover_msgs::msg::CameraConfig PTZConfig_)
+    void Arbitration::CB_PTZConfigFiltering(rover_msgs::msg::CameraConfig PTZConfig_, size_t priority_)
     {
         size_t id = PTZConfig_.id_cam;
-        _currentPriorityLevelPtzConfig[id] = _currentPriorityLevelPtzCmd[id];
+
+        if (id >= std::to_underlying(Constants::CameraInfo::eCamNames::eLast))
+        {
+            return;
+        }
+
+        if (priority_ != _currentPriorityLevelPtzCmd[id] || !_isPTZTopicActive[id])
+        {
+            return;
+        }
+        _lastValidPTZConfig[id] = PTZConfig_;
     }
 }  // namespace CameraManager
