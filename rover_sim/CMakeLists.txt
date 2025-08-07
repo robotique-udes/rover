@@ -13,6 +13,7 @@ find_package(rover_msgs REQUIRED)
 
 install(PROGRAMS
   scripts/arm_sim.py
+  scripts/arm_viz.py
   DESTINATION lib/${PROJECT_NAME}
 )
 

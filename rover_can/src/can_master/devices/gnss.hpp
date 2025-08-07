@@ -7,6 +7,7 @@
 #include "rover_can2/msgs/fix_position.hpp"
 #include "rover_can2/msgs/fix_heading.hpp"
 #include "rover_can2/msgs/fix_info.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 
 #include <rover_msgs/msg/gps.hpp>
 
@@ -33,6 +34,8 @@ class Gnss : public RoverCan2::Device<RoverCan2::SubscriberMember<RoverCan2::Msg
     void CB_CAN_FixHeading(const RoverCan2::Msgs::FixHeading& canMsg_);
     void CB_CAN_FixInfo(const RoverCan2::Msgs::FixInfo& canMsg_);
     void CB_CAN_FixPosition(const RoverCan2::Msgs::FixPosition& canMsg_);
+
+    uint8_t fixQualityEnumToUint8(Constants::eGGAQuality fixQuality_);
 
     rover_msgs::msg::Gps _rosGpsMsg;
     rclcpp::Publisher<rover_msgs::msg::Gps>::SharedPtr _pub_GnssData;

@@ -42,6 +42,7 @@ namespace RoverCan2::Constant
         COMPASS = 0x303,
         LIGHTS_MAIN = 0x304,
         LIGHTS_IR = 0x305,
+        ROUTER = 0x0306,
 
     _FREE_AUXILIARY = 0x400,
         CAMERA_ROVER_MAIN = 0x401,
@@ -179,6 +180,8 @@ namespace RoverCan2::Constant
                 return "LIGHTS_MAIN";
             case eDeviceId::LIGHTS_IR:
                 return "LIGHTS_IR";
+            case eDeviceId::ROUTER:
+                return "ROUTER";
             case eDeviceId::_FREE_AUXILIARY:
                 return "_FREE_AUXILIARY";
             case eDeviceId::CAMERA_ROVER_MAIN:
