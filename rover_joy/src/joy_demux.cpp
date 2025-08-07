@@ -30,7 +30,7 @@ class JoyDemux : public rclcpp::Node
     void CB_Joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const;
     void callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
                        std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_);
-    void callbackStatus() const;
+    void CB_Status() const;
 
     void redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& msg_) const;
     bool isIdle(eDemuxDestination dest_) const;
