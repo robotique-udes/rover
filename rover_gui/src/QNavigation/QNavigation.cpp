@@ -83,7 +83,7 @@ void QNavigation::createNavigationFolder(void)
         sessionPath = *optionalSessionFolderPath;
         if (sessionPath.empty())
         {
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty session folder path",
                                                                            "SessionFolderManager returned an empty path",
                                                                            QHelper::QToastNotification::eNotifType::ERROR);
         }
@@ -101,14 +101,14 @@ void QNavigation::createNavigationFolder(void)
         homePath = *optionalHomePath;
         if (homePath.empty())
         {
-            QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty home path",
                                                                            "HomePath returned an empty path",
                                                                            QHelper::QToastNotification::eNotifType::ERROR);
         }
     }
     else
     {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No home found",
                                                                        "HomePath couldn't return a valid path",
                                                                        QHelper::QToastNotification::eNotifType::ERROR);
     }
@@ -355,8 +355,11 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
     {
         root["waypoints"] = Json::arrayValue;
     }
+    else
+    {
+        root = *rootOpt;
+    }
 
-    root = *rootOpt;
 
     waypointsArray = root["waypoints"];
 
@@ -490,7 +493,7 @@ std::string QNavigation::findLastSessionFolder(void)
     }
     else
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Couldn't find last sessions");
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Couldn't find last session");
         return "";
     }
 }
