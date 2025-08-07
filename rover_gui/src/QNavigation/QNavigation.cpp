@@ -19,6 +19,12 @@ constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
 constexpr const char* NAVIGATION_PATH = "/Navigation";
 constexpr const char* JSON_FILE_NAME = "/waypoints.json";
 
+constexpr const char* WAYPOINT_JSON = "waypoints";
+constexpr const char* WAYPOINT_JSON_NAME = "name";
+constexpr const char* WAYPOINT_JSON_LATITUDE = "latitude";
+constexpr const char* WAYPOINT_JSON_LONGITUDE = "longitude";
+constexpr const char* WAYPOINT_JSON_ID = "id";
+
 // Default to Studio de Création
 constexpr double DEFAULT_LATITUDE = 45.377755;
 constexpr double DEFAULT_LONGITUDE = -71.924652;
@@ -68,7 +74,11 @@ void QNavigation::onJsBridgeReady(void)
 {
     for (const sWaypoint& waypoint : _waypoints)
     {
-        emit this->sendGoal(QString::fromStdString(waypoint.name), waypoint.latitude, waypoint.longitude, QString::fromStdString(waypoint.id), false);
+        emit this->sendGoal(QString::fromStdString(waypoint.name),
+                            waypoint.latitude,
+                            waypoint.longitude,
+                            QString::fromStdString(waypoint.id),
+                            false);
     }
 }
 
@@ -150,7 +160,11 @@ void QNavigation::onSetGoalClicked()
 
     this->addWaypointToList(waypoint);
     this->addWaypointToJson(waypoint);
-    emit this->sendGoal(QString::fromStdString(waypoint.name), waypoint.latitude, waypoint.longitude, QString::fromStdString(waypoint.id), true);
+    emit this->sendGoal(QString::fromStdString(waypoint.name),
+                        waypoint.latitude,
+                        waypoint.longitude,
+                        QString::fromStdString(waypoint.id),
+                        true);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -211,8 +225,10 @@ void QNavigation::onCalculatePathClicked(void)
 
 void QNavigation::addWaypointToList(const sWaypoint& waypoint_)
 {
-    QString displayText
-        = QString("%1 (%2, %3)").arg(QString::fromStdString(waypoint_.name)).arg(waypoint_.latitude, 0, 'f', 6).arg(waypoint_.longitude, 0, 'f', 6);
+    QString displayText = QString("%1 (%2, %3)")
+                              .arg(QString::fromStdString(waypoint_.name))
+                              .arg(waypoint_.latitude, 0, 'f', 6)
+                              .arg(waypoint_.longitude, 0, 'f', 6);
 
     std::unique_ptr<QListWidgetItem> waypointItem = std::make_unique<QListWidgetItem>(displayText);
 
@@ -353,24 +369,24 @@ void QNavigation::addWaypointToJson(const sWaypoint& waypoint_)
 
     if (!rootOpt.has_value())
     {
-        root["waypoints"] = Json::arrayValue;
+        root[WAYPOINT_JSON] = Json::arrayValue;
     }
     else
     {
         root = rootOpt.value();
     }
 
-    waypointsArray = root["waypoints"];
+    waypointsArray = root[WAYPOINT_JSON];
 
     Json::Value waypointObj;
-    waypointObj["name"] = waypoint_.name;
-    waypointObj["latitude"] = waypoint_.latitude;
-    waypointObj["longitude"] = waypoint_.longitude;
-    waypointObj["id"] = waypoint_.id;
+    waypointObj[WAYPOINT_JSON_NAME] = waypoint_.name;
+    waypointObj[WAYPOINT_JSON_LATITUDE] = waypoint_.latitude;
+    waypointObj[WAYPOINT_JSON_LONGITUDE] = waypoint_.longitude;
+    waypointObj[WAYPOINT_JSON_ID] = waypoint_.id;
 
     waypointsArray.append(waypointObj);
 
-    root["waypoints"] = waypointsArray;
+    root[WAYPOINT_JSON] = waypointsArray;
     RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Attempting to write to: %s", filePath.c_str());
     this->writeJsonFile(filePath, root);
 }
@@ -388,25 +404,25 @@ void QNavigation::deleteWaypointFromJson(const std::string& index_)
 
     root = rootOpt.value();
 
-    if (!root.isMember("waypoints") || !root["waypoints"].isArray())
+    if (!root.isMember(WAYPOINT_JSON) || !root[WAYPOINT_JSON].isArray())
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "No waypoints array found in JSON");
         return;
     }
 
-    Json::Value& waypointsArray = root["waypoints"];
+    Json::Value& waypointsArray = root[WAYPOINT_JSON];
     Json::Value newWaypoints(Json::arrayValue);
     std::string idToRemove = index_;
 
     for (const Json::Value& waypoint : waypointsArray)
     {
-        if (!waypoint.isMember("id") || waypoint["id"].asString() != idToRemove)
+        if (!waypoint.isMember(WAYPOINT_JSON_ID) || waypoint[WAYPOINT_JSON_ID].asString() != idToRemove)
         {
             newWaypoints.append(waypoint);
         }
     }
 
-    root["waypoints"] = newWaypoints;
+    root[WAYPOINT_JSON] = newWaypoints;
 
     this->writeJsonFile(filePath, root);
 }
@@ -439,20 +455,20 @@ void QNavigation::loadWaypointsFromJson(void)
 
     Json::Value root = rootOpt.value();
 
-    if (root.isMember("waypoints") && root["waypoints"].isArray())
+    if (root.isMember(WAYPOINT_JSON) && root[WAYPOINT_JSON].isArray())
     {
-        const Json::Value& waypointsArray = root["waypoints"];
+        const Json::Value& waypointsArray = root[WAYPOINT_JSON];
 
         for (const Json::Value& waypointObj : waypointsArray)
         {
-            if (waypointObj.isMember("name") && waypointObj.isMember("latitude") && waypointObj.isMember("longitude")
-                && waypointObj.isMember("id"))
+            if (waypointObj.isMember(WAYPOINT_JSON_NAME) && waypointObj.isMember(WAYPOINT_JSON_LATITUDE)
+                && waypointObj.isMember(WAYPOINT_JSON_LONGITUDE) && waypointObj.isMember(WAYPOINT_JSON_ID))
             {
                 sWaypoint waypoint;
-                waypoint.name = waypointObj["name"].asString();
-                waypoint.latitude = waypointObj["latitude"].asDouble();
-                waypoint.longitude = waypointObj["longitude"].asDouble();
-                waypoint.id = waypointObj["id"].asString();
+                waypoint.name = waypointObj[WAYPOINT_JSON_NAME].asString();
+                waypoint.latitude = waypointObj[WAYPOINT_JSON_LATITUDE].asDouble();
+                waypoint.longitude = waypointObj[WAYPOINT_JSON_LONGITUDE].asDouble();
+                waypoint.id = waypointObj[WAYPOINT_JSON_ID].asString();
 
                 this->addWaypointToList(waypoint);
             }
