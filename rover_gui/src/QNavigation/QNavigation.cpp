@@ -449,10 +449,10 @@ void QNavigation::loadWaypointsFromJson(void)
                 && waypointObj.isMember("id"))
             {
                 sWaypoint waypoint;
-                waypoint.name = QString::fromStdString(waypointObj["name"].asString());
+                waypoint.name = waypointObj["name"].asString();
                 waypoint.latitude = waypointObj["latitude"].asDouble();
                 waypoint.longitude = waypointObj["longitude"].asDouble();
-                waypoint.id = QString::fromStdString(waypointObj["id"].asString());
+                waypoint.id = waypointObj["id"].asString();
 
                 this->addWaypointToList(waypoint);
             }
