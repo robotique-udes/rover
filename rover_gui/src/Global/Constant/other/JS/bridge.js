@@ -43,9 +43,10 @@ class Bridge
                 self.#gpsCallback(lat, lon, headingDeg);
             });
 
-            qtBridge.sendGoal.connect(function (name, lat, lon, id) 
+            qtBridge.sendGoal.connect(function (name, lat, lon, id, flyTo) 
             {
-                self.#setGoal(name, lat, lon, id);
+                alert("Received waypoint");
+                self.#setGoal(name, lat, lon, id, flyTo);
             });
 
             qtBridge.calculatePath.connect(function (destLat, destLon, waypointId) 
@@ -72,7 +73,14 @@ class Bridge
             {
                 self.waypoints.waypointVisibility(waypointId, visibility);
             });
+
+            if (window.qtBridge && window.qtBridge.onJsBridgeReady) 
+            {
+                window.qtBridge.onJsBridgeReady();
+            }
         });
+
+        
     }
 
     #gpsCallback(lat, lon, headingDeg)
@@ -103,7 +111,7 @@ class Bridge
         }
     }
 
-    #setGoal(name, lat, lon, id)
+    #setGoal(name, lat, lon, id, flyTo)
     {
         if (this.waypoints.isAddingWaypoint)
         {
@@ -128,12 +136,15 @@ class Bridge
             this.camera.toggleTopDownView();
         }
 
-        this.viewer.camera.flyTo({
-            destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
-            complete: () => {
-                this.viewer.scene.requestRender();
-            }
-        });
+        if (flyTo)
+        {
+            this.viewer.camera.flyTo({
+                destination: Cesium.Cartesian3.fromDegrees(lon, lat, 1000.0),
+                complete: () => {
+                    this.viewer.scene.requestRender();
+                }
+            });
+        }
 
         if (window.qtBridge && window.qtBridge.waypointCreated) 
         {
