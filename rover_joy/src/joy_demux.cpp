@@ -27,10 +27,10 @@ class JoyDemux : public rclcpp::Node
     JoyDemux();
 
   private:
-    void CB_Joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const;
-    void CB_Demux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
-                       std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_);
-    void CB_Status() const;
+    void CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const;
+    void CB_demux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
+                  std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_);
+    void CB_status() const;
 
     void redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& msg_) const;
     bool isIdle(eDemuxDestination dest_) const;
@@ -68,14 +68,14 @@ JoyDemux::JoyDemux():
                                                                 QOS_DEFAULT,
                                                                 [this](const rover_msgs::msg::Joy& msg_)
                                                                 {
-                                                                    callbackJoy(msg_, eControllerType::MAIN);
+                                                                    CB_joy(msg_, eControllerType::MAIN);
                                                                 });
 
     _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("secondary_joy",
                                                                      QOS_DEFAULT,
                                                                      [this](const rover_msgs::msg::Joy& msg_)
                                                                      {
-                                                                         callbackJoy(msg_, eControllerType::SECONDARY);
+                                                                         CB_joy(msg_, eControllerType::SECONDARY);
                                                                      });
 
     _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", QOS_DEFAULT);
@@ -88,17 +88,17 @@ JoyDemux::JoyDemux():
         [this](const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
                std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_)
         {
-            this->callbackDemux(request_, response_);
+            this->CB_demux(request_, response_);
         });
 
     _timer_status = this->create_wall_timer(std::chrono::milliseconds(250),
                                             [this]()
                                             {
-                                                this->callbackStatus();
+                                                this->CB_status();
                                             });
 }
 
-void JoyDemux::callbackJoy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const
+void JoyDemux::CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const
 {
     eDemuxDestination dest = eDemuxDestination::NONE;
 
@@ -139,7 +139,7 @@ void JoyDemux::callbackJoy(const rover_msgs::msg::Joy& msg_, eControllerType con
     }
 }
 
-void JoyDemux::callbackStatus() const
+void JoyDemux::CB_status() const
 {
     rover_msgs::msg::JoyDemuxStatus msg_status;
     msg_status.controller_main_topic = std::to_underlying(_dest_main);
@@ -171,8 +171,8 @@ bool JoyDemux::isIdle(eDemuxDestination dest_) const
     return (_dest_main != dest_ && _dest_secondary != dest_);
 }
 
-void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
-                             std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response)
+void JoyDemux::CB_demux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
+                        std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response)
 {
     eDemuxDestination dest = (eDemuxDestination)((int8_t)request->destination);
 
