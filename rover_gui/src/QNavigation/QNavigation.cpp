@@ -8,7 +8,6 @@
 
 // Helpers
 #include <rover_lib2/helpers/folders.hpp>
-#include <json/json.h>
 
 #include <fstream>
 #include <vector>
@@ -32,6 +31,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
 {
     _ui.setupUi(this);
     this->createNavigationFolder();
+    this->initializeWaypoints();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
@@ -334,8 +334,6 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     {
         Folders::createFolder(_sessionFolderPath);
     }
-
-    this->initializeWaypoints();
 }
 
 void QNavigation::onClearPathClicked(void)
@@ -351,22 +349,14 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
     Json::Value root;
     Json::Value waypointsArray(Json::arrayValue);
 
-    std::ifstream inputFile(filePath);
-    if (inputFile.is_open())
-    {
-        Json::CharReaderBuilder builder;
-        std::string errors;
-        if (!Json::parseFromStream(builder, inputFile, &root, &errors))
-        {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to parse existing waypoints JSON: %s", errors.c_str());
-            root["waypoints"] = Json::arrayValue;
-        }
-        inputFile.close();
-    }
-    else
+    std::optional<Json::Value> rootOpt = this->readJsonFile(filePath);
+
+    if (!rootOpt.has_value())
     {
         root["waypoints"] = Json::arrayValue;
     }
+
+    root = *rootOpt;
 
     waypointsArray = root["waypoints"];
 
@@ -380,47 +370,21 @@ void QNavigation::addWaypointToJson(const sWaypoint waypoint_)
 
     root["waypoints"] = waypointsArray;
     RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Attempting to write to: %s", filePath.c_str());
-    std::ofstream outputFile(filePath);
-
-    if (outputFile.is_open())
-    {
-        Json::StreamWriterBuilder builder;
-        builder["indentation"] = "  ";
-        std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-        writer->write(root, &outputFile);
-        outputFile.close();
-
-        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Waypoint saved to %s", filePath.c_str());
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to open file for writing: %s", filePath.c_str());
-    }
+    this->writeJsonFile(filePath, root);
 }
 
 void QNavigation::deleteWaypointFromJson(const QString index_)
 {
     std::string filePath = _sessionFolderPath + JSON_FILE_NAME;
     Json::Value root;
+    std::optional<Json::Value> rootOpt = this->readJsonFile(filePath);
 
-    std::ifstream inputFile(filePath);
-
-    if (inputFile.is_open())
+    if (!rootOpt.has_value())
     {
-        Json::CharReaderBuilder builder;
-        std::string errors;
-
-        if (!Json::parseFromStream(builder, inputFile, &root, &errors))
-        {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to properly parse JSON: %s", errors.c_str());
-        }
-        inputFile.close();
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open JSON file");
         return;
     }
+
+    root = *rootOpt;
 
     if (!root.isMember("waypoints") || !root["waypoints"].isArray())
     {
@@ -442,19 +406,7 @@ void QNavigation::deleteWaypointFromJson(const QString index_)
 
     root["waypoints"] = newWaypoints;
 
-    std::ofstream outputFile(filePath);
-    if (outputFile.is_open())
-    {
-        Json::StreamWriterBuilder builder;
-        builder["indentation"] = "  ";
-        std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
-        writer->write(root, &outputFile);
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Waypoint with id %s deleted from JSON", idToRemove.c_str());
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to open file for writing: %s", filePath.c_str());
-    }
+    this->writeJsonFile(filePath, root);
 }
 
 void QNavigation::initializeWaypoints()
@@ -464,66 +416,48 @@ void QNavigation::initializeWaypoints()
     {
         std::string lastSessionFolderPath = this->findLastSessionFolder();
         std::string lastFilePath = lastSessionFolderPath + JSON_FILE_NAME;
-        if (std::filesystem::exists(lastFilePath))
+        if (!std::filesystem::exists(lastFilePath))
         {
-            std::filesystem::copy_file(lastFilePath, currentFilePath);
+            return;
         }
+        std::filesystem::copy_file(lastFilePath, currentFilePath);
     }
     this->loadWaypointsFromJson();
 }
 
 void QNavigation::loadWaypointsFromJson(void)
 {
-    std::string lastSessionFolderPath = this->findLastSessionFolder();
+    std::string filePath = _sessionFolderPath + JSON_FILE_NAME;
+    std::optional<Json::Value> rootOpt = this->readJsonFile(filePath);
 
-    if (lastSessionFolderPath.empty())
+    if (!rootOpt.has_value())
     {
         return;
     }
 
-    std::string filePath = lastSessionFolderPath + JSON_FILE_NAME;
-    std::ifstream file(filePath);
+    Json::Value root = *rootOpt;
 
-    if (!file.is_open())
+    if (root.isMember("waypoints") && root["waypoints"].isArray())
     {
-        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "No waypoints file found at %s", filePath.c_str());
-        return;
-    }
+        const Json::Value& waypointsArray = root["waypoints"];
 
-    Json::Value root;
-    Json::CharReaderBuilder builder;
-    std::string errors;
-
-    if (Json::parseFromStream(builder, file, &root, &errors))
-    {
-        if (root.isMember("waypoints") && root["waypoints"].isArray())
+        for (const Json::Value& waypointObj : waypointsArray)
         {
-            const Json::Value& waypointsArray = root["waypoints"];
-
-            for (const Json::Value& waypointObj : waypointsArray)
+            if (waypointObj.isMember("name") && waypointObj.isMember("latitude") && waypointObj.isMember("longitude")
+                && waypointObj.isMember("id"))
             {
-                if (waypointObj.isMember("name") && waypointObj.isMember("latitude") && waypointObj.isMember("longitude")
-                    && waypointObj.isMember("id"))
-                {
-                    sWaypoint waypoint;
-                    waypoint.name = QString::fromStdString(waypointObj["name"].asString());
-                    waypoint.latitude = waypointObj["latitude"].asDouble();
-                    waypoint.longitude = waypointObj["longitude"].asDouble();
-                    waypoint.id = QString::fromStdString(waypointObj["id"].asString());
+                sWaypoint waypoint;
+                waypoint.name = QString::fromStdString(waypointObj["name"].asString());
+                waypoint.latitude = waypointObj["latitude"].asDouble();
+                waypoint.longitude = waypointObj["longitude"].asDouble();
+                waypoint.id = QString::fromStdString(waypointObj["id"].asString());
 
-                    this->addWaypointToList(waypoint);
-                }
+                this->addWaypointToList(waypoint);
             }
-
-            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Loaded %d waypoints from file", waypointsArray.size());
         }
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to parse JSON file: %s", errors.c_str());
-    }
 
-    file.close();
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Loaded %d waypoints from file", waypointsArray.size());
+    }
 }
 
 std::string QNavigation::findLastSessionFolder(void)
@@ -559,4 +493,39 @@ std::string QNavigation::findLastSessionFolder(void)
         RCLCPP_WARN(rclcpp::get_logger("GUI"), "Couldn't find last sessions");
         return "";
     }
+}
+
+std::optional<Json::Value> QNavigation::readJsonFile(const std::string& filePath)
+{
+    std::ifstream file(filePath);
+    if (!file.is_open())
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open JSON file: %s", filePath.c_str());
+        return std::nullopt;
+    }
+
+    Json::Value root;
+    Json::CharReaderBuilder builder;
+    std::string errors;
+    if (!Json::parseFromStream(builder, file, &root, &errors))
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to parse JSON file: %s", errors.c_str());
+        return std::nullopt;
+    }
+    return root;
+}
+
+void QNavigation::writeJsonFile(const std::string& filePath, const Json::Value& root)
+{
+    std::ofstream outputFile(filePath);
+    if (!outputFile.is_open())
+    {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Failed to open file for writing: %s", filePath.c_str());
+        return;
+    }
+    Json::StreamWriterBuilder builder;
+    builder["indentation"] = "  ";
+    std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
+    writer->write(root, &outputFile);
+    outputFile.close();
 }

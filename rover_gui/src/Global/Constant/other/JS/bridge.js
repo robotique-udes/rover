@@ -45,7 +45,6 @@ class Bridge
 
             qtBridge.sendGoal.connect(function (name, lat, lon, id, flyTo) 
             {
-                alert("Received waypoint");
                 self.#setGoal(name, lat, lon, id, flyTo);
             });
 

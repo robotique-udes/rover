@@ -8,6 +8,9 @@
 #include <QWebChannel>
 #include <QListWidgetItem>
 #include <iostream>
+#include <optional>
+
+#include <json/json.h>
 
 class QNavigation : public QWidget
 {
@@ -15,7 +18,6 @@ class QNavigation : public QWidget
 
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
-
 
     struct sWaypoint
     {
@@ -58,6 +60,8 @@ class QNavigation : public QWidget
     std::string findLastSessionFolder(void);
     void deleteWaypointFromJson(const QString index_);
     void initializeWaypoints();
+    std::optional<Json::Value> readJsonFile(const std::string& filePath);
+    void writeJsonFile(const std::string& filePath, const Json::Value& root);
 
     QWebChannel _webChannel;
     std::string _sessionFolderPath;
