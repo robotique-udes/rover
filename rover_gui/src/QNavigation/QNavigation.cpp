@@ -201,8 +201,7 @@ void QNavigation::waypointCreated(const QString& name_, double latitude_, double
         id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
     }
     sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
-    this->addWaypointToList(waypoint);
-    this->addWaypointToJson(waypoint);
+    this->registerWaypoint(waypoint);
 }
 
 void QNavigation::onCalculatePathClicked(void)
@@ -402,7 +401,7 @@ void QNavigation::deleteWaypointFromJson(const std::string& index_)
     if (!root.isMember(WAYPOINT_JSON) || !root[WAYPOINT_JSON].isArray())
     {
         QHelper::QToastNotification::getInstance().notifyFromAnyThread("No waypoints found",
-                                                                       "Unable to find previous waypoints from JSON",
+                                                                       "Corrupted file. Unable to find waypoint inside JSON",
                                                                        QHelper::QToastNotification::eNotifType::ERROR);
         return;
     }
@@ -433,6 +432,10 @@ void QNavigation::initializeWaypoints()
         std::string lastFilePath = lastSessionFolderPath + JSON_FILE_NAME;
         if (!std::filesystem::exists(lastFilePath))
         {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                "No waypoints found",
+                "Unable to load waypoint from JSON. File missing or invalid.",
+                QHelper::QToastNotification::eNotifType::ERROR);
             return;
         }
         std::filesystem::copy_file(lastFilePath, currentFilePath);
@@ -471,7 +474,7 @@ void QNavigation::loadWaypointsFromJson(void)
             }
         }
 
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Loaded %d waypoints from file", waypointsArray.size());
+        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Loaded %d waypoint(s) from file", waypointsArray.size());
     }
 }
 
@@ -543,4 +546,10 @@ void QNavigation::writeJsonFile(const std::string& filePath, const Json::Value& 
     std::unique_ptr<Json::StreamWriter> writer(builder.newStreamWriter());
     writer->write(root, &outputFile);
     outputFile.close();
+}
+
+void QNavigation::registerWaypoint(const sWaypoint& waypoint_)
+{
+    this->addWaypointToJson(waypoint_);
+    this->addWaypointToList(waypoint_);
 }
