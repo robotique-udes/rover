@@ -245,6 +245,7 @@ std::optional<std::string> CameraNode::getFolderPath(const std::string& basePath
 
     if (!homeOpt.has_value())
     {
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, $HOME env variable wasn't found");
         return std::nullopt;
     }
 
