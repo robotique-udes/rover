@@ -10,9 +10,7 @@
 #include <algorithm>
 #include <filesystem>
 
-QWaypointManager::QWaypointManager()
-{
-}
+QWaypointManager::QWaypointManager() {}
 
 void QWaypointManager::setSessionFolderPath(const std::string& sessionFolderPath_)
 {
@@ -59,7 +57,6 @@ std::optional<QList<sWaypoint>> QWaypointManager::loadWaypointsFromJson(void)
     std::string filePath = _sessionFolderPath + WAYPOINT_FILE_PATH;
     std::optional<Json::Value> rootOpt = this->readJsonFile(filePath);
 
-
     if (!rootOpt.has_value())
     {
         return std::nullopt;
@@ -83,7 +80,7 @@ std::optional<QList<sWaypoint>> QWaypointManager::loadWaypointsFromJson(void)
                 waypoint.longitude = waypointObj[WAYPOINT_JSON_LONGITUDE].asDouble();
                 waypoint.id = waypointObj[WAYPOINT_JSON_ID].asString();
 
-                //this->addWaypointToList(waypoint);
+                // this->addWaypointToList(waypoint);
                 waypoints.append(waypoint);
             }
         }

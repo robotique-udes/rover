@@ -32,7 +32,6 @@ class QWaypointManager
 
     void addWaypointToJson(const sWaypoint& waypoint_);
     void deleteWaypointFromJson(const std::string& index_);
-    
 
   private:
     std::optional<QList<sWaypoint>> loadWaypointsFromJson(void);

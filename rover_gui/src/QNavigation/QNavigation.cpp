@@ -30,7 +30,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
 {
     _ui.setupUi(this);
     this->createNavigationFolder();
-    this->initializeWaypointManager();    
+    this->initializeWaypointManager();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
@@ -71,9 +71,9 @@ void QNavigation::initializeWaypointManager()
     if (!waypointOpt.has_value())
     {
         QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                "No waypoints found",
-                "Unable to load waypoint from JSON. File missing or invalid.",
-                QHelper::QToastNotification::eNotifType::ERROR);
+            "No waypoints found",
+            "Unable to load waypoint from JSON. File missing or invalid.",
+            QHelper::QToastNotification::eNotifType::ERROR);
         return;
     }
 

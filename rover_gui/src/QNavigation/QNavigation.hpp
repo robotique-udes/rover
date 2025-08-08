@@ -49,11 +49,11 @@ class QNavigation : public QWidget
     void addWaypointToList(const sWaypoint& waypoint_);
     void initializeWaypointManager();
     void createNavigationFolder(void);
-    
+
     QWebChannel _webChannel;
     std::shared_ptr<rclcpp::Node> _node;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
-    
+
     Ui::Navigation _ui;
     QList<sWaypoint> _waypoints;
 
