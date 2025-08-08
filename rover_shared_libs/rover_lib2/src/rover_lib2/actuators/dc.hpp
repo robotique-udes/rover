@@ -14,7 +14,7 @@
 #include "rover_lib2/controllers/PID.hpp"
 
 DEFINE_LOG_NODE(ActuatorDc, Logger::eNodeState::OFF);
-DEFINE_LOG_NODE(ActuatorDcPlot, Logger::eNodeState::ON);
+DEFINE_LOG_NODE(ActuatorDcPlot, Logger::eNodeState::OFF);
 
 namespace Actuators
 {

@@ -298,10 +298,10 @@ void JoyFormator::setControllerType(std::string controller_type_name)
         _controller_config.axes[Keybinding::cross_front] = 5;
         _controller_config.axes[Keybinding::cross_side] = 4;
 
-        _controller_config.trigger_range_min = 0.0f;
-        _controller_config.trigger_range_max = 1.0f;
+        _controller_config.trigger_range_min = 0.0F;
+        _controller_config.trigger_range_max = 1.0F;
 
-        _controller_config.joystick_dead_zone = 0.0f;
+        _controller_config.joystick_dead_zone = 0.02F;
 
         _controller_config.custom_steps = &JoyFormator::customStepsLogitech;
     }

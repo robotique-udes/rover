@@ -1,29 +1,40 @@
 #include <rclcpp/rclcpp.hpp>
+#include <chrono>
+
 #include <rover_msgs/msg/joy.hpp>
 #include <rover_msgs/msg/joy_demux_status.hpp>
 #include <rover_msgs/srv/joy_demux_set_state.hpp>
 #include <rover_lib2/helpers/macros.hpp>
 #include <rover_lib2/helpers/constants.hpp>
 
-using namespace std::chrono_literals;
-
 class JoyDemux : public rclcpp::Node
 {
-    enum eControllerType
+    enum class eControllerType : uint8_t
     {
-        main = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
-        secondary = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_SECONDARY
+        MAIN = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
+        SECONDARY = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_SECONDARY
     };
 
-    enum eDemuxDestination
+    enum class eDemuxDestination : uint8_t
     {
-        drive_train = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
-        arm = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
-        antenna = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
-        none = (int8_t)rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
+        DRIVE_TRAIN = rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
+        ARM = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
+        ANTENNA = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
+        NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
+
+  public:
+    JoyDemux();
 
   private:
+    void CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const;
+    void CB_demux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
+                  std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_);
+    void CB_status() const;
+
+    void redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& msg_) const;
+    bool isIdle(eDemuxDestination dest_) const;
+
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_main;
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_secondary;
 
@@ -36,25 +47,13 @@ class JoyDemux : public rclcpp::Node
 
     rclcpp::TimerBase::SharedPtr _timer_status;
 
-    eDemuxDestination _dest_main = eDemuxDestination::none;
-    eDemuxDestination _dest_secondary = eDemuxDestination::none;
-
-    void callbackJoy(const rover_msgs::msg::Joy& msg, int8_t controller_type);
-    void callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
-                       std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response);
-    void callbackStatus();
-
-    void redirectMsg(eDemuxDestination dest, rover_msgs::msg::Joy msg);
-    bool isIdle(eDemuxDestination dest);
-
-  public:
-    JoyDemux();
-    ~JoyDemux() {}
+    eDemuxDestination _dest_main = eDemuxDestination::NONE;
+    eDemuxDestination _dest_secondary = eDemuxDestination::DRIVE_TRAIN;
 };
 
-int main(int argc, char* argv[])
+int main(int argc_, char* argv_[])
 {
-    rclcpp::init(argc, argv);
+    rclcpp::init(argc_, argv_);
 
     rclcpp::spin(std::make_shared<JoyDemux>());
 
@@ -67,16 +66,16 @@ JoyDemux::JoyDemux():
 {
     _sub_main = this->create_subscription<rover_msgs::msg::Joy>("main_joy",
                                                                 QOS_DEFAULT,
-                                                                [this](const rover_msgs::msg::Joy msg)
+                                                                [this](const rover_msgs::msg::Joy& msg_)
                                                                 {
-                                                                    callbackJoy(msg, eControllerType::main);
+                                                                    CB_joy(msg_, eControllerType::MAIN);
                                                                 });
 
     _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("secondary_joy",
                                                                      QOS_DEFAULT,
-                                                                     [this](const rover_msgs::msg::Joy msg)
+                                                                     [this](const rover_msgs::msg::Joy& msg_)
                                                                      {
-                                                                         callbackJoy(msg, eControllerType::secondary);
+                                                                         CB_joy(msg_, eControllerType::SECONDARY);
                                                                      });
 
     _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", QOS_DEFAULT);
@@ -86,90 +85,98 @@ JoyDemux::JoyDemux():
 
     _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
         "demux_control",
-        std::bind(&JoyDemux::callbackDemux, this, std::placeholders::_1, std::placeholders::_2));
+        [this](const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
+               std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_)
+        {
+            this->CB_demux(request_, response_);
+        });
 
-    _timer_status = this->create_wall_timer(250ms, std::bind(&JoyDemux::callbackStatus, this));
+    _timer_status = this->create_wall_timer(std::chrono::milliseconds(250),
+                                            [this]()
+                                            {
+                                                this->CB_status();
+                                            });
 }
 
-void JoyDemux::callbackJoy(const rover_msgs::msg::Joy& msg, int8_t controller_type)
+void JoyDemux::CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const
 {
-    eDemuxDestination dest = eDemuxDestination::none;
+    eDemuxDestination dest = eDemuxDestination::NONE;
 
-    if (controller_type == eControllerType::main)
+    if (controller_type_ == eControllerType::MAIN)
     {
         dest = _dest_main;
     }
-    else if (controller_type == eControllerType::secondary)
+    else if (controller_type_ == eControllerType::SECONDARY)
     {
         dest = _dest_secondary;
     }
     else
     {
-        RCLCPP_WARN(this->get_logger(), "Wrong \"controller_type\" argument: %i?", controller_type);
+        RCLCPP_WARN(this->get_logger(), "Wrong \"controller_type\" argument: %u?", std::to_underlying(controller_type_));
     }
 
-    this->redirectMsg(dest, msg);
+    this->redirectMsg(dest, msg_);
 
     // Sending zeros to idling topics but only if main controller callback (to
     // keep frenquency stable)
-    if (controller_type == eControllerType::main)
+    if (controller_type_ == eControllerType::MAIN)
     {
         rover_msgs::msg::Joy msg_zeros;
-        if (isIdle(eDemuxDestination::drive_train))
+        if (isIdle(eDemuxDestination::DRIVE_TRAIN))
         {
             _pub_drive_train->publish(msg_zeros);
         }
 
-        if (isIdle(eDemuxDestination::arm))
+        if (isIdle(eDemuxDestination::ARM))
         {
             _pub_arm->publish(msg_zeros);
         }
 
-        if (isIdle(eDemuxDestination::antenna))
+        if (isIdle(eDemuxDestination::ANTENNA))
         {
             _pub_antenna->publish(msg_zeros);
         }
     }
 }
 
-void JoyDemux::callbackStatus()
+void JoyDemux::CB_status() const
 {
     rover_msgs::msg::JoyDemuxStatus msg_status;
-    msg_status.controller_main_topic = _dest_main;
-    msg_status.controller_secondary_topic = _dest_secondary;
+    msg_status.controller_main_topic = std::to_underlying(_dest_main);
+    msg_status.controller_secondary_topic = std::to_underlying(_dest_secondary);
 
     _pub_status->publish(msg_status);
 }
 
-void JoyDemux::redirectMsg(eDemuxDestination dest, rover_msgs::msg::Joy msg)
+void JoyDemux::redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& msg_) const
 {
-    if (dest == eDemuxDestination::drive_train)
+    if (dest_ == eDemuxDestination::DRIVE_TRAIN)
     {
-        _pub_drive_train->publish(msg);
+        _pub_drive_train->publish(msg_);
     }
-    else if (dest == eDemuxDestination::arm)
+    else if (dest_ == eDemuxDestination::ARM)
     {
-        _pub_arm->publish(msg);
+        _pub_arm->publish(msg_);
     }
-    else if (dest == eDemuxDestination::antenna)
+    else if (dest_ == eDemuxDestination::ANTENNA)
     {
-        _pub_antenna->publish(msg);
+        _pub_antenna->publish(msg_);
     }
 
     return;
 }
 
-bool JoyDemux::isIdle(eDemuxDestination dest)
+bool JoyDemux::isIdle(eDemuxDestination dest_) const
 {
-    return (_dest_main != dest && _dest_secondary != dest);
+    return (_dest_main != dest_ && _dest_secondary != dest_);
 }
 
-void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
-                             std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response)
+void JoyDemux::CB_demux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
+                        std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response)
 {
     eDemuxDestination dest = (eDemuxDestination)((int8_t)request->destination);
 
-    if (request->controller_type == eControllerType::main)
+    if (request->controller_type == std::to_underlying(eControllerType::MAIN))
     {
         if (_dest_secondary == dest)
         {
@@ -178,7 +185,7 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
             if (request->force)
             {
                 RCLCPP_WARN(this->get_logger(), "Secondary joy destination was set to \"none\"");
-                _dest_secondary = eDemuxDestination::none;
+                _dest_secondary = eDemuxDestination::NONE;
             }
             else
             {
@@ -189,7 +196,7 @@ void JoyDemux::callbackDemux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetS
 
         _dest_main = dest;
     }
-    else if (request->controller_type == eControllerType::secondary)
+    else if (request->controller_type == std::to_underlying(eControllerType::SECONDARY))
     {
         if (_dest_main == dest)
         {

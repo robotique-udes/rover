@@ -72,16 +72,18 @@ namespace Encoders
         AMT222X(SPIBus& spiBus_,
                 gpio_num_t pinCS_,
                 const char* nvsNamespace_,
-                FilterPosT& filterPos_,
-                FilterSpeedT& filterSpeed_,
-                bool reversed_ = false):
+                bool reversed_ = false,
+                float ratioOutputToEnc_ = 1.0F,
+                FilterPosT& filterPos_ = Filters::None(),
+                FilterSpeedT& filterSpeed_ = Filters::None()):
             _spiDevice(spiBus_, pinCS_, SPI_CLOCK_SPEED_HZ, SPI_TIME_BEFORE_FIRST_BIT_US, SPI_TIME_AFTER_LAST_BIT_US, SPI_MODE),
-            _filterPos(filterPos_),
-            _filterSpeed(filterSpeed_),
             _turnCount(nvsNamespace_, NVS_KEY_TURN_COUNT, 0U),
             _calibOffset(nvsNamespace_, NVS_KEY_CALIB_OFFSET, 0.0F),
             _lastQuadrant(nvsNamespace_, NVS_KEY_LAST_QUADRANT, 0.0F),
-            _reversed(reversed_)
+            _reversed(reversed_),
+            _ratioOutputToEnc(ratioOutputToEnc_),
+            _filterPos(filterPos_),
+            _filterSpeed(filterSpeed_)
         {
         }
 
@@ -134,7 +136,7 @@ namespace Encoders
 
         float getPosition(void) const
         {
-            return (_currentPosition + _calibOffset.getValue());
+            return this->applyOutputToEncoderRatio(_currentPosition + _calibOffset.getValue());
         }
 
         float getSpeed(void) const
@@ -301,9 +303,19 @@ namespace Encoders
             return quadrant;
         }
 
+        float applyOutputToEncoderRatio(float rawData_) const
+        {
+            return rawData_ * _ratioOutputToEnc;
+        }
+
         SPIDevice<TRANSACTION_MAX_LENGTH> _spiDevice;
         eState _currentState = eState::ASK_POSITION;
         LoopTimer<uint64_t, &Time::micros> loopExec = {LOOP_PERIOD_US};
+
+        bool _dataValidNVS = false;
+        NVSDataHandle<int16_t> _turnCount;
+        NVSDataHandle<float> _calibOffset;
+        NVSDataHandle<uint8_t> _lastQuadrant;
 
         bool _isFirstRead = true;
 
@@ -312,17 +324,13 @@ namespace Encoders
         float _currentPosition = 0.0F;
         float _lastPosition = 0.0F;
         float _currentSpeed = 0.0F;
+        bool _reversed = false;
+        float _ratioOutputToEnc = 0.0F;
+
         Watchdog<uint64_t, &Time::micros> _dataValidWatchdog = {WATCHDOG_DATA_VALID_PERIOD_US};
         Chrono<uint64_t, &Time::micros> _dtSpeedCalc;
         FilterPosT& _filterPos;
         FilterSpeedT& _filterSpeed;
-
-        bool _dataValidNVS = false;
-        NVSDataHandle<int16_t> _turnCount;
-        NVSDataHandle<float> _calibOffset;
-        NVSDataHandle<uint8_t> _lastQuadrant;
-
-        bool _reversed;
 
         VALIDATE_CONCEPT(Encoder, AMT222X);
     };
