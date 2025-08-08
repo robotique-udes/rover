@@ -60,6 +60,8 @@ class Arbitration : public rclcpp::Node
 Arbitration::Arbitration():
     Node("arbitration")
 {
+    _arbitration.arbitration = rover_msgs::msg::DrivetrainArbitration::TELEOP;
+
     for (size_t i = 0; i < rover_msgs::msg::PropulsionMotor::MOTOR_MAX; ++i)
     {
         _zeroCmd.target_speed[i] = 0.0;
