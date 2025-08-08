@@ -218,5 +218,15 @@ void QWaypointManager::writeJsonFile(const std::string& filePath, const Json::Va
 
 void QWaypointManager::syncWaypoints(QString& waypointList_)
 {
+    std::optional<Json::Value> rootOpt = readJsonFile(_sessionFolderPath);
 
+    if (!rootOpt.has_value())
+    {
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to read JSON file");
+        return;
+    }
+
+    Json::Value root = rootOpt.value();
+
+    
 }
