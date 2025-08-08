@@ -33,11 +33,10 @@ class MapManager
                 model: {
                     uri: 'qrc:/model/direction_arrow.glb',
                     scale: 0.2,
-                    minimumPixelSize: 30,
-                    maximumScale: 60,
+                    minimumPixelSize: 50,
+                    maximumScale: 120,
                     heightReference: Cesium.HeightReference.CLAMP_TO_GROUND,
-                    rotation: 0,
-                    color: Cesium.Color.RED,
+                    rotation: 90,
                 },
             orientation: new Cesium.CallbackProperty(() => {
                 const headingRad = Cesium.Math.toRadians(this.bridge.lastHeading || 0);
