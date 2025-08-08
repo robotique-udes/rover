@@ -1,4 +1,5 @@
 #include <rclcpp/client.hpp>
+#include <rclcpp/logging.hpp>
 #include <rclcpp/node.hpp>
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/detail/joy_demux_status__struct.hpp>
@@ -104,10 +105,15 @@ class JoyDemuxController : public rclcpp::Node
             request->force = false;
             request->destination = std::to_underlying(currentDest);
 
+            auto future = _client_demuxSetState->async_send_request(request);
             auto response = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Response>();
-            auto future = _client_demuxSetState->async_send_request(request, );
-            if (rclcpp::FutureReturnCode::TIMEOUT == rclcpp::spin_until_future_complete(this->shared_from_this(), response))
+            if (rclcpp::FutureReturnCode::SUCCESS == rclcpp::spin_until_future_complete(this->shared_from_this(), future))
             {
+                RCLCPP_INFO(this->get_logger(), "Service call reached with success %s", response->success ? "True" : "False");
+            }
+            else
+            {
+                RCLCPP_ERROR(this->get_logger(), "Service call failed");
                 _client_demuxSetState->remove_pending_request(future);
             }
         }
