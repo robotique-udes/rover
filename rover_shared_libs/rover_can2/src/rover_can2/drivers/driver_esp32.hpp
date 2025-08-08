@@ -1,6 +1,7 @@
 #ifndef ROVER_CAN2_DRIVERS_DRIVER_ESP32_HPP
 #define ROVER_CAN2_DRIVERS_DRIVER_ESP32_HPP
 
+#include "hal/twai_types.h"
 #include "rover_can2/drivers/driver_base.hpp"
 
 #include "rover_lib2/helpers/circular_buffer.hpp"
@@ -21,7 +22,7 @@ namespace RoverCan2::Drivers
     {
         VALIDATE_BASE_TYPE(LED::LedBlinkerT, LedBlinkerT_);
 
-        static constexpr twai_timing_config_t CAN_SPEED_CONFIG = TWAI_TIMING_CONFIG_1MBITS();
+        static constexpr twai_timing_config_t CAN_SPEED_CONFIG = TWAI_TIMING_CONFIG_100KBITS();
         static constexpr twai_mode_t TWAI_MODE = TWAI_MODE_NORMAL;
         static constexpr twai_filter_config_t TWAI_ID_FILTER = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
