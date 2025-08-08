@@ -30,22 +30,22 @@ class CameraInterface
                     const std::string& ptzConfigTopic_,
                     const std::string& powerCommandTopic_);
 
-    void setPTZCmd(rover_msgs::msg::CameraControl goalMsg_, size_t id_);
-    rover_msgs::msg::CameraControl getPTZCmd(size_t id_) const;
+    void setPTZCmd(rover_msgs::msg::CameraControl goalMsg_, Constants::CameraInfo::eCamNames id_);
+    rover_msgs::msg::CameraControl getPTZCmd(Constants::CameraInfo::eCamNames id_) const;
 
-    void setPTZConfig(rover_msgs::msg::CameraConfig configMsg_, size_t id_);
-    rover_msgs::msg::CameraConfig getPtzConfig(size_t id_) const;
+    void setPTZConfig(rover_msgs::msg::CameraConfig configMsg_, Constants::CameraInfo::eCamNames id_);
+    rover_msgs::msg::CameraConfig getPtzConfig(Constants::CameraInfo::eCamNames id_) const;
 
-    void setPowerCmd(rover_msgs::msg::CameraControl powerMsg_, size_t id_);
-    rover_msgs::msg::CameraControl getPowerCmd(size_t id_) const;
+    void setPowerCmd(rover_msgs::msg::CameraControl powerMsg_, Constants::CameraInfo::eCamNames id_);
+    rover_msgs::msg::CameraControl getPowerCmd(Constants::CameraInfo::eCamNames id_) const;
 
-    void release(size_t id_);
+    void release(Constants::CameraInfo::eCamNames id_);
 
-    rover_msgs::msg::CameraControl getLastPowerStatusMsg(size_t id_) const;
-    rover_msgs::msg::CameraControl getLastPtzStatusMsg(size_t id_) const;
+    rover_msgs::msg::CameraControl getLastPowerStatusMsg(Constants::CameraInfo::eCamNames id_) const;
+    rover_msgs::msg::CameraControl getLastPtzStatusMsg(Constants::CameraInfo::eCamNames id_) const;
 
-    bool isGoalReached(size_t id_);
-    bool isCamUnderControl(size_t id_);
+    bool isGoalReached(Constants::CameraInfo::eCamNames id_);
+    bool isCamUnderControl(Constants::CameraInfo::eCamNames id_);
 
   private:
     void initTimers();
@@ -75,20 +75,17 @@ class CameraInterface
     rclcpp::TimerBase::SharedPtr _timer_pubPTZConfig;
     rclcpp::TimerBase::SharedPtr _timer_pubPowerCmd;
 
-    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPtzCmdMsg;
-    std::array<rover_msgs::msg::CameraConfig, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)>
-        _lastPtzConfigMsg;
-    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _lastPowerMsg;
+    std::array<rover_msgs::msg::CameraControl, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _lastPtzCmdMsg;
+    std::array<rover_msgs::msg::CameraConfig, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _lastPtzConfigMsg;
+    std::array<rover_msgs::msg::CameraControl, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _lastPowerMsg;
 
-    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)>
-        _lastPowerStatusMsg;
-    std::array<rover_msgs::msg::CameraControl, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)>
-        _lastPtzStatusMsg;
+    std::array<rover_msgs::msg::CameraControl, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _lastPowerStatusMsg;
+    std::array<rover_msgs::msg::CameraControl, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _lastPtzStatusMsg;
 
-    std::array<std::string, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _topicWithPriority;
+    std::array<std::string, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _topicWithPriority;
 
-    std::array<bool, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _isCamConcerned = {false};
-    std::array<bool, static_cast<std::size_t>(Constants::CameraInfo::eCamNames::eLast)> _isGoalReached = {false};
+    std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isCamConcerned = {false};
+    std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isGoalReached = {false};
 
     std::shared_ptr<rclcpp::Node> _node;
 };

@@ -216,9 +216,10 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     std::string latitude = std::to_string(_lastLatitude);
     std::string longitude = std::to_string(_lastLongitude);
     std::optional<Constants::CameraInfo::eCamNames> idCam = Constants::CameraInfo::getIdFromURL(camURL_);
-    std::string ID = idCam ? std::string(
-                         Constants::CameraInfo::CAMERA_INFO[std::to_underlying(*idCam)][std::to_underlying(Constants::CameraInfo::eInfoType::NAME)])
-                           : "Unknown id";
+    std::string ID
+        = idCam ? std::string(Constants::CameraInfo::CAMERA_INFO[std::to_underlying(*idCam)]
+                                                                [std::to_underlying(Constants::CameraInfo::eInfoType::NAME)])
+                : "Unknown id";
 
     switch (fileType_)
     {

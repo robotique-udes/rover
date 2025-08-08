@@ -15,8 +15,8 @@ class CameraInterfaceTest : public rclcpp::Node
 
     static constexpr const uint64_t GOAL_WATCHDOG_DELAY = 1000;
 
-    static constexpr const size_t TEST_CAM_A_ID = 0;
-    static constexpr const size_t TEST_CAM_B_ID = 3;
+    static constexpr Constants::CameraInfo::eCamNames TEST_CAM_A_ID = Constants::CameraInfo::eCamNames::MAIN;
+    static constexpr Constants::CameraInfo::eCamNames TEST_CAM_B_ID = Constants::CameraInfo::eCamNames::ANTENNA;
 
   public:
     CameraInterfaceTest():
@@ -59,10 +59,10 @@ class CameraInterfaceTest : public rclcpp::Node
                                                                     TOPIC_SEND_POWER_COMMAND_GUI);
 
         rover_msgs::msg::CameraControl msg;
-        size_t id = TEST_CAM_A_ID;
+        size_t id = std::to_underlying(TEST_CAM_A_ID);
         msg.id_cam = id;
         msg.yaw = 1;
-        _testCameraInterfaceGUI->setPTZCmd(msg, id);
+        _testCameraInterfaceGUI->setPTZCmd(msg, TEST_CAM_A_ID);
     }
 
     void CB_cameraInterfaceTest()
@@ -82,7 +82,7 @@ class CameraInterfaceTest : public rclcpp::Node
             if (simulationSwippingIndex % 2)
             {
                 rover_msgs::msg::CameraControl msg;
-                size_t id = TEST_CAM_B_ID;
+                size_t id = std::to_underlying(TEST_CAM_B_ID);
                 msg.id_cam = id;
                 msg.yaw = 4;
                 _testCameraInterfacePanorama->setPTZCmd(msg, TEST_CAM_B_ID);
@@ -91,7 +91,7 @@ class CameraInterfaceTest : public rclcpp::Node
             {
                 _testCameraInterfacePanorama->release(TEST_CAM_B_ID);
                 rover_msgs::msg::CameraControl msg;
-                size_t id = TEST_CAM_B_ID;
+                size_t id = std::to_underlying(TEST_CAM_B_ID);
                 msg.id_cam = id;
                 msg.yaw = 2;
                 _testCameraInterfaceGUI->setPTZCmd(msg, TEST_CAM_B_ID);
