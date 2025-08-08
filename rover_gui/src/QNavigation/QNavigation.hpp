@@ -4,6 +4,7 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
 #include "UI_Navigation.h"
+#include "QWaypoint/QWaypointManager.hpp"
 
 #include <QWebChannel>
 #include <QListWidgetItem>
@@ -18,14 +19,6 @@ class QNavigation : public QWidget
 
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
-
-    struct sWaypoint
-    {
-        std::string name;
-        double latitude;
-        double longitude;
-        std::string id;
-    };
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
@@ -54,24 +47,18 @@ class QNavigation : public QWidget
 
   private:
     void addWaypointToList(const sWaypoint& waypoint_);
+    void initializeWaypointManager();
     void createNavigationFolder(void);
-    void addWaypointToJson(const sWaypoint& waypoint_);
-    void loadWaypointsFromJson(void);
-    std::string findLastSessionFolder(void);
-    void deleteWaypointFromJson(const std::string& index_);
-    void initializeWaypoints();
-    std::optional<Json::Value> readJsonFile(const std::string& filePath);
-    void writeJsonFile(const std::string& filePath, const Json::Value& root);
-    void registerWaypoint(const sWaypoint& waypoint_);
-
+    
     QWebChannel _webChannel;
-    std::string _sessionFolderPath;
     std::shared_ptr<rclcpp::Node> _node;
-    Ui::Navigation _ui;
-
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
-
+    
+    Ui::Navigation _ui;
     QList<sWaypoint> _waypoints;
+
+    QWaypointManager _waypointManager;
+    std::string _sessionFolderPath;
 };
 
 #endif  // QNAVIGATION_HPP

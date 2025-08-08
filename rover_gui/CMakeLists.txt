@@ -70,6 +70,7 @@ add_executable(main_gui src/gui.cpp
                    src/QLightsController/QLightsController.cpp
 
                    src/QNavigation/QNavigation.cpp
+                   src/QNavigation/QWaypoint/QWaypointManager.cpp
 
                    src/QSideBar/QSideBar.cpp
 

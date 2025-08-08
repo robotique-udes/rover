@@ -1,9 +1,10 @@
-#ifndef QNAVIGATION_QWAYPOINT_QWAYPOINT_HPP
-#define QNAVIGATION_QWAYPOINT_QWAYPOINT_HPP
+#ifndef QNAVIGATION_QWAYPOINT_QWAYPOINTMANAGER_HPP
+#define QNAVIGATION_QWAYPOINT_QWAYPOINTMANAGER_HPP
 
 #include <string>
 #include <optional>
 #include "json/json.h"
+#include <QListWidgetItem>
 
 struct sWaypoint
 {
@@ -13,10 +14,10 @@ struct sWaypoint
     std::string id;
 };
 
-class QWaypoint
+class QWaypointManager
 {
     static constexpr const char* NAVIGATION_PATH = "/Navigation";
-    static constexpr const char* JSON_FILE_NAME = "/waypoints.json";
+    static constexpr const char* WAYPOINT_FILE_PATH = "/waypoints.json";
 
     static constexpr const char* WAYPOINT_JSON = "waypoints";
     static constexpr const char* WAYPOINT_JSON_NAME = "name";
@@ -25,21 +26,21 @@ class QWaypoint
     static constexpr const char* WAYPOINT_JSON_ID = "id";
 
   public:
-    QWaypoint(std::string sessionFolderPath_);
-    void registerWaypoint(const sWaypoint& waypoint_);
+    QWaypointManager();
+    std::optional<QList<sWaypoint>> initializeWaypoints();
+    void setSessionFolderPath(const std::string& sessionFolderPath_);
+
+    void addWaypointToJson(const sWaypoint& waypoint_);
+    void deleteWaypointFromJson(const std::string& index_);
     
 
   private:
-    void addWaypointToList(const sWaypoint& waypoint_);
-    void addWaypointToJson(const sWaypoint& waypoint_);
-    void loadWaypointsFromJson(void);
+    std::optional<QList<sWaypoint>> loadWaypointsFromJson(void);
     std::string findLastSessionFolder(void);
-    void deleteWaypointFromJson(const std::string& index_);
-    void initializeWaypoints();
     std::optional<Json::Value> readJsonFile(const std::string& filePath);
     void writeJsonFile(const std::string& filePath, const Json::Value& root);
 
     std::string _sessionFolderPath;
 };
 
-#endif  // QNAVIGATION_QWAYPOINT_QWAYPOINT_HPP
+#endif  // QNAVIGATION_QWAYPOINT_QWAYPOINTMANAGER_HPP
