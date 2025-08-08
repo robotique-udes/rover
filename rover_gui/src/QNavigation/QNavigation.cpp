@@ -54,13 +54,6 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                                                                {
                                                                    this->onGpsMessage(gpsMsg_);
                                                                });
-
-    // Hack | Todo: java script should send a signal when it's ready to update it's position
-    QTimer::singleShot(1'500,
-                       [this]()
-                       {
-                           emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
-                       });
 }
 
 void QNavigation::initializeWaypointManager(void)
@@ -86,6 +79,7 @@ void QNavigation::onJsBridgeReady(void)
                             QString::fromStdString(waypoint.id),
                             false);
     }
+    emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -232,11 +226,13 @@ void QNavigation::onCalculatePathClicked(void)
 void QNavigation::addWaypointToList(const sWaypoint& waypoint_)
 {
     _waypointsList.append(waypoint_);
-    
+
     bool exists = false;
-    for (int i = 0; i < _ui.waypointList->count(); ++i) {
+    for (int i = 0; i < _ui.waypointList->count(); ++i)
+    {
         QListWidgetItem* item = _ui.waypointList->item(i);
-        if (item->data(Qt::UserRole).toString().toStdString() == waypoint_.id) {
+        if (item->data(Qt::UserRole).toString().toStdString() == waypoint_.id)
+        {
             exists = true;
             break;
         }
