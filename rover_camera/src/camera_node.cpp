@@ -241,17 +241,14 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
  */
 std::optional<std::string> CameraNode::getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_)
 {
-    const char* home = std::getenv("HOME");
-    std::string homeStr;
-    if (home)
+    std::optional<std::string> homeOpt = Folders::getHome();
+
+    if (!homeOpt.has_value())
     {
-        homeStr = home;
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to create session folder, $HOME env variable wasn't found");
         return std::nullopt;
     }
+
+    std::string homeStr = homeOpt.value();
 
     std::string folderPath;
     const std::string pathForScreenshots = "/screenshots";
