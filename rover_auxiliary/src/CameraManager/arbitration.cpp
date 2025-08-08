@@ -51,6 +51,7 @@ namespace CameraManager
 
         if (id >= std::to_underlying(Constants::CameraInfo::eCamNames::eLast))
         {
+            RCLCPP_DEBUG(rclcpp::get_logger("CAMERA_ARBITRATION"), "Invalid cam id %ld was received for PTZ cmd", id);
             return;
         }
 

@@ -45,7 +45,7 @@ namespace Constants
             eLast
         };
 
-        constexpr std::array<std::array<const char*, 2>, static_cast<std::size_t>(eCamNames::eLast)> CAMERA_INFO = {{
+        constexpr std::array<std::array<const char*, 2>, std::to_underlying(eCamNames::eLast)> CAMERA_INFO = {{
             {"Main", "rtsp://192.168.144.30:554/1/h264major"},
             {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
             {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
@@ -60,7 +60,6 @@ namespace Constants
          * @return Success on camera name found
          */
         bool getNameFromURL(const std::string& url_, std::string& rName_);
-        eCamNames getIndexFromName(const std::string& name_);
 
         static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
 

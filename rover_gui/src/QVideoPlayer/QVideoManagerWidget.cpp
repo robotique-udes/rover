@@ -164,8 +164,7 @@ void QVideoManagerWidget::initWidget(void)
             }
             else
             {
-                size_t index = std::to_underlying(Constants::CameraInfo::getIndexFromName(CAMERA_NAME_ORDER[i]));
-                cameraUrl = Constants::CameraInfo::CAMERA_INFO[index][std::to_underlying(Constants::CameraInfo::eInfoType::URL)];
+                cameraUrl = Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::URL)];
             }
         }
         else if (i < CAMERA_NAME_ORDER.size())
@@ -313,13 +312,6 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
 
 void QVideoManagerWidget::CB_pubCameraAngle(const std::string& camURL_, float pitch_)
 {
-    if (Constants::CameraInfo::getIndexFromName("Main") == Constants::CameraInfo::eCamNames::eLast
-        || Constants::CameraInfo::getIndexFromName("Antenna") == Constants::CameraInfo::eCamNames::eLast)
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Can't publish camera angles. Coulnd't find 'Main' or 'Antenna' in camera map!");
-        return;
-    }
-
     rover_msgs::msg::CameraControl msg;
 
     if (camURL_

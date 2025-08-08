@@ -19,21 +19,5 @@ namespace Constants::CameraInfo
         }
         return false;
     }
-
-    eCamNames getIndexFromName(const std::string& name_)
-    {
-        size_t index = 0;
-        for (const auto& camera : CAMERA_INFO)
-        {
-            const char* name = camera[static_cast<size_t>(CameraInfo::eInfoType::NAME)];
-
-            if (name == name_)
-            {
-                return static_cast<eCamNames>(index);
-            }
-            index++;
-        }
-        return eCamNames::eLast;
-    }
 #endif  // defined(__linux__)
 }  // namespace Constants::CameraInfo
