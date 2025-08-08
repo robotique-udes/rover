@@ -22,7 +22,7 @@ namespace RoverCan2::Drivers
     {
         VALIDATE_BASE_TYPE(LED::LedBlinkerT, LedBlinkerT_);
 
-        static constexpr twai_timing_config_t CAN_SPEED_CONFIG = TWAI_TIMING_CONFIG_100KBITS();
+        static constexpr twai_timing_config_t CAN_SPEED_CONFIG = TWAI_TIMING_CONFIG_1MBITS();
         static constexpr twai_mode_t TWAI_MODE = TWAI_MODE_NORMAL;
         static constexpr twai_filter_config_t TWAI_ID_FILTER = TWAI_FILTER_CONFIG_ACCEPT_ALL();
 
