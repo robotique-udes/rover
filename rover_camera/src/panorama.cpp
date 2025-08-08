@@ -13,7 +13,7 @@ Panorama::Panorama():
         [this](const std::shared_ptr<rover_msgs::srv::Panorama::Request> request_,
                std::shared_ptr<rover_msgs::srv::Panorama::Response> response_)
         {
-            this->handlePanoramaRequest(*request_, *response_);
+            this->CB_srvPanorama(*request_, *response_);
         });
 
     _sub_gps = this->create_subscription<rover_msgs::msg::Gps>(TOPIC_GPS_NAME,
@@ -24,10 +24,27 @@ Panorama::Panorama():
                                                                });
     _pub_cameraCmd = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_CMD_PANORAMA, QOS_DEFAULT);
     _pub_cameraConfig = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_CAMERA_CONFIG_PANORAM, QOS_DEFAULT);
+    _pub_cameraPower = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_POWER_PANORAMA, QOS_DEFAULT);
+}
+
+void Panorama::CB_srvPanorama(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_)
+{
+    std::optional<uint8_t> idCam = this->getIdCam(request_.camera_url);
+    if (!idCam.has_value())
+    {
+        response_.success = false;
+        response_.status = "Invalid camera URL";
+        return;
+    }
+
+    this->enableCameraPower(*idCam);
+    this->handlePanoramaRequest(request_, response_, *idCam);
+    this->disableCameraPower(*idCam);
 }
 
 void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
-                                     rover_msgs::srv::Panorama::Response& response_)
+                                     rover_msgs::srv::Panorama::Response& response_,
+                                     uint8_t idCam_)
 {
     response_.success = false;
     if (!this->validateRequest(request_, response_))
@@ -35,22 +52,24 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
         return;
     }
 
-    std::optional<uint8_t> idCam = this->getIdCam(request_.camera_url);
-    if (!idCam.has_value())
-    {
-        return;
-    }
-
-    this->rotateCamera(request_.duration, *idCam);
+    this->rotateCamera(request_.duration, idCam_);
 
     std::vector<cv::Mat> frames;
     if (!this->captureFrames(request_, response_, frames))
     {
-        _timer_ptzCmd->cancel();
+        if (_timer_ptzCmd)
+        {
+            _timer_ptzCmd->cancel();
+            _timer_ptzCmd.reset();
+        }
         return;
     }
-    this->configPtz(*idCam, 10.0F /*= As fast as possible*/);
-    _timer_ptzCmd->cancel();
+    this->configPtz(idCam_, 10.0F /*= As fast as possible*/);
+    if (_timer_ptzCmd)
+    {
+        _timer_ptzCmd->cancel();
+        _timer_ptzCmd.reset();
+    }
 
     std::optional<cv::Mat> pano = this->stitchFrames(frames);
     if (!pano.has_value())
@@ -388,6 +407,32 @@ std::optional<uint8_t> Panorama::getIdCam(const std::string& camURL_)
         return rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
     }
     return std::nullopt;
+}
+
+void Panorama::enableCameraPower(uint8_t id_)
+{
+    rover_msgs::msg::CameraControl msg;
+    msg.id_cam = id_;
+    msg.power_on = true;
+
+    _timer_powerCmd = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_POWER_PERIOD_MS),
+                                              [this, msg](void)
+                                              {
+                                                  _pub_cameraPower->publish(msg);
+                                              });
+}
+
+void Panorama::disableCameraPower(uint8_t id_)
+{
+    if (_timer_powerCmd)
+    {
+        _timer_powerCmd->cancel();
+        _timer_powerCmd.reset();
+    }
+    rover_msgs::msg::CameraControl msg;
+    msg.id_cam = id_;
+    msg.power_on = false;
+    _pub_cameraPower->publish(msg);
 }
 
 int main(int argc, char* argv[])
