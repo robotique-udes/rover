@@ -141,9 +141,7 @@ void QWaypointManager::deleteWaypointFromJson(const std::string& index_)
 
     if (!root.isMember(WAYPOINT_JSON) || !root[WAYPOINT_JSON].isArray())
     {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No waypoints found",
-                                                                       "Corrupted file. Unable to find waypoint inside JSON",
-                                                                       QHelper::QToastNotification::eNotifType::ERROR);
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "No waypoints array found in JSON");
         return;
     }
 
@@ -227,6 +225,10 @@ void QWaypointManager::syncWaypoints(QString& waypointList_)
     }
 
     Json::Value root = rootOpt.value();
+    Json::Value waypointsArray = root[WAYPOINT_JSON];
 
-    
+    for (Json::Value& jsonWaypoint : waypointsArray)
+    {
+        
+    }
 }
