@@ -3,7 +3,7 @@
 
 #include "process_frame.hpp"
 
-#include <rover_lib2/helpers/moving_average.hpp>
+#include <rover_lib2/filters/moving_average.hpp>
 #include <unordered_map>
 
 class Detection
@@ -28,7 +28,7 @@ class Detection
     bool _camLost = false;
     std::string _cameraURL;
     ProcessFrame _processFrame;
-    std::unordered_map<uint16_t, MovingAverage<uint16_t, COEFF_NB_ARUCO>> _validation;
+    std::unordered_map<uint16_t, Filters::MovingAverage<uint16_t, COEFF_NB_ARUCO>> _validation;
     std::vector<uint16_t> _validatedIds;
 };
 
