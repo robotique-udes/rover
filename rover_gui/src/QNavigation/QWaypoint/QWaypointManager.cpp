@@ -214,21 +214,64 @@ void QWaypointManager::writeJsonFile(const std::string& filePath, const Json::Va
     outputFile.close();
 }
 
-void QWaypointManager::syncWaypoints(QString& waypointList_)
+void QWaypointManager::syncWaypoints(const QList<sWaypoint>& waypointList_)
 {
-    std::optional<Json::Value> rootOpt = readJsonFile(_sessionFolderPath);
+    std::set<std::string> jsonIds = this->getJsonIds();
+    std::set<std::string> listIds = this->getListIds(waypointList_);
 
+    this->addMissingToList(jsonIds, listIds, waypointList_);
+    this->addMissingToJson(jsonIds, listIds, waypointList_);
+}
+
+std::set<std::string> QWaypointManager::getJsonIds()
+{
+    Json::Value root;
+    std::optional<Json::Value> rootOpt = this->readJsonFile(_sessionFolderPath);
     if (!rootOpt.has_value())
     {
-        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to read JSON file");
-        return;
+        root[WAYPOINT_JSON] = Json::arrayValue;
+    }
+    else
+    {
+        root = rootOpt.value();
+        if (!root.isMember(WAYPOINT_JSON) || !root[WAYPOINT_JSON].isArray())
+        {
+            root[WAYPOINT_JSON] = Json::arrayValue;
+        }
     }
 
-    Json::Value root = rootOpt.value();
     Json::Value waypointsArray = root[WAYPOINT_JSON];
 
-    for (Json::Value& jsonWaypoint : waypointsArray)
+    std::set<std::string> ids;
+    for (const Json::Value& waypoint : waypointsArray)
     {
-        
+        ids.insert(waypoint[WAYPOINT_JSON_ID].asString());
     }
+
+    return ids;
+}
+
+std::set<std::string> QWaypointManager::getListIds(const QList<sWaypoint> waypointsList_)
+{
+    std::set<std::string> ids;
+    for (const sWaypoint& waypoint : waypointsList_)
+    {
+        ids.insert(waypoint.id);
+    }
+
+    return ids;
+}
+
+void QWaypointManager::addMissingToList(std::set<std::string> jsonIds_,
+                                        std::set<std::string> listIds_,
+                                        const QList<sWaypoint> waypointsList_)
+{
+
+}
+
+void QWaypointManager::addMissingToJson(std::set<std::string> jsonIds_,
+                                        std::set<std::string> listIds_,
+                                        const QList<sWaypoint> waypointsList_)
+{
+
 }

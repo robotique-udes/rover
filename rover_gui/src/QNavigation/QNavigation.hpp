@@ -10,6 +10,7 @@
 #include <QListWidgetItem>
 #include <iostream>
 #include <optional>
+#include <set>
 
 #include <json/json.h>
 
@@ -47,7 +48,7 @@ class QNavigation : public QWidget
 
   private:
     void addWaypointToList(const sWaypoint& waypoint_);
-    void initializeWaypointManager();
+    void initializeWaypointManager(void);
     void createNavigationFolder(void);
 
     QWebChannel _webChannel;

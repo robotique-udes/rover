@@ -63,7 +63,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                        });
 }
 
-void QNavigation::initializeWaypointManager()
+void QNavigation::initializeWaypointManager(void)
 {
     _waypointManager.setSessionFolderPath(_sessionFolderPath);
     std::optional<QList<sWaypoint>> waypointOpt = _waypointManager.initializeWaypoints();

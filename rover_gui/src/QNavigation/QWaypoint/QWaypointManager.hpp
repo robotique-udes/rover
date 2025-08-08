@@ -3,6 +3,7 @@
 
 #include <string>
 #include <optional>
+#include <set>
 #include "json/json.h"
 #include <QListWidgetItem>
 
@@ -32,13 +33,20 @@ class QWaypointManager
 
     void addWaypointToJson(const sWaypoint& waypoint_);
     void deleteWaypointFromJson(const std::string& index_);
-    void syncWaypoints(QString& waypointList_);
+    void syncWaypoints(const QList<sWaypoint>& waypointList_);
 
   private:
     std::optional<QList<sWaypoint>> loadWaypointsFromJson(void);
     std::string findLastSessionFolder(void);
+
     std::optional<Json::Value> readJsonFile(const std::string& filePath);
     void writeJsonFile(const std::string& filePath, const Json::Value& root);
+
+    std::set<std::string> getJsonIds();
+    std::set<std::string> getListIds(const QList<sWaypoint> waypointList_);
+
+    void addMissingToList(std::set<std::string> jsonIds_, std::set<std::string> listIds_, const QList<sWaypoint> waypointsList_);
+    void addMissingToJson(std::set<std::string> jsonIds_, std::set<std::string> listIds_, const QList<sWaypoint> waypointsList_);
 
     std::string _sessionFolderPath;
 };
