@@ -2,6 +2,8 @@
 #define ROVER_LIB2_HELPERS_CONSTANTS_HPP
 #include <array>
 #include <cstddef>
+#include <cstdint>
+#include <iterator>
 #include <utility>
 
 #include <cstdint>
@@ -9,6 +11,7 @@
 #if defined(__linux__)
 #include <map>
 #include <string>
+#include <optional>
 #endif  // defined(__linux__)
 
 #if defined(ROS)
@@ -25,21 +28,42 @@ namespace Constants
     namespace CameraInfo
     {
 #if defined(__linux__)
-        const std::map<std::string, std::string, std::less<>> CAMERA_URL_MAP = {
+
+        enum class eCamNames : size_t
+        {
+            MAIN,
+            ANTENNA,
+            FRONT_SIDE,
+            ARM_TOP,
+            ARM_SIDE,
+            eLast
+        };
+
+        enum class eInfoType : size_t
+        {
+            NAME,
+            URL,
+            eLast
+        };
+
+        constexpr std::array<std::array<const char*, 2>, std::to_underlying(eCamNames::eLast)> CAMERA_INFO = {{
             {"Main", "rtsp://192.168.144.30:554/1/h264major"},
             {"Antenna", "rtsp://192.168.144.31:554/1/h264major"},
             {"Front-Side", "rtsp://192.168.144.32:554/1/h264major"},
             {"Arm-Top", "rtsp://192.168.144.35:554/1/h264major"},
             {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
-        };
+        }};
 
-        /**
-         * @brief
-         * @param url_ URL of the camera
-         * @param rName_ Overwrite value if found
-         * @return Success on camera name found
-         */
-        bool getNameFromURL(const std::string& url_, std::string& rName_);
+        std::optional<eCamNames> getIdFromURL(const std::string& url_);
+
+        static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
+
+        static constexpr float SEND_COMMAND_PTZ_FREQUENCY = 5.F;
+        static constexpr float SEND_CONFIG_PTZ_FREQUENCY = 0.5F;
+        static constexpr float SEND_COMMAND_POWER_FREQUENCY = 0.5F;
+
+        static constexpr float RECEIVE_PTZ_STATUS_FREQUENCY = 0.5F;
+        static constexpr float RECEIVE_POWER_STATUS_FREQUENCY = 0.5F;
 #endif  // defined(__linux__)
     }   // namespace CameraInfo
 
