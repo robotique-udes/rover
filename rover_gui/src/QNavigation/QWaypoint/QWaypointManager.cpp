@@ -241,9 +241,11 @@ void QWaypointManager::syncWaypoints(QList<sWaypoint>& waypointList_)
 
     root[WAYPOINT_JSON] = waypointsArray;
     this->writeJsonFile(filePath, root);
-    
-    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Synchronized waypoints: %d in list, %d in JSON", 
-                waypointList_.size(), waypointsArray.size());
+
+    RCLCPP_INFO(rclcpp::get_logger("GUI"),
+                "Synchronized waypoints: %d in list, %d in JSON",
+                waypointList_.size(),
+                waypointsArray.size());
 }
 
 std::set<std::string> QWaypointManager::getJsonIds(const Json::Value& waypointsArray_)
