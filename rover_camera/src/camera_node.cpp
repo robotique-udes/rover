@@ -94,17 +94,19 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
     std::optional<std::string> folderPathOptional;
     std::string captureName;
     std::string cameraURL = request_.camera_url;
-    std::string currentCamera;
+    std::optional<size_t> idCam = Constants::CameraInfo::getIdFromURL(cameraURL);
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::SCREENSHOT);
     folderPathOptional = this->getFolderPath(request_.base_path, eFileFormatNameTypes::SCREENSHOT);
-    Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
 
     if (!folderPathOptional)
     {
-        RCLCPP_ERROR(this->get_logger(), "Failed to find home environment when screenshoting camera %s", currentCamera.c_str());
+        RCLCPP_ERROR(this->get_logger(),
+                     "Failed to find home environment when screenshoting camera %s",
+                     idCam ? std::to_string(*idCam).c_str() : "Unknown id");
         response_.success = false;
-        response_.status = "Failed to find home environment for saving screenshot on camera: " + currentCamera;
+        response_.status = "Failed to find home environment for saving screenshot on camera: "
+                           + (idCam ? std::to_string(*idCam) : "Unknown id");
         return;
     }
 
@@ -115,10 +117,10 @@ void CameraNode::takeScreenshot(const rover_msgs::srv::CameraControl::Request& r
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to create screenshots folder or it already exists at %s for camera: %s",
                      folderPath.c_str(),
-                     currentCamera.c_str());
+                     (idCam ? std::to_string(*idCam) : "Unknown id").c_str());
         response_.success = false;
-        response_.status
-            = "Failed to create screenshots folder or it already exists at " + folderPath + " for camera: " + currentCamera;
+        response_.status = "Failed to create screenshots folder or it already exists at " + folderPath
+                           + " for camera: " + (idCam ? std::to_string(*idCam) : "Unknown id");
     }
 
     sScreenshotResult screenshotResult = this->getScreenshot(folderPath, captureName, cameraURL);
@@ -140,17 +142,19 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
     std::optional<std::string> folderPathOptional;
     std::string captureName;
     std::string cameraURL = request_.camera_url;
-    std::string currentCamera;
 
     captureName = this->getFileName(request_.capture_name, cameraURL, eFileFormatNameTypes::VIDEO);
     folderPathOptional = this->getFolderPath(request_.base_path, eFileFormatNameTypes::VIDEO);
-    Constants::CameraInfo::getNameFromURL(cameraURL, currentCamera);
+    std::optional<size_t> idCam = Constants::CameraInfo::getIdFromURL(cameraURL);
 
     if (!folderPathOptional)
     {
-        RCLCPP_ERROR(this->get_logger(), "Failed to find home environment when recording camera %s", currentCamera.c_str());
+        RCLCPP_ERROR(this->get_logger(),
+                     "Failed to find home environment when recording camera %s",
+                     (idCam ? std::to_string(*idCam) : "Unknown id").c_str());
         response_.success = false;
-        response_.status = "Failed to find home environment for saving recording on camera: " + currentCamera;
+        response_.status = "Failed to find home environment for saving recording on camera: "
+                           + (idCam ? std::to_string(*idCam) : "Unknown id");
         return;
     }
 
@@ -161,10 +165,10 @@ void CameraNode::startRecordingLogic(const rover_msgs::srv::CameraControl::Reque
         RCLCPP_ERROR(this->get_logger(),
                      "Failed to create recordings folder or it already exists at %s for camera: %s",
                      folderPath.c_str(),
-                     currentCamera.c_str());
+                     (idCam ? std::to_string(*idCam) : "Unknown id").c_str());
         response_.success = false;
-        response_.status
-            = "Failed to create recordings folder or it already exists at " + folderPath + "for camera: " + currentCamera;
+        response_.status = "Failed to create recordings folder or it already exists at " + folderPath
+                           + "for camera: " + (idCam ? std::to_string(*idCam) : "Unknown id");
     }
     if (this->newRecording(folderPath, captureName, cameraURL))
     {
@@ -211,8 +215,10 @@ std::string CameraNode::getFileName(const std::string& capture_name_, std::strin
     std::string time = Date::getCurrentTime();
     std::string latitude = std::to_string(_lastLatitude);
     std::string longitude = std::to_string(_lastLongitude);
-    std::string ID = "UnknownID";
-    Constants::CameraInfo::getNameFromURL(camURL_, ID);
+    std::optional<size_t> idCam = Constants::CameraInfo::getIdFromURL(camURL_);
+    std::string ID = idCam ? std::string(
+                         Constants::CameraInfo::CAMERA_INFO[*idCam][std::to_underlying(Constants::CameraInfo::eInfoType::NAME)])
+                           : "Unknown id";
 
     switch (fileType_)
     {

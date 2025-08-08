@@ -4,20 +4,20 @@
 namespace Constants::CameraInfo
 {
 #if defined(__linux__)
-    bool getNameFromURL(const std::string& url_, std::string& rName_)
-    {
-        for (const auto& camera : CAMERA_INFO)
-        {
-            const char* name = camera[static_cast<size_t>(CameraInfo::eInfoType::NAME)];
-            const char* url = camera[static_cast<size_t>(CameraInfo::eInfoType::URL)];
 
-            if (url_ == url)
+    std::optional<std::size_t> getIdFromURL(const std::string& url_)
+    {
+        std::size_t idCam = 0;
+        for (const auto& [key, url] : CAMERA_INFO)
+        {
+            if (url == url_)
             {
-                rName_ = name;
-                return true;
+                return idCam;
             }
+            ++idCam;
         }
-        return false;
+        return std::nullopt;
     }
+
 #endif  // defined(__linux__)
 }  // namespace Constants::CameraInfo

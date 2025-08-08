@@ -11,6 +11,7 @@
 #if defined(__linux__)
 #include <map>
 #include <string>
+#include <optional>
 #endif  // defined(__linux__)
 
 #if defined(ROS)
@@ -53,13 +54,7 @@ namespace Constants
             {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
         }};
 
-        /**
-         * @brief
-         * @param url_ URL of the camera
-         * @param rName_ Overwrite value if found
-         * @return Success on camera name found
-         */
-        bool getNameFromURL(const std::string& url_, std::string& rName_);
+        std::optional<std::size_t> getIdFromURL(const std::string& url_);
 
         static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
 
