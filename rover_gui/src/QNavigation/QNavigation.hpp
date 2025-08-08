@@ -48,6 +48,7 @@ class QNavigation : public QWidget
 
   private:
     void addWaypointToList(const sWaypoint& waypoint_);
+    void addWaypointToUI(const sWaypoint& waypoint);
     void initializeWaypointManager(void);
     void createNavigationFolder(void);
 
@@ -56,7 +57,7 @@ class QNavigation : public QWidget
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
 
     Ui::Navigation _ui;
-    QList<sWaypoint> _waypoints;
+    QList<sWaypoint> _waypointsList;
 
     QWaypointManager _waypointManager;
     std::string _sessionFolderPath;

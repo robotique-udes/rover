@@ -3,7 +3,6 @@
 #include <rclcpp/rclcpp.hpp>
 
 #include <rover_lib2/helpers/folders.hpp>
-#include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 
 #include <fstream>
 #include <vector>
@@ -50,45 +49,6 @@ void QWaypointManager::addWaypointToJson(const sWaypoint& waypoint_)
     root[WAYPOINT_JSON] = waypointsArray;
     RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Attempting to write to: %s", filePath.c_str());
     this->writeJsonFile(filePath, root);
-}
-
-std::optional<QList<sWaypoint>> QWaypointManager::loadWaypointsFromJson(void)
-{
-    std::string filePath = _sessionFolderPath + WAYPOINT_FILE_PATH;
-    std::optional<Json::Value> rootOpt = this->readJsonFile(filePath);
-
-    if (!rootOpt.has_value())
-    {
-        return std::nullopt;
-    }
-
-    Json::Value root = rootOpt.value();
-    QList<sWaypoint> waypoints;
-
-    if (root.isMember(WAYPOINT_JSON) && root[WAYPOINT_JSON].isArray())
-    {
-        const Json::Value& waypointsArray = root[WAYPOINT_JSON];
-
-        for (const Json::Value& waypointObj : waypointsArray)
-        {
-            if (waypointObj.isMember(WAYPOINT_JSON_NAME) && waypointObj.isMember(WAYPOINT_JSON_LATITUDE)
-                && waypointObj.isMember(WAYPOINT_JSON_LONGITUDE) && waypointObj.isMember(WAYPOINT_JSON_ID))
-            {
-                sWaypoint waypoint;
-                waypoint.name = waypointObj[WAYPOINT_JSON_NAME].asString();
-                waypoint.latitude = waypointObj[WAYPOINT_JSON_LATITUDE].asDouble();
-                waypoint.longitude = waypointObj[WAYPOINT_JSON_LONGITUDE].asDouble();
-                waypoint.id = waypointObj[WAYPOINT_JSON_ID].asString();
-
-                // this->addWaypointToList(waypoint);
-                waypoints.append(waypoint);
-            }
-        }
-
-        RCLCPP_INFO(rclcpp::get_logger("GUI"), "Loaded %d waypoint(s) from file", waypointsArray.size());
-    }
-
-    return waypoints;
 }
 
 std::string QWaypointManager::findLastSessionFolder(void)
@@ -162,7 +122,7 @@ void QWaypointManager::deleteWaypointFromJson(const std::string& index_)
     this->writeJsonFile(filePath, root);
 }
 
-std::optional<QList<sWaypoint>> QWaypointManager::initializeWaypoints()
+void QWaypointManager::initializeWaypoints()
 {
     std::string currentFilePath = _sessionFolderPath + WAYPOINT_FILE_PATH;
     if (!std::filesystem::exists(currentFilePath))
@@ -172,11 +132,21 @@ std::optional<QList<sWaypoint>> QWaypointManager::initializeWaypoints()
         if (!std::filesystem::exists(lastFilePath))
         {
             RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to load waypoint from JSON. File missing or invalid.");
-            return std::nullopt;
+            return;
         }
         std::filesystem::copy_file(lastFilePath, currentFilePath);
     }
-    return this->loadWaypointsFromJson();
+
+    std::optional<Json::Value> rootOpt = this->readJsonFile(currentFilePath);
+    if (!rootOpt.has_value())
+    {
+        return;
+    }
+
+    Json::Value root = rootOpt.value();
+    Json::Value waypointsArray = root[WAYPOINT_JSON];
+
+    RCLCPP_INFO(rclcpp::get_logger("GUI"), "Loaded %d waypoint(s) from file", waypointsArray.size());
 }
 
 std::optional<Json::Value> QWaypointManager::readJsonFile(const std::string& filePath)
@@ -184,7 +154,7 @@ std::optional<Json::Value> QWaypointManager::readJsonFile(const std::string& fil
     std::ifstream file(filePath);
     if (!file.is_open())
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open JSON file: %s", filePath.c_str());
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Unable to open JSON file: %s", filePath.c_str());
         return std::nullopt;
     }
 
@@ -236,16 +206,11 @@ void QWaypointManager::syncWaypoints(QList<sWaypoint>& waypointList_)
     std::set<std::string> jsonIds = this->getJsonIds(waypointsArray);
     std::set<std::string> listIds = this->getListIds(waypointList_);
 
-    this->addMissingWaypointsToList(jsonIds, listIds, waypointList_, waypointsArray);
-    this->addMissingWaypointsToJson(jsonIds, listIds, waypointList_, waypointsArray);
+    this->addMissingWaypointsToList(listIds, waypointList_, waypointsArray);
+    this->addMissingWaypointsToJson(jsonIds, waypointList_, waypointsArray);
 
     root[WAYPOINT_JSON] = waypointsArray;
     this->writeJsonFile(filePath, root);
-
-    RCLCPP_INFO(rclcpp::get_logger("GUI"),
-                "Synchronized waypoints: %d in list, %d in JSON",
-                waypointList_.size(),
-                waypointsArray.size());
 }
 
 std::set<std::string> QWaypointManager::getJsonIds(const Json::Value& waypointsArray_)
@@ -270,8 +235,7 @@ std::set<std::string> QWaypointManager::getListIds(const QList<sWaypoint>& waypo
     return ids;
 }
 
-void QWaypointManager::addMissingWaypointsToList(std::set<std::string>& jsonIds_,
-                                                 std::set<std::string>& listIds_,
+void QWaypointManager::addMissingWaypointsToList(std::set<std::string>& listIds_,
                                                  QList<sWaypoint>& waypointsList_,
                                                  const Json::Value& waypointsArray_)
 {
@@ -300,7 +264,6 @@ void QWaypointManager::addMissingWaypointsToList(std::set<std::string>& jsonIds_
 }
 
 void QWaypointManager::addMissingWaypointsToJson(std::set<std::string>& jsonIds_,
-                                                 std::set<std::string>& listIds_,
                                                  const QList<sWaypoint>& waypointsList_,
                                                  Json::Value& waypointsArray_)
 {
@@ -318,4 +281,14 @@ void QWaypointManager::addMissingWaypointsToJson(std::set<std::string>& jsonIds_
             RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Added waypoint to JSON: %s", listWaypoint.name.c_str());
         }
     }
+}
+
+void QWaypointManager::clearWaypoints()
+{
+    Json::Value root;
+    root[WAYPOINT_JSON] = Json::arrayValue;
+
+    std::string filePath = _sessionFolderPath + WAYPOINT_FILE_PATH;
+
+    this->writeJsonFile(filePath, root);
 }

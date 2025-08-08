@@ -66,27 +66,19 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
 void QNavigation::initializeWaypointManager(void)
 {
     _waypointManager.setSessionFolderPath(_sessionFolderPath);
-    std::optional<QList<sWaypoint>> waypointOpt = _waypointManager.initializeWaypoints();
+    _waypointManager.initializeWaypoints();
 
-    if (!waypointOpt.has_value())
-    {
-        QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-            "No waypoints found",
-            "Unable to load waypoint from JSON. File missing or invalid.",
-            QHelper::QToastNotification::eNotifType::ERROR);
-        return;
-    }
+    _waypointManager.syncWaypoints(_waypointsList);
 
-    QList<sWaypoint> waypoints = waypointOpt.value();
-    for (const sWaypoint& waypoint : waypoints)
+    for (const sWaypoint& waypoint : _waypointsList)
     {
-        this->addWaypointToList(waypoint);
+        this->addWaypointToUI(waypoint);
     }
 }
 
 void QNavigation::onJsBridgeReady(void)
 {
-    for (const sWaypoint& waypoint : _waypoints)
+    for (const sWaypoint& waypoint : _waypointsList)
     {
         emit this->sendGoal(QString::fromStdString(waypoint.name),
                             waypoint.latitude,
@@ -160,7 +152,7 @@ void QNavigation::onSetGoalClicked()
     waypoint.longitude = _ui.inputLongitude->text().toDouble();
     waypoint.name = _ui.inputName->text().toStdString();
 
-    for (const sWaypoint& waypointIt : _waypoints)
+    for (const sWaypoint& waypointIt : _waypointsList)
     {
         if (waypointIt.name == waypoint.name)
         {
@@ -173,8 +165,7 @@ void QNavigation::onSetGoalClicked()
     waypoint.id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
 
     this->addWaypointToList(waypoint);
-    _waypointManager.addWaypointToJson(waypoint);
-    // this->addWaypointToJson(waypoint);
+    _waypointManager.syncWaypoints(_waypointsList);
     emit this->sendGoal(QString::fromStdString(waypoint.name),
                         waypoint.latitude,
                         waypoint.longitude,
@@ -203,7 +194,7 @@ void QNavigation::pathDistanceCalculated(double distanceMeters_)
 
 void QNavigation::waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_)
 {
-    for (const auto& waypoint : _waypoints)
+    for (const auto& waypoint : _waypointsList)
     {
         if (waypoint.id == id_.toStdString() || waypoint.name == name_.toStdString())
         {
@@ -217,7 +208,7 @@ void QNavigation::waypointCreated(const QString& name_, double latitude_, double
     }
     sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
     this->addWaypointToList(waypoint);
-    _waypointManager.addWaypointToJson(waypoint);
+    _waypointManager.syncWaypoints(_waypointsList);
 }
 
 void QNavigation::onCalculatePathClicked(void)
@@ -230,15 +221,34 @@ void QNavigation::onCalculatePathClicked(void)
     }
 
     int index_ = _ui.waypointList->row(currentItem_);
-    if (index_ >= 0 && index_ < _waypoints.size())
+    if (index_ >= 0 && index_ < _waypointsList.size())
     {
-        const sWaypoint& waypoint = _waypoints.at(index_);
+        const sWaypoint& waypoint = _waypointsList.at(index_);
 
         emit this->calculatePath(waypoint.latitude, waypoint.longitude, QString::fromStdString(waypoint.id));
     }
 }
 
 void QNavigation::addWaypointToList(const sWaypoint& waypoint_)
+{
+    _waypointsList.append(waypoint_);
+    
+    bool exists = false;
+    for (int i = 0; i < _ui.waypointList->count(); ++i) {
+        QListWidgetItem* item = _ui.waypointList->item(i);
+        if (item->data(Qt::UserRole).toString().toStdString() == waypoint_.id) {
+            exists = true;
+            break;
+        }
+    }
+
+    if (!exists)
+    {
+        this->addWaypointToUI(waypoint_);
+    }
+}
+
+void QNavigation::addWaypointToUI(const sWaypoint& waypoint_)
 {
     QString displayText = QString("%1 (%2, %3)")
                               .arg(QString::fromStdString(waypoint_.name))
@@ -251,7 +261,6 @@ void QNavigation::addWaypointToList(const sWaypoint& waypoint_)
     waypointItem->setCheckState(Qt::Checked);
     waypointItem->setData(Qt::UserRole, QString::fromStdString(waypoint_.id));
 
-    _waypoints.append(waypoint_);
     _ui.waypointList->addItem(waypointItem.release());
 }
 
@@ -263,9 +272,9 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
     }
 
     int index = _ui.waypointList->row(item_);
-    if (index >= 0 && index < _waypoints.size())
+    if (index >= 0 && index < _waypointsList.size())
     {
-        const sWaypoint& waypoint = _waypoints.at(index);
+        const sWaypoint& waypoint = _waypointsList.at(index);
         bool isVisible = (item_->checkState() == Qt::Checked);
 
         emit this->waypointIsVisible(QString::fromStdString(waypoint.id), isVisible);
@@ -280,9 +289,9 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
     }
 
     int index_ = _ui.waypointList->row(item_);
-    if (index_ >= 0 && index_ < _waypoints.size())
+    if (index_ >= 0 && index_ < _waypointsList.size())
     {
-        const sWaypoint& waypoint_ = _waypoints.at(index_);
+        const sWaypoint& waypoint_ = _waypointsList.at(index_);
 
         _ui.inputName->setText(QString::fromStdString(waypoint_.name));
         _ui.inputLatitude->setText(QString::number(waypoint_.latitude, 'f', 6));
@@ -300,16 +309,16 @@ void QNavigation::onDeleteWaypointClicked(void)
     }
 
     int index_ = _ui.waypointList->row(currentItem_);
-    if (index_ >= 0 && index_ < _waypoints.size())
+    if (index_ >= 0 && index_ < _waypointsList.size())
     {
-        const std::string waypointId = _waypoints.at(index_).id;
+        const std::string waypointId = _waypointsList.at(index_).id;
         _waypointManager.deleteWaypointFromJson(waypointId);
 
         delete _ui.waypointList->takeItem(index_);
 
         emit this->deleteWaypoint(QString::fromStdString(waypointId));
 
-        _waypoints.removeAt(index_);
+        _waypointsList.removeAt(index_);
 
         _ui.inputName->clear();
         _ui.inputLatitude->clear();
@@ -329,8 +338,9 @@ void QNavigation::onClearWaypointsClicked(void)
 
     if (result_ == QMessageBox::Yes)
     {
-        _waypoints.clear();
+        _waypointsList.clear();
         _ui.waypointList->clear();
+        _waypointManager.clearWaypoints();
 
         _ui.inputName->clear();
         _ui.inputLatitude->clear();

@@ -28,12 +28,13 @@ class QWaypointManager
 
   public:
     QWaypointManager();
-    std::optional<QList<sWaypoint>> initializeWaypoints();
+    void initializeWaypoints();
     void setSessionFolderPath(const std::string& sessionFolderPath_);
 
     void addWaypointToJson(const sWaypoint& waypoint_);
     void deleteWaypointFromJson(const std::string& index_);
     void syncWaypoints(QList<sWaypoint>& waypointList_);
+    void clearWaypoints();
 
   private:
     std::optional<QList<sWaypoint>> loadWaypointsFromJson(void);
@@ -45,12 +46,10 @@ class QWaypointManager
     std::set<std::string> getJsonIds(const Json::Value& waypointsArray_);
     std::set<std::string> getListIds(const QList<sWaypoint>& waypointList_);
 
-    void addMissingWaypointsToList(std::set<std::string>& jsonIds_,
-                                   std::set<std::string>& listIds_,
+    void addMissingWaypointsToList(std::set<std::string>& listIds_,
                                    QList<sWaypoint>& waypointsList_,
                                    const Json::Value& waypointsArray_);
     void addMissingWaypointsToJson(std::set<std::string>& jsonIds_,
-                                   std::set<std::string>& listIds_,
                                    const QList<sWaypoint>& waypointsList_,
                                    Json::Value& waypointsArray_);
 
