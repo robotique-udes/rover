@@ -1,4 +1,4 @@
-#include "panorama.hpp"
+#include "panorama_manager.hpp"
 
 #include <sys/stat.h>
 #include <rover_lib2/helpers/folders.hpp>
@@ -6,7 +6,7 @@
 #include <rover_lib2/helpers/macros.hpp>
 #include <rover_lib2/helpers/constants.hpp>
 
-Panorama::Panorama():
+PanoramaManager::PanoramaManager():
     Node("Panorama")
 {
     _srv_panorama = this->create_service<rover_msgs::srv::Panorama>(
@@ -28,7 +28,7 @@ Panorama::Panorama():
     _pub_cameraPower = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_POWER_PANORAMA, QOS_DEFAULT);
 }
 
-void Panorama::CB_srvPanorama(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_)
+void PanoramaManager::CB_srvPanorama(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_)
 {
     std::optional<uint8_t> idCam = this->getIdCam(request_.camera_url);
     if (!idCam.has_value())
@@ -45,7 +45,7 @@ void Panorama::CB_srvPanorama(const rover_msgs::srv::Panorama::Request& request_
     this->disableCameraPower(*idCam);
 }
 
-void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
+void PanoramaManager::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
                                      rover_msgs::srv::Panorama::Response& response_,
                                      uint8_t idCam_)
 {
@@ -108,7 +108,7 @@ void Panorama::handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& r
     response_.success = true;
 }
 
-std::optional<cv::Mat> Panorama::warpCorrection(const cv::Mat& pano)
+std::optional<cv::Mat> PanoramaManager::warpCorrection(const cv::Mat& pano)
 {
     if (pano.empty())
     {
@@ -135,7 +135,7 @@ std::optional<cv::Mat> Panorama::warpCorrection(const cv::Mat& pano)
     return pano(roi).clone();
 }
 
-std::optional<cv::Mat> Panorama::stitchFrames(std::vector<cv::Mat>& frames_)
+std::optional<cv::Mat> PanoramaManager::stitchFrames(std::vector<cv::Mat>& frames_)
 {
     if (frames_.size() < 2)
     {
@@ -168,13 +168,13 @@ std::optional<cv::Mat> Panorama::stitchFrames(std::vector<cv::Mat>& frames_)
     return pano;
 }
 
-void Panorama::setGpsPosition(const rover_msgs::msg::Gps& gpsMsg_)
+void PanoramaManager::setGpsPosition(const rover_msgs::msg::Gps& gpsMsg_)
 {
     _sGpsCoordinates.latitude = gpsMsg_.latitude;
     _sGpsCoordinates.longitude = gpsMsg_.longitude;
 }
 
-std::optional<std::string> Panorama::getFolderPath(const std::string& basePath_)
+std::optional<std::string> PanoramaManager::getFolderPath(const std::string& basePath_)
 {
     const char* home = std::getenv("HOME");
     std::string homeStr;
@@ -192,7 +192,7 @@ std::optional<std::string> Panorama::getFolderPath(const std::string& basePath_)
     return folderPath;
 }
 
-bool Panorama::validateRequest(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_)
+bool PanoramaManager::validateRequest(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_)
 {
     if (request_.duration <= 0)
     {
@@ -209,7 +209,7 @@ bool Panorama::validateRequest(const rover_msgs::srv::Panorama::Request& request
     return true;
 }
 
-bool Panorama::captureFrames(const rover_msgs::srv::Panorama::Request& request_,
+bool PanoramaManager::captureFrames(const rover_msgs::srv::Panorama::Request& request_,
                              rover_msgs::srv::Panorama::Response& response_,
                              std::vector<cv::Mat>& frames_)
 {
@@ -250,7 +250,7 @@ bool Panorama::captureFrames(const rover_msgs::srv::Panorama::Request& request_,
     return true;
 }
 
-void Panorama::annotatePanorama(cv::Mat& pano_, const std::string& name_)
+void PanoramaManager::annotatePanorama(cv::Mat& pano_, const std::string& name_)
 {
     std::string gpsCoord
         = "latitude: " + std::to_string(_sGpsCoordinates.latitude) + ", longitude: " + std::to_string(_sGpsCoordinates.longitude);
@@ -262,7 +262,7 @@ void Panorama::annotatePanorama(cv::Mat& pano_, const std::string& name_)
     cv::putText(pano_, text, cv::Point(10, height), cv::FONT_HERSHEY_SIMPLEX, FONT_SCALE, TEXT_COLOR, TEXT_THICKNESS);
 }
 
-bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& request_,
+bool PanoramaManager::prepareOutputPath(const rover_msgs::srv::Panorama::Request& request_,
                                  rover_msgs::srv::Panorama::Response& response_,
                                  std::string& filename_)
 {
@@ -294,7 +294,7 @@ bool Panorama::prepareOutputPath(const rover_msgs::srv::Panorama::Request& reque
     return true;
 }
 
-bool Panorama::savePanorama(rover_msgs::srv::Panorama::Response& response_, const std::string& filename_, const cv::Mat& pano_)
+bool PanoramaManager::savePanorama(rover_msgs::srv::Panorama::Response& response_, const std::string& filename_, const cv::Mat& pano_)
 {
     try
     {
@@ -316,7 +316,7 @@ bool Panorama::savePanorama(rover_msgs::srv::Panorama::Response& response_, cons
     return true;
 }
 
-void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
+void PanoramaManager::rotateCamera(uint16_t duration_, uint8_t idCam_)
 {
     float totalPanDeg = static_cast<float>(duration_) / 1000.0F * MAX_ROTATION_SPEED_PANORAMA;
     float targetRotationSpeed = MAX_ROTATION_SPEED_PANORAMA;
@@ -356,7 +356,7 @@ void Panorama::rotateCamera(uint16_t duration_, uint8_t idCam_)
                                             });
 }
 
-void Panorama::waitForAngle(uint8_t idCam_, float angle_)
+void PanoramaManager::waitForAngle(uint8_t idCam_, float angle_)
 {
     std::promise<void> angleReachedPromise;
     std::future<void> angleReachedFuture = angleReachedPromise.get_future();
@@ -379,7 +379,7 @@ void Panorama::waitForAngle(uint8_t idCam_, float angle_)
     }
 }
 
-void Panorama::configPtz(uint8_t idCam_, float rotationSpeed_)
+void PanoramaManager::configPtz(uint8_t idCam_, float rotationSpeed_)
 {
     rover_msgs::msg::CameraConfig configMsg;
     configMsg.tilt_max_speed = rotationSpeed_;
@@ -392,7 +392,7 @@ void Panorama::configPtz(uint8_t idCam_, float rotationSpeed_)
     _pub_cameraConfig->publish(configMsg);
 }
 
-std::optional<uint8_t> Panorama::getIdCam(const std::string& camURL_)
+std::optional<uint8_t> PanoramaManager::getIdCam(const std::string& camURL_)
 {
     if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
         || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
@@ -412,7 +412,7 @@ std::optional<uint8_t> Panorama::getIdCam(const std::string& camURL_)
     return std::nullopt;
 }
 
-void Panorama::enableCameraPower(uint8_t id_)
+void PanoramaManager::enableCameraPower(uint8_t id_)
 {
     rover_msgs::msg::CameraControl msg;
     msg.id_cam = id_;
@@ -425,7 +425,7 @@ void Panorama::enableCameraPower(uint8_t id_)
                                               });
 }
 
-void Panorama::disableCameraPower(uint8_t id_)
+void PanoramaManager::disableCameraPower(uint8_t id_)
 {
     if (_timer_powerCmd)
     {
@@ -441,7 +441,7 @@ void Panorama::disableCameraPower(uint8_t id_)
 int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
-    rclcpp::spin(std::make_shared<Panorama>());
+    rclcpp::spin(std::make_shared<PanoramaManager>());
     rclcpp::shutdown();
     return 0;
 }

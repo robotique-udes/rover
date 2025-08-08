@@ -15,7 +15,7 @@ struct sCoordinate
     float longitude = 0.0F;
 };
 
-class Panorama : public rclcpp::Node
+class PanoramaManager : public rclcpp::Node
 {
   private:
     static constexpr float MAX_ROTATION_SPEED_PANORAMA = 15.0F;  // deg/s
@@ -43,7 +43,7 @@ class Panorama : public rclcpp::Node
         = " latency=0 drop=true ! decodebin ! videorate max-rate=2 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
   public:
-    Panorama();
+    PanoramaManager();
 
   private:
     void CB_srvPanorama(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_);
