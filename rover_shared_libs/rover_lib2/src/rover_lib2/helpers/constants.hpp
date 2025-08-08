@@ -54,7 +54,7 @@ namespace Constants
             {"Arm-Side", "rtsp://192.168.144.36:554/1/h264major"},
         }};
 
-        std::optional<std::size_t> getIdFromURL(const std::string& url_);
+        std::optional<eCamNames> getIdFromURL(const std::string& url_);
 
         static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
 

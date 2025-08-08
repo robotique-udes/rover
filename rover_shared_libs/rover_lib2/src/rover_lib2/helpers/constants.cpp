@@ -5,16 +5,14 @@ namespace Constants::CameraInfo
 {
 #if defined(__linux__)
 
-    std::optional<std::size_t> getIdFromURL(const std::string& url_)
+    std::optional<eCamNames> getIdFromURL(const std::string& url_)
     {
-        std::size_t idCam = 0;
-        for (const auto& [key, url] : CAMERA_INFO)
+        for (std::size_t id = 0; id < std::to_underlying(eCamNames::eLast); ++id)
         {
-            if (url == url_)
+            if (CAMERA_INFO[id][std::to_underlying(eInfoType::URL)] == url_)
             {
-                return idCam;
+                return static_cast<eCamNames>(id);
             }
-            ++idCam;
         }
         return std::nullopt;
     }
