@@ -3,20 +3,28 @@
 namespace Constants::CameraInfo
 {
 #if defined(__linux__)
-
-    std::optional<std::size_t> getIdFromURL(const std::string& url_)
+    bool getNameFromURL(const std::string& url_, std::string& rName_)
     {
-        std::size_t idCam = 0;
-        for (const auto& [key, url] : CAMERA_URL_MAP)
+        static std::map<std::string, std::string> cameraNameMap = []()
         {
-            if (url == url_)
+            std::map<std::string, std::string> tempMap;
+            for (const auto& [key, value] : Constants::CameraInfo::CAMERA_URL_MAP)
             {
-                return idCam;
+                tempMap[value] = key;
             }
-            ++idCam;
-        }
-        return std::nullopt;
-    }
+            return tempMap;
+        }();
 
+        auto it = cameraNameMap.find(url_);
+        if (it != cameraNameMap.end())
+        {
+            rName_ = it->second;
+            return true;
+        }
+        else
+        {
+            return false;
+        }
+    }
 #endif  // defined(__linux__)
 }  // namespace Constants::CameraInfo
