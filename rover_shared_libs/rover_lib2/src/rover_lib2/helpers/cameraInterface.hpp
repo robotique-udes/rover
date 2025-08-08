@@ -30,13 +30,13 @@ class CameraInterface
                     const std::string& ptzConfigTopic_,
                     const std::string& powerCommandTopic_);
 
-    void setPTZCmd(rover_msgs::msg::CameraControl goalMsg_, Constants::CameraInfo::eCamNames id_);
+    void setPTZCmd(const rover_msgs::msg::CameraControl& goalMsg_, Constants::CameraInfo::eCamNames id_);
     rover_msgs::msg::CameraControl getPTZCmd(Constants::CameraInfo::eCamNames id_) const;
 
-    void setPTZConfig(rover_msgs::msg::CameraConfig configMsg_, Constants::CameraInfo::eCamNames id_);
+    void setPTZConfig(const rover_msgs::msg::CameraConfig& configMsg_, Constants::CameraInfo::eCamNames id_);
     rover_msgs::msg::CameraConfig getPtzConfig(Constants::CameraInfo::eCamNames id_) const;
 
-    void setPowerCmd(rover_msgs::msg::CameraControl powerMsg_, Constants::CameraInfo::eCamNames id_);
+    void setPowerCmd(const rover_msgs::msg::CameraControl& powerMsg_, Constants::CameraInfo::eCamNames id_);
     rover_msgs::msg::CameraControl getPowerCmd(Constants::CameraInfo::eCamNames id_) const;
 
     void release(Constants::CameraInfo::eCamNames id_);
@@ -56,9 +56,9 @@ class CameraInterface
     void CB_publishPtzConfig(void);
     void CB_publishPowerCmd(void);
 
-    void CB_subscriberPowerStatus(rover_msgs::msg::CameraControl statusMsg_);
-    void CB_subscriberPtzStatus(rover_msgs::msg::CameraControl statusMsg_);
-    void CB_subscriberTopicWithPriority(rover_msgs::msg::TopicWithPriority topicLists_);
+    void CB_subscriberPowerStatus(const rover_msgs::msg::CameraControl& statusMsg_);
+    void CB_subscriberPtzStatus(const rover_msgs::msg::CameraControl& statusMsg_);
+    void CB_subscriberTopicWithPriority(const rover_msgs::msg::TopicWithPriority& topicLists_);
 
     std::string _ptzCommandTopic;
     std::string _ptzConfigTopic;

@@ -25,7 +25,7 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
     }
 }
 
-void CameraInterface::setPTZCmd(rover_msgs::msg::CameraControl goalMsg_, Constants::CameraInfo::eCamNames id_)
+void CameraInterface::setPTZCmd(const rover_msgs::msg::CameraControl& goalMsg_, Constants::CameraInfo::eCamNames id_)
 {
     if (id_ == Constants::CameraInfo::eCamNames::eLast)
     {
@@ -45,7 +45,7 @@ rover_msgs::msg::CameraControl CameraInterface::getPTZCmd(Constants::CameraInfo:
     return _lastPtzCmdMsg[std::to_underlying(id_)];
 }
 
-void CameraInterface::setPTZConfig(rover_msgs::msg::CameraConfig configMsg_, Constants::CameraInfo::eCamNames id_)
+void CameraInterface::setPTZConfig(const rover_msgs::msg::CameraConfig& configMsg_, Constants::CameraInfo::eCamNames id_)
 {
     if (id_ == Constants::CameraInfo::eCamNames::eLast)
     {
@@ -65,7 +65,7 @@ rover_msgs::msg::CameraConfig CameraInterface::getPtzConfig(Constants::CameraInf
     return _lastPtzConfigMsg[std::to_underlying(id_)];
 }
 
-void CameraInterface::setPowerCmd(rover_msgs::msg::CameraControl powerMsg_, Constants::CameraInfo::eCamNames id_)
+void CameraInterface::setPowerCmd(const rover_msgs::msg::CameraControl& powerMsg_, Constants::CameraInfo::eCamNames id_)
 {
     if (id_ == Constants::CameraInfo::eCamNames::eLast)
     {
@@ -177,9 +177,14 @@ void CameraInterface::initPub()
 
 void CameraInterface::CB_publishPtzCmd(void)
 {
+    if(!_node)
+    {
+        return;
+    }
+
     for (size_t i = 0; i < _isCamConcerned.size(); ++i)
     {
-        if (_node && _isCamConcerned[i])
+        if (_isCamConcerned[i])
         {
             _pub_PTZCmd->publish(_lastPtzCmdMsg[i]);
         }
@@ -188,9 +193,14 @@ void CameraInterface::CB_publishPtzCmd(void)
 
 void CameraInterface::CB_publishPtzConfig(void)
 {
+    if(!_node)
+    {
+        return;
+    }
+
     for (size_t i = 0; i < _isCamConcerned.size(); ++i)
     {
-        if (_node && _isCamConcerned[i])
+        if (_isCamConcerned[i])
         {
             _pub_configCmd->publish(_lastPtzConfigMsg[i]);
         }
@@ -199,22 +209,27 @@ void CameraInterface::CB_publishPtzConfig(void)
 
 void CameraInterface::CB_publishPowerCmd(void)
 {
+    if(!_node)
+    {
+        return;
+    }
+
     for (size_t i = 0; i < _isCamConcerned.size(); ++i)
     {
-        if (_node && _isCamConcerned[i])
+        if (_isCamConcerned[i])
         {
             _pub_powerCmd->publish(_lastPowerMsg[i]);
         }
     }
 }
 
-void CameraInterface::CB_subscriberPowerStatus(rover_msgs::msg::CameraControl statusMsg_)
+void CameraInterface::CB_subscriberPowerStatus(const rover_msgs::msg::CameraControl& statusMsg_)
 {
     size_t id = statusMsg_.id_cam;
     _lastPowerStatusMsg[id] = statusMsg_;
 }
 
-void CameraInterface::CB_subscriberPtzStatus(rover_msgs::msg::CameraControl statusMsg_)
+void CameraInterface::CB_subscriberPtzStatus(const rover_msgs::msg::CameraControl& statusMsg_)
 {
     size_t id = statusMsg_.id_cam;
     _lastPowerStatusMsg[id] = statusMsg_;
@@ -230,7 +245,7 @@ void CameraInterface::CB_subscriberPtzStatus(rover_msgs::msg::CameraControl stat
     }
 }
 
-void CameraInterface::CB_subscriberTopicWithPriority(rover_msgs::msg::TopicWithPriority topicLists_)
+void CameraInterface::CB_subscriberTopicWithPriority(const rover_msgs::msg::TopicWithPriority& topicLists_)
 {
     for (size_t i = 0; i < _topicWithPriority.size(); ++i)
     {
