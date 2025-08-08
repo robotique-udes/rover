@@ -1,4 +1,5 @@
 #include "panorama.hpp"
+
 #include <sys/stat.h>
 #include <rover_lib2/helpers/folders.hpp>
 #include <rover_lib2/helpers/date.hpp>
@@ -36,6 +37,8 @@ void Panorama::CB_srvPanorama(const rover_msgs::srv::Panorama::Request& request_
         response_.status = "Invalid camera URL";
         return;
     }
+
+    std::chrono::milliseconds duration = std::chrono::milliseconds(request_.duration);
 
     this->enableCameraPower(*idCam);
     this->handlePanoramaRequest(request_, response_, *idCam);
@@ -113,14 +116,14 @@ std::optional<cv::Mat> Panorama::warpCorrection(const cv::Mat& pano)
         return std::nullopt;
     }
 
-    int width = pano.cols;
-    int height = pano.rows;
+    const int width = pano.cols;
+    const int height = pano.rows;
 
-    int marginX = width * CROP_PERCENT;
-    int marginY = height * CROP_PERCENT;
+    const int marginX = width * CROP_PERCENT;
+    const int marginY = height * CROP_PERCENT;
 
-    int cropWidth = std::max(1, width - 2 * marginX);
-    int cropHeight = std::max(1, height - 2 * marginY);
+    const int cropWidth = std::max(1, width - 2 * marginX);
+    const int cropHeight = std::max(1, height - 2 * marginY);
 
     if (cropWidth <= 0 || cropHeight <= 0)
     {

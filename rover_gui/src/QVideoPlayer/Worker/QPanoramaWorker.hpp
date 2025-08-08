@@ -1,11 +1,12 @@
 #ifndef PANORAMA_WORKER_HPP
 #define PANORAMA_WORKER_HPP
 
+#include "rclcpp/rclcpp.hpp"
+#include "Global/Workers/QWorker.hpp"
+
 #include <QObject>
 #include <QString>
-#include "rclcpp/rclcpp.hpp"
 #include <rover_msgs/srv/panorama.hpp>
-#include "Global/Workers/QWorker.hpp"
 
 class QPanoramaWorker : public QWorker
 {
@@ -13,8 +14,8 @@ class QPanoramaWorker : public QWorker
 
   private:
     static constexpr const char* CAMERA_PATH = "/camera";
-    static constexpr uint16_t SERVICE_TIMEOUT_MS
-        = 4'000U;  // Additional time to account for initializing camera position, stitching the frames and correction warp
+    static constexpr std::chrono::milliseconds SERVICE_TIMEOUT_MS
+        = std::chrono::milliseconds(4'000U);  // Additional time to account for initializing camera position, stitching the frames and correction warp
 
   public:
     QPanoramaWorker(bool start_ = false, QObject* parent_ = nullptr);
