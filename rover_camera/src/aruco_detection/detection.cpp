@@ -52,7 +52,8 @@ void Detection::update(bool debugMode_)
             it->second.addValue(static_cast<uint16_t>(1));
             detectedIds.erase(found);
 
-            if (it->second.getFilteredValue() > VALIDATION_THRESHOLD && std::ranges::find(_validatedIds, id) == _validatedIds.end())
+            if (it->second.getFilteredValue() > VALIDATION_THRESHOLD
+                && std::ranges::find(_validatedIds, id) == _validatedIds.end())
             {
                 _validatedIds.push_back(id);
             }
