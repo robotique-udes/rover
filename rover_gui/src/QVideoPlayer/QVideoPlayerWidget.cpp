@@ -1,6 +1,7 @@
 #include "QVideoPlayerWidget.hpp"
 #include "QLogManager.hpp"
 #include <Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp>
+#include "rover_lib2/helpers/constants.hpp"
 #include <QStyle>
 #include <QDateTime>
 #include <QMessageBox>
@@ -8,6 +9,7 @@
 #include <QRegularExpression>
 #include <optional>
 #include <gst/video/videooverlay.h>
+#include <utility>
 
 using namespace LogUtils;
 
@@ -932,8 +934,11 @@ void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
 
 void QVideoPlayerWidget::hideAngleSelector(void)
 {
-    if (_camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main")
-        || _camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    if (_camURL
+            == Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)]
+                                                 [std::to_underlying(Constants::CameraInfo::eInfoType::URL)]
+        || Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)]
+                                             [std::to_underlying(Constants::CameraInfo::eInfoType::URL)])
     {
         _ui.cameraAngleSlider->show();
         _ui.cameraAngleBox->show();

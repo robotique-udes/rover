@@ -1,7 +1,9 @@
 #include "QVideoManagerWidget.hpp"
 #include "QLogManager.hpp"
 #include "rover_lib2/helpers/assert.hpp"
+#include "rover_lib2/helpers/constants.hpp"
 #include <QString>
+#include <utility>
 
 using namespace LogUtils;
 
@@ -160,10 +162,16 @@ void QVideoManagerWidget::initWidget(void)
     for (size_t i = 0UL; i < NBR_CAM_TO_TRACK; ++i)
     {
         std::string cameraUrl = "";
-        if (i < CAMERA_NAME_ORDER.size()
-            && Constants::CameraInfo::CAMERA_URL_MAP.find(CAMERA_NAME_ORDER[i]) != Constants::CameraInfo::CAMERA_URL_MAP.end())
+        if (i < CAMERA_NAME_ORDER.size())
         {
-            cameraUrl = Constants::CameraInfo::CAMERA_URL_MAP.at(CAMERA_NAME_ORDER[i]);
+            if (i >= std::to_underlying(Constants::CameraInfo::eCamNames::eLast))
+            {
+                cameraUrl = "";
+            }
+            else
+            {
+                cameraUrl = Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::URL)];
+            }
         }
         else if (i < CAMERA_NAME_ORDER.size())
         {
@@ -316,23 +324,17 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
 
 void QVideoManagerWidget::CB_pubCameraAngle(void)
 {
-    if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
-        || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Can't publish camera angles. Coulnd't find 'Main' or 'Antenna' in camera map!");
-        return;
-    }
-
     for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
     {
         std::string camURL = widget->getCamURL();
+        Constants::CameraInfo::eCamNames id = Constants::CameraInfo::getIdFromURL(camURL);
         rover_msgs::msg::CameraControl msg;
 
-        if (camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))
+        if (id == Constants::CameraInfo::eCamNames::MAIN)
         {
             msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_MAIN;
         }
-        else if (camURL == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+        else if (camURL == Constants::CameraInfo::eCamNames::ANTENNA)
         {
             msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
         }
