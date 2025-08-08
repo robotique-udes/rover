@@ -177,7 +177,7 @@ void CameraInterface::initPub()
 
 void CameraInterface::CB_publishPtzCmd(void)
 {
-    if(!_node)
+    if (!_node)
     {
         return;
     }
@@ -193,7 +193,7 @@ void CameraInterface::CB_publishPtzCmd(void)
 
 void CameraInterface::CB_publishPtzConfig(void)
 {
-    if(!_node)
+    if (!_node)
     {
         return;
     }
@@ -209,7 +209,7 @@ void CameraInterface::CB_publishPtzConfig(void)
 
 void CameraInterface::CB_publishPowerCmd(void)
 {
-    if(!_node)
+    if (!_node)
     {
         return;
     }
