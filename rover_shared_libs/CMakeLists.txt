@@ -13,6 +13,7 @@ file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS
 )
 
 find_package(rover_msgs REQUIRED)
+find_package(rclcpp REQUIRED)
 
 add_library(rover_shared_libs ${LIB_HEADERS} ${LIB_SOURCES})
 
@@ -27,7 +28,7 @@ target_include_directories(rover_shared_libs PUBLIC
 
 target_compile_features(rover_shared_libs PUBLIC cxx_std_23)
 target_compile_options(rover_shared_libs PRIVATE -Wall -Wextra -Wpedantic)
-target_compile_definitions(rover_shared_libs INTERFACE ROS)
+target_compile_definitions(rover_shared_libs PUBLIC ROS)
 
 install(TARGETS rover_shared_libs
         EXPORT rover_shared_libsTargets
