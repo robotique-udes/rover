@@ -1,6 +1,6 @@
 #!/bin/sh
 
-/usr/bin/slcand -o -c -s3 /dev/ttyRovus canRovus
+/usr/bin/slcand -o -c -s8 /dev/ttyRovus canRovus
 
 sleep 1
 

@@ -4,6 +4,7 @@
 #if defined(__linux__)
 #include <string>
 #include <vector>
+#include <optional>
 
 namespace Folders
 {
@@ -32,6 +33,13 @@ namespace Folders
      * @return std::vector<std::string>
      */
     std::vector<std::string> splitPath(const std::string& path);
+
+    /**
+     * @brief Get the Home environment variable
+     *
+     * @return std::optional<std::string>
+     */
+    std::optional<std::string> getHome();
 }  // namespace Folders
 
 #endif  //(__linux__)
