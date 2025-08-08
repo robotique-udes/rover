@@ -1,0 +1,9 @@
+uint8 id_cam
+
+float32 pan_max_position
+float32 pan_min_position
+float32 pan_max_speed
+
+float32 tilt_max_position
+float32 tilt_min_position
+float32 tilt_max_speed
