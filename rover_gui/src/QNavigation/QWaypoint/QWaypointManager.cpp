@@ -215,3 +215,8 @@ void QWaypointManager::writeJsonFile(const std::string& filePath, const Json::Va
     writer->write(root, &outputFile);
     outputFile.close();
 }
+
+void QWaypointManager::syncWaypoints(QString& waypointList_)
+{
+
+}
