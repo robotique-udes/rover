@@ -33,7 +33,7 @@ class QWaypointManager
 
     void addWaypointToJson(const sWaypoint& waypoint_);
     void deleteWaypointFromJson(const std::string& index_);
-    void syncWaypoints(const QList<sWaypoint>& waypointList_);
+    void syncWaypoints(QList<sWaypoint>& waypointList_);
 
   private:
     std::optional<QList<sWaypoint>> loadWaypointsFromJson(void);
@@ -42,11 +42,17 @@ class QWaypointManager
     std::optional<Json::Value> readJsonFile(const std::string& filePath);
     void writeJsonFile(const std::string& filePath, const Json::Value& root);
 
-    std::set<std::string> getJsonIds();
-    std::set<std::string> getListIds(const QList<sWaypoint> waypointList_);
+    std::set<std::string> getJsonIds(const Json::Value& waypointsArray_);
+    std::set<std::string> getListIds(const QList<sWaypoint>& waypointList_);
 
-    void addMissingToList(std::set<std::string> jsonIds_, std::set<std::string> listIds_, const QList<sWaypoint> waypointsList_);
-    void addMissingToJson(std::set<std::string> jsonIds_, std::set<std::string> listIds_, const QList<sWaypoint> waypointsList_);
+    void addMissingWaypointsToList(std::set<std::string>& jsonIds_,
+                                   std::set<std::string>& listIds_,
+                                   QList<sWaypoint>& waypointsList_,
+                                   const Json::Value& waypointsArray_);
+    void addMissingWaypointsToJson(std::set<std::string>& jsonIds_,
+                                   std::set<std::string>& listIds_,
+                                   const QList<sWaypoint>& waypointsList_,
+                                   Json::Value& waypointsArray_);
 
     std::string _sessionFolderPath;
 };
