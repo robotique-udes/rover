@@ -64,4 +64,17 @@ std::vector<std::string> Folders::splitPath(const std::string& path_)
     return subdirectories;
 }
 
+std::optional<std::string> Folders::getHome()
+{
+    const char* home = std::getenv("HOME");
+    std::string homeStr;
+    if (home != nullptr)
+    {
+        homeStr = home;
+        return homeStr;
+    }
+
+    return std::nullopt;
+}
+
 #endif  //(__linux__)
