@@ -27,7 +27,6 @@ class MapManager
 
         this.camera = new Camera(this.viewer);
         this.waypointManager = new Waypoint(this.viewer);
-        this.bridge = new Bridge(this.viewer, null, this.waypointManager, this.camera, { latitude: 45.377755, longitude: -71.924652 });
         this.roverEntity = this.viewer.entities.add({
                 name: "Live Position Arrow",
                 position: Cesium.Cartesian3.fromDegrees(0.0, 0.0, 0),
@@ -48,7 +47,7 @@ class MapManager
             }, false)
         });
 
-        this.bridge.rover = this.roverEntity;
+        this.bridge = new Bridge(this.viewer, this.roverEntity, this.waypointManager, this.camera, { latitude: 45.377755, longitude: -71.924652 });
 
         this.#setupEventHandlers();
     }
