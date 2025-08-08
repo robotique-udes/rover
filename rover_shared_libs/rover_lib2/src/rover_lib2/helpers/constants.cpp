@@ -1,39 +1,30 @@
 #include "constants.hpp"
-#include <cstddef>
 
 namespace Constants::CameraInfo
 {
 #if defined(__linux__)
     bool getNameFromURL(const std::string& url_, std::string& rName_)
     {
-        for (const auto& camera : CAMERA_INFO)
+        static std::map<std::string, std::string> cameraNameMap = []()
         {
-            const char* name = camera[static_cast<size_t>(CameraInfo::eInfoType::NAME)];
-            const char* url = camera[static_cast<size_t>(CameraInfo::eInfoType::URL)];
-
-            if (url_ == url)
+            std::map<std::string, std::string> tempMap;
+            for (const auto& [key, value] : Constants::CameraInfo::CAMERA_URL_MAP)
             {
-                rName_ = name;
-                return true;
+                tempMap[value] = key;
             }
-        }
-        return false;
-    }
+            return tempMap;
+        }();
 
-    eCamNames getIndexFromName(const std::string& name_)
-    {
-        size_t index = 0;
-        for (const auto& camera : CAMERA_INFO)
+        auto it = cameraNameMap.find(url_);
+        if (it != cameraNameMap.end())
         {
-            const char* name = camera[static_cast<size_t>(CameraInfo::eInfoType::NAME)];
-
-            if (name == name_)
-            {
-                return static_cast<eCamNames>(index);
-            }
-            index++;
+            rName_ = it->second;
+            return true;
         }
-        return eCamNames::eLast;
+        else
+        {
+            return false;
+        }
     }
 #endif  // defined(__linux__)
 }  // namespace Constants::CameraInfo

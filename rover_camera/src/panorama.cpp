@@ -372,12 +372,20 @@ void Panorama::configPtz(uint8_t idCam_, float rotationSpeed_)
 
 std::optional<uint8_t> Panorama::getIdCam(const std::string& camURL_)
 {
-    std::string name;
-    Constants::CameraInfo::getNameFromURL(camURL_, name);
-    Constants::CameraInfo::eCamNames idCam = Constants::CameraInfo::getIndexFromName(name);
-    if (idCam == Constants::CameraInfo::eCamNames::MAIN || idCam == Constants::CameraInfo::eCamNames::ANTENNA)
+    if (Constants::CameraInfo::CAMERA_URL_MAP.find("Main") == Constants::CameraInfo::CAMERA_URL_MAP.end()
+        || Constants::CameraInfo::CAMERA_URL_MAP.find("Antenna") == Constants::CameraInfo::CAMERA_URL_MAP.end())
     {
-        return static_cast<uint8_t>(std::to_underlying(idCam));
+        RCLCPP_ERROR(this->get_logger(), "Can't publish camera angles. Coulnd't find 'Main' or 'Antenna' in camera map!");
+        return std::nullopt;
+    }
+
+    if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Main"))
+    {
+        return rover_msgs::msg::CameraControl::ID_CAM_MAIN;
+    }
+    else if (camURL_ == Constants::CameraInfo::CAMERA_URL_MAP.at("Antenna"))
+    {
+        return rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
     }
     return std::nullopt;
 }
