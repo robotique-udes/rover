@@ -34,7 +34,7 @@ class CameraInterfaceTest : public rclcpp::Node
             {
                 if (_testCameraInterfaceGUI->isGoalReached(TEST_CAM_B_ID))
                 {
-                    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "GOAL REACHED ON %ld ", TEST_CAM_B_ID);
+                    RCLCPP_INFO(rclcpp::get_logger("CAMERA_SIM"), "GOAL REACHED ON %ld ", std::to_underlying(TEST_CAM_B_ID));
                 }
             });
     }
