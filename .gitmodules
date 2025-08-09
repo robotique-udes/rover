@@ -4,3 +4,6 @@
 [submodule "deps/jsoncpp"]
 	path = deps/jsoncpp
 	url = git@github.com:open-source-parsers/jsoncpp.git
+[submodule "deps/csv-parser"]
+	path = deps/csv-parser
+	url = git@github.com:vincentlaucsb/csv-parser.git

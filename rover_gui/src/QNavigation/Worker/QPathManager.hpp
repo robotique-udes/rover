@@ -10,6 +10,8 @@
 class QPathManager : public QWorker
 {
     Q_OBJECT
+
+    static constexpr const char* NAVIGATION_PATH = "/Navigation";
     static constexpr const char* POSITION_FILE_PATH = "/position.csv";
 
   signals:
@@ -24,6 +26,9 @@ class QPathManager : public QWorker
 
   private:
     void writePosToCSVInternal(double latitude_, double longitude_);
+    std::string findLastSessionFolder(void);
+    void readFromCSV(std::string filePath_);
+
     std::string _sessionFolderPath;
 };
 
