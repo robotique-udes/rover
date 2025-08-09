@@ -4,6 +4,7 @@
 #include "robot_controller.hpp"
 #include "Eigen/Dense"
 #include "rover_lib2/helpers/log.hpp"
+#include <numbers>
 #include <rclcpp/logger.hpp>
 #include <utility>
 
@@ -108,15 +109,15 @@ class CartesianController : public RobotController
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
         }
 
-        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
-        {
-            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-        }
-        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
-        {
-            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
-                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-        }
+//        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
+//        {
+//            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+//        }
+//        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
+//        {
+//            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+//                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+//        }
 
         if (_planApplied)
         {
@@ -156,9 +157,9 @@ class CartesianController : public RobotController
         RCLCPP_INFO(rclcpp::get_logger("dick"),
                     "Command requested: x: %f, y: %f, z: %f, a: %f",
                     _desiredCartesian[std::to_underlying(eCartesianInput::X)],
-                    _jointPositions[std::to_underlying(eCartesianInput::Y)],
-                    _jointPositions[std::to_underlying(eCartesianInput::Z)],
-                    _jointPositions[std::to_underlying(eCartesianInput::ALPHA)]);
+                    _desiredCartesian[std::to_underlying(eCartesianInput::Y)],
+                    _desiredCartesian[std::to_underlying(eCartesianInput::Z)],
+                    _desiredCartesian[std::to_underlying(eCartesianInput::ALPHA)]);
 
         Eigen::Map<
             Eigen::Matrix<float, TO_UNDERLYING(eCartesianInput::eLAST), TO_UNDERLYING(eCartesianQ::eLAST), Eigen::RowMajor>>
