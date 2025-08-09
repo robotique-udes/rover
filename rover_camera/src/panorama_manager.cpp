@@ -1,14 +1,8 @@
 #include "panorama_manager.hpp"
 
-#include <sys/stat.h>
-#include <rover_lib2/helpers/folders.hpp>
-#include <rover_lib2/helpers/date.hpp>
-#include <rover_lib2/helpers/macros.hpp>
-#include <rover_lib2/helpers/constants.hpp>
-
 PanoramaManager::PanoramaManager():
     Node("PanoramaManager"),
-    _cameraInterface(std::make_shared<CameraInterface>(this,
+    _cameraInterface(std::make_shared<CameraInterface>(this->shared_from_this(),
                                                        TOPIC_CAMERA_PTZ_CMD_PANORAMA,
                                                        TOPIC_CAMERA_CONFIG_PANORAM,
                                                        TOPIC_CAMERA_POWER_PANORAMA))
@@ -40,7 +34,7 @@ void PanoramaManager::CB_srvPanorama(const rover_msgs::srv::Panorama::Request& r
         return;
     }
 
-    _panoramaProcessors[std::to_underlying(idCam)].execute(request_, response_, _sGpsCoordinates);
+    _panoramaProcessors[std::to_underlying(*idCam)]->execute(request_, response_, *idCam, _sGpsCoordinates);
 }
 
 void PanoramaManager::setGpsPosition(const rover_msgs::msg::Gps& gpsMsg_)
@@ -53,7 +47,7 @@ void PanoramaManager::initPanoramaProcessor(void)
 {
     for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
     {
-        _panoramaProcessors[id] = PanoramaProcessor(static_cast<Constants::CameraInfo::eCamNames>(id));
+        _panoramaProcessors[id] = std::make_unique<PanoramaProcessor>(this->shared_from_this(), static_cast<Constants::CameraInfo::eCamNames>(id), _cameraInterface);
     }
 }
 

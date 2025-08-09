@@ -38,7 +38,8 @@ target_link_libraries(aruco_detection
                           ${OpenCV_LIBS}
                           rover_shared_libs)
                 
-add_executable(panorama src/panorama_manager.cpp)
+add_executable(panorama src/panorama_manager.cpp
+                        src/panorama_processor.cpp)
                           
 ament_target_dependencies(panorama
                           rclcpp

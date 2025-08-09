@@ -66,11 +66,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
-
-    for (const char* url : CAMERA_NAME_ORDER)
-    {
-        _cameraUrls.push_back(Constants::CameraInfo::CAMERA_URL_MAP.at(url));
-    }
 }
 
 void QVideoManagerWidget::onTabChanged(uint16_t index_)
@@ -327,16 +322,17 @@ void QVideoManagerWidget::CB_pubCameraAngle(void)
     for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
     {
         std::string camURL = widget->getCamURL();
-        Constants::CameraInfo::eCamNames id = Constants::CameraInfo::getIdFromURL(camURL);
+        std::optional<Constants::CameraInfo::eCamNames> id = Constants::CameraInfo::getIdFromURL(camURL);
         rover_msgs::msg::CameraControl msg;
 
-        if (id == Constants::CameraInfo::eCamNames::MAIN)
+        if(!id)
         {
-            msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_MAIN;
+            continue;
         }
-        else if (camURL == Constants::CameraInfo::eCamNames::ANTENNA)
+
+        if (*id == Constants::CameraInfo::eCamNames::MAIN || *id == Constants::CameraInfo::eCamNames::ANTENNA)
         {
-            msg.id_cam = rover_msgs::msg::CameraControl::ID_CAM_ANTENNA;
+            msg.id_cam = std::to_underlying(*id);
         }
         else
         {
@@ -376,8 +372,7 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
         QOS_DEFAULT,
         [this](const rover_msgs::msg::CameraControl msg)
         {
-            if (msg.id_cam >= rover_msgs::msg::CameraControl::ID_CAM_MAX
-                || msg.id_cam >= Constants::CameraInfo::CAMERA_URL_MAP.size())
+            if (msg.id_cam >= std::to_underlying(Constants::CameraInfo::eCamNames::eLast))
             {
                 QHelper::QToastNotification::getInstance().notifyFromAnyThread(
                     "Invalid message was received from /rover/camera/PTZ_status",
@@ -387,7 +382,7 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
             }
             for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
             {
-                emit widget->updateActualAngle(_cameraUrls[msg.id_cam], msg.yaw);
+                emit widget->updateActualAngle(Constants::CameraInfo::CAMERA_INFO[static_cast<size_t>(msg.id_cam)][std::to_underlying(Constants::CameraInfo::eInfoType::URL)], msg.yaw);
             }
         });
 }

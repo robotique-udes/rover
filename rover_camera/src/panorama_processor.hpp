@@ -43,18 +43,20 @@ class PanoramaProcessor
         = " latency=0 drop=true ! decodebin ! videorate max-rate=2 ! videoconvert ! queue max-size-buffers=1 ! appsink";
 
   public:
-    PanoramaProcessor(Constants::CameraInfo::eCamNames id_, std::shared_ptr<CameraInterface> cameraInterface_);
+    PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_, Constants::CameraInfo::eCamNames id_, std::shared_ptr<CameraInterface> cameraInterface_);
     ~PanoramaProcessor();
 
     void execute(const rover_msgs::srv::Panorama::Request& request_,
                  rover_msgs::srv::Panorama::Response& response_,
+                 Constants::CameraInfo::eCamNames id_,
                  sCoordinate coordinates_);
     bool isBusy(void);
 
   private:
     void handlePanoramaRequest(const rover_msgs::srv::Panorama::Request& request_,
                                rover_msgs::srv::Panorama::Response& response_,
-                               Constants::CameraInfo::eCamNames id_, sCoordinate coordinates_);
+                               Constants::CameraInfo::eCamNames id_,
+                               sCoordinate coordinates_);
     void enableCameraPower(Constants::CameraInfo::eCamNames id_);
     void disableCameraPower(Constants::CameraInfo::eCamNames id_);
     bool validateRequest(const rover_msgs::srv::Panorama::Request& request_, rover_msgs::srv::Panorama::Response& response_);
@@ -67,7 +69,7 @@ class PanoramaProcessor
                            std::string& filename_);
     bool savePanorama(rover_msgs::srv::Panorama::Response& response_, const std::string& filename_, const cv::Mat& pano_);
     std::optional<cv::Mat> warpCorrection(const cv::Mat& pano_);
-    void rotateCamera(uint16_t duration_, Constants::CameraInfo::eCamNames id_);
+    void rotateCamera(std::chrono::milliseconds duration_, Constants::CameraInfo::eCamNames id_);
     void waitForAngle(Constants::CameraInfo::eCamNames id_, float angle_);
     std::optional<std::string> getFolderPath(const std::string& basePath_);
     std::optional<cv::Mat> stitchFrames(std::vector<cv::Mat>& frames_);
@@ -80,6 +82,7 @@ class PanoramaProcessor
      */
     void configPtz(Constants::CameraInfo::eCamNames id_, float rotationSpeed_);
 
+    std::weak_ptr<rclcpp::Node> _node;
     std::atomic<bool> _busy{false};
     Constants::CameraInfo::eCamNames _id;
     std::shared_ptr<CameraInterface> _cameraInterface;

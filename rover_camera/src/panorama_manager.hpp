@@ -25,6 +25,6 @@ class PanoramaManager : public rclcpp::Node
     rclcpp::Service<rover_msgs::srv::Panorama>::SharedPtr _srv_panorama;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_gps;
     sCoordinate _sGpsCoordinates;
-    std::array<PanoramaProcessor, std::to_underlying(Constants::CameraInfo::eCamNames::eLast) _panoramaProcessors;
+    std::array<std::unique_ptr<PanoramaProcessor>, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _panoramaProcessors;
     std::shared_ptr<CameraInterface> _cameraInterface;
 };

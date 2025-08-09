@@ -1,6 +1,15 @@
 #include "panorama_processor.hpp"
 
-PanoramaProcessor::PanoramaProcessor(Constants::CameraInfo::eCamNames id_, std::shared_ptr<CameraInterface> cameraInterface_):
+#include <sys/stat.h>
+#include <rover_lib2/helpers/folders.hpp>
+#include <rover_lib2/helpers/date.hpp>
+#include <rover_lib2/helpers/macros.hpp>
+#include <rover_lib2/helpers/constants.hpp>
+
+PanoramaProcessor::PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,
+                                     Constants::CameraInfo::eCamNames id_,
+                                     std::shared_ptr<CameraInterface> cameraInterface_):
+    _node(node_),
     _id(id_),
     _cameraInterface(cameraInterface_)
 {
@@ -10,6 +19,7 @@ PanoramaProcessor::~PanoramaProcessor() {}
 
 void PanoramaProcessor::execute(const rover_msgs::srv::Panorama::Request& request_,
                                 rover_msgs::srv::Panorama::Response& response_,
+                                Constants::CameraInfo::eCamNames id_,
                                 sCoordinate coordinates_)
 {
     if (this->isBusy())
@@ -21,7 +31,7 @@ void PanoramaProcessor::execute(const rover_msgs::srv::Panorama::Request& reques
 
     _busy.store(true);
 
-    this->handlePanoramaRequest(request_, response_, coordinates_);
+    this->handlePanoramaRequest(request_, response_, id_, coordinates_);
 
     _busy.store(false);
 }
@@ -292,7 +302,7 @@ bool PanoramaProcessor::savePanorama(rover_msgs::srv::Panorama::Response& respon
 
 void PanoramaProcessor::rotateCamera(std::chrono::milliseconds duration_, Constants::CameraInfo::eCamNames id_)
 {
-    float totalPanDeg = static_cast<float>(duration_) / 1000.0F * MAX_ROTATION_SPEED_PANORAMA;
+    float totalPanDeg = static_cast<float>(duration_.count()) / 1000.0F * MAX_ROTATION_SPEED_PANORAMA;
     float targetRotationSpeed = MAX_ROTATION_SPEED_PANORAMA;
     if (totalPanDeg > MAX_PAN_ANGLE)
     {
@@ -329,22 +339,25 @@ void PanoramaProcessor::waitForAngle(Constants::CameraInfo::eCamNames id_, float
     std::promise<void> angleReachedPromise;
     std::future<void> angleReachedFuture = angleReachedPromise.get_future();
 
-    rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr sub_ptzStatusTemp
-        = this->create_subscription<rover_msgs::msg::CameraControl>(
-            TOPIC_CAMERA_PTZ_STATUS,
-            QOS_DEFAULT,
-            [this, &id_, &angle_, &angleReachedPromise](const rover_msgs::msg::CameraControl& msg_)
-            {
-                if (msg_.id_cam == std::to_underlying(id_) && std::fabs(msg_.yaw - angle_) < POSITION_TOLERANCE)
-                {
-                    angleReachedPromise.set_value();
-                }
-            });
-
-    if (angleReachedFuture.wait_for(std::chrono::milliseconds(ANGLE_WAIT_TIMEOUT_MS)) == std::future_status::timeout)
+    if (std::shared_ptr<rclcpp::Node> lockedNode = _node.lock())
     {
-        RCLCPP_INFO(rclcpp::get_logger("PanoramaManager"),
-                    "Desired start angle for panorama wasn't reached in time, starting panorama anyway");
+        rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr sub_ptzStatusTemp
+            = lockedNode->create_subscription<rover_msgs::msg::CameraControl>(
+                TOPIC_CAMERA_PTZ_STATUS,
+                QOS_DEFAULT,
+                [this, &id_, &angle_, &angleReachedPromise](const rover_msgs::msg::CameraControl& msg_)
+                {
+                    if (msg_.id_cam == std::to_underlying(id_) && std::fabs(msg_.yaw - angle_) < POSITION_TOLERANCE)
+                    {
+                        angleReachedPromise.set_value();
+                    }
+                });
+
+        if (angleReachedFuture.wait_for(std::chrono::milliseconds(ANGLE_WAIT_TIMEOUT_MS)) == std::future_status::timeout)
+        {
+            RCLCPP_INFO(rclcpp::get_logger("PanoramaManager"),
+                        "Desired start angle for panorama wasn't reached in time, starting panorama anyway");
+        }
     }
 }
 
@@ -361,7 +374,7 @@ void PanoramaProcessor::configPtz(Constants::CameraInfo::eCamNames id_, float ro
 
     if (_cameraInterface)
     {
-        _cameraInterface->setPTZConfig(msg);
+        _cameraInterface->setPTZConfig(configMsg, id_);
     }
 }
 
