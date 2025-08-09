@@ -89,8 +89,8 @@ namespace KEYBINDINGS
         constexpr eJoyInput WRIST_DOWN = eJoyInput::CROSS_DOWN;
         constexpr eJoyInput WRIST_ROT_LEFT = eJoyInput::CROSS_LEFT;
         constexpr eJoyInput WRIST_ROT_RIGHT = eJoyInput::CROSS_RIGHT;
-        constexpr eJoyInput GRIPPER_CLOSE = eJoyInput::R2;
-        constexpr eJoyInput GRIPPER_OPEN = eJoyInput::L2;
+        constexpr eJoyInput GRIPPER_CLOSE = eJoyInput::L2;
+        constexpr eJoyInput GRIPPER_OPEN = eJoyInput::R2;
 
         constexpr eJoyInput ACTIVATE_ALPHA = eJoyInput::R1;
         constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::R2;
