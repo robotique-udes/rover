@@ -85,7 +85,7 @@ namespace ARM_CONFIGURATION
         {
             constexpr float x = 0.0F;
             constexpr float y = 0.0F;
-            constexpr float z = 0.41F;
+            constexpr float z = 0.415F;
         }  // namespace LEN
     }      // namespace J2
 
@@ -100,7 +100,7 @@ namespace ARM_CONFIGURATION
         {
             constexpr float x = 0.0F;
             constexpr float y = 0.0F;
-            constexpr float z = 0.15F;
+            constexpr float z = 0.25F;
         }  // namespace LEN
     }      // namespace GRIPPER_TILT
 

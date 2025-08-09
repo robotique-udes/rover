@@ -1,10 +1,22 @@
 #include "QNavigation.hpp"
 
-#include "Global/Helpers/QHelpers.hpp"
+// QT
 #include <QTimer>
+#include "Global/Helpers/QHelpers.hpp"
+#include <Global/Helpers/QToastNotification/QToastNotification.hpp>
+#include "Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp"
+
+// Helpers
+#include <rover_lib2/helpers/folders.hpp>
+
+#include <fstream>
+#include <vector>
+#include <algorithm>
+#include <filesystem>
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
+constexpr const char* NAVIGATION_PATH = "/Navigation";
 
 // Default to Studio de Création
 constexpr double DEFAULT_LATITUDE = 45.377755;
@@ -17,6 +29,8 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     _node(guiNode_)
 {
     _ui.setupUi(this);
+    this->createNavigationFolder();
+    this->initializeWaypointManager();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
@@ -40,13 +54,78 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                                                                {
                                                                    this->onGpsMessage(gpsMsg_);
                                                                });
+}
 
-    // Hack | Todo: java script should send a signal when it's ready to update it's position
-    QTimer::singleShot(1'500,
-                       [this]()
-                       {
-                           emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
-                       });
+void QNavigation::initializeWaypointManager(void)
+{
+    _waypointManager.setSessionFolderPath(_sessionFolderPath);
+    _waypointManager.initializeWaypoints();
+
+    _waypointManager.syncWaypoints(_waypointsList);
+
+    for (const sWaypoint& waypoint : _waypointsList)
+    {
+        this->addWaypointToUI(waypoint);
+    }
+}
+
+void QNavigation::onJsBridgeReady(void)
+{
+    for (const sWaypoint& waypoint : _waypointsList)
+    {
+        emit this->sendGoal(QString::fromStdString(waypoint.name),
+                            waypoint.latitude,
+                            waypoint.longitude,
+                            QString::fromStdString(waypoint.id),
+                            false);
+    }
+    emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
+}
+
+void QNavigation::createNavigationFolder(void)
+{
+    std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
+    std::string homePath;
+    std::string sessionPath;
+
+    if (optionalSessionFolderPath.has_value())
+    {
+        sessionPath = optionalSessionFolderPath.value();
+        if (sessionPath.empty())
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty session folder path",
+                                                                           "SessionFolderManager returned an empty path",
+                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+        }
+    }
+    else
+    {
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No session folder found",
+                                                                       "SessionFolderManager couldn't return a valid path",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
+    }
+
+    std::optional<std::string> optionalHomePath = Folders::getHome();
+    if (optionalHomePath.has_value())
+    {
+        homePath = *optionalHomePath;
+        if (homePath.empty())
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty home path",
+                                                                           "HomePath returned an empty path",
+                                                                           QHelper::QToastNotification::eNotifType::ERROR);
+        }
+    }
+    else
+    {
+        QHelper::QToastNotification::getInstance().notifyFromAnyThread("No home found",
+                                                                       "HomePath couldn't return a valid path",
+                                                                       QHelper::QToastNotification::eNotifType::ERROR);
+    }
+
+    _sessionFolderPath = homePath + sessionPath + NAVIGATION_PATH;
+    Folders::createFolder(_sessionFolderPath);
+    RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Current navigation folder path: %s", _sessionFolderPath.c_str());
 }
 
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
@@ -62,13 +141,14 @@ void QNavigation::onSetGoalClicked()
         return;
     }
 
-    double lat = _ui.inputLatitude->text().toDouble();
-    double lon = _ui.inputLongitude->text().toDouble();
-    QString name = _ui.inputName->text();
+    sWaypoint waypoint;
+    waypoint.latitude = _ui.inputLatitude->text().toDouble();
+    waypoint.longitude = _ui.inputLongitude->text().toDouble();
+    waypoint.name = _ui.inputName->text().toStdString();
 
-    for (const sWaypoint& waypoint : _waypoints)
+    for (const sWaypoint& waypointIt : _waypointsList)
     {
-        if (waypoint.name == name)
+        if (waypointIt.name == waypoint.name)
         {
             QHelper::QPopUp::sendQuestionPopUp("Duplicate Name",
                                                "A waypoint with this name already exists. Please choose a different name.");
@@ -76,11 +156,15 @@ void QNavigation::onSetGoalClicked()
         }
     }
 
-    QString id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
+    waypoint.id = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString();
 
-    this->addWaypointToList(name, lat, lon, id);
-
-    emit this->sendGoal(name, lat, lon, id);
+    this->addWaypointToList(waypoint);
+    _waypointManager.syncWaypoints(_waypointsList);
+    emit this->sendGoal(QString::fromStdString(waypoint.name),
+                        waypoint.latitude,
+                        waypoint.longitude,
+                        QString::fromStdString(waypoint.id),
+                        true);
 
     _ui.inputName->clear();
     _ui.inputLatitude->clear();
@@ -102,11 +186,11 @@ void QNavigation::pathDistanceCalculated(double distanceMeters_)
     _ui.distanceLabel->setText(distanceText_);
 }
 
-void QNavigation::waypointCreated(QString name_, double latitude_, double longitude_, QString id_)
+void QNavigation::waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_)
 {
-    for (const auto& waypoint : _waypoints)
+    for (const auto& waypoint : _waypointsList)
     {
-        if (waypoint.id == id_ || waypoint.name == name_)
+        if (waypoint.id == id_.toStdString() || waypoint.name == name_.toStdString())
         {
             return;
         }
@@ -116,8 +200,9 @@ void QNavigation::waypointCreated(QString name_, double latitude_, double longit
     {
         id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
     }
-
-    this->addWaypointToList(name_, latitude_, longitude_, id_);
+    sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
+    this->addWaypointToList(waypoint);
+    _waypointManager.syncWaypoints(_waypointsList);
 }
 
 void QNavigation::onCalculatePathClicked(void)
@@ -130,31 +215,47 @@ void QNavigation::onCalculatePathClicked(void)
     }
 
     int index_ = _ui.waypointList->row(currentItem_);
-    if (index_ >= 0 && index_ < _waypoints.size())
+    if (index_ >= 0 && index_ < _waypointsList.size())
     {
-        const sWaypoint& waypoint = _waypoints.at(index_);
+        const sWaypoint& waypoint = _waypointsList.at(index_);
 
-        emit this->calculatePath(waypoint.latitude, waypoint.longitude, waypoint.id);
+        emit this->calculatePath(waypoint.latitude, waypoint.longitude, QString::fromStdString(waypoint.id));
     }
 }
 
-void QNavigation::addWaypointToList(const QString& name_, double latitude_, double longitude_, const QString& id_)
+void QNavigation::addWaypointToList(const sWaypoint& waypoint_)
 {
-    sWaypoint waypoint_;
-    waypoint_.name = name_;
-    waypoint_.latitude = latitude_;
-    waypoint_.longitude = longitude_;
-    waypoint_.id = id_;
+    _waypointsList.append(waypoint_);
 
-    QString displayText = QString("%1 (%2, %3)").arg(name_).arg(latitude_, 0, 'f', 6).arg(longitude_, 0, 'f', 6);
+    bool exists = false;
+    for (int i = 0; i < _ui.waypointList->count(); ++i)
+    {
+        QListWidgetItem* item = _ui.waypointList->item(i);
+        if (item->data(Qt::UserRole).toString().toStdString() == waypoint_.id)
+        {
+            exists = true;
+            break;
+        }
+    }
+
+    if (!exists)
+    {
+        this->addWaypointToUI(waypoint_);
+    }
+}
+
+void QNavigation::addWaypointToUI(const sWaypoint& waypoint_)
+{
+    QString displayText = QString("%1 (%2, %3)")
+                              .arg(QString::fromStdString(waypoint_.name))
+                              .arg(waypoint_.latitude, 0, 'f', 6)
+                              .arg(waypoint_.longitude, 0, 'f', 6);
 
     std::unique_ptr<QListWidgetItem> waypointItem = std::make_unique<QListWidgetItem>(displayText);
 
     waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
     waypointItem->setCheckState(Qt::Checked);
-    waypointItem->setData(Qt::UserRole, id_);
-
-    _waypoints.append(waypoint_);
+    waypointItem->setData(Qt::UserRole, QString::fromStdString(waypoint_.id));
 
     _ui.waypointList->addItem(waypointItem.release());
 }
@@ -167,12 +268,12 @@ void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
     }
 
     int index = _ui.waypointList->row(item_);
-    if (index >= 0 && index < _waypoints.size())
+    if (index >= 0 && index < _waypointsList.size())
     {
-        const sWaypoint& waypoint = _waypoints.at(index);
+        const sWaypoint& waypoint = _waypointsList.at(index);
         bool isVisible = (item_->checkState() == Qt::Checked);
 
-        emit this->waypointIsVisible(waypoint.id, isVisible);
+        emit this->waypointIsVisible(QString::fromStdString(waypoint.id), isVisible);
     }
 }
 
@@ -184,11 +285,11 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
     }
 
     int index_ = _ui.waypointList->row(item_);
-    if (index_ >= 0 && index_ < _waypoints.size())
+    if (index_ >= 0 && index_ < _waypointsList.size())
     {
-        const sWaypoint& waypoint_ = _waypoints.at(index_);
+        const sWaypoint& waypoint_ = _waypointsList.at(index_);
 
-        _ui.inputName->setText(waypoint_.name);
+        _ui.inputName->setText(QString::fromStdString(waypoint_.name));
         _ui.inputLatitude->setText(QString::number(waypoint_.latitude, 'f', 6));
         _ui.inputLongitude->setText(QString::number(waypoint_.longitude, 'f', 6));
     }
@@ -204,15 +305,16 @@ void QNavigation::onDeleteWaypointClicked(void)
     }
 
     int index_ = _ui.waypointList->row(currentItem_);
-    if (index_ >= 0 && index_ < _waypoints.size())
+    if (index_ >= 0 && index_ < _waypointsList.size())
     {
-        const QString waypointId_ = _waypoints.at(index_).id;
+        const std::string waypointId = _waypointsList.at(index_).id;
+        _waypointManager.deleteWaypointFromJson(waypointId);
 
         delete _ui.waypointList->takeItem(index_);
 
-        emit this->deleteWaypoint(waypointId_);
+        emit this->deleteWaypoint(QString::fromStdString(waypointId));
 
-        _waypoints.removeAt(index_);
+        _waypointsList.removeAt(index_);
 
         _ui.inputName->clear();
         _ui.inputLatitude->clear();
@@ -232,8 +334,9 @@ void QNavigation::onClearWaypointsClicked(void)
 
     if (result_ == QMessageBox::Yes)
     {
-        _waypoints.clear();
+        _waypointsList.clear();
         _ui.waypointList->clear();
+        _waypointManager.clearWaypoints();
 
         _ui.inputName->clear();
         _ui.inputLatitude->clear();
@@ -261,7 +364,7 @@ void QNavigation::onWebViewLoadFinished(bool ok_)
     }
     else
     {
-        RCLCPP_WARN(_node->get_logger(), "Cesium token not found, can't load map");
+        RCLCPP_WARN(rclcpp::get_logger("GUI"), "Cesium token not found, can't load map");
     }
 }
 

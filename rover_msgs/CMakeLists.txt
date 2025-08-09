@@ -44,6 +44,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Battery.msg"
   "msg/CameraAngle.msg"
   "msg/CameraControl.msg"
+  "msg/CameraConfig.msg"
   "msg/CanDeviceStatus.msg"  
   "msg/Compass.msg"
   "msg/DDBControl.msg"
@@ -56,6 +57,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/Light.msg"
   "msg/PropulsionMotor.msg"
   "msg/ScienceControl.msg"
+  "msg/TopicWithPriority.msg"
 
   "srv/AntennaArbitration.srv"
   "srv/ArmJointConfig.srv"
