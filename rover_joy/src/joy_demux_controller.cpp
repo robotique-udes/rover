@@ -2,7 +2,6 @@
 #include <rclcpp/logging.hpp>
 #include <rclcpp/node.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <rover_msgs/msg/detail/joy_demux_status__struct.hpp>
 #include <rover_msgs/msg/joy.hpp>
 #include <rover_msgs/msg/joy_demux_status.hpp>
 #include <rover_msgs/srv/joy_demux_set_state.hpp>
@@ -10,19 +9,19 @@
 #include <rover_lib2/helpers/constants.hpp>
 #include <utility>
 #include <memory>
+#include <array>
 
 class JoyDemuxController : public rclcpp::Node
 {
-    enum eControllerType : uint8_t
+    enum class eControllerType : uint8_t
     {
         MAIN = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
         SECONDARY = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_SECONDARY,
         eLAST
     };
 
-    enum eDemuxDestination : uint8_t
+    enum class eDemuxDestination : uint8_t
     {
-        // Only toggle between those two by design
         DRIVE_TRAIN = rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
         ARM = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
         NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE,
@@ -35,35 +34,35 @@ class JoyDemuxController : public rclcpp::Node
         _sub_demuxStatus
             = this->create_subscription<rover_msgs::msg::JoyDemuxStatus>("/base/joy/demux_status",
                                                                          QOS_DEFAULT,
-                                                                         [this](const rover_msgs::msg::JoyDemuxStatus msg_)
+                                                                         [this](const rover_msgs::msg::JoyDemuxStatus& msg_)
                                                                          {
                                                                              this->CB_demuxStatus(msg_);
                                                                          });
 
-        _sub_main = this->create_subscription<rover_msgs::msg::Joy>("/base/joy/main",
+        _sub_main = this->create_subscription<rover_msgs::msg::Joy>("/base/joy/main_formatted",
                                                                     QOS_DEFAULT,
                                                                     [this](const rover_msgs::msg::Joy& msg_)
                                                                     {
                                                                         this->CB_joy<eControllerType::MAIN>(msg_);
                                                                     });
 
-        _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("/base/joy/main",
+        _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("/base/joy/secondary_formatted",
                                                                          QOS_DEFAULT,
                                                                          [this](const rover_msgs::msg::Joy& msg_)
                                                                          {
                                                                              this->CB_joy<eControllerType::SECONDARY>(msg_);
                                                                          });
 
-        _client_demuxSetState = this->create_client<rover_msgs::srv::JoyDemuxSetState>("/base/joy/demux");
+        _client_demuxSetState = this->create_client<rover_msgs::srv::JoyDemuxSetState>("/base/joy/demux_control");
     }
 
   private:
     template<eControllerType controller_>
     void CB_joy(const rover_msgs::msg::Joy& msg_)
     {
-        static_assert(std::to_underlying(controller_) >= 0 && std::to_underlying(controller_) < eControllerType::eLAST);
+        static_assert(std::to_underlying(controller_) < std::to_underlying(eControllerType::eLAST));
 
-        constexpr Constants::Keybinds::eJoyInput TOGGLE_KEYBIND = Constants::Keybinds::JoyDemuxController::TOGGLE_BETWEEN_DEMUX;
+        constexpr auto TOGGLE_KEYBIND = Constants::Keybinds::JoyDemuxController::TOGGLE_BETWEEN_DEMUX;
 
         rover_msgs::msg::Joy& controllerLastJoyMsg = _lastJoyMsgs[std::to_underlying(controller_)];
         const float toggleInput = msg_.joy_data[std::to_underlying(TOGGLE_KEYBIND)];
@@ -82,7 +81,6 @@ class JoyDemuxController : public rclcpp::Node
             }
             else
             {
-                // Not concerned
                 return;
             }
 
@@ -96,7 +94,12 @@ class JoyDemuxController : public rclcpp::Node
             }
             else
             {
-                // Not concerned
+                return;
+            }
+
+            if (!_client_demuxSetState->wait_for_service(std::chrono::milliseconds(10)))
+            {
+                RCLCPP_WARN(this->get_logger(), "Service not available");
                 return;
             }
 
@@ -105,23 +108,26 @@ class JoyDemuxController : public rclcpp::Node
             request->force = false;
             request->destination = std::to_underlying(currentDest);
 
-            auto future = _client_demuxSetState->async_send_request(request);
-            auto response = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Response>();
-            if (rclcpp::FutureReturnCode::SUCCESS == rclcpp::spin_until_future_complete(this->shared_from_this(), future))
-            {
-                RCLCPP_INFO(this->get_logger(), "Service call reached with success %s", response->success ? "True" : "False");
-            }
-            else
-            {
-                RCLCPP_ERROR(this->get_logger(), "Service call failed");
-                _client_demuxSetState->remove_pending_request(future);
-            }
+            _client_demuxSetState->async_send_request(
+                request,
+                [this](rclcpp::Client<rover_msgs::srv::JoyDemuxSetState>::SharedFuture future_)
+                {
+                    try
+                    {
+                        auto response = future_.get();
+                        RCLCPP_DEBUG(this->get_logger(), "Service call success: %s", response->success ? "True" : "False");
+                    }
+                    catch (const std::exception& e)
+                    {
+                        RCLCPP_ERROR(this->get_logger(), "Service call exception: %s", e.what());
+                    }
+                });
         }
 
         controllerLastJoyMsg = msg_;
     }
 
-    void CB_demuxStatus(const rover_msgs::msg::JoyDemuxStatus msg_)
+    void CB_demuxStatus(const rover_msgs::msg::JoyDemuxStatus& msg_)
     {
         _mainControllerCurrentDestination = static_cast<eDemuxDestination>(msg_.controller_main_topic);
         _secondaryControllerCurrentDestination = static_cast<eDemuxDestination>(msg_.controller_secondary_topic);
@@ -134,7 +140,7 @@ class JoyDemuxController : public rclcpp::Node
 
     eDemuxDestination _mainControllerCurrentDestination = eDemuxDestination::NONE;
     eDemuxDestination _secondaryControllerCurrentDestination = eDemuxDestination::NONE;
-    std::array<rover_msgs::msg::Joy, eControllerType::eLAST> _lastJoyMsgs;
+    std::array<rover_msgs::msg::Joy, std::to_underlying(eControllerType::eLAST)> _lastJoyMsgs;
 };
 
 int main(int argc, char* argv[])
