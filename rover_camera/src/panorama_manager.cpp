@@ -1,11 +1,7 @@
 #include "panorama_manager.hpp"
 
 PanoramaManager::PanoramaManager():
-    Node("PanoramaManager"),
-    _cameraInterface(std::make_shared<CameraInterface>(this->shared_from_this(),
-                                                       TOPIC_CAMERA_PTZ_CMD_PANORAMA,
-                                                       TOPIC_CAMERA_CONFIG_PANORAM,
-                                                       TOPIC_CAMERA_POWER_PANORAMA))
+    Node("PanoramaManager")
 {
     _srv_panorama = this->create_service<rover_msgs::srv::Panorama>(
         PANORAMA_SERVICE_NAME,
@@ -47,14 +43,26 @@ void PanoramaManager::initPanoramaProcessor(void)
 {
     for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
     {
-        _panoramaProcessors[id] = std::make_unique<PanoramaProcessor>(this->shared_from_this(), static_cast<Constants::CameraInfo::eCamNames>(id), _cameraInterface);
+        _panoramaProcessors[id] = std::make_unique<PanoramaProcessor>(this->shared_from_this(),
+                                                                      static_cast<Constants::CameraInfo::eCamNames>(id),
+                                                                      _cameraInterface);
     }
+}
+
+void PanoramaManager::initCameraInterface(void)
+{
+    _cameraInterface = std::make_shared<CameraInterface>(this->shared_from_this(),
+                                                         TOPIC_CAMERA_PTZ_CMD_PANORAMA,
+                                                         TOPIC_CAMERA_CONFIG_PANORAM,
+                                                         TOPIC_CAMERA_POWER_PANORAMA);
 }
 
 int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
     std::shared_ptr<PanoramaManager> node = std::make_shared<PanoramaManager>();
+    node->initCameraInterface();
+    node->initPanoramaProcessor();
     rclcpp::executors::MultiThreadedExecutor executor;
     executor.add_node(node);
     executor.spin();
