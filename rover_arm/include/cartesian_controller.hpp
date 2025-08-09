@@ -4,6 +4,9 @@
 #include "robot_controller.hpp"
 #include "Eigen/Dense"
 #include "rover_lib2/helpers/log.hpp"
+#include <numbers>
+#include <rclcpp/logger.hpp>
+#include <utility>
 
 DEFINE_LOG_NODE(CartesianController, Logger::eNodeState::ON);
 
@@ -51,7 +54,7 @@ class CartesianController : public RobotController
 
   public:
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
-        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
+        const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
         _desiredCartesian = {};
@@ -106,15 +109,16 @@ class CartesianController : public RobotController
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
         }
 
-        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
-        {
-            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-        }
-        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
-        {
-            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
-                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-        }
+        //        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
+        //        {
+        //            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] =
+        //            getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        //        }
+        //        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
+        //        {
+        //            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+        //                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        //        }
 
         if (_planApplied)
         {
@@ -269,7 +273,7 @@ class CartesianController : public RobotController
         return _pointsRecorded;
     }
 
-    void getJointPositions(std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> position_)
+    void setJointPositions(const std::array<float, TO_UNDERLYING(eJointIndex::eLAST)>& position_)
     {
         _jointPositions = position_;
     }
