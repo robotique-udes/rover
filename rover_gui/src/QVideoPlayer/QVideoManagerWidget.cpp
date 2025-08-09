@@ -382,14 +382,27 @@ void QVideoManagerWidget::initCameraInterface(void)
     configMsg.tilt_min_position = CAMERA_MIN_ANGLE;
     configMsg.tilt_max_speed = CAMERA_MAX_SPEED;
 
+    rover_msgs::msg::CameraControl cmdMsg;
+    cmdMsg.yaw = CAMERA_CENTER_ANGLE;
+    cmdMsg.pitch = 0.0F;
+    cmdMsg.power_on = true;
+    
+    cmdMsg.id_cam = static_cast<uint8_t>(std::to_underlying(Constants::CameraInfo::eCamNames::MAIN));
+    _cameraInterface.setPTZCmd(cmdMsg, Constants::CameraInfo::eCamNames::MAIN);
+    configMsg.id_cam = static_cast<uint8_t>(std::to_underlying(Constants::CameraInfo::eCamNames::MAIN));
+    _cameraInterface.setPTZConfig(configMsg, Constants::CameraInfo::eCamNames::MAIN);
+
+    cmdMsg.id_cam = 1 ; //static_cast<uint8_t>(std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA));
+    _cameraInterface.setPTZCmd(cmdMsg, Constants::CameraInfo::eCamNames::ANTENNA);
+    configMsg.id_cam = static_cast<uint8_t>(std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA));
+    _cameraInterface.setPTZConfig(configMsg, Constants::CameraInfo::eCamNames::ANTENNA);
+
     rover_msgs::msg::CameraControl powerMsg;
     powerMsg.power_on = true;
 
     for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
     {
         configMsg.id_cam = id;
-        powerMsg.id_cam = id;
-        _cameraInterface.setPTZConfig(configMsg, static_cast<Constants::CameraInfo::eCamNames>(id));
         _cameraInterface.setPowerCmd(powerMsg, static_cast<Constants::CameraInfo::eCamNames>(id));
     }
 }

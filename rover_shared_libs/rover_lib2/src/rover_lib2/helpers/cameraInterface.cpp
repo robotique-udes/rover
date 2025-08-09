@@ -23,6 +23,13 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
         this->initPub();
         this->initSub();
     }
+
+    for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
+    {
+        rover_msgs::msg::CameraControl msg;
+        msg.id_cam = id;
+        _lastPtzCmdMsg[id] = msg;
+    }
 }
 
 void CameraInterface::setPTZCmd(const rover_msgs::msg::CameraControl& goalMsg_, Constants::CameraInfo::eCamNames id_)
@@ -32,9 +39,9 @@ void CameraInterface::setPTZCmd(const rover_msgs::msg::CameraControl& goalMsg_, 
         return;
     }
 
-    if (!_isCamConcerned[std::to_underlying(id_)])
+    if (!_isCamConcernedPTZ[std::to_underlying(id_)])
     {
-        _isCamConcerned[std::to_underlying(id_)] = true;
+        _isCamConcernedPTZ[std::to_underlying(id_)] = true;
     }
 
     _lastPtzCmdMsg[std::to_underlying(id_)] = goalMsg_;
@@ -52,9 +59,9 @@ void CameraInterface::setPTZConfig(const rover_msgs::msg::CameraConfig& configMs
         return;
     }
 
-    if (!_isCamConcerned[std::to_underlying(id_)])
+    if (!_isCamConcernedPTZ[std::to_underlying(id_)])
     {
-        _isCamConcerned[std::to_underlying(id_)] = true;
+        _isCamConcernedPTZ[std::to_underlying(id_)] = true;
     }
 
     _lastPtzConfigMsg[std::to_underlying(id_)] = configMsg_;
@@ -72,9 +79,9 @@ void CameraInterface::setPowerCmd(const rover_msgs::msg::CameraControl& powerMsg
         return;
     }
 
-    if (!_isCamConcerned[std::to_underlying(id_)])
+    if (!_isCamConcernedPower[std::to_underlying(id_)])
     {
-        _isCamConcerned[std::to_underlying(id_)] = true;
+        _isCamConcernedPower[std::to_underlying(id_)] = true;
     }
 
     _lastPowerMsg[std::to_underlying(id_)] = powerMsg_;
@@ -87,7 +94,7 @@ rover_msgs::msg::CameraControl CameraInterface::getPowerCmd(Constants::CameraInf
 
 void CameraInterface::release(Constants::CameraInfo::eCamNames id_)
 {
-    _isCamConcerned[std::to_underlying(id_)] = false;
+    _isCamConcernedPTZ[std::to_underlying(id_)] = false;
 }
 
 bool CameraInterface::isGoalReached(Constants::CameraInfo::eCamNames id_)
@@ -182,9 +189,9 @@ void CameraInterface::CB_publishPtzCmd(void)
         return;
     }
 
-    for (size_t i = 0; i < _isCamConcerned.size(); ++i)
+    for (size_t i = 0; i < _isCamConcernedPTZ.size(); ++i)
     {
-        if (_isCamConcerned[i])
+        if (_isCamConcernedPTZ[i])
         {
             _pub_PTZCmd->publish(_lastPtzCmdMsg[i]);
         }
@@ -198,9 +205,9 @@ void CameraInterface::CB_publishPtzConfig(void)
         return;
     }
 
-    for (size_t i = 0; i < _isCamConcerned.size(); ++i)
+    for (size_t i = 0; i < _isCamConcernedPTZ.size(); ++i)
     {
-        if (_isCamConcerned[i])
+        if (_isCamConcernedPTZ[i])
         {
             _pub_configCmd->publish(_lastPtzConfigMsg[i]);
         }
@@ -214,9 +221,9 @@ void CameraInterface::CB_publishPowerCmd(void)
         return;
     }
 
-    for (size_t i = 0; i < _isCamConcerned.size(); ++i)
+    for (size_t i = 0; i < _isCamConcernedPower.size(); ++i)
     {
-        if (_isCamConcerned[i])
+        if (_isCamConcernedPower[i])
         {
             _pub_powerCmd->publish(_lastPowerMsg[i]);
         }
