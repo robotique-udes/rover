@@ -96,7 +96,6 @@ class QVideoManagerWidget : public QWidget
 
     QSplitter _splitter;
     QSplitter _arm3Splitter;
-    QGridLayout _arm4Splitter;
     QPushButton _resetLayout_PB;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;

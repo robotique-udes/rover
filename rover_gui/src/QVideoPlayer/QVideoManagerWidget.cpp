@@ -114,14 +114,14 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     }
     else if (index_ == std::to_underlying(eTabIndex::ARM3))
     {
-        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)])
-        {
-            _arm3SubLayout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get());
-        }
-
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)])
         {
             _arm3SubLayout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get());
+        }
+
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)])
+        {
+            _arm3SubLayout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get());
         }
 
         _arm3Splitter.addWidget(&_arm3SubLayoutContainer);
@@ -138,22 +138,22 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     {
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get(), 0, 0);
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get(), 1, 0);
         }
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get(), 0, 1);
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get(), 1, 1);
         }
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get(), 1, 0);
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get(), 0, 1);
         }
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)].get(), 1, 1);
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)].get(), 0, 0);
         }
         _resetLayout_PB.setVisible(false);
     }

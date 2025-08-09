@@ -911,8 +911,9 @@ void QVideoPlayerWidget::hideAngleSelector(void)
     if (_camURL
             == Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)]
                                                  [std::to_underlying(Constants::CameraInfo::eInfoType::URL)]
-        || Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)]
-                                             [std::to_underlying(Constants::CameraInfo::eInfoType::URL)])
+        || _camURL
+               == Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)]
+                                                    [std::to_underlying(Constants::CameraInfo::eInfoType::URL)])
     {
         _ui.cameraAngleSlider->show();
         _ui.cameraAngleBox->show();
