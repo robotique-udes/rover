@@ -35,8 +35,8 @@ namespace ARM_CONFIGURATION
     namespace JL
     {
         constexpr eJointIndex ID = eJointIndex::JL;
-        constexpr float MAX_VELOCITY = 0.035F;   // m/s
-        constexpr float JOG_VELOCITY = 0.03F;    // m/s
+        constexpr float MAX_VELOCITY = 0.035F;  // m/s
+        constexpr float JOG_VELOCITY = 0.03F;   // m/s
         constexpr float CART_VELOCITY = 0.03F;  // m/s
         namespace LEN
         {
@@ -49,8 +49,8 @@ namespace ARM_CONFIGURATION
     namespace J0
     {
         constexpr eJointIndex ID = eJointIndex::J0;
-        constexpr float MAX_VELOCITY = 0.05F;    // m/s
-        constexpr float JOG_VELOCITY = 0.05F;    // m/s
+        constexpr float MAX_VELOCITY = 0.05F;   // m/s
+        constexpr float JOG_VELOCITY = 0.05F;   // m/s
         constexpr float CART_VELOCITY = 0.05F;  // m/s
         namespace LEN
         {
@@ -63,8 +63,8 @@ namespace ARM_CONFIGURATION
     namespace J1
     {
         constexpr eJointIndex ID = eJointIndex::J1;
-        constexpr float MAX_VELOCITY = 0.2F;   // rad/s
-        constexpr float JOG_VELOCITY = 0.15F;  // rad/s
+        constexpr float MAX_VELOCITY = 0.2F;    // rad/s
+        constexpr float JOG_VELOCITY = 0.15F;   // rad/s
         constexpr float CART_VELOCITY = 0.15F;  // rad/s
 
         namespace LEN
@@ -78,8 +78,8 @@ namespace ARM_CONFIGURATION
     namespace J2
     {
         constexpr eJointIndex ID = eJointIndex::J2;
-        constexpr float MAX_VELOCITY = 0.2F;   // rad/s
-        constexpr float JOG_VELOCITY = 0.15F;  // rad/s
+        constexpr float MAX_VELOCITY = 0.2F;    // rad/s
+        constexpr float JOG_VELOCITY = 0.15F;   // rad/s
         constexpr float CART_VELOCITY = 0.15F;  // rad/s
         namespace LEN
         {
@@ -122,8 +122,8 @@ namespace ARM_CONFIGURATION
     namespace GRIPPER_CLOSE
     {
         constexpr eJointIndex ID = eJointIndex::GRIPPER_CLOSE;
-        constexpr float MAX_VELOCITY = 0.5F;    // rad/s
-        constexpr float JOG_VELOCITY = 0.5F;    // rad/s
+        constexpr float MAX_VELOCITY = 0.5F;   // rad/s
+        constexpr float JOG_VELOCITY = 0.5F;   // rad/s
         constexpr float CART_VELOCITY = 0.5F;  // rad/s
 
         namespace LEN
