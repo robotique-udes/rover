@@ -4,7 +4,9 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
 #include "UI_Navigation.h"
+
 #include "QWaypoint/QWaypointManager.hpp"
+#include "QPath/QPathManager.hpp"
 
 #include <QWebChannel>
 #include <QListWidgetItem>
@@ -60,6 +62,7 @@ class QNavigation : public QWidget
     QList<sWaypoint> _waypointsList;
 
     QWaypointManager _waypointManager;
+    QPathManager _pathManager;
     std::string _sessionFolderPath;
 };
 
