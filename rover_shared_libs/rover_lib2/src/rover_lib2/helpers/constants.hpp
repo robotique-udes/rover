@@ -3,13 +3,9 @@
 #include <array>
 #include <cstddef>
 #include <cstdint>
-#include <iterator>
 #include <utility>
 
-#include <cstdint>
-
 #if defined(__linux__)
-#include <map>
 #include <string>
 #include <optional>
 #endif  // defined(__linux__)
@@ -20,7 +16,7 @@
 #endif  // defined(ROS)
 
 #if defined(ROS)
-#define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(10))
+#define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(1))
 #endif  // defined(ROS)
 
 namespace Constants
@@ -69,7 +65,7 @@ namespace Constants
 
     namespace AntennaInfo
     {
-        enum class eAntennaType : std::size_t
+        enum class eAntennaType : size_t
         {
             BASE = 0,
             ROVER = 1,
@@ -82,8 +78,8 @@ namespace Constants
         template<eAntennaType antenna_>
         constexpr const char* getURL()
         {
-            static_assert(static_cast<size_t>(antenna_) < ANTENNA_URLS.size(), "Invalid antenna index");
-            return ANTENNA_URLS[static_cast<size_t>(antenna_)];
+            static_assert(std::to_underlying(antenna_) < ANTENNA_URLS.size(), "Invalid antenna index");
+            return ANTENNA_URLS[std::to_underlying(antenna_)];
         }
     }  // namespace AntennaInfo
 
@@ -94,18 +90,6 @@ namespace Constants
         constexpr float SPEED_FACTOR_TURBO = 1.0f;
         constexpr float SMALLEST_RADIUS = 0.3f;
     }  // namespace DriveTrain
-
-#if defined(__linux__) && defined(ROS)
-    namespace DriveTrain::KeyBinding
-    {
-        constexpr uint8_t DEADMAN_SWITCH = rover_msgs::msg::Joy::L1;
-        constexpr uint8_t LINEAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT;
-        constexpr uint8_t ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE;
-        constexpr uint8_t MODE_TANK_ANGULAR_INPUT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE;
-        constexpr uint8_t MODE_NORMAL_ENABLE = rover_msgs::msg::Joy::R1;
-        constexpr uint8_t MODE_TURBO_ENABLE = rover_msgs::msg::Joy::R2;
-    }   // namespace DriveTrain::KeyBinding
-#endif  // defined(__linux__) && defined(ROS)
 
     enum class eGGAQuality : uint8_t
     {
@@ -122,6 +106,56 @@ namespace Constants
         RELIABLE = 2U,
         BEST = 4U,
     };
+
+#if defined(ROS)
+    namespace Keybinds
+    {
+        enum class eJoyInput
+        {
+            JOYSTICK_LEFT_FRONT = rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT,
+            JOYSTICK_LEFT_SIDE = rover_msgs::msg::Joy::JOYSTICK_LEFT_SIDE,
+            JOYSTICK_LEFT_PUSH = rover_msgs::msg::Joy::JOYSTICK_LEFT_PUSH,
+            JOYSTICK_RIGHT_FRONT = rover_msgs::msg::Joy::JOYSTICK_RIGHT_FRONT,
+            JOYSTICK_RIGHT_SIDE = rover_msgs::msg::Joy::JOYSTICK_RIGHT_SIDE,
+            JOYSTICK_RIGHT_PUSH = rover_msgs::msg::Joy::JOYSTICK_RIGHT_PUSH,
+            CROSS_UP = rover_msgs::msg::Joy::CROSS_UP,
+            CROSS_DOWN = rover_msgs::msg::Joy::CROSS_DOWN,
+            CROSS_LEFT = rover_msgs::msg::Joy::CROSS_LEFT,
+            CROSS_RIGHT = rover_msgs::msg::Joy::CROSS_RIGHT,
+            L1 = rover_msgs::msg::Joy::L1,
+            L2 = rover_msgs::msg::Joy::L2,
+            R1 = rover_msgs::msg::Joy::R1,
+            R2 = rover_msgs::msg::Joy::R2,
+            A = rover_msgs::msg::Joy::A,
+            B = rover_msgs::msg::Joy::B,
+            X = rover_msgs::msg::Joy::X,
+            Y = rover_msgs::msg::Joy::Y,
+            EXT0 = rover_msgs::msg::Joy::EXT0,
+            EXT1 = rover_msgs::msg::Joy::EXT1,
+            EXT2 = rover_msgs::msg::Joy::EXT2,
+            eLAST
+        };
+
+        static_assert(rover_msgs::msg::Joy::MAX >= std::to_underlying(eJoyInput::eLAST));
+
+        namespace JoyDemuxController
+        {
+            constexpr eJoyInput TOGGLE_BETWEEN_DEMUX = eJoyInput::EXT0;
+        }
+
+        namespace DriveTrain
+        {
+            constexpr eJoyInput DEADMAN_SWITCH = eJoyInput::L1;
+            constexpr eJoyInput LINEAR_INPUT = eJoyInput::JOYSTICK_LEFT_FRONT;
+            constexpr eJoyInput ANGULAR_INPUT = eJoyInput::JOYSTICK_LEFT_SIDE;
+            constexpr eJoyInput MODE_TANK_ANGULAR_INPUT = eJoyInput::JOYSTICK_RIGHT_SIDE;
+            constexpr eJoyInput MODE_NORMAL_ENABLE = eJoyInput::R1;
+            constexpr eJoyInput MODE_TURBO_ENABLE = eJoyInput::R2;
+        }  // namespace DriveTrain
+
+    }   // namespace Keybinds
+#endif  // defined(ROS)
+
 }  // namespace Constants
 
 #endif  // ROVER_LIB2_HELPERS_CONSTANTS_HPP
