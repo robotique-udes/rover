@@ -37,7 +37,7 @@ namespace ARM_CONFIGURATION
         constexpr eJointIndex ID = eJointIndex::JL;
         constexpr float MAX_VELOCITY = 0.035F;   // m/s
         constexpr float JOG_VELOCITY = 0.03F;    // m/s
-        constexpr float CART_VELOCITY = 0.015F;  // m/s
+        constexpr float CART_VELOCITY = 0.03F;  // m/s
         namespace LEN
         {
             constexpr float x = 0.0f;
@@ -51,7 +51,7 @@ namespace ARM_CONFIGURATION
         constexpr eJointIndex ID = eJointIndex::J0;
         constexpr float MAX_VELOCITY = 0.05F;    // m/s
         constexpr float JOG_VELOCITY = 0.05F;    // m/s
-        constexpr float CART_VELOCITY = 0.025F;  // m/s
+        constexpr float CART_VELOCITY = 0.05F;  // m/s
         namespace LEN
         {
             constexpr float x = 0.0f;
@@ -65,7 +65,7 @@ namespace ARM_CONFIGURATION
         constexpr eJointIndex ID = eJointIndex::J1;
         constexpr float MAX_VELOCITY = 0.2F;   // rad/s
         constexpr float JOG_VELOCITY = 0.15F;  // rad/s
-        constexpr float CART_VELOCITY = 0.1F;  // rad/s
+        constexpr float CART_VELOCITY = 0.15F;  // rad/s
 
         namespace LEN
         {
@@ -80,7 +80,7 @@ namespace ARM_CONFIGURATION
         constexpr eJointIndex ID = eJointIndex::J2;
         constexpr float MAX_VELOCITY = 0.2F;   // rad/s
         constexpr float JOG_VELOCITY = 0.15F;  // rad/s
-        constexpr float CART_VELOCITY = 0.1F;  // rad/s
+        constexpr float CART_VELOCITY = 0.15F;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0F;
@@ -94,7 +94,7 @@ namespace ARM_CONFIGURATION
         constexpr eJointIndex ID = eJointIndex::GRIPPER_TILT;
         constexpr float MAX_VELOCITY = 0.8F;   // rad/s
         constexpr float JOG_VELOCITY = 0.2F;   // rad/s
-        constexpr float CART_VELOCITY = 0.1F;  // rad/s
+        constexpr float CART_VELOCITY = 0.2F;  // rad/s
 
         namespace LEN
         {
@@ -124,7 +124,7 @@ namespace ARM_CONFIGURATION
         constexpr eJointIndex ID = eJointIndex::GRIPPER_CLOSE;
         constexpr float MAX_VELOCITY = 0.5F;    // rad/s
         constexpr float JOG_VELOCITY = 0.5F;    // rad/s
-        constexpr float CART_VELOCITY = 0.25F;  // rad/s
+        constexpr float CART_VELOCITY = 0.5F;  // rad/s
 
         namespace LEN
         {

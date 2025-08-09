@@ -1,9 +1,11 @@
 #ifndef __CARTESIAN_CONTROLLER_HPP__
 #define __CARTESIAN_CONTROLLER_HPP__
 
+#include "keybinding.hpp"
 #include "robot_controller.hpp"
 #include "Eigen/Dense"
 #include "rover_lib2/helpers/log.hpp"
+#include "rover_lib2/helpers/macros.hpp"
 #include <numbers>
 #include <rclcpp/logger.hpp>
 #include <utility>
@@ -12,6 +14,8 @@ DEFINE_LOG_NODE(CartesianController, Logger::eNodeState::ON);
 
 class CartesianController : public RobotController
 {
+    static constexpr float X_AXIS_DEADZONE = 0.2F;
+
   public:
     enum class eCartesianCoord
     {
@@ -64,15 +68,27 @@ class CartesianController : public RobotController
             return jointCommands;
         }
 
-        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::X_AXIS_RIGHT))
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::X_AXIS))
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesianInput::X)]
-                = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::X_AXIS_RIGHT)];
-        }
-        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::X_AXIS_LEFT))
-        {
-            _desiredCartesian[TO_UNDERLYING(eCartesianInput::X)]
-                = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::X_AXIS_LEFT)];
+            // JL deadzone
+            float input = -inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::X_AXIS)];
+            if (IN_ERROR(input, X_AXIS_DEADZONE, 0.0F))
+            {
+                input = 0.0F;
+            }
+            else
+            {
+                if (input > 0.0F)
+                {
+                    input = MAP(input, 0.0F, 1.0F, X_AXIS_DEADZONE, 1.0F);
+                }
+                else
+                {
+                    input = MAP(input, -1.0F, 0.0F, -1.0F, -X_AXIS_DEADZONE);
+                }
+            }
+
+            _desiredCartesian[TO_UNDERLYING(eCartesianInput::X)] = input;
         }
 
         if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::Y_AXIS))
@@ -105,18 +121,25 @@ class CartesianController : public RobotController
                 = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
         }
 
-        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ACTIVATE_ALPHA))
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE))
         {
-            if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE))
-            {
-                _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
-                    = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE)];
-            }
-            else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE))
-            {
-                _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
-                    = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE)];
-            }
+            _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
+                = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE)];
+        }
+        else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE))
+        {
+            _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
+                = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE)];
+        }
+
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_CLOSE))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        }
+        else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_OPEN))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
         }
         // if (_planApplied)
         // {
