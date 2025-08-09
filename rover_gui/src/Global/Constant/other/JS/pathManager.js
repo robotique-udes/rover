@@ -2,7 +2,9 @@ class PathManager
 {
     #pathUpdateInterval = null;
     #pathEntities = [];
+    #lastPosition = [];
     static WAYPOINT_PATH = "waypointPath";
+    static POSITION_PATH = "positionPath";
 
     constructor(viewer, waypointManager)
     {
@@ -40,7 +42,7 @@ class PathManager
         this.#pathUpdateInterval = setInterval(() => {
             if (this.waypointManager.currentPosition && this.waypointManager.activeWaypoint) 
             {
-                this.#drawPath(
+                this.#drawLinePath(
                     PathManager.WAYPOINT_PATH,
                     this.waypointManager.currentPosition.latitude,
                     this.waypointManager.currentPosition.longitude,
@@ -50,7 +52,7 @@ class PathManager
             }
         }, 1000);
 
-        this.#drawPath(
+        this.#drawLinePath(
             PathManager.WAYPOINT_PATH,
             this.waypointManager.currentPosition.latitude,
             this.waypointManager.currentPosition.longitude,
@@ -68,6 +70,35 @@ class PathManager
         this.clearWaypointPath();
     }
 
+    drawPathTaken(latitude_, longitude_)
+    {
+        this.#lastPosition.push([longitude_, latitude_]);
+        const flatPositions = this.#lastPosition.flat();
+
+        const idx = this.#pathEntities.findIndex(e => e.id === PathManager.POSITION_PATH);
+        
+        if (idx !== -1) 
+        {
+            this.viewer.entities.remove(this.#pathEntities[idx]);
+            this.#pathEntities.splice(idx, 1);
+        }
+
+        const newEntity = this.viewer.entities.add({
+            id: PathManager.POSITION_PATH,
+            polyline: {
+                positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
+                width: 3,
+                material: new Cesium.PolylineOutlineMaterialProperty({
+                    color: Cesium.Color.CYAN,
+                    outlineWidth: 1,
+                    outlineColor: Cesium.Color.BLACK
+                }),
+                clampToGround: true
+            }
+        });
+        this.#pathEntities.push(newEntity);
+    }
+
     #calculateHaversineDistance(lat1, lon1, lat2, lon2) 
     {
         const R = 6371000;
@@ -82,7 +113,7 @@ class PathManager
         return R * c;
     }
 
-    #drawPath(name, startLat, startLon, endLat, endLon) 
+    #drawLinePath(name, startLat, startLon, endLat, endLon) 
     {
         const idx = this.#pathEntities.findIndex(e => e.id === name);
         if (idx !== -1) 

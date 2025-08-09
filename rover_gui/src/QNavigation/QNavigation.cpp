@@ -140,6 +140,7 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
+    emit this->updatePathTaken(msg_.latitude, msg_.longitude);
     _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
 }
 
@@ -387,5 +388,5 @@ void QNavigation::onClearPathClicked(void)
 
 void QNavigation::onCSVReady(void)
 {
-    emit this->updatePath(QString::fromStdString(_sessionFolderPath));
+    // #TODO: Find an usefulness to this
 }

@@ -75,9 +75,9 @@ class Bridge
                 self.waypoints.waypointVisibility(waypointId, visibility);
             });
 
-            qtBridge.updatePath.connect(function (sessionFolderPath)
+            qtBridge.updatePathTaken.connect(function (latitude_, longitude_)
             {
-                alert("CSV file is ready for download.");
+                self.pathManager.drawPathTaken(latitude_, longitude_);
             });
 
             if (window.qtBridge && window.qtBridge.onJsBridgeReady) 
