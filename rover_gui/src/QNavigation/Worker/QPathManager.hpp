@@ -15,14 +15,12 @@ class QPathManager : public QWorker
   signals:
     void onCSVReady(void);
 
-  public slots:
-    void writePosToCSV(double latitude_, double longitude_);
-
   public:
     QPathManager(bool start_ = false, QObject* parent_ = nullptr);
 
     void setSessionFolderPath(std::string sessionFolderPath_);
     void initializeCSVFile(void);
+    void writePosToCSV(double latitude_, double longitude_);
 
   private:
     void writePosToCSVInternal(double latitude_, double longitude_);

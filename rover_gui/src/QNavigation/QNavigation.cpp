@@ -26,7 +26,8 @@ constexpr double DEFAULT_HEADING = 0.0;
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _webChannel(this),
-    _node(guiNode_)
+    _node(guiNode_),
+    _pathManager(true, this)
 {
     _ui.setupUi(this);
     this->createNavigationFolder();
@@ -48,6 +49,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
+    connect(&_pathManager, &QPathManager::onCSVReady, this, &QNavigation::onCSVReady);
 
     _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>(GPS_TOPIC_NAME,
                                                                1,
@@ -138,7 +140,7 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
-    emit this->writePosToCSV(msg_.latitude, msg_.longitude);
+    _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
 }
 
 void QNavigation::onSetGoalClicked()
@@ -385,5 +387,6 @@ void QNavigation::onClearPathClicked(void)
 
 void QNavigation::onCSVReady(void)
 {
+    RCLCPP_ERROR(rclcpp::get_logger("GUI"), "CSV ready, sending signal to JS");
     emit this->updatePath();
 }
