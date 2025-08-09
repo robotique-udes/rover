@@ -78,23 +78,19 @@ namespace KEYBINDINGS
     {
         constexpr eJoyInput TOGGLE_CARTESIAN = eJoyInput::Y;
 
-        constexpr eJoyInput X_AXIS_RIGHT = eJoyInput::B;
-        constexpr eJoyInput X_AXIS_LEFT = eJoyInput::X;
+        constexpr eJoyInput X_AXIS = eJoyInput::JOYSTICK_LEFT_SIDE;
 
-        constexpr eJoyInput Y_AXIS = eJoyInput::JOYSTICK_RIGHT_FRONT;
+        constexpr eJoyInput Y_AXIS = eJoyInput::JOYSTICK_LEFT_FRONT;
 
-        constexpr eJoyInput Z_AXIS = eJoyInput::JOYSTICK_LEFT_FRONT;
+        constexpr eJoyInput Z_AXIS = eJoyInput::JOYSTICK_RIGHT_FRONT;
 
-        constexpr eJoyInput WRIST_UP = eJoyInput::CROSS_UP;
-        constexpr eJoyInput WRIST_DOWN = eJoyInput::CROSS_DOWN;
         constexpr eJoyInput WRIST_ROT_LEFT = eJoyInput::CROSS_LEFT;
         constexpr eJoyInput WRIST_ROT_RIGHT = eJoyInput::CROSS_RIGHT;
         constexpr eJoyInput GRIPPER_CLOSE = eJoyInput::L2;
         constexpr eJoyInput GRIPPER_OPEN = eJoyInput::R2;
 
-        constexpr eJoyInput ACTIVATE_ALPHA = eJoyInput::R1;
-        constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::R2;
-        constexpr eJoyInput ALPHA_NEGATIVE = eJoyInput::L2;
+        constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::CROSS_UP;
+        constexpr eJoyInput ALPHA_NEGATIVE = eJoyInput::CROSS_DOWN;
 
         // constexpr eJoyInput RECORD = eJoyInput::A;
         // constexpr eJoyInput CLEAR_POINTS = eJoyInput::X;
