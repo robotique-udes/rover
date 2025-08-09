@@ -4,12 +4,13 @@ class Bridge
     #lastHeading = 0;
     #currentPosition = {};
 
-    constructor(viewer, roverEntity, waypointManager, cameraManager, initialPosition) 
+    constructor(viewer, roverEntity, waypointManager, cameraManager, initialPosition, pathManager) 
     {
         this.viewer = viewer;
         this.rover = roverEntity;
         this.waypoints = waypointManager;
         this.camera = cameraManager;
+        this.pathManager = pathManager;
         this.#currentPosition = initialPosition || { latitude: 0, longitude: 0 };
         this.#setupBridgeConnection();
     }
@@ -35,7 +36,7 @@ class Bridge
 
             qtBridge.clearPath.connect(function () 
             {
-                self.waypoints.stopDynamicPathUpdates();
+                self.pathManager.stopDynamicPathUpdates();
             });
 
             qtBridge.gpsCallback.connect(function (lat, lon, headingDeg) 
@@ -50,20 +51,21 @@ class Bridge
 
             qtBridge.calculatePath.connect(function (destLat, destLon, waypointId) 
             {
-                self.waypoints.startDynamicPathUpdates(destLat, destLon, waypointId);
+                self.pathManager.startDynamicPathUpdates(destLat, destLon, waypointId);
             });
 
             qtBridge.clearWaypoints.connect(function () 
             {
-                self.waypoints.stopDynamicPathUpdates();
                 self.waypoints.clearAllWaypoints();
+                self.pathManager.stopDynamicPathUpdates();
+                self.pathManager.clearWaypointPath();
             });
 
             qtBridge.deleteWaypoint.connect(function (waypointId) 
             {
                 if (self.waypoints.activeWaypoint && self.waypoints.activeWaypoint.id === waypointId) 
                 {
-                    self.waypoints.stopDynamicPathUpdates();
+                    self.pathManager.stopDynamicPathUpdates();
                 }
                 self.waypoints.deleteWaypoint(waypointId);
             });
@@ -73,7 +75,7 @@ class Bridge
                 self.waypoints.waypointVisibility(waypointId, visibility);
             });
 
-            qtBridge.onCSVReady.connect(function ()
+            qtBridge.updatePath.connect(function (sessionFolderPath)
             {
                 alert("CSV file is ready for download.");
             });

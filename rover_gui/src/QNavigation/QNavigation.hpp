@@ -34,7 +34,7 @@ class QNavigation : public QWidget
     void deleteWaypoint(const QString& waypointId_);
     void addWaypoint(const QString& name_, double latitude_, double longitude_, const QString& id_);
     void writePosToCSV(double latitude_, double longitude_);
-    void updatePath(void);
+    void updatePath(const QString& sessionFolderPath_);
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_);

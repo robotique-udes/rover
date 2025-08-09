@@ -387,6 +387,5 @@ void QNavigation::onClearPathClicked(void)
 
 void QNavigation::onCSVReady(void)
 {
-    RCLCPP_ERROR(rclcpp::get_logger("GUI"), "CSV ready, sending signal to JS");
-    emit this->updatePath();
+    emit this->updatePath(QString::fromStdString(_sessionFolderPath));
 }
