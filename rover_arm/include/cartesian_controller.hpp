@@ -148,20 +148,6 @@ class CartesianController : public RobotController
             desiredCartesianVec = rotationMatrix * desiredCartesianVec;
         }
 
-        RCLCPP_INFO(rclcpp::get_logger("dick"),
-                    "Joint positions: JL: %f, J1: %f, J2: %f, GRIPPER_TILT: %f",
-                    _jointPositions[TO_UNDERLYING(eJointIndex::JL)],
-                    _jointPositions[TO_UNDERLYING(eJointIndex::J1)],
-                    _jointPositions[TO_UNDERLYING(eJointIndex::J2)],
-                    _jointPositions[TO_UNDERLYING(eJointIndex::GRIPPER_TILT)]);
-
-        RCLCPP_INFO(rclcpp::get_logger("dick"),
-                    "Command requested: x: %f, y: %f, z: %f, a: %f",
-                    _desiredCartesian[std::to_underlying(eCartesianInput::X)],
-                    _desiredCartesian[std::to_underlying(eCartesianInput::Y)],
-                    _desiredCartesian[std::to_underlying(eCartesianInput::Z)],
-                    _desiredCartesian[std::to_underlying(eCartesianInput::ALPHA)]);
-
         Eigen::Map<
             Eigen::Matrix<float, TO_UNDERLYING(eCartesianInput::eLAST), TO_UNDERLYING(eCartesianQ::eLAST), Eigen::RowMajor>>
             jacobian(this->computeJacobian(_jointPositions).data());
