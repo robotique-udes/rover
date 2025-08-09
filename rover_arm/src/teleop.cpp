@@ -13,6 +13,7 @@
 #include <rover_lib2/helpers/constants.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+#include <utility>
 
 class Teleop : public rclcpp::Node
 {
@@ -95,15 +96,7 @@ class Teleop : public rclcpp::Node
         // CARTESIAN CONTROL
         else if (_controlMode == eControlMode::CARTESIAN)
         {
-            _cartesianController.getJointPositions(_jointPositions);
-
-            RCLCPP_INFO(this->get_logger(),
-                        "Joint positions: JL: %f, J1: %f, J2: %f, GRIPPER_TILT: %f",
-                        _jointPositions[TO_UNDERLYING(eJointIndex::JL)],
-                        _jointPositions[TO_UNDERLYING(eJointIndex::J1)],
-                        _jointPositions[TO_UNDERLYING(eJointIndex::J2)],
-                        _jointPositions[TO_UNDERLYING(eJointIndex::GRIPPER_TILT)]);
-
+            _cartesianController.setJointPositions(_jointPositions);
             armMsg.target_speed = _cartesianController.getJointCmdFromInput(joyArray);
 
             // if (_joyManager.isTriggered(KEYBINDINGS::CARTESIAN::RECORD))
@@ -141,7 +134,15 @@ class Teleop : public rclcpp::Node
 
     void position_CB(const rover_msgs::msg::ArmMsg& armMsg_)
     {
-        std::copy_n(armMsg_.target_speed.begin(), TO_UNDERLYING(eJointIndex::eLAST), _jointPositions.begin());
+        _jointPositions[std::to_underlying(eJointIndex::J0)] = armMsg_.current_position[rover_msgs::msg::ArmMsg::J0];
+        _jointPositions[std::to_underlying(eJointIndex::J1)] = armMsg_.current_position[rover_msgs::msg::ArmMsg::J1];
+        _jointPositions[std::to_underlying(eJointIndex::J2)] = armMsg_.current_position[rover_msgs::msg::ArmMsg::J2];
+        _jointPositions[std::to_underlying(eJointIndex::GRIPPER_ROT)]
+            = armMsg_.current_position[rover_msgs::msg::ArmMsg::GRIPPER_ROT];
+        _jointPositions[std::to_underlying(eJointIndex::GRIPPER_TILT)]
+            = armMsg_.current_position[rover_msgs::msg::ArmMsg::GRIPPER_TILT];
+        _jointPositions[std::to_underlying(eJointIndex::GRIPPER_CLOSE)]
+            = armMsg_.current_position[rover_msgs::msg::ArmMsg::GRIPPER_CLOSE];
     }
 };
 

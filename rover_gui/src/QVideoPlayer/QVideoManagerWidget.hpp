@@ -18,7 +18,9 @@
 enum class eTabIndex : uint8_t
 {
     GRID = 0,
-    ALT
+    ALT,
+    ARM3,
+    ARM4
 };
 
 class QVideoManagerWidget : public QWidget
@@ -83,10 +85,17 @@ class QVideoManagerWidget : public QWidget
 
     QHBoxLayout _altLayout;
     QVBoxLayout _vSubLayout;
+    QVBoxLayout _arm3Layout;
+    QVBoxLayout _arm3SubLayout;
+    QGridLayout _arm4Layout;
     QWidget _vSubLayoutContainer;
     QWidget _altLayoutContainer;
+    QWidget _arm3LayoutContainer;
+    QWidget _arm3SubLayoutContainer;
+    QWidget _arm4LayoutContainer;
 
     QSplitter _splitter;
+    QSplitter _arm3Splitter;
     QPushButton _resetLayout_PB;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;

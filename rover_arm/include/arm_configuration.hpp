@@ -63,9 +63,9 @@ namespace ARM_CONFIGURATION
     namespace J1
     {
         constexpr eJointIndex ID = eJointIndex::J1;
-        constexpr float MAX_VELOCITY = 0.2F;   // rad/s
-        constexpr float JOG_VELOCITY = 0.15F;  // rad/s
-        constexpr float CART_VELOCITY = 0.1F;  // rad/s
+        constexpr float MAX_VELOCITY = 0.2F;     // rad/s
+        constexpr float JOG_VELOCITY = 0.15F;    // rad/s
+        constexpr float CART_VELOCITY = 0.075F;  // rad/s
 
         namespace LEN
         {
@@ -78,14 +78,14 @@ namespace ARM_CONFIGURATION
     namespace J2
     {
         constexpr eJointIndex ID = eJointIndex::J2;
-        constexpr float MAX_VELOCITY = 0.2F;   // rad/s
-        constexpr float JOG_VELOCITY = 0.15F;  // rad/s
-        constexpr float CART_VELOCITY = 0.1F;  // rad/s
+        constexpr float MAX_VELOCITY = 0.2F;    // rad/s
+        constexpr float JOG_VELOCITY = 0.15F;   // rad/s
+        constexpr float CART_VELOCITY = 0.75F;  // rad/s
         namespace LEN
         {
             constexpr float x = 0.0F;
             constexpr float y = 0.0F;
-            constexpr float z = 0.41F;
+            constexpr float z = 0.415F;
         }  // namespace LEN
     }      // namespace J2
 
@@ -100,7 +100,7 @@ namespace ARM_CONFIGURATION
         {
             constexpr float x = 0.0F;
             constexpr float y = 0.0F;
-            constexpr float z = 0.15F;
+            constexpr float z = 0.25F;
         }  // namespace LEN
     }      // namespace GRIPPER_TILT
 
@@ -109,7 +109,7 @@ namespace ARM_CONFIGURATION
         constexpr eJointIndex ID = eJointIndex::GRIPPER_ROT;
         constexpr float MAX_VELOCITY = 0.8;    // rad/s
         constexpr float JOG_VELOCITY = 0.8F;   // rad/s
-        constexpr float CART_VELOCITY = 0.4F;  // rad/s
+        constexpr float CART_VELOCITY = 0.2F;  // rad/s
 
         namespace LEN
         {

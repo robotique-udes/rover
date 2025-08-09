@@ -18,7 +18,7 @@ class RobotController
     }
 
     virtual std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
-        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_)
+        const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& inputArray_)
         = 0;
 
     constexpr float getCartVelocity(eJointIndex joint_) const
