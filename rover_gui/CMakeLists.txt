@@ -15,6 +15,7 @@ find_package(rover_msgs REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg DBus)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
+find_package(jsoncpp REQUIRED)
 
 set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
@@ -69,6 +70,7 @@ add_executable(main_gui src/gui.cpp
                    src/QLightsController/QLightsController.cpp
 
                    src/QNavigation/QNavigation.cpp
+                   src/QNavigation/QWaypoint/QWaypointManager.cpp
 
                    src/QSideBar/QSideBar.cpp
 
@@ -117,6 +119,7 @@ target_link_libraries(main_gui
   ${LIBSSH_LIBRARY}
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs
+  jsoncpp_lib
 )         
 
 target_sources(main_gui PRIVATE ${RESOURCES})

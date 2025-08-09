@@ -1,14 +1,22 @@
 #ifndef __CARTESIAN_CONTROLLER_HPP__
 #define __CARTESIAN_CONTROLLER_HPP__
 
+#include "keybinding.hpp"
 #include "robot_controller.hpp"
 #include "Eigen/Dense"
 #include "rover_lib2/helpers/log.hpp"
+#include "rover_lib2/helpers/macros.hpp"
+#include <numbers>
+#include <rclcpp/logger.hpp>
+#include <utility>
 
 DEFINE_LOG_NODE(CartesianController, Logger::eNodeState::ON);
 
 class CartesianController : public RobotController
 {
+    static constexpr float X_AXIS_DEADZONE = 0.2F;
+    static constexpr float BOMBO_SPEED = 2.0F;
+
   public:
     enum class eCartesianCoord
     {
@@ -51,7 +59,7 @@ class CartesianController : public RobotController
 
   public:
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
-        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
+        const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
         _desiredCartesian = {};
@@ -61,15 +69,27 @@ class CartesianController : public RobotController
             return jointCommands;
         }
 
-        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::X_AXIS_RIGHT))
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::X_AXIS))
         {
-            _desiredCartesian[TO_UNDERLYING(eCartesianInput::X)]
-                = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::X_AXIS_RIGHT)];
-        }
-        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::X_AXIS_LEFT))
-        {
-            _desiredCartesian[TO_UNDERLYING(eCartesianInput::X)]
-                = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::X_AXIS_LEFT)];
+            // JL deadzone
+            float input = -inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::X_AXIS)];
+            if (IN_ERROR(input, X_AXIS_DEADZONE, 0.0F))
+            {
+                input = 0.0F;
+            }
+            else
+            {
+                if (input > 0.0F)
+                {
+                    input = MAP(input, 0.0F, 1.0F, X_AXIS_DEADZONE, 1.0F);
+                }
+                else
+                {
+                    input = MAP(input, -1.0F, 0.0F, -1.0F, -X_AXIS_DEADZONE);
+                }
+            }
+
+            _desiredCartesian[TO_UNDERLYING(eCartesianInput::X)] = input;
         }
 
         if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::Y_AXIS))
@@ -83,20 +103,6 @@ class CartesianController : public RobotController
             _desiredCartesian[TO_UNDERLYING(eCartesianInput::Z)] = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::Z_AXIS)];
         }
 
-        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ACTIVATE_ALPHA))
-        {
-            if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE))
-            {
-                _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
-                    = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE)];
-            }
-            else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE))
-            {
-                _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
-                    = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE)];
-            }
-        }
-
         if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_ROT_LEFT))
         {
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
@@ -106,43 +112,63 @@ class CartesianController : public RobotController
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
         }
 
-        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_CLOSE))
         {
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
         }
-        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
+        else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_OPEN))
         {
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
                 = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
         }
 
-        if (_planApplied)
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE))
         {
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector12;
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector13;
-
-            for (int i = 0; i < TO_UNDERLYING(eCartesianCoord::eLAST); ++i)
-            {
-                vector12(i) = _poseArray[1][i] - _poseArray[0][i];
-                vector13(i) = _poseArray[2][i] - _poseArray[0][i];
-            }
-
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> xAxis;
-            xAxis << 1.0F, 0.0F, 0.0F;
-
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> zAxis = vector12.cross(vector13).normalized();
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> yAxis = zAxis.cross(xAxis).normalized();
-
-            zAxis = xAxis.cross(yAxis).normalized();
-
-            Eigen::Matrix<float, TO_UNDERLYING(eCartesianCoord::eLAST), TO_UNDERLYING(eCartesianCoord::eLAST)> rotationMatrix;
-            rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::X)) = xAxis;
-            rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Y)) = yAxis;
-            rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Z)) = zAxis;
-
-            Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)>> desiredCartesianVec(_desiredCartesian.data());
-            desiredCartesianVec = rotationMatrix * desiredCartesianVec;
+            _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
+                = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE)];
         }
+        else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE))
+        {
+            _desiredCartesian[TO_UNDERLYING(eCartesianInput::ALPHA)]
+                = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE)];
+        }
+
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_CLOSE))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        }
+        else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_OPEN))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        }
+        // if (_planApplied)
+        // {
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector12;
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector13;
+
+        //     for (int i = 0; i < TO_UNDERLYING(eCartesianCoord::eLAST); ++i)
+        //     {
+        //         vector12(i) = _poseArray[1][i] - _poseArray[0][i];
+        //         vector13(i) = _poseArray[2][i] - _poseArray[0][i];
+        //     }
+
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> xAxis;
+        //     xAxis << 1.0F, 0.0F, 0.0F;
+
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> zAxis = vector12.cross(vector13).normalized();
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> yAxis = zAxis.cross(xAxis).normalized();
+
+        //     zAxis = xAxis.cross(yAxis).normalized();
+
+        //     Eigen::Matrix<float, TO_UNDERLYING(eCartesianCoord::eLAST), TO_UNDERLYING(eCartesianCoord::eLAST)> rotationMatrix;
+        //     rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::X)) = xAxis;
+        //     rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Y)) = yAxis;
+        //     rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Z)) = zAxis;
+
+        //     Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)>>
+        //     desiredCartesianVec(_desiredCartesian.data()); desiredCartesianVec = rotationMatrix * desiredCartesianVec;
+        // }
 
         Eigen::Map<
             Eigen::Matrix<float, TO_UNDERLYING(eCartesianInput::eLAST), TO_UNDERLYING(eCartesianQ::eLAST), Eigen::RowMajor>>
@@ -155,6 +181,15 @@ class CartesianController : public RobotController
 
         std::array<float, TO_UNDERLYING(eCartesianQ::eLAST)> velocityArray;
         Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianQ::eLAST)>>(velocityArray.data()) = computedVelocity;
+
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::BOMBO_SPEED))
+        {
+            for (size_t i = 0; i < TO_UNDERLYING(eCartesianQ::eLAST); i++)
+            {
+                velocityArray[i] *= BOMBO_SPEED;
+            }
+        }
+
         std::array<float, TO_UNDERLYING(eCartesianQ::eLAST)> scaledVelocities = this->scaleVelocities(velocityArray);
 
         jointCommands[TO_UNDERLYING(eJointIndex::JL)] = scaledVelocities[TO_UNDERLYING(eCartesianQ::Q0)];
@@ -269,7 +304,7 @@ class CartesianController : public RobotController
         return _pointsRecorded;
     }
 
-    void getJointPositions(std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> position_)
+    void setJointPositions(const std::array<float, TO_UNDERLYING(eJointIndex::eLAST)>& position_)
     {
         _jointPositions = position_;
     }

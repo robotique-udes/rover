@@ -54,17 +54,24 @@ def generate_launch_description():
                           parameters=[{"controller_type": "Logitech"}],
                           remappings=[("main_joy", "main_formatted"),
                                       ("secondary_joy", "secondary_formatted")])
+    
+    node_joy_demux_controller = Node(package="rover_joy",
+                                     namespace="/base/joy",
+                                     executable="joy_demux_controller",
+                                     name="demux_controller")
 
     ld.add_action(node_joy_main)
     ld.add_action(node_joy_secondary)
     ld.add_action(node_joy_main_formator)
     ld.add_action(node_joy_secondary_formator)
     ld.add_action(node_joy_demux)
+    ld.add_action(node_joy_demux_controller)
 
     return LaunchDescription([
                               node_joy_main,
                               node_joy_secondary,
                               node_joy_main_formator,
                               node_joy_secondary_formator,
-                              node_joy_demux
+                              node_joy_demux,
+                              node_joy_demux_controller
                              ])
