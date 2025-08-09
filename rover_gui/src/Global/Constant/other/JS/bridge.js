@@ -36,7 +36,7 @@ class Bridge
 
             qtBridge.clearPath.connect(function () 
             {
-                self.pathManager.stopDynamicPathUpdates();
+                self.pathManager.stopDynamicWaypointPathUpdates();
             });
 
             qtBridge.gpsCallback.connect(function (lat, lon, headingDeg) 
@@ -51,13 +51,13 @@ class Bridge
 
             qtBridge.calculatePath.connect(function (destLat, destLon, waypointId) 
             {
-                self.pathManager.startDynamicPathUpdates(destLat, destLon, waypointId);
+                self.pathManager.startDynamicWaypointPathUpdates(destLat, destLon, waypointId);
             });
 
             qtBridge.clearWaypoints.connect(function () 
             {
                 self.waypoints.clearAllWaypoints();
-                self.pathManager.stopDynamicPathUpdates();
+                self.pathManager.stopDynamicWaypointPathUpdates();
                 self.pathManager.clearWaypointPath();
             });
 
@@ -65,7 +65,7 @@ class Bridge
             {
                 if (self.waypoints.activeWaypoint && self.waypoints.activeWaypoint.id === waypointId) 
                 {
-                    self.pathManager.stopDynamicPathUpdates();
+                    self.pathManager.stopDynamicWaypointPathUpdates();
                 }
                 self.waypoints.deleteWaypoint(waypointId);
             });

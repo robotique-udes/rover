@@ -40,6 +40,11 @@ class Waypoint
         return this.#activeWaypoint;
     }
 
+    set activeWaypoint(waypoint)
+    {
+        this.#activeWaypoint = waypoint;
+    }
+
     clearAllWaypoints() 
     {
         this.#waypointEntities.forEach(waypoint => {

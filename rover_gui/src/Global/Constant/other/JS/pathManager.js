@@ -28,7 +28,7 @@ class PathManager
         }
     }
 
-    startDynamicPathUpdates(destLat, destLon, waypointId) 
+    startDynamicWaypointPathUpdates(destLat, destLon, waypointId) 
     {
         this.waypointManager.activeWaypoint = {
             latitude: destLat,
@@ -59,7 +59,7 @@ class PathManager
         );
     }
 
-    stopDynamicPathUpdates() 
+    stopDynamicWaypointPathUpdates() 
     {
         clearInterval(this.#pathUpdateInterval);
         this.#pathUpdateInterval = null;
