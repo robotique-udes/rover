@@ -14,7 +14,9 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _tabWidget(this),
     _gridContainer(nullptr),
     _vSubLayoutContainer(nullptr),
-    _altLayoutContainer(nullptr)
+    _altLayoutContainer(nullptr),
+    _arm3LayoutContainer(nullptr),
+    _arm4LayoutContainer(nullptr)
 {
     this->initWidget();
 
@@ -53,14 +55,19 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _gridContainer.setLayout(&_gridLayout);
     _altLayoutContainer.setLayout(&_altLayout);
     _vSubLayoutContainer.setLayout(&_vSubLayout);
-    _altLayout.addWidget(&_vSubLayoutContainer);
+    _arm3LayoutContainer.setLayout(&_arm3Layout);
+    _arm3SubLayoutContainer.setLayout(&_arm3SubLayout);
+    _arm4LayoutContainer.setLayout(&_arm4Layout);
 
     _mainLayout.addWidget(&_tabWidget);
     this->setLayout(&_mainLayout);
 
     _altLayout.addWidget(&_splitter);
+    _arm3Layout.addWidget(&_arm3Splitter);
     _tabWidget.addTab(&_gridContainer, "grid");
     _tabWidget.addTab(&_altLayoutContainer, "alt");
+    _tabWidget.addTab(&_arm3LayoutContainer, "arm3");
+    _tabWidget.addTab(&_arm4LayoutContainer, "arm4");
     _tabWidget.setCurrentIndex(std::to_underlying(eTabIndex::ALT));
 
     _playerWorkerThreadAruco->start();
@@ -84,7 +91,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
         }
         _resetLayout_PB.setVisible(false);
     }
-    else
+    else if (index_ == std::to_underlying(eTabIndex::ALT))
     {
         if (_videoPlaysWidgets[1])
         {
@@ -104,6 +111,51 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
         }
         _resetLayout_PB.setVisible(true);
         this->setSplitterInitialGeometry();
+    }
+    else if (index_ == std::to_underlying(eTabIndex::ARM3))
+    {
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)])
+        {
+            _arm3SubLayout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get());
+        }
+
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)])
+        {
+            _arm3SubLayout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get());
+        }
+
+        _arm3Splitter.addWidget(&_arm3SubLayoutContainer);
+
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)])
+        {
+            _arm3Splitter.insertWidget(0,
+                                       _videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get());
+        }
+        this->setSplitterInitialGeometry();
+        _resetLayout_PB.setVisible(true);
+    }
+    else if (index_ == std::to_underlying(eTabIndex::ARM4))
+    {
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)])
+        {
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get(), 0, 0);
+        }
+
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)])
+        {
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get(), 0, 1);
+        }
+
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)])
+        {
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get(), 1, 0);
+        }
+
+        if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)])
+        {
+            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)].get(), 1, 1);
+        }
+        _resetLayout_PB.setVisible(false);
     }
 }
 
@@ -290,12 +342,23 @@ void QVideoManagerWidget::initCameraControlSubscriber(void)
                                                                               });
 }
 
-void QVideoManagerWidget::setSplitterInitialGeometry()
+void QVideoManagerWidget::setSplitterInitialGeometry(void)
 {
-    int total = _splitter.width();
-    int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
-    int right = total - left;
-    _splitter.setSizes(QList<int>({left, right}));
+    uint16_t index = _tabWidget.currentIndex();
+    if (index == std::to_underlying(eTabIndex::ALT))
+    {
+        int total = _splitter.width();
+        int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
+        int right = total - left;
+        _splitter.setSizes(QList<int>({left, right}));
+    }
+    else if (index == std::to_underlying(eTabIndex::ARM3))
+    {
+        int total = _arm3Splitter.width();
+        int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
+        int right = total - left;
+        _arm3Splitter.setSizes(QList<int>({left, right}));
+    }
 }
 
 void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
