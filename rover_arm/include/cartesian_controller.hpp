@@ -109,15 +109,16 @@ class CartesianController : public RobotController
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
         }
 
-//        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
-//        {
-//            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-//        }
-//        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
-//        {
-//            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
-//                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-//        }
+        //        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
+        //        {
+        //            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] =
+        //            getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        //        }
+        //        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
+        //        {
+        //            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+        //                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        //        }
 
         if (_planApplied)
         {
