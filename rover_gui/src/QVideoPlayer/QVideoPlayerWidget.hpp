@@ -102,6 +102,7 @@ class QVideoPlayerWidget : public QWidget
     void requestStopStream(void);
     void displayDetectedArucos(std::vector<uint16_t> ids_);
     void updateActualAngle(const std::string& camURL_, float yaw_);
+    void updatePTZCmd(float yaw_, size_t id_);
 
   private slots:
     // Arucuo

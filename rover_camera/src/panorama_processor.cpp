@@ -5,6 +5,11 @@
 #include <rover_lib2/helpers/date.hpp>
 #include <rover_lib2/helpers/macros.hpp>
 #include <rover_lib2/helpers/constants.hpp>
+#include <rover_lib2/helpers/chrono.hpp>
+#include <rover_lib2/helpers/time.hpp>
+
+
+const cv::Scalar PanoramaProcessor::TEXT_COLOR = cv::Scalar(34, 139, 34);
 
 PanoramaProcessor::PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,
                                      Constants::CameraInfo::eCamNames id_,
@@ -31,7 +36,16 @@ void PanoramaProcessor::execute(const rover_msgs::srv::Panorama::Request& reques
 
     _busy.store(true);
 
+    this->enableCameraPower(id_);
     this->handlePanoramaRequest(request_, response_, id_, coordinates_);
+    this->disableCameraPower(id_);
+
+
+    if(_cameraInterface)
+    {
+        _cameraInterface->release(id_);
+    }
+
 
     _busy.store(false);
 }
@@ -59,7 +73,6 @@ void PanoramaProcessor::handlePanoramaRequest(const rover_msgs::srv::Panorama::R
     {
         return;
     }
-    this->configPtz(id_, 10.0F /*= As fast as possible*/);
 
     std::optional<cv::Mat> pano = this->stitchFrames(frames);
     if (!pano.has_value())
@@ -157,19 +170,13 @@ std::optional<cv::Mat> PanoramaProcessor::stitchFrames(std::vector<cv::Mat>& fra
 
 std::optional<std::string> PanoramaProcessor::getFolderPath(const std::string& basePath_)
 {
-    const char* home = std::getenv("HOME");
-    std::string homeStr;
-    if (home)
+    std::optional<std::string> home = Folders::getHome();
+    if (!home)
     {
-        homeStr = home;
-    }
-    else
-    {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Unable to create session folder, $HOME env variable wasn't found");
         return std::nullopt;
     }
 
-    std::string folderPath = homeStr + basePath_ + PATH_FOR_PANORAMA;
+    std::string folderPath = *home + basePath_ + PATH_FOR_PANORAMA;
     return folderPath;
 }
 
@@ -208,9 +215,8 @@ bool PanoramaProcessor::captureFrames(const rover_msgs::srv::Panorama::Request& 
 
     cv::Mat frame;
     uint8_t invalidFramesCounter = 0U;
-    std::chrono::steady_clock::time_point start = std::chrono::steady_clock::now();
-    while (std::chrono::duration_cast<std::chrono::milliseconds>(std::chrono::steady_clock::now() - start).count()
-           < request_.duration)
+    Chrono<uint64_t, Time::millis> chrono;
+    while (chrono.getTime() < static_cast<uint64_t>(request_.duration))
     {
         cap >> frame;
         if (!frame.empty())

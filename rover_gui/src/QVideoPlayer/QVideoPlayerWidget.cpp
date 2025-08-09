@@ -925,11 +925,13 @@ void QVideoPlayerWidget::CB_srvCameraAvailable(bool available_)
 void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
 {
     _ui.cameraAngleBox->setValue(_ui.cameraAngleSlider->value());
+    emit this->updatePTZCmd(_ui.cameraAngleSlider->value(), std::to_underlying(*Constants::CameraInfo::getIdFromURL(_camURL)));
 }
 
 void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
 {
     _ui.cameraAngleSlider->setValue(_ui.cameraAngleBox->value());
+    emit this->updatePTZCmd(_ui.cameraAngleBox->value(), std::to_underlying(*Constants::CameraInfo::getIdFromURL(_camURL)));
 }
 
 void QVideoPlayerWidget::hideAngleSelector(void)
@@ -962,6 +964,7 @@ void QVideoPlayerWidget::onCenterAngle(void)
 {
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
+    emit this->updatePTZCmd(CAMERA_CENTER_ANGLE, std::to_underlying(*Constants::CameraInfo::getIdFromURL(_camURL)));
 }
 
 void QVideoPlayerWidget::handlePanorama(void)

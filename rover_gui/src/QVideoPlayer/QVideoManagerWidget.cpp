@@ -10,6 +10,7 @@ using namespace LogUtils;
 QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),
+    _cameraInterface(guiNode_, CAMERA_PTZ_CMD_TOPIC_GUI, CAMERA_PTZ_CONFIG_TOPIC_GUI, CAMERA_POWER_TOPIC_GUI),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
     _panoramaWorkerThread(std::make_shared<QPanoramaWorker>()),
     _tabWidget(this),
@@ -31,6 +32,7 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
+        connect(_videoPlaysWidgets[i].get(), &QVideoPlayerWidget::updatePTZCmd, this, &QVideoManagerWidget::setPTZCmd);
         connect(_playerWorkerThreadRecording[i].get(),
                 &QRecordingWorker::setCursorWaiting,
                 this,
@@ -44,7 +46,6 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     this->initCameraControlClient();
     this->initCameraListSubscriber();
-    this->initCameraAnglePublisher();
     this->initCameraStatusSubscriber();
 
     _gridContainer.setLayout(&_gridLayout);
@@ -61,11 +62,23 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _tabWidget.setCurrentIndex(std::to_underlying(eTabIndex::ALT));
 
     this->initPanoramaClient();
+    this->initCameraInterface();
 
     _playerWorkerThreadAruco->start();
     _playerWorkerThreadAruco->setThreadName("WorkerAruco");
     _panoramaWorkerThread->start();
     _panoramaWorkerThread->setThreadName("QWorkerPano");
+}
+
+QVideoManagerWidget::~QVideoManagerWidget()
+{
+    rover_msgs::msg::CameraControl powerMsg;
+    powerMsg.power_on = false;
+    for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
+    {
+        powerMsg.id_cam = id;
+        _cameraInterface.setPowerCmd(powerMsg, static_cast<Constants::CameraInfo::eCamNames>(id));
+    }
 }
 
 void QVideoManagerWidget::onTabChanged(uint16_t index_)
@@ -274,16 +287,6 @@ void QVideoManagerWidget::initCameraControlClient(void)
     return;
 }
 
-void QVideoManagerWidget::initCameraAnglePublisher(void)
-{
-    _pub_cameraCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(CAMERA_CMD_TOPIC_GUI, QOS_DEFAULT);
-    _timer_pubCameraAngle = _node->create_wall_timer(std::chrono::milliseconds(ANGLE_PUBLISHER_PERIOD_MS),
-                                                     [this](void)
-                                                     {
-                                                         this->CB_pubCameraAngle();
-                                                     });
-}
-
 void QVideoManagerWidget::initCameraListSubscriber(void)
 {
     _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
@@ -317,34 +320,14 @@ void QVideoManagerWidget::onSetCursorWaiting(bool waiting_)
     }
 }
 
-void QVideoManagerWidget::CB_pubCameraAngle(void)
+void QVideoManagerWidget::setPTZCmd(float yaw_, size_t id_)
 {
-    for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
-    {
-        std::string camURL = widget->getCamURL();
-        std::optional<Constants::CameraInfo::eCamNames> id = Constants::CameraInfo::getIdFromURL(camURL);
-        rover_msgs::msg::CameraControl msg;
-
-        if(!id)
-        {
-            continue;
-        }
-
-        if (*id == Constants::CameraInfo::eCamNames::MAIN || *id == Constants::CameraInfo::eCamNames::ANTENNA)
-        {
-            msg.id_cam = std::to_underlying(*id);
-        }
-        else
-        {
-            continue;
-        }
-
-        msg.pitch = 0.0f;
-        msg.yaw = widget->getCameraAngle();
-        msg.power_on = true;
-
-        _pub_cameraCmd->publish(msg);
-    }
+    rover_msgs::msg::CameraControl msg;
+    msg.id_cam = id_;
+    msg.yaw = yaw_;
+    msg.power_on = true;
+    msg.pitch = 0.0F;
+    _cameraInterface.setPTZCmd(msg, static_cast<Constants::CameraInfo::eCamNames>(id_));
 }
 
 void QVideoManagerWidget::initPanoramaClient(void)
@@ -382,7 +365,31 @@ void QVideoManagerWidget::initCameraStatusSubscriber(void)
             }
             for (const std::unique_ptr<QVideoPlayerWidget>& widget : _videoPlaysWidgets)
             {
-                emit widget->updateActualAngle(Constants::CameraInfo::CAMERA_INFO[static_cast<size_t>(msg.id_cam)][std::to_underlying(Constants::CameraInfo::eInfoType::URL)], msg.yaw);
+                emit widget->updateActualAngle(Constants::CameraInfo::CAMERA_INFO[static_cast<size_t>(
+                                                   msg.id_cam)][std::to_underlying(Constants::CameraInfo::eInfoType::URL)],
+                                               msg.yaw);
             }
         });
+}
+
+void QVideoManagerWidget::initCameraInterface(void)
+{
+    rover_msgs::msg::CameraConfig configMsg;
+    configMsg.pan_max_position = CAMERA_MAX_ANGLE;
+    configMsg.pan_min_position = CAMERA_MIN_ANGLE;
+    configMsg.pan_max_speed = CAMERA_MAX_SPEED;
+    configMsg.tilt_max_position = CAMERA_MAX_ANGLE;
+    configMsg.tilt_min_position = CAMERA_MIN_ANGLE;
+    configMsg.tilt_max_speed = CAMERA_MAX_SPEED;
+
+    rover_msgs::msg::CameraControl powerMsg;
+    powerMsg.power_on = true;
+
+    for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
+    {
+        configMsg.id_cam = id;
+        powerMsg.id_cam = id;
+        _cameraInterface.setPTZConfig(configMsg, static_cast<Constants::CameraInfo::eCamNames>(id));
+        _cameraInterface.setPowerCmd(powerMsg, static_cast<Constants::CameraInfo::eCamNames>(id));
+    }
 }

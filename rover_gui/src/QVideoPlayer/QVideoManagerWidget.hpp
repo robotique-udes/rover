@@ -11,6 +11,7 @@
 #include "rover_msgs/msg/camera_list.hpp"
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_lib2/helpers/constants.hpp"
+#include "rover_lib2/helpers/cameraInterface.hpp"
 #include <rover_msgs/srv/panorama.hpp>
 
 #include <QtWidgets/QGridLayout>
@@ -30,14 +31,15 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* TOPIC_ARUCO_DETECTIONS = "/rover/cameras/aruco_detected";
     static constexpr const char* SERVICE_RECORDING_NAME = "/rover/cameras/media_server_control";
     static constexpr const char* TOPIC_RECORDING_INFO = "/rover/camera/recordings_info";
-    static constexpr const char* CAMERA_CMD_TOPIC_GUI = "/rover/camera/PTZ_cmd/GUI";
+    static constexpr const char* CAMERA_PTZ_CMD_TOPIC_GUI = "/rover/camera/PTZ_cmd/GUI";
+    static constexpr const char* CAMERA_PTZ_CONFIG_TOPIC_GUI = "/rover/camera/PTZ_config/GUI";
+    static constexpr const char* CAMERA_POWER_TOPIC_GUI = "/rover/camera/power_cmd/GUI";
     static constexpr const char* CAMERA_STATUS_TOPIC = "/rover/camera/PTZ_status";
     static constexpr const char* SERVICE_PANORAMA_NAME = "/rover/video/panorama";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 5000U;
     static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 50U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
-    static constexpr uint16_t ANGLE_PUBLISHER_PERIOD_MS = 100U;
 
     static constexpr float ALT_CAM_LAYOUT_PROPORTION = 0.7f;
 
@@ -49,16 +51,20 @@ class QVideoManagerWidget : public QWidget
         "Arm-Side",
     };
 
+    static constexpr float CAMERA_MAX_SPEED = 10.0F;
+    static constexpr float CAMERA_MIN_ANGLE = 0.0F;
+    static constexpr float CAMERA_MAX_ANGLE = 360.0F;
+
   public:
     QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    ~QVideoManagerWidget();
 
     void CB_updateArucoDetectionManager(void);
     void CB_displayArucoDetected(rover_msgs::msg::Aruco msg_);
-
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
-    void CB_pubCameraAngle(void);
+    void setPTZCmd(float yaw_, size_t id_);
     void onTabChanged(uint16_t index_);
 
   private:
@@ -74,10 +80,13 @@ class QVideoManagerWidget : public QWidget
     void initCameraStatusSubscriber(void);
 
     void initPanoramaClient(void);
+    void initCameraInterface(void);
 
     void setSplitterInitialGeometry(void);
 
     std::shared_ptr<rclcpp::Node> _node;
+
+    CameraInterface _cameraInterface;
 
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::array<std::shared_ptr<QRecordingWorker>, NBR_CAM_TO_TRACK> _playerWorkerThreadRecording;
@@ -103,10 +112,8 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> _client_cameraControlManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraList>> _sub_cameraList;
-    std::shared_ptr<rclcpp::Publisher<rover_msgs::msg::CameraControl>> _pub_cameraCmd;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::CameraControl>> _sub_cameraStatus;
     rclcpp::TimerBase::SharedPtr _timer_clientCameraControlHealth;
-    rclcpp::TimerBase::SharedPtr _timer_pubCameraAngle;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramique;
 

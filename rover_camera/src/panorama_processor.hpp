@@ -12,8 +12,6 @@
 #include <optional>
 #include <atomic>
 
-#define TEXT_COLOR cv::Scalar(34, 139, 34)
-
 struct sCoordinate
 {
     float latitude = 0.0F;
@@ -23,8 +21,8 @@ struct sCoordinate
 class PanoramaProcessor
 {
   private:
+    static const cv::Scalar TEXT_COLOR;
     static constexpr float MAX_ROTATION_SPEED_PANORAMA = 15.0F;  // deg/s
-    static constexpr float MAX_ROTATION_SPEED_GUI = 10.0F;       // rad/s
     static constexpr float MAX_PAN_ANGLE = 360.0F;               // deg
     static constexpr float MIDDLE_PAN_ANGLE = 180.0F;            // degs
     static constexpr float POSITION_TOLERANCE = 0.05F;           // rad
