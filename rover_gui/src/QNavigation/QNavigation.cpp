@@ -138,7 +138,7 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
-    _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
+    emit this->writePosToCSV(msg_.latitude, msg_.longitude);
 }
 
 void QNavigation::onSetGoalClicked()
@@ -381,4 +381,9 @@ void QNavigation::onClearPathClicked(void)
     _ui.distanceLabel->setText("N/A");
 
     emit this->clearPath();
+}
+
+void QNavigation::onCSVReady(void)
+{
+    emit this->updatePath();
 }

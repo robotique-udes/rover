@@ -73,6 +73,11 @@ class Bridge
                 self.waypoints.waypointVisibility(waypointId, visibility);
             });
 
+            qtBridge.onCSVReady.connect(function ()
+            {
+                alert("CSV file is ready for download.");
+            });
+
             if (window.qtBridge && window.qtBridge.onJsBridgeReady) 
             {
                 window.qtBridge.onJsBridgeReady();

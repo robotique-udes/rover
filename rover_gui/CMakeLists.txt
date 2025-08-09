@@ -71,7 +71,7 @@ add_executable(main_gui src/gui.cpp
 
                    src/QNavigation/QNavigation.cpp
                    src/QNavigation/QWaypoint/QWaypointManager.cpp
-                   src/QNavigation/QPath/QPathManager.cpp
+                   src/QNavigation/Worker/QPathManager.cpp
 
                    src/QSideBar/QSideBar.cpp
 

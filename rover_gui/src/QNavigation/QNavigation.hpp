@@ -6,7 +6,7 @@
 #include "UI_Navigation.h"
 
 #include "QWaypoint/QWaypointManager.hpp"
-#include "QPath/QPathManager.hpp"
+#include "Worker/QPathManager.hpp"
 
 #include <QWebChannel>
 #include <QListWidgetItem>
@@ -33,6 +33,8 @@ class QNavigation : public QWidget
     void clearPath(void);
     void deleteWaypoint(const QString& waypointId_);
     void addWaypoint(const QString& name_, double latitude_, double longitude_, const QString& id_);
+    void writePosToCSV(double latitude_, double longitude_);
+    void updatePath(void);
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_);
@@ -47,6 +49,7 @@ class QNavigation : public QWidget
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
     void onJsBridgeReady(void);
+    void onCSVReady(void);
 
   private:
     void addWaypointToList(const sWaypoint& waypoint_);

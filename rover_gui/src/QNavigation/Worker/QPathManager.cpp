@@ -1,5 +1,10 @@
 #include "QPathManager.hpp"
 
+QPathManager::QPathManager(bool start_, QObject* parent_):
+    QWorker(start_, parent_)
+{
+}
+
 void QPathManager::setSessionFolderPath(std::string sessionFolderPath_)
 {
     if (!sessionFolderPath_.empty())
@@ -12,7 +17,7 @@ void QPathManager::setSessionFolderPath(std::string sessionFolderPath_)
     }
 }
 
-void QPathManager::initializeCSVFile()
+void QPathManager::initializeCSVFile(void)
 {
     std::string filePath = _sessionFolderPath + POSITION_FILE_PATH;
     std::ofstream csv_file(filePath);
@@ -31,6 +36,16 @@ void QPathManager::initializeCSVFile()
 
 void QPathManager::writePosToCSV(double latitude_, double longitude_)
 {
+    this->addTask(
+        [this, latitude_, longitude_]
+        (void)
+        {
+            this->writePosToCSVInternal(latitude_, longitude_);
+        });
+}
+
+void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
+{
     std::string filePath = _sessionFolderPath + POSITION_FILE_PATH;
     RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Opening file at path: %s", filePath.c_str());
     std::ofstream csv_file(filePath, std::ios_base::app);
@@ -39,10 +54,13 @@ void QPathManager::writePosToCSV(double latitude_, double longitude_)
     {
         csv_file << latitude_ << "," << longitude_ << std::endl;
         RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Appending file at path: %s", filePath.c_str());
+        return;
     }
     else
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open. Lost coordinates");
         return;
     }
+
+    emit this->onCSVReady();
 }
