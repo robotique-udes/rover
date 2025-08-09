@@ -104,7 +104,7 @@ class CartesianController : public RobotController
             jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
                 = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
         }
-        
+
         if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ACTIVATE_ALPHA))
         {
             if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE))
