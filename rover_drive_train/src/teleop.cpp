@@ -28,12 +28,12 @@ class Teleop : public rclcpp::Node
     {
         rover_msgs::msg::PropulsionMotor message;
 
-        float deadmanSwitch = msg_.joy_data[Constants::DriveTrain::KeyBinding::DEADMAN_SWITCH];
-        float linearInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::LINEAR_INPUT];
-        float angularInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::ANGULAR_INPUT];
-        float modeTankAngularInput = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_TANK_ANGULAR_INPUT];
-        float modeNormalEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_NORMAL_ENABLE];
-        float modeTurboEnable = msg_.joy_data[Constants::DriveTrain::KeyBinding::MODE_TURBO_ENABLE];
+        float deadmanSwitch = msg_.joy_data[std::to_underlying(Constants::Keybinds::DriveTrain::DEADMAN_SWITCH)];
+        float linearInput = msg_.joy_data[std::to_underlying(Constants::Keybinds::DriveTrain::LINEAR_INPUT)];
+        float angularInput = msg_.joy_data[std::to_underlying(Constants::Keybinds::DriveTrain::ANGULAR_INPUT)];
+        float modeTankAngularInput = msg_.joy_data[std::to_underlying(Constants::Keybinds::DriveTrain::MODE_TANK_ANGULAR_INPUT)];
+        float modeNormalEnable = msg_.joy_data[std::to_underlying(Constants::Keybinds::DriveTrain::MODE_NORMAL_ENABLE)];
+        float modeTurboEnable = msg_.joy_data[std::to_underlying(Constants::Keybinds::DriveTrain::MODE_TURBO_ENABLE)];
 
         if (this->floatToBool(deadmanSwitch))
         {

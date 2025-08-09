@@ -188,6 +188,12 @@ constexpr T MAP(T value_, T inMin_, T inMax_, T outMin_, T outMax_)
     return ((value_ - inMin_) * (outMax_ - outMin_) / (inMax_ - inMin_) + outMin_);
 }
 
+template<std::floating_point T>
+constexpr bool floatToBool(T value_)
+{
+    return IN_ERROR(value_, static_cast<T>(0.001), static_cast<T>(0.0));
+}
+
 #define CHECK_POINTER_VALID(POINTER) (POINTER ? true : false)
 
 #define SIGN(VAR) ((float)VAR > 0.0f ? 1.0f : -1.0f)
