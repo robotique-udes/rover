@@ -92,6 +92,8 @@ namespace KEYBINDINGS
         constexpr eJoyInput ALPHA_POSITIVE = eJoyInput::CROSS_UP;
         constexpr eJoyInput ALPHA_NEGATIVE = eJoyInput::CROSS_DOWN;
 
+        constexpr eJoyInput BOMBO_SPEED = eJoyInput::R1;
+
         // constexpr eJoyInput RECORD = eJoyInput::A;
         // constexpr eJoyInput CLEAR_POINTS = eJoyInput::X;
         // constexpr eJoyInput CREATE_PLAN = eJoyInput::B;

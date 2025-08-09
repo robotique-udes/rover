@@ -15,6 +15,7 @@ DEFINE_LOG_NODE(CartesianController, Logger::eNodeState::ON);
 class CartesianController : public RobotController
 {
     static constexpr float X_AXIS_DEADZONE = 0.2F;
+    static constexpr float BOMBO_SPEED = 2.0F;
 
   public:
     enum class eCartesianCoord
@@ -180,6 +181,15 @@ class CartesianController : public RobotController
 
         std::array<float, TO_UNDERLYING(eCartesianQ::eLAST)> velocityArray;
         Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianQ::eLAST)>>(velocityArray.data()) = computedVelocity;
+
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::BOMBO_SPEED))
+        {
+            for (size_t i = 0; i < TO_UNDERLYING(eCartesianQ::eLAST); i++)
+            {
+                velocityArray[i] *= BOMBO_SPEED;
+            }
+        }
+
         std::array<float, TO_UNDERLYING(eCartesianQ::eLAST)> scaledVelocities = this->scaleVelocities(velocityArray);
 
         jointCommands[TO_UNDERLYING(eJointIndex::JL)] = scaledVelocities[TO_UNDERLYING(eCartesianQ::Q0)];
