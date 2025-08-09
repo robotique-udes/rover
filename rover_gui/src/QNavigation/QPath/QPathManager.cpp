@@ -39,7 +39,7 @@ void QPathManager::writePosToCSV(double latitude_, double longitude_)
     }
     else
     {
-        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open. Lost coordonnates");
+        RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to open. Lost coordinates");
         return;
     }
 }

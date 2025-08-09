@@ -52,6 +52,7 @@ class QNavigation : public QWidget
     void addWaypointToList(const sWaypoint& waypoint_);
     void addWaypointToUI(const sWaypoint& waypoint);
     void initializeWaypointManager(void);
+    void initializePathManager(void);
     void createNavigationFolder(void);
 
     QWebChannel _webChannel;

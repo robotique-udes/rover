@@ -32,6 +32,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     this->createNavigationFolder();
     this->initializeWaypointManager();
 
+
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
         {
@@ -67,6 +68,12 @@ void QNavigation::initializeWaypointManager(void)
     {
         this->addWaypointToUI(waypoint);
     }
+}
+
+void QNavigation::initializePathManager(void)
+{
+    _pathManager.setSessionFolderPath(_sessionFolderPath);
+    _pathManager.initializeCSVFile();
 }
 
 void QNavigation::onJsBridgeReady(void)
@@ -131,6 +138,7 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
+    _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
 }
 
 void QNavigation::onSetGoalClicked()
