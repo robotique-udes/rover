@@ -86,6 +86,25 @@ class CartesianController : public RobotController
             _desiredCartesian[TO_UNDERLYING(eCartesianInput::Z)] = inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::Z_AXIS)];
         }
 
+        if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_ROT_LEFT))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
+        }
+        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_ROT_RIGHT))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
+        }
+
+        if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_CLOSE))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        }
+        else if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::GRIPPER_OPEN))
+        {
+            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
+                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
+        }
+
         if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ACTIVATE_ALPHA))
         {
             if (_joyManager.isPressed(KEYBINDINGS::CARTESIAN::ALPHA_POSITIVE))
@@ -99,54 +118,33 @@ class CartesianController : public RobotController
                     = -1.0F * inputArray_[TO_UNDERLYING(KEYBINDINGS::CARTESIAN::ALPHA_NEGATIVE)];
             }
         }
+        // if (_planApplied)
+        // {
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector12;
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector13;
 
-        if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_ROT_LEFT))
-        {
-            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
-        }
-        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::WRIST_ROT_RIGHT))
-        {
-            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_ROT)] = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_ROT::ID);
-        }
+        //     for (int i = 0; i < TO_UNDERLYING(eCartesianCoord::eLAST); ++i)
+        //     {
+        //         vector12(i) = _poseArray[1][i] - _poseArray[0][i];
+        //         vector13(i) = _poseArray[2][i] - _poseArray[0][i];
+        //     }
 
-        //        if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_CLOSE))
-        //        {
-        //            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)] =
-        //            getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-        //        }
-        //        else if (_joyManager.isPressed(KEYBINDINGS::JOINT::GRIPPER_OPEN))
-        //        {
-        //            jointCommands[TO_UNDERLYING(eJointIndex::GRIPPER_CLOSE)]
-        //                = -1.0F * getJogVelocity(ARM_CONFIGURATION::GRIPPER_CLOSE::ID);
-        //        }
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> xAxis;
+        //     xAxis << 1.0F, 0.0F, 0.0F;
 
-        if (_planApplied)
-        {
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector12;
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> vector13;
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> zAxis = vector12.cross(vector13).normalized();
+        //     Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> yAxis = zAxis.cross(xAxis).normalized();
 
-            for (int i = 0; i < TO_UNDERLYING(eCartesianCoord::eLAST); ++i)
-            {
-                vector12(i) = _poseArray[1][i] - _poseArray[0][i];
-                vector13(i) = _poseArray[2][i] - _poseArray[0][i];
-            }
+        //     zAxis = xAxis.cross(yAxis).normalized();
 
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> xAxis;
-            xAxis << 1.0F, 0.0F, 0.0F;
+        //     Eigen::Matrix<float, TO_UNDERLYING(eCartesianCoord::eLAST), TO_UNDERLYING(eCartesianCoord::eLAST)> rotationMatrix;
+        //     rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::X)) = xAxis;
+        //     rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Y)) = yAxis;
+        //     rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Z)) = zAxis;
 
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> zAxis = vector12.cross(vector13).normalized();
-            Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)> yAxis = zAxis.cross(xAxis).normalized();
-
-            zAxis = xAxis.cross(yAxis).normalized();
-
-            Eigen::Matrix<float, TO_UNDERLYING(eCartesianCoord::eLAST), TO_UNDERLYING(eCartesianCoord::eLAST)> rotationMatrix;
-            rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::X)) = xAxis;
-            rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Y)) = yAxis;
-            rotationMatrix.col(TO_UNDERLYING(eCartesianCoord::Z)) = zAxis;
-
-            Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)>> desiredCartesianVec(_desiredCartesian.data());
-            desiredCartesianVec = rotationMatrix * desiredCartesianVec;
-        }
+        //     Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)>>
+        //     desiredCartesianVec(_desiredCartesian.data()); desiredCartesianVec = rotationMatrix * desiredCartesianVec;
+        // }
 
         Eigen::Map<
             Eigen::Matrix<float, TO_UNDERLYING(eCartesianInput::eLAST), TO_UNDERLYING(eCartesianQ::eLAST), Eigen::RowMajor>>
