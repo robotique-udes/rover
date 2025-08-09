@@ -31,7 +31,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     _ui.setupUi(this);
     this->createNavigationFolder();
     this->initializeWaypointManager();
-
+    this->initializePathManager();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
@@ -115,7 +115,7 @@ void QNavigation::createNavigationFolder(void)
     std::optional<std::string> optionalHomePath = Folders::getHome();
     if (optionalHomePath.has_value())
     {
-        homePath = *optionalHomePath;
+        homePath = optionalHomePath.value();
         if (homePath.empty())
         {
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty home path",

@@ -20,6 +20,7 @@ void QPathManager::initializeCSVFile()
     if (csv_file.is_open())
     {
         csv_file << "latitude,longitude" << std::endl;
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Creating and writing header to file at path: %s", filePath.c_str());
     }
     else
     {
@@ -31,11 +32,13 @@ void QPathManager::initializeCSVFile()
 void QPathManager::writePosToCSV(double latitude_, double longitude_)
 {
     std::string filePath = _sessionFolderPath + POSITION_FILE_PATH;
+    RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Opening file at path: %s", filePath.c_str());
     std::ofstream csv_file(filePath, std::ios_base::app);
 
     if (csv_file.is_open())
     {
         csv_file << latitude_ << "," << longitude_ << std::endl;
+        RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Appending file at path: %s", filePath.c_str());
     }
     else
     {
