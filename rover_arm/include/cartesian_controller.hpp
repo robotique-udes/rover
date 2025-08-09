@@ -269,7 +269,7 @@ class CartesianController : public RobotController
         return _pointsRecorded;
     }
 
-    void getJointPositions(std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> position_)
+    void setJointPositions(const std::array<float, TO_UNDERLYING(eJointIndex::eLAST)>& position_)
     {
         _jointPositions = position_;
     }
