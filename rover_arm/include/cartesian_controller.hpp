@@ -4,6 +4,8 @@
 #include "robot_controller.hpp"
 #include "Eigen/Dense"
 #include "rover_lib2/helpers/log.hpp"
+#include <rclcpp/logger.hpp>
+#include <utility>
 
 DEFINE_LOG_NODE(CartesianController, Logger::eNodeState::ON);
 
@@ -51,7 +53,7 @@ class CartesianController : public RobotController
 
   public:
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
-        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> inputArray_) override
+        const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
         _desiredCartesian = {};
@@ -143,6 +145,20 @@ class CartesianController : public RobotController
             Eigen::Map<Eigen::Vector<float, TO_UNDERLYING(eCartesianCoord::eLAST)>> desiredCartesianVec(_desiredCartesian.data());
             desiredCartesianVec = rotationMatrix * desiredCartesianVec;
         }
+
+        RCLCPP_INFO(rclcpp::get_logger("dick"),
+                    "Joint positions: JL: %f, J1: %f, J2: %f, GRIPPER_TILT: %f",
+                    _jointPositions[TO_UNDERLYING(eJointIndex::JL)],
+                    _jointPositions[TO_UNDERLYING(eJointIndex::J1)],
+                    _jointPositions[TO_UNDERLYING(eJointIndex::J2)],
+                    _jointPositions[TO_UNDERLYING(eJointIndex::GRIPPER_TILT)]);
+
+        RCLCPP_INFO(rclcpp::get_logger("dick"),
+                    "Command requested: x: %f, y: %f, z: %f, a: %f",
+                    _desiredCartesian[std::to_underlying(eCartesianInput::X)],
+                    _jointPositions[std::to_underlying(eCartesianInput::Y)],
+                    _jointPositions[std::to_underlying(eCartesianInput::Z)],
+                    _jointPositions[std::to_underlying(eCartesianInput::ALPHA)]);
 
         Eigen::Map<
             Eigen::Matrix<float, TO_UNDERLYING(eCartesianInput::eLAST), TO_UNDERLYING(eCartesianQ::eLAST), Eigen::RowMajor>>

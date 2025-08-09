@@ -97,14 +97,6 @@ class Teleop : public rclcpp::Node
         else if (_controlMode == eControlMode::CARTESIAN)
         {
             _cartesianController.setJointPositions(_jointPositions);
-
-            RCLCPP_INFO(this->get_logger(),
-                        "Joint positions: JL: %f, J1: %f, J2: %f, GRIPPER_TILT: %f",
-                        _jointPositions[TO_UNDERLYING(eJointIndex::JL)],
-                        _jointPositions[TO_UNDERLYING(eJointIndex::J1)],
-                        _jointPositions[TO_UNDERLYING(eJointIndex::J2)],
-                        _jointPositions[TO_UNDERLYING(eJointIndex::GRIPPER_TILT)]);
-
             armMsg.target_speed = _cartesianController.getJointCmdFromInput(joyArray);
 
             // if (_joyManager.isTriggered(KEYBINDINGS::CARTESIAN::RECORD))
