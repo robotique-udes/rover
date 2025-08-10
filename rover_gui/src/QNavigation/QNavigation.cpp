@@ -9,11 +9,6 @@
 // Helpers
 #include <rover_lib2/helpers/folders.hpp>
 
-#include <fstream>
-#include <vector>
-#include <algorithm>
-#include <filesystem>
-
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
 constexpr const char* NAVIGATION_PATH = "/Navigation";
@@ -163,10 +158,12 @@ void QNavigation::onSetGoalClicked()
 
     for (const sWaypoint& waypointIt : _waypointsList)
     {
-        if (waypointIt.name == waypoint.name)
+        if (waypointIt.name == waypoint.name || waypointIt.latitude == waypoint.latitude
+            || waypointIt.longitude == waypoint.longitude)
         {
-            QHelper::QPopUp::sendQuestionPopUp("Duplicate Name",
-                                               "A waypoint with this name already exists. Please choose a different name.");
+            QHelper::QPopUp::sendQuestionPopUp(
+                "Duplicate Name or duplicate location",
+                "A waypoint with this name or position already exists. Please choose a different name or position.");
             return;
         }
     }
@@ -186,12 +183,12 @@ void QNavigation::onSetGoalClicked()
     _ui.inputLongitude->clear();
 }
 
-void QNavigation::pathDistanceCalculated(double distanceMeters_)
+void QNavigation::pathDistanceCalculated(double distanceMeters_, double heading_)
 {
     QString distanceText_;
     if (distanceMeters_ >= 1000.0)
     {
-        distanceText_ = QString("%1 km").arg(distanceMeters_ / 1000.0, 0, 'f', 2);
+        distanceText_ = QString("%1 km, %2 deg").arg(distanceMeters_ / 1000.0, 0, 'f', 2).arg(heading_, 0, 'f', 2);
     }
     else
     {
@@ -216,6 +213,11 @@ void QNavigation::waypointCreated(const QString& name_, double latitude_, double
         id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
     }
     sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
+    RCLCPP_ERROR(rclcpp::get_logger("GUI"),
+                 "Correctly passed through waypointCreated(): name: %s, latitude: %f, longitude: %f",
+                 waypoint.name.c_str(),
+                 waypoint.latitude,
+                 waypoint.longitude);
     this->addWaypointToList(waypoint);
     _waypointManager.syncWaypoints(_waypointsList);
 }
