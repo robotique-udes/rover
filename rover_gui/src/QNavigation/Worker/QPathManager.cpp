@@ -35,14 +35,13 @@ void QPathManager::initializeCSVFile(std::vector<sPosition>& oldPath_)
         }
         std::filesystem::copy_file(lastFilePath, currentFilePath);
     }
-    
+
     this->addTask(
         [this, currentFilePath, &oldPath_]
         {
             RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Starting to read at path: %s", currentFilePath.c_str());
             this->readFromCSV(currentFilePath, oldPath_);
-        }
-    );
+        });
 }
 
 void QPathManager::writePosToCSV(double latitude_, double longitude_)
@@ -61,7 +60,7 @@ void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
 
     if (csv_file.is_open())
     {
-        csv_file << latitude_ << "," << longitude_ << std::endl;
+        csv_file << std::fixed << std::setprecision(8) << latitude_ << "," << longitude_ << std::endl;
         RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Appending file at path: %s", filePath.c_str());
     }
     else
