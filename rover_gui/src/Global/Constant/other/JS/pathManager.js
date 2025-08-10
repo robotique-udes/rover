@@ -77,31 +77,27 @@ class PathManager
         this.#currentPath.push([longitude_, latitude_]);
         const flatPositions = this.#currentPath.flat();
 
-        const idx = this.#pathEntities.findIndex(e => e.id === PathManager.POSITION_PATH);
-        
-        if (idx !== -1) 
+        if (!this.#currentPathEntity)
         {
-            this.viewer.entities.remove(this.#pathEntities[idx]);
-            this.#pathEntities.splice(idx, 1);
-        }
-
-        let newEntity = this.viewer.entities.add({
-            id: name_,
-            polyline: {
-                positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
-                width: 3,
-                material: new Cesium.PolylineOutlineMaterialProperty({
-                    color: Cesium.Color.RED,
-                    outlineWidth: 1,
-                    outlineColor: Cesium.Color.BLACK
-                }),
-                clampToGround: true
-            }
-        });
-
-        if(newEntity)
+            // Create the entity on the first call
+            this.#currentPathEntity = this.viewer.entities.add({
+                id: name_,
+                polyline: {
+                    positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
+                    width: 3,
+                    material: new Cesium.PolylineOutlineMaterialProperty({
+                        color: Cesium.Color.RED,
+                        outlineWidth: 1,
+                        outlineColor: Cesium.Color.BLACK
+                    }),
+                    clampToGround: true
+                }
+            });
+        } 
+        else 
         {
-            this.#pathEntities.push(newEntity);
+            // Update the positions array for smooth animation
+            this.#currentPathEntity.polyline.positions = Cesium.Cartesian3.fromDegreesArray(flatPositions);
         }
     }
 
