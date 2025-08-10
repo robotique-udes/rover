@@ -51,7 +51,7 @@ window.addEventListener('offline', function ()
 });
 
 window.addEventListener('online', async function () {
-    let connection = await checkConnectivity();
+    const connection = await checkConnectivity();
     if (connection)
     {
         const connectionError = document.getElementById('connectionError');
@@ -63,5 +63,6 @@ window.addEventListener('online', async function () {
         {
             initializeMap();
         }
+        // TODO: Reinitialize mapManager after on-off-on 
     }
 });

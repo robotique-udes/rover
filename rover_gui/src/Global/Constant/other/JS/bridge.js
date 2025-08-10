@@ -75,14 +75,14 @@ class Bridge
                 self.waypoints.waypointVisibility(waypointId, visibility);
             });
 
-            qtBridge.updatePathTaken.connect(function (latitude_, longitude_, name_)
+            qtBridge.updatePathTaken.connect(function (latitude_, longitude_)
             {
-                self.pathManager.drawPathTaken(latitude_, longitude_, name_);
+                self.pathManager.drawPathTaken(latitude_, longitude_);
             });
 
-            qtBridge.loadFullPath.connect(function (points_, name_)
+            qtBridge.loadFullPath.connect(function (points_)
             {
-               self.pathManager.drawFullPath(points_, name_) 
+               self.pathManager.drawFullPath(points_) 
             });
 
             if (window.qtBridge && window.qtBridge.onJsBridgeReady) 

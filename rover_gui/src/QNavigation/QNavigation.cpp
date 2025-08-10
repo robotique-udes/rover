@@ -84,8 +84,15 @@ void QNavigation::onJsBridgeReady(void)
     }
     emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
 
-    emit this->loadFullPath(_oldPath, QString::fromStdString(_pathManager.OLD_PATH_NAME));
-    RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Sent loaded path, points: %ld", _oldPath.size());
+    QVariantList variantPath;
+    for (const sPosition& point : _oldPath) {
+        QVariantMap pointMap;
+        pointMap["latitude"] = point.latitude;
+        pointMap["longitude"] = point.longitude;
+        variantPath.append(pointMap);
+    }
+
+    emit this->loadFullPath(variantPath);
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -137,7 +144,7 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
-    emit this->updatePathTaken(msg_.latitude, msg_.longitude, QString::fromStdString(_pathManager.PATH_NAME));
+    emit this->updatePathTaken(msg_.latitude, msg_.longitude);
 
     if (++_gpsMsgCounter % GPS_SKIP_RATE == 0)
     {
