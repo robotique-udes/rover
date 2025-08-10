@@ -74,11 +74,6 @@ void QPathManager::readFromCSV(std::string filePath_, std::vector<sPosition>& ol
     std::ifstream file(filePath_);
     std::string line;
 
-    if (std::getline(file, line))
-    {
-        // Reads first line to remove header;
-    }
-
     while (std::getline(file, line))
     {
         std::istringstream ss(line);
