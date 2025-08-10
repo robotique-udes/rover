@@ -39,7 +39,7 @@ void QPathManager::initializeCSVFile(std::vector<sPosition>& oldPath_)
     this->addTask(
         [this, currentFilePath, &oldPath_]
         {
-            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Starting to read at path: %s", currentFilePath.c_str());
+            RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Starting to read at path: %s", currentFilePath.c_str());
             this->readFromCSV(currentFilePath, oldPath_);
         }
     );
@@ -90,8 +90,6 @@ void QPathManager::readFromCSV(std::string filePath_, std::vector<sPosition>& ol
             point.latitude = std::stod(latStr);
             point.longitude = std::stod(lonStr);
             oldPath_.push_back(point);
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Read latitude %f, longitude: %f", point.latitude, point.longitude);
-            
         }
     }
 }

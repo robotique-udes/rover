@@ -5,7 +5,7 @@ class PathManager
     #currentPath = [];
     #oldPath = [];
     static WAYPOINT_PATH = "waypointPath";
-    static POSITION_PATH = "positionPath";
+    static POSITION_PATH = "currentPath";
     static OLD_POSITION_PATH = "oldPath";
 
     constructor(viewer, waypointManager)
