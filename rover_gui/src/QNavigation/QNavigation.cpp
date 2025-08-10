@@ -26,11 +26,13 @@ constexpr double DEFAULT_HEADING = 0.0;
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _webChannel(this),
-    _node(guiNode_)
+    _node(guiNode_),
+    _pathManager(true, this)
 {
     _ui.setupUi(this);
     this->createNavigationFolder();
     this->initializeWaypointManager();
+    this->initializePathManager();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
@@ -69,6 +71,12 @@ void QNavigation::initializeWaypointManager(void)
     }
 }
 
+void QNavigation::initializePathManager(void)
+{
+    _pathManager.setSessionFolderPath(_sessionFolderPath);
+    _pathManager.initializeCSVFile(_oldPath);
+}
+
 void QNavigation::onJsBridgeReady(void)
 {
     for (const sWaypoint& waypoint : _waypointsList)
@@ -80,6 +88,11 @@ void QNavigation::onJsBridgeReady(void)
                             false);
     }
     emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
+
+    for (const sPosition& point : _oldPath)
+    {
+        emit this->updatePathTaken(point.latitude, point.longitude, QString::fromStdString(_pathManager.OLD_PATH_NAME));
+    }
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -108,7 +121,7 @@ void QNavigation::createNavigationFolder(void)
     std::optional<std::string> optionalHomePath = Folders::getHome();
     if (optionalHomePath.has_value())
     {
-        homePath = *optionalHomePath;
+        homePath = optionalHomePath.value();
         if (homePath.empty())
         {
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty home path",
@@ -131,6 +144,8 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
+    emit this->updatePathTaken(msg_.latitude, msg_.longitude, QString::fromStdString(_pathManager.PATH_NAME));
+    _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
 }
 
 void QNavigation::onSetGoalClicked()
