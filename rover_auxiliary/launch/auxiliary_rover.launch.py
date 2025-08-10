@@ -21,5 +21,6 @@ def generate_launch_description():
         name="camera_manager"
     )
     ld.add_action(node_camera_manager)
+    ld.add_action(node_ddb_control)
 
     return ld

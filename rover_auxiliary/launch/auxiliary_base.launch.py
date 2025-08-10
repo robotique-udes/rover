@@ -13,4 +13,5 @@ def generate_launch_description():
         executable="antenna",
         name="antenna"
     )
+    ld.add_action(node_antenna)
     return ld
