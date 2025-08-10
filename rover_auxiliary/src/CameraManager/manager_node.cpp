@@ -91,7 +91,7 @@ namespace CameraManager
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
                 Arbitration::PTZ_CMD_TOPIC[topicIndex],
-                QOS_DEFAULT,
+                QOS_CAMERA,
                 [this, topicIndex](const rover_msgs::msg::CameraControl& PTZcmd_)
                 {
                     this->_arbitration.CB_PTZCmdFiltering(PTZcmd_, topicIndex);
@@ -105,7 +105,7 @@ namespace CameraManager
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraConfig>(
                 Arbitration::PTZ_CONFIG_TOPIC[topicIndex],
-                QOS_DEFAULT,
+                QOS_CAMERA,
                 [this, topicIndex](const rover_msgs::msg::CameraConfig& PTZConfig_)
                 {
                     this->_arbitration.CB_PTZConfigFiltering(PTZConfig_, topicIndex);
@@ -118,7 +118,7 @@ namespace CameraManager
         {
             subscriber = this->create_subscription<rover_msgs::msg::CameraControl>(
                 Arbitration::POWER_CMD_TOPIC[topicIndex],
-                QOS_DEFAULT,
+                QOS_CAMERA,
                 [this, topicIndex](const rover_msgs::msg::CameraControl& powerCmd_)
                 {
                     CB_storePowerCmd(powerCmd_, topicIndex);
@@ -130,7 +130,7 @@ namespace CameraManager
     void ManagerNode::initPubs()
     {
         _publisher_filteredPTZCmd
-            = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_COMMAND_MANAGER, QOS_DEFAULT);
+            = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_COMMAND_MANAGER, QOS_CAMERA);
 
         _timer_filtredPTZCmdPub = this->create_wall_timer(
             std::chrono::milliseconds(static_cast<size_t>(1000 / Constants::CameraInfo::SEND_COMMAND_PTZ_FREQUENCY)),
@@ -140,7 +140,7 @@ namespace CameraManager
             });
 
         _publisher_filteredPTZConfig
-            = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_PTZ_CONFIG_MANAGER, QOS_DEFAULT);
+            = this->create_publisher<rover_msgs::msg::CameraConfig>(TOPIC_PTZ_CONFIG_MANAGER, QOS_CAMERA);
 
         _timer_filtredPTZConfigPub = this->create_wall_timer(
             std::chrono::milliseconds(static_cast<size_t>(1000.F / Constants::CameraInfo::SEND_CONFIG_PTZ_FREQUENCY)),
@@ -150,7 +150,7 @@ namespace CameraManager
             });
 
         _publisher_filteredPowerCmd
-            = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_POWER_COMMAND_MANAGER, QOS_DEFAULT);
+            = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_POWER_COMMAND_MANAGER, QOS_CAMERA);
 
         _timer_filtredPowerCmdPub = this->create_wall_timer(
             std::chrono::milliseconds(static_cast<size_t>(1000.F / Constants::CameraInfo::SEND_COMMAND_POWER_FREQUENCY)),
@@ -160,7 +160,7 @@ namespace CameraManager
             });
 
         _publisher_topicWithPriority
-            = this->create_publisher<rover_msgs::msg::TopicWithPriority>(TOPIC_WITH_PRIORITY, QOS_DEFAULT);
+            = this->create_publisher<rover_msgs::msg::TopicWithPriority>(TOPIC_WITH_PRIORITY, QOS_CAMERA);
 
         _timer_topicWithPriorityPub = this->create_wall_timer(
             std::chrono::milliseconds(static_cast<size_t>(1000.F / Constants::CameraInfo::SEND_COMMAND_PTZ_FREQUENCY)),

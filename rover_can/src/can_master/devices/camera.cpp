@@ -19,15 +19,17 @@ Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsg
 
 void Camera::rosElementInit()
 {
-    _pub_powerStatus
-        = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_POWER_STATUS, QOS_DEFAULT);
+    _pub_powerStatus = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(
+        TOPIC_CAMERA_POWER_STATUS,
+        QOS_CAMERA);
 
-    _pub_ptzStatus
-        = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_STATUS, QOS_DEFAULT);
+    _pub_ptzStatus = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(
+        TOPIC_CAMERA_PTZ_STATUS,
+        QOS_CAMERA);
 
     _sub_powerCmd = this->getAttachedNode()->create_subscription<rover_msgs::msg::CameraControl>(
         TOPIC_CAMERA_POWER_COMMAND,
-        QOS_DEFAULT,
+        QOS_CAMERA,
         [this](const rover_msgs::msg::CameraControl& rosMsg_)
         {
             this->CB_ROS_powerCmd(rosMsg_);
@@ -35,7 +37,7 @@ void Camera::rosElementInit()
 
     _sub_ptzCmd = this->getAttachedNode()->create_subscription<rover_msgs::msg::CameraControl>(
         TOPIC_CAMERA_PTZ_COMMAND_MANAGER,
-        QOS_DEFAULT,
+        QOS_CAMERA,
         [this](const rover_msgs::msg::CameraControl& rosMsg_)
         {
             this->CB_ROS_ptzCmd(rosMsg_);
@@ -43,7 +45,7 @@ void Camera::rosElementInit()
 
     _sub_ptzConfig = this->getAttachedNode()->create_subscription<rover_msgs::msg::CameraConfig>(
         TOPIC_CAMERA_PTZ_CONFIG_MANAGER,
-        QOS_DEFAULT,
+        QOS_CAMERA,
         [this](const rover_msgs::msg::CameraConfig& rosMsg_)
         {
             this->CB_ROS_ptzConfig(rosMsg_);
@@ -187,6 +189,10 @@ void Camera::CB_ROS_ptzConfig(const rover_msgs::msg::CameraConfig& rosMsg_)
 
 void Camera::CB_sendCanPowerCmd(void)
 {
+    RCLCPP_INFO(this->getAttachedNode()->get_logger(),
+                "Setting power to %d for %ld",
+                _nextPowerCanMsg.data().onState,
+                _idCamCameraControlMsg);
     this->sendMsg(_nextPowerCanMsg);
 }
 

@@ -153,14 +153,14 @@ void CameraInterface::initTimers()
 void CameraInterface::initSub()
 {
     _sub_powerStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
-                                                                                  QOS_DEFAULT,
+                                                                                  QOS_CAMERA,
                                                                                   [this](rover_msgs::msg::CameraControl msg_)
                                                                                   {
                                                                                       this->CB_subscriberPowerStatus(msg_);
                                                                                   });
 
     _sub_PTZStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
-                                                                                QOS_DEFAULT,
+                                                                                QOS_CAMERA,
                                                                                 [this](rover_msgs::msg::CameraControl msg_)
                                                                                 {
                                                                                     this->CB_subscriberPtzStatus(msg_);
@@ -168,7 +168,7 @@ void CameraInterface::initSub()
 
     _sub_topicWithPriority
         = _node->create_subscription<rover_msgs::msg::TopicWithPriority>(TOPIC_WITH_PRIORITY,
-                                                                         QOS_DEFAULT,
+                                                                         QOS_CAMERA,
                                                                          [this](rover_msgs::msg::TopicWithPriority msg_)
                                                                          {
                                                                              this->CB_subscriberTopicWithPriority(msg_);
@@ -177,9 +177,9 @@ void CameraInterface::initSub()
 
 void CameraInterface::initPub()
 {
-    _pub_PTZCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_ptzCommandTopic, QOS_DEFAULT);
-    _pub_configCmd = _node->create_publisher<rover_msgs::msg::CameraConfig>(_ptzConfigTopic, QOS_DEFAULT);
-    _pub_powerCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_powerCommandTopic, QOS_DEFAULT);
+    _pub_PTZCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_ptzCommandTopic, QOS_CAMERA);
+    _pub_configCmd = _node->create_publisher<rover_msgs::msg::CameraConfig>(_ptzConfigTopic, QOS_CAMERA);
+    _pub_powerCmd = _node->create_publisher<rover_msgs::msg::CameraControl>(_powerCommandTopic, QOS_CAMERA);
 }
 
 void CameraInterface::CB_publishPtzCmd(void)
