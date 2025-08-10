@@ -387,7 +387,7 @@ void QVideoManagerWidget::setPTZCmd(float yaw_, size_t id_)
 {
     rover_msgs::msg::CameraControl msg;
     msg.id_cam = id_;
-    msg.yaw = yaw_;
+    msg.yaw = degToRad(yaw_);
     msg.power_on = true;
     msg.pitch = 0.0F;
     _cameraInterface.setPTZCmd(msg, static_cast<Constants::CameraInfo::eCamNames>(id_));
