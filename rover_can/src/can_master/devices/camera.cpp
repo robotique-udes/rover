@@ -189,10 +189,6 @@ void Camera::CB_ROS_ptzConfig(const rover_msgs::msg::CameraConfig& rosMsg_)
 
 void Camera::CB_sendCanPowerCmd(void)
 {
-    RCLCPP_INFO(this->getAttachedNode()->get_logger(),
-                "Setting power to %d for %ld",
-                _nextPowerCanMsg.data().onState,
-                _idCamCameraControlMsg);
     this->sendMsg(_nextPowerCanMsg);
 }
 
