@@ -6,6 +6,7 @@
 #include "can_master/devices/propulsion_motors.hpp"
 #include "can_master/devices/light.hpp"
 #include "can_master/devices/gnss.hpp"
+#include "can_master/devices/sensor_box.hpp"
 #include "rover_can2/drivers/driver_linux.hpp"
 
 #include <rover_msgs/msg/can_device_status.hpp>
@@ -91,6 +92,9 @@ class CanMasterNode : public rclcpp::Node
                                      _armJointMsg);
 
     Light lightMain = Light(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN);
+
+    SensorBox sensorBox;
+
     // Can
     RoverCan2::Drivers::DriverLinux __canDriver;
     RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverLinux,
@@ -111,7 +115,8 @@ class CanMasterNode : public rclcpp::Node
                              ArmJoint&,
                              ArmJoint&,
                              ArmJoint&,
-                             Light&>
+                             Light&,
+                             SensorBox&>
         _canManager = RoverCan2::ManagerMaster(
             __canDriver,
             [this](RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& msg_)
@@ -135,9 +140,10 @@ class CanMasterNode : public rclcpp::Node
             gripperTilt,
             gripperRot,
             gripperClose,
-            lightMain);
+            lightMain,
+            sensorBox);
 
-    std::array<MasterDevice*, 17U> _deviceArray = {&motorFL,
+    std::array<MasterDevice*, 18U> _deviceArray = {&motorFL,
                                                    &motorFR,
                                                    &motorRL,
                                                    &motorRR,
@@ -154,7 +160,8 @@ class CanMasterNode : public rclcpp::Node
                                                    &gripperTilt,
                                                    &gripperRot,
                                                    &gripperClose,
-                                                   &lightMain};
+                                                   &lightMain,
+                                                   &sensorBox};
 };
 
 #endif  // CAN_MASTER_NODE_HPP

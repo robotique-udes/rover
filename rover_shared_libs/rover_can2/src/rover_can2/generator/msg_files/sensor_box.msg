@@ -1,0 +1,2 @@
+float amonia;
+float hydrogen;

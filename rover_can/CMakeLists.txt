@@ -31,6 +31,7 @@ set(SOURCES_CAN_MASTER_DEVICES
     src/can_master/devices/gnss.cpp
     src/can_master/devices/light.cpp
     src/can_master/devices/propulsion_motors.cpp
+    src/can_master/devices/sensor_box.cpp
 )
 
 set(SOURCES_CAN_MASTER
