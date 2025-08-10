@@ -1,0 +1,2 @@
+float32 amonia_ppb
+float32 hydrogen_percent
