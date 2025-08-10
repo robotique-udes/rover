@@ -192,7 +192,7 @@ void QNavigation::pathDistanceCalculated(double distanceMeters_, double heading_
     }
     else
     {
-        distanceText_ = QString("%1 m").arg(qRound(distanceMeters_));
+        distanceText_ = QString("%1 m, %2 deg").arg(qRound(distanceMeters_)).arg(heading_, 0, 'f', 2);
     }
 
     _ui.distanceLabel->setText(distanceText_);
