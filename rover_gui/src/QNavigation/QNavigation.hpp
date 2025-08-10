@@ -35,6 +35,7 @@ class QNavigation : public QWidget
     void addWaypoint(const QString& name_, double latitude_, double longitude_, const QString& id_);
     void writePosToCSV(double latitude_, double longitude_);
     void updatePathTaken(double latitude_, double longitude_, const QString& pathName_);
+    void loadFullPath(std::vector<sPosition> points_, const QString& pathName_);
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_, double heading_);

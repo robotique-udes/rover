@@ -80,6 +80,11 @@ class Bridge
                 self.pathManager.drawPathTaken(latitude_, longitude_, name_);
             });
 
+            qtBridge.loadFullPath.connect(function (points_, name_)
+            {
+               self.pathManager.drawFullPath(points_, name_) 
+            });
+
             if (window.qtBridge && window.qtBridge.onJsBridgeReady) 
             {
                 window.qtBridge.onJsBridgeReady();

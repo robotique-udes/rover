@@ -74,61 +74,62 @@ class PathManager
 
     drawPathTaken(latitude_, longitude_, name_)
     {
-        let newEntity = null;
-        if (name_ === PathManager.OLD_POSITION_PATH)
+        this.#currentPath.push([longitude_, latitude_]);
+        const flatPositions = this.#currentPath.flat();
+
+        const idx = this.#pathEntities.findIndex(e => e.id === PathManager.POSITION_PATH);
+        
+        if (idx !== -1) 
         {
-            this.#oldPath.push([longitude_, latitude_]);
-            const flatPositions = this.#oldPath.flat();
-    
-            const idx = this.#pathEntities.findIndex(e => e.id === PathManager.OLD_POSITION_PATH);
-            
-            if (idx !== -1) 
-            {
-                this.viewer.entities.remove(this.#pathEntities[idx]);
-                this.#pathEntities.splice(idx, 1);
-            }
-    
-            newEntity = this.viewer.entities.add({
-                id: name_,
-                polyline: {
-                    positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
-                    width: 3,
-                    material: new Cesium.PolylineOutlineMaterialProperty({
-                        color: Cesium.Color.CYAN,
-                        outlineWidth: 1,
-                        outlineColor: Cesium.Color.BLACK
-                    }),
-                    clampToGround: true
-                }
-            });
+            this.viewer.entities.remove(this.#pathEntities[idx]);
+            this.#pathEntities.splice(idx, 1);
         }
-        else if (name_ === PathManager.POSITION_PATH)
+
+        let newEntity = this.viewer.entities.add({
+            id: name_,
+            polyline: {
+                positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
+                width: 3,
+                material: new Cesium.PolylineOutlineMaterialProperty({
+                    color: Cesium.Color.RED,
+                    outlineWidth: 1,
+                    outlineColor: Cesium.Color.BLACK
+                }),
+                clampToGround: true
+            }
+        });
+
+        if(newEntity)
         {
-            this.#currentPath.push([longitude_, latitude_]);
-            const flatPositions = this.#currentPath.flat();
-    
-            const idx = this.#pathEntities.findIndex(e => e.id === PathManager.POSITION_PATH);
-            
-            if (idx !== -1) 
-            {
-                this.viewer.entities.remove(this.#pathEntities[idx]);
-                this.#pathEntities.splice(idx, 1);
-            }
-    
-            newEntity = this.viewer.entities.add({
-                id: name_,
-                polyline: {
-                    positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
-                    width: 3,
-                    material: new Cesium.PolylineOutlineMaterialProperty({
-                        color: Cesium.Color.RED,
-                        outlineWidth: 1,
-                        outlineColor: Cesium.Color.BLACK
-                    }),
-                    clampToGround: true
-                }
-            });
+            this.#pathEntities.push(newEntity);
         }
+    }
+
+    drawFullPath(points_, name_)
+    {
+        this.#oldPath = points_.map(p => [p.lon, p.lat]);
+        const flatPositions = this.#oldPath.flat();
+        const idx = this.#pathEntities.findIndex(e => e.id === PathManager.OLD_POSITION_PATH);
+            
+        if (idx !== -1) 
+        {
+            this.viewer.entities.remove(this.#pathEntities[idx]);
+            this.#pathEntities.splice(idx, 1);
+        }
+
+        let newEntity = this.viewer.entities.add({
+            id: name_,
+            polyline: {
+                positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
+                width: 3,
+                material: new Cesium.PolylineOutlineMaterialProperty({
+                    color: Cesium.Color.CYAN,
+                    outlineWidth: 1,
+                    outlineColor: Cesium.Color.BLACK
+                }),
+                clampToGround: true
+            }
+        });
 
         if(newEntity)
         {
