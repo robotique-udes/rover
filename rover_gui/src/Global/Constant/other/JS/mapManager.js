@@ -47,7 +47,8 @@ class MapManager
             }, false)
         });
 
-        this.bridge = new Bridge(this.viewer, this.roverEntity, this.waypointManager, this.camera, { latitude: 45.377755, longitude: -71.924652 });
+        this.pathManager = new PathManager(this.viewer, this.waypointManager);
+        this.bridge = new Bridge(this.viewer, this.roverEntity, this.waypointManager, this.camera, { latitude: 45.377755, longitude: -71.924652 }, this.pathManager);
 
         this.#setupEventHandlers();
     }

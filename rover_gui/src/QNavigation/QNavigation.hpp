@@ -4,7 +4,9 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
 #include "UI_Navigation.h"
+
 #include "QWaypoint/QWaypointManager.hpp"
+#include "Worker/QPathManager.hpp"
 
 #include <QWebChannel>
 #include <QListWidgetItem>
@@ -31,6 +33,8 @@ class QNavigation : public QWidget
     void clearPath(void);
     void deleteWaypoint(const QString& waypointId_);
     void addWaypoint(const QString& name_, double latitude_, double longitude_, const QString& id_);
+    void writePosToCSV(double latitude_, double longitude_);
+    void updatePathTaken(double latitude_, double longitude_, const QString& pathName_);
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_);
@@ -50,6 +54,7 @@ class QNavigation : public QWidget
     void addWaypointToList(const sWaypoint& waypoint_);
     void addWaypointToUI(const sWaypoint& waypoint);
     void initializeWaypointManager(void);
+    void initializePathManager(void);
     void createNavigationFolder(void);
 
     QWebChannel _webChannel;
@@ -58,8 +63,10 @@ class QNavigation : public QWidget
 
     Ui::Navigation _ui;
     QList<sWaypoint> _waypointsList;
+    std::vector<sPosition> _oldPath;
 
     QWaypointManager _waypointManager;
+    QPathManager _pathManager;
     std::string _sessionFolderPath;
 };
 
