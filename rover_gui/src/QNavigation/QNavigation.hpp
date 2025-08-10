@@ -49,7 +49,7 @@ class QNavigation : public QWidget
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
     void onJsBridgeReady(void);
-    void onCSVReady(void);
+    void loadOldPath(double latitude_, double longitude_);
 
   private:
     void addWaypointToList(const sWaypoint& waypoint_);

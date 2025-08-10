@@ -49,7 +49,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
-    connect(&_pathManager, &QPathManager::onCSVReady, this, &QNavigation::onCSVReady);
+    connect(&_pathManager, &QPathManager::loadOldPath, this, &QNavigation::loadOldPath);
 
     _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>(GPS_TOPIC_NAME,
                                                                1,
@@ -386,7 +386,7 @@ void QNavigation::onClearPathClicked(void)
     emit this->clearPath();
 }
 
-void QNavigation::onCSVReady(void)
+void QNavigation::loadOldPath(double latitude_, double longitude_)
 {
-    // #TODO: Find an usefulness to this
+    emit this->updatePathTaken(latitude_, longitude_);
 }

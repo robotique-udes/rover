@@ -6,6 +6,7 @@
 
 #include <iostream>
 #include <fstream>
+#include <vector>
 
 class QPathManager : public QWorker
 {
@@ -15,7 +16,7 @@ class QPathManager : public QWorker
     static constexpr const char* POSITION_FILE_PATH = "/position.csv";
 
   signals:
-    void onCSVReady(void);
+    void loadOldPath(double latitude_, double longitude_);
 
   public:
     QPathManager(bool start_ = false, QObject* parent_ = nullptr);

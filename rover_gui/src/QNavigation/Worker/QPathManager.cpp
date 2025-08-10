@@ -1,6 +1,7 @@
 #include "QPathManager.hpp"
 
 #include <filesystem>
+#include <sstream>
 
 QPathManager::QPathManager(bool start_, QObject* parent_):
     QWorker(start_, parent_)
@@ -22,7 +23,7 @@ void QPathManager::setSessionFolderPath(std::string sessionFolderPath_)
 void QPathManager::initializeCSVFile(void)
 {
     std::string currentFilePath = _sessionFolderPath + POSITION_FILE_PATH;
-    
+
     if (!std::filesystem::exists(currentFilePath))
     {
         std::string lastSessionFolderPath = this->findLastSessionFolder();
@@ -34,7 +35,7 @@ void QPathManager::initializeCSVFile(void)
         }
         std::filesystem::copy_file(lastFilePath, currentFilePath);
     }
-
+    this->readFromCSV(currentFilePath);
 }
 
 void QPathManager::writePosToCSV(double latitude_, double longitude_)
@@ -55,7 +56,6 @@ void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
     {
         csv_file << latitude_ << "," << longitude_ << std::endl;
         RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Appending file at path: %s", filePath.c_str());
-        emit this->onCSVReady();
     }
     else
     {
@@ -65,9 +65,26 @@ void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
 
 void QPathManager::readFromCSV(std::string filePath_)
 {
-    std::ifstream csv_file(filePath_);
+    ;
+    std::ifstream file(filePath_);
+    std::string line;
 
-    csv_file.close();
+    if (std::getline(file, line))
+    {
+        // Reads first line to remove header;
+    }
+
+    while (std::getline(file, line))
+    {
+        std::istringstream ss(line);
+        std::string latStr, lonStr;
+        if (std::getline(ss, latStr, ',') && std::getline(ss, lonStr, ','))
+        {
+            double lat = std::stod(latStr);
+            double lon = std::stod(lonStr);
+            emit this->loadOldPath(lat, lon);
+        }
+    }
 }
 
 std::string QPathManager::findLastSessionFolder(void)
