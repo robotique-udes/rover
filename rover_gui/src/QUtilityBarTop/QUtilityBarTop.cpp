@@ -236,6 +236,10 @@ void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float speed
         {
             icon = QIcon(":/icons/RSSI_three.png");
         }
+        else if (rssi_ == 0)
+        {
+            icon = QIcon(":/icons/ErrorRSSI.png");
+        }
         else
         {
             icon = QIcon(":/icons/RSSI_four.png");

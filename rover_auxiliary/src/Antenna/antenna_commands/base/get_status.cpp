@@ -68,7 +68,7 @@ eAntennaCode Command::Base::GetStatus::parseResponse(const cpr::Response& respon
         return eAntennaCode::FAILURE_PARSING_ERROR;
     }
 
-    _rssi = wireless[JSON_FIELD_RSSI].asFloat();
+    _rssi = -wireless[JSON_FIELD_RSSI].asFloat();
     return eAntennaCode::SUCCESS;
 }
 
