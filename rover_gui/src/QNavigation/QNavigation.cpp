@@ -85,7 +85,8 @@ void QNavigation::onJsBridgeReady(void)
     emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
 
     QVariantList variantPath;
-    for (const sPosition& point : _oldPath) {
+    for (const sPosition& point : _oldPath)
+    {
         QVariantMap pointMap;
         pointMap["latitude"] = point.latitude;
         pointMap["longitude"] = point.longitude;

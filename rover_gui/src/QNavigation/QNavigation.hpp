@@ -20,7 +20,7 @@ class QNavigation : public QWidget
 {
     Q_OBJECT
 
-    static constexpr uint8_t GPS_SKIP_RATE =  20U;
+    static constexpr uint8_t GPS_SKIP_RATE = 20U;
 
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
