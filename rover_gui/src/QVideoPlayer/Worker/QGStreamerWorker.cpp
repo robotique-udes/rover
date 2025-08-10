@@ -283,7 +283,8 @@ GStreamerWorker::~GStreamerWorker()
 QString GStreamerWorker::buildPipelineString(const QString& rtspUrl_) const
 {
     return QString(
-               "rtspsrc location=%1 latency=0 transport=tcp timeout=10000000 buffer-mode=none do-retransmission=false drop-on-latency=true ! "
+               "rtspsrc location=%1 latency=0 transport=tcp timeout=10000000 buffer-mode=none do-retransmission=false "
+               "drop-on-latency=true ! "
                "decodebin "
                "name=dec "
                "queue name=q0 max-size-buffers=10 max-size-time=0 max-size-bytes=0 leaky=downstream ! videoconvert ! tee name=t "
