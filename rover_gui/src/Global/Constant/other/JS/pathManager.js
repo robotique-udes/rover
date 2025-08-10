@@ -176,10 +176,24 @@ class PathManager
         this.#pathEntities.push(newEntity);
 
         const distance = this.#calculateHaversineDistance(startLat, startLon, endLat, endLon);
+        const heading = this.#calculateHeading(startLat, startLon, endLat, endLon);
         if (window.qtBridge) 
         {
-            window.qtBridge.pathDistanceCalculated(distance);
+            window.qtBridge.pathDistanceCalculated(distance, heading);
         }
-        return distance;
+    }
+
+    #calculateHeading(lat1, lon1, lat2, lon2)
+    {
+        const dLon = (lon2 - lon1) * Math.PI / 180;
+        lat1 = lat1 * Math.PI / 180;
+        lat2 = lat2 * Math.PI / 180;
+
+        const y = Math.sin(dLon) * Math.cos(lat2);
+        const x = Math.cos(lat1) * Math.sin(lat2) -
+                  Math.sin(lat1) * Math.cos(lat2) * Math.cos(dLon);
+        const heading = Math.atan2(y, x);
+
+        return (heading * 180 / Math.PI + 360) % 360; // Convert to degrees and normalize
     }
 }
