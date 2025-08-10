@@ -3,9 +3,7 @@ class Waypoint
     #waypointCounter = 1;
     #activeWaypoint = null;
     #isAddingWaypoint = false;
-    #pathEntity = null;
     #waypointEntities = [];
-    #pathUpdateInterval = null;
     #currentPosition = {};
 
     constructor(viewer) 
@@ -16,6 +14,11 @@ class Waypoint
     set currentPosition(position)
     {
         this.#currentPosition = position;
+    }
+
+    get currentPosition()
+    {
+        return this.#currentPosition;
     }
 
     get isAddingWaypoint()
@@ -37,6 +40,11 @@ class Waypoint
         return this.#activeWaypoint;
     }
 
+    set activeWaypoint(waypoint)
+    {
+        this.#activeWaypoint = waypoint;
+    }
+
     clearAllWaypoints() 
     {
         this.#waypointEntities.forEach(waypoint => {
@@ -44,12 +52,6 @@ class Waypoint
         });
         this.#waypointEntities = [];
         this.#waypointCounter = 1;
-
-        if (this.#pathEntity) 
-        {
-            this.viewer.entities.remove(this.#pathEntity);
-            this.#pathEntity = null;
-        }
     }
 
     deleteWaypoint(waypointId) 
@@ -62,91 +64,6 @@ class Waypoint
             return true;
         }
         return false;
-    }
-
-    #drawPath(startLat, startLon, endLat, endLon) 
-    {
-        if (this.#pathEntity) 
-        {
-            this.viewer.entities.remove(this.#pathEntity);
-        }
-
-        this.#pathEntity = this.viewer.entities.add({
-            name: "Path to Waypoint",
-            polyline: {
-            positions: Cesium.Cartesian3.fromDegreesArray([startLon, startLat, endLon, endLat]),
-            width: 3,
-            material: new Cesium.PolylineOutlineMaterialProperty({
-                color: Cesium.Color.YELLOW,
-                outlineWidth: 1,
-                outlineColor: Cesium.Color.BLACK
-            }),
-            clampToGround: true
-            }
-        });
-
-        const distance = this.#calculateHaversineDistance(startLat, startLon, endLat, endLon);
-        if (window.qtBridge) 
-        {
-            window.qtBridge.pathDistanceCalculated(distance);
-        }
-        return distance;
-    }
-
-    startDynamicPathUpdates(destLat, destLon, waypointId) 
-    {
-        this.#activeWaypoint = {
-            latitude: destLat,
-            longitude: destLon,
-            id: waypointId
-        };
-
-        clearInterval(this.#pathUpdateInterval);
-        this.#pathUpdateInterval = setInterval(() => {
-            if (this.#currentPosition && this.#activeWaypoint) 
-            {
-                this.#drawPath(
-                    this.#currentPosition.latitude,
-                    this.#currentPosition.longitude,
-                    this.#activeWaypoint.latitude,
-                    this.#activeWaypoint.longitude
-                );
-            }
-        }, 1000);
-
-        this.#drawPath(
-            this.#currentPosition.latitude,
-            this.#currentPosition.longitude,
-            destLat,
-            destLon
-        );
-    }
-
-    stopDynamicPathUpdates() 
-    {
-        clearInterval(this.#pathUpdateInterval);
-        this.#pathUpdateInterval = null;
-        this.#activeWaypoint = null;
-
-        if (this.#pathEntity) 
-        {
-            this.viewer.entities.remove(this.#pathEntity);
-            this.#pathEntity = null;
-        }
-    }
-
-    #calculateHaversineDistance(lat1, lon1, lat2, lon2) 
-    {
-        const R = 6371000;
-        const dLat = (lat2 - lat1) * Math.PI / 180;
-        const dLon = (lon2 - lon1) * Math.PI / 180;
-
-        const a = Math.sin(dLat / 2) ** 2 +
-            Math.cos(lat1 * Math.PI / 180) * Math.cos(lat2 * Math.PI / 180) *
-            Math.sin(dLon / 2) ** 2;
-
-        const c = 2 * Math.atan2(Math.sqrt(a), Math.sqrt(1 - a));
-        return R * c;
     }
 
     addWaypoint(lat, lon, name, waypointId) 
