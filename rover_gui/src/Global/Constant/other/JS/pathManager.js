@@ -181,7 +181,6 @@ class PathManager
         {
             window.qtBridge.pathDistanceCalculated(distance, heading);
         }
-        return distance;
     }
 
     #calculateHeading(lat1, lon1, lat2, lon2)
