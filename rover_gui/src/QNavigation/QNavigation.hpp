@@ -20,6 +20,8 @@ class QNavigation : public QWidget
 {
     Q_OBJECT
 
+    static constexpr uint8_t GPS_SKIP_RATE =  20U;
+
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
@@ -65,6 +67,7 @@ class QNavigation : public QWidget
     Ui::Navigation _ui;
     QList<sWaypoint> _waypointsList;
     std::vector<sPosition> _oldPath;
+    uint8_t _gpsMsgCounter;
 
     QWaypointManager _waypointManager;
     QPathManager _pathManager;
