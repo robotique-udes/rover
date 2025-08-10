@@ -10,10 +10,10 @@
 
 #include <QWebChannel>
 #include <QListWidgetItem>
+
 #include <iostream>
 #include <optional>
-#include <set>
-
+#include <vector>
 #include <json/json.h>
 
 class QNavigation : public QWidget
@@ -37,7 +37,7 @@ class QNavigation : public QWidget
     void updatePathTaken(double latitude_, double longitude_, const QString& pathName_);
 
   public slots:
-    void pathDistanceCalculated(double distanceMeters_);
+    void pathDistanceCalculated(double distanceMeters_, double heading_);
     void waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_);
     void onCalculatePathClicked(void);
     void onWaypointVisibilityChanged(QListWidgetItem* item_);
