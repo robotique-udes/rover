@@ -2,6 +2,7 @@
 
 #include <filesystem>
 #include <sstream>
+#include <iomanip>
 
 QPathManager::QPathManager(bool start_, QObject* parent_):
     QWorker(start_, parent_)
@@ -30,7 +31,7 @@ void QPathManager::initializeCSVFile(std::vector<sPosition>& oldPath_)
         std::string lastFilePath = lastSessionFolderPath + POSITION_FILE_PATH;
         if (!std::filesystem::exists(lastFilePath))
         {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to load waypoint from JSON. File missing or invalid.");
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to load Position.csv. File missing or invalid.");
             return;
         }
         std::filesystem::copy_file(lastFilePath, currentFilePath);
@@ -72,6 +73,10 @@ void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
 void QPathManager::readFromCSV(std::string filePath_, std::vector<sPosition>& oldPath_)
 {
     std::ifstream file(filePath_);
+    if (!file.is_open())
+    {
+        return;
+    }
     std::string line;
 
     while (std::getline(file, line))
