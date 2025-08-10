@@ -51,7 +51,7 @@ window.addEventListener('offline', function ()
 });
 
 window.addEventListener('online', async function () {
-    connection = await checkConnectivity();
+    let connection = await checkConnectivity();
     if (connection)
     {
         const connectionError = document.getElementById('connectionError');
