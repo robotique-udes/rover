@@ -16,7 +16,6 @@
 #include <vector>
 #include <json/json.h>
 
-
 class QNavigation : public QWidget
 {
     Q_OBJECT
