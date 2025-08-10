@@ -49,7 +49,6 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     connect(_ui.clearWaypointsButton, &QPushButton::clicked, this, &QNavigation::onClearWaypointsClicked);
     connect(_ui.clearPathButton, &QPushButton::clicked, this, &QNavigation::onClearPathClicked);
     connect(_ui.deleteWaypointButton, &QPushButton::clicked, this, &QNavigation::onDeleteWaypointClicked);
-    connect(&_pathManager, &QPathManager::loadOldPath, this, &QNavigation::loadOldPath);
 
     _gpsSub = _node->create_subscription<rover_msgs::msg::Gps>(GPS_TOPIC_NAME,
                                                                1,
@@ -75,7 +74,7 @@ void QNavigation::initializeWaypointManager(void)
 void QNavigation::initializePathManager(void)
 {
     _pathManager.setSessionFolderPath(_sessionFolderPath);
-    _pathManager.initializeCSVFile();
+    _pathManager.initializeCSVFile(_oldPath);
 }
 
 void QNavigation::onJsBridgeReady(void)
@@ -89,6 +88,11 @@ void QNavigation::onJsBridgeReady(void)
                             false);
     }
     emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
+
+    for (const sPosition& point : _oldPath)
+    {
+        emit this->updatePathTaken(point.latitude, point.longitude, QString::fromStdString(_pathManager.OLD_PATH_NAME));
+    }
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -140,7 +144,7 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
-    emit this->updatePathTaken(msg_.latitude, msg_.longitude);
+    emit this->updatePathTaken(msg_.latitude, msg_.longitude, QString::fromStdString(_pathManager.PATH_NAME));
     _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
 }
 
@@ -384,9 +388,4 @@ void QNavigation::onClearPathClicked(void)
     _ui.distanceLabel->setText("N/A");
 
     emit this->clearPath();
-}
-
-void QNavigation::loadOldPath(double latitude_, double longitude_)
-{
-    emit this->updatePathTaken(latitude_, longitude_);
 }

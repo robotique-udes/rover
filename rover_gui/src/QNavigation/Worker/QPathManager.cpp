@@ -20,7 +20,7 @@ void QPathManager::setSessionFolderPath(std::string sessionFolderPath_)
     }
 }
 
-void QPathManager::initializeCSVFile(void)
+void QPathManager::initializeCSVFile(std::vector<sPosition>& oldPath_)
 {
     std::string currentFilePath = _sessionFolderPath + POSITION_FILE_PATH;
 
@@ -35,7 +35,14 @@ void QPathManager::initializeCSVFile(void)
         }
         std::filesystem::copy_file(lastFilePath, currentFilePath);
     }
-    this->readFromCSV(currentFilePath);
+    
+    this->addTask(
+        [this, currentFilePath, &oldPath_]
+        {
+            RCLCPP_INFO(rclcpp::get_logger("GUI"), "Starting to read at path: %s", currentFilePath.c_str());
+            this->readFromCSV(currentFilePath, oldPath_);
+        }
+    );
 }
 
 void QPathManager::writePosToCSV(double latitude_, double longitude_)
@@ -63,9 +70,8 @@ void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
     }
 }
 
-void QPathManager::readFromCSV(std::string filePath_)
+void QPathManager::readFromCSV(std::string filePath_, std::vector<sPosition>& oldPath_)
 {
-    ;
     std::ifstream file(filePath_);
     std::string line;
 
@@ -80,9 +86,12 @@ void QPathManager::readFromCSV(std::string filePath_)
         std::string latStr, lonStr;
         if (std::getline(ss, latStr, ',') && std::getline(ss, lonStr, ','))
         {
-            double lat = std::stod(latStr);
-            double lon = std::stod(lonStr);
-            emit this->loadOldPath(lat, lon);
+            sPosition point;
+            point.latitude = std::stod(latStr);
+            point.longitude = std::stod(lonStr);
+            oldPath_.push_back(point);
+            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Read latitude %f, longitude: %f", point.latitude, point.longitude);
+            
         }
     }
 }

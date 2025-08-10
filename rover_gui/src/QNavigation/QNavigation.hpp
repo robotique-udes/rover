@@ -34,7 +34,7 @@ class QNavigation : public QWidget
     void deleteWaypoint(const QString& waypointId_);
     void addWaypoint(const QString& name_, double latitude_, double longitude_, const QString& id_);
     void writePosToCSV(double latitude_, double longitude_);
-    void updatePathTaken(double latitude_, double longitude_);
+    void updatePathTaken(double latitude_, double longitude_, const QString& pathName_);
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_);
@@ -49,7 +49,6 @@ class QNavigation : public QWidget
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
     void onJsBridgeReady(void);
-    void loadOldPath(double latitude_, double longitude_);
 
   private:
     void addWaypointToList(const sWaypoint& waypoint_);
@@ -64,6 +63,7 @@ class QNavigation : public QWidget
 
     Ui::Navigation _ui;
     QList<sWaypoint> _waypointsList;
+    std::vector<sPosition> _oldPath;
 
     QWaypointManager _waypointManager;
     QPathManager _pathManager;

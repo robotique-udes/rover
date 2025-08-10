@@ -75,9 +75,9 @@ class Bridge
                 self.waypoints.waypointVisibility(waypointId, visibility);
             });
 
-            qtBridge.updatePathTaken.connect(function (latitude_, longitude_)
+            qtBridge.updatePathTaken.connect(function (latitude_, longitude_, name_)
             {
-                self.pathManager.drawPathTaken(latitude_, longitude_);
+                self.pathManager.drawPathTaken(latitude_, longitude_, name_);
             });
 
             if (window.qtBridge && window.qtBridge.onJsBridgeReady) 

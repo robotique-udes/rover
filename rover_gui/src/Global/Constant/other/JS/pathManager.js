@@ -2,9 +2,11 @@ class PathManager
 {
     #pathUpdateInterval = null;
     #pathEntities = [];
-    #lastPosition = [];
+    #currentPath = [];
+    #oldPath = [];
     static WAYPOINT_PATH = "waypointPath";
     static POSITION_PATH = "positionPath";
+    static OLD_POSITION_PATH = "oldPath";
 
     constructor(viewer, waypointManager)
     {
@@ -70,33 +72,68 @@ class PathManager
         this.clearWaypointPath();
     }
 
-    drawPathTaken(latitude_, longitude_)
+    drawPathTaken(latitude_, longitude_, name_)
     {
-        this.#lastPosition.push([longitude_, latitude_]);
-        const flatPositions = this.#lastPosition.flat();
-
-        const idx = this.#pathEntities.findIndex(e => e.id === PathManager.POSITION_PATH);
-        
-        if (idx !== -1) 
+        let newEntity = null;
+        if (name_ === PathManager.OLD_POSITION_PATH)
         {
-            this.viewer.entities.remove(this.#pathEntities[idx]);
-            this.#pathEntities.splice(idx, 1);
+            this.#oldPath.push([longitude_, latitude_]);
+            const flatPositions = this.#oldPath.flat();
+    
+            const idx = this.#pathEntities.findIndex(e => e.id === PathManager.OLD_POSITION_PATH);
+            
+            if (idx !== -1) 
+            {
+                this.viewer.entities.remove(this.#pathEntities[idx]);
+                this.#pathEntities.splice(idx, 1);
+            }
+    
+            newEntity = this.viewer.entities.add({
+                id: name_,
+                polyline: {
+                    positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
+                    width: 3,
+                    material: new Cesium.PolylineOutlineMaterialProperty({
+                        color: Cesium.Color.CYAN,
+                        outlineWidth: 1,
+                        outlineColor: Cesium.Color.BLACK
+                    }),
+                    clampToGround: true
+                }
+            });
+        }
+        else if (name_ === PathManager.POSITION_PATH)
+        {
+            this.#currentPath.push([longitude_, latitude_]);
+            const flatPositions = this.#currentPath.flat();
+    
+            const idx = this.#pathEntities.findIndex(e => e.id === PathManager.POSITION_PATH);
+            
+            if (idx !== -1) 
+            {
+                this.viewer.entities.remove(this.#pathEntities[idx]);
+                this.#pathEntities.splice(idx, 1);
+            }
+    
+            newEntity = this.viewer.entities.add({
+                id: name_,
+                polyline: {
+                    positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
+                    width: 3,
+                    material: new Cesium.PolylineOutlineMaterialProperty({
+                        color: Cesium.Color.RED,
+                        outlineWidth: 1,
+                        outlineColor: Cesium.Color.BLACK
+                    }),
+                    clampToGround: true
+                }
+            });
         }
 
-        const newEntity = this.viewer.entities.add({
-            id: PathManager.POSITION_PATH,
-            polyline: {
-                positions: Cesium.Cartesian3.fromDegreesArray(flatPositions),
-                width: 3,
-                material: new Cesium.PolylineOutlineMaterialProperty({
-                    color: Cesium.Color.CYAN,
-                    outlineWidth: 1,
-                    outlineColor: Cesium.Color.BLACK
-                }),
-                clampToGround: true
-            }
-        });
-        this.#pathEntities.push(newEntity);
+        if(newEntity)
+        {
+            this.#pathEntities.push(newEntity);
+        }
     }
 
     #calculateHaversineDistance(lat1, lon1, lat2, lon2) 
