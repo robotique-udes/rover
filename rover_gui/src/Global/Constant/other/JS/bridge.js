@@ -4,12 +4,13 @@ class Bridge
     #lastHeading = 0;
     #currentPosition = {};
 
-    constructor(viewer, roverEntity, waypointManager, cameraManager, initialPosition) 
+    constructor(viewer, roverEntity, waypointManager, cameraManager, initialPosition, pathManager) 
     {
         this.viewer = viewer;
         this.rover = roverEntity;
         this.waypoints = waypointManager;
         this.camera = cameraManager;
+        this.pathManager = pathManager;
         this.#currentPosition = initialPosition || { latitude: 0, longitude: 0 };
         this.#setupBridgeConnection();
     }
@@ -35,7 +36,7 @@ class Bridge
 
             qtBridge.clearPath.connect(function () 
             {
-                self.waypoints.stopDynamicPathUpdates();
+                self.pathManager.stopDynamicWaypointPathUpdates();
             });
 
             qtBridge.gpsCallback.connect(function (lat, lon, headingDeg) 
@@ -50,20 +51,21 @@ class Bridge
 
             qtBridge.calculatePath.connect(function (destLat, destLon, waypointId) 
             {
-                self.waypoints.startDynamicPathUpdates(destLat, destLon, waypointId);
+                self.pathManager.startDynamicWaypointPathUpdates(destLat, destLon, waypointId);
             });
 
             qtBridge.clearWaypoints.connect(function () 
             {
-                self.waypoints.stopDynamicPathUpdates();
                 self.waypoints.clearAllWaypoints();
+                self.pathManager.stopDynamicWaypointPathUpdates();
+                self.pathManager.clearWaypointPath();
             });
 
             qtBridge.deleteWaypoint.connect(function (waypointId) 
             {
                 if (self.waypoints.activeWaypoint && self.waypoints.activeWaypoint.id === waypointId) 
                 {
-                    self.waypoints.stopDynamicPathUpdates();
+                    self.pathManager.stopDynamicWaypointPathUpdates();
                 }
                 self.waypoints.deleteWaypoint(waypointId);
             });
@@ -71,6 +73,11 @@ class Bridge
             qtBridge.waypointIsVisible.connect(function (waypointId, visibility)
             {
                 self.waypoints.waypointVisibility(waypointId, visibility);
+            });
+
+            qtBridge.updatePathTaken.connect(function (latitude_, longitude_, name_)
+            {
+                self.pathManager.drawPathTaken(latitude_, longitude_, name_);
             });
 
             if (window.qtBridge && window.qtBridge.onJsBridgeReady) 

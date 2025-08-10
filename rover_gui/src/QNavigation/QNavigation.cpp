@@ -9,11 +9,6 @@
 // Helpers
 #include <rover_lib2/helpers/folders.hpp>
 
-#include <fstream>
-#include <vector>
-#include <algorithm>
-#include <filesystem>
-
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
 constexpr const char* NAVIGATION_PATH = "/Navigation";
@@ -26,11 +21,13 @@ constexpr double DEFAULT_HEADING = 0.0;
 QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _webChannel(this),
-    _node(guiNode_)
+    _node(guiNode_),
+    _pathManager(true, this)
 {
     _ui.setupUi(this);
     this->createNavigationFolder();
     this->initializeWaypointManager();
+    this->initializePathManager();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
@@ -69,6 +66,12 @@ void QNavigation::initializeWaypointManager(void)
     }
 }
 
+void QNavigation::initializePathManager(void)
+{
+    _pathManager.setSessionFolderPath(_sessionFolderPath);
+    _pathManager.initializeCSVFile(_oldPath);
+}
+
 void QNavigation::onJsBridgeReady(void)
 {
     for (const sWaypoint& waypoint : _waypointsList)
@@ -80,6 +83,11 @@ void QNavigation::onJsBridgeReady(void)
                             false);
     }
     emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
+
+    for (const sPosition& point : _oldPath)
+    {
+        emit this->updatePathTaken(point.latitude, point.longitude, QString::fromStdString(_pathManager.OLD_PATH_NAME));
+    }
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -108,7 +116,7 @@ void QNavigation::createNavigationFolder(void)
     std::optional<std::string> optionalHomePath = Folders::getHome();
     if (optionalHomePath.has_value())
     {
-        homePath = *optionalHomePath;
+        homePath = optionalHomePath.value();
         if (homePath.empty())
         {
             QHelper::QToastNotification::getInstance().notifyFromAnyThread("Empty home path",
@@ -131,6 +139,8 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
+    emit this->updatePathTaken(msg_.latitude, msg_.longitude, QString::fromStdString(_pathManager.PATH_NAME));
+    _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
 }
 
 void QNavigation::onSetGoalClicked()
@@ -148,10 +158,12 @@ void QNavigation::onSetGoalClicked()
 
     for (const sWaypoint& waypointIt : _waypointsList)
     {
-        if (waypointIt.name == waypoint.name)
+        if (waypointIt.name == waypoint.name || waypointIt.latitude == waypoint.latitude
+            || waypointIt.longitude == waypoint.longitude)
         {
-            QHelper::QPopUp::sendQuestionPopUp("Duplicate Name",
-                                               "A waypoint with this name already exists. Please choose a different name.");
+            QHelper::QPopUp::sendQuestionPopUp(
+                "Duplicate Name or duplicate location",
+                "A waypoint with this name or position already exists. Please choose a different name or position.");
             return;
         }
     }
@@ -171,16 +183,16 @@ void QNavigation::onSetGoalClicked()
     _ui.inputLongitude->clear();
 }
 
-void QNavigation::pathDistanceCalculated(double distanceMeters_)
+void QNavigation::pathDistanceCalculated(double distanceMeters_, double heading_)
 {
     QString distanceText_;
     if (distanceMeters_ >= 1000.0)
     {
-        distanceText_ = QString("%1 km").arg(distanceMeters_ / 1000.0, 0, 'f', 2);
+        distanceText_ = QString("%1 km, %2 deg").arg(distanceMeters_ / 1000.0, 0, 'f', 2).arg(heading_, 0, 'f', 2);
     }
     else
     {
-        distanceText_ = QString("%1 m").arg(qRound(distanceMeters_));
+        distanceText_ = QString("%1 m, %2 deg").arg(qRound(distanceMeters_)).arg(heading_, 0, 'f', 2);
     }
 
     _ui.distanceLabel->setText(distanceText_);
@@ -201,6 +213,11 @@ void QNavigation::waypointCreated(const QString& name_, double latitude_, double
         id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
     }
     sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
+    RCLCPP_ERROR(rclcpp::get_logger("GUI"),
+                 "Correctly passed through waypointCreated(): name: %s, latitude: %f, longitude: %f",
+                 waypoint.name.c_str(),
+                 waypoint.latitude,
+                 waypoint.longitude);
     this->addWaypointToList(waypoint);
     _waypointManager.syncWaypoints(_waypointsList);
 }
