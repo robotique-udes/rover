@@ -26,10 +26,8 @@ class PanoramaProcessor
     static constexpr float MAX_PAN_ANGLE = 360.0F;               // deg
     static constexpr float MIDDLE_PAN_ANGLE = 180.0F;            // degs
     static constexpr float POSITION_TOLERANCE = 0.05F;           // rad
-    static constexpr uint16_t STITCH_TIMEOUT_MS = 2'000U;
-    static constexpr uint16_t ANGLE_WAIT_TIMEOUT_MS = 2'500U;
-    static constexpr uint8_t PUBLISHER_CMD_PERIOD_MS = 50U;
-    static constexpr uint8_t PUBLISHER_POWER_PERIOD_MS = 200U;
+    static constexpr const std::chrono::milliseconds STITCH_TIMEOUT_MS = std::chrono::milliseconds(2'000U);
+    static constexpr const std::chrono::milliseconds ANGLE_WAIT_TIMEOUT_MS = std::chrono::milliseconds(2'500U);
     static constexpr float CROP_PERCENT = 0.10F;
     static constexpr uint8_t MAX_INVALID_FRAMES = 10U;
     static constexpr double FONT_SCALE = 0.7;
@@ -75,7 +73,7 @@ class PanoramaProcessor
     /**
      * @brief send the config PTZ msg using publisher
      *
-     * @param idCam_ The id of the target camera
+     * @param id_ The id of the target camera
      * @param rotationSpeed_ rotation speed in rad/s
      */
     void configPtz(Constants::CameraInfo::eCamNames id_, float rotationSpeed_);

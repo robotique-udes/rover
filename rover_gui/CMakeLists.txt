@@ -96,7 +96,6 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QRecordingWorker.cpp
                    src/QVideoPlayer/Worker/QPanoramaWorker.cpp
 
-
                    src/Global/Constant/resources.qrc
                    ui/icons.qrc
                 )

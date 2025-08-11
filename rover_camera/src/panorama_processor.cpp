@@ -8,7 +8,6 @@
 #include <rover_lib2/helpers/chrono.hpp>
 #include <rover_lib2/helpers/time.hpp>
 
-
 const cv::Scalar PanoramaProcessor::TEXT_COLOR = cv::Scalar(34, 139, 34);
 
 PanoramaProcessor::PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,
@@ -40,12 +39,10 @@ void PanoramaProcessor::execute(const rover_msgs::srv::Panorama::Request& reques
     this->handlePanoramaRequest(request_, response_, id_, coordinates_);
     this->disableCameraPower(id_);
 
-
-    if(_cameraInterface)
+    if (_cameraInterface)
     {
         _cameraInterface->release(id_);
     }
-
 
     _busy.store(false);
 }
@@ -75,7 +72,7 @@ void PanoramaProcessor::handlePanoramaRequest(const rover_msgs::srv::Panorama::R
     }
 
     std::optional<cv::Mat> pano = this->stitchFrames(frames);
-    if (!pano.has_value())
+    if (!pano)
     {
         RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Stitching failed, panorama image is empty.");
         response_.status = "Stitching failed, panorama image is empty.";
@@ -83,7 +80,7 @@ void PanoramaProcessor::handlePanoramaRequest(const rover_msgs::srv::Panorama::R
     }
 
     std::optional<cv::Mat> panoRect = this->warpCorrection(*pano);
-    if (!panoRect.has_value())
+    if (!panoRect)
     {
         RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Warp correction failed, panorama image is empty.");
         response_.status = "Warp correction failed, panorama image is empty.";
@@ -153,9 +150,9 @@ std::optional<cv::Mat> PanoramaProcessor::stitchFrames(std::vector<cv::Mat>& fra
                                                               return status;
                                                           });
 
-    if (future.wait_for(std::chrono::milliseconds(STITCH_TIMEOUT_MS)) != std::future_status::ready)
+    if (future.wait_for(STITCH_TIMEOUT_MS) != std::future_status::ready)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Stitching timed out after %d seconds", STITCH_TIMEOUT_MS);
+        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Stitching timed out after %ld seconds", STITCH_TIMEOUT_MS.count());
         return std::nullopt;
     }
 
@@ -327,7 +324,7 @@ void PanoramaProcessor::rotateCamera(std::chrono::milliseconds duration_, Consta
     if (_cameraInterface)
     {
         _cameraInterface->setPTZCmd(ptzMsg, id_);
-        this->waitForAngle(id_, startAngle);  // move to interface?
+        this->waitForAngle(id_, startAngle);
     }
 
     this->configPtz(id_, degToRad(targetRotationSpeed));
@@ -359,7 +356,7 @@ void PanoramaProcessor::waitForAngle(Constants::CameraInfo::eCamNames id_, float
                     }
                 });
 
-        if (angleReachedFuture.wait_for(std::chrono::milliseconds(ANGLE_WAIT_TIMEOUT_MS)) == std::future_status::timeout)
+        if (angleReachedFuture.wait_for(ANGLE_WAIT_TIMEOUT_MS) == std::future_status::timeout)
         {
             RCLCPP_INFO(rclcpp::get_logger("PanoramaManager"),
                         "Desired start angle for panorama wasn't reached in time, starting panorama anyway");

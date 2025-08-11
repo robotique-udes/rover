@@ -53,7 +53,7 @@ void PanoramaManager::initCameraInterface(void)
 {
     _cameraInterface = std::make_shared<CameraInterface>(this->shared_from_this(),
                                                          TOPIC_CAMERA_PTZ_CMD_PANORAMA,
-                                                         TOPIC_CAMERA_CONFIG_PANORAM,
+                                                         TOPIC_CAMERA_CONFIG_PANORAMA,
                                                          TOPIC_CAMERA_POWER_PANORAMA);
 }
 

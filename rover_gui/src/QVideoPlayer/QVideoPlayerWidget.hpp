@@ -34,9 +34,9 @@ class QVideoPlayerWidget : public QWidget
 
     static constexpr size_t STYLE_RESET_TIME = 2'000UL;
 
-    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
-    static constexpr uint16_t CAMERA_MAX_ANGLE = 360;
-    static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100;
+    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180U;
+    static constexpr uint16_t CAMERA_MAX_ANGLE = 360U;
+    static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100U;
 
   public:
     enum class ePlayerState

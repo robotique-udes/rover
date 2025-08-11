@@ -12,8 +12,8 @@
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 #include "rover_lib2/helpers/cameraInterface.hpp"
-#include <rover_msgs/srv/panorama.hpp>
 
+#include <rover_msgs/srv/panorama.hpp>
 #include <QtWidgets/QGridLayout>
 #include <QtWidgets/QWidget>
 
@@ -42,9 +42,9 @@ class QVideoManagerWidget : public QWidget
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 5000U;
     static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 50U;
     static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
-    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180;
+    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180U;
 
-    static constexpr float ALT_CAM_LAYOUT_PROPORTION = 0.7f;
+    static constexpr float ALT_CAM_LAYOUT_PROPORTION = 0.7F;
 
     static constexpr std::array<const char*, 5> CAMERA_NAME_ORDER = {
         "Main",
@@ -67,6 +67,13 @@ class QVideoManagerWidget : public QWidget
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
+    
+    /**
+     * @brief set the PTZ cmd
+     * 
+     * @param yaw_ angle in degrees
+     * @param id_ camera id
+     */
     void setPTZCmd(float yaw_, size_t id_);
     void onTabChanged(uint16_t index_);
 

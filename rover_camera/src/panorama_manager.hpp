@@ -10,7 +10,7 @@ class PanoramaManager : public rclcpp::Node
     static constexpr const char* TOPIC_GPS_NAME = "/rover/gps/position";
     static constexpr const char* PANORAMA_SERVICE_NAME = "/rover/video/panorama";
     static constexpr const char* TOPIC_CAMERA_PTZ_CMD_PANORAMA = "/rover/camera/PTZ_cmd/panorama";
-    static constexpr const char* TOPIC_CAMERA_CONFIG_PANORAM = "/rover/camera/PTZ_config/panorama";
+    static constexpr const char* TOPIC_CAMERA_CONFIG_PANORAMA = "/rover/camera/PTZ_config/panorama";
     static constexpr const char* TOPIC_CAMERA_POWER_PANORAMA = "/rover/camera/power_cmd/panorama";
 
   public:
