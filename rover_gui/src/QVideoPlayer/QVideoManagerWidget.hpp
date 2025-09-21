@@ -67,10 +67,10 @@ class QVideoManagerWidget : public QWidget
   private slots:
     void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
-    
+
     /**
      * @brief set the PTZ cmd
-     * 
+     *
      * @param yaw_ angle in degrees
      * @param id_ camera id
      */

@@ -129,8 +129,7 @@ namespace CameraManager
 
     void ManagerNode::initPubs()
     {
-        _publisher_filteredPTZCmd
-            = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_COMMAND_MANAGER, QOS_CAMERA);
+        _publisher_filteredPTZCmd = this->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_PTZ_COMMAND_MANAGER, QOS_CAMERA);
 
         _timer_filtredPTZCmdPub = this->create_wall_timer(
             std::chrono::milliseconds(static_cast<size_t>(1000 / Constants::CameraInfo::SEND_COMMAND_PTZ_FREQUENCY)),

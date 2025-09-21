@@ -9,6 +9,7 @@
 #include <rover_lib2/helpers/time.hpp>
 
 const cv::Scalar PanoramaProcessor::TEXT_COLOR = cv::Scalar(34, 139, 34);
+const rclcpp::Logger PanoramaProcessor::LOGGER = rclcpp::get_logger("PanoramaManager");
 
 PanoramaProcessor::PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,
                                      Constants::CameraInfo::eCamNames id_,
@@ -19,7 +20,22 @@ PanoramaProcessor::PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,
 {
 }
 
-PanoramaProcessor::~PanoramaProcessor() {}
+PanoramaProcessor::~PanoramaProcessor()
+{
+    if (this->isBusy())
+    {
+        std::unique_lock dummyLock(_dummyMutex);
+        if (!_panoramaDone.wait_for(dummyLock,
+                                    SHUTDOWN_LIMIT_MS,
+                                    [this](void)
+                                    {
+                                        return !this->isBusy();
+                                    }))
+        {
+            RCLCPP_WARN(LOGGER, "Shutdown limit reached, forcing shutdown");
+        }
+    }
+}
 
 void PanoramaProcessor::execute(const rover_msgs::srv::Panorama::Request& request_,
                                 rover_msgs::srv::Panorama::Response& response_,
@@ -45,6 +61,7 @@ void PanoramaProcessor::execute(const rover_msgs::srv::Panorama::Request& reques
     }
 
     _busy.store(false);
+    _panoramaDone.notify_one();
 }
 
 bool PanoramaProcessor::isBusy(void)
@@ -71,19 +88,15 @@ void PanoramaProcessor::handlePanoramaRequest(const rover_msgs::srv::Panorama::R
         return;
     }
 
-    std::optional<cv::Mat> pano = this->stitchFrames(frames);
+    std::optional<cv::Mat> pano = this->stitchFrames(frames, response_);
     if (!pano)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Stitching failed, panorama image is empty.");
-        response_.status = "Stitching failed, panorama image is empty.";
         return;
     }
 
-    std::optional<cv::Mat> panoRect = this->warpCorrection(*pano);
+    std::optional<cv::Mat> panoRect = this->warpCorrection(*pano, response_);
     if (!panoRect)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Warp correction failed, panorama image is empty.");
-        response_.status = "Warp correction failed, panorama image is empty.";
         return;
     }
 
@@ -100,16 +113,17 @@ void PanoramaProcessor::handlePanoramaRequest(const rover_msgs::srv::Panorama::R
         return;
     }
 
-    RCLCPP_DEBUG(rclcpp::get_logger("PanoramaManager"), "Panorama saved to %s", filename.c_str());
+    RCLCPP_DEBUG(LOGGER, "Panorama saved to %s", filename.c_str());
     response_.status = "Panorama saved to: " + filename;
     response_.success = true;
 }
 
-std::optional<cv::Mat> PanoramaProcessor::warpCorrection(const cv::Mat& pano)
+std::optional<cv::Mat> PanoramaProcessor::warpCorrection(const cv::Mat& pano, rover_msgs::srv::Panorama::Response& response_)
 {
     if (pano.empty())
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Empty image was received for cropping");
+        RCLCPP_ERROR(LOGGER, "Empty image was received for cropping");
+        response_.status = "Warp correction failed, panorama image is empty.";
         return std::nullopt;
     }
 
@@ -124,7 +138,8 @@ std::optional<cv::Mat> PanoramaProcessor::warpCorrection(const cv::Mat& pano)
 
     if (cropWidth <= 0 || cropHeight <= 0)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Invalid dimensions for cropping.");
+        RCLCPP_ERROR(LOGGER, "Invalid dimensions for cropping.");
+        response_.status = "Warp correction failed, panorama image dimensions are invalid.";
         return std::nullopt;
     }
 
@@ -132,11 +147,13 @@ std::optional<cv::Mat> PanoramaProcessor::warpCorrection(const cv::Mat& pano)
     return pano(roi).clone();
 }
 
-std::optional<cv::Mat> PanoramaProcessor::stitchFrames(std::vector<cv::Mat>& frames_)
+std::optional<cv::Mat> PanoramaProcessor::stitchFrames(std::vector<cv::Mat>& frames_,
+                                                       rover_msgs::srv::Panorama::Response& response_)
 {
     if (frames_.size() < 2)
     {
-        RCLCPP_WARN(rclcpp::get_logger("PanoramaManager"), "Not enough images for stitching (need at least 2)");
+        RCLCPP_WARN(LOGGER, "Not enough images for stitching (need at least 2)");
+        response_.status = "Stitching failed, not enough images were captured (min 2).";
         return std::nullopt;
     }
 
@@ -152,13 +169,15 @@ std::optional<cv::Mat> PanoramaProcessor::stitchFrames(std::vector<cv::Mat>& fra
 
     if (future.wait_for(STITCH_TIMEOUT_MS) != std::future_status::ready)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Stitching timed out after %ld seconds", STITCH_TIMEOUT_MS.count());
+        RCLCPP_ERROR(LOGGER, "Stitching timed out after %ld seconds", STITCH_TIMEOUT_MS.count());
+        response_.status = "Stitching timeout after" + std::to_string(STITCH_TIMEOUT_MS.count()) + " ms";
         return std::nullopt;
     }
 
     if (future.get() != cv::Stitcher::OK)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Stitching failed. Error code: %d", static_cast<int>(future.get()));
+        RCLCPP_ERROR(LOGGER, "Stitching failed. Error code: %d", static_cast<int>(future.get()));
+        response_.status = "Stitching failed unexpectedly, check logs for reason";
         return std::nullopt;
     }
 
@@ -182,13 +201,13 @@ bool PanoramaProcessor::validateRequest(const rover_msgs::srv::Panorama::Request
 {
     if (request_.duration <= 0)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Requested duration is zero or negative, aborting panorama.");
+        RCLCPP_ERROR(LOGGER, "Requested duration is zero or negative, aborting panorama.");
         response_.status = "Requested duration is zero or negative.";
         return false;
     }
     if (request_.camera_url.rfind("rtsp://", 0) != 0)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Camera URL does not start with rtsp://, aborting panorama.");
+        RCLCPP_ERROR(LOGGER, "Camera URL does not start with rtsp://, aborting panorama.");
         response_.status = "Camera URL must start with rtsp:// because pipeline is rtsp specific";
         return false;
     }
@@ -204,11 +223,11 @@ bool PanoramaProcessor::captureFrames(const rover_msgs::srv::Panorama::Request& 
 
     if (!cap.isOpened())
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Failed to open camera");
+        RCLCPP_ERROR(LOGGER, "Failed to open camera");
         response_.status = "Failed to open camera stream (cap)";
         return false;
     }
-    RCLCPP_DEBUG(rclcpp::get_logger("PanoramaManager"), "Starting frame capture for camera: %s", request_.camera_url.c_str());
+    RCLCPP_DEBUG(LOGGER, "Starting frame capture for camera: %s", request_.camera_url.c_str());
 
     cv::Mat frame;
     uint8_t invalidFramesCounter = 0U;
@@ -222,11 +241,11 @@ bool PanoramaProcessor::captureFrames(const rover_msgs::srv::Panorama::Request& 
         }
         else
         {
-            RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Blank frame grabbed");
+            RCLCPP_ERROR(LOGGER, "Blank frame grabbed");
             invalidFramesCounter++;
             if (invalidFramesCounter >= MAX_INVALID_FRAMES)
             {
-                RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Too many blank frame grabbed, stopping capture");
+                RCLCPP_ERROR(LOGGER, "Too many blank frame grabbed, stopping capture");
                 break;
             }
         }
@@ -254,9 +273,7 @@ bool PanoramaProcessor::prepareOutputPath(const rover_msgs::srv::Panorama::Reque
     std::optional<std::string> pathFolderOptional = this->getFolderPath(request_.base_path);
     if (!pathFolderOptional)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"),
-                     "Failed to find home environment when capturing panorama on camera %s",
-                     request_.camera_url.c_str());
+        RCLCPP_ERROR(LOGGER, "Failed to find home environment when capturing panorama on camera %s", request_.camera_url.c_str());
         response_.success = false;
         response_.status = "Failed to find home environment for saving screenshot on camera: " + request_.camera_url;
         return false;
@@ -264,7 +281,7 @@ bool PanoramaProcessor::prepareOutputPath(const rover_msgs::srv::Panorama::Reque
     std::string pathFolder = *pathFolderOptional;
     if (!Folders::createFolder(pathFolder))
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"),
+        RCLCPP_ERROR(LOGGER,
                      "Failed to create panorama folder at %s for camera: %s",
                      pathFolder.c_str(),
                      request_.camera_url.c_str());
@@ -287,7 +304,7 @@ bool PanoramaProcessor::savePanorama(rover_msgs::srv::Panorama::Response& respon
     {
         if (!cv::imwrite(filename_, pano_))
         {
-            RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "Failed to save panorama image to file: %s", filename_.c_str());
+            RCLCPP_ERROR(LOGGER, "Failed to save panorama image to file: %s", filename_.c_str());
             response_.success = false;
             response_.status = "Failed to save panorama image to file: " + filename_;
             return false;
@@ -295,7 +312,7 @@ bool PanoramaProcessor::savePanorama(rover_msgs::srv::Panorama::Response& respon
     }
     catch (const cv::Exception& e)
     {
-        RCLCPP_ERROR(rclcpp::get_logger("PanoramaManager"), "OpenCV exception during imwrite: %s", e.what());
+        RCLCPP_ERROR(LOGGER, "OpenCV exception during imwrite: %s", e.what());
         response_.success = false;
         response_.status = std::string("OpenCV exception during imwrite: ") + e.what();
         return false;
@@ -358,8 +375,7 @@ void PanoramaProcessor::waitForAngle(Constants::CameraInfo::eCamNames id_, float
 
         if (angleReachedFuture.wait_for(ANGLE_WAIT_TIMEOUT_MS) == std::future_status::timeout)
         {
-            RCLCPP_INFO(rclcpp::get_logger("PanoramaManager"),
-                        "Desired start angle for panorama wasn't reached in time, starting panorama anyway");
+            RCLCPP_INFO(LOGGER, "Desired start angle for panorama wasn't reached in time, starting panorama anyway");
         }
     }
 }

@@ -449,7 +449,7 @@ void QVideoManagerWidget::initCameraInterface(void)
     cmdMsg.yaw = CAMERA_CENTER_ANGLE;
     cmdMsg.pitch = 0.0F;
     cmdMsg.power_on = true;
-    
+
     cmdMsg.id_cam = static_cast<uint8_t>(std::to_underlying(Constants::CameraInfo::eCamNames::MAIN));
     _cameraInterface.setPTZCmd(cmdMsg, Constants::CameraInfo::eCamNames::MAIN);
     configMsg.id_cam = static_cast<uint8_t>(std::to_underlying(Constants::CameraInfo::eCamNames::MAIN));

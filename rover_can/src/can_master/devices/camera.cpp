@@ -19,13 +19,11 @@ Camera::Camera(RoverCan2::Constant::eDeviceId IdCan_, uint8_t IdCameraControlMsg
 
 void Camera::rosElementInit()
 {
-    _pub_powerStatus = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(
-        TOPIC_CAMERA_POWER_STATUS,
-        QOS_CAMERA);
+    _pub_powerStatus
+        = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_POWER_STATUS, QOS_CAMERA);
 
-    _pub_ptzStatus = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(
-        TOPIC_CAMERA_PTZ_STATUS,
-        QOS_CAMERA);
+    _pub_ptzStatus
+        = this->getAttachedNode()->create_publisher<rover_msgs::msg::CameraControl>(TOPIC_CAMERA_PTZ_STATUS, QOS_CAMERA);
 
     _sub_powerCmd = this->getAttachedNode()->create_subscription<rover_msgs::msg::CameraControl>(
         TOPIC_CAMERA_POWER_COMMAND,
