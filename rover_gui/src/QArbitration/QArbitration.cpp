@@ -23,7 +23,7 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
         QOS_DEFAULT,
         [this](const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_)
         {
-            this->joyDemuxStatusCallback(msg_);
+            emit this->joyDemuxStatusCallbackSignal(msg_);
         });
 
     _driveTrainStatusSub = _node->create_subscription<rover_msgs::msg::DrivetrainArbitration>(
@@ -31,7 +31,7 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
         QOS_DEFAULT,
         [this](const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_)
         {
-            this->driveTrainDemuxStatusCallback(msg_);
+            emit this->driveTrainDemuxStatusCallbackSignal(msg_);
         });
 
     connect(_ui.mainComboBox,
@@ -53,6 +53,10 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
             QOverload<int>::of(&QComboBox::currentIndexChanged),
             this,
             &QArbitration::onDriveTrainComboChanged);
+
+    connect(this, &QArbitration::joyDemuxStatusCallbackSignal, this, &QArbitration::joyDemuxStatusCallback);
+
+    connect(this, &QArbitration::driveTrainDemuxStatusCallbackSignal, this, &QArbitration::driveTrainDemuxStatusCallback);
 }
 
 void QArbitration::initComboBoxItems()
