@@ -6,6 +6,7 @@
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QRecordingWorker.hpp"
+#include "Worker/QPanoramaWorker.hpp"
 #include "Worker/QGStreamerWorker.hpp"
 #include "QVideoRecorderWidget.hpp"
 
@@ -31,6 +32,12 @@ class QVideoPlayerWidget : public QWidget
     static int MAX_RECONNECT_ATTEMPTS;
     static int _instanceCounter;
 
+    static constexpr size_t STYLE_RESET_TIME = 2'000UL;
+
+    static constexpr uint16_t CAMERA_CENTER_ANGLE = 180U;
+    static constexpr uint16_t CAMERA_MAX_ANGLE = 360U;
+    static constexpr uint16_t SLIDER_UPDATE_FREQUENCY_HZ = 100U;
+
   public:
     enum class ePlayerState
     {
@@ -47,7 +54,8 @@ class QVideoPlayerWidget : public QWidget
                        std::string url_,
                        uint16_t playerIndex_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
-                       std::shared_ptr<QRecordingWorker> workerThreadRecording_);
+                       std::shared_ptr<QRecordingWorker> workerThreadRecording_,
+                       std::shared_ptr<QPanoramaWorker> workerThreadPanorama_);
 
     ~QVideoPlayerWidget();
 
@@ -68,6 +76,7 @@ class QVideoPlayerWidget : public QWidget
     void handlePlayPauseButton(void);
 
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
+    void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_);
 
     std::string getCamURL(void);
     float getCameraAngle(void);
@@ -91,8 +100,9 @@ class QVideoPlayerWidget : public QWidget
     void streamStateChanged(bool isRunning_, int streamIndex_);
     void requestStartStream(const QString& rtspUrl_);
     void requestStopStream(void);
-    void notifyCameraAnglePublisher(std::string camURL_, float angle_);
     void displayDetectedArucos(std::vector<uint16_t> ids_);
+    void updateActualAngle(const std::string& camURL_, float yaw_);
+    void updatePTZCmd(float yaw_, size_t id_);
 
   private slots:
     // Arucuo
@@ -104,6 +114,12 @@ class QVideoPlayerWidget : public QWidget
     void onCameraAngleSliderChanged(void);
     void onCameraAngleBoxChanged(void);
 
+    void handlePanorama(void);
+    void onPanoramaStarted(uint16_t duration_, uint16_t playerIndex_);
+    void onPanoramaFinished(bool success_, const std::string& status_, uint16_t playerIndex_);
+    void setPanoramaDuration(void);
+    void onUpdateActualAngle(const std::string& camURL_, float yaw_);
+
     void onPipelineStarted(GstElement* pipeline_);
     void onErrorOccurred(const QString& error_);
     void onConnectionFailed(void);
@@ -113,6 +129,7 @@ class QVideoPlayerWidget : public QWidget
     void onConnectionTimeout(void);
     void onToggleView(void);
     void onUrlTextChanged(const QString& text_);
+    void onCenterAngle(void);
 
     void clearLogs(void);
     void toggleLogView(bool show_);
@@ -135,11 +152,14 @@ class QVideoPlayerWidget : public QWidget
     std::string _defaultCamUrl = "";
 
     int _streamIndex;
-    int16_t _playerIndex;
+    uint16_t _playerIndex;
+    std::string _sessionFolderPath;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramaManager;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
+    std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
     QVideoRecorderWidget _recorderWidget;
 
     ePlayerState _state = ePlayerState::NOT_CONNECTED;
@@ -154,6 +174,7 @@ class QVideoPlayerWidget : public QWidget
     QTimer _reconnectTimer;
     QTimer _frameTimeoutTimer;
     QTimer _connectionTimeoutTimer;
+    uint16_t _panoramaDuration = 5000U;
 };
 
 #endif

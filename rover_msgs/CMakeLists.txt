@@ -70,8 +70,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/Empty.srv"
   "srv/JoyDemuxSetState.srv"
   "srv/LightControl.srv"
-  "srv/PanoControl.srv"
   "srv/RtspStream.srv"
+  "srv/Panorama.srv"
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

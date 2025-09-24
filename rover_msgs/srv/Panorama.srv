@@ -1,0 +1,7 @@
+string camera_url
+string panorama_name
+string base_path
+uint16 duration
+---
+bool success
+string status

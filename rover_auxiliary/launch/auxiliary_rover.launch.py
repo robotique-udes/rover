@@ -13,6 +13,7 @@ def generate_launch_description():
         executable="ddb_control",
         name="ddb_control"
     )
+    ld.add_action(node_ddb_control)
     
     node_camera_manager = Node(
         package="rover_auxiliary",
