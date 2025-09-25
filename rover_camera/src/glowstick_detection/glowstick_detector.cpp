@@ -50,55 +50,88 @@ void GlowstickDetector::filterFrame(const cv::Mat& frame_, cv::Mat masks_[])
 
         if (i != WHITE)
         {
-            //applyWatershedSegmentation(masks_[i], frame_);
+            applyWatershedSegmentation(masks_[i], frame_);
         }
     };
 }
 
 void GlowstickDetector::applyWatershedSegmentation(cv::Mat& mask_, const cv::Mat& originalImage_)
 {
+    
     if (cv::countNonZero(mask_) == 0) return;
 
-    cv::Mat pixDistanceFromBlack;
-    cv::distanceTransform(mask_, pixDistanceFromBlack, cv::DIST_L2, GS_CONFIGURATION::DIST_MASK_PRECISION);
+    cv::Mat bin;
+    cv::Mat sureBg;
+    cv::Mat dist;
+
+    uint16_t dilateIter = 2;
+
+    if (mask_.type() != CV_8U) 
+    {
+        mask_.convertTo(bin, CV_8U);
+    }
+    else
+    {
+        mask_ = mask_.clone(), bin = mask_;
+    } 
+
+    cv::Mat kernel = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(3,3));
+    cv::morphologyEx(bin, bin, cv::MORPH_OPEN, kernel);
+
+    cv::dilate(bin, sureBg, kernel, cv::Point(-1, -1), dilateIter);
+    cv::distanceTransform(bin, dist, cv::DIST_L2, GS_CONFIGURATION::DIST_MASK_PRECISION);
 
     double minVal, maxVal;
-    cv::minMaxLoc(pixDistanceFromBlack, &minVal, &maxVal);
+    cv::minMaxLoc(dist, &minVal, &maxVal);
+    if (maxVal <= 0) return;
+
+    cv::Mat distDilated;
+    cv::dilate(dist, distDilated, cv::getStructuringElement(cv::MORPH_RECT, cv::Size(3,3)));
+    cv::Mat localMax = (dist == distDilated);
+
+    double thresh = GS_CONFIGURATION::CENTER_THRESHOLD_PERCENTAGE * maxVal;
+    cv::Mat sureFg;
+    cv::threshold(dist, sureFg, thresh, 255, cv::THRESH_BINARY);
+    sureFg.convertTo(sureFg, CV_8U);
 
     cv::Mat peaks;
-    cv::threshold(pixDistanceFromBlack, peaks, GS_CONFIGURATION::CENTER_THRESHOLD_PERCENTAGE*maxVal, 255, cv::THRESH_BINARY);
-    peaks.convertTo(peaks, CV_8U);
 
-    cv::Mat kernelSmall = cv::getStructuringElement(cv::MORPH_ELLIPSE, cv::Size(5, 5));
-    cv::morphologyEx(peaks, peaks, cv::MORPH_OPEN, kernelSmall);
+    localMax.convertTo(localMax, CV_8U);
+    cv::bitwise_and(localMax, sureFg, peaks);
 
-    cv::Mat watershedMarkers = cv::Mat::zeros(peaks.size(),  CV_32S);
-    int numComponents = cv::connectedComponents(peaks, watershedMarkers);
+    cv::morphologyEx(peaks, peaks, cv::MORPH_OPEN, kernel);
 
-    if (numComponents > 1)
+    cv::Mat markers;
+    int numComponents = cv::connectedComponents(peaks, markers);
+    if (numComponents <= 1)
     {
-        watershedMarkers.setTo(1, mask_ == 0);
+        return;
+    } 
 
-        cv::Mat watershedImage;
-        originalImage_.copyTo(watershedImage);
-        cv::watershed(watershedImage, watershedMarkers);
+    markers += 1;
 
-        cv::Mat watershedMask = cv::Mat::zeros(watershedMarkers.size(), CV_8U);
-        for (int i=0; i<watershedMarkers.rows; i++)
-        {
-            for (int j=0; j<watershedMarkers.cols; j++)
-            {
-                int label = watershedMarkers.at<int>(i, j);
-                if (label > 1)
-                {
-                    watershedMask.at<uchar>(i, j) = 255;
-                }
-            }
-        }
+    cv::Mat unknown;
+    cv::subtract(sureBg, sureFg, unknown);
+    markers.setTo(0, unknown == 255);
 
-        watershedMask.copyTo(mask_);
+    cv::Mat wsImg;
+    if (originalImage_.channels() == 1)
+    {
+        cv::cvtColor(originalImage_, wsImg, cv::COLOR_GRAY2BGR555);
+    }
+    else
+    {
+        originalImage_.copyTo(wsImg);
     }
 
+    cv::watershed(wsImg, markers);
+
+    cv::Mat watershedMask = cv::Mat::zeros(markers.size(), CV_8U);
+    watershedMask.setTo(255, markers > 1);
+
+    watershedMask &= bin;
+
+    watershedMask.copyTo(mask_);
 
 }
 
