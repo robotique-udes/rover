@@ -378,7 +378,7 @@ void QUtilityBarTop::onAntennaStatusTimeout()
 }
 void QUtilityBarTop::onGNSSTimeout()
 {
-    if ((_node->now() - _lastBatteryTimeMsg) > _batteryTimeout)
+    if ((_node->now() - _lastGNSSTimeMsg) > _GNSSTimeout)
     {
         QIcon iconSat(":/icons/GNSSError.svg");
         QIcon iconHeading(":/icons/Heading");
