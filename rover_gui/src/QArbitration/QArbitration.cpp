@@ -23,7 +23,7 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
         QOS_DEFAULT,
         [this](const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_)
         {
-            emit this->joyDemuxStatusCallbackSignal(msg_);
+            emit this->joyDemuxStatusChanged(msg_);
         });
 
     _driveTrainStatusSub = _node->create_subscription<rover_msgs::msg::DrivetrainArbitration>(
@@ -31,7 +31,7 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
         QOS_DEFAULT,
         [this](const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_)
         {
-            emit this->driveTrainDemuxStatusCallbackSignal(msg_);
+            emit this->driveTrainDemuxStatusChanged(msg_);
         });
 
     connect(_ui.mainComboBox,
@@ -54,9 +54,9 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
             this,
             &QArbitration::onDriveTrainComboChanged);
 
-    connect(this, &QArbitration::joyDemuxStatusCallbackSignal, this, &QArbitration::joyDemuxStatusCallback);
+    connect(this, &QArbitration::joyDemuxStatusChanged, this, &QArbitration::onJoyDemuxStatusChanged);
 
-    connect(this, &QArbitration::driveTrainDemuxStatusCallbackSignal, this, &QArbitration::driveTrainDemuxStatusCallback);
+    connect(this, &QArbitration::driveTrainDemuxStatusChanged, this, &QArbitration::onDriveTrainDemuxStatusChanged);
 }
 
 void QArbitration::initComboBoxItems()
@@ -127,7 +127,7 @@ void QArbitration::checkServiceAvailable(rclcpp::Client<T>::SharedPtr client_, c
     }
 }
 
-void QArbitration::joyDemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_)
+void QArbitration::onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_)
 {
     if (!msg_)
     {
@@ -145,7 +145,7 @@ void QArbitration::joyDemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus:
     _ui.secComboBox->blockSignals(wasBlockedSec);
 }
 
-void QArbitration::driveTrainDemuxStatusCallback(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg)
+void QArbitration::onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg)
 {
     if (!msg)
     {
