@@ -17,6 +17,7 @@
 
 #if defined(ROS)
 #define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(1))
+#define QOS_CAMERA rclcpp::QoS(rclcpp::KeepLast(std::to_underlying(Constants::CameraInfo::eCamNames::eLast)))
 #endif  // defined(ROS)
 
 namespace Constants

@@ -84,7 +84,8 @@ class CameraInterface
 
     std::array<std::string, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _topicWithPriority;
 
-    std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isCamConcerned = {false};
+    std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isCamConcernedPTZ = {false};
+    std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isCamConcernedPower = {false};
     std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isGoalReached = {false};
 
     std::shared_ptr<rclcpp::Node> _node;

@@ -424,26 +424,73 @@
    <item row="2" column="0">
     <layout class="QHBoxLayout" name="horizontalLayout_angle">
      <item>
-      <widget class="QSlider" name="cameraAngleSlider">
-       <property name="cursor">
-        <cursorShape>ClosedHandCursor</cursorShape>
-       </property>
-       <property name="maximum">
-        <number>360</number>
-       </property>
-       <property name="value">
-        <number>0</number>
-       </property>
-       <property name="orientation">
-        <enum>Qt::Horizontal</enum>
-       </property>
-       <property name="tickPosition">
-        <enum>QSlider::TicksAbove</enum>
-       </property>
-       <property name="tickInterval">
-        <number>90</number>
+      <widget class="QPushButton" name="angleCenterButton">
+       <property name="text">
+        <string>Center</string>
        </property>
       </widget>
+     </item>
+     <item>
+      <layout class="QVBoxLayout" name="verticalLayout_3">
+       <item>
+        <widget class="QSlider" name="cameraAngleSlider">
+         <property name="cursor">
+          <cursorShape>ClosedHandCursor</cursorShape>
+         </property>
+         <property name="maximum">
+          <number>360</number>
+         </property>
+         <property name="value">
+          <number>180</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="tickPosition">
+          <enum>QSlider::TicksAbove</enum>
+         </property>
+         <property name="tickInterval">
+          <number>90</number>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QSlider" name="actualAngleSlider">
+         <property name="enabled">
+          <bool>false</bool>
+         </property>
+         <property name="styleSheet">
+          <string notr="true">QSlider::handle:horizontal {
+        image: url(:/icons/arrow.png);
+        background: transparent;
+        border: none;
+        width: 16px;
+        height: 16px;
+        margin: -8px 0;  /* adjust to align vertically */
+    }
+
+    QSlider::groove:horizontal {
+        background: transparent;
+        height: 4px;  /* or whatever you want */
+    }
+
+    QSlider::sub-page:horizontal,
+    QSlider::add-page:horizontal {
+        background: transparent;
+    }</string>
+         </property>
+         <property name="maximum">
+          <number>360</number>
+         </property>
+         <property name="value">
+          <number>180</number>
+         </property>
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+        </widget>
+       </item>
+      </layout>
      </item>
      <item>
       <widget class="QDoubleSpinBox" name="cameraAngleBox">
@@ -461,6 +508,35 @@
        </property>
        <property name="singleStep">
         <double>1.000000000000000</double>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QPushButton" name="panoramaButton">
+       <property name="text">
+        <string>Panorama</string>
+       </property>
+      </widget>
+     </item>
+     <item>
+      <widget class="QDoubleSpinBox" name="panoramaDurationBox">
+       <property name="alignment">
+        <set>Qt::AlignRight|Qt::AlignTrailing|Qt::AlignVCenter</set>
+       </property>
+       <property name="suffix">
+        <string> sec</string>
+       </property>
+       <property name="decimals">
+        <number>1</number>
+       </property>
+       <property name="maximum">
+        <double>15.000000000000000</double>
+       </property>
+       <property name="singleStep">
+        <double>0.100000000000000</double>
+       </property>
+       <property name="value">
+        <double>5.000000000000000</double>
        </property>
       </widget>
      </item>
