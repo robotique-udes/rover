@@ -3,6 +3,7 @@
 #include <filesystem>
 #include <sstream>
 #include <iomanip>
+#include <QVariantMap>
 
 QPathManager::QPathManager(bool start_, QObject* parent_):
     QWorker(start_, parent_)
@@ -21,7 +22,7 @@ void QPathManager::setSessionFolderPath(std::string sessionFolderPath_)
     }
 }
 
-void QPathManager::initializeCSVFile(std::vector<sPosition>& oldPath_)
+void QPathManager::initializeCSVFile(QVariantList& oldPath_)
 {
     std::string currentFilePath = _sessionFolderPath + POSITION_FILE_PATH;
 
@@ -70,7 +71,7 @@ void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
     }
 }
 
-void QPathManager::readFromCSV(std::string filePath_, std::vector<sPosition>& oldPath_)
+void QPathManager::readFromCSV(std::string filePath_, QVariantList& oldPath_)
 {
     std::ifstream file(filePath_);
     if (!file.is_open())
@@ -85,10 +86,10 @@ void QPathManager::readFromCSV(std::string filePath_, std::vector<sPosition>& ol
         std::string latStr, lonStr;
         if (std::getline(ss, latStr, ',') && std::getline(ss, lonStr, ','))
         {
-            sPosition point;
-            point.latitude = std::stod(latStr);
-            point.longitude = std::stod(lonStr);
-            oldPath_.push_back(point);
+            QVariantMap point;
+            point["latitude"] = QString::fromStdString(latStr).toDouble();
+            point["longitude"] = QString::fromStdString(lonStr).toDouble();
+            oldPath_.append(point);
         }
     }
 }

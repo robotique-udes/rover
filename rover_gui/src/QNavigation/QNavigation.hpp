@@ -66,7 +66,7 @@ class QNavigation : public QWidget
 
     Ui::Navigation _ui;
     QList<sWaypoint> _waypointsList;
-    std::vector<sPosition> _oldPath;
+    QVariantList _oldPath;
     uint8_t _gpsMsgCounter;
 
     QWaypointManager _waypointManager;

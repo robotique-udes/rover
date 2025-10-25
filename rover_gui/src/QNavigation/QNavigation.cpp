@@ -84,16 +84,7 @@ void QNavigation::onJsBridgeReady(void)
     }
     emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
 
-    QVariantList variantPath;
-    for (const sPosition& point : _oldPath)
-    {
-        QVariantMap pointMap;
-        pointMap["latitude"] = point.latitude;
-        pointMap["longitude"] = point.longitude;
-        variantPath.append(pointMap);
-    }
-
-    emit this->loadFullPath(variantPath);
+    emit this->loadFullPath(_oldPath);
 }
 
 void QNavigation::createNavigationFolder(void)
