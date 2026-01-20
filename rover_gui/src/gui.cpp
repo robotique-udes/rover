@@ -109,7 +109,7 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
 
 void nodeThreadFunc(std::shared_ptr<rclcpp::Node> node_)
 {
-    rclcpp::executors::SingleThreadedExecutor rosExecutor;
+    rclcpp::executors::MultiThreadedExecutor rosExecutor;
     rosExecutor.add_node(node_);
     rosExecutor.spin();
 
