@@ -1,5 +1,6 @@
 #ifndef ANTENNA_COMMAND_HPP
 #define ANTENNA_COMMAND_HPP
+#include <cstdint>
 #include <string>
 
 enum class eAntennaCode : uint8_t
