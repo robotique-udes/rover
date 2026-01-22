@@ -16,7 +16,7 @@ set(DESKTOP_FILE
       "[Desktop Entry]\n"
       "Type=Application\n"
       "Name=Rover Base\n"
-      "Exec=bash -c '${ROS_LAUNCH_SCRIPT}; exec bash'\n"
+      "Exec=bash -c '${ROS_LAUNCH_SCRIPT}'\n"
       "Icon=${ROVER_BASE_ICON_PATH}\n"
       "Terminal=true\n"
       "StartupWMClass=Rover Base"
