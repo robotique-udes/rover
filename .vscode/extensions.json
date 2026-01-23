@@ -1,0 +1,17 @@
+{
+  "recommendations": [
+    "ms-vscode.cpptools",
+    "ms-vscode.cmake-tools",
+    "akamud.vscode-theme-onedark",
+    "aaron-bond.better-comments",
+    "usernamehw.errorlens",
+    "github.vscode-github-actions",
+    "ms-vscode-remote.vscode-remote-extensionpack",
+    "ranch-hand-robotics.rde-pack",
+    "alexnesnes.teleplot",
+    "vscode-icons-team.vscode-icons",
+    "hediet.vscode-drawio",
+    "ms-python.python",
+    "eamodio.gitlens"
+  ]
+}
