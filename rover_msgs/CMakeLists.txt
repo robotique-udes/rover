@@ -7,7 +7,7 @@ endif()
 
 set(INSTALL_PATH "${CMAKE_INSTALL_PREFIX}/..")
 
-set(ROVER_BASE_EXEC_PATH "${INSTALL_PATH}/rover_gui/lib/rover_gui/main_gui")
+set(ROS_LAUNCH_SCRIPT "${CMAKE_CURRENT_SOURCE_DIR}/../scripts/launch_ui.sh")
 set(ICON_NAME "exec_icon.svg")
 set(ROVER_BASE_ICON_PATH_PREFIX "${INSTALL_PATH}/rover_gui/lib/rover_gui")
 set(ROVER_BASE_ICON_PATH "${ROVER_BASE_ICON_PATH_PREFIX}/${ICON_NAME}")
@@ -17,7 +17,7 @@ set(DESKTOP_FILE
       "[Desktop Entry]\n"
       "Type=Application\n"
       "Name=Rover Base\n"
-      "Exec=bash -c 'source ~/.bashrc && ${ROVER_BASE_EXEC_PATH}'\n"
+      "Exec=bash -c '${ROS_LAUNCH_SCRIPT}'\n"
       "Icon=${ROVER_BASE_ICON_PATH}\n"
       "Terminal=true\n"
       "StartupWMClass=Rover Base"
