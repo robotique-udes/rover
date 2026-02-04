@@ -20,8 +20,6 @@ class QNavigation : public QWidget
 {
     Q_OBJECT
 
-    static constexpr uint8_t GPS_SKIP_RATE = 20U;
-
   public:
     QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
 
@@ -59,15 +57,18 @@ class QNavigation : public QWidget
     void initializeWaypointManager(void);
     void initializePathManager(void);
     void createNavigationFolder(void);
+    void onCSVWriteTimer(void);
 
     QWebChannel _webChannel;
     std::shared_ptr<rclcpp::Node> _node;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
+    rclcpp::TimerBase::SharedPtr _csvWriteTimer;
 
     Ui::Navigation _ui;
     QList<sWaypoint> _waypointsList;
     QVariantList _oldPath;
-    uint8_t _gpsMsgCounter;
+    rover_msgs::msg::Gps _latestGpsMsg;
+    bool _hasGpsData = false;
 
     QWaypointManager _waypointManager;
     QPathManager _pathManager;
