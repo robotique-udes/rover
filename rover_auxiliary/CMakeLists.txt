@@ -76,8 +76,13 @@ install(TARGETS
 install(TARGETS
         camera_manager
         DESTINATION lib/${PROJECT_NAME})
+
 install(TARGETS
         antenna
         DESTINATION lib/${PROJECT_NAME})
-  
+
+install(TARGETS
+        bms_info
+        DESTINATION lib/${PROJECT_NAME})
+
 ament_package()
