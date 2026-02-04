@@ -12,6 +12,11 @@
     "vscode-icons-team.vscode-icons",
     "hediet.vscode-drawio",
     "ms-python.python",
-    "eamodio.gitlens"
+    "eamodio.gitlens",
+    "sanaajani.taskrunnercode",
+    "bracketpaircolordlw.bracket-pair-color-dlw",
+    "cschlosser.doxdocgen",
+    "redhat.vscode-yaml",
+    "redhat.vscode-xml"
   ]
 }
