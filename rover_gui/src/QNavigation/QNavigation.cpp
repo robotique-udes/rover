@@ -142,14 +142,15 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
-    
+
     _latestGpsMsg = msg_;
-    
-    if (!_hasGpsData) _hasGpsData = true;
+
+    if (!_hasGpsData)
+        _hasGpsData = true;
 }
 
 void QNavigation::onCSVWriteTimer(void)
-{  
+{
     if (_hasGpsData)
     {
         emit this->updatePathTaken(_latestGpsMsg.latitude, _latestGpsMsg.longitude);
