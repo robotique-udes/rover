@@ -12,7 +12,7 @@ find_package(rover_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-add_subdirectory(../rover_shared_libs/ .build)
+add_subdirectory(../deps/rover_lib/ .build)
 
 add_executable(media_server src/camera_node.cpp
                 src/video_recording.cpp)
@@ -22,7 +22,7 @@ ament_target_dependencies(media_server
                           OpenCV)
 target_link_libraries(media_server 
                         ${OpenCV_LIBS}
-                        rover_shared_libs)
+                        rover_lib)
 
 add_executable(aruco_detection src/aruco_detection/aruco_detection_node.cpp
                 src/aruco_detection/detection.cpp
@@ -36,7 +36,7 @@ ament_target_dependencies(aruco_detection
 target_link_libraries(media_server ${OpenCV_LIBS})
 target_link_libraries(aruco_detection 
                           ${OpenCV_LIBS}
-                          rover_shared_libs)
+                          rover_libs)
                 
 add_executable(panorama src/panorama_manager.cpp
                         src/panorama_processor.cpp)
@@ -48,7 +48,7 @@ ament_target_dependencies(panorama
                           OpenCV)
 target_link_libraries(panorama
                           ${OpenCV_LIBS}
-                          rover_shared_libs)
+                          rover_libs)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 

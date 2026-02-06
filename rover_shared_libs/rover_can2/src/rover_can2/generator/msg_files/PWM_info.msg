@@ -1,2 +1,0 @@
-bool frequencyCtrlEn;
-bool dutyCycleCtrlEn;

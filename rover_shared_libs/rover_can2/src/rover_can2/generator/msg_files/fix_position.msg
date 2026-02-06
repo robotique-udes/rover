@@ -1,2 +1,0 @@
-float latitude;
-float longitude;

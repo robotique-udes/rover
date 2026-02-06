@@ -21,7 +21,7 @@ include_directories(
   ${EIGEN3_INCLUDE_DIRS}
 )
 
-add_subdirectory(../rover_shared_libs/ .build)
+add_subdirectory(../deps/rover_lib/ .build)
 
 add_executable(teleop src/teleop.cpp)
 ament_target_dependencies(teleop
@@ -29,7 +29,7 @@ ament_target_dependencies(teleop
                           std_msgs
                           rover_msgs
                           Eigen3)
-target_link_libraries(teleop Eigen3::Eigen rover_shared_libs)
+target_link_libraries(teleop Eigen3::Eigen rover_lib)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
