@@ -1,2 +1,0 @@
-float currentPosition;
-float currentSpeed;

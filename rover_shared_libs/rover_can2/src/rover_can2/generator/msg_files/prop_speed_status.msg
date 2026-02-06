@@ -1,1 +1,0 @@
-float current_speed;
