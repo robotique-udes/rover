@@ -4,3 +4,7 @@
 [submodule "deps/jsoncpp"]
 	path = deps/jsoncpp
 	url = git@github.com:open-source-parsers/jsoncpp.git
+[submodule "deps/rover_lib"]
+    path = deps/rover_lib
+    url = git@github.com:robotique-udes/rover_lib.git
+    branch = dev/ES_initial_setup
