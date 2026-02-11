@@ -25,7 +25,7 @@ BMSDataNode::BMSDataNode(int argc, char** argv):
 
 int BMSDataNode::getData()
 {
-
+    _cellVolt.reserve(MAX_CELL);
     std::ifstream file(DATA_FILE_PATH);
     std::string stringAmp;
     char number;
@@ -64,7 +64,7 @@ int BMSDataNode::getData()
             file.get(number);
         }
 
-        _cellVolt[indexCell] = std::stoi(stringVolt);
+        _cellVolt[indexCell] = static_cast<uint16_t>(std::stoi(stringVolt));
         std::cout << _cellVolt[indexCell] << std::endl;
     }
 
@@ -78,4 +78,12 @@ void BMSDataNode::callbackBMSData()
     rover_msgs::msg::BmsData msg;
 
     getData();
+
+    msg.battery_amps = _batteryAmps;
+    
+    for(uint16_t index=0;index<MAX_CELL;index++)
+    {
+        const auto& cellV = _cellVolt[index];
+        
+    }
 }
