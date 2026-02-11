@@ -27,7 +27,8 @@ int BMSDataNode::getData()
 {
 
     std::ifstream file(DATA_FILE_PATH);
-    std::string line;
+    std::string stringAmp;
+    char number;
 
     if (!file.is_open())
     {
@@ -35,53 +36,36 @@ int BMSDataNode::getData()
         return 1;
     }
 
-    for(uint8_t i=0;i<4;i++)
+    while(file.get() != '=')
+    {}
+
+    file.get(number);
+    while(number != ' ' && number != '\n')
     {
-        uint8_t counter = 0;
+            stringAmp += number;
+            file.get(number);
+    }
 
-        getline(file, line);
-        line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
+    _batteryAmps = std::stoi(stringAmp);
+    std::cout << _batteryAmps << std::endl;
 
-        if(i==1 || i==3)
+    while(file.get() != '=')
+    {}
+
+    for(uint16_t indexCell=0;indexCell<MAX_CELL;indexCell++)
+    {
+        std::string stringVolt;
+
+        file.get(number);
+
+        while(number != ':' && number != ' ' && number != '\n')
         {
-            while(line[counter] != '=')
-            {
-                counter++;
-            }
-            
-            if(i==1)
-            {
-                std::string stringNumber;
-
-                while(counter + 1 < line.size())
-                {
-                    stringNumber += line[counter+1];
-                    counter++;
-                }
-                _batteryAmps = std::stoi(stringNumber);
-                std::cout << _batteryAmps << std::endl;
-            }
-            else if(i==3)
-            {
-                for(uint8_t cellIndex = 0;cellIndex<MAX_CELL;cellIndex++)
-                {
-                    std::string stringNumber;
-
-                    while(line[counter+1] != ':' && line[counter+1] != ' ')
-                    {
-                        stringNumber+= line[counter+1];
-                        counter++;
-                    }
-                    counter++;
-                    std::cout << stringNumber << std::endl;
-                    _cellVolt[cellIndex] = std::stoi(stringNumber);
-                    std::cout << _cellVolt[cellIndex] << std::endl;
-                }
-                
-
-            }
+            stringVolt += number;
+            file.get(number);
         }
 
+        _cellVolt[indexCell] = std::stoi(stringVolt);
+        std::cout << _cellVolt[indexCell] << std::endl;
     }
 
     file.close();
