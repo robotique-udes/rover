@@ -26,10 +26,10 @@ class BMSDataNode : public rclcpp::Node
 
     private:
 
-        uint8_t _batteryAmps;
-        uint8_t _batterySOC;
-        uint8_t _batteryVolt;
-        uint8_t _cellVolt[MAX_CELL] = {0};
+        uint16_t _batteryAmps;
+        uint16_t _batterySOC;
+        uint16_t _batteryVolt;
+        uint16_t _cellVolt[MAX_CELL] = {0};
         rclcpp::Publisher<rover_msgs::msg::BmsData>::SharedPtr _publisher;
         rclcpp::TimerBase::SharedPtr _timer_publisher;
 };

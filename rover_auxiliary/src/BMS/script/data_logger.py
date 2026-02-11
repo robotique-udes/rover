@@ -26,19 +26,8 @@ def log(cmd, response):
 
 def fetchData():
     
-    send('?A')
-    send('?V')
-    send('?D')
-    send('?T')
-    send('?FS')
-    send('?DO')
-    send('?TM')
-    send('?FID')
-    send('?CL')
-    send('?CRT')
-    send('?BMC')
-    send('?BMF')
-    send('?BMS')
+    send('?A 1')
+    send('?V 4')
 
 fetchData()
 
