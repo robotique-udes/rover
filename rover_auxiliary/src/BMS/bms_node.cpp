@@ -28,7 +28,6 @@ int BMSDataNode::getData()
 
     std::ifstream file(DATA_FILE_PATH);
     std::string line;
-    bool skip = true;
 
     if (!file.is_open())
     {
@@ -36,11 +35,53 @@ int BMSDataNode::getData()
         return 1;
     }
 
-    while(getline(file, line))
+    for(uint8_t i=0;i<4;i++)
     {
+        uint8_t counter = 0;
+
+        getline(file, line);
         line.erase(std::remove(line.begin(), line.end(), '\r'), line.end());
 
-        std::cout << line << std::endl;
+        if(i==1 || i==3)
+        {
+            while(line[counter] != '=')
+            {
+                counter++;
+            }
+            
+            if(i==1)
+            {
+                std::string stringNumber;
+
+                while(counter + 1 < line.size())
+                {
+                    stringNumber += line[counter+1];
+                    counter++;
+                }
+                _batteryAmps = std::stoi(stringNumber);
+                std::cout << _batteryAmps << std::endl;
+            }
+            else if(i==3)
+            {
+                for(uint8_t cellIndex = 0;cellIndex<MAX_CELL;cellIndex++)
+                {
+                    std::string stringNumber;
+
+                    while(line[counter+1] != ':' && line[counter+1] != ' ')
+                    {
+                        stringNumber+= line[counter+1];
+                        counter++;
+                    }
+                    counter++;
+                    std::cout << stringNumber << std::endl;
+                    _cellVolt[cellIndex] = std::stoi(stringNumber);
+                    std::cout << _cellVolt[cellIndex] << std::endl;
+                }
+                
+
+            }
+        }
+
     }
 
     file.close();
