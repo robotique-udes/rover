@@ -8,6 +8,8 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
+#include <termios.h>
+#include <fcntl.h>
 
 
 class BMSDataNode : public rclcpp::Node
@@ -22,8 +24,11 @@ class BMSDataNode : public rclcpp::Node
     public:
 
         BMSDataNode(int argc, char** argv);
-        void callbackBMSData();
-        int getData();
+        void callbackBMSData(void);
+        void getData(void);
+        void serialConfig(int fileDesc);
+        void serialWrite(int fileDesc, const std::string& cmd);
+        std::string serialRead(int fileDesc);
 
     private:
 
