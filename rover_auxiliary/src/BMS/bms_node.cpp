@@ -120,7 +120,6 @@ void BMSDataNode::serialWrite(int fileDesc_, const std::string& cmd_)
 {
     ssize_t bytesWritten = write(fileDesc_, cmd_.c_str(), cmd_.size());
     (void)bytesWritten;
-
 }
 
 std::string BMSDataNode::serialRead(int fileDesc_)
