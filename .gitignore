@@ -2,6 +2,8 @@
 *.bkp
 .env
 .vscode/launch.json
+.vscode/settings.json
+.vscode/tasks.json
 
 screenshots/
 recordings/
