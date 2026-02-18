@@ -2,16 +2,16 @@
 
 
 
-int main(int argc, char** argv)
+int main(int argc_, char** argv_)
 {
-    rclcpp::init(argc, argv);
-    auto node = std::make_shared<BMSDataNode>(argc, argv);
+    rclcpp::init(argc_, argv_);
+    auto node = std::make_shared<BMSDataNode>(argc_, argv_);
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
 }
 
-BMSDataNode::BMSDataNode(int argc, char** argv):
+BMSDataNode::BMSDataNode(int argc_, char** argv_):
     Node("bms_info")
 {
 
@@ -42,6 +42,7 @@ void BMSDataNode::getData(void)
     std::string ampSerialOutput;
     std::string cellsVoltSerialOutput;
     int fileDesc;
+    uint16_t ampIndex = 0;
 
     _cellVolt.clear();
     _cellVolt.reserve(MAX_CELL);
@@ -56,27 +57,43 @@ void BMSDataNode::getData(void)
     serialConfig(fileDesc);
     tcflush(fileDesc, TCIOFLUSH);
 
-    serialWrite(fileDesc ,"?A 2\r");
+    serialWrite(fileDesc ,"?A\r");
     ampSerialOutput = serialRead(fileDesc);
     serialWrite(fileDesc, "?V\r");
     cellsVoltSerialOutput = serialRead(fileDesc);
 
-    _batteryAmps = std::stoi(ampSerialOutput.substr(7,2));
+    ampSerialOutput = ampSerialOutput.substr(AMP_START_INDEX);
+    cellsVoltSerialOutput = cellsVoltSerialOutput.substr(CELL_START_INDEX);
+    
+    while(ampSerialOutput[ampIndex] != ':')
+    {
+        ampIndex++;
+    }
+
+    _batteryAmps = std::stod(ampSerialOutput.substr(0, ampIndex));
 
     for(uint16_t index=0;index<MAX_CELL;index++)
     {
-        _cellVolt.push_back(std::stoi(cellsVoltSerialOutput.substr(17+index*5,4)));
+        uint16_t cellIndex = 0;
+
+        while(cellsVoltSerialOutput[cellIndex] != ':')
+        {
+            cellIndex++;
+        }
+        _cellVolt.push_back(std::stoi(cellsVoltSerialOutput.substr(0, cellIndex)));
+        cellsVoltSerialOutput = cellsVoltSerialOutput.substr(cellIndex+1);
     }
+
 
     close(fileDesc);
 }
 
-void BMSDataNode::serialConfig(int fileDesc)
+void BMSDataNode::serialConfig(int fileDesc_)
 {
     struct termios tty;
 
     memset(&tty, 0, sizeof(tty));
-    if(tcgetattr(fileDesc, &tty) != 0)
+    if(tcgetattr(fileDesc_, &tty) != 0)
     {
         std::cout << "tcgetattr failed" << std::endl;
     }
@@ -97,24 +114,24 @@ void BMSDataNode::serialConfig(int fileDesc)
     tty.c_cc[VMIN] = 0;
     tty.c_cc[VTIME] = 10;
 
-    if(tcsetattr(fileDesc, TCSANOW, &tty) != 0)
+    if(tcsetattr(fileDesc_, TCSANOW, &tty) != 0)
     {
         std::cout << "tcsetattr failed" << std::endl;
     }
 
 }
 
-void BMSDataNode::serialWrite(int fileDesc, const std::string& cmd)
+void BMSDataNode::serialWrite(int fileDesc_, const std::string& cmd_)
 {
-    write(fileDesc, cmd.c_str(), cmd.size());
+    write(fileDesc_, cmd_.c_str(), cmd_.size());
 }
 
-std::string BMSDataNode::serialRead(int fileDesc)
+std::string BMSDataNode::serialRead(int fileDesc_)
 {
     char buffer[256];
     std::string response;
 
-    ssize_t n = read(fileDesc, buffer, sizeof(buffer));
+    ssize_t n = read(fileDesc_, buffer, sizeof(buffer));
 
     if(n > 0)
     {
