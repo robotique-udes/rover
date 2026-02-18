@@ -3,13 +3,13 @@
 int main(int argc_, char** argv_)
 {
     rclcpp::init(argc_, argv_);
-    auto node = std::make_shared<BMSDataNode>(argc_, argv_);
+    auto node = std::make_shared<BMSDataNode>();
     rclcpp::spin(node);
     rclcpp::shutdown();
     return 0;
 }
 
-BMSDataNode::BMSDataNode(int argc_, char** argv_):
+BMSDataNode::BMSDataNode():
     Node("bms_info")
 {
     _publisher = this->create_publisher<rover_msgs::msg::BmsData>(TOPIC_BMS_DATA, QOS_DEFAULT);
@@ -118,7 +118,9 @@ void BMSDataNode::serialConfig(int fileDesc_)
 
 void BMSDataNode::serialWrite(int fileDesc_, const std::string& cmd_)
 {
-    write(fileDesc_, cmd_.c_str(), cmd_.size());
+    ssize_t bytesWritten = write(fileDesc_, cmd_.c_str(), cmd_.size());
+    (void)bytesWritten;
+
 }
 
 std::string BMSDataNode::serialRead(int fileDesc_)

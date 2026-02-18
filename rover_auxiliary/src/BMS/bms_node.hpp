@@ -21,7 +21,7 @@ class BMSDataNode : public rclcpp::Node
     static constexpr uint16_t CELL_START_INDEX = 17;
 
   public:
-    BMSDataNode(int argc_, char** argv_);
+    BMSDataNode();
     void callbackBMSData(void);
     void getData(void);
     void serialConfig(int fileDesc_);
