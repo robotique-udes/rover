@@ -13,6 +13,7 @@ constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
 constexpr const char* NAVIGATION_PATH = "/Navigation";
 
+constexpr float CSV_WRITE_FREQUENCY_HZ = 1.0F;
 // Default to Studio de Création
 constexpr double DEFAULT_LATITUDE = 45.377755;
 constexpr double DEFAULT_LONGITUDE = -71.924652;
@@ -51,6 +52,11 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
                                                                {
                                                                    this->onGpsMessage(gpsMsg_);
                                                                });
+    _csvWriteTimer = _node->create_wall_timer(std::chrono::milliseconds(static_cast<int>(1000.0 / CSV_WRITE_FREQUENCY_HZ)),
+                                              [this]()
+                                              {
+                                                  this->onCSVWriteTimer();
+                                              });
 }
 
 void QNavigation::initializeWaypointManager(void)
@@ -84,10 +90,7 @@ void QNavigation::onJsBridgeReady(void)
     }
     emit this->gpsCallback(DEFAULT_LATITUDE, DEFAULT_LONGITUDE, DEFAULT_HEADING);
 
-    for (const sPosition& point : _oldPath)
-    {
-        emit this->updatePathTaken(point.latitude, point.longitude, QString::fromStdString(_pathManager.OLD_PATH_NAME));
-    }
+    emit this->loadFullPath(_oldPath);
 }
 
 void QNavigation::createNavigationFolder(void)
@@ -139,8 +142,20 @@ void QNavigation::createNavigationFolder(void)
 void QNavigation::onGpsMessage(const rover_msgs::msg::Gps& msg_)
 {
     emit this->gpsCallback(msg_.latitude, msg_.longitude, msg_.heading);
-    emit this->updatePathTaken(msg_.latitude, msg_.longitude, QString::fromStdString(_pathManager.PATH_NAME));
-    _pathManager.writePosToCSV(msg_.latitude, msg_.longitude);
+
+    _latestGpsMsg = msg_;
+
+    if (!_hasGpsData)
+        _hasGpsData = true;
+}
+
+void QNavigation::onCSVWriteTimer(void)
+{
+    if (_hasGpsData)
+    {
+        emit this->updatePathTaken(_latestGpsMsg.latitude, _latestGpsMsg.longitude);
+        _pathManager.writePosToCSV(_latestGpsMsg.latitude, _latestGpsMsg.longitude);
+    }
 }
 
 void QNavigation::onSetGoalClicked()
