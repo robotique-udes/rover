@@ -1,7 +1,6 @@
 cmake_minimum_required(VERSION 3.8)
 project(rover_security)
 
-# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 23)
 endif()
