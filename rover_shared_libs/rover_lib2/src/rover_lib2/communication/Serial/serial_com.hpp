@@ -3,6 +3,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_lib2/helpers/constants.hpp"
+#include "rover_msgs/msg/bms_data.hpp"
 #include <utility>
 #include <fstream>
 #include <iostream>
