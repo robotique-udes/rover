@@ -8,8 +8,9 @@
 #include <fstream>
 #include <iostream>
 #include <vector>
-#include <termios.h>
 #include <fcntl.h>
+#include <termios.h>
+#include "rover_lib2/communication/Serial/serial_com.hpp"
 
 class BMSDataNode : public rclcpp::Node
 {
@@ -24,7 +25,6 @@ class BMSDataNode : public rclcpp::Node
     BMSDataNode();
     void callbackBMSData(void);
     void getData(void);
-    void serialConfig(int fileDesc_);
     void serialWrite(int fileDesc_, const std::string& cmd_);
     std::string serialRead(int fileDesc_);
 
