@@ -54,14 +54,18 @@ class QArbitration : public QWidget
   public:
     QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
 
+  signals:
+    void joyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
+    void driveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
+
   private slots:
     void onControllerComboChanged(eControllerType controller_, int index_);
     void onDriveTrainComboChanged(int index_);
+    void onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
+    void onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
 
   private:
     void initComboBoxItems();
-    void joyDemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
-    void driveTrainDemuxStatusCallback(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
 
     template<typename T>
     void checkServiceAvailable(rclcpp::Client<T>::SharedPtr client_, const std::string& serviceName_);
