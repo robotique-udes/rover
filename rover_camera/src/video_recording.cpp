@@ -152,8 +152,10 @@ bool Recording::startRecording(void)
     filepath_long.insert(filepath_long.length() - 4,
                          "_long_" + std::to_string(_recordingNumberLong++));  // add recording number before .avi
 
-    _pipeline = "rtspsrc location=" + _camURL
-                + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+    _pipeline = "rtspsrc location=\"" + _camURL
+                + "\" latency=0 ! "
+                  "decodebin ! videoconvert ! "
+                  "appsink sync=false drop=true max-buffers=1";
 
     std::future<bool> opened = std::async(std::launch::async,
                                           [this]()

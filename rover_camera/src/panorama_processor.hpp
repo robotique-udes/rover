@@ -38,8 +38,9 @@ class PanoramaProcessor
     static constexpr const char* TOPIC_CAMERA_PTZ_STATUS = "/rover/camera/PTZ_status";
     static constexpr const char* PATH_FOR_PANORAMA = "/panorama";
     static constexpr const char* PANORAMA_FILE_NAME = "panorama_";
-    static constexpr const char* PIPELINE
-        = " latency=0 drop=true ! decodebin ! videorate max-rate=2 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+    static constexpr const char* PIPELINE = "\" latency=0 ! "
+                                            "decodebin ! videoconvert ! "
+                                            "appsink sync=false drop=true max-buffers=1";
 
   public:
     PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,

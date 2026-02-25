@@ -44,6 +44,7 @@ class Teleop : public rclcpp::Node
   public:
     Teleop():
         rclcpp::Node("teleop_node"),
+        _joyManager(),
         _jointController(_joyManager),
         _cartesianController(_joyManager)
     {
