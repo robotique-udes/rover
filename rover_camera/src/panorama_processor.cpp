@@ -218,7 +218,7 @@ bool PanoramaProcessor::captureFrames(const rover_msgs::srv::Panorama::Request& 
                                       rover_msgs::srv::Panorama::Response& response_,
                                       std::vector<cv::Mat>& frames_)
 {
-    std::string pipeline = "rtspsrc location=" + request_.camera_url + PIPELINE;
+    std::string pipeline = "rtspsrc location=\"" + request_.camera_url + PIPELINE;
     cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
 
     if (!cap.isOpened())

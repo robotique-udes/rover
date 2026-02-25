@@ -11,12 +11,12 @@ on:
     types: [checks_requested]
 
 jobs:
-  humble-build:
-    name: 'Build on ROS2 Humble (Ubuntu 22.04)'
-    runs-on: ubuntu-22.04
+  jazzy-build:
+    name: 'Build on ROS2 Jazzy (Ubuntu 24.04)'
+    runs-on: ubuntu-24.04
 
     container:
-      image: osrf/ros:humble-desktop
+      image: osrf/ros:jazzy-desktop
 
     steps:
       - name: Checkout code
@@ -36,7 +36,7 @@ jobs:
         shell: bash  
         run: |
           echo -e "\e[0;34m=== Sourcing for build ... ===\e[0m"
-          source /opt/ros/humble/setup.bash
+          source /opt/ros/jazzy/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
           
           export CPR_USE_SYSTEM_CURL=ON
