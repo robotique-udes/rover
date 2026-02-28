@@ -23,20 +23,18 @@ add_subdirectory(
   ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
 )
 
-ament_target_dependencies(rover_shared_libs
-  rclcpp
-  rover_msgs
-)
+add_subdirectory(../deps/rover_lib/ .build)
 
 include_directories(include)
 
 add_executable(teleop src/teleop.cpp)
 
 ament_target_dependencies(teleop
-  rclcpp
-  std_msgs
-  rover_msgs
-)
+                          rclcpp
+                          std_msgs
+                          rover_msgs
+                          Eigen3)
+target_link_libraries(teleop Eigen3::Eigen rover_lib)
 
 target_link_libraries(teleop
   Eigen3::Eigen
