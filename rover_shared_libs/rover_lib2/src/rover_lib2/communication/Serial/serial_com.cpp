@@ -10,7 +10,7 @@ SerialCom::SerialCom(eBaudRate baudRate_,
                      uint16_t minChar_,
                      uint16_t timeout_)
 {
-    _baudRate = to_native(baudRate_);
+    _baudRate = static_cast<speed_t>(baudRate_);
     _char = static_cast<tcflag_t>(char_);
     _twoStopBit = twoStopBit_;
     _enRead = enRead_;
@@ -96,9 +96,4 @@ void SerialCom::controlFlagsInit(termios& tty_)
             tty_.c_cflag |= PARODD;
         }
     }
-}
-
-constexpr speed_t SerialCom::to_native(eBaudRate b_)
-{
-    return static_cast<speed_t>(b_);
 }
