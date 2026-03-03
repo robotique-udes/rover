@@ -53,7 +53,6 @@ class SerialCom
     void serialWrite(int fileDesc_, const std::string& cmd_);
     std::string serialRead(int fileDesc_);
     void controlFlagsInit(termios& tty_);
-    static constexpr speed_t to_native(eBaudRate b_);
 
     speed_t _baudRate;
     tcflag_t _char;
