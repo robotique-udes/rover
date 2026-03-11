@@ -10,8 +10,7 @@ namespace Controllers
 {
 
     template<typename ImplT>
-    concept Controller = requires(ImplT impl_)
-    {
+    concept Controller = requires(ImplT impl_) {
         // clang-format off
         { impl_.computeCommand(float{} /*input_*/, float{} /*target_*/) } -> std::same_as<float>;
 

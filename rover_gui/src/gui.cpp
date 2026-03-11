@@ -61,9 +61,7 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
     QObject::connect(&rosProcess, &QProcess::readyReadStandardError, [&rosProcess](){ forwardPrints(rosProcess); });
     // clang-format on
 
-    rosProcess.start("bash",
-                     QStringList() << "-c"
-                                   << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
+    rosProcess.start("bash", QStringList() << "-c" << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
 
     int ret = QApplication::exec();
 
