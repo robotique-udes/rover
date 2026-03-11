@@ -40,7 +40,7 @@ void BMSDataNode::getData(void)
     std::string cellsVoltSerialOutput;
     int fileDesc;
     uint16_t ampIndex = 0;
-    SerialCom terminal(eBaudRate::B_1152000, eCharSize::C_S8, false, true, false, false, false, 0, 10);
+    SerialCom terminal;
 
     _cellVolt.clear();
     _cellVolt.reserve(MAX_CELL);
@@ -52,13 +52,12 @@ void BMSDataNode::getData(void)
         std::cout << "Error encountered when opening the serial" << std::endl;
     }
 
-    terminal.serialConfig(fileDesc);
     tcflush(fileDesc, TCIOFLUSH);
 
-    terminal.serialWrite(fileDesc, "?A\r");
-    ampSerialOutput = terminal.serialRead(fileDesc);
-    terminal.serialWrite(fileDesc, "?V\r");
-    cellsVoltSerialOutput = terminal.serialRead(fileDesc);
+    terminal.serialWrite("?A\r");
+    ampSerialOutput = terminal.serialRead();
+    terminal.serialWrite("?V\r");
+    cellsVoltSerialOutput = serialRead();
 
     ampSerialOutput = ampSerialOutput.substr(AMP_START_INDEX);
     cellsVoltSerialOutput = cellsVoltSerialOutput.substr(CELL_START_INDEX);
