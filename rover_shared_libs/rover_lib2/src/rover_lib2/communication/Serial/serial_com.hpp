@@ -3,12 +3,16 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "rover_lib2/helpers/constants.hpp"
+#include "rover_lib2/helpers/log.hpp"
 #include <fstream>
 #include <utility>
 #include <iostream>
 #include <vector>
 #include <fcntl.h>
 #include <termios.h>
+#include <cstring>
+#include <cerrno>
+#include <unistd.h>
 
 enum class eBaudRate : speed_t
 {
@@ -29,40 +33,47 @@ enum class eBaudRate : speed_t
     B_4000000 = B4000000
 };
 
-enum class eCharSize : tcflag_t
+enum class eDataPerPacket : tcflag_t
 {
-    C_S5 = CS5,
-    C_S6 = CS6,
-    C_S7 = CS7,
-    C_S8 = CS8
+    FIVE_BITS = CS5,
+    SIX_BITS = CS6,
+    SEVEN_BITS = CS7,
+    EIGHT_BITS = CS8
 };
+
+enum class eState : size_t
+{
+    INACTIVE,
+    ACTIVE
+};
+
+DEFINE_LOG_NODE(SerialCom, Logger::eNodeState::ON);
 
 class SerialCom
 {
   public:
-    SerialCom(eBaudRate baudRate_,
-              eCharSize char_,
-              bool twoStopBit_,
-              bool enRead_,
-              bool ignModem_,
-              bool parity_,
-              bool oddParity_,
-              uint16_t minChar_,
-              uint16_t timeout_);
-    void serialConfig(int fileDesc_);
-    void serialWrite(int fileDesc_, const std::string& cmd_);
-    std::string serialRead(int fileDesc_);
-    void controlFlagsInit(termios& tty_);
+    SerialCom(int fileDesc_,
+              eBaudRate baudRate_= eBaudRate::B_1152000,
+              eDataPerPacket char_ = eDataPerPacket::EIGHT_BITS,
+              tcflag_t cflags_ = CREAD | CLOCAL,
+              uint16_t minChar_ = 0,
+              uint16_t timeout_ = 10);
+    ~SerialCom();
+    bool serialWrite(const std::string& cmd_);
+    std::string serialRead();
+    eState getState() const;
 
+ private:
+    static const uint16_t READING_BUFFER = 256;
+    bool serialConfig();
+    void controlFlagsInit(termios& tty_);
+    int _fileDesc;
     speed_t _baudRate;
     tcflag_t _char;
-    bool _twoStopBit;
-    bool _enRead;
-    bool _ignModem;
-    bool _parity;
-    bool _oddParity;
+    tcflag_t _cflags;
     uint16_t _minChar;
     uint16_t _timeout;
+    eState _state;
 };
 
 #endif
