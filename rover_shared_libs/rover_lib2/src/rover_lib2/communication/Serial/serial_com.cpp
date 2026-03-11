@@ -1,70 +1,113 @@
 #include "serial_com.hpp"
 
-SerialCom::SerialCom(eBaudRate baudRate_,
-                     eCharSize char_,
-                     bool twoStopBit_,
-                     bool enRead_,
-                     bool ignModem_,
-                     bool parity_,
-                     bool oddParity_,
-                     uint16_t minChar_,
-                     uint16_t timeout_)
+SerialCom::SerialCom(int fileDesc_, eBaudRate baudRate_, eDataPerPacket char_,
+                     tcflag_t cflags_, uint16_t minChar_, uint16_t timeout_)
+                     : _fileDesc(fileDesc_),
+                       _baudRate(std::to_underlying(baudRate_)),
+                       _char(std::to_underlying(char_)),
+                       _cflags(cflags_),
+                       _minChar(minChar_),
+                       _timeout(timeout_),
+                       _state(eState::INACTIVE)
 {
-    _baudRate = static_cast<speed_t>(baudRate_);
-    _char = static_cast<tcflag_t>(char_);
-    _twoStopBit = twoStopBit_;
-    _enRead = enRead_;
-    _ignModem = ignModem_;
-    _parity = parity_;
-    _oddParity = oddParity_;
-    _minChar = minChar_;
-    _timeout = timeout_;
+    if (!this->serialConfig())
+    {
+        LOG_ERROR(Logger::Nodes::SerialCom, "Unable to configure the serial port");
+    }
+    else
+    {
+        this->_state = eState::ACTIVE;
+    }
 }
 
-void SerialCom::serialConfig(int fileDesc_)
+SerialCom::~SerialCom()
+{
+    if (this->_fileDesc >= 0)
+    {
+        close(this->_fileDesc);
+        this->_fileDesc = -1;
+        this->_state = eState::INACTIVE;
+    }
+}
+
+bool SerialCom::serialConfig()
 {
     struct termios tty;
 
     memset(&tty, 0, sizeof(tty));
-    if (tcgetattr(fileDesc_, &tty) != 0)
+    if (tcgetattr(this->_fileDesc, &tty) != 0)
     {
-        std::cout << "tcgetattr failed" << std::endl;
+        std::string errorMsg = "tcgetattr failed: " + std::string(strerror(errno));
+        LOG_ERROR(Logger::Nodes::SerialCom, errorMsg.c_str());
+        this->_state = eState::INACTIVE;
+        return false;
     }
 
-    cfsetospeed(&tty, _baudRate);
-    cfsetispeed(&tty, _baudRate);
+    cfsetospeed(&tty, this->_baudRate);
+    cfsetispeed(&tty, this->_baudRate);
 
-    controlFlagsInit(tty);
+    this->controlFlagsInit(tty);
 
     tty.c_lflag = 0;  // Disables all flags
     tty.c_iflag = 0;  // Disables all flags
     tty.c_oflag = 0;  // Disables all flags
 
-    tty.c_cc[VMIN] = _minChar;
-    tty.c_cc[VTIME] = _timeout;
+    tty.c_cc[VMIN] = this->_minChar;
+    tty.c_cc[VTIME] = this->_timeout;
 
-    if (tcsetattr(fileDesc_, TCSANOW, &tty) != 0)
+    if (tcsetattr(this->_fileDesc, TCSANOW, &tty) != 0)
     {
-        std::cout << "tcsetattr failed" << std::endl;
+        std::string errorMsg = "tcsetattr failed: " + std::string(strerror(errno));
+        LOG_ERROR(Logger::Nodes::SerialCom, errorMsg.c_str());
+        this->_state = eState::INACTIVE;
+        return false;
     }
+
+    return true;
 }
 
-void SerialCom::serialWrite(int fileDesc_, const std::string& cmd_)
+bool SerialCom::serialWrite(const std::string& cmd_)
 {
-    ssize_t bytesWritten = write(fileDesc_, cmd_.c_str(), cmd_.size());
-    (void)bytesWritten;
+    if (this->_state != eState::ACTIVE)
+    {
+        LOG_ERROR(Logger::Nodes::SerialCom, "Cannot write: serial port is inactive");
+
+        return false;
+    }
+
+    ssize_t bytesWritten = write(this->_fileDesc, cmd_.c_str(), cmd_.size());
+
+    if (bytesWritten < 0)
+    {
+        std::string errorMsg = "Write failed: " + std::string(strerror(errno));
+        LOG_ERROR(Logger::Nodes::SerialCom, errorMsg.c_str());
+        return false;
+    }
+
+    return true;
 }
 
-std::string SerialCom::serialRead(int fileDesc_)
+std::string SerialCom::serialRead()
 {
-    char buffer[256];
     std::string response;
 
-    ssize_t n = read(fileDesc_, buffer, sizeof(buffer));
+    if (this->_state != eState::ACTIVE)
+    {
+        LOG_ERROR(Logger::Nodes::SerialCom, "Cannot read: serial port is inactive");
+        return response;
+    }
+
+    char buffer[READING_BUFFER];
+    ssize_t n = read(this->_fileDesc, buffer, sizeof(buffer));
 
     if (n > 0)
     {
         response.assign(buffer, n);
+    }
+    else if (n < 0)
+    {
+        std::string errorMsg = "Read failed: " + std::string(strerror(errno));
+        LOG_ERROR(Logger::Nodes::SerialCom, errorMsg.c_str());
     }
 
     return response;
@@ -73,27 +116,10 @@ std::string SerialCom::serialRead(int fileDesc_)
 void SerialCom::controlFlagsInit(termios& tty_)
 {
     tty_.c_cflag &= ~CSIZE;
-    tty_.c_cflag |= _char;
+    tty_.c_cflag |= (this->_char | this->_cflags);
+}
 
-    if (_twoStopBit)
-    {
-        tty_.c_cflag |= CSTOPB;
-    }
-    if (_enRead)
-    {
-        tty_.c_cflag |= CREAD;
-    }
-    if (_ignModem)
-    {
-        tty_.c_cflag |= CLOCAL;
-    }
-    if (_parity)
-    {
-        tty_.c_cflag |= PARENB;
-
-        if (_oddParity)
-        {
-            tty_.c_cflag |= PARODD;
-        }
-    }
+eState SerialCom::getState() const
+{
+    return this->_state;
 }
