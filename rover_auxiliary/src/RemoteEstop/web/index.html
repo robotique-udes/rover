@@ -1,0 +1,69 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>E-Stop</title>
+  <link rel="stylesheet" href="styles.css" />
+  <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
+</head>
+<body>
+
+  <div class="panel">
+    <p id="conn-status">Connecting...</p>
+    <button id="estop" onclick="triggerEStop()" disabled>E-STOP</button>
+    <p id="status"></p>
+    <button id="resetBtn" onclick="triggerReset()">Reset</button>
+  </div>
+
+  <script>
+    // Change this to your ROS2 machine's IP
+    var ROS_IP = "ws://192.168.144.198:9090";
+
+    var ros = new ROSLIB.Ros({ url: ROS_IP });
+
+    ros.on('connection', function () {
+      document.getElementById('conn-status').textContent = 'Connected';
+      document.getElementById('estop').disabled = false;
+    });
+
+    ros.on('error', function () {
+      document.getElementById('conn-status').textContent = 'Connection error';
+    });
+
+    ros.on('close', function () {
+      document.getElementById('conn-status').textContent = 'Disconnected';
+      document.getElementById('estop').disabled = true;
+    });
+
+    var estopService = new ROSLIB.Service({
+      ros: ros,
+      name: '/rover/remote_estop/estop_srv',
+      serviceType: 'rover_msgs/srv/EmergencyStop'
+    });
+
+    var resetService = new ROSLIB.Service({
+      ros: ros,
+      name: '/rover/remote_estop/estop_srv',
+      serviceType: 'rover_msgs/srv/EmergencyStop'
+    });
+
+    function triggerEStop() {
+      estopService.callService(new ROSLIB.ServiceRequest({request_stop: true}), function (result) {
+        document.getElementById('status').textContent = result.message;
+        document.getElementById('estop').classList.add('pressed');
+        document.getElementById('resetBtn').style.display = 'block';
+      });
+    }
+
+    function triggerReset() {
+      resetService.callService(new ROSLIB.ServiceRequest({request_reset: true}), function (result) {
+        document.getElementById('status').textContent = result.message;
+        document.getElementById('estop').classList.remove('pressed');
+        document.getElementById('resetBtn').style.display = 'none';
+      });
+    }
+  </script>
+
+</body>
+</html>

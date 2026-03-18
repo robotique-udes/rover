@@ -22,8 +22,11 @@ include_directories(${OpenCV_INCLUDE_DIRS})
 include_directories(${CMAKE_CURRENT_SOURCE_DIR}/src)
 
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
+
 add_executable(camera_manager src/CameraManager/manager_node.cpp
                       src/CameraManager/arbitration.cpp)
+
+add_executable(remote_estop src/RemoteEstop/remote_estop_node.cpp)
                       
 add_executable(antenna src/Antenna/antenna_node.cpp
                        src/Antenna/antenna_driver.cpp
@@ -38,6 +41,7 @@ ament_target_dependencies(ddb_control
                           rcl_interfaces)
 target_link_libraries(ddb_control rover_shared_libs)
 target_link_libraries(camera_manager rover_shared_libs)
+target_link_libraries(remote_estop rover_shared_libs)
 
 ament_target_dependencies(camera_manager
                           rclcpp
@@ -49,12 +53,20 @@ ament_target_dependencies(antenna
                           rover_msgs
                           rcl_interfaces)
 
+ament_target_dependencies(remote_estop
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
 target_link_libraries(antenna 
                       rover_shared_libs
                       jsoncpp_lib
                       cpr::cpr)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY src/RemoteEstop/web/
+  DESTINATION share/${PROJECT_NAME}/web
+)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 
@@ -67,6 +79,9 @@ install(TARGETS
         DESTINATION lib/${PROJECT_NAME})
 install(TARGETS
         antenna
+        DESTINATION lib/${PROJECT_NAME})
+install(TARGETS
+        remote_estop
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

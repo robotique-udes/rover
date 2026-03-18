@@ -72,6 +72,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/LightControl.srv"
   "srv/RtspStream.srv"
   "srv/Panorama.srv"
+  "srv/EmergencyStop.srv"
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

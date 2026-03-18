@@ -1,0 +1,4 @@
+bool request_stop
+bool request_reset
+---
+bool success
