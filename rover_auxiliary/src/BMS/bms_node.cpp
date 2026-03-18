@@ -12,9 +12,9 @@ int main(int argc_, char** argv_)
 BMSDataNode::BMSDataNode():
     Node("bms_info")
 {
-    _publisher = this->create_publisher<rover_msgs::msg::BmsData>(TOPIC_BMS_DATA, QOS_DEFAULT);
+    this->_publisher = create_publisher<rover_msgs::msg::BmsData>(TOPIC_BMS_DATA, QOS_DEFAULT);
 
-    _timer_publisher = this->create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
+    this->_timer_publisher = create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
                                                [this](void)
                                                {
                                                    this->callbackBMSData();
@@ -25,63 +25,102 @@ void BMSDataNode::callbackBMSData(void)
 {
     rover_msgs::msg::BmsData msg;
 
-    getData();
+    this->getData();
 
-    msg.battery_amps = _batteryAmps;
+    msg.battery_amps = this->_batteryAmps;
 
-    msg.cell_volt = _cellVolt;
+    msg.cell_volt = this->_cellVolt;
 
-    _publisher->publish(msg);
+    this->_publisher->publish(msg);
 }
 
 void BMSDataNode::getData(void)
 {
     std::string ampSerialOutput;
-    std::string cellsVoltSerialOutput;
+    std::string voltSerialOutput;
     int fileDesc;
     uint16_t ampIndex = 0;
-    SerialCom terminal;
 
-    _cellVolt.clear();
-    _cellVolt.reserve(MAX_CELL);
+    this->_cellVolt.clear();
+    this->_cellVolt.reserve(MAX_CELL);
 
     fileDesc = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
 
-    if (fileDesc < 0)
+    if (tcflush(fileDesc, TCIOFLUSH) == -1)
     {
-        std::cout << "Error encountered when opening the serial" << std::endl;
+        std::string errorMsg = "tcflush failed: " + std::string(strerror(errno));
+        RCLCPP_WARN(this->get_logger(), errorMsg.c_str());
     }
 
-    tcflush(fileDesc, TCIOFLUSH);
+    SerialCom terminal(fileDesc);
 
     terminal.serialWrite("?A\r");
     ampSerialOutput = terminal.serialRead();
     terminal.serialWrite("?V\r");
-    cellsVoltSerialOutput = serialRead();
+    voltSerialOutput = terminal.serialRead();
 
-    ampSerialOutput = ampSerialOutput.substr(AMP_START_INDEX);
-    cellsVoltSerialOutput = cellsVoltSerialOutput.substr(CELL_START_INDEX);
+    for (size_t i = 0; i < ampSerialOutput.size(); i++)
+    {
+        std::cout << ampSerialOutput[i];
+    }
+
+    std::cout << std::endl;
+
+    for (size_t i = 0; i < voltSerialOutput.size(); i++)
+    {
+        std::cout << voltSerialOutput[i];
+    }
+
+    std::cout << std::endl;
 
     while (ampSerialOutput[ampIndex] != ':')
     {
         ampIndex++;
     }
 
-    _batteryAmps = std::stod(ampSerialOutput.substr(0, ampIndex));
+    this->_batteryAmps = std::stod(ampSerialOutput.substr(0, ampIndex));
 
     for (uint16_t index = 0; index < MAX_CELL; index++)
     {
         uint16_t cellIndex = 0;
 
-        while (cellsVoltSerialOutput[cellIndex] != ':')
+        while (voltSerialOutput[cellIndex] != ':')
         {
             cellIndex++;
         }
-        _cellVolt.push_back(std::stoi(cellsVoltSerialOutput.substr(0, cellIndex)));
-        cellsVoltSerialOutput = cellsVoltSerialOutput.substr(cellIndex + 1);
+        this->_cellVolt.push_back(std::stoi(voltSerialOutput.substr(0, cellIndex)));
+        voltSerialOutput = voltSerialOutput.substr(cellIndex + 1);
     }
 
-    close(fileDesc);
+    if (close(fileDesc) == -1)
+    {
+        std::string errorMsg = "unable to close the fileDesc:" + std::string(strerror(errno));
+        RCLCPP_WARN(this->get_logger(), errorMsg.c_str());
+    }
+}
+
+void BMSDataNode::parse(std::string rawOutput, uint16_t dataNumber, std::vector<uint16_t>& dataArray)
+{
+    uint16_t indexGarb = 0;
+
+    while(indexGarb < rawOutput.size() && rawOutput[indexGarb] != '=')
+    {
+        indexGarb++;
+    }
+
+    rawOutput = rawOutput.substr(indexGarb + 1);
+
+    for (uint16_t i = 0; i < dataNumber; i++)
+    {
+        uint16_t index = 0;
+
+        while (index < rawOutput.size() && rawOutput[index] != ':')
+        {
+            index++;
+        }
+        dataArray.push_back(std::stoi(rawOutput.substr(0, index)));
+        rawOutput = rawOutput.substr(index + 1);
+    }
 }
 
 
