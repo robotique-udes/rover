@@ -12,8 +12,6 @@
 #include <termios.h>
 #include "rover_lib2/communication/Serial/serial_com.hpp"
 
-DEFINE_LOG_NODE(BmsInfo, Logger::eNodeState::ON);
-
 class BMSDataNode : public rclcpp::Node
 {
     static constexpr const char* TOPIC_BMS_DATA = "rover/auxiliary/bms_data";
