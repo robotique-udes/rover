@@ -27,11 +27,20 @@ void BMSDataNode::callbackBMSData(void)
 
     this->getData();
 
-    msg.battery_amps = this->_batteryAmps;
+    msg.battery_amps = this->_ampArray[AmpIndexType::BATTERY_AMPS];
 
-    msg.cell_volt = this->_cellVolt;
+    std::vector<uint16_t> cellVolts;
+
+    for (uint16_t i = VoltIndexType::CELL_VOLT_START; i < VoltIndexType::CELL_VOLT_END; i++)
+    {
+        cellVolts.push_back(this->_voltArray[i]); 
+    }
+
+    msg.cell_volt = cellVolts;
 
     this->_publisher->publish(msg);
+
+    cellVolts.clear();
 }
 
 void BMSDataNode::getData(void)
@@ -39,10 +48,6 @@ void BMSDataNode::getData(void)
     std::string ampSerialOutput;
     std::string voltSerialOutput;
     int fileDesc;
-    uint16_t ampIndex = 0;
-
-    this->_cellVolt.clear();
-    this->_cellVolt.reserve(MAX_CELL);
 
     fileDesc = open("/dev/ttyACM0", O_RDWR | O_NOCTTY | O_SYNC);
 
@@ -59,38 +64,8 @@ void BMSDataNode::getData(void)
     terminal.serialWrite("?V\r");
     voltSerialOutput = terminal.serialRead();
 
-    for (size_t i = 0; i < ampSerialOutput.size(); i++)
-    {
-        std::cout << ampSerialOutput[i];
-    }
-
-    std::cout << std::endl;
-
-    for (size_t i = 0; i < voltSerialOutput.size(); i++)
-    {
-        std::cout << voltSerialOutput[i];
-    }
-
-    std::cout << std::endl;
-
-    while (ampSerialOutput[ampIndex] != ':')
-    {
-        ampIndex++;
-    }
-
-    this->_batteryAmps = std::stod(ampSerialOutput.substr(0, ampIndex));
-
-    for (uint16_t index = 0; index < MAX_CELL; index++)
-    {
-        uint16_t cellIndex = 0;
-
-        while (voltSerialOutput[cellIndex] != ':')
-        {
-            cellIndex++;
-        }
-        this->_cellVolt.push_back(std::stoi(voltSerialOutput.substr(0, cellIndex)));
-        voltSerialOutput = voltSerialOutput.substr(cellIndex + 1);
-    }
+    this->parse(ampSerialOutput, this->_ampArray, AMP_DATA_TYPES);
+    this->parse(voltSerialOutput, this->_voltArray, VOLT_DATA_TYPES);
 
     if (close(fileDesc) == -1)
     {
@@ -99,7 +74,7 @@ void BMSDataNode::getData(void)
     }
 }
 
-void BMSDataNode::parse(std::string rawOutput, uint16_t dataNumber, std::vector<uint16_t>& dataArray)
+void BMSDataNode::parse(std::string rawOutput, uint16_t dataArray[], uint16_t arraySize)
 {
     uint16_t indexGarb = 0;
 
@@ -110,7 +85,7 @@ void BMSDataNode::parse(std::string rawOutput, uint16_t dataNumber, std::vector<
 
     rawOutput = rawOutput.substr(indexGarb + 1);
 
-    for (uint16_t i = 0; i < dataNumber; i++)
+    for (uint16_t i = 0; i < arraySize; i++)
     {
         uint16_t index = 0;
 
@@ -118,8 +93,12 @@ void BMSDataNode::parse(std::string rawOutput, uint16_t dataNumber, std::vector<
         {
             index++;
         }
-        dataArray.push_back(std::stoi(rawOutput.substr(0, index)));
-        rawOutput = rawOutput.substr(index + 1);
+        dataArray[i] = std::stoi(rawOutput.substr(0, index));
+
+        if (i < arraySize - 1)
+        {
+            rawOutput = rawOutput.substr(index + 1);
+        }
     }
 }
 
