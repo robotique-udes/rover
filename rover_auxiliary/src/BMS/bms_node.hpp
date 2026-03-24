@@ -18,18 +18,37 @@ class BMSDataNode : public rclcpp::Node
 {
     static constexpr const char* TOPIC_BMS_DATA = "rover/auxiliary/bms_data";
     static constexpr uint64_t DELAY_PUBLISHER_MS = 1000UL;
-    static constexpr uint16_t MAX_CELL = 6;
+    static constexpr uint16_t VOLT_DATA_TYPES = 9;
+    static constexpr uint16_t AMP_DATA_TYPES = 6;
+
+    enum AmpIndexType
+    {
+      BATTERY_AMPS,
+      AH,
+      MAX_AH,
+      SOC,
+      CHARGE_AMPS,
+      LOAD_AMPS
+    };
+
+    enum VoltIndexType
+    {
+      BATTERY,
+      LOAD,
+      CHARGE,
+      CELL_VOLT_START,
+      CELL_VOLT_END = 9
+    };
 
   public:
     BMSDataNode();
     void callbackBMSData(void);
     void getData(void);
-    void parse(std::string rawOutput, uint16_t dataNumber, std::vector<uint16_t>& dataArray);
+    void parse(std::string rawOutput, uint16_t dataArray[], uint16_t arraySize);
 
   private:
-    double _batteryAmps;
-    uint16_t _batteryVolt;
-    std::vector<uint16_t> _cellVolt;
+    uint16_t _ampArray[AMP_DATA_TYPES];
+    uint16_t _voltArray[VOLT_DATA_TYPES];
     rclcpp::Publisher<rover_msgs::msg::BmsData>::SharedPtr _publisher;
     rclcpp::TimerBase::SharedPtr _timer_publisher;
 };
