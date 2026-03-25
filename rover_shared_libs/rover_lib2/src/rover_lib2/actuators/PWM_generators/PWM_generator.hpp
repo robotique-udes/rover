@@ -7,8 +7,7 @@ namespace PWMGenerators
 {
 
     template<typename ImplT>
-    concept PWMGenerator = RoverObject<ImplT> && requires(ImplT impl_)
-    {
+    concept PWMGenerator = RoverObject<ImplT> && requires(ImplT impl_) {
         // clang-format off
         { impl_.setDutyCycle(float{} /* duty_ */) } -> std::same_as<void>;
 

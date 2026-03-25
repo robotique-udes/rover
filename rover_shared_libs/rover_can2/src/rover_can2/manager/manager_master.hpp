@@ -78,8 +78,9 @@ namespace RoverCan2
     };
 
     template<typename DriverT, typename... DevicesT>
-    ManagerMaster(DriverT&, std::function<void(Constant::eDeviceId, const Msgs::ErrorState&)>, DevicesT&&...)
-        -> ManagerMaster<DriverT, DevicesT...>;
+    ManagerMaster(DriverT&,
+                  std::function<void(Constant::eDeviceId, const Msgs::ErrorState&)>,
+                  DevicesT&&...) -> ManagerMaster<DriverT, DevicesT...>;
 }  // namespace RoverCan2
 
 #endif  // ROVER_CAN2_MANAGER_MANAGER_MASTER_HPP
