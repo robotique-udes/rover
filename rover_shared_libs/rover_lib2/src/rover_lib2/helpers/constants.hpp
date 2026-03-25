@@ -62,7 +62,7 @@ namespace Constants
         static constexpr float RECEIVE_PTZ_STATUS_FREQUENCY = 0.5F;
         static constexpr float RECEIVE_POWER_STATUS_FREQUENCY = 0.5F;
 #endif  // defined(__linux__)
-    }   // namespace CameraInfo
+    }  // namespace CameraInfo
 
     namespace AntennaInfo
     {
@@ -154,7 +154,7 @@ namespace Constants
             constexpr eJoyInput MODE_TURBO_ENABLE = eJoyInput::R2;
         }  // namespace DriveTrain
 
-    }   // namespace Keybinds
+    }  // namespace Keybinds
 #endif  // defined(ROS)
 
 }  // namespace Constants

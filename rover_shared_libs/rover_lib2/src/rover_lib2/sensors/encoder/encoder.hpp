@@ -10,8 +10,7 @@
 namespace Encoders
 {
     template<typename ImplT>
-    concept Encoder = RoverObject<ImplT> && requires(ImplT impl_)
-    {
+    concept Encoder = RoverObject<ImplT> && requires(ImplT impl_) {
         // clang-format off
         { std::as_const(impl_).dataIsValid() } -> std::same_as<bool>;
 
