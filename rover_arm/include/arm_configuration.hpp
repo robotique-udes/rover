@@ -44,7 +44,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
         }  // namespace LEN
-    }      // namespace JL
+    }  // namespace JL
 
     namespace J0
     {
@@ -58,7 +58,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0f;
             constexpr float z = 0.0f;
         }  // namespace LEN
-    }      // namespace J0
+    }  // namespace J0
 
     namespace J1
     {
@@ -73,7 +73,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0F;
             constexpr float z = 0.41F;
         }  // namespace LEN
-    }      // namespace J1
+    }  // namespace J1
 
     namespace J2
     {
@@ -87,7 +87,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0F;
             constexpr float z = 0.415F;
         }  // namespace LEN
-    }      // namespace J2
+    }  // namespace J2
 
     namespace GRIPPER_TILT
     {
@@ -102,7 +102,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0F;
             constexpr float z = 0.25F;
         }  // namespace LEN
-    }      // namespace GRIPPER_TILT
+    }  // namespace GRIPPER_TILT
 
     namespace GRIPPER_ROT
     {
@@ -117,7 +117,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0F;
             constexpr float z = 0.0F;
         }  // namespace LEN
-    }      // namespace GRIPPER_ROT
+    }  // namespace GRIPPER_ROT
 
     namespace GRIPPER_CLOSE
     {
@@ -132,7 +132,7 @@ namespace ARM_CONFIGURATION
             constexpr float y = 0.0F;
             constexpr float z = 0.0F;
         }  // namespace LEN
-    }      // namespace GRIPPER_CLOSE
+    }  // namespace GRIPPER_CLOSE
 
     // GRIPPER_CLOSE not defined because no speed control available in current arm configuration
 }  // namespace ARM_CONFIGURATION
