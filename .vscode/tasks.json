@@ -7,7 +7,7 @@
             "command": "bash",
             "args": [
                 "-c",
-                "cd ../../ && colcon build --packages-skip rover_gui && source install/setup.bash"
+                "cd ../../ && colcon build && source install/setup.bash"
             ],
             "options": {
                 "cwd": "${workspaceFolder}",
