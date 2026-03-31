@@ -9,7 +9,8 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _arbitrationWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
     _deviceStatusWidget(guiNode_, this),
-    _ligthsController(guiNode_, this)
+    _ligthsController(guiNode_, this),
+    _bmsDataWidget(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
@@ -74,6 +75,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             grid->addWidget(&_arbitrationWidget, 0, 1);
             grid->addWidget(&_ligthsController, 1, 1);
             grid->addWidget(&_deviceStatusWidget, 2, 1);
+            grid->addWidget(&_bmsDataWidget, 3, 1);
 
             grid->setColumnStretch(0, 6);
             grid->setColumnStretch(1, 1);
@@ -94,7 +96,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             break;
         
         case QSideBar::eTabIndex::BMS_DATA:
-            //grid->addWidget(&_bmsDataWidget, 0 ,1);
+            grid->addWidget(&_bmsDataWidget, 0 ,1);
             break;
     }
 
