@@ -9,7 +9,6 @@ class QBmsData : public QWidget
     Q_OBJECT
 
     public:
-        QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
 
 
     private:
