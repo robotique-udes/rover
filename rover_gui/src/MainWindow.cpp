@@ -92,6 +92,10 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
         case QSideBar::eTabIndex::FILE_TRANSFER:
             grid->addWidget(&_fileTransferWidget, 0, 1);
             break;
+        
+        case QSideBar::eTabIndex::BMS_DATA:
+            //grid->addWidget(&_bmsDataWidget, 0 ,1);
+            break;
     }
 
     std::unique_ptr<QWidget> widget = std::make_unique<QWidget>();
