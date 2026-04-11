@@ -77,7 +77,7 @@ void QBmsData::addMeasureWidget(eMeasurementType measurementType_)
     bmsInfoLabel ->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bmsInfoLabel ->setWordWrap(false);
 
-    QString infoText = QString::fromStdString(this->getBmsDataName(measurementType_));
+    QString infoText = QString::fromStdString(this->getBmsDataName(measurementType_)) + "0";
 
     bmsInfoLabel->setText(infoText);
 
@@ -107,30 +107,30 @@ void QBmsData::updateBmsData(eMeasurementType measurementType_, const rover_msgs
 {
     QLabel* infoLabel = _bmsDataTypes[measurementType_].bmsInfoLabel;
     
-    QString infoText;
+    QString infoText = QString::fromStdString(this->getBmsDataName(measurementType_));
 
     switch (measurementType_)
     {
         case eMeasurementType::BATTERY_AMPS:
-            infoText = QString::number(msg_.battery_amps);
+            infoText += QString::number(msg_.battery_amps) + " A";
             break;
         case eMeasurementType::CELL_1_VOLT:
-            infoText = QString::number(msg_.cell_volt[0]);
+            infoText += QString::number(msg_.cell_volt[0]) + " mV";
             break;
         case eMeasurementType::CELL_2_VOLT:
-            infoText = QString::number(msg_.cell_volt[1]);
+            infoText += QString::number(msg_.cell_volt[1]) + " mV";
             break;
         case eMeasurementType::CELL_3_VOLT:
-            infoText = QString::number(msg_.cell_volt[2]);
+            infoText += QString::number(msg_.cell_volt[2]) + " mV";
             break;
         case eMeasurementType::CELL_4_VOLT:
-            infoText = QString::number(msg_.cell_volt[3]);
+            infoText += QString::number(msg_.cell_volt[3]) + " mV";
             break;
         case eMeasurementType::CELL_5_VOLT:
-            infoText = QString::number(msg_.cell_volt[4]);
+            infoText += QString::number(msg_.cell_volt[4]) + " mV";
             break;
         case eMeasurementType::CELL_6_VOLT:
-            infoText = QString::number(msg_.cell_volt[5]);
+            infoText += QString::number(msg_.cell_volt[5]) + " mV";
             break;
     }
 
@@ -144,7 +144,7 @@ std::string QBmsData::getBmsDataIcon(eMeasurementType measurementType_)
         case eMeasurementType::AH:
             [[fallthrough]];
         case eMeasurementType::BATTERY_AMPS:
-            return ":/icons/motor.png";
+            return ":/icons/amps.png";
         case eMeasurementType::BATTERY_VOLT:
             [[fallthrough]];
         case eMeasurementType::CELL_1_VOLT:
@@ -158,7 +158,7 @@ std::string QBmsData::getBmsDataIcon(eMeasurementType measurementType_)
         case eMeasurementType::CELL_5_VOLT:
             [[fallthrough]];
         case eMeasurementType::CELL_6_VOLT:
-            [[fallthrough]];
+            return ":/icons/cells_volt.png";
         case eMeasurementType::CHARGE_AMPS:
             [[fallthrough]];
         case eMeasurementType::CHARGE_VOLT:
@@ -183,21 +183,21 @@ std::string QBmsData::getBmsDataName(eMeasurementType measurementType_)
         case eMeasurementType::AH:
             return "Ah";
         case eMeasurementType::BATTERY_AMPS:
-            return "Battery Amps";
+            return "Battery \nAmps: ";
         case eMeasurementType::BATTERY_VOLT:
-            return "Battery Volt";
+            return "Battery \nVolt: ";
         case eMeasurementType::CELL_1_VOLT:
-            return "Cell 1 Volt";
+            return "Cell 1 \nVolt: ";
         case eMeasurementType::CELL_2_VOLT:
-            return "Cell 2 Volt";
+            return "Cell 2 \nVolt: ";
         case eMeasurementType::CELL_3_VOLT:
-            return "Cell 3 Volt";
+            return "Cell 3 \nVolt: ";
         case eMeasurementType::CELL_4_VOLT:
-            return "Cell 4 Volt";
+            return "Cell 4 \nVolt: ";
         case eMeasurementType::CELL_5_VOLT:
-            return "Cell 5 Volt";
+            return "Cell 5 \nVolt: ";
         case eMeasurementType::CELL_6_VOLT:
-            return "Cell 6 Volt";
+            return "Cell 6 \nVolt: ";
         case eMeasurementType::CHARGE_AMPS:
             return "Charge Amps";
         case eMeasurementType::CHARGE_VOLT:
