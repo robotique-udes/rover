@@ -23,6 +23,8 @@ class QBmsData : public QWidget
     static constexpr uint8_t ICON_DIMENSION = 55U;
     static constexpr uint16_t BATT_AMPS_ARRAY_SIZE = 20;
     static constexpr uint16_t GRAPH_DIMENSION = 800U;
+    static constexpr uint16_t CELL_WIDTH = 200U;
+    static constexpr uint16_t CELL_HEIGHT = 400U;
 
     enum class eMeasurementType
     {
@@ -44,11 +46,12 @@ class QBmsData : public QWidget
     public:
         QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
         void setGraphSize(uint16_t width_ = GRAPH_DIMENSION, uint16_t height_ = GRAPH_DIMENSION);
+        void setCellContainerSize(uint16_t width_ = CELL_WIDTH, uint16_t height_ = CELL_HEIGHT);
 
     private:
         void callbackBmsData(const rover_msgs::msg::BmsData& msg_);
         void initializeWidget(void);
-        void addCellVoltWidget(eMeasurementType measurementType_);
+        void addCellVoltWidget(eMeasurementType measurementType_, QGridLayout* grid_, uint16_t row_, uint16_t col_);
         void addBattAmpsWidget(eMeasurementType measurementType_);
         std::string getBmsDataIcon(eMeasurementType measurementType_);
         std::string getBmsDataName(eMeasurementType measurementType_);
