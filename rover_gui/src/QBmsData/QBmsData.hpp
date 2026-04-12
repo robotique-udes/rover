@@ -13,6 +13,7 @@
 #include "UI_BmsData.h"
 #include "Global/QFlowLayout.hpp"
 #include <QLabel>
+#include <QtCharts>
 
 
 class QBmsData : public QWidget
@@ -20,18 +21,12 @@ class QBmsData : public QWidget
     Q_OBJECT
 
     static constexpr uint8_t ICON_DIMENSION = 55U;
+    static constexpr uint16_t BATT_AMPS_ARRAY_SIZE = 20;
+    static constexpr uint16_t GRAPH_DIMENSION = 800U;
 
     enum class eMeasurementType
     {
       BATTERY_AMPS,
-      AH,
-      MAX_AH,
-      SOC,
-      CHARGE_AMPS,
-      LOAD_AMPS,
-      BATTERY_VOLT,
-      LOAD_VOLT,
-      CHARGE_VOLT,
       CELL_1_VOLT,
       CELL_2_VOLT,
       CELL_3_VOLT,
@@ -48,21 +43,26 @@ class QBmsData : public QWidget
 
     public:
         QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-
+        void setGraphSize(uint16_t width_ = GRAPH_DIMENSION, uint16_t height_ = GRAPH_DIMENSION);
 
     private:
         void callbackBmsData(const rover_msgs::msg::BmsData& msg_);
         void initializeWidget(void);
-        void addMeasureWidget(eMeasurementType measurementType_);
+        void addCellVoltWidget(eMeasurementType measurementType_);
+        void addBattAmpsWidget(eMeasurementType measurementType_);
         std::string getBmsDataIcon(eMeasurementType measurementType_);
         std::string getBmsDataName(eMeasurementType measurementType_);
         void updateBmsData(eMeasurementType measurementType_, const rover_msgs::msg::BmsData& msg_);
+        void updateBattAmps(const rover_msgs::msg::BmsData& msg_);
 
         std::shared_ptr<rclcpp::Node> _node;
         Ui::DataLogger _ui;
         rclcpp::Subscription<rover_msgs::msg::BmsData>::SharedPtr _sub_bmsData;
         std::unique_ptr<QFlowLayout> _layout;
         std::unordered_map<eMeasurementType, sBmsDataInfos> _bmsDataTypes;
+        std::deque<float> _battAmpsDataArray = std::deque<float>(BATT_AMPS_ARRAY_SIZE, 0.0f);
+        QChartView* _chartView;
+        QLineSeries* _battAmpsSeries;
 
 
 };

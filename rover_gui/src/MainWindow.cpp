@@ -75,6 +75,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             grid->addWidget(&_arbitrationWidget, 0, 1);
             grid->addWidget(&_ligthsController, 1, 1);
             grid->addWidget(&_deviceStatusWidget, 2, 1);
+            _bmsDataWidget.setGraphSize(200, 200);
             grid->addWidget(&_bmsDataWidget, 3, 1);
 
             grid->setColumnStretch(0, 6);
@@ -96,6 +97,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             break;
         
         case QSideBar::eTabIndex::BMS_DATA:
+            _bmsDataWidget.setGraphSize();
             grid->addWidget(&_bmsDataWidget, 0 ,1);
             break;
     }
