@@ -21,21 +21,19 @@ QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     this->_ui.bmsData->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     this->_ui.bmsData->adjustSize();
 
+    this->_graphXAxis.push_back(_node->now());
+
     this->initializeWidget();
 
-    this->_sub_bmsData = _node->create_subscription<rover_msgs::msg::BmsData>("rover/auxiliary/bms_data",
+    this->_sub_bmsData = _node->create_subscription<rover_msgs::msg::BmsData>("/rover/auxiliary/bms_data",
                                                                         QOS_DEFAULT,
-                                                                        [this](const rover_msgs::msg::BmsData& msg)
+                                                                        [this](rover_msgs::msg::BmsData msg_)
                                                                         {
-                                                                            QMetaObject::invokeMethod(
-                                                                                this,
-                                                                                [this, msg]()
-                                                                                {
-                                                                                    this->callbackBmsData(msg);
-                                                                                },
-                                                                                Qt::QueuedConnection);
+                                                                            emit this->callbackBmsData(msg_);
                                                                         });
-
+        
+    
+    connect(this, &QBmsData::callbackBmsData, this, &QBmsData::onCallbackBmsData);
 }
 
 
@@ -73,25 +71,15 @@ void QBmsData::addCellVoltWidget(eMeasurementType measurementType_, QGridLayout*
     contentLayout->setContentsMargins(1, 1, 1, 1);
     contentLayout->setSpacing(1);
 
-    std::unique_ptr<QLabel> iconLabel = std::make_unique<QLabel>(bmsDataContainer.get());
-    iconLabel->setFixedSize(ICON_DIMENSION, ICON_DIMENSION);
-    iconLabel->setScaledContents(true);
-    iconLabel->setSizePolicy(QSizePolicy::Fixed, QSizePolicy::Fixed);
-
-    QPixmap defaultIcon(QString::fromStdString(this->getBmsDataIcon(measurementType_)));
-    if (!defaultIcon.isNull())
-    {
-        QPixmap scaledIcon = defaultIcon.scaled(iconLabel->size(), Qt::KeepAspectRatio, Qt::SmoothTransformation);
-        iconLabel->setAlignment(Qt::AlignCenter);
-        iconLabel->setPixmap(scaledIcon);
-    }
-
     std::unique_ptr<QLabel> bmsInfoLabel = std::make_unique<QLabel>(bmsDataContainer.get());
     bmsInfoLabel->setAlignment(Qt::AlignCenter);
     bmsInfoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
     bmsInfoLabel->setWordWrap(false);
 
-    containerLayout->addWidget(iconLabel.release());
+    QString infoText = "0";
+    bmsInfoLabel->setText(infoText);
+
+
     containerLayout->addWidget(bmsInfoLabel.get());
 
     std::unique_ptr<QLabel> titleLabel = std::make_unique<QLabel>(bmsDataContainer.get());
@@ -131,13 +119,17 @@ void QBmsData::addBattAmpsWidget(eMeasurementType measurementType_)
 
     std::unique_ptr<QValueAxis> axisX = std::make_unique<QValueAxis>();
     axisX->setTitleText("Temps [s]");
+    axisX->setRange(0.0f, 100.0f);
 
     std::unique_ptr<QValueAxis> axisY = std::make_unique<QValueAxis>();
-    axisY->setTitleText("Ampère [A]");
+    axisY->setTitleText("Ampère [mA]");
+    axisY->setRange(0.0f, 1000.0f);
 
     chart->addAxis(axisX.get(), Qt::AlignBottom);
     chart->addAxis(axisY.get(), Qt::AlignLeft);
 
+    this->_axisX = axisX.get();
+    this->_axisY = axisY.get();
     this->_battAmpsSeries->attachAxis(axisX.release());
     this->_battAmpsSeries->attachAxis(axisY.release());
 
@@ -159,9 +151,9 @@ void QBmsData::addBattAmpsWidget(eMeasurementType measurementType_)
 }
 
 
-void QBmsData::callbackBmsData(const rover_msgs::msg::BmsData& msg_)
+void QBmsData::onCallbackBmsData(rover_msgs::msg::BmsData msg_)
 {
-    this->updateBmsData(eMeasurementType::BATTERY_AMPS, msg_);
+    this->updateBattAmps(msg_);
     this->updateBmsData(eMeasurementType::CELL_1_VOLT, msg_);
     this->updateBmsData(eMeasurementType::CELL_2_VOLT, msg_);
     this->updateBmsData(eMeasurementType::CELL_3_VOLT, msg_);
@@ -170,43 +162,44 @@ void QBmsData::callbackBmsData(const rover_msgs::msg::BmsData& msg_)
     this->updateBmsData(eMeasurementType::CELL_6_VOLT, msg_);
 }
 
-void QBmsData::updateBmsData(eMeasurementType measurementType_, const rover_msgs::msg::BmsData& msg_)
+void QBmsData::updateBmsData(eMeasurementType measurementType_, rover_msgs::msg::BmsData msg_)
 {
     QLabel* infoLabel = this->_bmsDataTypes[measurementType_].bmsInfoLabel;
-    QString infoText = QString::fromStdString(this->getBmsDataName(measurementType_));
+    QString infoText;;
 
     switch (measurementType_)
     {
         case eMeasurementType::BATTERY_AMPS:
-            updateBattAmps(msg_);
             break;
         case eMeasurementType::CELL_1_VOLT:
-            infoText += QString::number(msg_.cell_volt[0]) + " mV";
+            infoText = QString::number(msg_.cell_volt[0]) + " mV";
             break;
         case eMeasurementType::CELL_2_VOLT:
-            infoText += QString::number(msg_.cell_volt[1]) + " mV";
+            infoText = QString::number(msg_.cell_volt[1]) + " mV";
             break;
         case eMeasurementType::CELL_3_VOLT:
-            infoText += QString::number(msg_.cell_volt[2]) + " mV";
+            infoText = QString::number(msg_.cell_volt[2]) + " mV";
             break;
         case eMeasurementType::CELL_4_VOLT:
-            infoText += QString::number(msg_.cell_volt[3]) + " mV";
+            infoText = QString::number(msg_.cell_volt[3]) + " mV";
             break;
         case eMeasurementType::CELL_5_VOLT:
-            infoText += QString::number(msg_.cell_volt[4]) + " mV";
+            infoText = QString::number(msg_.cell_volt[4]) + " mV";
             break;
         case eMeasurementType::CELL_6_VOLT:
-            infoText += QString::number(msg_.cell_volt[5]) + " mV";
+            infoText = QString::number(msg_.cell_volt[5]) + " mV";
             break;
     }
 
     infoLabel->setText(infoText);
+
 }
 
-void QBmsData::updateBattAmps(const rover_msgs::msg::BmsData& msg_)
+void QBmsData::updateBattAmps(rover_msgs::msg::BmsData msg_)
 {
     this->_battAmpsDataArray.pop_front();
     this->_battAmpsDataArray.push_back(msg_.battery_amps);
+    this->_graphXAxis.push_back(_node->now());
 
     this->_battAmpsSeries->clear();
 
@@ -214,6 +207,9 @@ void QBmsData::updateBattAmps(const rover_msgs::msg::BmsData& msg_)
     {
         this->_battAmpsSeries->append(i, _battAmpsDataArray[i]);
     }
+
+    this->_axisY->setRange(_battAmpsDataArray.back() - AXIS_Y_DIFF, _battAmpsDataArray.back() + AXIS_Y_DIFF);
+    this->_axisX->setRange(0, (_graphXAxis.back().nanoseconds()-_graphXAxis.front().nanoseconds()) / X_TIME_SCALER + 3);
 }
 
 std::string QBmsData::getBmsDataIcon(eMeasurementType measurementType_)

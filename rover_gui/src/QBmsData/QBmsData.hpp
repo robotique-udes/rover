@@ -25,6 +25,8 @@ class QBmsData : public QWidget
     static constexpr uint16_t GRAPH_DIMENSION = 800U;
     static constexpr uint16_t CELL_WIDTH = 200U;
     static constexpr uint16_t CELL_HEIGHT = 400U;
+    static constexpr uint16_t AXIS_Y_DIFF = 2500;
+    static constexpr int X_TIME_SCALER = 1000000000;
 
     enum class eMeasurementType
     {
@@ -48,24 +50,35 @@ class QBmsData : public QWidget
         void setGraphSize(uint16_t width_ = GRAPH_DIMENSION, uint16_t height_ = GRAPH_DIMENSION);
         void setCellContainerSize(uint16_t width_ = CELL_WIDTH, uint16_t height_ = CELL_HEIGHT);
 
+    signals:
+        void callbackBmsData(rover_msgs::msg::BmsData msg_);
+
+    private slots:
+        void onCallbackBmsData(rover_msgs::msg::BmsData msg_);
+
     private:
-        void callbackBmsData(const rover_msgs::msg::BmsData& msg_);
         void initializeWidget(void);
         void addCellVoltWidget(eMeasurementType measurementType_, QGridLayout* grid_, uint16_t row_, uint16_t col_);
         void addBattAmpsWidget(eMeasurementType measurementType_);
         std::string getBmsDataIcon(eMeasurementType measurementType_);
         std::string getBmsDataName(eMeasurementType measurementType_);
-        void updateBmsData(eMeasurementType measurementType_, const rover_msgs::msg::BmsData& msg_);
-        void updateBattAmps(const rover_msgs::msg::BmsData& msg_);
+        void updateBmsData(eMeasurementType measurementType_,  rover_msgs::msg::BmsData msg_);
+        void updateBattAmps(rover_msgs::msg::BmsData msg_);
 
         std::shared_ptr<rclcpp::Node> _node;
+        rclcpp::TimerBase::SharedPtr _timer_bmsPub;
+        rclcpp::TimerBase::SharedPtr _watchdog_bms;
+
         Ui::DataLogger _ui;
         rclcpp::Subscription<rover_msgs::msg::BmsData>::SharedPtr _sub_bmsData;
         std::unique_ptr<QFlowLayout> _layout;
         std::unordered_map<eMeasurementType, sBmsDataInfos> _bmsDataTypes;
         std::deque<float> _battAmpsDataArray = std::deque<float>(BATT_AMPS_ARRAY_SIZE, 0.0f);
+        std::vector<rclcpp::Time> _graphXAxis;
         QChartView* _chartView;
         QLineSeries* _battAmpsSeries;
+        QValueAxis* _axisY;
+        QValueAxis* _axisX;
 
 
 };
