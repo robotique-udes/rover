@@ -74,7 +74,7 @@ void BMSDataNode::getData(void)
     }
 }
 
-void BMSDataNode::parse(std::string rawOutput, uint16_t dataArray[], uint16_t arraySize)
+void BMSDataNode::parse(std::string rawOutput, int16_t dataArray[], uint16_t arraySize)
 {
     uint16_t indexGarb = 0;
 

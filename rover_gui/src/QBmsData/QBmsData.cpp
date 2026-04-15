@@ -71,16 +71,11 @@ void QBmsData::addCellVoltWidget(eMeasurementType measurementType_, QGridLayout*
     contentLayout->setContentsMargins(1, 1, 1, 1);
     contentLayout->setSpacing(1);
 
-    std::unique_ptr<QLabel> bmsInfoLabel = std::make_unique<QLabel>(bmsDataContainer.get());
-    bmsInfoLabel->setAlignment(Qt::AlignCenter);
-    bmsInfoLabel->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
-    bmsInfoLabel->setWordWrap(false);
-
-    QString infoText = "0";
-    bmsInfoLabel->setText(infoText);
-
-
-    containerLayout->addWidget(bmsInfoLabel.get());
+    std::unique_ptr<QProgressBar> progressBar = std::make_unique<QProgressBar>(bmsDataContainer.get());
+    progressBar->setRange(0, 4000);
+    progressBar->setValue(0);
+    progressBar->setTextVisible(true);
+    progressBar->setAlignment(Qt::AlignCenter);
 
     std::unique_ptr<QLabel> titleLabel = std::make_unique<QLabel>(bmsDataContainer.get());
     titleLabel->setText(QString::fromStdString(this->getBmsDataName(measurementType_)));
@@ -95,7 +90,7 @@ void QBmsData::addCellVoltWidget(eMeasurementType measurementType_, QGridLayout*
     containerLayout->addLayout(contentLayout.release());
     containerLayout->addWidget(titleLabel.release());
 
-    this->_bmsDataTypes[measurementType_] = {bmsDataContainer.get(), bmsInfoLabel.release()};
+    this->_bmsDataTypes[measurementType_] = {bmsDataContainer.get(), progressBar.release()};
 
     bmsDataContainer->setLayout(containerLayout.release());
     grid_->addWidget(bmsDataContainer.release(), row_, col_);
@@ -122,7 +117,7 @@ void QBmsData::addBattAmpsWidget(eMeasurementType measurementType_)
     axisX->setRange(0.0f, 100.0f);
 
     std::unique_ptr<QValueAxis> axisY = std::make_unique<QValueAxis>();
-    axisY->setTitleText("Ampère [mA]");
+    axisY->setTitleText("Ampère [A]");
     axisY->setRange(0.0f, 1000.0f);
 
     chart->addAxis(axisX.get(), Qt::AlignBottom);
@@ -164,41 +159,37 @@ void QBmsData::onCallbackBmsData(rover_msgs::msg::BmsData msg_)
 
 void QBmsData::updateBmsData(eMeasurementType measurementType_, rover_msgs::msg::BmsData msg_)
 {
-    QLabel* infoLabel = this->_bmsDataTypes[measurementType_].bmsInfoLabel;
-    QString infoText;;
+    QProgressBar* cellProgressBar = this->_bmsDataTypes[measurementType_].progressBar;
 
     switch (measurementType_)
     {
         case eMeasurementType::BATTERY_AMPS:
             break;
         case eMeasurementType::CELL_1_VOLT:
-            infoText = QString::number(msg_.cell_volt[0]) + " mV";
+            cellProgressBar->setValue(msg_.cell_volt[0]);
             break;
         case eMeasurementType::CELL_2_VOLT:
-            infoText = QString::number(msg_.cell_volt[1]) + " mV";
+            cellProgressBar->setValue(msg_.cell_volt[1]);
             break;
         case eMeasurementType::CELL_3_VOLT:
-            infoText = QString::number(msg_.cell_volt[2]) + " mV";
+            cellProgressBar->setValue(msg_.cell_volt[2]);
             break;
         case eMeasurementType::CELL_4_VOLT:
-            infoText = QString::number(msg_.cell_volt[3]) + " mV";
+            cellProgressBar->setValue(msg_.cell_volt[3]);
             break;
         case eMeasurementType::CELL_5_VOLT:
-            infoText = QString::number(msg_.cell_volt[4]) + " mV";
+            cellProgressBar->setValue(msg_.cell_volt[4]);
             break;
         case eMeasurementType::CELL_6_VOLT:
-            infoText = QString::number(msg_.cell_volt[5]) + " mV";
+            cellProgressBar->setValue(msg_.cell_volt[5]);
             break;
     }
-
-    infoLabel->setText(infoText);
-
 }
 
 void QBmsData::updateBattAmps(rover_msgs::msg::BmsData msg_)
 {
     this->_battAmpsDataArray.pop_front();
-    this->_battAmpsDataArray.push_back(msg_.battery_amps);
+    this->_battAmpsDataArray.push_back(msg_.battery_amps/-100);
     this->_graphXAxis.push_back(_node->now());
 
     this->_battAmpsSeries->clear();

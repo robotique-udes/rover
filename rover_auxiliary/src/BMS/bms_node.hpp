@@ -42,11 +42,11 @@ class BMSDataNode : public rclcpp::Node
     BMSDataNode();
     void callbackBMSData(void);
     void getData(void);
-    void parse(std::string rawOutput, uint16_t dataArray[], uint16_t arraySize);
+    void parse(std::string rawOutput, int16_t dataArray[], uint16_t arraySize);
 
   private:
-    uint16_t _ampArray[AMP_DATA_TYPES];
-    uint16_t _voltArray[VOLT_DATA_TYPES];
+    int16_t _ampArray[AMP_DATA_TYPES];
+    int16_t _voltArray[VOLT_DATA_TYPES];
     rclcpp::Publisher<rover_msgs::msg::BmsData>::SharedPtr _publisher;
     rclcpp::TimerBase::SharedPtr _timer_publisher;
 };

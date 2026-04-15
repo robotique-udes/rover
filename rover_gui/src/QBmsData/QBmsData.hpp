@@ -25,7 +25,7 @@ class QBmsData : public QWidget
     static constexpr uint16_t GRAPH_DIMENSION = 800U;
     static constexpr uint16_t CELL_WIDTH = 200U;
     static constexpr uint16_t CELL_HEIGHT = 400U;
-    static constexpr uint16_t AXIS_Y_DIFF = 2500;
+    static constexpr uint16_t AXIS_Y_DIFF = 20;
     static constexpr int X_TIME_SCALER = 1000000000;
 
     enum class eMeasurementType
@@ -42,7 +42,7 @@ class QBmsData : public QWidget
     struct sBmsDataInfos
     {
         QWidget* bmsDataContainer;
-        QLabel* bmsInfoLabel;
+        QProgressBar* progressBar;
     };
 
     public:
