@@ -67,17 +67,16 @@ void QBmsData::addCellVoltWidget(eMeasurementType measurementType_, QGridLayout*
     containerLayout->setContentsMargins(1, 1, 1, 1);
     containerLayout->setSpacing(1);
 
-    std::unique_ptr<QHBoxLayout> contentLayout = std::make_unique<QHBoxLayout>();
-    contentLayout->setContentsMargins(1, 1, 1, 1);
-    contentLayout->setSpacing(1);
-
-    std::unique_ptr<QProgressBar> progressBar = std::make_unique<QProgressBar>(bmsDataContainer.get());
-    progressBar->setRange(0, 4000);
-    progressBar->setValue(0);
+    std::unique_ptr<QProgressBar> progressBar = std::make_unique<QProgressBar>();
+    progressBar->setRange(3000, 4200);
+    progressBar->setValue(3000);
+    progressBar->setFormat("%v(%p%)");
     progressBar->setTextVisible(true);
     progressBar->setAlignment(Qt::AlignCenter);
+    progressBar->setOrientation(Qt::Vertical);
+    progressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
-    std::unique_ptr<QLabel> titleLabel = std::make_unique<QLabel>(bmsDataContainer.get());
+    std::unique_ptr<QLabel> titleLabel = std::make_unique<QLabel>();
     titleLabel->setText(QString::fromStdString(this->getBmsDataName(measurementType_)));
     titleLabel->setAlignment(Qt::AlignCenter);
 
@@ -87,10 +86,10 @@ void QBmsData::addCellVoltWidget(eMeasurementType measurementType_, QGridLayout*
     titleFont.setBold(true);
     titleLabel->setFont(titleFont);
 
-    containerLayout->addLayout(contentLayout.release());
+    QProgressBar* progressBarPtr = progressBar.get();
+    containerLayout->addWidget(progressBar.release());
     containerLayout->addWidget(titleLabel.release());
-
-    this->_bmsDataTypes[measurementType_] = {bmsDataContainer.get(), progressBar.release()};
+    this->_bmsDataTypes[measurementType_] = {bmsDataContainer.get(), progressBarPtr};
 
     bmsDataContainer->setLayout(containerLayout.release());
     grid_->addWidget(bmsDataContainer.release(), row_, col_);
@@ -118,7 +117,7 @@ void QBmsData::addBattAmpsWidget(eMeasurementType measurementType_)
 
     std::unique_ptr<QValueAxis> axisY = std::make_unique<QValueAxis>();
     axisY->setTitleText("Ampère [A]");
-    axisY->setRange(0.0f, 1000.0f);
+    axisY->setRange(0.0f, 10.0f);
 
     chart->addAxis(axisX.get(), Qt::AlignBottom);
     chart->addAxis(axisY.get(), Qt::AlignLeft);
