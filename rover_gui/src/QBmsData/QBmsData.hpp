@@ -27,6 +27,8 @@ class QBmsData : public QWidget
     static constexpr uint16_t CELL_HEIGHT = 400U;
     static constexpr uint16_t AXIS_Y_DIFF = 20;
     static constexpr int X_TIME_SCALER = 1000000000;
+    static constexpr uint16_t CELL_MIN_VOLT = 3000;
+    static constexpr uint16_t CELL_MAX_VOLT = 4200;
 
     enum class eMeasurementType
     {
@@ -59,7 +61,7 @@ class QBmsData : public QWidget
     private:
         void initializeWidget(void);
         void addCellVoltWidget(eMeasurementType measurementType_, QGridLayout* grid_, uint16_t row_, uint16_t col_);
-        void addBattAmpsWidget(eMeasurementType measurementType_);
+        void addBattAmpsWidget(void);
         std::string getBmsDataIcon(eMeasurementType measurementType_);
         std::string getBmsDataName(eMeasurementType measurementType_);
         void updateBmsData(eMeasurementType measurementType_,  rover_msgs::msg::BmsData msg_);

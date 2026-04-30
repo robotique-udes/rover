@@ -39,7 +39,7 @@ QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
 
 void QBmsData::initializeWidget(void)
 {
-    this->addBattAmpsWidget(eMeasurementType::BATTERY_AMPS);
+    this->addBattAmpsWidget();
 
     std::unique_ptr<QGridLayout> cellsGrid = std::make_unique<QGridLayout>();
     cellsGrid->setSpacing(2);
@@ -68,8 +68,8 @@ void QBmsData::addCellVoltWidget(eMeasurementType measurementType_, QGridLayout*
     containerLayout->setSpacing(1);
 
     std::unique_ptr<QProgressBar> progressBar = std::make_unique<QProgressBar>();
-    progressBar->setRange(3000, 4200);
-    progressBar->setValue(3000);
+    progressBar->setRange(CELL_MIN_VOLT, CELL_MAX_VOLT);
+    progressBar->setValue(CELL_MIN_VOLT);
     progressBar->setFormat("%v(%p%)");
     progressBar->setTextVisible(true);
     progressBar->setAlignment(Qt::AlignCenter);
@@ -95,7 +95,7 @@ void QBmsData::addCellVoltWidget(eMeasurementType measurementType_, QGridLayout*
     grid_->addWidget(bmsDataContainer.release(), row_, col_);
 }
 
-void QBmsData::addBattAmpsWidget(eMeasurementType measurementType_)
+void QBmsData::addBattAmpsWidget(void)
 {
     std::unique_ptr<QWidget> bmsDataContainer = std::make_unique<QWidget>(this->_ui.bmsData);
     bmsDataContainer->setStyleSheet(DEFAULT);
