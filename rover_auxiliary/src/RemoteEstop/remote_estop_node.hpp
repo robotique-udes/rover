@@ -8,7 +8,7 @@
 
 class RemoteStop : public rclcpp::Node
 {
-    static constexpr const char* SERVICE_ESTOP = "estop_srv";
+    static constexpr const char* SERVICE_ESTOP = "/rover/remote_estop/estop_srv";
     static constexpr const char* SERVICE_ARBITRATION_CONTROL = "/rover/drive_train/demux_control";
 
   private:
