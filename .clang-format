@@ -59,7 +59,7 @@ SpacesInCStyleCastParentheses: 'false'
 SpacesInContainerLiterals: 'false'
 SpacesInParentheses: 'false'
 SpacesInSquareBrackets: 'false'
-Standard: Cpp20
+Standard: Latest
 TabWidth: '2'
 UseTab: Never
 SortIncludes: 'false'

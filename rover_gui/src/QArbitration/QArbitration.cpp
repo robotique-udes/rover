@@ -69,7 +69,8 @@ void QArbitration::initComboBoxItems()
     this->_ui.secComboBox->addItem("Drive Train", 0);
     this->_ui.secComboBox->addItem("Arm", 1);
     this->_ui.secComboBox->addItem("Antenna", 2);
-    this->_ui.secComboBox->addItem("None", 3);
+    this->_ui.secComboBox->addItem("Science", 3);
+    this->_ui.secComboBox->addItem("None", 4);
 
     this->_ui.driveTrainComboBox->addItem("None", 0);
     this->_ui.driveTrainComboBox->addItem("Teleop", 1);

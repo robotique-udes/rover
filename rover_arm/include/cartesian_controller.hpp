@@ -1,11 +1,11 @@
 #ifndef __CARTESIAN_CONTROLLER_HPP__
 #define __CARTESIAN_CONTROLLER_HPP__
 
-#include "keybinding.hpp"
 #include "robot_controller.hpp"
 #include "Eigen/Dense"
 #include "rover_lib2/helpers/log.hpp"
 #include "rover_lib2/helpers/macros.hpp"
+
 #include <numbers>
 #include <rclcpp/logger.hpp>
 #include <utility>
@@ -59,7 +59,7 @@ class CartesianController : public RobotController
 
   public:
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
-        const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& inputArray_) override
+        const std::array<float, TO_UNDERLYING(Constants::Keybinds::eJoyInput::eLAST)>& inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
         _desiredCartesian = {};
