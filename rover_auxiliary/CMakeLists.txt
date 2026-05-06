@@ -25,8 +25,6 @@ add_executable(ddb_control src/DDB/ddb_control_node.cpp)
 
 add_executable(camera_manager src/CameraManager/manager_node.cpp
                       src/CameraManager/arbitration.cpp)
-
-add_executable(remote_estop src/RemoteEstop/remote_estop_node.cpp)
                       
 add_executable(antenna src/Antenna/antenna_node.cpp
                        src/Antenna/antenna_driver.cpp
@@ -41,7 +39,6 @@ ament_target_dependencies(ddb_control
                           rcl_interfaces)
 target_link_libraries(ddb_control rover_shared_libs)
 target_link_libraries(camera_manager rover_shared_libs)
-target_link_libraries(remote_estop rover_shared_libs)
 
 ament_target_dependencies(camera_manager
                           rclcpp
@@ -49,11 +46,6 @@ ament_target_dependencies(camera_manager
                           rcl_interfaces)
 
 ament_target_dependencies(antenna
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces)
-
-ament_target_dependencies(remote_estop
                           rclcpp
                           rover_msgs
                           rcl_interfaces)
@@ -79,9 +71,6 @@ install(TARGETS
         DESTINATION lib/${PROJECT_NAME})
 install(TARGETS
         antenna
-        DESTINATION lib/${PROJECT_NAME})
-install(TARGETS
-        remote_estop
         DESTINATION lib/${PROJECT_NAME})
   
 ament_package()

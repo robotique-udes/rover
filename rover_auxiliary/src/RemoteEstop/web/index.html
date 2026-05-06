@@ -5,63 +5,42 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>E-Stop</title>
   <link rel="stylesheet" href="styles.css" />
-  <script src="https://cdn.jsdelivr.net/npm/roslib@1/build/roslib.min.js"></script>
 </head>
 <body>
 
   <div class="panel">
-    <p id="conn-status">Connecting...</p>
-    <button id="estop" onclick="triggerEStop()" disabled>E-STOP</button>
+    <button id="estop" onclick="triggerEStop()">E-STOP</button>
     <p id="status"></p>
-    <button id="resetBtn" onclick="triggerReset()">Reset</button>
+    <button id="resetBtn" onclick="triggerReset()" style="display:none;">Reset</button>
   </div>
 
   <script>
-    // Change this to your ROS2 machine's IP
-    var ROS_IP = "ws://192.168.50.128:9090";
-
-    var ros = new ROSLIB.Ros({ url: ROS_IP });
-
-    ros.on('connection', function () {
-      document.getElementById('conn-status').textContent = 'Connected';
-      document.getElementById('estop').disabled = false;
-    });
-
-    ros.on('error', function () {
-      document.getElementById('conn-status').textContent = 'Connection error';
-    });
-
-    ros.on('close', function () {
-      document.getElementById('conn-status').textContent = 'Disconnected';
-      document.getElementById('estop').disabled = true;
-    });
-
-    var estopService = new ROSLIB.Service({
-      ros: ros,
-      name: '/rover/remote_estop/estop_srv',
-      serviceType: 'rover_msgs/srv/EmergencyStop'
-    });
-
-    var resetService = new ROSLIB.Service({
-      ros: ros,
-      name: '/rover/remote_estop/estop_srv',
-      serviceType: 'rover_msgs/srv/EmergencyStop'
-    });
+    var SERVER_IP = "http://10.236.165.181:8080";
 
     function triggerEStop() {
-      estopService.callService(new ROSLIB.ServiceRequest({request_stop: true}), function (result) {
-        document.getElementById('status').textContent = result.message;
-        document.getElementById('estop').classList.add('pressed');
-        document.getElementById('resetBtn').style.display = 'block';
-      });
+      fetch(SERVER_IP + '/kill_teleop', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('status').textContent = data.message;
+          document.getElementById('estop').classList.add('pressed');
+          document.getElementById('resetBtn').style.display = 'block';
+        })
+        .catch(err => {
+          document.getElementById('status').textContent = 'Failed: ' + err;
+        });
     }
 
     function triggerReset() {
-      resetService.callService(new ROSLIB.ServiceRequest({request_reset: true}), function (result) {
-        document.getElementById('status').textContent = result.message;
-        document.getElementById('estop').classList.remove('pressed');
-        document.getElementById('resetBtn').style.display = 'none';
-      });
+      fetch(SERVER_IP + '/relaunch_teleop', { method: 'POST' })
+        .then(r => r.json())
+        .then(data => {
+          document.getElementById('status').textContent = data.message;
+          document.getElementById('estop').classList.remove('pressed');
+          document.getElementById('resetBtn').style.display = 'none';
+        })
+        .catch(err => {
+          document.getElementById('status').textContent = 'Failed: ' + err;
+        });
     }
   </script>
 
