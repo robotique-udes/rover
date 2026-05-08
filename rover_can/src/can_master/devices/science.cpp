@@ -1,15 +1,12 @@
 #include "science.hpp"
+
+#include <rover_can2/msgs/science.hpp>
 #include <rover_lib2/helpers/constants.hpp>
 
-Science::Science(RoverCan2::Constant::eDeviceId deviceId_,
-                                 uint8_t rosPropSpeedMsgId_,
-                                 std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ScienceMsg>> rosSharedMsg_):
+Science::Science(RoverCan2::Constant::eDeviceId deviceId_):
     DeviceT(deviceId_,
-            RoverCan2::Publisher<RoverCan2::Msgs::Science>()),
-    _rosScienceMsgId(rosPropSpeedMsgId_),
-    _rosSharedMsg(rosSharedMsg_)
+            RoverCan2::Publisher<RoverCan2::Msgs::Science>())
 {
-    ASSERT_COND_MSG(rosSharedMsg_, "rosSharedMsg_ can't be nullptr");
 }
 
 void Science::rosElementInit(void)

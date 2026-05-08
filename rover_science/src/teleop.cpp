@@ -46,7 +46,7 @@ class Teleop : public rclcpp::Node
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
         rover_msgs::msg::ScienceMsg scienceMsg;
 
-        
+        RCLCPP_INFO(this->get_logger(), "HERE");
 
         if (this->_joyManager.isTriggered(KEYBINDINGS::DEADMAN_SWITCH))
         {

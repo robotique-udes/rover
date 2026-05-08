@@ -1,5 +1,5 @@
-#ifndef PROPULSION_MOTORS_HPP
-#define PROPULSION_MOTORS_HPP
+#ifndef SCIENCE_HPP
+#define SCIENCE_HPP
 
 #include "can_master/master_device.hpp"
 #include "can_master/shared_msg.hpp"
@@ -20,9 +20,7 @@ class Science : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::S
     static constexpr uint32_t CAN_PUBLISH_PERIOD_MS = static_cast<uint32_t>(ROUND(1'000.0F / CAN_PUBLISH_FREQUENCY));
 
   public:
-    Science(RoverCan2::Constant::eDeviceId deviceId_,
-                    uint8_t rosPropSpeedMsgId_,
-                    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ScienceMsg>> rosSharedMsg_);
+    Science(RoverCan2::Constant::eDeviceId deviceId_);
 
   private:
     void rosElementInit(void) override;
@@ -32,7 +30,7 @@ class Science : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::S
     void CB_ROS_scienceCmd(const rover_msgs::msg::ScienceMsg& rosMsg_);
     void CB_ROS_canSend(void);
 
-    const uint8_t _rosScienceMsgId;
+    // const uint8_t _rosScienceMsgId;
 
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ScienceMsg>> _rosSharedMsg;
     RoverCan2::Msgs::Science _nextScienceCmdMsg;

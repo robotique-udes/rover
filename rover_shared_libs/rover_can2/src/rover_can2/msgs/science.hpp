@@ -1,5 +1,5 @@
-#ifndef SCIENCE_HPP
-#define SCIENCE_HPP
+#ifndef ROVER_CAN2_MSGS_SCIENCE_HPP
+#define ROVER_CAN2_MSGS_SCIENCE_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
