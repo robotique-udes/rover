@@ -134,6 +134,11 @@ void JoyDemux::CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controll
         {
             _pub_arm->publish(msg_zeros);
         }
+        
+        if (isIdle(eDemuxDestination::SCIENCE))
+        {
+            _pub_science->publish(msg_zeros);
+        }
 
         if (isIdle(eDemuxDestination::ANTENNA))
         {
@@ -160,6 +165,10 @@ void JoyDemux::redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& 
     else if (dest_ == eDemuxDestination::ARM)
     {
         _pub_arm->publish(msg_);
+    }
+    else if (dest_ == eDemuxDestination::SCIENCE)
+    {
+        _pub_science->publish(msg_);
     }
     else if (dest_ == eDemuxDestination::ANTENNA)
     {
