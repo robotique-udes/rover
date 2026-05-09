@@ -4,8 +4,7 @@
 #include <rover_lib2/helpers/constants.hpp>
 
 Science::Science(RoverCan2::Constant::eDeviceId deviceId_):
-    DeviceT(deviceId_,
-            RoverCan2::Publisher<RoverCan2::Msgs::Science>())
+    DeviceT(deviceId_, RoverCan2::Publisher<RoverCan2::Msgs::Science>())
 {
 }
 

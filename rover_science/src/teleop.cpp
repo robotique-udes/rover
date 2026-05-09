@@ -47,7 +47,7 @@ class Teleop : public rclcpp::Node
         rover_msgs::msg::ScienceMsg scienceMsg;
 
         _joyManager.updateJoyArray(joyArray);
-        
+
         if (this->_joyManager.isPressed(KEYBINDINGS::DEADMAN_SWITCH))
         {
             if (this->_joyManager.isPressed(KEYBINDINGS::LINEAR_ACT_UP))

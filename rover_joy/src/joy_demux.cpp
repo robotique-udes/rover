@@ -134,7 +134,7 @@ void JoyDemux::CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controll
         {
             _pub_arm->publish(msg_zeros);
         }
-        
+
         if (isIdle(eDemuxDestination::SCIENCE))
         {
             _pub_science->publish(msg_zeros);

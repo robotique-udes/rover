@@ -10,7 +10,7 @@
 #include <rover_can2/rover_can2.hpp>
 
 class Science : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::Science>>,
-                        public MasterDevice
+                public MasterDevice
 {
     using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::Science>>;
 
