@@ -38,8 +38,11 @@ class PanoramaProcessor
     static constexpr const char* TOPIC_CAMERA_PTZ_STATUS = "/rover/camera/PTZ_status";
     static constexpr const char* PATH_FOR_PANORAMA = "/panorama";
     static constexpr const char* PANORAMA_FILE_NAME = "panorama_";
-    static constexpr const char* PIPELINE = "\" latency=0 ! "
-                                            "decodebin ! videoconvert ! "
+    static constexpr const char* PIPELINE = "\" latency=0 protocols=tcp drop-on-latency=true ! "
+                                            "rtph264depay ! "
+                                            "h264parse ! "
+                                            "avdec_h264 max-threads=4 ! "
+                                            "videoconvert ! "
                                             "appsink sync=false drop=true max-buffers=1";
 
   public:
