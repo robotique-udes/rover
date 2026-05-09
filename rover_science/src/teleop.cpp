@@ -50,7 +50,6 @@ class Teleop : public rclcpp::Node
         
         if (this->_joyManager.isPressed(KEYBINDINGS::DEADMAN_SWITCH))
         {
-            RCLCPP_INFO(this->get_logger(), "HERE");
             if (this->_joyManager.isPressed(KEYBINDINGS::LINEAR_ACT_UP))
             {
                 scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::LINEAR_ACT] = LIN_ACT_SPEED_FACTOR;
