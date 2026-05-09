@@ -43,7 +43,7 @@ class QUtilityBarTop : public QWidget
 
   signals:
     void updateBatteryUI(float _percent);
-    void updateAntennaUI(bool connected_, float rssi_, float speed_);
+    void updateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_);
     void updateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void updateTimer(int secondsBeforeTimeOut_);
 
@@ -59,7 +59,7 @@ class QUtilityBarTop : public QWidget
 
   private slots:
     void onUpdateBatteryUI(float _percent);
-    void onUpdateAntennaUI(bool connected_, float rssi_, float speed_);
+    void onUpdateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_);
     void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
 
