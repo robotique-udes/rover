@@ -6,6 +6,32 @@
 #include <qdebug.h>
 #include <qtimezone.h>
 
+namespace
+{
+    QString toDMS(double deg, bool isLat)
+    {
+        char dir;
+
+        if (isLat)
+            dir = (deg >= 0) ? 'N' : 'S';
+        else
+            dir = (deg >= 0) ? 'E' : 'W';
+
+        deg = std::abs(deg);
+
+        int d = static_cast<int>(deg);
+        double minFloat = (deg - d) * 60.0;
+        int m = static_cast<int>(minFloat);
+        double s = (minFloat - m) * 60.0;
+
+        return QString("%1° %2' %3\" %4")
+            .arg(d)
+            .arg(m)
+            .arg(s, 0, 'f', 2)
+            .arg(dir);
+    }
+}
+
 QUtilityBarTop::QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
     _node(node_),
@@ -262,8 +288,17 @@ void QUtilityBarTop::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
 {
     _ui.HeadingLabel->setText(QString::number((heading_), 'f', 2) + " deg   ");
     _ui.satellitesNbrLabel->setText(QString::number(static_cast<int>(satNbr_)) + "   ");
-    _ui.latitudeLabel->setText("Lat: " + QString::number(static_cast<float>(lat_), 'f', 6));
-    _ui.longitudeLabel->setText("Long: " + QString::number(static_cast<float>(long_), 'f', 6));
+
+    if(_ui.dmsToggle->value() == 0)
+    {
+        _ui.latitudeLabel->setText("Lat: " + QString::number(static_cast<float>(lat_), 'f', 6));
+        _ui.longitudeLabel->setText("Long: " + QString::number(static_cast<float>(long_), 'f', 6));
+    }
+    else
+    {
+        _ui.latitudeLabel->setText("Lat: " + toDMS(lat_, true));
+        _ui.longitudeLabel->setText("Long: " + toDMS(long_, false));
+    }
 
     _ui.satellliteIcon_pb->setIcon(QIcon(":/icons/GNSSIcon.svg"));
     _ui.headingIcon_pb->setIcon(QIcon(":/icons/HeadingIcon.svg"));
