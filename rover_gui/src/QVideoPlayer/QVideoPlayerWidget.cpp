@@ -71,7 +71,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     connect(this, &QVideoPlayerWidget::displayDetectedArucos, this, &QVideoPlayerWidget::onDisplayDetectedArucos);
 
-    connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::updateCamURL);
+    connect(_ui.rtspComboBox, &QComboBox::currentIndexChanged, this, &QVideoPlayerWidget::updateCamURL);
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::setURLToDefault);
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
 
@@ -90,11 +90,15 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_panoramaWorkerThread.get(), &QPanoramaWorker::panoramaFinished, this, &QVideoPlayerWidget::onPanoramaFinished);
     connect(_ui.panoramaDurationBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::setPanoramaDuration);
     connect(this, &QVideoPlayerWidget::updateActualAngle, this, &QVideoPlayerWidget::onUpdateActualAngle);
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
-    _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
     _ui.arucoIdsTextBox->setText("Ids: ");
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
+
+    for (uint16_t i = 0; i<NBR_IDS_TO_DISPLAY; i++)
+    {
+        _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][1]);
+    }
+    
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
@@ -162,7 +166,7 @@ void QVideoPlayerWidget::connectUISignals(void)
 {
     connect(_ui.playPauseButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePlayPauseButton);
     connect(_ui.toggleViewButton, &QPushButton::clicked, this, &QVideoPlayerWidget::onToggleView);
-    connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::onUrlTextChanged);
+    connect(_ui.rtspComboBox, &QComboBox::currentTextChanged, this, &QVideoPlayerWidget::onUrlTextChanged);
 
     QPushButton* backToVideoBtn = this->findChild<QPushButton*>("backToVideoBtn");
     if (backToVideoBtn)
@@ -463,8 +467,9 @@ bool QVideoPlayerWidget::validateRtspUrl(const QString& url_)
     return url_.startsWith("rtsp://") || url_.startsWith("rtspt://") || url_.startsWith("rtsps://");
 }
 
-void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
+void QVideoPlayerWidget::updateUrlValidationUI(bool isValid)
 {
+    /*
     if (isValid_)
     {
         _ui.rtspTextBox->setStyleSheet("");
@@ -474,7 +479,7 @@ void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
     {
         _ui.rtspTextBox->setStyleSheet("border: 1px solid red;");
         _ui.rtspTextBox->setToolTip("Invalid URL format. Expected: rtsp://[username:password@]host[:port]/path");
-    }
+    }*/
 }
 
 void QVideoPlayerWidget::emitStateChanged(void)
@@ -491,20 +496,13 @@ void QVideoPlayerWidget::onToggleView(void)
 
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
-    if (text_.isEmpty())
-    {
-        _ui.rtspTextBox->setStyleSheet("");
-        _ui.rtspTextBox->setToolTip("Enter RTSP URL...");
-    }
-    else
-    {
-        bool isValid = this->validateRtspUrl(text_);
-        this->updateUrlValidationUI(isValid);
 
-        if (_state == ePlayerState::CONNECTION_FAILED && isValid)
-        {
-            this->setPlayerState(ePlayerState::NOT_CONNECTED);
-        }
+    bool isValid = this->validateRtspUrl(text_);
+    this->updateUrlValidationUI(isValid);
+
+    if (_state == ePlayerState::CONNECTION_FAILED && isValid)
+    {
+        this->setPlayerState(ePlayerState::NOT_CONNECTED);
     }
 }
 
@@ -639,9 +637,9 @@ void QVideoPlayerWidget::onReconnectTimer(void)
 {
     if (_state == ePlayerState::RECONNECTING)
     {
-        if (!_ui.rtspTextBox->text().isEmpty())
+        if (!_ui.rtspComboBox->currentText().isEmpty())
         {
-            this->startStream(_ui.rtspTextBox->text());
+            this->startStream(_ui.rtspComboBox->currentText());
         }
     }
 }
@@ -816,14 +814,14 @@ void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
 void QVideoPlayerWidget::setURLToDefault(void)
 {
     _camURL = this->_defaultCamUrl;
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+    _ui.rtspComboBox->setCurrentText(QString::fromStdString(_camURL));
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
 
 void QVideoPlayerWidget::updateCamURL()
 {
-    _camURL = _ui.rtspTextBox->text().toStdString();
+    _camURL = _ui.rtspComboBox->currentText().toStdString();
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
