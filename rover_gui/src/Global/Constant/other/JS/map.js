@@ -41,7 +41,7 @@ async function checkConnectivity()
 
 document.addEventListener('DOMContentLoaded', initializeMap);
 
-window.addEventListener('offline', function () 
+window.addEventListener('offline', () => 
 {
     const connectionError = document.getElementById('connectionError');
     if (connectionError)
@@ -50,7 +50,7 @@ window.addEventListener('offline', function ()
     }
 });
 
-window.addEventListener('online', async function () {
+window.addEventListener('online', async () => {
     const connection = await checkConnectivity();
     if (connection)
     {

@@ -32,57 +32,62 @@ class Bridge
             const qtBridge = channel.objects.bridge;
             window.qtBridge = qtBridge;
 
-            const self = this;
-
-            qtBridge.clearPath.connect(function () 
+            qtBridge.clearPath.connect(() =>
             {
-                self.pathManager.stopDynamicWaypointPathUpdates();
+                this.pathManager.stopDynamicWaypointPathUpdates();
             });
 
-            qtBridge.gpsCallback.connect(function (lat, lon, headingDeg) 
+            qtBridge.gpsCallback.connect((lat, lon, headingDeg) => 
             {
-                self.#gpsCallback(lat, lon, headingDeg);
+                this.#gpsCallback(lat, lon, headingDeg);
             });
 
-            qtBridge.sendGoal.connect(function (name, lat, lon, id, flyTo) 
+            qtBridge.sendGoal.connect((name, lat, lon, id, flyTo) => 
             {
-                self.#setGoal(name, lat, lon, id, flyTo);
+                this.#setGoal(name, lat, lon, id, flyTo);
             });
 
-            qtBridge.calculatePath.connect(function (destLat, destLon, waypointId) 
+            qtBridge.calculatePath.connect((destLat, destLon, waypointId) => 
             {
-                self.pathManager.startDynamicWaypointPathUpdates(destLat, destLon, waypointId);
+                this.pathManager.startDynamicWaypointPathUpdates(destLat, destLon, waypointId);
             });
 
-            qtBridge.clearWaypoints.connect(function () 
+            qtBridge.clearWaypoints.connect(() => 
             {
-                self.waypoints.clearAllWaypoints();
-                self.pathManager.stopDynamicWaypointPathUpdates();
-                self.pathManager.clearWaypointPath();
+                Swal.fire({
+                    title: 'Waypoints cleared',
+                    text: `All waypoints have been removed.`,
+                    icon: 'success',
+                    confirmButtonText: 'OK'
+                });
+
+                this.waypoints.clearAllWaypoints();
+                this.pathManager.stopDynamicWaypointPathUpdates();
+                this.pathManager.clearWaypointPath();
             });
 
-            qtBridge.deleteWaypoint.connect(function (waypointId) 
+            qtBridge.deleteWaypoint.connect((waypointId) =>
             {
-                if (self.waypoints.activeWaypoint && self.waypoints.activeWaypoint.id === waypointId) 
+                if (this.waypoints.activeWaypoint && this.waypoints.activeWaypoint.id === waypointId) 
                 {
-                    self.pathManager.stopDynamicWaypointPathUpdates();
+                    this.pathManager.stopDynamicWaypointPathUpdates();
                 }
-                self.waypoints.deleteWaypoint(waypointId);
+                this.waypoints.deleteWaypoint(waypointId);
             });
 
-            qtBridge.waypointIsVisible.connect(function (waypointId, visibility)
+            qtBridge.waypointIsVisible.connect((waypointId, visibility) =>
             {
-                self.waypoints.waypointVisibility(waypointId, visibility);
+                this.waypoints.waypointVisibility(waypointId, visibility);
             });
 
-            qtBridge.updatePathTaken.connect(function (latitude_, longitude_)
+            qtBridge.updatePathTaken.connect((latitude_, longitude_) =>
             {
-                self.pathManager.drawPathTaken(latitude_, longitude_);
+                this.pathManager.drawPathTaken(latitude_, longitude_);
             });
 
-            qtBridge.loadFullPath.connect(function (points_)
+            qtBridge.loadFullPath.connect((points_) =>
             {
-               self.pathManager.drawFullPath(points_) 
+               this.pathManager.drawFullPath(points_) 
             });
 
             if (window.qtBridge && window.qtBridge.onJsBridgeReady) 
