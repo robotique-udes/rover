@@ -2,6 +2,8 @@
 
 #include <rover_lib2/helpers/assert.hpp>
 
+#include "rover_lib2/helpers/constants.hpp"
+
 QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
@@ -15,7 +17,7 @@ QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
                   this,
                   [this]()
                   {
-                      RCLCPP_ERROR(this->_node->get_logger(), "Test dot");
+                      this->onPbDotClick();
                   });
 
     this->connect(_ui.pb_dash,
@@ -23,6 +25,59 @@ QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
                   this,
                   [this]()
                   {
-                      RCLCPP_ERROR(this->_node->get_logger(), "Test dash");
+                      this->onPbDashClick();
                   });
+
+    this->connect(_ui.pb_space,
+                  &QPushButton::clicked,
+                  this,
+                  [this]()
+                  {
+                      this->onPbSpaceClick();
+                  });
+
+    this->connect(_ui.pb_send,
+                  &QPushButton::clicked,
+                  this,
+                  [this]()
+                  {
+                      this->sendMorseCode();
+                  });
+
+    this->connect(_ui.lineEdit,
+                  &QLineEdit::returnPressed,
+                  this,
+                  [this]()
+                  {
+                      this->sendMorseCode();
+                  });
+
+    _pub_morseCode = this->_node->create_publisher<rover_msgs::msg::MorseCode>(TOPIC_MORSE_CODE, QOS_DEFAULT);
+}
+
+void QMorseCode::onPbDotClick()
+{
+    this->_ui.lineEdit->insert(".");
+}
+
+void QMorseCode::onPbDashClick()
+{
+    this->_ui.lineEdit->insert("-");
+}
+
+void QMorseCode::onPbSpaceClick()
+{
+    this->_ui.lineEdit->insert(" ");
+}
+
+void QMorseCode::sendMorseCode()
+{
+    RCLCPP_DEBUG(this->_node->get_logger(), this->_ui.lineEdit->text().toStdString().c_str());
+    std::string morseCode = this->_ui.lineEdit->text().toStdString();
+    ;
+    rover_msgs::msg::MorseCode msg;
+    msg.cmd = morseCode;
+    _pub_morseCode->publish(msg);
+
+    this->_ui.lineEdit->clear();
 }
