@@ -72,9 +72,7 @@ void QMorseCode::onPbSpaceClick()
 
 void QMorseCode::sendMorseCode()
 {
-    RCLCPP_DEBUG(this->_node->get_logger(), this->_ui.lineEdit->text().toStdString().c_str());
     std::string morseCode = this->_ui.lineEdit->text().toStdString();
-    ;
     rover_msgs::msg::MorseCode msg;
     msg.cmd = morseCode;
     _pub_morseCode->publish(msg);
