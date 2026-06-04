@@ -14,6 +14,8 @@
     <file>icons/arrow.png</file>
     <file>icons/arm.png</file>
     <file>icons/gripper.png</file>
+    <file>icons/morse_dash.svg</file>
+    <file>icons/morse_dot.svg</file>
 
     <file>model/direction_arrow.glb</file>
     
