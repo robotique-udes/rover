@@ -213,9 +213,8 @@ void QNavigation::pathDistanceCalculated(double distanceMeters_, double heading_
     _ui.distanceLabel->setText(distanceText_);
 }
 
-void QNavigation::waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_)
+void QNavigation::waypointCreated(const QString& name_, double latitude_, double longitude_, const QString& id_)
 {
-    RCLCPP_ERROR(this->_node->get_logger(), "Received signal from bridge");
     for (const auto& waypoint : _waypointsList)
     {
         if (waypoint.id == id_.toStdString() || waypoint.name == name_.toStdString())
@@ -224,16 +223,10 @@ void QNavigation::waypointCreated(const QString& name_, double latitude_, double
         }
     }
 
-    if (id_.isEmpty())
-    {
-        id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
-    }
-    sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
-    RCLCPP_ERROR(rclcpp::get_logger("GUI"),
-                 "Correctly passed through waypointCreated(): name: %s, latitude: %f, longitude: %f",
-                 waypoint.name.c_str(),
-                 waypoint.latitude,
-                 waypoint.longitude);
+    std::string id;
+    id = id_.isEmpty() ? "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString() : id_.toStdString();
+    
+    sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id};
     this->addWaypointToList(waypoint);
     _waypointManager.syncWaypoints(_waypointsList);
 }
@@ -361,11 +354,9 @@ void QNavigation::onDeleteWaypointClicked(void)
 
 void QNavigation::onClearWaypointsClicked(void)
 {
-    RCLCPP_ERROR(this->_node->get_logger(), "Before popup");
     QMessageBox::StandardButton result_ = QHelper::QPopUp::sendQuestionPopUp("Clear Waypoints",
                                                                              "Are you sure you want to clear all waypoints?",
                                                                              QMessageBox::Yes | QMessageBox::No);
-    RCLCPP_ERROR(this->_node->get_logger(), "After popup");
 
     if (result_ == QMessageBox::Yes)
     {
@@ -380,10 +371,7 @@ void QNavigation::onClearWaypointsClicked(void)
 
         emit this->clearWaypoints();
 
-        RCLCPP_ERROR(this->_node->get_logger(), "Cleared all waypoints");
     }
-
-    RCLCPP_ERROR(this->_node->get_logger(), "Not cleared all waypoints");
 }
 
 void QNavigation::onWebViewLoadFinished(bool ok_)
