@@ -225,7 +225,7 @@ void QNavigation::waypointCreated(const QString& name_, double latitude_, double
 
     std::string id;
     id = id_.isEmpty() ? "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString() : id_.toStdString();
-    
+
     sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id};
     this->addWaypointToList(waypoint);
     _waypointManager.syncWaypoints(_waypointsList);
@@ -370,7 +370,6 @@ void QNavigation::onClearWaypointsClicked(void)
         _ui.distanceLabel->setText("N/A");
 
         emit this->clearWaypoints();
-
     }
 }
 
