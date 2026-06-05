@@ -29,8 +29,6 @@ class QUtilityBarBottom : public QWidget
     std::shared_ptr<rclcpp::Node> _node;
 
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::ArmMsg>> _sub_armJointStatus;
-
-    float _lastColor;
 };
 
 #endif  // QUTILITY_BAR_BOTTOM_HPP
