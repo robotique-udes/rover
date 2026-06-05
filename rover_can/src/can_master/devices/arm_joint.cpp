@@ -79,6 +79,7 @@ void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmJointStatus& 
 void ArmJoint::CB_CAN_armAdvancedStatus(const RoverCan2::Msgs::ArmJointAdvancedStatus& msg_)
 {
     _rosSharedMsg->get().getThreadSafeAccess().current_torque[_rosArmSpeedMsgId] = msg_.getData().currentTorque;
+    _rosSharedMsg->get().getThreadSafeAccess().current_motor_temp[_rosArmSpeedMsgId] = msg_.getData().currentMotorTemp;
     _rosSharedMsg->get().getThreadSafeAccess().current_amperage[_rosArmSpeedMsgId] = msg_.getData().currentAmperage;
 }
 
