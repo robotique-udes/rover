@@ -54,13 +54,6 @@ class Bridge
 
             qtBridge.clearWaypoints.connect(() => 
             {
-                Swal.fire({
-                    title: 'Waypoints cleared',
-                    text: `All waypoints have been removed.`,
-                    icon: 'success',
-                    confirmButtonText: 'OK'
-                });
-
                 this.waypoints.clearAllWaypoints();
                 this.pathManager.stopDynamicWaypointPathUpdates();
                 this.pathManager.clearWaypointPath();
