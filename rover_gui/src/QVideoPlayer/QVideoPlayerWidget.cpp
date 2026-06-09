@@ -94,11 +94,10 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
 
-    for (uint16_t i = 0; i<NBR_IDS_TO_DISPLAY; i++)
+    for (uint16_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
     {
         _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][1]);
     }
-    
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
@@ -469,7 +468,6 @@ bool QVideoPlayerWidget::validateRtspUrl(const QString& url_)
 
 void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
 {
-    
     if (isValid_)
     {
         _ui.rtspComboBox->setStyleSheet("");
@@ -496,7 +494,6 @@ void QVideoPlayerWidget::onToggleView(void)
 
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
-
     bool isValid = this->validateRtspUrl(text_);
     this->updateUrlValidationUI(isValid);
 
