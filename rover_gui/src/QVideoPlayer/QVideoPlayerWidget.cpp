@@ -467,19 +467,19 @@ bool QVideoPlayerWidget::validateRtspUrl(const QString& url_)
     return url_.startsWith("rtsp://") || url_.startsWith("rtspt://") || url_.startsWith("rtsps://");
 }
 
-void QVideoPlayerWidget::updateUrlValidationUI(bool isValid)
+void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
 {
-    /*
+    
     if (isValid_)
     {
-        _ui.rtspTextBox->setStyleSheet("");
-        _ui.rtspTextBox->setToolTip("");
+        _ui.rtspComboBox->setStyleSheet("");
+        _ui.rtspComboBox->setToolTip("");
     }
     else
     {
-        _ui.rtspTextBox->setStyleSheet("border: 1px solid red;");
-        _ui.rtspTextBox->setToolTip("Invalid URL format. Expected: rtsp://[username:password@]host[:port]/path");
-    }*/
+        _ui.rtspComboBox->setStyleSheet("border: 1px solid red;");
+        _ui.rtspComboBox->setToolTip("Invalid URL format. Expected: rtsp://[username:password@]host[:port]/path");
+    }
 }
 
 void QVideoPlayerWidget::emitStateChanged(void)
