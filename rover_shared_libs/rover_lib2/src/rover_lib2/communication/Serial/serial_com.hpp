@@ -52,27 +52,25 @@ DEFINE_LOG_NODE(SerialCom, Logger::eNodeState::ON);
 class SerialCom
 {
   public:
-    SerialCom(int fileDesc_,
-              eBaudRate baudRate_= eBaudRate::B_1152000,
+    SerialCom(const char* path_,
+              eBaudRate baudRate_ = eBaudRate::B_1152000,
               eDataPerPacket char_ = eDataPerPacket::EIGHT_BITS,
               tcflag_t cflags_ = CREAD | CLOCAL,
               uint16_t minChar_ = 0,
               uint16_t timeout_ = 10);
+    SerialCom(const SerialCom&) = delete;
+    SerialCom& operator=(const SerialCom&) = delete;
+    SerialCom(SerialCom&&) = delete;
+    SerialCom& operator=(SerialCom&&) = delete;
     ~SerialCom();
     bool serialWrite(const std::string& cmd_);
     std::string serialRead();
     eState getState() const;
 
- private:
+  private:
     static const uint16_t READING_BUFFER = 256;
-    bool serialConfig();
-    void controlFlagsInit(termios& tty_);
+    bool serialConfig(eBaudRate baudRate_, eDataPerPacket char_, tcflag_t cflags_, uint16_t minChar_, uint16_t timeout_);
     int _fileDesc;
-    speed_t _baudRate;
-    tcflag_t _char;
-    tcflag_t _cflags;
-    uint16_t _minChar;
-    uint16_t _timeout;
     eState _state;
 };
 
