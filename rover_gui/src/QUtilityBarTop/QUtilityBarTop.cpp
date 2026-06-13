@@ -2,6 +2,7 @@
 #include "rover_lib2/helpers/constants.hpp"
 #include <QIcon>
 #include <QFile>
+#include <QStyle>
 #include <qdebug.h>
 #include <qtimezone.h>
 
@@ -46,10 +47,14 @@ void QUtilityBarTop::setupUI(void)
 
     _ui.batteryLabel->setText("-- %");
     _ui.signalQualityLabel->setText("RSSI: ---");
-    _ui.connectionSpeedLabel->setText("--.- Mb/s");
+    _ui.upSpeedLabel->setText("--.- Mb/s");
+    _ui.downSpeedLabel->setText("--.- Mb/s");
     _ui.satellitesNbrLabel->setText("Sat: --");
     _ui.GNSSFixLabel->setText("Fix: --.-------");
     _ui.HeadingLabel->setText("---.--");
+
+    _ui.upSpeedButton->setIcon(QIcon::fromTheme("go-up"));
+    _ui.downSpeedButton->setIcon(QIcon::fromTheme("go-down"));
 
     this->setStyleSheet(R"(
     QPushButton {
@@ -103,7 +108,7 @@ void QUtilityBarTop::initAntennaStatus(void)
             QOS_DEFAULT,
             [this](rover_msgs::msg::AntennaStatus msg_)
             {
-                emit this->updateAntennaUI(msg_.connected, msg_.rssi, msg_.txrate);
+                emit this->updateAntennaUI(msg_.connected, msg_.rssi, msg_.txrate, msg_.rxrate);
             });
 
         _timer_RSSIPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_RSSI_PUB_COUNT_MS),
@@ -213,13 +218,14 @@ void QUtilityBarTop::onUpdateBatteryUI(float _percent)
     _ui.batteryIcon->setIcon(icon);
 }
 
-void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float speed_)
+void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_)
 {
     QIcon icon;
     if (connected_)
     {
         _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_)));
-        _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_ / 1000000.0f), 'f', 1) + " Mb/s");
+        _ui.upSpeedLabel->setText(QString::number(static_cast<float>(upSpeed_ / 1000000.0f), 'f', 1) + " Mb/s");
+        _ui.downSpeedLabel->setText(QString::number(static_cast<float>(downSpeed_ / 1000000.0f), 'f', 1) + " Mb/s");
 
         if (rssi_ <= -85)
         {
@@ -245,7 +251,7 @@ void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float speed
     else
     {
         _ui.signalQualityLabel->setText("RSSI: ---");
-        _ui.connectionSpeedLabel->setText("--.- Mb/s");
+        _ui.upSpeedLabel->setText("--.- Mb/s");
         icon = QIcon(":/icons/ErrorRSSI.png");
     }
 
