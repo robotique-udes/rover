@@ -39,7 +39,7 @@ class QNavigation : public QWidget
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_, double heading_);
-    void waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_);
+    void waypointCreated(const QString& name_, double latitude_, double longitude_, const QString& id_);
     void onCalculatePathClicked(void);
     void onWaypointVisibilityChanged(QListWidgetItem* item_);
     void onWaypointSelected(QListWidgetItem* item_);
