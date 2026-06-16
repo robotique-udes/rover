@@ -28,7 +28,7 @@ void BMSDataNode::callbackBMSData(void)
 
     this->getData();
 
-    msg.battery_amps = this->_ampArray[AmpIndexType::BATTERY_AMPS];
+    msg.battery_amps = _ampArray[AmpIndexType::BATTERY_AMPS];
 
     msg.cell_volt.resize(CELL_VOLT_END - CELL_VOLT_START);
 
