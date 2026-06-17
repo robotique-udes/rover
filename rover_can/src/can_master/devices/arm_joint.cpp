@@ -8,7 +8,8 @@ ArmJoint::ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
     DeviceT(deviceId_,
             RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>(),
             RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus),
-            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>()),
+            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>(),
+            RoverCan2::Publisher<RoverCan2::Msgs::MorseInput>()),
     _rosArmSpeedMsgId(rosArmSpeedMsgId_),
     _rosSharedMsg(rosSharedMsg_)
 {
@@ -41,13 +42,13 @@ void ArmJoint::rosElementInit(void)
             this->CB_SRV_armJointsConfig(request_, response_);
         });
 
-    _sub_MorseCodeInput
-        = this->getAttachedNode()->create_subscription<rover_msgs::msg::MorseCode>(MORSE_CODE_TOPIC,
-                                                                                QOS_DEFAULT,
-                                                                                [this](const rover_msgs::msg::MorseCode& rosMsg_)
-                                                                                {
-                                                                                    this->CB_ROS_mordeCodeInput(rosMsg_);
-                                                                                });
+    _sub_MorseCodeInput = this->getAttachedNode()->create_subscription<rover_msgs::msg::MorseCode>(
+        MORSE_CODE_TOPIC,
+        QOS_DEFAULT,
+        [this](const rover_msgs::msg::MorseCode& rosMsg_)
+        {
+            this->CB_ROS_mordeCodeInput(rosMsg_);
+        });
 }
 
 void ArmJoint::rosElementClean(void)

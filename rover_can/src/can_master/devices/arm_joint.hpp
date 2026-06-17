@@ -18,12 +18,14 @@
 
 class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>,
                                           RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointStatus, ArmJoint>,
-                                          RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>>,
+                                          RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>,
+                                          RoverCan2::Publisher<RoverCan2::Msgs::MorseInput>>,
                  public MasterDevice
 {
     using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>,
                                       RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointStatus, ArmJoint>,
-                                      RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>>;
+                                      RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>,
+                                      RoverCan2::Publisher<RoverCan2::Msgs::MorseInput>>;
 
     static constexpr const char* ARM_CMD_TOPIC = "/rover/arm/joints_cmd";
     static constexpr const char* ARM_POSITION_STATUS_TOPIC = "/rover/arm/joints_status";
