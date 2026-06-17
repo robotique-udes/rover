@@ -74,7 +74,8 @@ void QMorseCode::sendMorseCode()
 {
     std::string morseCode = this->_ui.lineEdit->text().toStdString();
     rover_msgs::msg::MorseCode msg;
-    msg.cmd = morseCode;
+    msg.speed_wpm = 18;
+    msg.symbol = 1;
     _pub_morseCode->publish(msg);
 
     this->_ui.lineEdit->clear();
