@@ -40,6 +40,14 @@ void ArmJoint::rosElementInit(void)
         {
             this->CB_SRV_armJointsConfig(request_, response_);
         });
+
+    _sub_MorseCodeInput
+        = this->getAttachedNode()->create_subscription<rover_msgs::msg::MorseCode>(MORSE_CODE_TOPIC,
+                                                                                QOS_DEFAULT,
+                                                                                [this](const rover_msgs::msg::MorseCode& rosMsg_)
+                                                                                {
+                                                                                    this->CB_ROS_mordeCodeInput(rosMsg_);
+                                                                                });
 }
 
 void ArmJoint::rosElementClean(void)
@@ -119,6 +127,12 @@ void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::Arm
                 break;
         }
     }
+}
+
+void ArmJoint::CB_ROS_mordeCodeInput(const rover_msgs::msg::MorseCode& msg_)
+{
+    this->_nextMorseInputMsg.data().symbol = msg_.symbol;
+    this->_nextMorseInputMsg.data().speed_wpm = msg_.speed_wpm;
 }
 
 void ArmJoint::CB_ROS_canSend(void)

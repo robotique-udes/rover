@@ -8,8 +8,10 @@
 #include <rover_can2/rover_can2.hpp>
 #include <rover_can2/msgs/arm_joint_status.hpp>
 #include <rover_can2/msgs/arm_joint_config.hpp>
+#include <rover_can2/msgs/morse_input.hpp>
 #include <rover_msgs/msg/arm_msg.hpp>
 #include <rover_msgs/srv/arm_joint_config.hpp>
+#include <rover_msgs/msg/morse_code.hpp>
 
 #include <memory>
 #include <vector>
@@ -26,6 +28,7 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     static constexpr const char* ARM_CMD_TOPIC = "/rover/arm/joints_cmd";
     static constexpr const char* ARM_POSITION_STATUS_TOPIC = "/rover/arm/joints_status";
     static constexpr const char* ARM_JOINTS_CONFIG_SERVICE_NAME = "/rover/arm/joints_config";
+    static constexpr const char* MORSE_CODE_TOPIC = "/base/gui/morse_code";
     static constexpr float ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ = 20.0F;
     static constexpr uint32_t CAN_PUBLISH_PERIOD_MS
         = static_cast<uint32_t>(ROUND(1'000.0F / ARM_POSITION_STATUS_PUBLISH_FREQUENCY_HZ));
@@ -52,15 +55,18 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     void CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_);
     void CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
                                 std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_);
+    void CB_ROS_mordeCodeInput(const rover_msgs::msg::MorseCode& msg_);
     void CB_ROS_canSend(void);
 
     const uint8_t _rosArmSpeedMsgId;
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ArmMsg>> _rosSharedMsg;
     RoverCan2::Msgs::ArmJointCmd _nextArmCmdMsg;
     RoverCan2::Msgs::ArmJointConfig _nextArmConfigMsg;
+    RoverCan2::Msgs::MorseInput _nextMorseInputMsg;
 
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pub_ArmPositionStatus;
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _sub_ArmPositionStatus;
+    rclcpp::Subscription<rover_msgs::msg::MorseCode>::SharedPtr _sub_MorseCodeInput;
     rclcpp::Service<rover_msgs::srv::ArmJointConfig>::SharedPtr _srv_ArmJointsConfig;
     rclcpp::TimerBase::SharedPtr _timerCanSend;
 };
