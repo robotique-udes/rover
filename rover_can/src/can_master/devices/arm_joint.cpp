@@ -133,6 +133,7 @@ void ArmJoint::CB_ROS_mordeCodeInput(const rover_msgs::msg::MorseCode& msg_)
 {
     this->_nextMorseInputMsg.data().symbol = msg_.symbol;
     this->_nextMorseInputMsg.data().speed_wpm = msg_.speed_wpm;
+    this->sendMsg(_nextMorseInputMsg);
 }
 
 void ArmJoint::CB_ROS_canSend(void)
