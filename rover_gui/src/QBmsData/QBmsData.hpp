@@ -29,6 +29,7 @@ class QBmsData : public QWidget
     static constexpr int X_TIME_SCALER = 1000000000;
     static constexpr uint16_t CELL_MIN_VOLT = 3000;
     static constexpr uint16_t CELL_MAX_VOLT = 4200;
+    static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
 
     enum class eMeasurementType
     {
