@@ -1,18 +1,18 @@
 #ifndef SERIAL_COM_H
 #define SERIAL_COM_H
 
-#include "rclcpp/rclcpp.hpp"
 #include "rover_lib2/helpers/constants.hpp"
 #include "rover_lib2/helpers/log.hpp"
-#include <fstream>
+
+#include <rclcpp/rclcpp.hpp>
 #include <utility>
-#include <iostream>
-#include <vector>
 #include <fcntl.h>
 #include <termios.h>
 #include <cstring>
 #include <cerrno>
 #include <unistd.h>
+#include <optional>
+#include <string>
 
 enum class eBaudRate : speed_t
 {
@@ -41,7 +41,7 @@ enum class eDataPerPacket : tcflag_t
     EIGHT_BITS = CS8
 };
 
-enum class eState : size_t
+enum class eState : uint8_t
 {
     INACTIVE,
     ACTIVE
@@ -49,29 +49,56 @@ enum class eState : size_t
 
 DEFINE_LOG_NODE(SerialCom, Logger::eNodeState::ON);
 
+/**
+ * @brief RAII wrapper around a POSIX serial port file descriptor.
+ *
+ * Provides open/configure/read/write/close lifecycle management for a
+ * serial device using POSIX termios. Not copyable or movable, as it
+ * owns a single file descriptor for its lifetime.
+ *
+ * @note POSIX systems only.
+ * @warning Not thread-safe. Concurrent calls to serialRead() / serialWrite()
+ *          / reconnect() from multiple threads require external synchronization.
+ */
 class SerialCom
 {
   public:
-    SerialCom(const char* path_,
+    SerialCom(std::string path_,
               eBaudRate baudRate_ = eBaudRate::B_1152000,
               eDataPerPacket char_ = eDataPerPacket::EIGHT_BITS,
               tcflag_t cflags_ = CREAD | CLOCAL,
-              uint16_t minChar_ = 0,
-              uint16_t timeout_ = 10);
+              uint8_t minChar_ = 0,
+              uint8_t timeout_ = 10);
     SerialCom(const SerialCom&) = delete;
     SerialCom& operator=(const SerialCom&) = delete;
     SerialCom(SerialCom&&) = delete;
     SerialCom& operator=(SerialCom&&) = delete;
     ~SerialCom();
     bool serialWrite(const std::string& cmd_);
-    std::string serialRead();
+
+    /**
+     * @brief Reads available bytes from the serial port.
+     *
+     * @return Raw bytes read, or std::nullopt on inactive port / read failure.
+     *
+     *@warning Does not guarantee a complete message. Caller must accumulate
+     *         fragments and reconstruct messages per the device protocol.
+     */
+    std::optional<std::string> serialRead();
     eState getState() const;
+    bool reconnect();
 
   private:
     static const uint16_t READING_BUFFER = 256;
-    bool serialConfig(eBaudRate baudRate_, eDataPerPacket char_, tcflag_t cflags_, uint16_t minChar_, uint16_t timeout_);
+    bool serialConfig();
     int _fileDesc;
     eState _state;
+    std::string _path;
+    eBaudRate _baudRate;
+    eDataPerPacket _char;
+    tcflag_t _cflags;
+    uint8_t _minChar;
+    uint8_t _timeout;
 };
 
 #endif
