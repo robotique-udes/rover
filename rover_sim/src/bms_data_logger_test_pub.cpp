@@ -22,9 +22,8 @@ private:
  
     msg.battery_amps = 5.0f + 10.0f * static_cast<float>(
       std::sin(_tick * 0.05)) * -100;
- 
+      
     const std::size_t NUM_CELLS = 6;
-    msg.cell_volt.resize(NUM_CELLS);
     for (std::size_t i = 0; i < NUM_CELLS; ++i) {
       msg.cell_volt[i] = static_cast<uint16_t>(
         3700 + 500 * std::sin(_tick * 0.03 + static_cast<double>(i) * 0.5));

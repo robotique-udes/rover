@@ -1,2 +1,2 @@
 float32 battery_amps
-uint16[] cell_volt
+uint16[6] cell_volt

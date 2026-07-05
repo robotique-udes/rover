@@ -6,21 +6,17 @@
 
 #include <rover_lib2/helpers/constants.hpp>
 #include <rclcpp/rclcpp.hpp>
-#include <utility>
-#include <fstream>
-#include <iostream>
-#include <vector>
-#include <fcntl.h>
-#include <termios.h>
 
 class BMSDataNode : public rclcpp::Node
 {
+  private:
     static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
+    static constexpr const char* DEVICE_FILE_PATH = "/dev/ttyACM0";
     static constexpr uint64_t DELAY_PUBLISHER_MS = 1000UL;
-    static constexpr uint16_t VOLT_DATA_TYPES = 9;
-    static constexpr uint16_t AMP_DATA_TYPES = 6;
+    static constexpr size_t VOLT_DATA_TYPES = 9;
+    static constexpr size_t AMP_DATA_TYPES = 6;
 
-    enum AmpIndexType
+    enum class AmpIndexType : size_t
     {
         BATTERY_AMPS,
         AH,
@@ -30,7 +26,7 @@ class BMSDataNode : public rclcpp::Node
         LOAD_AMPS
     };
 
-    enum VoltIndexType
+    enum class VoltIndexType : size_t
     {
         BATTERY,
         LOAD,
@@ -45,10 +41,11 @@ class BMSDataNode : public rclcpp::Node
   private:
     void callbackBMSData(void);
     void getData(void);
-    void parse(std::string rawOutput_, uint16_t dataArray_[], uint16_t arraySize_);
+    template<size_t N>
+    void parse(std::string_view rawOutput_, std::array<uint16_t, N>& dataArray_);
 
-    uint16_t _ampArray[AMP_DATA_TYPES];
-    uint16_t _voltArray[VOLT_DATA_TYPES];
+    std::array<uint16_t, AMP_DATA_TYPES> _ampArray;
+    std::array<uint16_t, VOLT_DATA_TYPES> _voltArray;
     rclcpp::Publisher<rover_msgs::msg::BmsData>::SharedPtr _publisher;
     rclcpp::TimerBase::SharedPtr _timer_publisher;
     SerialCom _terminal;

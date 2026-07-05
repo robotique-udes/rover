@@ -15,6 +15,8 @@
 #include <QLabel>
 #include <QtCharts>
 
+#include "QCellWidget.hpp"
+
 
 class QBmsData : public QWidget
 {
@@ -25,22 +27,13 @@ class QBmsData : public QWidget
     static constexpr uint16_t GRAPH_DIMENSION = 800U;
     static constexpr uint16_t CELL_WIDTH = 200U;
     static constexpr uint16_t CELL_HEIGHT = 400U;
-    static constexpr uint16_t AXIS_Y_DIFF = 20;
+    static constexpr uint16_t AXIS_Y_DIFF = 20U;
     static constexpr int X_TIME_SCALER = 1000000000;
     static constexpr uint16_t CELL_MIN_VOLT = 3000;
     static constexpr uint16_t CELL_MAX_VOLT = 4200;
     static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
-
-    enum class eMeasurementType
-    {
-      BATTERY_AMPS,
-      CELL_1_VOLT,
-      CELL_2_VOLT,
-      CELL_3_VOLT,
-      CELL_4_VOLT,
-      CELL_5_VOLT,
-      CELL_6_VOLT
-    };
+    static constexpr uint16_t CELLS_ARRAY_SIZE = 6;
+    static constexpr uint16_t GRAPH_MAX_SAMPLES = 50;
 
     struct sBmsDataInfos
     {
@@ -57,33 +50,26 @@ class QBmsData : public QWidget
         void callbackBmsData(rover_msgs::msg::BmsData msg_);
 
     private slots:
-        void onCallbackBmsData(rover_msgs::msg::BmsData msg_);
+        void onCallbackBmsData(const rover_msgs::msg::BmsData& msg_);
 
-    private:
+    public:
         void initializeWidget(void);
-        void addCellVoltWidget(eMeasurementType measurementType_, QGridLayout* grid_, uint16_t row_, uint16_t col_);
+        void addCellVoltWidget(uint16_t cellIndex_, QGridLayout* grid_, uint16_t row_, uint16_t col_);
         void addBattAmpsWidget(void);
-        std::string getBmsDataIcon(eMeasurementType measurementType_);
-        std::string getBmsDataName(eMeasurementType measurementType_);
-        void updateBmsData(eMeasurementType measurementType_,  rover_msgs::msg::BmsData msg_);
-        void updateBattAmps(rover_msgs::msg::BmsData msg_);
+        void updateCellVolt(uint16_t cellIndex_, uint16_t voltValue_);
+        void updateBattAmps(float amps_);
 
         std::shared_ptr<rclcpp::Node> _node;
-        rclcpp::TimerBase::SharedPtr _timer_bmsPub;
-        rclcpp::TimerBase::SharedPtr _watchdog_bms;
-
         Ui::DataLogger _ui;
         rclcpp::Subscription<rover_msgs::msg::BmsData>::SharedPtr _sub_bmsData;
-        std::unique_ptr<QFlowLayout> _layout;
-        std::unordered_map<eMeasurementType, sBmsDataInfos> _bmsDataTypes;
-        std::deque<float> _battAmpsDataArray = std::deque<float>(BATT_AMPS_ARRAY_SIZE, 0.0f);
-        std::vector<rclcpp::Time> _graphXAxis;
+        QFlowLayout* _layout;
+        std::unordered_map<uint16_t, sBmsDataInfos> _bmsDataTypes;
         QChartView* _chartView;
         QLineSeries* _battAmpsSeries;
         QValueAxis* _axisY;
         QValueAxis* _axisX;
-
-
+        uint16_t _timeCount = 0;
+        rclcpp::Time _initTime;
 };
 
 #endif

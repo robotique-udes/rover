@@ -11,7 +11,7 @@ int main(int argc_, char** argv_)
 
 BMSDataNode::BMSDataNode():
     Node("bms_info"),
-    _terminal("/dev/ttyACM0")
+    _terminal(DEVICE_FILE_PATH)
 {
     _publisher = create_publisher<rover_msgs::msg::BmsData>(TOPIC_BMS_DATA, QOS_DEFAULT);
 
@@ -28,13 +28,12 @@ void BMSDataNode::callbackBMSData(void)
 
     this->getData();
 
-    msg.battery_amps = _ampArray[AmpIndexType::BATTERY_AMPS];
+    msg.battery_amps = _ampArray[static_cast<size_t>(AmpIndexType::BATTERY_AMPS)];
 
-    msg.cell_volt.resize(CELL_VOLT_END - CELL_VOLT_START);
-
-    for (uint16_t i = VoltIndexType::CELL_VOLT_START; i < VoltIndexType::CELL_VOLT_END; i++)
+    for (size_t i = static_cast<size_t>(VoltIndexType::CELL_VOLT_START); i < static_cast<size_t>(VoltIndexType::CELL_VOLT_END);
+         i++)
     {
-        msg.cell_volt[i - CELL_VOLT_START] = _voltArray[i];
+        msg.cell_volt[i - static_cast<size_t>(VoltIndexType::CELL_VOLT_START)] = _voltArray[i];
     }
 
     _publisher->publish(msg);
@@ -42,52 +41,81 @@ void BMSDataNode::callbackBMSData(void)
 
 void BMSDataNode::getData(void)
 {
-    std::string ampSerialOutput;
-    std::string voltSerialOutput;
-
     _terminal.serialWrite("?A\r");
-    ampSerialOutput = _terminal.serialRead();
-    _terminal.serialWrite("?V\r");
-    voltSerialOutput = _terminal.serialRead();
+    auto ampResult = _terminal.serialRead();
 
-    this->parse(ampSerialOutput, _ampArray, AMP_DATA_TYPES);
-    this->parse(voltSerialOutput, _voltArray, VOLT_DATA_TYPES);
+    if (ampResult.has_value())
+    {
+        this->parse(ampResult.value(), _ampArray);
+    }
+    else
+    {
+        RCLCPP_WARN(this->get_logger(), "Command to retrieve amp data failed");
+    }
+
+    _terminal.serialWrite("?V\r");
+    auto voltResult = _terminal.serialRead();
+    if (voltResult.has_value())
+    {
+        this->parse(voltResult.value(), _voltArray);
+    }
+    else
+    {
+        RCLCPP_WARN(this->get_logger(), "Command to retrieve volt data failed");
+    }
 }
 
-void BMSDataNode::parse(const std::string rawOutput_, uint16_t dataArray_[], uint16_t arraySize_)
+template<size_t N>
+void BMSDataNode::parse(std::string_view view_, std::array<uint16_t, N>& dataArray_)
 {
-    std::string_view view = rawOutput_;
-
-    size_t startPos = view.find('=');
+    size_t startPos = view_.find('=');
     if (startPos == std::string_view::npos)
     {
         RCLCPP_WARN(this->get_logger(), "Command to retrieve data from BMS failed");
         return;
     }
 
-    view.remove_prefix(startPos + 1);
+    view_.remove_prefix(startPos + 1);
 
-    if (view.empty())
+    if (view_.empty())
     {
-        RCLCPP_WARN(this->get_logger(), "No data retreived from BMS command");
+        RCLCPP_WARN(this->get_logger(), "No data retrieved from BMS command");
         return;
     }
 
-    for (uint16_t i = 0; i < arraySize_; i++)
+    for (size_t i = 0; i < dataArray_.size(); i++)
     {
-        size_t delimPos = view.find(':');
+        size_t delimPos = view_.find(':');
 
-        dataArray_[i] = std::stoi(std::string(view.substr(0, delimPos)));
-
+        size_t end;
         if (delimPos == std::string_view::npos)
         {
-            if (i < arraySize_ - 1)
+            end = view_.size();
+            if (i < dataArray_.size() - 1)
             {
                 RCLCPP_WARN(this->get_logger(), "BMS's command output returned fewer data than expected");
             }
+        }
+        else
+        {
+            end = delimPos;
+        }
+
+        uint16_t value;
+        std::from_chars_result charResult = std::from_chars(view_.data(), view_.data() + end, value);
+        if (charResult.ec == std::errc{})
+        {
+            dataArray_.at(i) = value;
+        }
+        else
+        {
+            RCLCPP_WARN(this->get_logger(), "Failed to parse BMS value");
             return;
         }
 
-        view.remove_prefix(delimPos + 1);
+        if (delimPos != std::string_view::npos)
+        {
+            view_.remove_prefix(delimPos + 1);
+        }
     }
 }
