@@ -1,10 +1,10 @@
 #include "QBmsData.hpp"
 
 constexpr const char* DEFAULT = "QWidget {"
-                                    "background-color: #3c3f41;"
-                                    "border-radius: 5px;"
-                                    "padding: 5px 10px;"
-                                    "}";
+                                "background-color: #3c3f41;"
+                                "border-radius: 5px;"
+                                "padding: 5px 10px;"
+                                "}";
 
 QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
@@ -12,9 +12,9 @@ QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
 {
     _ui.setupUi(this);
 
-        _layout = new QFlowLayout(_ui.bmsData);
-        _layout->setSpacing(2);
-        _layout->setContentsMargins(2, 2, 2, 2);
+    _layout = new QFlowLayout(_ui.bmsData);
+    _layout->setSpacing(2);
+    _layout->setContentsMargins(2, 2, 2, 2);
 
     _ui.bmsData->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
     _ui.bmsData->adjustSize();
@@ -47,6 +47,7 @@ void QBmsData::initializeWidget(void)
     }
 
     cellContainer->setLayout(cellsGrid);
+    _layout->addWidget(_graph);
     _layout->addWidget(cellContainer);
 }
 

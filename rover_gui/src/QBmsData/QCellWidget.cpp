@@ -1,17 +1,18 @@
 #include "QCellWidget.hpp"
 
 constexpr const char* DEFAULT = "QWidget {"
-                                    "background-color: #3c3f41;"
-                                    "border-radius: 5px;"
-                                    "padding: 5px 10px;"
-                                    "}";
+                                "background-color: #3c3f41;"
+                                "border-radius: 5px;"
+                                "padding: 5px 10px;"
+                                "}";
 
-QCellWidget::QCellWidget(uint16_t cellIndex_, QWidget* parent_) : QWidget(parent_)
+QCellWidget::QCellWidget(uint16_t cellIndex_, QWidget* parent_):
+    QWidget(parent_)
 {
     setStyleSheet(DEFAULT);
     setFixedSize(CELL_WIDTH, CELL_HEIGHT);
 
-    QVBoxLayout* layout = new QVBoxLayout(this);  
+    QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(1, 1, 1, 1);
     layout->setSpacing(1);
 

@@ -1,13 +1,14 @@
 #include "QBattChart.hpp"
 
 constexpr const char* DEFAULT = "QWidget {"
-                                    "background-color: #3c3f41;"
-                                    "border-radius: 5px;"
-                                    "padding: 5px 10px;"
-                                    "}";
+                                "background-color: #3c3f41;"
+                                "border-radius: 5px;"
+                                "padding: 5px 10px;"
+                                "}";
 
-
-QBattChart::QBattChart(rclcpp::Time initTime_, QWidget* parent_) : QWidget(parent_), _initTime(initTime_)
+QBattChart::QBattChart(rclcpp::Time initTime_, QWidget* parent_):
+    QWidget(parent_),
+    _initTime(initTime_)
 {
     setStyleSheet(DEFAULT);
 
