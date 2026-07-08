@@ -97,6 +97,8 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QPanoramaWorker.cpp
 
                    src/QBmsData/QBmsData.cpp
+                   src/QBmsData/QCellWidget.cpp
+                   src/QBmsData/QBattChart.cpp
 
                    src/Global/Constant/resources.qrc
                    ui/icons.qrc

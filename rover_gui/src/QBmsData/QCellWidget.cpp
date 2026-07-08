@@ -1,5 +1,4 @@
 #include "QCellWidget.hpp"
-#include "QBmsData.hpp"
 
 constexpr const char* DEFAULT = "QWidget {"
                                     "background-color: #3c3f41;"
@@ -7,24 +6,23 @@ constexpr const char* DEFAULT = "QWidget {"
                                     "padding: 5px 10px;"
                                     "}";
 
-QCellWidget::QCellWidget(uint16_t cellIndex_, QBmsData* bmsGUI)
+QCellWidget::QCellWidget(uint16_t cellIndex_, QWidget* parent_) : QWidget(parent_)
 {
-    QWidget* bmsDataContainer = new QWidget(bmsGUI->_ui.bmsData);
-    bmsDataContainer->setStyleSheet(DEFAULT);
-    bmsDataContainer->setFixedSize(CELL_WIDTH, CELL_HEIGHT);
+    setStyleSheet(DEFAULT);
+    setFixedSize(CELL_WIDTH, CELL_HEIGHT);
 
-    QVBoxLayout* containerLayout = new QVBoxLayout(bmsDataContainer);
-    containerLayout->setContentsMargins(1, 1, 1, 1);
-    containerLayout->setSpacing(1);
+    QVBoxLayout* layout = new QVBoxLayout(this);  
+    layout->setContentsMargins(1, 1, 1, 1);
+    layout->setSpacing(1);
 
-    QProgressBar* progressBar = new QProgressBar();
-    progressBar->setRange(QBmsData::CELL_MIN_VOLT, QBmsData::CELL_MAX_VOLT);
-    progressBar->setValue(QBmsData::CELL_MIN_VOLT);
-    progressBar->setFormat("%v(%p%)");
-    progressBar->setTextVisible(true);
-    progressBar->setAlignment(Qt::AlignCenter);
-    progressBar->setOrientation(Qt::Vertical);
-    progressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
+    _progressBar = new QProgressBar();
+    _progressBar->setRange(CELL_MIN_VOLT, CELL_MAX_VOLT);
+    _progressBar->setValue(CELL_MIN_VOLT);
+    _progressBar->setFormat("%v(%p%)");
+    _progressBar->setTextVisible(true);
+    _progressBar->setAlignment(Qt::AlignCenter);
+    _progressBar->setOrientation(Qt::Vertical);
+    _progressBar->setSizePolicy(QSizePolicy::Expanding, QSizePolicy::Expanding);
 
     QLabel* titleLabel = new QLabel();
     titleLabel->setText(QString::fromStdString("Cell " + std::to_string(cellIndex_)));
@@ -36,7 +34,16 @@ QCellWidget::QCellWidget(uint16_t cellIndex_, QBmsData* bmsGUI)
     titleFont.setBold(true);
     titleLabel->setFont(titleFont);
 
-    containerLayout->addWidget(progressBar);
-    containerLayout->addWidget(titleLabel);
-    bmsGUI->_bmsDataTypes[cellIndex_] = {bmsDataContainer, progressBar};
+    layout->addWidget(_progressBar);
+    layout->addWidget(titleLabel);
+}
+
+void QCellWidget::setVoltage(uint16_t volt_)
+{
+    _progressBar->setValue(volt_);
+}
+
+void QCellWidget::setCellContainerSize(uint16_t width_, uint16_t height_)
+{
+    setFixedSize(width_, height_);
 }

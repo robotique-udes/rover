@@ -1,25 +1,32 @@
-
-// ROS
-#include <rclcpp/rclcpp.hpp>
-#include <rover_msgs/msg/bms_data.hpp>
-#include <rover_can2/constant.hpp>
-#include <rover_lib2/helpers/macros.hpp>
-#include <rover_lib2/helpers/constants.hpp>
+#ifndef QCELLWIDGET_HPP
+#define QCELLWIDGET_HPP
 
 // QT
-#include <QtWidgets/QGridLayout>
-#include "UI_BmsData.h"
-#include "Global/QFlowLayout.hpp"
 #include <QLabel>
-#include <QtCharts>
+#include <QProgressBar>
+#include <QVBoxLayout>
 
-class QBmsData;
+class QProgressBar;
 
 class QCellWidget : public QWidget
 {
-    static constexpr uint16_t CELL_WIDTH = 200U;
-    static constexpr uint16_t CELL_HEIGHT = 400U;
+    Q_OBJECT
 
     public:
-    QCellWidget(uint16_t cellIndex_, QBmsData* bmsGUI);
+        static constexpr uint16_t CELL_WIDTH = 200U;
+        static constexpr uint16_t CELL_HEIGHT = 400U;
+        static constexpr uint16_t CELL_MIN_VOLT = 3000;
+        static constexpr uint16_t CELL_MAX_VOLT = 4200;
+
+        explicit QCellWidget(uint16_t cellIndex_, QWidget* parent_ = nullptr);
+        void setVoltage(uint16_t volt_);
+        void setCellContainerSize(uint16_t width_, uint16_t height_);
+
+    private:
+        QProgressBar* _progressBar;
 };
+
+
+
+
+#endif
