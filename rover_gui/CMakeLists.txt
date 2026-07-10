@@ -69,6 +69,8 @@ add_executable(main_gui src/gui.cpp
 
                    src/QLightsController/QLightsController.cpp
 
+                   src/QArmGraphView/QArmGraphView.cpp
+
                    src/QNavigation/QNavigation.cpp
                    src/QNavigation/QWaypoint/QWaypointManager.cpp
                    src/QNavigation/Worker/QPathManager.cpp
