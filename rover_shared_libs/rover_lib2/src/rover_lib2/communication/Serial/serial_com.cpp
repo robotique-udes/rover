@@ -1,3 +1,5 @@
+#if defined(__linux__)
+
 #include "serial_com.hpp"
 
 SerialCom::SerialCom(std::string path_,
@@ -15,6 +17,7 @@ SerialCom::SerialCom(std::string path_,
     _minChar(minChar_),
     _timeout(timeout_)
 {
+    assert((cflags_ & CSIZE) == 0 && "data size bits belong in eDataPerPacket, not cflags_");
     _fileDesc = open(path_.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_CLOEXEC);
     if (_fileDesc < 0)
     {
@@ -169,3 +172,5 @@ eState SerialCom::getState() const
 {
     return _state;
 }
+
+#endif
