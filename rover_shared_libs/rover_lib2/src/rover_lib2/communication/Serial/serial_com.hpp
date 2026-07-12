@@ -66,11 +66,11 @@ class SerialCom
 {
   public:
     SerialCom(std::string path_,
-              eBaudRate baudRate_ = eBaudRate::B_1152000,
+              eBaudRate baudRate_ = eBaudRate::B_115200,
               eDataPerPacket char_ = eDataPerPacket::EIGHT_BITS,
               tcflag_t cflags_ = CREAD | CLOCAL,
               uint8_t minChar_ = 0,
-              uint8_t timeout_ = 10);
+              uint8_t timeout_ = 1);
     SerialCom(const SerialCom&) = delete;
     SerialCom& operator=(const SerialCom&) = delete;
     SerialCom(SerialCom&&) = delete;
@@ -89,9 +89,12 @@ class SerialCom
     std::optional<std::string> serialRead();
     eState getState() const;
     bool reconnect();
+    void flushInput();
 
   private:
-    static const uint16_t READING_BUFFER = 256;
+    static constexpr uint16_t READING_BUFFER = 256;
+    static constexpr char FRAME_TERMINATOR = '\r';
+    static constexpr uint16_t READ_TIMEOUT_MS = 200;
     bool serialConfig();
     int _fileDesc;
     eState _state;
@@ -101,6 +104,7 @@ class SerialCom
     tcflag_t _cflags;
     uint8_t _minChar;
     uint8_t _timeout;
+    std::string _rxBuffer;
 };
 
 #else
