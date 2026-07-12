@@ -65,6 +65,7 @@ QUtilityBarTop::QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* par
     connect(this, &QUtilityBarTop::GNSSTimeout, this, &QUtilityBarTop::onGNSSTimeout);
 
     connect(this, &QUtilityBarTop::timerDisplay, this, &QUtilityBarTop::onTimerDisplay);
+    connect(_ui.dmsToggle, &QSlider::valueChanged, this, &QUtilityBarTop::dmsChanged);
 }
 
 void QUtilityBarTop::setupUI(void)

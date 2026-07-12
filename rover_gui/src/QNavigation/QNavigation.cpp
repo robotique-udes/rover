@@ -1,13 +1,41 @@
 #include "QNavigation.hpp"
 
 // QT
+#include <QRegularExpression>
 #include <QTimer>
+#include <cmath>
 #include "Global/Helpers/QHelpers.hpp"
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 #include "Global/Helpers/QSessionFolderManager/QSessionFolderManager.hpp"
 
 // Helpers
 #include <rover_lib2/helpers/folders.hpp>
+
+namespace
+{
+    QString toDMS(double deg, bool isLat)
+    {
+        char dir;
+
+        if (isLat)
+            dir = (deg >= 0) ? 'N' : 'S';
+        else
+            dir = (deg >= 0) ? 'E' : 'W';
+
+        deg = std::abs(deg);
+
+        int d = static_cast<int>(deg);
+        double minFloat = (deg - d) * 60.0;
+        int m = static_cast<int>(minFloat);
+        double s = (minFloat - m) * 60.0;
+
+        return QString("%1° %2' %3\" %4")
+            .arg(d)
+            .arg(m)
+            .arg(s, 0, 'f', 2)
+            .arg(dir);
+    }
+}
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
@@ -29,6 +57,7 @@ QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent
     this->createNavigationFolder();
     this->initializeWaypointManager();
     this->initializePathManager();
+    this->updateCoordinateLabels();
 
     qInstallMessageHandler(
         [](QtMsgType, const QMessageLogContext&, const QString&)
@@ -167,9 +196,17 @@ void QNavigation::onSetGoalClicked()
     }
 
     sWaypoint waypoint;
-    waypoint.latitude = _ui.inputLatitude->text().toDouble();
-    waypoint.longitude = _ui.inputLongitude->text().toDouble();
+    bool okLatitude = false;
+    bool okLongitude = false;
+    waypoint.latitude = this->parseCoordinateText(_ui.inputLatitude->text(), okLatitude);
+    waypoint.longitude = this->parseCoordinateText(_ui.inputLongitude->text(), okLongitude);
     waypoint.name = _ui.inputName->text().toStdString();
+
+    if (!okLatitude || !okLongitude)
+    {
+        QHelper::QPopUp::sendQuestionPopUp("Input Error", "Please enter valid coordinates in DD or DMS format.");
+        return;
+    }
 
     for (const sWaypoint& waypointIt : _waypointsList)
     {
@@ -270,20 +307,153 @@ void QNavigation::addWaypointToList(const sWaypoint& waypoint_)
     }
 }
 
-void QNavigation::addWaypointToUI(const sWaypoint& waypoint_)
+QString QNavigation::waypointDisplayText(const sWaypoint& waypoint_) const
 {
-    QString displayText = QString("%1 (%2, %3)")
-                              .arg(QString::fromStdString(waypoint_.name))
-                              .arg(waypoint_.latitude, 0, 'f', 6)
-                              .arg(waypoint_.longitude, 0, 'f', 6);
+    if (_dmsOn)
+    {
+        return QString("%1 (%2, %3)")
+            .arg(QString::fromStdString(waypoint_.name))
+            .arg(toDMS(waypoint_.latitude, true))
+            .arg(toDMS(waypoint_.longitude, false));
+    }
+
+    return QString("%1 (%2, %3)")
+        .arg(QString::fromStdString(waypoint_.name))
+        .arg(waypoint_.latitude, 0, 'f', 6)
+        .arg(waypoint_.longitude, 0, 'f', 6);
+}
+
+double QNavigation::parseCoordinateText(const QString& text, bool& ok) const
+{
+    ok = false;
+    QString trimmed = text.trimmed();
+    if (trimmed.isEmpty())
+    {
+        return 0.0;
+    }
+
+    static const QRegularExpression regex(R"(^\s*([+-]?\d+(?:\.\d+)?)(?:\s*°\s*([0-9]+(?:\.\d+)?)\s*'\s*([0-9]+(?:\.\d+)?)\s*"?)?\s*([NnSsEeWw])?\s*$)");
+    QRegularExpressionMatch match = regex.match(trimmed);
+    if (!match.hasMatch())
+    {
+        bool localOk = false;
+        double value = trimmed.toDouble(&localOk);
+        ok = localOk;
+        return value;
+    }
+
+    double degrees = match.captured(1).toDouble(&ok);
+    if (!ok)
+    {
+        return 0.0;
+    }
+
+    double minutes = 0.0;
+    double seconds = 0.0;
+    if (!match.captured(2).isEmpty())
+    {
+        minutes = match.captured(2).toDouble(&ok);
+        if (!ok)
+        {
+            return 0.0;
+        }
+    }
+    if (!match.captured(3).isEmpty())
+    {
+        seconds = match.captured(3).toDouble(&ok);
+        if (!ok)
+        {
+            return 0.0;
+        }
+    }
+
+    double value = std::abs(degrees) + minutes / 60.0 + seconds / 3600.0;
+    QString direction = match.captured(4).toUpper();
+
+    if (!direction.isEmpty())
+    {
+        if (direction == "S" || direction == "W")
+        {
+            value = -std::abs(value);
+        }
+        else
+        {
+            value = std::abs(value);
+        }
+    }
+    else if (degrees < 0)
+    {
+        value = -value;
+    }
+
+    ok = true;
+    return value;
+}
+
+void QNavigation::updateCoordinateLabels(void)
+{
+    _ui.labelLatitude->setText(QString("Latitude (%1):").arg(_dmsOn ? "DMS" : "DD"));
+    _ui.labelLongitude->setText(QString("Longitude (%1):").arg(_dmsOn ? "DMS" : "DD"));
+}
+
+void QNavigation::refreshCoordinateInputs(void)
+{
+    if (!_ui.inputLatitude->text().isEmpty())
+    {
+        bool ok = false;
+        double latitude = this->parseCoordinateText(_ui.inputLatitude->text(), ok);
+        if (ok)
+        {
+            _ui.inputLatitude->setText(_dmsOn ? toDMS(latitude, true)
+                                              : QString::number(latitude, 'f', 6));
+        }
+    }
+
+    if (!_ui.inputLongitude->text().isEmpty())
+    {
+        bool ok = false;
+        double longitude = this->parseCoordinateText(_ui.inputLongitude->text(), ok);
+        if (ok)
+        {
+            _ui.inputLongitude->setText(_dmsOn ? toDMS(longitude, false)
+                                               : QString::number(longitude, 'f', 6));
+        }
+    }
+}
+
+void QNavigation::addWaypointToUI(const sWaypoint& waypoint_, Qt::CheckState checkState)
+{
+    QString displayText = this->waypointDisplayText(waypoint_);
 
     std::unique_ptr<QListWidgetItem> waypointItem = std::make_unique<QListWidgetItem>(displayText);
 
     waypointItem->setFlags(waypointItem->flags() | Qt::ItemIsUserCheckable);
-    waypointItem->setCheckState(Qt::Checked);
+    waypointItem->setCheckState(checkState);
     waypointItem->setData(Qt::UserRole, QString::fromStdString(waypoint_.id));
 
     _ui.waypointList->addItem(waypointItem.release());
+}
+
+void QNavigation::refreshWaypointItems(void)
+{
+    if (_ui.waypointList->count() != _waypointsList.size())
+    {
+        _ui.waypointList->clear();
+        for (const sWaypoint& waypoint : _waypointsList)
+        {
+            this->addWaypointToUI(waypoint, Qt::Checked);
+        }
+        return;
+    }
+
+    for (int i = 0; i < _waypointsList.size(); ++i)
+    {
+        QListWidgetItem* item = _ui.waypointList->item(i);
+        if (item)
+        {
+            item->setText(this->waypointDisplayText(_waypointsList.at(i)));
+        }
+    }
 }
 
 void QNavigation::onWaypointVisibilityChanged(QListWidgetItem* item_)
@@ -316,8 +486,10 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
         const sWaypoint& waypoint_ = _waypointsList.at(index_);
 
         _ui.inputName->setText(QString::fromStdString(waypoint_.name));
-        _ui.inputLatitude->setText(QString::number(waypoint_.latitude, 'f', 6));
-        _ui.inputLongitude->setText(QString::number(waypoint_.longitude, 'f', 6));
+        _ui.inputLatitude->setText(_dmsOn ? toDMS(waypoint_.latitude, true)
+                                          : QString::number(waypoint_.latitude, 'f', 6));
+        _ui.inputLongitude->setText(_dmsOn ? toDMS(waypoint_.longitude, false)
+                                           : QString::number(waypoint_.longitude, 'f', 6));
     }
 }
 
@@ -399,4 +571,18 @@ void QNavigation::onClearPathClicked(void)
     _ui.distanceLabel->setText("N/A");
 
     emit this->clearPath();
+}
+
+void QNavigation::toggleDMS(int activate_)
+{
+    const bool newDmsOn = (activate_ != 0);
+    if (_dmsOn == newDmsOn)
+    {
+        return;
+    }
+
+    _dmsOn = newDmsOn;
+    this->updateCoordinateLabels();
+    this->refreshWaypointItems();
+    this->refreshCoordinateInputs();
 }

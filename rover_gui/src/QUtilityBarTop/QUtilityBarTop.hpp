@@ -56,6 +56,7 @@ class QUtilityBarTop : public QWidget
     void GNSSTimeout();
 
     void timerDisplay(void);
+    void dmsChanged(int activate_);
 
   private slots:
     void onUpdateBatteryUI(float _percent);

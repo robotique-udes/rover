@@ -50,10 +50,16 @@ class QNavigation : public QWidget
     void onWebViewLoadFinished(bool ok);
     void onGpsMessage(const rover_msgs::msg::Gps& msg_);
     void onJsBridgeReady(void);
+    void toggleDMS(int activate_);
 
   private:
     void addWaypointToList(const sWaypoint& waypoint_);
-    void addWaypointToUI(const sWaypoint& waypoint);
+    void addWaypointToUI(const sWaypoint& waypoint_, Qt::CheckState checkState = Qt::Checked);
+    QString waypointDisplayText(const sWaypoint& waypoint_) const;
+    double parseCoordinateText(const QString& text, bool& ok) const;
+    void updateCoordinateLabels(void);
+    void refreshCoordinateInputs(void);
+    void refreshWaypointItems(void);
     void initializeWaypointManager(void);
     void initializePathManager(void);
     void createNavigationFolder(void);
@@ -69,6 +75,7 @@ class QNavigation : public QWidget
     QVariantList _oldPath;
     rover_msgs::msg::Gps _latestGpsMsg;
     bool _hasGpsData = false;
+    bool _dmsOn = false;
 
     QWaypointManager _waypointManager;
     QPathManager _pathManager;

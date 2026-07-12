@@ -34,6 +34,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _mainTabWidget.tabBar()->hide();
 
     connect(&_sideBarWidget, &QSideBar::switchPage, this, &MainWindow::onTabChange);
+    connect(&_topUtilityBar, &QUtilityBarTop::dmsChanged, &_navigationWidget, &QNavigation::toggleDMS);
     connect(&_bottomUtilityBar,
             &QUtilityBarBottom::seeHistory,
             &_notificationHistoryWidget,
