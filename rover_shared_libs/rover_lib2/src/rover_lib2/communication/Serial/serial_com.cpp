@@ -122,17 +122,50 @@ std::optional<std::string> SerialCom::serialRead()
         return std::nullopt;
     }
 
-    char buffer[READING_BUFFER];
-    ssize_t n = read(_fileDesc, buffer, sizeof(buffer));
+    const std::chrono::time_point<std::chrono::steady_clock> deadline
+        = std::chrono::steady_clock::now() + std::chrono::milliseconds(READ_TIMEOUT_MS);
 
-    if (n < 0)
+    while (true)
     {
-        std::string errorMsg = "Read failed: " + std::string(strerror(errno));
-        LOG_ERROR(Logger::Nodes::SerialCom, errorMsg.c_str());
-        return std::nullopt;
-    }
+        const size_t pos = _rxBuffer.find(FRAME_TERMINATOR);
+        if (pos != std::string::npos)
+        {
+            std::string frame = _rxBuffer.substr(0, pos);
+            _rxBuffer.erase(0, pos + 1);
+            return frame;
+        }
 
-    return std::string(buffer, n);
+        if (std::chrono::steady_clock::now() > deadline)
+        {
+            LOG_ERROR(Logger::Nodes::SerialCom, "Readin request timed out waiting for full frame");
+            return std::nullopt;
+        }
+
+        char buffer[READING_BUFFER];
+        ssize_t n = read(_fileDesc, buffer, sizeof(buffer));
+
+        if (n < 0)
+        {
+            std::string errorMsg = "Read failed: " + std::string(strerror(errno));
+            LOG_ERROR(Logger::Nodes::SerialCom, errorMsg.c_str());
+            return std::nullopt;
+        }
+        else if (n == 0)
+        {
+            continue;
+        }
+        else
+        {
+            _rxBuffer.append(buffer, n);
+            if (_rxBuffer.size() > READING_BUFFER)
+            {
+                LOG_ERROR(Logger::Nodes::SerialCom,
+                          "Reading request never received frame terminator. Disregarding all previous data");
+                _rxBuffer.clear();
+                return std::nullopt;
+            }
+        }
+    }
 }
 
 bool SerialCom::reconnect()
@@ -165,7 +198,14 @@ bool SerialCom::reconnect()
     }
 
     _state = eState::ACTIVE;
+    _rxBuffer.clear();
     return true;
+}
+
+void SerialCom::flushInput()
+{
+    _rxBuffer.clear();
+    tcflush(_fileDesc, TCIFLUSH);
 }
 
 eState SerialCom::getState() const
