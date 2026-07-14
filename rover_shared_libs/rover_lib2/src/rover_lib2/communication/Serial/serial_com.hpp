@@ -82,9 +82,6 @@ class SerialCom
      * @brief Reads available bytes from the serial port.
      *
      * @return Raw bytes read, or std::nullopt on inactive port / read failure.
-     *
-     *@warning Does not guarantee a complete message. Caller must accumulate
-     *         fragments and reconstruct messages per the device protocol.
      */
     std::optional<std::string> serialRead();
     eState getState() const;
@@ -95,6 +92,7 @@ class SerialCom
     static constexpr uint16_t READING_BUFFER = 256;
     static constexpr char FRAME_TERMINATOR = '\r';
     static constexpr uint16_t READ_TIMEOUT_MS = 200;
+    static constexpr uint16_t MAX_RX_SIZE = 512;
     bool serialConfig();
     int _fileDesc;
     eState _state;

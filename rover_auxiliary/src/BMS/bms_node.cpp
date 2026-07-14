@@ -38,19 +38,19 @@ void BMSDataNode::callbackBMSData(void)
         {
             msg.cell_volt[i - std::to_underlying(VoltIndexType::CELL_VOLT_START)] = _voltArray[i];
         }
-        _failedAttemps = 0;
+        _failedAttempts = 0;
     }
     else
     {
         msg.valid = false;
-        _failedAttemps++;
+        _failedAttempts++;
         _terminal.flushInput();
 
-        if (_failedAttemps > MAX_FAILED_ATTEMPS)
+        if (_failedAttempts > MAX_FAILED_ATTEMPTS)
         {
             RCLCPP_WARN(this->get_logger(), "Consecutive failures, reconnecting serial port");
             _terminal.reconnect();
-            _failedAttemps = 0;
+            _failedAttempts = 0;
         }
     }
 
@@ -59,7 +59,10 @@ void BMSDataNode::callbackBMSData(void)
 
 bool BMSDataNode::getData(void)
 {
-    _terminal.serialWrite("?A\r");
+    if (!_terminal.serialWrite("?A\r"))
+    {
+        return false;
+    }
     const std::optional<std::string> ampResult = _terminal.serialRead();
 
     if (!ampResult)
@@ -72,7 +75,11 @@ bool BMSDataNode::getData(void)
         return false;
     }
 
-    _terminal.serialWrite("?V\r");
+    if (!_terminal.serialWrite("?V\r"))
+    {
+        return false;
+    }
+
     const std::optional<std::string> voltResult = _terminal.serialRead();
     if (!voltResult)
     {
@@ -106,6 +113,7 @@ bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_
                     expectedPrefix_.data(),
                     static_cast<int>(startPos),
                     view_.data());
+        return false;
     }
 
     view_.remove_prefix(startPos + 1);

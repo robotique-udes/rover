@@ -15,7 +15,7 @@ class BMSDataNode : public rclcpp::Node
     static constexpr uint64_t DELAY_PUBLISHER_MS = 1000UL;
     static constexpr size_t VOLT_DATA_TYPES = 9;
     static constexpr size_t AMP_DATA_TYPES = 6;
-    static constexpr uint16_t MAX_FAILED_ATTEMPS = 3;
+    static constexpr uint16_t MAX_FAILED_ATTEMPTS = 3;
 
     enum class AmpIndexType : size_t
     {
@@ -50,7 +50,7 @@ class BMSDataNode : public rclcpp::Node
     rclcpp::Publisher<rover_msgs::msg::BmsData>::SharedPtr _publisher;
     rclcpp::TimerBase::SharedPtr _timer_publisher;
     SerialCom _terminal;
-    uint16_t _failedAttemps = 0;
+    uint16_t _failedAttempts = 0;
 };
 
 #endif

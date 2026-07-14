@@ -91,7 +91,6 @@ bool SerialCom::serialWrite(const std::string& cmd_)
     if (_state != eState::ACTIVE)
     {
         LOG_ERROR(Logger::Nodes::SerialCom, "Cannot write: serial port is inactive");
-
         return false;
     }
 
@@ -157,7 +156,7 @@ std::optional<std::string> SerialCom::serialRead()
         else
         {
             _rxBuffer.append(buffer, n);
-            if (_rxBuffer.size() > READING_BUFFER)
+            if (_rxBuffer.size() > MAX_RX_SIZE)
             {
                 LOG_ERROR(Logger::Nodes::SerialCom,
                           "Reading request never received frame terminator. Disregarding all previous data");
