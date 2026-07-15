@@ -20,12 +20,6 @@
 class QBmsData : public QWidget
 {
     Q_OBJECT
-  public:
-    static constexpr uint16_t GRAPH_DIMENSION = 800U;
-    static constexpr uint16_t CELL_WIDTH = 200U;
-    static constexpr uint16_t CELL_HEIGHT = 400U;
-    static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
-    static constexpr uint16_t CELLS_ARRAY_SIZE = 6;
 
   public:
     QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
@@ -39,6 +33,13 @@ class QBmsData : public QWidget
     void onCallbackBmsData(const rover_msgs::msg::BmsData& msg_);
 
   private:
+    static constexpr uint16_t GRAPH_DIMENSION = 800U;
+    static constexpr uint16_t CELL_WIDTH = 200U;
+    static constexpr uint16_t CELL_HEIGHT = 400U;
+    static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
+    static constexpr uint16_t CELLS_ARRAY_SIZE = 6;
+
+
     void initializeWidget(void);
     void updateCellVolt(uint16_t cellIndex_, uint16_t voltValue_);
     void updateBattAmps(float amps_);

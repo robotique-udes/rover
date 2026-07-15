@@ -6,8 +6,7 @@ constexpr const char* DEFAULT = "QWidget {"
                                 "padding: 5px 10px;"
                                 "}";
 
-QBattChart::QBattChart(rclcpp::Time initTime_, QWidget* parent_):
-    QWidget(parent_),
+QBattChart::QBattChart(rclcpp::Time initTime_):
     _initTime(initTime_)
 {
     setStyleSheet(DEFAULT);

@@ -6,8 +6,7 @@ constexpr const char* DEFAULT = "QWidget {"
                                 "padding: 5px 10px;"
                                 "}";
 
-QCellWidget::QCellWidget(uint16_t cellIndex_, QWidget* parent_):
-    QWidget(parent_)
+QCellWidget::QCellWidget(uint16_t cellIndex_)
 {
     setStyleSheet(DEFAULT);
     setFixedSize(CELL_WIDTH, CELL_HEIGHT);

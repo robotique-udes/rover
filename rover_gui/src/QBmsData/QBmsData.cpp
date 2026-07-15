@@ -33,7 +33,7 @@ QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
 
 void QBmsData::initializeWidget(void)
 {
-    _graph = new QBattChart(_node->now(), _ui.bmsData);
+    _graph = new QBattChart(_node->now());
 
     QWidget* cellContainer = new QWidget(_ui.bmsData);
     QGridLayout* cellsGrid = new QGridLayout(cellContainer);
@@ -42,7 +42,7 @@ void QBmsData::initializeWidget(void)
 
     for (uint16_t i = 0; i < CELLS_ARRAY_SIZE; i++)
     {
-        _cells[i] = new QCellWidget(i, _ui.bmsData);
+        _cells[i] = new QCellWidget(i);
         cellsGrid->addWidget(_cells[i], static_cast<int>(i / 3), static_cast<int>(i % 3));
     }
 

@@ -15,7 +15,7 @@ class QBattChart : public QWidget
     static constexpr int X_TIME_SCALER = 1000000000;
     static constexpr uint16_t GRAPH_MAX_SAMPLES = 50;
 
-    explicit QBattChart(rclcpp::Time initTime_, QWidget* parent_ = nullptr);
+    explicit QBattChart(rclcpp::Time initTime_);
     void updateGraph(std::shared_ptr<rclcpp::Node> node_, float amps_);
     void setGraphSize(uint16_t width_ = GRAPH_DIMENSION, uint16_t height_ = GRAPH_DIMENSION);
 
