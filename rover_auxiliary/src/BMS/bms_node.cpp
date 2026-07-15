@@ -57,14 +57,32 @@ void BMSDataNode::callbackBMSData(void)
     _publisher->publish(msg);
 }
 
+std::optional<std::string> BMSDataNode::readDataFrame()
+{
+    for (int attempt = 0; attempt < MAX_ECHO_SKIPS; ++attempt)
+    {
+        std::optional<std::string> frame = _terminal.serialRead();
+        if (!frame)
+        {
+            return std::nullopt;  
+        }
+        if (!frame->empty() && frame->front() == '?')
+        {
+            continue;              
+        }
+        return frame;              
+    }
+    return std::nullopt;           
+}
+
 bool BMSDataNode::getData(void)
 {
     if (!_terminal.serialWrite("?A\r"))
     {
         return false;
     }
-    const std::optional<std::string> ampResult = _terminal.serialRead();
 
+    const std::optional<std::string> ampResult = this->readDataFrame();
     if (!ampResult)
     {
         RCLCPP_WARN(this->get_logger(), "Command to retrieve amp data failed");
@@ -80,7 +98,7 @@ bool BMSDataNode::getData(void)
         return false;
     }
 
-    const std::optional<std::string> voltResult = _terminal.serialRead();
+    const std::optional<std::string> voltResult = this->readDataFrame();
     if (!voltResult)
     {
         RCLCPP_WARN(this->get_logger(), "Command to retrieve volt data failed");

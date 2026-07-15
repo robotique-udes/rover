@@ -9,14 +9,6 @@
 
 class BMSDataNode : public rclcpp::Node
 {
-  private:
-    static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
-    static constexpr const char* DEVICE_FILE_PATH = "/dev/ttyACM0";
-    static constexpr uint64_t DELAY_PUBLISHER_MS = 1000UL;
-    static constexpr size_t VOLT_DATA_TYPES = 9;
-    static constexpr size_t AMP_DATA_TYPES = 6;
-    static constexpr uint16_t MAX_FAILED_ATTEMPTS = 3;
-
     enum class AmpIndexType : size_t
     {
         BATTERY_AMPS,
@@ -40,10 +32,19 @@ class BMSDataNode : public rclcpp::Node
     BMSDataNode();
 
   private:
+  static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
+    static constexpr const char* DEVICE_FILE_PATH = "/dev/ttyACM0";
+    static constexpr uint64_t DELAY_PUBLISHER_MS = 1000UL;
+    static constexpr size_t VOLT_DATA_TYPES = 13;
+    static constexpr size_t AMP_DATA_TYPES = 6;
+    static constexpr uint16_t MAX_FAILED_ATTEMPTS = 3;
+    static constexpr uint16_t MAX_ECHO_SKIPS = 3;
+
     void callbackBMSData(void);
     bool getData(void);
     template<size_t N>
     bool parse(std::string_view view_, std::string_view expectedPrefix_, std::array<uint16_t, N>& dataArray_);
+    std::optional<std::string> readDataFrame();
 
     std::array<uint16_t, AMP_DATA_TYPES> _ampArray{};
     std::array<uint16_t, VOLT_DATA_TYPES> _voltArray{};
