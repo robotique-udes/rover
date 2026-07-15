@@ -6,6 +6,8 @@
 #include <qdebug.h>
 #include <qtimezone.h>
 
+#include <cmath>
+
 namespace
 {
     QString toDMS(double deg, bool isLat)

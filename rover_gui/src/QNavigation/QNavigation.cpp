@@ -329,7 +329,7 @@ double QNavigation::parseCoordinateText(const QString& text, bool& ok) const
     }
 
     static const QRegularExpression regex(
-        R"(^\s*([+-]?\d+(?:\.\d+)?)(?:\s*°\s*([0-9]+(?:\.\d+)?)\s*'\s*([0-9]+(?:\.\d+)?)\s*"?)?\s*([NnSsEeWw])?\s*$)");
+        R"(^\s*([+-]?\d+(?:\.\d+)?)(?:\s*°\s*([0-9]+(?:\.\d+)?)\s*')?(?:\s*([0-9]+(?:\.\d+)?)\s*\"?)?\s*([NnSsEeWw])?\s*$)");
     QRegularExpressionMatch match = regex.match(trimmed);
     if (!match.hasMatch())
     {
