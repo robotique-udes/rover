@@ -29,13 +29,9 @@ namespace
         int m = static_cast<int>(minFloat);
         double s = (minFloat - m) * 60.0;
 
-        return QString("%1° %2' %3\" %4")
-            .arg(d)
-            .arg(m)
-            .arg(s, 0, 'f', 2)
-            .arg(dir);
+        return QString("%1° %2' %3\" %4").arg(d).arg(m).arg(s, 0, 'f', 2).arg(dir);
     }
-}
+}  // namespace
 
 constexpr const char* QRC_PATH_MAP_HTML = "qrc:/other/map.html";
 constexpr const char* GPS_TOPIC_NAME = "/rover/gps/position";
@@ -332,7 +328,8 @@ double QNavigation::parseCoordinateText(const QString& text, bool& ok) const
         return 0.0;
     }
 
-    static const QRegularExpression regex(R"(^\s*([+-]?\d+(?:\.\d+)?)(?:\s*°\s*([0-9]+(?:\.\d+)?)\s*'\s*([0-9]+(?:\.\d+)?)\s*"?)?\s*([NnSsEeWw])?\s*$)");
+    static const QRegularExpression regex(
+        R"(^\s*([+-]?\d+(?:\.\d+)?)(?:\s*°\s*([0-9]+(?:\.\d+)?)\s*'\s*([0-9]+(?:\.\d+)?)\s*"?)?\s*([NnSsEeWw])?\s*$)");
     QRegularExpressionMatch match = regex.match(trimmed);
     if (!match.hasMatch())
     {
@@ -404,8 +401,7 @@ void QNavigation::refreshCoordinateInputs(void)
         double latitude = this->parseCoordinateText(_ui.inputLatitude->text(), ok);
         if (ok)
         {
-            _ui.inputLatitude->setText(_dmsOn ? toDMS(latitude, true)
-                                              : QString::number(latitude, 'f', 6));
+            _ui.inputLatitude->setText(_dmsOn ? toDMS(latitude, true) : QString::number(latitude, 'f', 6));
         }
     }
 
@@ -415,8 +411,7 @@ void QNavigation::refreshCoordinateInputs(void)
         double longitude = this->parseCoordinateText(_ui.inputLongitude->text(), ok);
         if (ok)
         {
-            _ui.inputLongitude->setText(_dmsOn ? toDMS(longitude, false)
-                                               : QString::number(longitude, 'f', 6));
+            _ui.inputLongitude->setText(_dmsOn ? toDMS(longitude, false) : QString::number(longitude, 'f', 6));
         }
     }
 }
@@ -486,10 +481,8 @@ void QNavigation::onWaypointSelected(QListWidgetItem* item_)
         const sWaypoint& waypoint_ = _waypointsList.at(index_);
 
         _ui.inputName->setText(QString::fromStdString(waypoint_.name));
-        _ui.inputLatitude->setText(_dmsOn ? toDMS(waypoint_.latitude, true)
-                                          : QString::number(waypoint_.latitude, 'f', 6));
-        _ui.inputLongitude->setText(_dmsOn ? toDMS(waypoint_.longitude, false)
-                                           : QString::number(waypoint_.longitude, 'f', 6));
+        _ui.inputLatitude->setText(_dmsOn ? toDMS(waypoint_.latitude, true) : QString::number(waypoint_.latitude, 'f', 6));
+        _ui.inputLongitude->setText(_dmsOn ? toDMS(waypoint_.longitude, false) : QString::number(waypoint_.longitude, 'f', 6));
     }
 }
 

@@ -24,13 +24,9 @@ namespace
         int m = static_cast<int>(minFloat);
         double s = (minFloat - m) * 60.0;
 
-        return QString("%1° %2' %3\" %4")
-            .arg(d)
-            .arg(m)
-            .arg(s, 0, 'f', 2)
-            .arg(dir);
+        return QString("%1° %2' %3\" %4").arg(d).arg(m).arg(s, 0, 'f', 2).arg(dir);
     }
-}
+}  // namespace
 
 QUtilityBarTop::QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
@@ -290,7 +286,7 @@ void QUtilityBarTop::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_,
     _ui.HeadingLabel->setText(QString::number((heading_), 'f', 2) + " deg   ");
     _ui.satellitesNbrLabel->setText(QString::number(static_cast<int>(satNbr_)) + "   ");
 
-    if(_ui.dmsToggle->value() == 0)
+    if (_ui.dmsToggle->value() == 0)
     {
         _ui.latitudeLabel->setText("Lat: " + QString::number(static_cast<float>(lat_), 'f', 6));
         _ui.longitudeLabel->setText("Long: " + QString::number(static_cast<float>(long_), 'f', 6));
