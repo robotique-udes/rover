@@ -32,7 +32,7 @@ class BMSDataNode : public rclcpp::Node
     BMSDataNode();
 
   private:
-  static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
+    static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
     static constexpr const char* DEVICE_FILE_PATH = "/dev/ttyACM0";
     static constexpr uint64_t DELAY_PUBLISHER_MS = 1000UL;
     static constexpr size_t VOLT_DATA_TYPES = 13;

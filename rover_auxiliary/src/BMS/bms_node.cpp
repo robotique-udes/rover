@@ -64,15 +64,15 @@ std::optional<std::string> BMSDataNode::readDataFrame()
         std::optional<std::string> frame = _terminal.serialRead();
         if (!frame)
         {
-            return std::nullopt;  
+            return std::nullopt;
         }
         if (!frame->empty() && frame->front() == '?')
         {
-            continue;              
+            continue;
         }
-        return frame;              
+        return frame;
     }
-    return std::nullopt;           
+    return std::nullopt;
 }
 
 bool BMSDataNode::getData(void)
