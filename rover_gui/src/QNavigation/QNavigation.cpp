@@ -206,14 +206,14 @@ void QNavigation::onSetGoalClicked()
     if (!okLatitude || !okLongitude)
     {
         QHelper::QPopUp::sendQuestionPopUp("Input Error",
-                                          "Please enter valid coordinates in DD or DMS format (lat: -90..90, long: -180..180).");
+                                           "Please enter valid coordinates in DD or DMS format (lat: -90..90, long: -180..180).");
         return;
     }
 
     for (const sWaypoint& waypointIt : _waypointsList)
     {
-        if (waypointIt.name == waypoint.name || waypointIt.latitude == waypoint.latitude
-            || waypointIt.longitude == waypoint.longitude)
+        if (waypointIt.name == waypoint.name
+            || (waypointIt.latitude == waypoint.latitude && waypointIt.longitude == waypoint.longitude))
         {
             QHelper::QPopUp::sendQuestionPopUp(
                 "Duplicate Name or duplicate location",
