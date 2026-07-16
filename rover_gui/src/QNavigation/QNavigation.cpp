@@ -29,6 +29,18 @@ namespace
         int m = static_cast<int>(minFloat);
         double s = (minFloat - m) * 60.0;
 
+        s = std::round(s * 100.0) / 100.0;
+        if (s >= 60.0)
+        {
+            s -= 60.0;
+            ++m;
+        }
+        if (m >= 60)
+        {
+            m -= 60;
+            ++d;
+        }
+
         return QString("%1° %2' %3\" %4").arg(d).arg(m).arg(s, 0, 'f', 2).arg(dir);
     }
 }  // namespace
@@ -335,7 +347,7 @@ double QNavigation::parseCoordinateText(const QString& text, bool& ok) const
     }
 
     static const QRegularExpression regex(
-        R"(^\s*([+-]?\d+(?:\.\d+)?)(?:\s*°\s*([0-9]+(?:\.\d+)?)\s*')?(?:\s*([0-9]+(?:\.\d+)?)\s*\"?)?\s*([NnSsEeWw])?\s*$)");
+        R"(^\s*([+-]?\d+(?:\.\d+)?)(?:\s*°\s*([0-9]+(?:\.\d+)?)\s*'(?:\s*([0-9]+(?:\.\d+)?)\s*\")?)?\s*([NnSsEeWw])?\s*$)");
     QRegularExpressionMatch match = regex.match(trimmed);
     if (!match.hasMatch())
     {
@@ -345,7 +357,16 @@ double QNavigation::parseCoordinateText(const QString& text, bool& ok) const
         return value;
     }
 
-    double degrees = match.captured(1).toDouble(&ok);
+    QString degreesText = match.captured(1);
+    bool negativeSign = degreesText.trimmed().startsWith(QLatin1Char('-'));
+    bool hasMinutesOrSeconds = !match.captured(2).isEmpty() || !match.captured(3).isEmpty();
+
+    if (degreesText.contains(QLatin1Char('.')) && hasMinutesOrSeconds)
+    {
+        return 0.0;
+    }
+
+    double degrees = degreesText.toDouble(&ok);
     if (!ok)
     {
         return 0.0;
@@ -356,16 +377,18 @@ double QNavigation::parseCoordinateText(const QString& text, bool& ok) const
     if (!match.captured(2).isEmpty())
     {
         minutes = match.captured(2).toDouble(&ok);
-        if (!ok)
+        if (!ok || minutes >= 60.0)
         {
+            ok = false;
             return 0.0;
         }
     }
     if (!match.captured(3).isEmpty())
     {
         seconds = match.captured(3).toDouble(&ok);
-        if (!ok)
+        if (!ok || seconds >= 60.0)
         {
+            ok = false;
             return 0.0;
         }
     }
@@ -373,21 +396,28 @@ double QNavigation::parseCoordinateText(const QString& text, bool& ok) const
     double value = std::abs(degrees) + minutes / 60.0 + seconds / 3600.0;
     QString direction = match.captured(4).toUpper();
 
+    bool isNegative = false;
     if (!direction.isEmpty())
     {
-        if (direction == "S" || direction == "W")
-        {
-            value = -std::abs(value);
-        }
-        else
-        {
-            value = std::abs(value);
-        }
+        isNegative = (direction == "S" || direction == "W");
     }
-    else if (degrees < 0)
+    else
     {
-        value = -value;
+        isNegative = negativeSign;
     }
+
+    double maxDegrees = 180.0;
+    if (direction == "N" || direction == "S")
+    {
+        maxDegrees = 90.0;
+    }
+    if (value > maxDegrees)
+    {
+        ok = false;
+        return 0.0;
+    }
+
+    value = isNegative ? -value : value;
 
     ok = true;
     return value;
