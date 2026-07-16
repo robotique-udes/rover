@@ -198,9 +198,15 @@ void QNavigation::onSetGoalClicked()
     waypoint.longitude = this->parseCoordinateText(_ui.inputLongitude->text(), okLongitude);
     waypoint.name = _ui.inputName->text().toStdString();
 
+    if (okLatitude && (waypoint.latitude < -90.0 || waypoint.latitude > 90.0))
+        okLatitude = false;
+    if (okLongitude && (waypoint.longitude < -180.0 || waypoint.longitude > 180.0))
+        okLongitude = false;
+
     if (!okLatitude || !okLongitude)
     {
-        QHelper::QPopUp::sendQuestionPopUp("Input Error", "Please enter valid coordinates in DD or DMS format.");
+        QHelper::QPopUp::sendQuestionPopUp("Input Error",
+                                          "Please enter valid coordinates in DD or DMS format (lat: -90..90, long: -180..180).");
         return;
     }
 
