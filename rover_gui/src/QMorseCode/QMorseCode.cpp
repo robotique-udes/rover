@@ -73,10 +73,26 @@ void QMorseCode::onPbSpaceClick()
 void QMorseCode::sendMorseCode()
 {
     std::string morseCode = this->_ui.lineEdit->text().toStdString();
+    uint8_t len = static_cast<uint8_t>(morseCode.length());
+    uint8_t runningChecksum = 0;
+
     rover_msgs::msg::MorseCode msg;
-    msg.speed_wpm = 18;
-    msg.symbol = 1;
-    _pub_morseCode->publish(msg);
+    msg.length = len;
+
+    for (uint8_t i = 0; i < len; ++i)
+    {
+        uint8_t c = static_cast<uint8_t>(morseCode[i]);
+        runningChecksum = static_cast<uint8_t>(runningChecksum + c); // wraps naturally at 256
+
+        msg.start = (i == 0);
+        msg.index = i;
+        msg.character = c;
+        msg.checksum = runningChecksum;
+
+        _pub_morseCode->publish(msg);
+        RCLCPP_DEBUG(this->_node->get_logger(), "Sending char %d/%d: %c", i + 1, len, c);
+        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+    }
 
     this->_ui.lineEdit->clear();
 }

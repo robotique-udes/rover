@@ -132,8 +132,11 @@ void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::Arm
 
 void ArmJoint::CB_ROS_mordeCodeInput(const rover_msgs::msg::MorseCode& msg_)
 {
-    this->_nextMorseInputMsg.data().symbol = msg_.symbol;
-    this->_nextMorseInputMsg.data().speed_wpm = msg_.speed_wpm;
+    this->_nextMorseInputMsg.data().start = msg_.start;
+    this->_nextMorseInputMsg.data().index = msg_.index;
+    this->_nextMorseInputMsg.data().msg_length = msg_.length;
+    this->_nextMorseInputMsg.data().character = msg_.character;
+    this->_nextMorseInputMsg.data().checksum = msg_.checksum;
     this->sendMsg(_nextMorseInputMsg);
 }
 
