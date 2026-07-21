@@ -1,11 +1,5 @@
 #include "QBmsData.hpp"
 
-constexpr const char* DEFAULT = "QWidget {"
-                                "background-color: #3c3f41;"
-                                "border-radius: 5px;"
-                                "padding: 5px 10px;"
-                                "}";
-
 QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
@@ -17,7 +11,6 @@ QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     _layout->setContentsMargins(2, 2, 2, 2);
 
     _ui.bmsData->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
-    _ui.bmsData->adjustSize();
 
     this->initializeWidget();
 
