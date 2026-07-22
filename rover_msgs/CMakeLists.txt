@@ -42,6 +42,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ArmMsg.msg"
   "msg/Aruco.msg"
   "msg/Battery.msg"
+  "msg/BmsData.msg"
   "msg/CameraAngle.msg"
   "msg/CameraControl.msg"
   "msg/CameraConfig.msg"
