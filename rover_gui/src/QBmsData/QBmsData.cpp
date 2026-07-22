@@ -20,7 +20,13 @@ QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
                                                                         QOS_DEFAULT,
                                                                         [this](const rover_msgs::msg::BmsData& msg)
                                                                         {
-                                                                            emit this->callbackBmsData(msg);
+                                                                            QMetaObject::invokeMethod(
+                                                                                this,
+                                                                                [this, msg]()
+                                                                                {
+                                                                                    this->callbackBmsData(msg);
+                                                                                },
+                                                                                Qt::QueuedConnection);
                                                                         });
 }
 
@@ -33,7 +39,7 @@ void QBmsData::initializeWidget(void)
     cellsGrid->setSpacing(2);
     cellsGrid->setContentsMargins(2, 2, 2, 2);
 
-    for (uint16_t i = 0; i < CELLS_ARRAY_SIZE; i++)
+    for (uint16_t i = 0; i < _cells.size(); i++)
     {
         _cells[i] = new QCellWidget(i);
         cellsGrid->addWidget(_cells[i], static_cast<int>(i / 3), static_cast<int>(i % 3));
@@ -46,10 +52,13 @@ void QBmsData::initializeWidget(void)
 
 void QBmsData::onCallbackBmsData(const rover_msgs::msg::BmsData& msg_)
 {
-    _graph->updateGraph(_node, msg_.battery_amps);
-    for (size_t i = 0; i < msg_.cell_volt.size(); i++)
+    if (msg_.valid)
     {
-        _cells[i]->setVoltage(msg_.cell_volt[i]);
+        _graph->updateGraph(_node, msg_.battery_amps);
+        for (size_t i = 0; i < _cells.size(); i++)
+        {
+            _cells[i]->setVoltage(msg_.cell_volt[i]);
+        }
     }
 }
 

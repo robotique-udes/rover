@@ -9,7 +9,6 @@ constexpr const char* DEFAULT = "QWidget {"
 QCellWidget::QCellWidget(uint16_t cellIndex_)
 {
     setStyleSheet(DEFAULT);
-    setFixedSize(CELL_WIDTH, CELL_HEIGHT);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(1, 1, 1, 1);

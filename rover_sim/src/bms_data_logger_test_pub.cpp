@@ -29,6 +29,8 @@ class BmsPublisher : public rclcpp::Node
             msg.cell_volt[i] = static_cast<uint16_t>(3700 + 500 * std::sin(_tick * 0.03 + static_cast<double>(i) * 0.5));
         }
 
+        msg.valid = true;
+
         _publisher->publish(msg);
 
         RCLCPP_DEBUG(this->get_logger(),

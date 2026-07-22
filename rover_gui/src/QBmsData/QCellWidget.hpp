@@ -6,15 +6,11 @@
 #include <QProgressBar>
 #include <QVBoxLayout>
 
-class QProgressBar;
-
 class QCellWidget : public QWidget
 {
     Q_OBJECT
 
   public:
-    static constexpr uint16_t CELL_WIDTH = 200U;
-    static constexpr uint16_t CELL_HEIGHT = 400U;
     static constexpr uint16_t CELL_MIN_VOLT = 3000;
     static constexpr uint16_t CELL_MAX_VOLT = 4200;
 

@@ -36,7 +36,6 @@ QBattChart::QBattChart(rclcpp::Time initTime_):
 
     _chartView = new QChartView(chart, this);
     _chartView->setRenderHint(QPainter::Antialiasing);
-    _chartView->setFixedSize(GRAPH_DIMENSION, GRAPH_DIMENSION);
 
     layout->addWidget(_chartView);
 }
@@ -52,7 +51,7 @@ void QBattChart::updateGraph(std::shared_ptr<rclcpp::Node> node_, float amps_)
     }
 
     const double xMin = _battAmpsSeries->at(0).x();
-    const double xMax = _battAmpsSeries->at(_battAmpsSeries->count() - 1).x() + 5;
+    const double xMax = _battAmpsSeries->at(_battAmpsSeries->count() - 1).x() + X_OFFSET;
 
     _axisX->setRange(xMin, xMax);
 }
@@ -60,4 +59,5 @@ void QBattChart::updateGraph(std::shared_ptr<rclcpp::Node> node_, float amps_)
 void QBattChart::setGraphSize(uint16_t width_, uint16_t height_)
 {
     setFixedSize(width_, height_);
+    _chartView->setFixedSize(width_, height_);
 }

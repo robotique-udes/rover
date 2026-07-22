@@ -98,8 +98,8 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             break;
 
         case QSideBar::eTabIndex::BMS_DATA:
-            _bmsDataWidget.setGraphSize();
-            _bmsDataWidget.setCellContainerSize();
+            _bmsDataWidget.setGraphSize(800, 800);
+            _bmsDataWidget.setCellContainerSize(200, 400);
             grid->addWidget(&_bmsDataWidget, 0, 1);
             break;
     }
