@@ -39,6 +39,7 @@ class BMSDataNode : public rclcpp::Node
     static constexpr size_t AMP_DATA_TYPES = 6;
     static constexpr uint16_t MAX_FAILED_ATTEMPTS = 3;
     static constexpr uint16_t MAX_ECHO_SKIPS = 3;
+    static constexpr uint64_t LOGGER_THROTTLE_MS = 10'000UL;
 
     void callbackBMSData(void);
     bool getData(void);

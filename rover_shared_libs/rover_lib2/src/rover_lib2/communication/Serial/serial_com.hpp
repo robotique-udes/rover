@@ -93,6 +93,8 @@ class SerialCom
     static constexpr char FRAME_TERMINATOR = '\r';
     static constexpr uint16_t READ_TIMEOUT_MS = 200;
     static constexpr uint16_t MAX_RX_SIZE = 512;
+    static constexpr std::chrono::milliseconds LOGGER_THROTTLE_MS = std::chrono::milliseconds(20'000);
+
     bool serialConfig();
     int _fileDesc;
     eState _state;
@@ -103,6 +105,7 @@ class SerialCom
     uint8_t _minChar;
     uint8_t _timeout;
     std::string _rxBuffer;
+    std::chrono::time_point<std::chrono::steady_clock> _lastLogDC{};
 };
 
 #else

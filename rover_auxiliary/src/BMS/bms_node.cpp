@@ -45,7 +45,10 @@ void BMSDataNode::callbackBMSData(void)
 
         if (_failedAttempts > MAX_FAILED_ATTEMPTS)
         {
-            RCLCPP_WARN(this->get_logger(), "Consecutive failures, reconnecting serial port");
+            RCLCPP_WARN_THROTTLE(this->get_logger(),
+                                 *this->get_clock(),
+                                 LOGGER_THROTTLE_MS,
+                                 "Consecutive failures, reconnecting serial port");
             _terminal.reconnect();
             _failedAttempts = 0;
         }

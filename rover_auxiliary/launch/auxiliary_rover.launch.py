@@ -23,4 +23,12 @@ def generate_launch_description():
     )
     ld.add_action(node_camera_manager)
 
+    node_bms_info = Node(
+        package="rover_auxiliary",
+        namespace="/rover/auxiliary",
+        executable="bms_info",
+        name="bms_info"
+    )
+    ld.add_action(node_bms_info)
+
     return ld

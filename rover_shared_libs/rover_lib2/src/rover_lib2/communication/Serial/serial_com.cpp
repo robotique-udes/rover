@@ -90,7 +90,11 @@ bool SerialCom::serialWrite(const std::string& cmd_)
 {
     if (_state != eState::ACTIVE)
     {
-        LOG_ERROR(Logger::Nodes::SerialCom, "Cannot write: serial port is inactive");
+        if (std::chrono::steady_clock::now() - _lastLogDC > LOGGER_THROTTLE_MS)
+        {
+            LOG_ERROR(Logger::Nodes::SerialCom, "Cannot write: serial port is inactive");
+            _lastLogDC = std::chrono::steady_clock::now();
+        }
         return false;
     }
 
@@ -117,7 +121,10 @@ std::optional<std::string> SerialCom::serialRead()
 {
     if (_state != eState::ACTIVE)
     {
-        LOG_ERROR(Logger::Nodes::SerialCom, "Cannot read: serial port is inactive");
+        if (std::chrono::steady_clock::now() - _lastLogDC > LOGGER_THROTTLE_MS)
+        {
+            LOG_ERROR(Logger::Nodes::SerialCom, "Cannot read: serial port is inactive");
+        }
         return std::nullopt;
     }
 
@@ -179,7 +186,10 @@ bool SerialCom::reconnect()
     _fileDesc = open(_path.c_str(), O_RDWR | O_NOCTTY | O_SYNC | O_CLOEXEC);
     if (_fileDesc < 0)
     {
-        LOG_ERROR(Logger::Nodes::SerialCom, ("open failed: " + std::string(strerror(errno))).c_str());
+        if (std::chrono::steady_clock::now() - _lastLogDC > LOGGER_THROTTLE_MS)
+        {
+            LOG_ERROR(Logger::Nodes::SerialCom, ("open failed: " + std::string(strerror(errno))).c_str());
+        }
         return false;
     }
 
