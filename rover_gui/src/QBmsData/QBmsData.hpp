@@ -37,12 +37,9 @@ class QBmsData : public QWidget
     static constexpr uint16_t CELL_WIDTH = 200U;
     static constexpr uint16_t CELL_HEIGHT = 400U;
     static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
-    static constexpr uint16_t CELLS_ARRAY_SIZE = 6;
-
+    static constexpr size_t CELLS_ARRAY_SIZE = std::tuple_size_v<decltype(rover_msgs::msg::BmsData::cell_volt)>;
 
     void initializeWidget(void);
-    void updateCellVolt(uint16_t cellIndex_, uint16_t voltValue_);
-    void updateBattAmps(float amps_);
 
     std::shared_ptr<rclcpp::Node> _node;
     Ui::DataLogger _ui;

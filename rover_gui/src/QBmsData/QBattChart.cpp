@@ -19,15 +19,14 @@ QBattChart::QBattChart(rclcpp::Time initTime_):
     QChart* chart = new QChart();
 
     chart->addSeries(_battAmpsSeries);
-    chart->setTitle("Ampérage de la batterie");
+    chart->setTitle("Battery ampere");
 
     _axisX = new QValueAxis();
-    _axisX->setTitleText("Temps [s]");
-    _axisX->setRange(0.0f, 100.0f);
+    _axisX->setTitleText("Time [s]");
 
     _axisY = new QValueAxis();
-    _axisY->setTitleText("Ampère [A]");
-    _axisY->setRange(0.0f, 10.0f);
+    _axisY->setTitleText("Ampere [A]");
+    _axisY->setRange(-10, 20);
 
     chart->addAxis(_axisX, Qt::AlignBottom);
     chart->addAxis(_axisY, Qt::AlignLeft);
@@ -44,8 +43,8 @@ QBattChart::QBattChart(rclcpp::Time initTime_):
 
 void QBattChart::updateGraph(std::shared_ptr<rclcpp::Node> node_, float amps_)
 {
-    const double elapsed = (node_->now().nanoseconds() - _initTime.nanoseconds()) / X_TIME_SCALER;
-    _battAmpsSeries->append(elapsed, amps_ / -100);
+    const double elapsed = (node_->now().nanoseconds() - _initTime.nanoseconds()) / NS_TO_SECONDS;
+    _battAmpsSeries->append(elapsed, amps_ / -CENTIAMP_TO_AMP);
 
     if (_battAmpsSeries->count() > GRAPH_MAX_SAMPLES)
     {
@@ -56,8 +55,6 @@ void QBattChart::updateGraph(std::shared_ptr<rclcpp::Node> node_, float amps_)
     const double xMax = _battAmpsSeries->at(_battAmpsSeries->count() - 1).x() + 5;
 
     _axisX->setRange(xMin, xMax);
-    _axisY->setRange(-10, 20);
-    _timeCount++;
 }
 
 void QBattChart::setGraphSize(uint16_t width_, uint16_t height_)

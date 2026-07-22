@@ -30,9 +30,6 @@ void BMSDataNode::callbackBMSData(void)
     {
         msg.valid = true;
         msg.battery_amps = _ampArray[std::to_underlying(AmpIndexType::BATTERY_AMPS)];
-        msg.cell_volt.resize(std::to_underlying(VoltIndexType::CELL_VOLT_END)
-                             - std::to_underlying(VoltIndexType::CELL_VOLT_START));
-
         for (size_t i = std::to_underlying(VoltIndexType::CELL_VOLT_START); i < std::to_underlying(VoltIndexType::CELL_VOLT_END);
              i++)
         {

@@ -46,21 +46,11 @@ void QBmsData::initializeWidget(void)
 
 void QBmsData::onCallbackBmsData(const rover_msgs::msg::BmsData& msg_)
 {
-    this->updateBattAmps(msg_.battery_amps);
+    _graph->updateGraph(_node, msg_.battery_amps);
     for (size_t i = 0; i < msg_.cell_volt.size(); i++)
     {
-        this->updateCellVolt(i, msg_.cell_volt[i]);
+        _cells[i]->setVoltage(msg_.cell_volt[i]);
     }
-}
-
-void QBmsData::updateCellVolt(uint16_t cellIndex_, uint16_t voltValue_)
-{
-    _cells[cellIndex_]->setVoltage(voltValue_);
-}
-
-void QBmsData::updateBattAmps(float amps_)
-{
-    _graph->updateGraph(_node, amps_);
 }
 
 void QBmsData::setGraphSize(uint16_t width_, uint16_t height_)
