@@ -53,6 +53,7 @@ namespace RoverCan2::Constant
         CAMERA_ARM_SIDE = 0x406,
         SPEAKERS = 0x407,
         GAS_SENSORS = 0x408,
+        MORSE_INPUT = 0x409,
 
     _RESERVED_INTERNAL = 0x7F0,
         INVALID,

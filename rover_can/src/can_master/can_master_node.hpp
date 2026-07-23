@@ -7,6 +7,7 @@
 #include "can_master/devices/light.hpp"
 #include "can_master/devices/gnss.hpp"
 #include "can_master/devices/sensor_box.hpp"
+#include "can_master/devices/morse_input.hpp"
 #include "rover_can2/drivers/driver_linux.hpp"
 
 #include <rover_msgs/msg/can_device_status.hpp>
@@ -90,6 +91,8 @@ class CanMasterNode : public rclcpp::Node
     ArmJoint gripperClose = ArmJoint(RoverCan2::Constant::eDeviceId::GRIPPER_CLOSE_CONTROLLER,
                                      rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
                                      _armJointMsg);
+
+    MorseInput morseInput = MorseInput(RoverCan2::Constant::eDeviceId::MORSE_INPUT);
 
     Light lightMain = Light(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN);
 
