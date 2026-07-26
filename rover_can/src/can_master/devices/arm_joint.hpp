@@ -10,7 +10,6 @@
 #include <rover_can2/msgs/arm_joint_config.hpp>
 #include <rover_msgs/msg/arm_msg.hpp>
 #include <rover_msgs/srv/arm_joint_config.hpp>
-#include <rover_msgs/msg/morse_code.hpp>
 
 #include <memory>
 #include <vector>

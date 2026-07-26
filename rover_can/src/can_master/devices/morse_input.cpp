@@ -1,9 +1,9 @@
 #include "morse_input.hpp"
-#include "rover_can2/msgs/morse_input.hpp"
+#include "rover_can2/msgs/morse_code.hpp"
 #include <rover_lib2/helpers/constants.hpp>
 
 MorseInput::MorseInput(RoverCan2::Constant::eDeviceId IdCan_):
-    Device(IdCan_, RoverCan2::Publisher<RoverCan2::Msgs::MorseInput>()),
+    DerivedT(IdCan_, RoverCan2::Publisher<RoverCan2::Msgs::MorseCode>())
 {
 }
 

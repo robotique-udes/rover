@@ -4,13 +4,15 @@
 #include "can_master/master_device.hpp"
 
 #include <rover_can2/rover_can2.hpp>
-#include <rover_can2/msgs/morse_input.hpp>
+#include <rover_can2/msgs/morse_code.hpp>
 #include <rover_msgs/msg/morse_code.hpp>
 
-class MorseInput : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::MorseInput>>,
-               public MasterDevice
+class MorseInput : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::MorseCode>>,
+                   public MasterDevice
 {
     static constexpr const char* TOPIC_MORSE_CODE = "/base/gui/morse_code";
+
+    using DerivedT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::MorseCode>>;
 
   public:
     MorseInput(RoverCan2::Constant::eDeviceId IdCan_);
@@ -22,10 +24,7 @@ class MorseInput : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs
 
     void CB_ROS_morseCode(const rover_msgs::msg::MorseCode& rosMsg_);
 
-    const uint8_t _idCamCameraControlMsg;
-
-    RoverCan2::Msgs::MorseInput _nextMorseInputMsg;
-
+    RoverCan2::Msgs::MorseCode _nextMorseInputMsg;
 
     rclcpp::Subscription<rover_msgs::msg::MorseCode>::SharedPtr _sub_morseCode;
 };

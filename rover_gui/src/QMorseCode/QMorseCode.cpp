@@ -82,7 +82,7 @@ void QMorseCode::sendMorseCode()
     for (uint8_t i = 0; i < len; ++i)
     {
         uint8_t c = static_cast<uint8_t>(morseCode[i]);
-        runningChecksum = static_cast<uint8_t>(runningChecksum + c); // wraps naturally at 256
+        runningChecksum = static_cast<uint8_t>(runningChecksum + c);  // wraps naturally at 256
 
         msg.start = (i == 0);
         msg.index = i;

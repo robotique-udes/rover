@@ -53,7 +53,7 @@ namespace RoverCan2::Constant
         CAMERA_ARM_SIDE = 0x406,
         SPEAKERS = 0x407,
         GAS_SENSORS = 0x408,
-        MORSE_INPUT = 0x409,
+        MORSE_CODE = 0x409,
 
     _RESERVED_INTERNAL = 0x7F0,
         INVALID,
@@ -104,7 +104,7 @@ namespace RoverCan2::Constant
 
         SENSOR_BOX,
 
-        MORSE_INPUT,
+        MORSE_CODE,
         // clang-format on
     };
 
@@ -117,7 +117,7 @@ namespace RoverCan2::Constant
         eMsgId::POWER_STATUS,      eMsgId::PWM_CMD,          eMsgId::PWM_STATUS,  eMsgId::PWM_INFO,     eMsgId::PROP_SPEED_CMD,
         eMsgId::PROP_SPEED_STATUS, eMsgId::DDB_CMD,          eMsgId::DDB_STATUS,  eMsgId::FIX_POSITION, eMsgId::FIX_HEADING,
         eMsgId::FIX_INFO,          eMsgId::PTZ_CMD,          eMsgId::PTZ_STATUS,  eMsgId::PTZ_CONFIG,   eMsgId::ARM_JOINT_CMD,
-        eMsgId::ARM_JOINT_STATUS,  eMsgId::ARM_JOINT_CONFIG, eMsgId::SENSOR_BOX,  eMsgId::MORSE_INPUT,
+        eMsgId::ARM_JOINT_STATUS,  eMsgId::ARM_JOINT_CONFIG, eMsgId::SENSOR_BOX,  eMsgId::MORSE_CODE,
     };
 
     /**
@@ -206,6 +206,8 @@ namespace RoverCan2::Constant
                 return "SPEAKERS";
             case eDeviceId::GAS_SENSORS:
                 return "GAS_SENSORS";
+            case eDeviceId::MORSE_CODE:
+                return "MORSE_CODE";
             case eDeviceId::_RESERVED_INTERNAL:
                 return "_RESERVED_INTERNAL";
             case eDeviceId::INVALID:

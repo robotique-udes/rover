@@ -8,8 +8,7 @@ ArmJoint::ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
     DeviceT(deviceId_,
             RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>(),
             RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus),
-            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>(),
-            RoverCan2::Publisher<RoverCan2::Msgs::MorseInput>()),
+            RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>()),
     _rosArmSpeedMsgId(rosArmSpeedMsgId_),
     _rosSharedMsg(rosSharedMsg_)
 {
@@ -40,14 +39,6 @@ void ArmJoint::rosElementInit(void)
                std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_)
         {
             this->CB_SRV_armJointsConfig(request_, response_);
-        });
-
-    _sub_MorseCodeInput = this->getAttachedNode()->create_subscription<rover_msgs::msg::MorseCode>(
-        MORSE_CODE_TOPIC,
-        QOS_DEFAULT,
-        [this](const rover_msgs::msg::MorseCode& rosMsg_)
-        {
-            this->CB_ROS_mordeCodeInput(rosMsg_);
         });
 }
 
@@ -128,16 +119,6 @@ void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::Arm
                 break;
         }
     }
-}
-
-void ArmJoint::CB_ROS_mordeCodeInput(const rover_msgs::msg::MorseCode& msg_)
-{
-    this->_nextMorseInputMsg.data().start = msg_.start;
-    this->_nextMorseInputMsg.data().index = msg_.index;
-    this->_nextMorseInputMsg.data().msg_length = msg_.length;
-    this->_nextMorseInputMsg.data().character = msg_.character;
-    this->_nextMorseInputMsg.data().checksum = msg_.checksum;
-    this->sendMsg(_nextMorseInputMsg);
 }
 
 void ArmJoint::CB_ROS_canSend(void)
