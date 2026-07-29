@@ -1,15 +1,10 @@
 #include "QBattChart.hpp"
-
-constexpr const char* DEFAULT = "QWidget {"
-                                "background-color: #3c3f41;"
-                                "border-radius: 5px;"
-                                "padding: 5px 10px;"
-                                "}";
+#include "Global/Constant/StyleSheet.hpp"
 
 QBattChart::QBattChart(rclcpp::Time initTime_):
     _initTime(initTime_)
 {
-    setStyleSheet(DEFAULT);
+    setStyleSheet(Constants::Style::BMS_STYLE);
 
     QHBoxLayout* layout = new QHBoxLayout(this);
     layout->setContentsMargins(1, 1, 1, 1);
@@ -40,9 +35,9 @@ QBattChart::QBattChart(rclcpp::Time initTime_):
     layout->addWidget(_chartView);
 }
 
-void QBattChart::updateGraph(std::shared_ptr<rclcpp::Node> node_, float amps_)
+void QBattChart::updateGraph(rclcpp::Time now_, float amps_)
 {
-    const double elapsed = (node_->now().nanoseconds() - _initTime.nanoseconds()) / NS_TO_SECONDS;
+    const double elapsed = (now_.nanoseconds() - _initTime.nanoseconds()) / NS_TO_SECONDS;
     _battAmpsSeries->append(elapsed, amps_ / -CENTIAMP_TO_AMP);
 
     if (_battAmpsSeries->count() > GRAPH_MAX_SAMPLES)

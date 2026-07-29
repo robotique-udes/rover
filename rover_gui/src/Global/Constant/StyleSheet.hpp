@@ -196,4 +196,10 @@ QFrame[frameShape="5"] {
 
     constexpr const char* STYLE_LIGHT_MODE = "";
 
+    constexpr const char* BMS_STYLE = "QWidget {"
+                                "background-color: #3c3f41;"
+                                "border-radius: 5px;"
+                                "padding: 5px 10px;"
+                                "}";
+
 }  // namespace Constants::Style

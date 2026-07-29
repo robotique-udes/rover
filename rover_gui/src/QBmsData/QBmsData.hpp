@@ -1,6 +1,7 @@
 #ifndef QBMSDATA_HPP
 #define QBMSDATA_HPP
 
+#include "UI_BmsData.h"
 // ROS
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/bms_data.hpp>
@@ -9,13 +10,9 @@
 #include <rover_lib2/helpers/constants.hpp>
 
 // QT
-#include <QtWidgets/QGridLayout>
-#include "UI_BmsData.h"
 #include "QCellWidget.hpp"
 #include "QBattChart.hpp"
 #include "Global/QFlowLayout.hpp"
-#include <QLabel>
-#include <QtCharts>
 
 class QBmsData : public QWidget
 {
@@ -35,6 +32,7 @@ class QBmsData : public QWidget
   private:
     static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
     static constexpr size_t CELLS_ARRAY_SIZE = std::tuple_size_v<decltype(rover_msgs::msg::BmsData::cell_volt)>;
+    static constexpr uint16_t CELLS_PER_ROW = 3;
 
     void initializeWidget(void);
 

@@ -1,22 +1,20 @@
 #include "QCellWidget.hpp"
-
-constexpr const char* DEFAULT = "QWidget {"
-                                "background-color: #3c3f41;"
-                                "border-radius: 5px;"
-                                "padding: 5px 10px;"
-                                "}";
+#include "Global/Constant/StyleSheet.hpp"
+// QT
+#include <QVBoxLayout>
+#include <QLabel>
 
 QCellWidget::QCellWidget(uint16_t cellIndex_)
 {
-    setStyleSheet(DEFAULT);
+    setStyleSheet(Constants::Style::BMS_STYLE);
 
     QVBoxLayout* layout = new QVBoxLayout(this);
     layout->setContentsMargins(1, 1, 1, 1);
     layout->setSpacing(1);
 
     _progressBar = new QProgressBar();
-    _progressBar->setRange(CELL_MIN_VOLT, CELL_MAX_VOLT);
-    _progressBar->setValue(CELL_MIN_VOLT);
+    _progressBar->setRange(CELL_MIN_VOLT_MV, CELL_MAX_VOLT_MV);
+    _progressBar->setValue(CELL_MIN_VOLT_MV);
     _progressBar->setFormat("%v(%p%)");
     _progressBar->setTextVisible(true);
     _progressBar->setAlignment(Qt::AlignCenter);
