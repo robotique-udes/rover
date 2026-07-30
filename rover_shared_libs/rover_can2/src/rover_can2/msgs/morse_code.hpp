@@ -1,5 +1,5 @@
-#ifndef MORSE_CODE_HPP
-#define MORSE_CODE_HPP
+#ifndef ROVER_CAN2_MSGS_MORSE_CODE_HPP
+#define ROVER_CAN2_MSGS_MORSE_CODE_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
@@ -207,4 +207,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // MORSE_CODE_HPP
+#endif  // ROVER_CAN2_MSGS_MORSE_CODE_HPP
