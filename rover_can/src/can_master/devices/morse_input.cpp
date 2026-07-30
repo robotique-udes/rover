@@ -13,7 +13,7 @@ void MorseInput::rosElementInit()
 {
     _sub_morseCode = this->getAttachedNode()->create_subscription<rover_msgs::msg::MorseCode>(
         TOPIC_MORSE_CODE,
-        QOS_CAMERA,
+        QOS_DEFAULT,
         [this](const rover_msgs::msg::MorseCode& rosMsg_)
         {
             this->CB_ROS_morseCode(rosMsg_);

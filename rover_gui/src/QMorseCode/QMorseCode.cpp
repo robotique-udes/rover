@@ -1,5 +1,7 @@
 #include "QMorseCode.hpp"
 
+#include <thread>
+#include <chrono>
 #include <rover_lib2/helpers/assert.hpp>
 
 #include "rover_lib2/helpers/constants.hpp"
@@ -61,7 +63,7 @@ QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
                                                                          QOS_DEFAULT,
                                                                          [this](const rover_msgs::msg::MorseStatus& msg_)
                                                                          {
-                                                                             emit this->morseIsBusy(msg_);
+                                                                             emit this->morseIsBusy(msg_.is_busy);
                                                                          });
 }
 
@@ -80,21 +82,21 @@ void QMorseCode::onPbSpaceClick()
     this->_ui.lineEdit->insert(" ");
 }
 
-void QMorseCode::onMorseIsBusy(const rover_msgs::msg::MorseStatus& msg_)
+void QMorseCode::onMorseIsBusy(bool isBusy_)
 {
-    this->_ui.lineEdit->setDisabled(msg_.is_busy);
-    this->_ui.pb_dash->setDisabled(msg_.is_busy);
-    this->_ui.pb_dot->setDisabled(msg_.is_busy);
-    this->_ui.pb_send->setDisabled(msg_.is_busy);
-    this->_ui.pb_space->setDisabled(msg_.is_busy);
+    this->_ui.lineEdit->setDisabled(isBusy_);
+    this->_ui.pb_dash->setDisabled(isBusy_);
+    this->_ui.pb_dot->setDisabled(isBusy_);
+    this->_ui.pb_send->setDisabled(isBusy_);
+    this->_ui.pb_space->setDisabled(isBusy_);
 
-    if (this->_wasBusy != msg_.is_busy)
+    if (this->_wasBusy != isBusy_)
     {
-        _wasBusy = msg_.is_busy;
+        _wasBusy = isBusy_;
         this->_ui.lineEdit->clear();
     }
 
-    if (msg_.is_busy)
+    if (isBusy_)
     {
         this->_ui.lineEdit->setText("MORSE CURRENTLY BUSY");
     }

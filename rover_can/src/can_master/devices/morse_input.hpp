@@ -1,6 +1,8 @@
 #ifndef MORSE_INPUT_HPP
 #define MORSE_INPUT_HPP
 
+#include <vector>
+
 #include "can_master/master_device.hpp"
 
 #include <rover_can2/rover_can2.hpp>

@@ -29,10 +29,10 @@ class QMorseCode : public QWidget
     void CB_publishMorseCode();
 
   signals:
-    void morseIsBusy(const rover_msgs::msg::MorseStatus& msg_);
+    void morseIsBusy(bool isBusy_);
 
   private slots:
-    void onMorseIsBusy(const rover_msgs::msg::MorseStatus& msg_);
+    void onMorseIsBusy(bool isBusy_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;
