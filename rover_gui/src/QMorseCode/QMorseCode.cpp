@@ -58,11 +58,11 @@ QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
 
     _sub_morseStatus
         = this->_node->create_subscription<rover_msgs::msg::MorseStatus>(TOPIC_MORSE_STATUS,
-                                                                       QOS_DEFAULT,
-                                                                       [this](const rover_msgs::msg::MorseStatus& msg_)
-                                                                       {
-                                                                           emit this->morseIsBusy(msg_);
-                                                                       });
+                                                                         QOS_DEFAULT,
+                                                                         [this](const rover_msgs::msg::MorseStatus& msg_)
+                                                                         {
+                                                                             emit this->morseIsBusy(msg_);
+                                                                         });
 }
 
 void QMorseCode::onPbDotClick()
