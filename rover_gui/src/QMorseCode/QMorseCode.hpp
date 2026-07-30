@@ -40,6 +40,8 @@ class QMorseCode : public QWidget
 
     rclcpp::Publisher<rover_msgs::msg::MorseCode>::SharedPtr _pub_morseCode;
     rclcpp::Subscription<rover_msgs::msg::MorseStatus>::SharedPtr _sub_morseStatus;
+
+    bool _wasBusy = false;
 };
 
 #endif  // QMORSECODE_QMORSECODE_HPP

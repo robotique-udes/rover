@@ -87,7 +87,12 @@ void QMorseCode::onMorseIsBusy(const rover_msgs::msg::MorseStatus& msg_)
     this->_ui.pb_dot->setDisabled(msg_.is_busy);
     this->_ui.pb_send->setDisabled(msg_.is_busy);
     this->_ui.pb_space->setDisabled(msg_.is_busy);
-    this->_ui.lineEdit->clear();
+
+    if (this->_wasBusy != msg_.is_busy)
+    {
+        _wasBusy = msg_.is_busy;
+        this->_ui.lineEdit->clear();
+    }
 
     if (msg_.is_busy)
     {
