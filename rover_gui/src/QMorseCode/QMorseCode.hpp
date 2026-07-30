@@ -4,6 +4,7 @@
 // ROS
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/morse_code.hpp>
+#include <rover_msgs/msg/morse_status.hpp>
 
 // QT
 #include <QtWidgets/QGridLayout>
@@ -15,6 +16,7 @@ class QMorseCode : public QWidget
     Q_OBJECT
 
     static constexpr const char* TOPIC_MORSE_CODE = "/base/gui/morse_code";
+    static constexpr const char* TOPIC_MORSE_STATUS = "/base/gui/morse_status";
 
   public:
     QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
@@ -24,14 +26,20 @@ class QMorseCode : public QWidget
     void onPbDashClick();
     void onPbSpaceClick();
     void sendMorseCode();
-
     void CB_publishMorseCode();
+
+  signals:
+    void morseIsBusy(const rover_msgs::msg::MorseStatus& msg_);
+
+  private slots:
+    void onMorseIsBusy(const rover_msgs::msg::MorseStatus& msg_);
 
   private:
     std::shared_ptr<rclcpp::Node> _node;
     Ui::MorseCode _ui;
 
     rclcpp::Publisher<rover_msgs::msg::MorseCode>::SharedPtr _pub_morseCode;
+    rclcpp::Subscription<rover_msgs::msg::MorseStatus>::SharedPtr _sub_morseStatus;
 };
 
 #endif  // QMORSECODE_QMORSECODE_HPP

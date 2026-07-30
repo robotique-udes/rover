@@ -52,7 +52,17 @@ QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
                       this->sendMorseCode();
                   });
 
+    this->connect(this, &QMorseCode::morseIsBusy, this, &QMorseCode::onMorseIsBusy);
+
     _pub_morseCode = this->_node->create_publisher<rover_msgs::msg::MorseCode>(TOPIC_MORSE_CODE, QOS_DEFAULT);
+
+    _sub_morseStatus
+        = this->_node->create_subscription<rover_msgs::msg::MorseStatus>(TOPIC_MORSE_STATUS,
+                                                                       QOS_DEFAULT,
+                                                                       [this](const rover_msgs::msg::MorseStatus& msg_)
+                                                                       {
+                                                                           emit this->morseIsBusy(msg_);
+                                                                       });
 }
 
 void QMorseCode::onPbDotClick()
@@ -68,6 +78,21 @@ void QMorseCode::onPbDashClick()
 void QMorseCode::onPbSpaceClick()
 {
     this->_ui.lineEdit->insert(" ");
+}
+
+void QMorseCode::onMorseIsBusy(const rover_msgs::msg::MorseStatus& msg_)
+{
+    this->_ui.lineEdit->setDisabled(msg_.is_busy);
+    this->_ui.pb_dash->setDisabled(msg_.is_busy);
+    this->_ui.pb_dot->setDisabled(msg_.is_busy);
+    this->_ui.pb_send->setDisabled(msg_.is_busy);
+    this->_ui.pb_space->setDisabled(msg_.is_busy);
+    this->_ui.lineEdit->clear();
+
+    if (msg_.is_busy)
+    {
+        this->_ui.lineEdit->setText("MORSE CURRENTLY BUSY");
+    }
 }
 
 void QMorseCode::sendMorseCode()

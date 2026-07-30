@@ -106,6 +106,7 @@ namespace RoverCan2::Constant
         SENSOR_BOX,
 
         MORSE_CODE,
+        MORSE_STATUS,
         // clang-format on
     };
 
@@ -113,7 +114,7 @@ namespace RoverCan2::Constant
      * @brief Array holding all valid and implemented msgs used on the network.
      *
      */
-    constexpr CompileTimeArray<eMsgId, 25UL> SUPPORTED_MSGS = {
+    constexpr CompileTimeArray<eMsgId, 26UL> SUPPORTED_MSGS = {
         eMsgId::TEST_MSG,          eMsgId::TEST_MSG_2,
         eMsgId::ERROR_STATE,       eMsgId::HEARTBEAT,
         eMsgId::POWER_CMD,         eMsgId::POWER_STATUS,
@@ -126,7 +127,7 @@ namespace RoverCan2::Constant
         eMsgId::PTZ_CONFIG,        eMsgId::ARM_JOINT_CMD,
         eMsgId::ARM_JOINT_STATUS,  eMsgId::ARM_JOINT_ADVANCED_STATUS,
         eMsgId::ARM_JOINT_CONFIG,  eMsgId::SENSOR_BOX,
-        eMsgId::MORSE_CODE,
+        eMsgId::MORSE_CODE,        eMsgId::MORSE_STATUS,
     };
 
     /**
