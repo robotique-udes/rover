@@ -28,7 +28,7 @@ class QUtilityBarBottom : public QWidget
     Ui::UtilityBarBottom _ui;
     std::shared_ptr<rclcpp::Node> _node;
 
-    std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::ArmMsg>> _sub_armJointStatus;
+    rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _sub_armJointStatus;
 };
 
 #endif  // QUTILITY_BAR_BOTTOM_HPP
