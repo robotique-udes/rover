@@ -37,7 +37,8 @@ class QBmsData : public QWidget
     void initializeWidget(void);
 
     std::shared_ptr<rclcpp::Node> _node;
-    Ui::DataLogger _ui;
+    QWidget* _bmsData;
+    QGridLayout* _gridLayout;
     rclcpp::Subscription<rover_msgs::msg::BmsData>::SharedPtr _sub_bmsData;
     QFlowLayout* _layout;
     std::array<QCellWidget*, CELLS_ARRAY_SIZE> _cells;

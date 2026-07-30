@@ -1,5 +1,6 @@
 #include "rclcpp/rclcpp.hpp"
 #include "rover_msgs/msg/bms_data.hpp"
+#include "rover_msgs/msg/battery.hpp"
 #include <cmath>
 #include <memory>
 #include <vector>
@@ -12,6 +13,7 @@ class BmsPublisher : public rclcpp::Node
         _tick(0)
     {
         _publisher = this->create_publisher<rover_msgs::msg::BmsData>("rover/auxiliary/bms_data", 10);
+        _soc_publisher = this->create_publisher<rover_msgs::msg::Battery>("rover/auxiliary/battery", 10);
         _timer = this->create_wall_timer(std::chrono::seconds(1), std::bind(&BmsPublisher::publish_data, this));
         RCLCPP_INFO(this->get_logger(), "BMS mock publisher started on 'rover/auxiliary/bms_data'");
     }
@@ -20,8 +22,10 @@ class BmsPublisher : public rclcpp::Node
     void publish_data()
     {
         auto msg = rover_msgs::msg::BmsData();
+        auto msgSoc = rover_msgs::msg::Battery();
 
         msg.battery_amps = 5.0f + 10.0f * static_cast<float>(std::sin(_tick * 0.05)) * -100;
+        msgSoc.state_of_charge = 40;
 
         const std::size_t NUM_CELLS = 6;
         for (std::size_t i = 0; i < NUM_CELLS; ++i)
@@ -32,6 +36,7 @@ class BmsPublisher : public rclcpp::Node
         msg.valid = true;
 
         _publisher->publish(msg);
+        _soc_publisher->publish(msgSoc);
 
         RCLCPP_DEBUG(this->get_logger(),
                      "Published: amps=%.2f  cells[0]=%u mV  cells[%zu]=%u mV",
@@ -44,6 +49,7 @@ class BmsPublisher : public rclcpp::Node
     }
 
     rclcpp::Publisher<rover_msgs::msg::BmsData>::SharedPtr _publisher;
+    rclcpp::Publisher<rover_msgs::msg::Battery>::SharedPtr _soc_publisher;
     rclcpp::TimerBase::SharedPtr _timer;
     uint64_t _tick;
 };
