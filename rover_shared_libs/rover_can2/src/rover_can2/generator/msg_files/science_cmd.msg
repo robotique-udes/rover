@@ -1,4 +1,4 @@
 float lin_act_speed;
 bool grinder_on;
-bool beak_on;
+float beak_pos;
 bool carrousel_on;

@@ -47,7 +47,7 @@ void Science::CB_ROS_scienceCmd(const rover_msgs::msg::ScienceMsg& rosMsg_)
 {
     _nextScienceCmdMsg.data().lin_act_speed = rosMsg_.target_speed[rover_msgs::msg::ScienceMsg::LINEAR_ACT];
     _nextScienceCmdMsg.data().grinder_on = floatToBool(rosMsg_.target_speed[rover_msgs::msg::ScienceMsg::EXCAVATOR]);
-    _nextScienceCmdMsg.data().beak_on = floatToBool(rosMsg_.target_speed[rover_msgs::msg::ScienceMsg::BEAK]);
+    _nextScienceCmdMsg.data().beak_on = rosMsg_.target_speed[rover_msgs::msg::ScienceMsg::BEAK];
     _nextScienceCmdMsg.data().carrousel_on = floatToBool(rosMsg_.target_speed[rover_msgs::msg::ScienceMsg::CARROUSEL]);
 }
 

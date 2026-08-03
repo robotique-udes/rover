@@ -8,10 +8,10 @@ namespace KEYBINDINGS
 {
     constexpr Constants::Keybinds::eJoyInput DEADMAN_SWITCH = Constants::Keybinds::eJoyInput::L1;
 
-    constexpr Constants::Keybinds::eJoyInput LINEAR_ACT_UP = Constants::Keybinds::eJoyInput::A;
-    constexpr Constants::Keybinds::eJoyInput LINEAR_ACT_DOWN = Constants::Keybinds::eJoyInput::Y;
-    constexpr Constants::Keybinds::eJoyInput EXCAVATOR = Constants::Keybinds::eJoyInput::R2;
-    constexpr Constants::Keybinds::eJoyInput BEAK = Constants::Keybinds::eJoyInput::B;
+    constexpr Constants::Keybinds::eJoyInput LINEAR_ACT_UP = Constants::Keybinds::eJoyInput::CROSS_UP;
+    constexpr Constants::Keybinds::eJoyInput LINEAR_ACT_DOWN = Constants::Keybinds::eJoyInput::CROSS_DOWN;
+    constexpr Constants::Keybinds::eJoyInput EXCAVATOR = Constants::Keybinds::eJoyInput::A;
+    constexpr Constants::Keybinds::eJoyInput BEAK = Constants::Keybinds::eJoyInput::R2;
     constexpr Constants::Keybinds::eJoyInput CARROUSEL = Constants::Keybinds::eJoyInput::X;
 
 }  // namespace KEYBINDINGS
