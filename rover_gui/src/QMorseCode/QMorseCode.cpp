@@ -14,45 +14,15 @@ QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
 
     _ui.setupUi(this);
 
-    this->connect(_ui.pb_dot,
-                  &QPushButton::clicked,
-                  this,
-                  [this]()
-                  {
-                      this->onPbDotClick();
-                  });
+    this->connect(_ui.pb_dot, &QPushButton::clicked, this, &QMorseCode::onPbDotClick);
 
-    this->connect(_ui.pb_dash,
-                  &QPushButton::clicked,
-                  this,
-                  [this]()
-                  {
-                      this->onPbDashClick();
-                  });
+    this->connect(_ui.pb_dash, &QPushButton::clicked, this, &QMorseCode::onPbDashClick);
 
-    this->connect(_ui.pb_space,
-                  &QPushButton::clicked,
-                  this,
-                  [this]()
-                  {
-                      this->onPbSpaceClick();
-                  });
+    this->connect(_ui.pb_space, &QPushButton::clicked, this, &QMorseCode::onPbSpaceClick);
 
-    this->connect(_ui.pb_send,
-                  &QPushButton::clicked,
-                  this,
-                  [this]()
-                  {
-                      this->sendMorseCode();
-                  });
+    this->connect(_ui.pb_send, &QPushButton::clicked, this, &QMorseCode::sendMorseCode);
 
-    this->connect(_ui.lineEdit,
-                  &QLineEdit::returnPressed,
-                  this,
-                  [this]()
-                  {
-                      this->sendMorseCode();
-                  });
+    this->connect(_ui.lineEdit, &QLineEdit::returnPressed, this, &QMorseCode::sendMorseCode);
 
     this->connect(this, &QMorseCode::morseIsBusy, this, &QMorseCode::onMorseIsBusy);
 
