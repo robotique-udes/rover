@@ -4,15 +4,15 @@
 #include "can_master/master_device.hpp"
 #include "can_master/shared_msg.hpp"
 
-#include <rover_can2/msgs/science.hpp>
+#include <rover_can2/msgs/science_cmd.hpp>
 #include <rover_msgs/msg/science_msg.hpp>
 
 #include <rover_can2/rover_can2.hpp>
 
-class Science : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::Science>>,
+class Science : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ScienceCmd>>,
                 public MasterDevice
 {
-    using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::Science>>;
+    using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ScienceCmd>>;
 
     static constexpr const char* SCIENCE_CMD_TOPIC = "/rover/science/cmd";
 
@@ -30,10 +30,9 @@ class Science : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::S
     void CB_ROS_scienceCmd(const rover_msgs::msg::ScienceMsg& rosMsg_);
     void CB_ROS_canSend(void);
 
-    // const uint8_t _rosScienceMsgId;
 
     std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ScienceMsg>> _rosSharedMsg;
-    RoverCan2::Msgs::Science _nextScienceCmdMsg;
+    RoverCan2::Msgs::ScienceCmd _nextScienceCmdMsg;
 
     rclcpp::Subscription<rover_msgs::msg::ScienceMsg>::SharedPtr _sub_MotorStatus;
     rclcpp::TimerBase::SharedPtr _timerCanSend;

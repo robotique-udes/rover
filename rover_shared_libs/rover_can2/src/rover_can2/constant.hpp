@@ -103,7 +103,7 @@ namespace RoverCan2::Constant
         DDB_STATUS,
 
         SENSOR_BOX,
-        SCIENCE,
+        SCIENCE_CMD,
         // clang-format on
     };
 
@@ -116,7 +116,7 @@ namespace RoverCan2::Constant
            eMsgId::POWER_STATUS,      eMsgId::PWM_CMD,          eMsgId::PWM_STATUS,  eMsgId::PWM_INFO,     eMsgId::PROP_SPEED_CMD,
            eMsgId::PROP_SPEED_STATUS, eMsgId::DDB_CMD,          eMsgId::DDB_STATUS,  eMsgId::FIX_POSITION, eMsgId::FIX_HEADING,
            eMsgId::FIX_INFO,          eMsgId::PTZ_CMD,          eMsgId::PTZ_STATUS,  eMsgId::PTZ_CONFIG,   eMsgId::ARM_JOINT_CMD,
-           eMsgId::ARM_JOINT_STATUS,  eMsgId::ARM_JOINT_CONFIG, eMsgId::SENSOR_BOX,  eMsgId::SCIENCE};
+           eMsgId::ARM_JOINT_STATUS,  eMsgId::ARM_JOINT_CONFIG, eMsgId::SENSOR_BOX,  eMsgId::SCIENCE_CMD};
 
     /**
      * @brief

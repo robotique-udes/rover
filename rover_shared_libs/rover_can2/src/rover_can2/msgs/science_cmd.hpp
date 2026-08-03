@@ -1,46 +1,51 @@
-#ifndef ROVER_CAN2_MSGS_SCIENCE_HPP
-#define ROVER_CAN2_MSGS_SCIENCE_HPP
+#ifndef SCIENCE_CMD_HPP
+#define SCIENCE_CMD_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
 
-DEFINE_LOG_NODE(Science_msg, Logger::eNodeState::OFF)
+
+DEFINE_LOG_NODE(ScienceCmd_msg, Logger::eNodeState::OFF)
 
 namespace RoverCan2::Msgs
 {
-    class Science : public Msg<Science>
+    class ScienceCmd : public Msg<ScienceCmd>
     {
       public:
         enum class eMsgContentID : uint8_t
         {
-            ROTOR_SPEED,
             LIN_ACT_SPEED,
+            GRINDER_ON,
+            BEAK_ON,
+            CARROUSEL_ON,
             eLAST,
         };
 
       private:
         struct sMsgData
         {
-            float rotor_speed;
             float lin_act_speed;
+            bool grinder_on;
+            bool beak_on;
+            bool carrousel_on;
 
-            static_assert(sizeof(rotor_speed) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
-                                                     - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
-                          "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(lin_act_speed) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
-                                                       - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
-                          "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(lin_act_speed) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(grinder_on) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(beak_on) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(carrousel_on) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
-            = {eMsgContentID::ROTOR_SPEED, eMsgContentID::LIN_ACT_SPEED};
+            = {eMsgContentID::LIN_ACT_SPEED, eMsgContentID::GRINDER_ON, eMsgContentID::BEAK_ON, eMsgContentID::CARROUSEL_ON};
 
       public:
-        Science():
-            Msg(Constant::eMsgId::SCIENCE)
+        ScienceCmd():
+            Msg(Constant::eMsgId::SCIENCE_CMD)
         {
-            _data.rotor_speed = static_cast<decltype(_data.rotor_speed)>(0);
             _data.lin_act_speed = static_cast<decltype(_data.lin_act_speed)>(0);
+            _data.grinder_on = static_cast<decltype(_data.grinder_on)>(0);
+            _data.beak_on = static_cast<decltype(_data.beak_on)>(0);
+            _data.carrousel_on = static_cast<decltype(_data.carrousel_on)>(0);
         }
 
         eLoadMsgCode _loadMsg(const CanMsg& msg_)
@@ -58,7 +63,7 @@ namespace RoverCan2::Msgs
             eMsgContentID msgContentId = static_cast<eMsgContentID>(msg_.getMsgContentID());
             if (!VALID_MSG_IDS.contains(msgContentId))
             {
-                LOG_DEBUG(Logger::Nodes::Science_msg,
+                LOG_DEBUG(Logger::Nodes::ScienceCmd_msg,
                           "Mismatch between received message and local message definition. Received msgContentId: (%u), "
                           "expected lower than (%u) and none zero",
                           TO_UNDERLYING(msgContentId),
@@ -69,17 +74,31 @@ namespace RoverCan2::Msgs
             bool success = false;
             switch (msgContentId)
             {
-                case eMsgContentID::ROTOR_SPEED:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.rotor_speed);
-                    LOG_DEBUG(Logger::Nodes::Science_msg,
-                              "switch (msgContentId) case eMsgContentID::ROTOR_SPEED: %s",
+                case eMsgContentID::LIN_ACT_SPEED:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.lin_act_speed);
+                    LOG_DEBUG(Logger::Nodes::ScienceCmd_msg,
+                              "switch (msgContentId) case eMsgContentID::LIN_ACT_SPEED: %s",
                               success ? "success" : "failed");
                     break;
 
-                case eMsgContentID::LIN_ACT_SPEED:
-                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.lin_act_speed);
-                    LOG_DEBUG(Logger::Nodes::Science_msg,
-                              "switch (msgContentId) case eMsgContentID::LIN_ACT_SPEED: %s",
+                case eMsgContentID::GRINDER_ON:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.grinder_on);
+                    LOG_DEBUG(Logger::Nodes::ScienceCmd_msg,
+                              "switch (msgContentId) case eMsgContentID::GRINDER_ON: %s",
+                              success ? "success" : "failed");
+                    break;
+
+                case eMsgContentID::BEAK_ON:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.beak_on);
+                    LOG_DEBUG(Logger::Nodes::ScienceCmd_msg,
+                              "switch (msgContentId) case eMsgContentID::BEAK_ON: %s",
+                              success ? "success" : "failed");
+                    break;
+
+                case eMsgContentID::CARROUSEL_ON:
+                    success = Helpers::CAN_MSG_TO_ROVER_MSG_CONTENT(msg_, _data.carrousel_on);
+                    LOG_DEBUG(Logger::Nodes::ScienceCmd_msg,
+                              "switch (msgContentId) case eMsgContentID::CARROUSEL_ON: %s",
                               success ? "success" : "failed");
                     break;
                 case eMsgContentID::eLAST:
@@ -115,12 +134,20 @@ namespace RoverCan2::Msgs
             CanMsg msg_;
             switch (static_cast<eMsgContentID>(msgContentId_))
             {
-                case eMsgContentID::ROTOR_SPEED:
-                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.rotor_speed, msg_);
-                    break;
-
                 case eMsgContentID::LIN_ACT_SPEED:
                     Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.lin_act_speed, msg_);
+                    break;
+
+                case eMsgContentID::GRINDER_ON:
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.grinder_on, msg_);
+                    break;
+
+                case eMsgContentID::BEAK_ON:
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.beak_on, msg_);
+                    break;
+
+                case eMsgContentID::CARROUSEL_ON:
+                    Helpers::ROVER_MSG_CONTENT_TO_CAN_MSG(this->getMsgId(), msgContentId_, _data.carrousel_on, msg_);
                     break;
                 case eMsgContentID::eLAST:
                     [[fallthrough]];
@@ -152,4 +179,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // SCIENCE_HPP
+#endif  // SCIENCE_CMD_HPP
