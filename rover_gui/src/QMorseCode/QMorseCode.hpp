@@ -10,6 +10,7 @@
 #include <QtWidgets/QGridLayout>
 #include <QString>
 #include "UI_MorseCode.h"
+#include "Worker/QMorseWorker.hpp"
 
 class QMorseCode : public QWidget
 {
@@ -37,6 +38,7 @@ class QMorseCode : public QWidget
   private:
     std::shared_ptr<rclcpp::Node> _node;
     Ui::MorseCode _ui;
+    QMorseWorker _QMorseWorker;
 
     rclcpp::Publisher<rover_msgs::msg::MorseCode>::SharedPtr _pub_morseCode;
     rclcpp::Subscription<rover_msgs::msg::MorseStatus>::SharedPtr _sub_morseStatus;

@@ -8,7 +8,8 @@
 
 QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_)
+    _node(guiNode_),
+    _QMorseWorker(true, this)
 {
     ASSERT_COND(_node != nullptr);
 
@@ -26,9 +27,10 @@ QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_)
 
     this->connect(this, &QMorseCode::morseIsBusy, this, &QMorseCode::onMorseIsBusy);
 
-    _pub_morseCode = this->_node->create_publisher<rover_msgs::msg::MorseCode>(TOPIC_MORSE_CODE, QOS_DEFAULT);
+    this->_pub_morseCode = this->_node->create_publisher<rover_msgs::msg::MorseCode>(TOPIC_MORSE_CODE, QOS_DEFAULT);
+    this->_QMorseWorker.setPublisher(this->_pub_morseCode);
 
-    _sub_morseStatus
+    this->_sub_morseStatus
         = this->_node->create_subscription<rover_msgs::msg::MorseStatus>(TOPIC_MORSE_STATUS,
                                                                          QOS_DEFAULT,
                                                                          [this](const rover_msgs::msg::MorseStatus& msg_)
@@ -75,26 +77,8 @@ void QMorseCode::onMorseIsBusy(bool isBusy_)
 void QMorseCode::sendMorseCode()
 {
     std::string morseCode = this->_ui.lineEdit->text().toStdString();
-    uint8_t len = static_cast<uint8_t>(morseCode.length());
-    uint8_t runningChecksum = 0;
 
-    rover_msgs::msg::MorseCode msg;
-    msg.length = len;
-
-    for (uint8_t i = 0; i < len; ++i)
-    {
-        uint8_t c = static_cast<uint8_t>(morseCode[i]);
-        runningChecksum = static_cast<uint8_t>(runningChecksum + c);  // wraps naturally at 256
-
-        msg.start = (i == 0);
-        msg.index = i;
-        msg.character = c;
-        msg.checksum = runningChecksum;
-
-        _pub_morseCode->publish(msg);
-        RCLCPP_DEBUG(this->_node->get_logger(), "Sending char %d/%d: %c", i + 1, len, c);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
-    }
+    this->_QMorseWorker.sendMorseCode(morseCode);
 
     this->_ui.lineEdit->clear();
 }
