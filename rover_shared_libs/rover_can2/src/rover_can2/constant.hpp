@@ -204,6 +204,8 @@ namespace RoverCan2::Constant
                 return "SPEAKERS";
             case eDeviceId::GAS_SENSORS:
                 return "GAS_SENSORS";
+            case eDeviceId::SCIENCE:
+                return "SCIENCE";
             case eDeviceId::_RESERVED_INTERNAL:
                 return "_RESERVED_INTERNAL";
             case eDeviceId::INVALID:
