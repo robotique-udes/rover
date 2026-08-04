@@ -15,8 +15,6 @@ BMSDataNode::BMSDataNode():
 {
     _publisher = create_publisher<rover_msgs::msg::BmsData>(TOPIC_BMS_DATA, QOS_DEFAULT);
 
-    _soc_publisher = create_publisher<rover_msgs::msg::Battery>(TOPIC_BATTERY, QOS_DEFAULT);
-
     _timer_publisher = create_wall_timer(std::chrono::milliseconds(DELAY_PUBLISHER_MS),
                                          [this](void)
                                          {
@@ -27,13 +25,12 @@ BMSDataNode::BMSDataNode():
 void BMSDataNode::callbackBMSData(void)
 {
     rover_msgs::msg::BmsData msg;
-    rover_msgs::msg::Battery msgSoc;
 
     if (this->getData())
     {
         msg.valid = true;
         msg.battery_amps = _ampArray[std::to_underlying(AmpIndexType::BATTERY_AMPS)];
-        msgSoc.state_of_charge = _ampArray[std::to_underlying(AmpIndexType::SOC)];
+        msg.state_of_charge = _ampArray[std::to_underlying(AmpIndexType::SOC)];
         for (size_t i = std::to_underlying(VoltIndexType::CELL_VOLT_START); i < std::to_underlying(VoltIndexType::CELL_VOLT_END);
              i++)
         {
@@ -59,7 +56,6 @@ void BMSDataNode::callbackBMSData(void)
     }
 
     _publisher->publish(msg);
-    _soc_publisher->publish(msgSoc);
 }
 
 std::optional<std::string> BMSDataNode::readDataFrame()

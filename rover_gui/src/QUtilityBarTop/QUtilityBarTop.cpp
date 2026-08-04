@@ -71,9 +71,9 @@ void QUtilityBarTop::initBatterySubscriber(void)
 
     if (_node)
     {
-        _sub_battery = _node->create_subscription<rover_msgs::msg::Battery>(TOPIC_BATTERY,
+        _sub_battery = _node->create_subscription<rover_msgs::msg::BmsData>(TOPIC_BMS_DATA,
                                                                             QOS_DEFAULT,
-                                                                            [this](rover_msgs::msg::Battery msg_)
+                                                                            [this](rover_msgs::msg::BmsData msg_)
                                                                             {
                                                                                 emit this->updateBatteryUI(msg_.state_of_charge);
                                                                             });
@@ -332,7 +332,7 @@ void QUtilityBarTop::onUpdateTimer(int secondsBeforeTimeOut_)
 void QUtilityBarTop::onBatteryPubCount()
 {
     _lastBatteryTimeMsg = _node->now();
-    size_t count = _node->count_publishers(TOPIC_BATTERY);
+    size_t count = _node->count_publishers(TOPIC_BMS_DATA);
     if (!count)
     {
         QIcon icon(":/icons/BatteryError.svg");
