@@ -38,7 +38,7 @@ class MainWindow : public QMainWindow
     QTabWidget _mainTabWidget = QTabWidget(this);
 
     QUtilityBarTop _topUtilityBar;
-    QUtilityBarBottom _bottomUtilityBar = QUtilityBarBottom(this);
+    QUtilityBarBottom _bottomUtilityBar;
 
     QSideBar _sideBarWidget = QSideBar(this);
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
