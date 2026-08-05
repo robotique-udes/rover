@@ -9,7 +9,7 @@
 QMorseCode::QMorseCode(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),
-    _QMorseWorker(true, this)
+    _QMorseWorker(this)
 {
     ASSERT_COND(_node != nullptr);
 

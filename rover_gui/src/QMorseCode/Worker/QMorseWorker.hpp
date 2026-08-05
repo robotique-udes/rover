@@ -11,7 +11,7 @@ class QMorseWorker : public QWorker
     Q_OBJECT
 
   public:
-    QMorseWorker(bool start_ = false, QObject* parent_ = nullptr);
+    QMorseWorker(QObject* parent_ = nullptr);
 
     void sendMorseCode(const std::string& morseCodeMsg_);
 

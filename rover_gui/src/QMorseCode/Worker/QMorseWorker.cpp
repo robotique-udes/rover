@@ -1,7 +1,7 @@
 #include "QMorseWorker.hpp"
 
-QMorseWorker::QMorseWorker(bool start_, QObject* parent_):
-    QWorker(start_, parent_)
+QMorseWorker::QMorseWorker(QObject* parent_):
+    QWorker(false, parent_)
 {
 }
 
@@ -10,12 +10,16 @@ void QMorseWorker::sendMorseCode(const std::string& morseCode_)
     this->addTask(
         [this, morseCode_](void)
         {
-            this->sendMorseCodeInternal(morseCode_);
+            if (_pub_morseCode != nullptr)
+            {
+                this->sendMorseCodeInternal(morseCode_);
+            }
         });
 }
 
 void QMorseWorker::setPublisher(rclcpp::Publisher<rover_msgs::msg::MorseCode>::SharedPtr pub_morseCode_)
 {
+    this->start();
     _pub_morseCode = pub_morseCode_;
 }
 
