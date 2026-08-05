@@ -3,6 +3,8 @@
 #include <algorithm>
 #include <cmath>
 
+#include <rover_lib2/helpers/constants.hpp>
+
 QUtilityBarBottom::QUtilityBarBottom(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
     QWidget(parent_),
     _node(node_)
@@ -15,7 +17,7 @@ QUtilityBarBottom::QUtilityBarBottom(std::shared_ptr<rclcpp::Node> node_, QWidge
     _ui.gripperIcon->setStyleSheet("background-color: rgb(0, 255, 0); border: 1px solid #202020;");
 
     _sub_armJointStatus = this->_node->create_subscription<rover_msgs::msg::ArmMsg>(ARM_STATUS_TOPIC,
-                                                                                    1,
+                                                                                    QOS_DEFAULT,
                                                                                     [this](const rover_msgs::msg::ArmMsg& msg_)
                                                                                     {
                                                                                         this->CB_armStatus(msg_);
