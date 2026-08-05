@@ -6,6 +6,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     QMainWindow(nullptr),
     _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
     _topUtilityBar(guiNode_, this),
+    _bottomUtilityBar(guiNode_, this),
     _arbitrationWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
     _deviceStatusWidget(guiNode_, this),
