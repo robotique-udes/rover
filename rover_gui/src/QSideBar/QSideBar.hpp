@@ -14,6 +14,7 @@ class QSideBar : public QWidget
         NAVIGATION,
         FILE_TRANSFER,
         DEVICE_STATUS,
+        SCIENCE,
     };
 
     explicit QSideBar(QWidget* parent_);

@@ -9,7 +9,8 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _arbitrationWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
     _deviceStatusWidget(guiNode_, this),
-    _ligthsController(guiNode_, this)
+    _ligthsController(guiNode_, this),
+    _scienceWidget(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
@@ -54,6 +55,7 @@ void MainWindow::closeEvent(QCloseEvent* event_)
 
 void MainWindow::onTabChange(QSideBar::eTabIndex index_)
 {
+    _scienceWidget.hide(); // Figure out why the fuck do I need this
     while (_mainTabWidget.count() != 0)
     {
         std::unique_ptr<QWidget> widgetContained = std::make_unique<QWidget>(_mainTabWidget.widget(0));
@@ -87,6 +89,11 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
         case QSideBar::eTabIndex::DEVICE_STATUS:
             grid->addWidget(&_deviceStatusWidget, 0, 1);
             _deviceStatusWidget.onDeviceStatusPage();
+            break;
+
+        case QSideBar::eTabIndex::SCIENCE:
+            grid->addWidget(&_scienceWidget, 0, 1);
+            _scienceWidget.show();
             break;
 
         case QSideBar::eTabIndex::FILE_TRANSFER:
