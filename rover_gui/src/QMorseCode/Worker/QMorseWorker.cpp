@@ -19,8 +19,8 @@ void QMorseWorker::sendMorseCode(const std::string& morseCode_)
 
 void QMorseWorker::setPublisher(rclcpp::Publisher<rover_msgs::msg::MorseCode>::SharedPtr pub_morseCode_)
 {
-    this->start();
     _pub_morseCode = pub_morseCode_;
+    this->start();
 }
 
 void QMorseWorker::sendMorseCodeInternal(const std::string& morseCode_)
