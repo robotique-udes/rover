@@ -1,7 +1,7 @@
 #include "joy_manager.hpp"
 #include "keybinding_science.hpp"
 
-#include <rover_msgs/msg/science_msg.hpp>
+#include <rover_msgs/msg/science_cmd.hpp>
 #include <rover_msgs/msg/joy.hpp>
 
 #include <rover_lib2/helpers/time.hpp>
@@ -21,7 +21,7 @@ class Teleop : public rclcpp::Node
 
   private:
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyScience;
-    rclcpp::Publisher<rover_msgs::msg::ScienceMsg>::SharedPtr _pubScienceCmd;
+    rclcpp::Publisher<rover_msgs::msg::ScienceCmd>::SharedPtr _pubScienceCmd;
 
     JoyManager _joyManager;
 
@@ -36,7 +36,7 @@ class Teleop : public rclcpp::Node
                                                                          {
                                                                              this->joy_CB(joyMsg_);
                                                                          });
-        _pubScienceCmd = this->create_publisher<rover_msgs::msg::ScienceMsg>(TOPIC_SCIENCE_CMD, QOS_DEFAULT);
+        _pubScienceCmd = this->create_publisher<rover_msgs::msg::ScienceCmd>(TOPIC_SCIENCE_CMD, QOS_DEFAULT);
     }
 
     void joy_CB(const rover_msgs::msg::Joy& joyMsg_)
@@ -44,7 +44,7 @@ class Teleop : public rclcpp::Node
         const size_t joyMsgSize = joyMsg_.joy_data.size();
         std::array<float, TO_UNDERLYING(Constants::Keybinds::eJoyInput::eLAST)> joyArray = {};
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
-        rover_msgs::msg::ScienceMsg scienceMsg;
+        rover_msgs::msg::ScienceCmd scienceCmd;
 
         _joyManager.updateJoyArray(joyArray);
 
@@ -52,44 +52,44 @@ class Teleop : public rclcpp::Node
         {
             if (this->_joyManager.isPressed(KEYBINDINGS::LINEAR_ACT_UP))
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::LINEAR_ACT] = LIN_ACT_SPEED_FACTOR;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::LINEAR_ACT] = LIN_ACT_SPEED_FACTOR;
             }
             else if (this->_joyManager.isPressed(KEYBINDINGS::LINEAR_ACT_DOWN))
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::LINEAR_ACT] = LIN_ACT_SPEED_FACTOR * -1.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::LINEAR_ACT] = LIN_ACT_SPEED_FACTOR * -1.0F;
             }
             else
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::LINEAR_ACT] = 0.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::LINEAR_ACT] = 0.0F;
             }
 
             if (this->_joyManager.isPressed(KEYBINDINGS::EXCAVATOR))
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::EXCAVATOR] = 1.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 1.0F;
             }
             else
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::EXCAVATOR] = 0.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 0.0F;
             }
 
             if (this->_joyManager.isPressed(KEYBINDINGS::BEAK))
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::BEAK] = 1.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 1.0F;
             }
             else
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::BEAK] = 0.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 0.0F;
             }
             if (this->_joyManager.isPressed(KEYBINDINGS::CARROUSEL))
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::CARROUSEL] = 1.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL] = 1.0F;
             }
             else
             {
-                scienceMsg.target_speed[rover_msgs::msg::ScienceMsg::CARROUSEL] = 0.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL] = 0.0F;
             }
 
-            this->_pubScienceCmd->publish(scienceMsg);
+            this->_pubScienceCmd->publish(scienceCmd);
         }
     }
 };

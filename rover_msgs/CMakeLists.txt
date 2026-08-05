@@ -57,7 +57,8 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/CameraList.msg"
   "msg/Light.msg"
   "msg/PropulsionMotor.msg"
-  "msg/ScienceMsg.msg"
+  "msg/ScienceCmd.msg"
+  "msg/ScienceInfo.msg"
   "msg/SensorBox.msg"
   "msg/TopicWithPriority.msg"
 
