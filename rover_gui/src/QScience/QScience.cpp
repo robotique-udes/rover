@@ -73,7 +73,7 @@ void QScience::appendSensorData(quint16 s1_, quint16 s2_, quint16 s3_)
         _series3.remove(0);
     }
 
-    auto* axisX = qobject_cast<QValueAxis*>(_chart.axes(Qt::Horizontal).first());
+    QValueAxis* axisX = qobject_cast<QValueAxis*>(_chart.axes(Qt::Horizontal).first());
     axisX->setRange(_sampleIndex - MAX_POINTS_X, _sampleIndex);
 }
 
