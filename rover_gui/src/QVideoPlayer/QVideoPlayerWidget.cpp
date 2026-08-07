@@ -94,10 +94,18 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
 
+    const QSignalBlocker blocker(_ui.rtspComboBox);
+
     for (uint16_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
     {
-        _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][0]);
+        _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::NAME)]);
+        if (Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::URL)] == _camURL)
+        {
+            _ui.rtspComboBox->setCurrentIndex(static_cast<int>(i));
+        }
     }
+
+
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
@@ -494,16 +502,14 @@ void QVideoPlayerWidget::onToggleView(void)
 
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
-    stopStream();
     QString url = QString::fromStdString(Constants::CameraInfo::getURLFromId(text_.toStdString()));
     std::cout << url.toStdString();
     bool isValid = this->validateRtspUrl(url);
     this->updateUrlValidationUI(isValid);
 
-    if (isValid)
-    {
-        startStream(url);
-    }
+    this->setPlayerState(ePlayerState::RECONNECTING);
+    startStream(url);
+
     if (_state == ePlayerState::CONNECTION_FAILED && isValid)
     {
         this->setPlayerState(ePlayerState::NOT_CONNECTED);
