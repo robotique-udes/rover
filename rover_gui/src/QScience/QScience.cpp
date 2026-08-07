@@ -72,7 +72,7 @@ void QScience::updateSensorValues(const rover_msgs::msg::ScienceInfo& msg_)
 
 void QScience::appendSensorData(quint32 sampleIdx_, quint16 s1_, quint16 s2_, quint16 s3_)
 {
-    uint32_t timeValue = sampleIdx_ / SAMPLING_RATE_SENSORS;
+    double timeValue = sampleIdx_ / SAMPLING_RATE_SENSORS;
     _series1.append(timeValue, s1_);
     _series2.append(timeValue, s2_);
     _series3.append(timeValue, s3_);
