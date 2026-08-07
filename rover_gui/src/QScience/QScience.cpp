@@ -29,26 +29,28 @@ QScience::QScience(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     axisX->setRange(0, MAX_POINTS_X);
     axisY->setRange(0, MAX_POINTS_Y);
     axisX->setTitleText("Time (s)");
-    axisY->setTitleText("CO² (PPM)");
+    axisY->setTitleText("CO₂ (PPM)");
 
     _chartView.setRenderHint(QPainter::Antialiasing);
 
     _layout.addWidget(&_chartView);
-    _ui.widget->setLayout(&_layout);
-
-    connect(this, &QScience::sensorDataReceived, this, &QScience::appendSensorData, Qt::QueuedConnection);
+    _ui.chartWidget->setLayout(&_layout);
 
     _sub_scienceStatus = _node->create_subscription<rover_msgs::msg::ScienceInfo>(
         TOPIC_SCIENCE_INFO,
         QOS_DEFAULT,
         [this](const rover_msgs::msg::ScienceInfo& msg_)
         {
-            this->updateSensorValues(msg_);
-            emit this->sensorDataReceived(msg_.sensor_1, msg_.sensor_2, msg_.sensor_3);
+            if (!_dataPaused)
+            {
+                this->updateSensorValues(msg_);
+                emit this->sensorDataReceived(msg_.sensor_1, msg_.sensor_2, msg_.sensor_3);
+            }
         });
 
     this->connect(_ui.pb_clear, &QPushButton::clicked, this, &QScience::onClearClicked);
     this->connect(_ui.pb_save, &QPushButton::clicked, this, &QScience::onSaveClicked);
+    this->connect(_ui.cb_pause, &QCheckBox::clicked, this, &QScience::onCheckboxClicked);
 }
 
 void QScience::updateSensorValues(const rover_msgs::msg::ScienceInfo& msg_)
@@ -92,4 +94,17 @@ void QScience::onClearClicked()
 void QScience::onSaveClicked()
 {
     RCLCPP_ERROR(this->_node->get_logger(), "Save clicked");
+
+void QScience::onCheckboxClicked()
+{
+    if (_ui.cb_pause->isChecked())
+    {
+        this->_dataPaused = true;
+    }
+    else
+    {
+        this->_dataPaused = false;
+    }
+}
+
 }

@@ -37,6 +37,7 @@ class QScience : public QWidget
   private slots:
     void onClearClicked();
     void onSaveClicked();
+    void onCheckboxClicked();
     void appendSensorData(quint16 s1_, quint16 s2_, quint16 s3_);
 
   private:
@@ -57,6 +58,8 @@ class QScience : public QWidget
     QLineSeries _series3;
     QVBoxLayout _layout;
     int _sampleIndex = 0;
+
+    bool _dataPaused = false;
 };
 
 #endif  // QSCIENCE_QSCIENCE_HPP
