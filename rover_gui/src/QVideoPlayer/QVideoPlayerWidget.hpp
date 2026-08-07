@@ -2,6 +2,7 @@
 #define QVIDEOPLAYERWIDGER_HPP
 
 #include "rclcpp/rclcpp.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 
 #include "UI_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
@@ -145,11 +146,12 @@ class QVideoPlayerWidget : public QWidget
     void autoStartGStreamer(void);
 
     void hideAngleSelector(void);
+
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 
     std::string _camURL = "";
-    std::string _defaultCamUrl = "";
+    std::string _defaultCamUrl = Constants::CameraInfo::CAMERA_INFO[0][1];
 
     int _streamIndex;
     uint16_t _playerIndex;
