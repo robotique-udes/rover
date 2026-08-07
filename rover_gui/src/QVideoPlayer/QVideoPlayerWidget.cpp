@@ -96,7 +96,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     for (uint16_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
     {
-        _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][1]);
+        _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][0]);
     }
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
@@ -494,7 +494,9 @@ void QVideoPlayerWidget::onToggleView(void)
 
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
-    bool isValid = this->validateRtspUrl(text_);
+    QString url = QString::fromStdString(Constants::CameraInfo::getURLFromId(text_.toStdString()));
+    std::cout << url.toStdString();
+    bool isValid = this->validateRtspUrl(url);
     this->updateUrlValidationUI(isValid);
 
     if (_state == ePlayerState::CONNECTION_FAILED && isValid)
@@ -636,7 +638,7 @@ void QVideoPlayerWidget::onReconnectTimer(void)
     {
         if (!_ui.rtspComboBox->currentText().isEmpty())
         {
-            this->startStream(_ui.rtspComboBox->currentText());
+            this->startStream(QString::fromStdString(Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString())));
         }
     }
 }
@@ -818,7 +820,7 @@ void QVideoPlayerWidget::setURLToDefault(void)
 
 void QVideoPlayerWidget::updateCamURL()
 {
-    _camURL = _ui.rtspComboBox->currentText().toStdString();
+    _camURL = Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString());
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
