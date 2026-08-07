@@ -4,12 +4,17 @@
 #include "video_recording.hpp"
 
 #include <rclcpp/rclcpp.hpp>
+
+#include "rover_lib2/helpers/macros.hpp"
+#include "rover_lib2/helpers/constants.hpp"
+
 #include <rover_msgs/msg/gps.hpp>
 #include <rover_msgs/srv/camera_control.hpp>
 #include <rover_msgs/msg/camera_list.hpp>
 
-#include <rover_lib2/helpers/macros.hpp>
-#include <rover_lib2/helpers/constants.hpp>
+
+#include <rclcpp_lifecycle/lifecycle_node.hpp>
+#include <rclcpp_lifecycle/lifecycle_publisher.hpp>
 
 #include <sys/stat.h>
 #include <cstdlib>
