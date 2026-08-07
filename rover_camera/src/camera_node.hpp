@@ -26,7 +26,7 @@ struct sScreenshotResult
     std::string msg;
 };
 
-class CameraNode : public rclcpp::Node
+class CameraNode : public rclcpp_lifecycle::LifecycleNode
 {
     static constexpr uint64_t PUBLISHER_PERIOD_MS = 200UL;
     static constexpr const char* SERVICE_MEDIA_SERVER_NAME = "/rover/cameras/media_server_control";
