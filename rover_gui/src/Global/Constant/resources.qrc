@@ -14,6 +14,8 @@
     <file>icons/arrow.png</file>
     <file>icons/arm.png</file>
     <file>icons/gripper.png</file>
+    <file>icons/amps.png</file>
+    <file>icons/cells_volt.png</file>
 
     <file>model/direction_arrow.glb</file>
     
