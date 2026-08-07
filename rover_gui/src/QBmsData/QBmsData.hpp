@@ -1,7 +1,6 @@
 #ifndef QBMSDATA_HPP
 #define QBMSDATA_HPP
 
-#include "UI_BmsData.h"
 // ROS
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/bms_data.hpp>
@@ -37,8 +36,6 @@ class QBmsData : public QWidget
     void initializeWidget(void);
 
     std::shared_ptr<rclcpp::Node> _node;
-    QWidget* _bmsData;
-    QGridLayout* _gridLayout;
     rclcpp::Subscription<rover_msgs::msg::BmsData>::SharedPtr _sub_bmsData;
     QFlowLayout* _layout;
     std::array<QCellWidget*, CELLS_ARRAY_SIZE> _cells;

@@ -9,14 +9,11 @@ QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_)
 {
-    _bmsData = new QWidget(this);
-    _gridLayout = new QGridLayout(this);
-    _gridLayout->addWidget(_bmsData, 0, 0, 1, 2);
-    _layout = new QFlowLayout(_bmsData);
+    _layout = new QFlowLayout(this);
     _layout->setSpacing(2);
     _layout->setContentsMargins(2, 2, 2, 2);
 
-    _bmsData->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
+    this->setSizePolicy(QSizePolicy::Preferred, QSizePolicy::Preferred);
 
     this->initializeWidget();
 
@@ -34,7 +31,7 @@ void QBmsData::initializeWidget(void)
 {
     _graph = new QBattChart(_node->now());
 
-    QWidget* cellContainer = new QWidget(_bmsData);
+    QWidget* cellContainer = new QWidget(this);
     QGridLayout* cellsGrid = new QGridLayout(cellContainer);
     cellsGrid->setSpacing(2);
     cellsGrid->setContentsMargins(2, 2, 2, 2);
@@ -45,7 +42,6 @@ void QBmsData::initializeWidget(void)
         cellsGrid->addWidget(_cells[i], static_cast<int>(i / CELLS_PER_ROW), static_cast<int>(i % CELLS_PER_ROW));
     }
 
-    cellContainer->setLayout(cellsGrid);
     _layout->addWidget(_graph);
     _layout->addWidget(cellContainer);
 }
