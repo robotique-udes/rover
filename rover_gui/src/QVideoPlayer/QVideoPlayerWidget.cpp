@@ -494,11 +494,16 @@ void QVideoPlayerWidget::onToggleView(void)
 
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
+    stopStream();
     QString url = QString::fromStdString(Constants::CameraInfo::getURLFromId(text_.toStdString()));
     std::cout << url.toStdString();
     bool isValid = this->validateRtspUrl(url);
     this->updateUrlValidationUI(isValid);
 
+    if (isValid)
+    {
+        startStream(url);
+    }
     if (_state == ePlayerState::CONNECTION_FAILED && isValid)
     {
         this->setPlayerState(ePlayerState::NOT_CONNECTED);
@@ -638,7 +643,8 @@ void QVideoPlayerWidget::onReconnectTimer(void)
     {
         if (!_ui.rtspComboBox->currentText().isEmpty())
         {
-            this->startStream(QString::fromStdString(Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString())));
+            this->startStream(
+                QString::fromStdString(Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString())));
         }
     }
 }
