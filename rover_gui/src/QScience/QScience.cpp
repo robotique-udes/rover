@@ -68,6 +68,8 @@ void QScience::updateSensorValues(const rover_msgs::msg::ScienceInfo& msg_)
     _sensor1.push_back(msg_.sensor_1);
     _sensor2.push_back(msg_.sensor_2);
     _sensor3.push_back(msg_.sensor_3);
+    double timeValue = msg_.sample_index / SAMPLING_RATE_SENSORS;
+    _timeValues.push_back(timeValue);
 }
 
 void QScience::appendSensorData(quint32 sampleIdx_, quint16 s1_, quint16 s2_, quint16 s3_)
@@ -176,7 +178,8 @@ void QScience::writeToCSV()
     {
         for (uint16_t i = 0; i < _sensor1.size(); i++)
         {
-            csv_file << std::fixed << _sensor1[i] << "," << _sensor2[i] << "," << _sensor3[i] << std::endl;
+            csv_file << std::fixed << std::setprecision(8) << _timeValues[i] << _sensor1[i] << "," << _sensor2[i] << ","
+                     << _sensor3[i] << std::endl;
         }
         RCLCPP_DEBUG(rclcpp::get_logger("GUI"), "Appending file at path: %s", filePath.c_str());
     }

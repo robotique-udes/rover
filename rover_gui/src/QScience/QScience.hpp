@@ -55,6 +55,7 @@ class QScience : public QWidget
     std::vector<uint16_t> _sensor1;
     std::vector<uint16_t> _sensor2;
     std::vector<uint16_t> _sensor3;
+    std::vector<double> _timeValues;
 
     QChart _chart;
     QChartView _chartView;
