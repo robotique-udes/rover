@@ -63,6 +63,7 @@ void Science::CB_CAN_scienceInfo(const RoverCan2::Msgs::ScienceInfo& canMsg_)
 {
     rover_msgs::msg::ScienceInfo rosMsg;
 
+    rosMsg.sample_index = canMsg_.getData().sample_index;
     rosMsg.sensor_1 = canMsg_.getData().sensor_1;
     rosMsg.sensor_2 = canMsg_.getData().sensor_2;
     rosMsg.sensor_3 = canMsg_.getData().sensor_3;
