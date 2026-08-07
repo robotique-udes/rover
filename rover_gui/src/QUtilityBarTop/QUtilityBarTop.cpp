@@ -98,7 +98,7 @@ void QUtilityBarTop::initBatterySubscriber(void)
 
 void QUtilityBarTop::initAntennaStatus(void)
 {
-    QIcon icon(":/icons/RSSIError.svg");
+    QIcon icon(":/icons/ErrorRSSI.png");
     _ui.RSSILabel->setIcon(icon);
 
     if (_node)

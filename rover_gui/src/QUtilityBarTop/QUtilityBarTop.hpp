@@ -6,7 +6,6 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
 #include "rover_msgs/msg/bms_data.hpp"
-#include <rover_msgs/msg/gps.hpp>
 #include <rover_msgs/msg/antenna_status.hpp>
 
 #include <rover_lib2/helpers/ip_pinging.hpp>
