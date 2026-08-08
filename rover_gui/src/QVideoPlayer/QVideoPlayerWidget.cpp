@@ -98,14 +98,13 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     for (uint16_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
     {
-        _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::NAME)]);
+        _ui.rtspComboBox->addItem(
+            Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::NAME)]);
         if (Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::URL)] == _camURL)
         {
             _ui.rtspComboBox->setCurrentIndex(static_cast<int>(i));
         }
     }
-
-
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
@@ -511,7 +510,8 @@ void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
     }
     else
     {
-        url = QString::fromStdString(Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eInfoType::URL)][0]);
+        url = QString::fromStdString(
+            Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eInfoType::URL)][0]);
     }
     bool isValid = this->validateRtspUrl(url);
     this->updateUrlValidationUI(isValid);
@@ -664,7 +664,8 @@ void QVideoPlayerWidget::onReconnectTimer(void)
             }
             else
             {
-                std::string mainUrl = Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eInfoType::URL)][0];
+                std::string mainUrl
+                    = Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eInfoType::URL)][0];
                 this->startStream(QString::fromStdString(mainUrl));
             }
         }
