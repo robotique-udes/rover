@@ -98,6 +98,10 @@ add_executable(main_gui src/gui.cpp
                    
                    src/QScience/QScience.cpp
 
+                   src/QBmsData/QBmsData.cpp
+                   src/QBmsData/QCellWidget.cpp
+                   src/QBmsData/QBattChart.cpp
+
                    src/Global/Constant/resources.qrc
                    ui/icons.qrc
                 )
