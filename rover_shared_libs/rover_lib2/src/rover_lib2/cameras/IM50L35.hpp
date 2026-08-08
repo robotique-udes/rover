@@ -10,6 +10,15 @@
 #include <iostream>
 #include <string>
 
+namespace
+{
+    inline size_t discardResponse(void* contents, size_t size, size_t nmemb, void* userp)
+    {
+        (void)contents;
+        (void)userp;
+        return size * nmemb;
+    }
+} //namespace
 
 DEFINE_LOG_NODE(IM50L35, Logger::eNodeState::ON)
 
@@ -49,6 +58,7 @@ namespace IM50L35
 
         curl_easy_setopt(curl, CURLOPT_URL, url.c_str());
         curl_easy_setopt(curl, CURLOPT_POSTFIELDS, data.c_str());
+        curl_easy_setopt(curl, CURLOPT_WRITEFUNCTION, discardResponse);
 
         curl_easy_setopt(curl, CURLOPT_HTTPAUTH, CURLAUTH_ANY);
         curl_easy_setopt(curl, CURLOPT_USERNAME, username);

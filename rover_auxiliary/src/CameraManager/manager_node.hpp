@@ -23,6 +23,8 @@ namespace CameraManager
 
         static constexpr const char* TOPIC_WITH_PRIORITY = "/rover/camera/topic_with_priority";
 
+        static constexpr const char* SERVICE_IR = "rover/camera/IR";
+
       public:
         ManagerNode();
 
@@ -35,7 +37,7 @@ namespace CameraManager
         void CB_publishFilteredPowerCmd(void);
         void CB_publishTopicWithPriority(void);
 
-        void CB_srvIR(const rover_msgs::srv::CameraIR::Request& request_,rover_msgs::srv::CameraIR::Response& response_);
+        void CB_srvIR(const rover_msgs::srv::CameraIR::Request::SharedPtr request_, rover_msgs::srv::CameraIR::Response::SharedPtr response_);
 
         void initSubs(void);
         void initPubs(void);

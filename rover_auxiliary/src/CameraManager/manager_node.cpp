@@ -19,6 +19,14 @@ namespace CameraManager
     {
         this->initSubs();
         this->initPubs();
+
+        _srv_IR
+            = this->create_service<rover_msgs::srv::CameraIR>(SERVICE_IR,
+                                                              [this](const rover_msgs::srv::CameraIR::Request::SharedPtr request_,
+                                                                     rover_msgs::srv::CameraIR::Response::SharedPtr response_)
+                                                              {
+                                                                  this->CB_srvIR(request_, response_);
+                                                              });
     }
 
     void ManagerNode::CB_publishFilteredPtzCmd()
@@ -170,11 +178,12 @@ namespace CameraManager
             });
     }
 
-    void ManagerNode::CB_srvIR(const rover_msgs::srv::CameraIR::Request& request_, rover_msgs::srv::CameraIR::Response& response_)
+    void ManagerNode::CB_srvIR(const rover_msgs::srv::CameraIR::Request::SharedPtr request_,
+                               rover_msgs::srv::CameraIR::Response::SharedPtr response_)
     {
         (void)response_;
         IM50L35::IRModes IRMode;
-        switch (request_.ir_mode)
+        switch (request_->ir_mode)
         {
             case rover_msgs::srv::CameraIR::Request::DAYMODE:
                 IRMode = IM50L35::IRModes::DAY;
@@ -187,7 +196,7 @@ namespace CameraManager
                 break;
         }
 
-        IM50L35::setIR(request_.ip, IRMode, request_.ir_enable);
+        IM50L35::setIR(request_->ip, IRMode, request_->ir_enable);
     }
 
 }  // namespace CameraManager
