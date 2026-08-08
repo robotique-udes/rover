@@ -223,7 +223,7 @@ class CartesianController : public RobotController
         jacobian[3] = 0.0F;  // dx/q3
 
         jacobian[4] = 0.0F;                                // dy/dq0
-        jacobian[5] = -J1z * c1 - J2z * c12 - J3z * c123;  // dy/dq1
+        jacobian[5] = (-J1z * c1 - J2z * c12 - J3z * c123) * -1;  // dy/dq1
         jacobian[6] = -J2z * c12 - J3z * c123;             // dy/dq2
         jacobian[7] = -J3z * c123;                         // dy/dq3
 
