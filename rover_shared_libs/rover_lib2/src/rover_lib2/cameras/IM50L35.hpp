@@ -18,7 +18,7 @@ namespace
         (void)userp;
         return size * nmemb;
     }
-} //namespace
+}  // namespace
 
 DEFINE_LOG_NODE(IM50L35, Logger::eNodeState::ON)
 

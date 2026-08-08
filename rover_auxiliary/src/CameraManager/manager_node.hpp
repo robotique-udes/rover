@@ -37,7 +37,8 @@ namespace CameraManager
         void CB_publishFilteredPowerCmd(void);
         void CB_publishTopicWithPriority(void);
 
-        void CB_srvIR(const rover_msgs::srv::CameraIR::Request::SharedPtr request_, rover_msgs::srv::CameraIR::Response::SharedPtr response_);
+        void CB_srvIR(const rover_msgs::srv::CameraIR::Request::SharedPtr request_,
+                      rover_msgs::srv::CameraIR::Response::SharedPtr response_);
 
         void initSubs(void);
         void initPubs(void);
