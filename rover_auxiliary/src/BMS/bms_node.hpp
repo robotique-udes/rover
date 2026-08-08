@@ -44,11 +44,11 @@ class BMSDataNode : public rclcpp::Node
     void callbackBMSData(void);
     bool getData(void);
     template<size_t N>
-    bool parse(std::string_view view_, std::string_view expectedPrefix_, std::array<uint16_t, N>& dataArray_);
+    bool parse(std::string_view view_, std::string_view expectedPrefix_, std::array<int32_t, N>& dataArray_);
     std::optional<std::string> readDataFrame();
 
-    std::array<uint16_t, AMP_DATA_TYPES> _ampArray{};
-    std::array<uint16_t, VOLT_DATA_TYPES> _voltArray{};
+    std::array<int32_t, AMP_DATA_TYPES> _ampArray{};
+    std::array<int32_t, VOLT_DATA_TYPES> _voltArray{};
     rclcpp::Publisher<rover_msgs::msg::BmsData>::SharedPtr _publisher;
     rclcpp::TimerBase::SharedPtr _timer_publisher;
     SerialCom _terminal;
