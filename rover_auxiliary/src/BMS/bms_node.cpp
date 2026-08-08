@@ -114,7 +114,7 @@ bool BMSDataNode::getData(void)
 }
 
 template<size_t N>
-bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_, std::array<uint16_t, N>& dataArray_)
+bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_, std::array<int32_t, N>& dataArray_)
 {
     std::array<int32_t, N> tempArray{};
     const size_t startPos = view_.find('=');
