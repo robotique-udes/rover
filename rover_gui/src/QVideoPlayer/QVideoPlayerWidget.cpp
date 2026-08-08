@@ -502,21 +502,14 @@ void QVideoPlayerWidget::onToggleView(void)
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
     std::optional<std::string> urlString = Constants::CameraInfo::getURLFromId(text_.toStdString());
-    QString url;
-
-    if (urlString.has_value())
-    {
-        url = QString::fromStdString(urlString.value());
-    }
-    else
-    {
-        url = QString::fromStdString(
-            Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eInfoType::URL)][0]);
-    }
+    QString url = QString::fromStdString(urlString.value_or(DEFAULT_URL));
     bool isValid = this->validateRtspUrl(url);
     this->updateUrlValidationUI(isValid);
 
-    startStream(url);
+    if (isValid)
+    {
+        startStream(url);
+    }
 
     if (_state == ePlayerState::CONNECTION_FAILED && isValid)
     {
@@ -658,16 +651,7 @@ void QVideoPlayerWidget::onReconnectTimer(void)
         if (!_ui.rtspComboBox->currentText().isEmpty())
         {
             std::optional<std::string> url = Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString());
-            if (url.has_value())
-            {
-                this->startStream(QString::fromStdString(url.value()));
-            }
-            else
-            {
-                std::string mainUrl
-                    = Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eInfoType::URL)][0];
-                this->startStream(QString::fromStdString(mainUrl));
-            }
+            this->startStream(QString::fromStdString(url.value_or(DEFAULT_URL)));
         }
     }
 }
@@ -850,14 +834,7 @@ void QVideoPlayerWidget::setURLToDefault(void)
 void QVideoPlayerWidget::updateCamURL()
 {
     std::optional<std::string> url = Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString());
-    if (url.has_value())
-    {
-        _camURL = url.value();
-    }
-    else
-    {
-        _camURL = Constants::CameraInfo::CAMERA_INFO[std::to_underlying(Constants::CameraInfo::eInfoType::URL)][0];
-    }
+    _camURL = url.value_or(DEFAULT_URL);
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
