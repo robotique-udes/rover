@@ -52,7 +52,6 @@ namespace Constants
         }};
 
         std::optional<eCamNames> getIdFromURL(const std::string& url_);
-        std::optional<std::string> getURLFromId(const std::string& id_);
 
         static constexpr const size_t NUMBER_TOPIC_CAMERA_ARBITRATION = 2;
 
