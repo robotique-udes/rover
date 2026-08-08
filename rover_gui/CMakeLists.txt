@@ -35,6 +35,10 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
 )
 
+set(CMAKE_AUTOUIC_SEARCH_PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui
+)
+
 link_directories(${GSTREAMER_LIBRARY_DIRS})
 
 add_executable(main_gui src/gui.cpp
@@ -94,6 +98,7 @@ add_executable(main_gui src/gui.cpp
 
                    src/Global/Constant/resources.qrc
                    ui/icons.qrc
+                   ui/ui/
                 )
                   
 add_subdirectory(../rover_shared_libs/ .build)
