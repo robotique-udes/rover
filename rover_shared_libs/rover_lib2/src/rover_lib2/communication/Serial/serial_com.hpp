@@ -1,7 +1,7 @@
 #ifndef SERIAL_COM_H
 #define SERIAL_COM_H
 
-#if defined(__linux__)
+#if defined(__linux__) && defined(ROS)
 
 #include "rover_lib2/helpers/constants.hpp"
 #include "rover_lib2/helpers/log.hpp"
