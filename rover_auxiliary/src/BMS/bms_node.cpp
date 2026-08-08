@@ -162,7 +162,7 @@ bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_
         }
         else
         {
-            RCLCPP_WARN(this->get_logger(), "Failed to parse BMS value");
+            RCLCPP_WARN(get_logger(), "Failed to parse BMS field %zu: '%.*s'", i, static_cast<int>(end), view_.data());
             return false;
         }
 
