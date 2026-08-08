@@ -9,6 +9,8 @@
 #include <std_msgs/msg/empty.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/qos.hpp>
+#include <rclcpp/subscription_options.hpp>
 
 class Arbitration : public rclcpp::Node
 {
@@ -19,6 +21,8 @@ class Arbitration : public rclcpp::Node
     static constexpr const char* TOPIC_CMD_WHEELS_OUT = "/rover/drive_train/wheels_cmd_out";
     static constexpr const char* SERVICE_ARBITRATION_CONTROL = "/rover/drive_train/demux_control";
     static constexpr const char* TOPIC_ARBITRATION_STATUS = "/rover/drive_train/demux_status";
+    static constexpr std::chrono::milliseconds TELEOP_DEADLINE = std::chrono::milliseconds(200);
+    static constexpr std::chrono::milliseconds TELEOP_LEASE_DURATION = std::chrono::milliseconds(300);
 
   public:
     Arbitration();
@@ -67,6 +71,7 @@ Arbitration::Arbitration():
         _zeroCmd.target_speed[i] = 0.0;
         _zeroCmd.current_speed[i] = 0.0;
     }
+    _cmdTeleop = _zeroCmd;
 
     _subBaseHr = this->create_subscription<std_msgs::msg::Empty>(TOPIC_HEARTBEAT_BASE,
                                                                  QOS_DEFAULT,
@@ -80,14 +85,44 @@ Arbitration::Arbitration():
                                                                   {
                                                                       this->cbHB(msg_, &_roverHBLost, _watchdogRover);
                                                                   });
+    rclcpp::QoS teleopQos(rclcpp::KeepLast(1));
+    teleopQos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    teleopQos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+    teleopQos.deadline(TELEOP_DEADLINE);
+    teleopQos.liveliness(RMW_QOS_POLICY_LIVELINESS_AUTOMATIC);
+    teleopQos.liveliness_lease_duration(TELEOP_LEASE_DURATION);
 
-    _subMotorCmdTeleop
-        = this->create_subscription<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_TELEOP,
-                                                                      QOS_DEFAULT,
-                                                                      [this](const rover_msgs::msg::PropulsionMotor& msg_)
-                                                                      {
-                                                                          this->cbPropulsionCmd(msg_);
-                                                                      });
+    rclcpp::SubscriptionOptions teleopSubOptions;
+    teleopSubOptions.event_callbacks.deadline_callback = [this](rclcpp::QOSDeadlineRequestedInfo& info_)
+    {
+        RCLCPP_WARN(this->get_logger(),
+                    "Teleop deadline missed: total=%d change=%d",
+                    info_.total_count,
+                    info_.total_count_change);
+        _cmdTeleop = _zeroCmd;
+    };
+
+    teleopSubOptions.event_callbacks.liveliness_callback = [this](rclcpp::QOSLivelinessChangedInfo& info_)
+    {
+        if (info_.not_alive_count_change > 0)
+        {
+            RCLCPP_WARN(this->get_logger(),
+                        "Teleop liveliness lost: alive=%d not_alive=%d",
+                        info_.alive_count,
+                        info_.not_alive_count);
+            _cmdTeleop = _zeroCmd;
+        }
+        _cmdTeleop = _zeroCmd;
+    };
+
+    _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
+        TOPIC_CMD_WHEELS_TELEOP,
+        teleopQos,
+        [this](const rover_msgs::msg::PropulsionMotor& msg_)
+        {
+            this->cbPropulsionCmd(msg_);
+        },
+        teleopSubOptions);
     _subMotorCmdAuto
         = this->create_subscription<rover_msgs::msg::PropulsionMotor>(TOPIC_CMD_WHEELS_AUTO,
                                                                       QOS_DEFAULT,
