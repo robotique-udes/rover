@@ -2,6 +2,7 @@
 
 #include <optional>
 #include <rover_lib2/helpers/constants.hpp>
+#include <rover_lib2/cameras/IM50L35.hpp>
 
 int main(int argc, char* argv[])
 {
@@ -168,4 +169,25 @@ namespace CameraManager
                 this->CB_publishTopicWithPriority();
             });
     }
+
+    void ManagerNode::CB_srvIR(const rover_msgs::srv::CameraIR::Request& request_, rover_msgs::srv::CameraIR::Response& response_)
+    {
+        (void)response_;
+        IM50L35::IRModes IRMode;
+        switch (request_.ir_mode)
+        {
+            case rover_msgs::srv::CameraIR::Request::DAYMODE:
+                IRMode = IM50L35::IRModes::DAY;
+                break;
+            case rover_msgs::srv::CameraIR::Request::NIGHTMODE:
+                IRMode = IM50L35::IRModes::NIGHT;
+                break;
+            default:
+                IRMode = IM50L35::IRModes::DAY;
+                break;
+        }
+
+        IM50L35::setIR(request_.ip, IRMode, request_.ir_enable);
+    }
+
 }  // namespace CameraManager
