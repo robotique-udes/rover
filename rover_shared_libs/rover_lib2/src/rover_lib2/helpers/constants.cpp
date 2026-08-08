@@ -17,7 +17,7 @@ namespace Constants::CameraInfo
         return std::nullopt;
     }
 
-    std::string getURLFromId(const std::string& id_)
+    std::optional<std::string> getURLFromId(const std::string& id_)
     {
         for (std::size_t id = 0; id < std::to_underlying(eCamNames::eLast); id++)
         {
@@ -26,7 +26,7 @@ namespace Constants::CameraInfo
                 return CAMERA_INFO[id][std::to_underlying(eInfoType::URL)];
             }
         }
-        return "";
+        return std::nullopt;
     }
 
 #endif  // defined(__linux__)
