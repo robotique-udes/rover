@@ -1,6 +1,5 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/qos.hpp>
-#include <rclcpp/subscription_options.hpp>
 #include <rover_msgs/msg/joy.hpp>
 #include <rover_msgs/msg/joy_demux_status.hpp>
 #include <rover_msgs/msg/propulsion_motor.hpp>

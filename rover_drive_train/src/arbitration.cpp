@@ -112,7 +112,6 @@ Arbitration::Arbitration():
                         info_.not_alive_count);
             _cmdTeleop = _zeroCmd;
         }
-        _cmdTeleop = _zeroCmd;
     };
 
     _subMotorCmdTeleop = this->create_subscription<rover_msgs::msg::PropulsionMotor>(
