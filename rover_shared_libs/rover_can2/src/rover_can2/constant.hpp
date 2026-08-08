@@ -88,7 +88,6 @@ namespace RoverCan2::Constant
         
         ARM_JOINT_CMD,
         ARM_JOINT_STATUS,
-        ARM_JOINT_ADVANCED_STATUS,
         ARM_JOINT_CONFIG,
         
         FIX_POSITION,
@@ -98,11 +97,12 @@ namespace RoverCan2::Constant
         PTZ_CMD,
         PTZ_STATUS,
         PTZ_CONFIG,
-
+        
         DDB_CMD,
         DDB_STATUS,
-
+        
         SENSOR_BOX,
+        ARM_JOINT_ADVANCED_STATUS,
         // clang-format on
     };
 
@@ -121,8 +121,8 @@ namespace RoverCan2::Constant
         eMsgId::FIX_HEADING,       eMsgId::FIX_INFO,
         eMsgId::PTZ_CMD,           eMsgId::PTZ_STATUS,
         eMsgId::PTZ_CONFIG,        eMsgId::ARM_JOINT_CMD,
-        eMsgId::ARM_JOINT_STATUS,  eMsgId::ARM_JOINT_ADVANCED_STATUS,
-        eMsgId::ARM_JOINT_CONFIG,  eMsgId::SENSOR_BOX,
+        eMsgId::ARM_JOINT_STATUS,  eMsgId::ARM_JOINT_CONFIG,
+        eMsgId::SENSOR_BOX,        eMsgId::ARM_JOINT_ADVANCED_STATUS,
     };
 
     /**
