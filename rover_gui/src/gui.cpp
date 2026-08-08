@@ -121,5 +121,5 @@ void forwardPrints(QProcess& process_)
 }
 
 #ifndef __INTELLISENSE__
-//#include "gui.moc"
+// #include "gui.moc"
 #endif  // __INTELLISENSE__
