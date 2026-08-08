@@ -10,7 +10,7 @@ int main(int argc, char* argv[])
 
     std::shared_ptr<CameraNode> node = std::make_shared<CameraNode>();
     rclcpp::executors::MultiThreadedExecutor executor;
-    executor.add_node(node);
+    executor.add_node(node->get_node_base_interface());
     executor.spin();
 
     rclcpp::shutdown();
@@ -18,8 +18,20 @@ int main(int argc, char* argv[])
 }
 
 CameraNode::CameraNode():
-    Node("media_server")
+    LifecycleNode("media_server")
 {
+}
+
+rclcpp_lifecycle::LifecycleNode::CallbackReturn CameraNode::on_configure(const rclcpp_lifecycle::State& /*state*/)
+{
+    _pub_urls = this->create_publisher<rover_msgs::msg::CameraList>(TOPIC_MEDIA_SERVER_NAME, 1);
+    return CallbackReturn::SUCCESS;
+}
+
+rclcpp_lifecycle::LifecycleNode::CallbackReturn CameraNode::on_activate(const rclcpp_lifecycle::State& /*state*/)
+{
+    _pub_urls->on_activate();
+
     _srv_control = this->create_service<rover_msgs::srv::CameraControl>(
         SERVICE_MEDIA_SERVER_NAME,
         [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request_,
@@ -33,8 +45,6 @@ CameraNode::CameraNode():
             this->controlIPCam(*request_, *response_);
         });
 
-    _pub_urls = this->create_publisher<rover_msgs::msg::CameraList>(TOPIC_MEDIA_SERVER_NAME, 1);
-
     _timer_pub = this->create_wall_timer(std::chrono::milliseconds(PUBLISHER_PERIOD_MS),
                                          [this](void)
                                          {
@@ -47,6 +57,23 @@ CameraNode::CameraNode():
                                                                     {
                                                                         this->callbackPosition(gps_message_);
                                                                     });
+    return CallbackReturn::SUCCESS;
+}
+
+rclcpp_lifecycle::LifecycleNode::CallbackReturn CameraNode::on_deactivate(const rclcpp_lifecycle::State& /*state*/)
+{
+    this->stopAllRecording();
+    _srv_control.reset();
+    _sub_position.reset();
+    _timer_pub.reset();
+    _pub_urls->on_deactivate();
+    return CallbackReturn::SUCCESS;
+}
+
+rclcpp_lifecycle::LifecycleNode::CallbackReturn CameraNode::on_cleanup(const rclcpp_lifecycle::State& /*state*/)
+{
+    _pub_urls.reset();
+    return CallbackReturn::SUCCESS;
 }
 
 void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
@@ -385,6 +412,18 @@ bool CameraNode::stopRecording(std::string cameraURL_)
     }
     this->publishCameraUrls();
     return true;
+}
+
+void CameraNode::stopAllRecording(void)
+{
+    {
+        std::lock_guard<std::mutex> lock(_recordingMapMutex);
+
+        _recordingMap.clear();
+        _watchDogStop.store(true);
+        _recordingCv.notify_one();
+    }
+    this->publishCameraUrls();
 }
 
 /**

@@ -12,7 +12,6 @@
 #include <rover_msgs/srv/camera_control.hpp>
 #include <rover_msgs/msg/camera_list.hpp>
 
-
 #include <rclcpp_lifecycle/lifecycle_node.hpp>
 #include <rclcpp_lifecycle/lifecycle_publisher.hpp>
 
@@ -41,6 +40,10 @@ class CameraNode : public rclcpp_lifecycle::LifecycleNode
 
   public:
     CameraNode();
+    rclcpp_lifecycle::LifecycleNode::CallbackReturn on_configure(const rclcpp_lifecycle::State& /*state*/) override;
+    rclcpp_lifecycle::LifecycleNode::CallbackReturn on_activate(const rclcpp_lifecycle::State& /*state*/) override;
+    rclcpp_lifecycle::LifecycleNode::CallbackReturn on_deactivate(const rclcpp_lifecycle::State& /*state*/) override;
+    rclcpp_lifecycle::LifecycleNode::CallbackReturn on_cleanup(const rclcpp_lifecycle::State& /*state*/) override;
 
   private:
     void controlIPCam(const rover_msgs::srv::CameraControl::Request& request_,
@@ -52,6 +55,8 @@ class CameraNode : public rclcpp_lifecycle::LifecycleNode
     void stopRecordingLogic(const rover_msgs::srv::CameraControl::Request& request_,
                             rover_msgs::srv::CameraControl::Response& response_);
     void publishCameraUrls(void);
+
+    void stopAllRecording(void);
 
     std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
     std::optional<std::string> getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
@@ -65,7 +70,7 @@ class CameraNode : public rclcpp_lifecycle::LifecycleNode
     void requestShutdown(std::string camURL_);
 
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
-    rclcpp::Publisher<rover_msgs::msg::CameraList>::SharedPtr _pub_urls;
+    rclcpp_lifecycle::LifecyclePublisher<rover_msgs::msg::CameraList>::SharedPtr _pub_urls;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _sub_position;
     rclcpp::TimerBase::SharedPtr _timer_pub;
 

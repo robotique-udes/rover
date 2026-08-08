@@ -7,6 +7,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(rclcpp_lifecycle REQUIRED)
 find_package(OpenCV REQUIRED) 
 find_package(rover_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
@@ -18,6 +19,7 @@ add_executable(media_server src/camera_node.cpp
                 src/video_recording.cpp)
 ament_target_dependencies(media_server
                           rclcpp
+                          rclcpp_lifecycle
                           rover_msgs
                           OpenCV)
 target_link_libraries(media_server 
