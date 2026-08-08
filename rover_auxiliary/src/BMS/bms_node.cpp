@@ -114,9 +114,9 @@ bool BMSDataNode::getData(void)
 }
 
 template<size_t N>
-bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_, std::array<uint16_t, N>& dataArray_)
+bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_, std::array<int32_t, N>& dataArray_)
 {
-    std::array<uint16_t, N> tempArray{};
+    std::array<int32_t, N> tempArray{};
     const size_t startPos = view_.find('=');
     if (startPos == std::string_view::npos)
     {
@@ -154,7 +154,7 @@ bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_
             end = delimPos;
         }
 
-        uint16_t value;
+        int32_t value;
         std::from_chars_result charResult = std::from_chars(view_.data(), view_.data() + end, value);
         if (charResult.ec == std::errc{} && charResult.ptr == view_.data() + end)
         {
@@ -162,7 +162,7 @@ bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_
         }
         else
         {
-            RCLCPP_WARN(this->get_logger(), "Failed to parse BMS value");
+            RCLCPP_WARN(get_logger(), "Failed to parse BMS field %zu: '%.*s'", i, static_cast<int>(end), view_.data());
             return false;
         }
 
