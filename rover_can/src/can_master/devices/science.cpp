@@ -67,6 +67,7 @@ void Science::CB_CAN_scienceInfo(const RoverCan2::Msgs::ScienceInfo& canMsg_)
     rosMsg.sensor_1 = canMsg_.getData().sensor_1;
     rosMsg.sensor_2 = canMsg_.getData().sensor_2;
     rosMsg.sensor_3 = canMsg_.getData().sensor_3;
+    rosMsg.humidity = canMsg_.getData().humidity;
 
     _pub_ScienceInfo->publish(rosMsg);
 }
