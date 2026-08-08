@@ -23,6 +23,7 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
+set(CMAKE_AUTOUIC ON)
 
 include_directories(
   src
@@ -35,15 +36,6 @@ include_directories(
 )
 
 link_directories(${GSTREAMER_LIBRARY_DIRS})
-
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
-    COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Generating UI files..."
-)
-
-add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
 
 add_executable(main_gui src/gui.cpp
 
