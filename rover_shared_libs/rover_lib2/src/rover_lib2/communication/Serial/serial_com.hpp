@@ -1,5 +1,5 @@
-#ifndef SERIAL_COM_H
-#define SERIAL_COM_H
+#ifndef ROVER_LIB2_COMMUNICATION_SERIAL_SERIAL_COM_HPP
+#define ROVER_LIB2_COMMUNICATION_SERIAL_SERIAL_COM_HPP
 
 #if defined(__linux__) && defined(ROS)
 
@@ -111,4 +111,4 @@ class SerialCom
 #else
 #error "SerialCom requires Linux (POSIX termios). Not available on this target."
 #endif  // __linux__
-#endif
+#endif  // ROVER_LIB2_COMMUNICATION_SERIAL_SERIAL_COM_HPP
