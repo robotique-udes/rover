@@ -98,7 +98,6 @@ add_executable(main_gui src/gui.cpp
 
                    src/Global/Constant/resources.qrc
                    ui/icons.qrc
-                   ui/ui/
                 )
                   
 add_subdirectory(../rover_shared_libs/ .build)
