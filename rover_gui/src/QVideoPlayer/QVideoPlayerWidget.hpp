@@ -29,6 +29,8 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5'000UL;
     static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
     static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
+    static constexpr const char* DEFAULT_URL
+        = Constants::CameraInfo::CAMERA_INFO[0][std::to_underlying(Constants::CameraInfo::eInfoType::URL)];
 
     static int MAX_RECONNECT_ATTEMPTS;
     static int _instanceCounter;
