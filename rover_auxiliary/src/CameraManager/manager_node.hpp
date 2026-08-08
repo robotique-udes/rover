@@ -23,7 +23,7 @@ namespace CameraManager
 
         static constexpr const char* TOPIC_WITH_PRIORITY = "/rover/camera/topic_with_priority";
 
-        static constexpr const char* SERVICE_IR = "rover/camera/IR";
+        static constexpr const char* SERVICE_IR = "/rover/camera/IR";
 
       public:
         ManagerNode();

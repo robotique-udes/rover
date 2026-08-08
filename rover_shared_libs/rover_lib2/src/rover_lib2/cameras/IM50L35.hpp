@@ -7,7 +7,7 @@
 
 #include <curl/curl.h>
 
-#include <iostream>
+#include <cstdlib>
 #include <string>
 
 namespace
@@ -30,14 +30,14 @@ namespace IM50L35
         DAY = '3'
     };
 
-    void setIR(const std::string& IP_, IRModes IRMode_, bool IREnable_)
+    inline void setIR(const std::string& IP_, IRModes IRMode_, bool IREnable_)
     {
         const char* username = std::getenv("CAMERA_USERNAME");
         const char* password = std::getenv("CAMERA_PASSWORD");
 
         if (!username || !password)
         {
-            LOG_ERROR(Logger::Nodes::IM50L35, "CAMERA_USERNAME or CAMERA_PASSWORD environment variable not set")
+            LOG_ERROR(Logger::Nodes::IM50L35, "CAMERA_USERNAME or CAMERA_PASSWORD environment variable not set");
             return;
         }
 
@@ -46,7 +46,8 @@ namespace IM50L35
         CURL* curl = curl_easy_init();
         if (!curl)
         {
-            LOG_ERROR(Logger::Nodes::IM50L35, "Could not intialise CURL")
+            LOG_ERROR(Logger::Nodes::IM50L35, "Could not intialise CURL");
+            curl_global_cleanup();
             return;
         }
 
