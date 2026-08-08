@@ -11,7 +11,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _navigationWidget(guiNode_, this),
     _deviceStatusWidget(guiNode_, this),
     _ligthsController(guiNode_, this),
-    _bmsDataWidget(guiNode_, this)
+    _bmsDataWidget(guiNode_, this),
     _scienceWidget(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
