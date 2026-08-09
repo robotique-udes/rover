@@ -10,6 +10,7 @@
 #include "QUtilityBarTop/QUtilityBarTop.hpp"
 #include "QDeviceStatus/QDeviceStatus.hpp"
 #include "QLightsController/QLightsController.hpp"
+#include "QBmsData/QBmsData.hpp"
 #include "QMorseCode/QMorseCode.hpp"
 
 #include <QMainWindow>
@@ -48,6 +49,7 @@ class MainWindow : public QMainWindow
     QDeviceStatus _deviceStatusWidget;
     QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
     QLightsController _ligthsController;
+    QBmsData _bmsDataWidget;
     QMorseCode _morseCode;
 
     QFrame _topBarSeperator = QFrame(this);

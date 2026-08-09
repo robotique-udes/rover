@@ -1,12 +1,11 @@
 #ifndef Q_UTILITY_BAR_BOTTON_Q_UTILITY_BAR_TOP_HPP
 #define Q_UTILITY_BAR_BOTTON_Q_UTILITY_BAR_TOP_HPP
 
-#include "UI_TopUtilityBar.h"
+#include "ui_TopUtilityBar.h"
 
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
-#include <rover_msgs/msg/battery.hpp>
-#include <rover_msgs/msg/gps.hpp>
+#include "rover_msgs/msg/bms_data.hpp"
 #include <rover_msgs/msg/antenna_status.hpp>
 
 #include <rover_lib2/helpers/ip_pinging.hpp>
@@ -23,7 +22,7 @@ class QUtilityBarTop : public QWidget
 {
     Q_OBJECT
 
-    static constexpr const char* TOPIC_BATTERY = "/rover/auxiliary/battery";
+    static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
     static constexpr const char* TOPIC_GNSS = "/rover/gps/position";
 
@@ -87,7 +86,7 @@ class QUtilityBarTop : public QWidget
     std::vector<QDateTime> _timersList;
     QTimeZone _timeZone;
 
-    std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Battery>> _sub_battery;
+    std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::BmsData>> _sub_battery;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::AntennaStatus>> _sub_antennaStatus;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Gps>> _sub_GNSS;
 
