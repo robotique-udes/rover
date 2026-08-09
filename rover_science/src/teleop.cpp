@@ -85,11 +85,11 @@ class Teleop : public rclcpp::Node
             }
             else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_DUMP))
             {
-                scienceCmd.beak_pos = static_cast<float>(eServoPos::DUMP);
+                scienceCmd.beak_pos = static_cast<uint8_t>(eServoPos::DUMP);
             }
             else
             {
-                scienceCmd.beak_pos = static_cast<float>(eServoPos::HOME);
+                scienceCmd.beak_pos = static_cast<uint8_t>(eServoPos::HOME);
             }
 
             if (this->_joyManager.isPressed(KEYBINDINGS::CARROUSEL))
