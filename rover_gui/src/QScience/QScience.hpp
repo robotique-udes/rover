@@ -6,7 +6,7 @@
 #include <rover_msgs/msg/science_info.hpp>
 
 // QT
-#include "UI_Science.h"
+#include "ui_Science.h"
 
 #include <QtCharts/QChartView>
 #include <QtCharts/QChart>
