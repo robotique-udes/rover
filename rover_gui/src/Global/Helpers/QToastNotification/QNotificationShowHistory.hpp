@@ -2,7 +2,7 @@
 #define QNOTIFICATION_SHOW_HISTORY
 
 #include "rclcpp/rclcpp.hpp"
-#include "UI_NotificationHistoryPanel.h"
+#include "ui_NotificationHistoryPanel.h"
 
 #include <QtWidgets/QWidget>
 #include <QTimer>

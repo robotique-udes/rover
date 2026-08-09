@@ -4,7 +4,7 @@
 #include "rclcpp/rclcpp.hpp"
 #include <rover_lib2/helpers/constants.hpp>
 
-#include "UI_VideoPlayer.h"
+#include "ui_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QRecordingWorker.hpp"
 #include "Worker/QPanoramaWorker.hpp"

@@ -1,7 +1,7 @@
 #ifndef __QSSH_FILE_EXPLORER_WIDGET_HPP__
 #define __QSSH_FILE_EXPLORER_WIDGET_HPP__
 
-#include "UI_FileExplorer.h"
+#include "ui_FileExplorer.h"
 
 #include "QFileItem.hpp"
 #include "Worker/QSshWorker.hpp"

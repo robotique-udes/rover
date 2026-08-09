@@ -1,7 +1,7 @@
 #ifndef __QARBITRATION_HPP__
 #define __QARBITRATION_HPP__
 
-#include "UI_Arbitration.h"
+#include "ui_Arbitration.h"
 
 #include "rover_lib2/helpers/log.hpp"
 
