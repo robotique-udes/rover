@@ -100,8 +100,8 @@ class Teleop : public rclcpp::Node
             {
                 scienceCmd.carrousel_on = false;
             }
-            this->_pubScienceCmd->publish(scienceCmd);
         }
+        this->_pubScienceCmd->publish(scienceCmd);
     }
 };
 
