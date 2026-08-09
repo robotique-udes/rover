@@ -89,7 +89,6 @@ namespace RoverCan2::Constant
         
         ARM_JOINT_CMD,
         ARM_JOINT_STATUS,
-        ARM_JOINT_ADVANCED_STATUS,
         ARM_JOINT_CONFIG,
         
         FIX_POSITION,
@@ -99,11 +98,12 @@ namespace RoverCan2::Constant
         PTZ_CMD,
         PTZ_STATUS,
         PTZ_CONFIG,
-
+        
         DDB_CMD,
         DDB_STATUS,
-
+        
         SENSOR_BOX,
+        ARM_JOINT_ADVANCED_STATUS,
         SCIENCE_CMD,
         SCIENCE_INFO,
         // clang-format on
