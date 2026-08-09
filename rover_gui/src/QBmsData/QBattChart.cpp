@@ -21,7 +21,7 @@ QBattChart::QBattChart(rclcpp::Time initTime_):
 
     _axisY = new QValueAxis();
     _axisY->setTitleText("Ampere [A]");
-    _axisY->setRange(-10, 20);
+    _axisY->setRange(0, 30);
 
     chart->addAxis(_axisX, Qt::AlignBottom);
     chart->addAxis(_axisY, Qt::AlignLeft);
