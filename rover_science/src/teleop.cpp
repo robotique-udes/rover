@@ -65,11 +65,11 @@ class Teleop : public rclcpp::Node
 
             if (this->_joyManager.isPressed(KEYBINDINGS::EXCAVATOR))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 0.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 1.0F;
             }
             else
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 1.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 0.0F;
             }
 
             if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_HOME))
@@ -97,8 +97,8 @@ class Teleop : public rclcpp::Node
             {
                 scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL] = 0.0F;
             }
+            this->_pubScienceCmd->publish(scienceCmd);
         }
-        this->_pubScienceCmd->publish(scienceCmd);
     }
 };
 
