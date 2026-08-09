@@ -59,46 +59,46 @@ class Teleop : public rclcpp::Node
         {
             if (this->_joyManager.isPressed(KEYBINDINGS::LINEAR_ACT_UP))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::LINEAR_ACT] = LIN_ACT_SPEED_FACTOR;
+                scienceCmd.lin_speed = LIN_ACT_SPEED_FACTOR;
             }
             else if (this->_joyManager.isPressed(KEYBINDINGS::LINEAR_ACT_DOWN))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::LINEAR_ACT] = LIN_ACT_SPEED_FACTOR * -1.0F;
+                scienceCmd.lin_speed = LIN_ACT_SPEED_FACTOR * -1.0F;
             }
             else
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::LINEAR_ACT] = 0.0F;
+                scienceCmd.lin_speed = 0.0F;
             }
 
             if (this->_joyManager.isPressed(KEYBINDINGS::EXCAVATOR))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 1.0F;
+                scienceCmd.grinder_on = true;
             }
             else
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 0.0F;
+                scienceCmd.grinder_on = false;
             }
 
-            if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_HOME))
+            if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_POUR))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = static_cast<float>(eServoPos::HOME);
-            }
-            else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_POUR))
-            {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = static_cast<float>(eServoPos::POUR);
+                scienceCmd.beak_pos = static_cast<uint8_t>(eServoPos::POUR);
             }
             else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_DUMP))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = static_cast<float>(eServoPos::DUMP);
+                scienceCmd.beak_pos = static_cast<float>(eServoPos::DUMP);
+            }
+            else
+            {
+                scienceCmd.beak_pos = static_cast<float>(eServoPos::HOME);
             }
 
             if (this->_joyManager.isPressed(KEYBINDINGS::CARROUSEL))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL] = 1.0F;
+                scienceCmd.carrousel_on = true;
             }
             else
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL] = 0.0F;
+                scienceCmd.carrousel_on = true;
             }
             this->_pubScienceCmd->publish(scienceCmd);
         }

@@ -4,6 +4,7 @@
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
 
+
 DEFINE_LOG_NODE(ScienceCmd_msg, Logger::eNodeState::OFF)
 
 namespace RoverCan2::Msgs
@@ -25,21 +26,13 @@ namespace RoverCan2::Msgs
         {
             float lin_act_speed;
             bool grinder_on;
-            float beak_pos;
+            uint8_t beak_pos;
             bool carrousel_on;
 
-            static_assert(sizeof(lin_act_speed) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
-                                                       - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
-                          "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(grinder_on) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
-                                                    - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
-                          "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(beak_pos) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
-                                                  - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
-                          "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(carrousel_on) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
-                                                      - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
-                          "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(lin_act_speed) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(grinder_on) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(beak_pos) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(carrousel_on) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS

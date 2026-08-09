@@ -48,10 +48,10 @@ std::vector<RoverCan2::Constant::eDeviceId> Science::getManagedDevicesIds(void)
 
 void Science::CB_ROS_scienceCmd(const rover_msgs::msg::ScienceCmd& rosMsg_)
 {
-    _nextScienceCmdMsg.data().lin_act_speed = rosMsg_.target_speed[rover_msgs::msg::ScienceCmd::LINEAR_ACT];
-    _nextScienceCmdMsg.data().grinder_on = floatToBool(rosMsg_.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR]);
-    _nextScienceCmdMsg.data().beak_pos = rosMsg_.target_speed[rover_msgs::msg::ScienceCmd::BEAK];
-    _nextScienceCmdMsg.data().carrousel_on = floatToBool(rosMsg_.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL]);
+    _nextScienceCmdMsg.data().lin_act_speed = rosMsg_.lin_speed;
+    _nextScienceCmdMsg.data().grinder_on = rosMsg_.grinder_on;
+    _nextScienceCmdMsg.data().beak_pos = rosMsg_.beak_pos;
+    _nextScienceCmdMsg.data().carrousel_on = rosMsg_.carrousel_on;
 }
 
 void Science::CB_ROS_canSend(void)
