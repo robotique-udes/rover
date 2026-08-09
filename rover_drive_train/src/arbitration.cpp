@@ -59,6 +59,7 @@ class Arbitration : public rclcpp::Node
 
     bool _baseHBLost = false;
     bool _roverHBLost = false;
+    bool _deadlineWarningActive = false;
 };
 
 Arbitration::Arbitration():
@@ -95,11 +96,15 @@ Arbitration::Arbitration():
     rclcpp::SubscriptionOptions teleopSubOptions;
     teleopSubOptions.event_callbacks.deadline_callback = [this](rclcpp::QOSDeadlineRequestedInfo& info_)
     {
-        RCLCPP_WARN(this->get_logger(),
-                    "Teleop deadline missed: total=%d change=%d",
-                    info_.total_count,
-                    info_.total_count_change);
-        _cmdTeleop = _zeroCmd;
+        if (info_.total_count_change > 0 && !_deadlineWarningActive)
+        {
+            _deadlineWarningActive = true;
+            RCLCPP_WARN(this->get_logger(),
+                        "Teleop deadline missed: total=%d change=%d",
+                        info_.total_count,
+                        info_.total_count_change);
+            _cmdTeleop = _zeroCmd;
+        }
     };
 
     teleopSubOptions.event_callbacks.liveliness_callback = [this](rclcpp::QOSLivelinessChangedInfo& info_)
@@ -182,6 +187,7 @@ void Arbitration::cbHB(const std_msgs::msg::Empty /*msg_*/, bool* HBLostVar_, rc
 
 void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor& msg_)
 {
+    _deadlineWarningActive = false;
     _cmdTeleop = msg_;
 }
 
