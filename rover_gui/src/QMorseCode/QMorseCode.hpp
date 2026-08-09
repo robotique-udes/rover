@@ -9,7 +9,7 @@
 // QT
 #include <QtWidgets/QGridLayout>
 #include <QString>
-#include "UI_MorseCode.h"
+#include "ui_MorseCode.h"
 #include "Worker/QMorseWorker.hpp"
 
 class QMorseCode : public QWidget
