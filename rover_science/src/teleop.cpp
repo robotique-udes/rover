@@ -72,14 +72,23 @@ class Teleop : public rclcpp::Node
                 scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::EXCAVATOR] = 0.0F;
             }
 
-            if (this->_joyManager.isPressed(KEYBINDINGS::BEAK))
+            if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_HOME))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 1.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 0.0F;
+            }
+            else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_POUR))
+            {
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 30.0F;
+            }
+            else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_POUR))
+            {
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 180.0F;
             }
             else
             {
                 scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 0.0F;
             }
+
             if (this->_joyManager.isPressed(KEYBINDINGS::CARROUSEL))
             {
                 scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL] = 1.0F;
