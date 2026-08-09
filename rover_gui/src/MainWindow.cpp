@@ -43,6 +43,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
             &QHelper::QNotificationShowHistory::showHistory);
     connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
 
+    _scienceWidget.hide();  // Hide the science widget because otherwise it just floats at 0,0 when not assigned to a layout
     this->onTabChange(QSideBar::eTabIndex::DASHBOARD);
 }
 
@@ -57,7 +58,6 @@ void MainWindow::closeEvent(QCloseEvent* event_)
 
 void MainWindow::onTabChange(QSideBar::eTabIndex index_)
 {
-    _scienceWidget.hide(); // Figure out why the fuck do I need this
     while (_mainTabWidget.count() != 0)
     {
         std::unique_ptr<QWidget> widgetContained = std::make_unique<QWidget>(_mainTabWidget.widget(0));
