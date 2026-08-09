@@ -17,7 +17,7 @@ class Teleop : public rclcpp::Node
     static constexpr const char* TOPIC_JOY_SCIENCE = "/base/joy/science";
     static constexpr const char* TOPIC_SCIENCE_CMD = "/rover/science/cmd";
 
-    static constexpr const float LIN_ACT_SPEED_FACTOR = 0.5F;
+    static constexpr const float LIN_ACT_SPEED_FACTOR = 100F;
 
   private:
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyScience;
@@ -74,15 +74,15 @@ class Teleop : public rclcpp::Node
 
             if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_HOME))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 0.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 0.0F * 2 * std::numbers::pi_v<float>;
             }
             else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_POUR))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 30.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 30.0F * 2.0F * std::numbers::pi_v<float>;
             }
-            else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_POUR))
+            else if (this->_joyManager.isPressed(KEYBINDINGS::BEAK_DUMP))
             {
-                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 180.0F;
+                scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::BEAK] = 180.0F * 2.0F * std::numbers::pi_v<float>;
             }
             else
             {
@@ -98,9 +98,9 @@ class Teleop : public rclcpp::Node
                 scienceCmd.target_speed[rover_msgs::msg::ScienceCmd::CARROUSEL] = 0.0F;
             }
 
-            this->_pubScienceCmd->publish(scienceCmd);
         }
     }
+    this->_pubScienceCmd->publish(scienceCmd);
 };
 
 int main(int argc, char* argv[])
