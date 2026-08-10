@@ -48,6 +48,6 @@ void QMorseWorker::sendMorseCodeInternal(const std::string& morseCode_)
         msg.checksum = runningChecksum;
 
         _pub_morseCode->publish(msg);
-        std::this_thread::sleep_for(std::chrono::milliseconds(1));
+        std::this_thread::sleep_for(std::chrono::milliseconds(10));
     }
 }
