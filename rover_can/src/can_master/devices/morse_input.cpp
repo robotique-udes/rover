@@ -56,13 +56,14 @@ std::vector<RoverCan2::Constant::eDeviceId> MorseInput::getManagedDevicesIds(voi
 
 void MorseInput::CB_ROS_morseCode(const rover_msgs::msg::MorseCode& rosMsg_)
 {
-    std::lock_guard lock(morseMutex);
+    //std::lock_guard lock(morseMutex);
     this->_nextMorseInputMsg.data().msgId = rosMsg_.msg_id;
     this->_nextMorseInputMsg.data().index = rosMsg_.index;
     this->_nextMorseInputMsg.data().msg_length = rosMsg_.length;
     this->_nextMorseInputMsg.data().character = rosMsg_.character;
     this->_nextMorseInputMsg.data().checksum = rosMsg_.checksum;
-    this->sendMsg(_nextMorseInputMsg);
+    for(int i = 0; i < 30; i++){
+    this->sendMsg(_nextMorseInputMsg);}    
 }
 
 void MorseInput::CB_CAN_MorseStatus(const RoverCan2::Msgs::MorseStatus& msgCan_)
