@@ -1,5 +1,5 @@
-#ifndef QDEVICESTATUS_WORKER_QMORSE_WORKER_HPP
-#define QDEVICESTATUS_WORKER_QMORSE_WORKER_HPP
+#ifndef QMORSECODE_WORKER_QMORSE_WORKER_HPP
+#define QMORSECODE_QMORSE_WORKER_HPP
 
 #include "Global/Workers/QWorker.hpp"
 #include <rclcpp/rclcpp.hpp>
@@ -23,4 +23,4 @@ class QMorseWorker : public QWorker
     rclcpp::Publisher<rover_msgs::msg::MorseCode>::SharedPtr _pub_morseCode;
 };
 
-#endif  // QDEVICESTATUS_WORKER_QSTATUS_WORKER_HPP
+#endif  // QMORSECODE_WORKER_QSTATUS_WORKER_HPP

@@ -1,5 +1,8 @@
 #include "QMorseWorker.hpp"
 
+#include <chrono>
+#include <thread>
+
 QMorseWorker::QMorseWorker(QObject* parent_):
     QWorker(false, parent_)
 {
