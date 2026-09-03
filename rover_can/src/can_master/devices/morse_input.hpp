@@ -10,7 +10,6 @@
 #include <rover_can2/msgs/morse_status.hpp>
 #include <rover_msgs/msg/morse_code.hpp>
 #include <rover_msgs/msg/morse_status.hpp>
-#include <mutex>
 
 class MorseInput : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::MorseCode>,
                                             RoverCan2::SubscriberMember<RoverCan2::Msgs::MorseStatus, MorseInput>>,
@@ -40,7 +39,6 @@ class MorseInput : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs
     rclcpp::Publisher<rover_msgs::msg::MorseStatus>::SharedPtr _pub_morseStatus;
     rclcpp::TimerBase::SharedPtr _timer_statusPublisher;
     rover_msgs::msg::MorseStatus _msgRos;
-    std::mutex morseMutex;
 };
 
 #endif  // MORSE_INPUT_HPP
