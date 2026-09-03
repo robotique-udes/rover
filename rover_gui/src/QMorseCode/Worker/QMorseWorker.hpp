@@ -21,7 +21,6 @@ class QMorseWorker : public QWorker
     void sendMorseCodeInternal(const std::string& morseCodeMsg_);
 
     rclcpp::Publisher<rover_msgs::msg::MorseCode>::SharedPtr _pub_morseCode;
-    uint8_t _nextMsgId = 0;
 };
 
 #endif  // QDEVICESTATUS_WORKER_QSTATUS_WORKER_HPP
