@@ -58,7 +58,6 @@ add_executable(main_gui src/gui.cpp
                    src/Global/QTmpFolderManager.cpp
                    
                    src/QArbitration/QArbitration.cpp
-                   src/QArbitration/QArbitration.cpp
 
                    src/QDeviceStatus/QDeviceStatus.cpp
                    src/QDeviceStatus/Worker/QStatusWorker.cpp
@@ -123,7 +122,7 @@ target_link_libraries(main_gui
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs
   jsoncpp_lib
-)         
+)
 
 target_sources(main_gui PRIVATE ${RESOURCES})
                       
