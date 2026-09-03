@@ -64,6 +64,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/ArmJointConfig.srv"
   "srv/ArucoDetection.srv"
   "srv/CameraControl.srv"
+  "srv/CameraIR.srv"
   "srv/CompassCalibration.srv"
   "srv/DDBControl.srv"
   "srv/DriveTrainArbitration.srv"
