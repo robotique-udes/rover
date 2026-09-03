@@ -61,8 +61,7 @@ void MorseInput::CB_ROS_morseCode(const rover_msgs::msg::MorseCode& rosMsg_)
     this->_nextMorseInputMsg.data().msg_length = rosMsg_.length;
     this->_nextMorseInputMsg.data().character = rosMsg_.character;
     this->_nextMorseInputMsg.data().checksum = rosMsg_.checksum;
-    for(int i = 0; i < 30; i++){
-    this->sendMsg(_nextMorseInputMsg);}    
+    this->sendMsg(_nextMorseInputMsg);
 }
 
 void MorseInput::CB_CAN_MorseStatus(const RoverCan2::Msgs::MorseStatus& msgCan_)
