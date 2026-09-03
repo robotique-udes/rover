@@ -135,7 +135,7 @@ class QVideoManagerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramique;
 
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraIR>> _client_cameraIR;
+    rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr _client_cameraIR;
 
     std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };

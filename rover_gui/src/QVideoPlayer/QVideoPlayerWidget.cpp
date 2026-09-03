@@ -1101,7 +1101,7 @@ void QVideoPlayerWidget::setupIRModeBox(void)
     _ui.IRModeBox->setCurrentIndex(0);
 }
 
-void QVideoPlayerWidget::setCameraIRClient(rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_)
+void QVideoPlayerWidget::setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_)
 {
     _client_cameraIR = client_;
     this->onIRModeChanged();
