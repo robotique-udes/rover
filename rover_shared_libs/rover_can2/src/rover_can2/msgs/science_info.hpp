@@ -1,9 +1,8 @@
-#ifndef SCIENCE_INFO_HPP
-#define SCIENCE_INFO_HPP
+#ifndef ROVER_CAN2_MSGS_SCIENCE_INFO_HPP
+#define ROVER_CAN2_MSGS_SCIENCE_INFO_HPP
 
 #include "rover_can2/msgs/msg.hpp"
 #include "rover_can2/helpers.hpp"
-
 
 DEFINE_LOG_NODE(ScienceInfo_msg, Logger::eNodeState::OFF)
 
@@ -31,15 +30,29 @@ namespace RoverCan2::Msgs
             int sensor_3;
             int humidity;
 
-            static_assert(sizeof(sample_index) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(sensor_1) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(sensor_2) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(sensor_3) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
-            static_assert(sizeof(humidity) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA), "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(sample_index) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
+                                                      - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
+                          "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(sensor_1) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
+                                                  - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
+                          "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(sensor_2) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
+                                                  - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
+                          "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(sensor_3) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
+                                                  - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
+                          "Can messages cannot include field longer than 6 bytes");
+            static_assert(sizeof(humidity) <= RoverCan2::Constant::CAN_MAX_DATA_LENGTH
+                                                  - TO_UNDERLYING(RoverCan2::Constant::eDataIndex::START_OF_DATA),
+                          "Can messages cannot include field longer than 6 bytes");
         };
 
         static constexpr CompileTimeArray<eMsgContentID, TO_UNDERLYING(eMsgContentID::eLAST)> VALID_MSG_IDS
-            = {eMsgContentID::SAMPLE_INDEX, eMsgContentID::SENSOR_1, eMsgContentID::SENSOR_2, eMsgContentID::SENSOR_3, eMsgContentID::HUMIDITY};
+            = {eMsgContentID::SAMPLE_INDEX,
+               eMsgContentID::SENSOR_1,
+               eMsgContentID::SENSOR_2,
+               eMsgContentID::SENSOR_3,
+               eMsgContentID::HUMIDITY};
 
       public:
         ScienceInfo():
@@ -194,4 +207,4 @@ namespace RoverCan2::Msgs
 
 }  // namespace RoverCan2::Msgs
 
-#endif  // SCIENCE_INFO_HPP
+#endif  // ROVER_CAN2_MSGS_SCIENCE_INFO_HPP

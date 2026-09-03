@@ -10,15 +10,15 @@
 #include <optional>
 #endif  // defined(__linux__)
 
-// #if defined(ROS)
+#if defined(ROS)
 #include <rclcpp/qos.hpp>
 #include <rover_msgs/msg/joy.hpp>
-// #endif  // defined(ROS)
+#endif  // defined(ROS)
 
-// #if defined(ROS)
+#if defined(ROS)
 #define QOS_DEFAULT rclcpp::QoS(rclcpp::KeepLast(1))
 #define QOS_CAMERA rclcpp::QoS(rclcpp::KeepLast(std::to_underlying(Constants::CameraInfo::eCamNames::eLast)))
-// #endif  // defined(ROS)
+#endif  // defined(ROS)
 
 namespace Constants
 {
@@ -109,7 +109,7 @@ namespace Constants
         BEST = 4U,
     };
 
-    // #if defined(ROS)
+#if defined(ROS)
     namespace Keybinds
     {
         enum class eJoyInput
@@ -156,7 +156,7 @@ namespace Constants
         }  // namespace DriveTrain
 
     }  // namespace Keybinds
-    // #endif  // defined(ROS)
+#endif  // defined(ROS)
 
 }  // namespace Constants
 
