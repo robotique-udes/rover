@@ -36,7 +36,6 @@ class Science : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::S
     void CB_ROS_canSend(void);
     void CB_CAN_scienceInfo(const RoverCan2::Msgs::ScienceInfo& canMsg_);
 
-    std::shared_ptr<CanMaster::SharedRosMsg<rover_msgs::msg::ScienceCmd>> _rosSharedMsg;
     RoverCan2::Msgs::ScienceCmd _nextScienceCmdMsg;
 
     rclcpp::Subscription<rover_msgs::msg::ScienceCmd>::SharedPtr _sub_ScienceCmd;
