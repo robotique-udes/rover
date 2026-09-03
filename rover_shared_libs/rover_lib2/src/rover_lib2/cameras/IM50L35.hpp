@@ -53,7 +53,7 @@ namespace IM50L35
 
         const std::string url = "http://" + IP_ + "/form/IRset";
 
-        const std::string data = std::string("IRmode=") + static_cast<char>(IRMode_) + "&IRenable=" + (IREnable_ ? "1" : "0")
+        const std::string data = std::string("IRmode=") + std::to_underlying(IRMode_) + "&IRenable=" + (IREnable_ ? "1" : "0")
                                  + "&Dualenable=2" + "&luminval=50" + "&IRdelay=2" + "&c2bwthr=20" + "&bw2cthr=70"
                                  + "&PowerMode=0" + "&PowerValue=0";
 
