@@ -1,6 +1,5 @@
 #include <rclcpp/rclcpp.hpp>
 #include <rclcpp/qos.hpp>
-#include <rclcpp/subscription_options.hpp>
 #include <chrono>
 
 #include <rover_msgs/msg/joy.hpp>

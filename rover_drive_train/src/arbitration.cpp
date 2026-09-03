@@ -124,6 +124,7 @@ Arbitration::Arbitration():
         teleopQos,
         [this](const rover_msgs::msg::PropulsionMotor& msg_)
         {
+            _deadlineWarningActive = false;
             this->cbPropulsionCmd(msg_);
         },
         teleopSubOptions);
@@ -187,7 +188,6 @@ void Arbitration::cbHB(const std_msgs::msg::Empty /*msg_*/, bool* HBLostVar_, rc
 
 void Arbitration::cbPropulsionCmd(const rover_msgs::msg::PropulsionMotor& msg_)
 {
-    _deadlineWarningActive = false;
     _cmdTeleop = msg_;
 }
 

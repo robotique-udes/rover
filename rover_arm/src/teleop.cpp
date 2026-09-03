@@ -73,7 +73,10 @@ class Teleop : public rclcpp::Node
 
                 rover_msgs::msg::ArmMsg armMsg;
                 armMsg.target_speed = RobotController::getNullJointCommands();
-                _pubArmCmd->publish(armMsg);
+                if (_pubArmCmd)
+                {
+                    _pubArmCmd->publish(armMsg);
+                }
             }
         };
 
