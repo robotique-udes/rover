@@ -13,6 +13,8 @@
 #include <rover_lib2/helpers/constants.hpp>
 
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/qos.hpp>
+#include <rclcpp/subscription_options.hpp>
 #include <utility>
 
 class Teleop : public rclcpp::Node
@@ -20,6 +22,8 @@ class Teleop : public rclcpp::Node
     static constexpr const char* TOPIC_JOY_ARM = "/base/joy/arm";
     static constexpr const char* TOPIC_ARM_STATUS = "/rover/arm/joints_status";
     static constexpr const char* TOPIC_ARM_CMD = "/rover/arm/joints_cmd";
+    static constexpr std::chrono::milliseconds TELEOP_DEADLINE = std::chrono::milliseconds(200);
+    static constexpr std::chrono::milliseconds TELEOP_LEASE_DURATION = std::chrono::milliseconds(300);
 
   public:
     enum class eControlMode : size_t
@@ -40,6 +44,7 @@ class Teleop : public rclcpp::Node
     eControlMode _controlMode = eControlMode::JOINT;
 
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> _jointPositions;
+    bool _deadlineWarningActive = false;
 
   public:
     Teleop():
@@ -48,12 +53,55 @@ class Teleop : public rclcpp::Node
         _jointController(_joyManager),
         _cartesianController(_joyManager)
     {
-        _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_JOY_ARM,
-                                                                     QOS_DEFAULT,
-                                                                     [this](const rover_msgs::msg::Joy& joyMsg_)
-                                                                     {
-                                                                         this->joy_CB(joyMsg_);
-                                                                     });
+        rclcpp::QoS teleopQos(rclcpp::KeepLast(1));
+        teleopQos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+        teleopQos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+        teleopQos.deadline(TELEOP_DEADLINE);
+        teleopQos.liveliness(RMW_QOS_POLICY_LIVELINESS_AUTOMATIC);
+        teleopQos.liveliness_lease_duration(TELEOP_LEASE_DURATION);
+
+        rclcpp::SubscriptionOptions teleopSubOptions;
+        teleopSubOptions.event_callbacks.deadline_callback = [this](rclcpp::QOSDeadlineRequestedInfo& info_)
+        {
+            if (info_.total_count_change > 0 && !_deadlineWarningActive)
+            {
+                _deadlineWarningActive = true;
+                RCLCPP_WARN(this->get_logger(),
+                            "Teleop deadline missed: total=%d change=%d",
+                            info_.total_count,
+                            info_.total_count_change);
+
+                rover_msgs::msg::ArmMsg armMsg;
+                armMsg.target_speed = RobotController::getNullJointCommands();
+                if (_pubArmCmd)
+                {
+                    _pubArmCmd->publish(armMsg);
+                }
+            }
+        };
+
+        teleopSubOptions.event_callbacks.liveliness_callback = [this](rclcpp::QOSLivelinessChangedInfo& info_)
+        {
+            if (info_.not_alive_count_change > 0)
+            {
+                RCLCPP_WARN(this->get_logger(),
+                            "Teleop liveliness lost: alive=%d not_alive=%d",
+                            info_.alive_count,
+                            info_.not_alive_count);
+                rover_msgs::msg::ArmMsg armMsg;
+                armMsg.target_speed = RobotController::getNullJointCommands();
+                _pubArmCmd->publish(armMsg);
+            }
+        };
+
+        _subJoyArm = this->create_subscription<rover_msgs::msg::Joy>(
+            TOPIC_JOY_ARM,
+            teleopQos,
+            [this](const rover_msgs::msg::Joy& joyMsg_)
+            {
+                this->joy_CB(joyMsg_);
+            },
+            teleopSubOptions);
         _subArmPositions = this->create_subscription<rover_msgs::msg::ArmMsg>(TOPIC_ARM_STATUS,
                                                                               QOS_DEFAULT,
                                                                               [this](const rover_msgs::msg::ArmMsg& armMsg_)
@@ -66,6 +114,8 @@ class Teleop : public rclcpp::Node
 
     void joy_CB(const rover_msgs::msg::Joy& joyMsg_)
     {
+        _deadlineWarningActive = false;
+
         const size_t joyMsgSize = joyMsg_.joy_data.size();
         std::array<float, TO_UNDERLYING(Constants::Keybinds::eJoyInput::eLAST)> joyArray = {};
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
