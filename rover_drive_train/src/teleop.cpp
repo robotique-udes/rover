@@ -1,4 +1,5 @@
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/qos.hpp>
 #include <rover_msgs/msg/joy.hpp>
 #include <rover_msgs/msg/joy_demux_status.hpp>
 #include <rover_msgs/msg/propulsion_motor.hpp>
@@ -14,6 +15,8 @@ class Teleop : public rclcpp::Node
     static constexpr float CAR_CONTROL_MAP_FACTOR = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
     static constexpr float CAR_MODE_INPUT_BYPASS_THREASHOLD = 0.05F;
     static constexpr float CAR_MODE_TURN_DEADZONE = 0.50F / 2.0F;  // 50% total, 50%/2 right + 50%/2 left
+    static constexpr std::chrono::milliseconds TELEOP_DEADLINE = std::chrono::milliseconds(200);
+    static constexpr std::chrono::milliseconds TELEOP_LEASE_DURATION = std::chrono::milliseconds(300);
 
   public:
     Teleop();
@@ -98,7 +101,13 @@ Teleop::Teleop():
                                                                             this->CB_joy(msg_);
                                                                         });
 
-    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, QOS_DEFAULT);
+    rclcpp::QoS teleopQos(rclcpp::KeepLast(1));
+    teleopQos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    teleopQos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+    teleopQos.deadline(TELEOP_DEADLINE);
+    teleopQos.liveliness(RMW_QOS_POLICY_LIVELINESS_AUTOMATIC);
+    teleopQos.liveliness_lease_duration(TELEOP_LEASE_DURATION);
+    _pub_teleop_in = this->create_publisher<rover_msgs::msg::PropulsionMotor>(TOPIC_WHEEL_CMD, teleopQos);
 }
 
 int main(int argc, char* argv[])
