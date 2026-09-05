@@ -21,6 +21,7 @@ class JoyDemux : public rclcpp::Node
     {
         DRIVE_TRAIN = rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
         ARM = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
+        SCIENCE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_SCIENCE,
         ANTENNA = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
         NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
@@ -45,6 +46,7 @@ class JoyDemux : public rclcpp::Node
 
     rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_drive_train;
     rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_arm;
+    rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_science;
     rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_antenna;
     rclcpp::Publisher<rover_msgs::msg::JoyDemuxStatus>::SharedPtr _pub_status;
 
@@ -95,6 +97,7 @@ JoyDemux::JoyDemux():
     _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", teleopQos);
 
     _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("antenna", QOS_DEFAULT);
+    _pub_science = this->create_publisher<rover_msgs::msg::Joy>("science", QOS_DEFAULT);
     _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("demux_status", QOS_DEFAULT);
 
     _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
@@ -146,6 +149,11 @@ void JoyDemux::CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controll
             _pub_arm->publish(msg_zeros);
         }
 
+        if (isIdle(eDemuxDestination::SCIENCE))
+        {
+            _pub_science->publish(msg_zeros);
+        }
+
         if (isIdle(eDemuxDestination::ANTENNA))
         {
             _pub_antenna->publish(msg_zeros);
@@ -171,6 +179,10 @@ void JoyDemux::redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& 
     else if (dest_ == eDemuxDestination::ARM)
     {
         _pub_arm->publish(msg_);
+    }
+    else if (dest_ == eDemuxDestination::SCIENCE)
+    {
+        _pub_science->publish(msg_);
     }
     else if (dest_ == eDemuxDestination::ANTENNA)
     {
