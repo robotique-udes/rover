@@ -7,6 +7,7 @@
 #include "can_master/devices/light.hpp"
 #include "can_master/devices/gnss.hpp"
 #include "can_master/devices/sensor_box.hpp"
+#include "can_master/devices/morse_input.hpp"
 #include "rover_can2/drivers/driver_linux.hpp"
 
 #include <rover_msgs/msg/can_device_status.hpp>
@@ -91,6 +92,8 @@ class CanMasterNode : public rclcpp::Node
                                      rover_msgs::msg::ArmMsg::GRIPPER_CLOSE,
                                      _armJointMsg);
 
+    MorseInput morseInput = MorseInput(RoverCan2::Constant::eDeviceId::MORSE_CODE);
+
     Light lightMain = Light(RoverCan2::Constant::eDeviceId::LIGHTS_MAIN);
 
     SensorBox sensorBox;
@@ -116,7 +119,8 @@ class CanMasterNode : public rclcpp::Node
                              ArmJoint&,
                              ArmJoint&,
                              Light&,
-                             SensorBox&>
+                             SensorBox&,
+                             MorseInput&>
         _canManager = RoverCan2::ManagerMaster(
             __canDriver,
             [this](RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& msg_)
@@ -141,9 +145,10 @@ class CanMasterNode : public rclcpp::Node
             gripperRot,
             gripperClose,
             lightMain,
-            sensorBox);
+            sensorBox,
+            morseInput);
 
-    std::array<MasterDevice*, 18U> _deviceArray = {&motorFL,
+    std::array<MasterDevice*, 19U> _deviceArray = {&motorFL,
                                                    &motorFR,
                                                    &motorRL,
                                                    &motorRR,
@@ -161,7 +166,8 @@ class CanMasterNode : public rclcpp::Node
                                                    &gripperRot,
                                                    &gripperClose,
                                                    &lightMain,
-                                                   &sensorBox};
+                                                   &sensorBox,
+                                                   &morseInput};
 };
 
 #endif  // CAN_MASTER_NODE_HPP

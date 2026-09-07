@@ -11,7 +11,8 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _navigationWidget(guiNode_, this),
     _deviceStatusWidget(guiNode_, this),
     _ligthsController(guiNode_, this),
-    _bmsDataWidget(guiNode_, this)
+    _bmsDataWidget(guiNode_, this),
+    _morseCode(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
@@ -72,13 +73,14 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             [[fallthrough]];
 
         case QSideBar::eTabIndex::DASHBOARD:
-            grid->addWidget(&_navigationWidget, 0, 0, 3, 1);
+            grid->addWidget(&_navigationWidget, 0, 0, 4, 1);
             grid->addWidget(&_arbitrationWidget, 0, 1);
             grid->addWidget(&_ligthsController, 1, 1);
-            grid->addWidget(&_deviceStatusWidget, 2, 1);
+            grid->addWidget(&_morseCode, 2, 1);
+            grid->addWidget(&_deviceStatusWidget, 3, 1);
             _bmsDataWidget.setGraphSize(200, 200);
             _bmsDataWidget.setCellContainerSize(90, 75);
-            grid->addWidget(&_bmsDataWidget, 3, 1);
+            grid->addWidget(&_bmsDataWidget, 4, 1);
 
             grid->setColumnStretch(0, 6);
             grid->setColumnStretch(1, 1);

@@ -16,6 +16,8 @@
     <file>icons/gripper.png</file>
     <file>icons/amps.png</file>
     <file>icons/cells_volt.png</file>
+    <file>icons/morse_dash.svg</file>
+    <file>icons/morse_dot.svg</file>
 
     <file>model/direction_arrow.glb</file>
     

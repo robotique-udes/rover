@@ -206,7 +206,8 @@ def display_message_ids():
         ("0x21", "PTZ_STATUS"),
         ("0x22", "PTZ_CONFIG"), # New message ID
         ("0x23", "DDB_CMD"),
-        ("0x24", "DDB_STATUS") # Adjusted from 0x23 due to PTZ_CONFIG insertion
+        ("0x24", "DDB_STATUS"), # Adjusted from 0x23 due to PTZ_CONFIG insertion
+        ("0x27", "MORSE_INPUT"),
     ]
     
     print("Available Message IDs:")

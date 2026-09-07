@@ -53,6 +53,7 @@ namespace RoverCan2::Constant
         CAMERA_ARM_SIDE = 0x406,
         SPEAKERS = 0x407,
         GAS_SENSORS = 0x408,
+        MORSE_CODE = 0x409,
 
     _RESERVED_INTERNAL = 0x7F0,
         INVALID,
@@ -102,7 +103,11 @@ namespace RoverCan2::Constant
         DDB_STATUS,
         
         SENSOR_BOX,
+
         ARM_JOINT_ADVANCED_STATUS,
+        
+        MORSE_CODE,
+        MORSE_STATUS,
         // clang-format on
     };
 
@@ -110,14 +115,14 @@ namespace RoverCan2::Constant
      * @brief Array holding all valid and implemented msgs used on the network.
      *
      */
-    constexpr CompileTimeArray<eMsgId, 24UL> SUPPORTED_MSGS = {
-        eMsgId::TEST_MSG,         eMsgId::TEST_MSG_2,       eMsgId::ERROR_STATE,       eMsgId::HEARTBEAT,
-        eMsgId::POWER_CMD,        eMsgId::POWER_STATUS,     eMsgId::PWM_CMD,           eMsgId::PWM_STATUS,
-        eMsgId::PWM_INFO,         eMsgId::PROP_SPEED_CMD,   eMsgId::PROP_SPEED_STATUS, eMsgId::DDB_CMD,
-        eMsgId::DDB_STATUS,       eMsgId::FIX_POSITION,     eMsgId::FIX_HEADING,       eMsgId::FIX_INFO,
-        eMsgId::PTZ_CMD,          eMsgId::PTZ_STATUS,       eMsgId::PTZ_CONFIG,        eMsgId::ARM_JOINT_CMD,
-        eMsgId::ARM_JOINT_STATUS, eMsgId::ARM_JOINT_CONFIG, eMsgId::SENSOR_BOX,        eMsgId::ARM_JOINT_ADVANCED_STATUS,
-    };
+    constexpr CompileTimeArray<eMsgId, 26UL> SUPPORTED_MSGS
+        = {eMsgId::TEST_MSG,         eMsgId::TEST_MSG_2,       eMsgId::ERROR_STATE,       eMsgId::HEARTBEAT,
+           eMsgId::POWER_CMD,        eMsgId::POWER_STATUS,     eMsgId::PWM_CMD,           eMsgId::PWM_STATUS,
+           eMsgId::PWM_INFO,         eMsgId::PROP_SPEED_CMD,   eMsgId::PROP_SPEED_STATUS, eMsgId::DDB_CMD,
+           eMsgId::DDB_STATUS,       eMsgId::FIX_POSITION,     eMsgId::FIX_HEADING,       eMsgId::FIX_INFO,
+           eMsgId::PTZ_CMD,          eMsgId::PTZ_STATUS,       eMsgId::PTZ_CONFIG,        eMsgId::ARM_JOINT_CMD,
+           eMsgId::ARM_JOINT_STATUS, eMsgId::ARM_JOINT_CONFIG, eMsgId::SENSOR_BOX,        eMsgId::ARM_JOINT_ADVANCED_STATUS,
+           eMsgId::MORSE_CODE,       eMsgId::MORSE_STATUS};
 
     /**
      * @brief
@@ -205,6 +210,8 @@ namespace RoverCan2::Constant
                 return "SPEAKERS";
             case eDeviceId::GAS_SENSORS:
                 return "GAS_SENSORS";
+            case eDeviceId::MORSE_CODE:
+                return "MORSE_CODE";
             case eDeviceId::_RESERVED_INTERNAL:
                 return "_RESERVED_INTERNAL";
             case eDeviceId::INVALID:
