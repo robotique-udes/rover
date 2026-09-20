@@ -10,9 +10,13 @@ on:
   merge_group:
     types: [checks_requested]
 
+concurrency:
+  group: ${{ github.workflow }}-${{ github.ref }}
+  cancel-in-progress: true
+
 jobs:
   jazzy-build:
-    name: 'Build on ROS2 Jazzy (Ubuntu 24.04)'
+    name: 'Build and static analysis on ROS2 Jazzy (Ubuntu 24.04)'
     runs-on: ubuntu-24.04
 
     container:
@@ -20,10 +24,10 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v2
+        uses: actions/checkout@v4
         with:
           submodules: recursive
-          
+
       - name: Setup environment
         shell: bash
         run: |
@@ -31,20 +35,40 @@ jobs:
           chmod +x scripts/provision.sh
           scripts/provision.sh
           echo -e "\e[0;32m[OK] Dependencies installed successfully\e[0m"
-        
+
+      - name: Install clang-tidy
+        shell: bash
+        run: |
+          apt-get update
+          apt-get install -y clang-tidy ros-jazzy-ament-clang-tidy
+
       - name: Building rover packages
-        shell: bash  
+        shell: bash
         run: |
           echo -e "\e[0;34m=== Sourcing for build ... ===\e[0m"
           source /opt/ros/jazzy/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
-          
           export CPR_USE_SYSTEM_CURL=ON
           export CXXFLAGS="-Werror"
           echo -e "\e[0;34m=== Building ROS2 Packages ... ===\e[0m"
-          if colcon build; then
+          if colcon build \
+              --event-handlers console_direct+ \
+              --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; then
             echo -e "\e[0;32m=== [SUCCESS] ===\e[0m"
           else
             echo -e "\e[0;31m[FAILED] Building step triggered warnings or errors\e[0m"
-            exit 1  # Exit with status 1 if build fails
+            exit 1
           fi
+
+      - name: Run clang-tidy
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+          # List packages, skipping anything under deps/
+          pkgs=$(colcon list | awk -F'\t' '$2 !~ /^(\.\/)?deps\// {print $1}')
+          echo "Running clang-tidy on: $pkgs"
+          for pkg in $pkgs; do
+            if [ -f build/$pkg/compile_commands.json ]; then
+              ament_clang_tidy --config .clang-tidy build/$pkg
+            fi
+          done
