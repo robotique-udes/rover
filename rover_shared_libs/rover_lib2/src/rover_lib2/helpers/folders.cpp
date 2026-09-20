@@ -57,7 +57,6 @@ std::vector<std::string> Folders::splitPath(const std::string& path_)
     char delimiter = '/';
     std::vector<std::string> subdirectories;
     std::stringstream stringstream(path_);
-    std::string sub;
     size_t count = 0;
 
     for (std::string sub; (count < MAX_SUBDIR_COUNT && std::getline(stringstream, sub, delimiter));)

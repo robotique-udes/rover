@@ -12,7 +12,7 @@ CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
                                  const std::string& ptzConfigTopic_,
                                  const std::string& powerCommandTopic_)
 {
-    _node = node_;
+    _node = std::move(node_);
     _ptzCommandTopic = ptzCommandTopic_;
     _ptzConfigTopic = ptzConfigTopic_;
     _powerCommandTopic = powerCommandTopic_;
@@ -154,14 +154,14 @@ void CameraInterface::initSub()
 {
     _sub_powerStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
                                                                                   QOS_CAMERA,
-                                                                                  [this](rover_msgs::msg::CameraControl msg_)
+                                                                                  [this](const rover_msgs::msg::CameraControl& msg_)
                                                                                   {
                                                                                       this->CB_subscriberPowerStatus(msg_);
                                                                                   });
 
     _sub_PTZStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
                                                                                 QOS_CAMERA,
-                                                                                [this](rover_msgs::msg::CameraControl msg_)
+                                                                                [this](const rover_msgs::msg::CameraControl& msg_)
                                                                                 {
                                                                                     this->CB_subscriberPtzStatus(msg_);
                                                                                 });
@@ -169,7 +169,7 @@ void CameraInterface::initSub()
     _sub_topicWithPriority
         = _node->create_subscription<rover_msgs::msg::TopicWithPriority>(TOPIC_WITH_PRIORITY,
                                                                          QOS_CAMERA,
-                                                                         [this](rover_msgs::msg::TopicWithPriority msg_)
+                                                                         [this](const rover_msgs::msg::TopicWithPriority& msg_)
                                                                          {
                                                                              this->CB_subscriberTopicWithPriority(msg_);
                                                                          });
