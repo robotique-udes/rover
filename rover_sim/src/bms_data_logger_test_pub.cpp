@@ -21,7 +21,7 @@ class BmsPublisher : public rclcpp::Node
     {
         auto msg = rover_msgs::msg::BmsData();
 
-        msg.battery_amps = 5.0f + 10.0f * static_cast<float>(std::sin(_tick * 0.05)) * -100;
+        msg.battery_amps = static_cast<int16_t>(5.0f + 10.0f * static_cast<float>(std::sin(_tick * 0.05)) * -100);
         msg.state_of_charge = 40;
 
         const std::size_t NUM_CELLS = 6;
@@ -35,7 +35,7 @@ class BmsPublisher : public rclcpp::Node
         _publisher->publish(msg);
 
         RCLCPP_DEBUG(this->get_logger(),
-                     "Published: amps=%.2f  cells[0]=%u mV  cells[%zu]=%u mV",
+                     "Published: amps=%.2d  cells[0]=%u mV  cells[%zu]=%u mV",
                      msg.battery_amps,
                      msg.cell_volt.front(),
                      NUM_CELLS - 1,

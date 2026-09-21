@@ -22,8 +22,8 @@ namespace CameraManager
 
         _srv_IR
             = this->create_service<rover_msgs::srv::CameraIR>(SERVICE_IR,
-                                                              [this](const rover_msgs::srv::CameraIR::Request::SharedPtr request_,
-                                                                     rover_msgs::srv::CameraIR::Response::SharedPtr response_)
+                                                              [this](const rover_msgs::srv::CameraIR::Request::SharedPtr& request_,
+                                                                     const rover_msgs::srv::CameraIR::Response::SharedPtr& response_)
                                                               {
                                                                   this->CB_srvIR(request_, response_);
                                                               });

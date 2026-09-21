@@ -30,8 +30,8 @@ DDBControlNode::DDBControlNode():
 
     _srv_control_bank1 = this->create_service<rover_msgs::srv::DDBControl>(
         TOPIC_CONTROL_BANK_1,
-        [this](const std::shared_ptr<rover_msgs::srv::DDBControl::Request> request_,
-               std::shared_ptr<rover_msgs::srv::DDBControl::Response> response_)
+        [this](const std::shared_ptr<rover_msgs::srv::DDBControl::Request>& request_,
+               const std::shared_ptr<rover_msgs::srv::DDBControl::Response>& response_)
         {
             if (!request_ || !response_)
             {

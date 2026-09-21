@@ -11,7 +11,7 @@ class QBattChart : public QWidget
 
   public:
     explicit QBattChart(rclcpp::Time initTime_);
-    void updateGraph(rclcpp::Time now_, float amps_);
+    void updateGraph(rclcpp::Time now_, int16_t amps_);
     void setGraphSize(uint16_t width_, uint16_t height_);
 
   private:

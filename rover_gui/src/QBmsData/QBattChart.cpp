@@ -35,7 +35,7 @@ QBattChart::QBattChart(rclcpp::Time initTime_):
     layout->addWidget(_chartView);
 }
 
-void QBattChart::updateGraph(rclcpp::Time now_, float amps_)
+void QBattChart::updateGraph(rclcpp::Time now_, int16_t amps_)
 {
     const double elapsed = (now_.nanoseconds() - _initTime.nanoseconds()) / NS_TO_SECONDS;
     _battAmpsSeries->append(elapsed, amps_ / -CENTIAMP_TO_AMP);
