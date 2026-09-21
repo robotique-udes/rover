@@ -3,7 +3,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
-#include "UI_Navigation.h"
+#include "ui_Navigation.h"
 
 #include "QWaypoint/QWaypointManager.hpp"
 #include "Worker/QPathManager.hpp"
@@ -39,7 +39,7 @@ class QNavigation : public QWidget
 
   public slots:
     void pathDistanceCalculated(double distanceMeters_, double heading_);
-    void waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_);
+    void waypointCreated(const QString& name_, double latitude_, double longitude_, const QString& id_);
     void onCalculatePathClicked(void);
     void onWaypointVisibilityChanged(QListWidgetItem* item_);
     void onWaypointSelected(QListWidgetItem* item_);

@@ -300,7 +300,7 @@
           </sizepolicy>
          </property>
          <property name="text">
-          <string>vitesse modem</string>
+          <string>RSSI</string>
          </property>
         </widget>
        </item>
@@ -356,7 +356,7 @@
         </spacer>
        </item>
        <item>
-        <widget class="QLabel" name="connectionSpeedLabel">
+        <widget class="QLabel" name="upSpeedLabel">
          <property name="sizePolicy">
           <sizepolicy hsizetype="Fixed" vsizetype="Preferred">
            <horstretch>0</horstretch>
@@ -376,12 +376,85 @@
           </size>
          </property>
          <property name="text">
-          <string>signal antenne</string>
+          <string>Up speed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="upSpeedButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>35</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
          </property>
         </widget>
        </item>
        <item>
         <spacer name="horizontalSpacer">
+         <property name="orientation">
+          <enum>Qt::Horizontal</enum>
+         </property>
+         <property name="sizeType">
+          <enum>QSizePolicy::Fixed</enum>
+         </property>
+         <property name="sizeHint" stdset="0">
+          <size>
+           <width>40</width>
+           <height>20</height>
+          </size>
+         </property>
+        </spacer>
+       </item>
+       <item>
+        <widget class="QLabel" name="downSpeedLabel">
+         <property name="text">
+          <string>Down speed</string>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <widget class="QPushButton" name="downSpeedButton">
+         <property name="sizePolicy">
+          <sizepolicy hsizetype="Fixed" vsizetype="Minimum">
+           <horstretch>0</horstretch>
+           <verstretch>0</verstretch>
+          </sizepolicy>
+         </property>
+         <property name="maximumSize">
+          <size>
+           <width>35</width>
+           <height>16777215</height>
+          </size>
+         </property>
+         <property name="text">
+          <string/>
+         </property>
+         <property name="iconSize">
+          <size>
+           <width>24</width>
+           <height>24</height>
+          </size>
+         </property>
+        </widget>
+       </item>
+       <item>
+        <spacer name="horizontalSpacer_10">
          <property name="orientation">
           <enum>Qt::Horizontal</enum>
          </property>

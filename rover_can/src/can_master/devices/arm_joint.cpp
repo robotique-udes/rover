@@ -8,6 +8,7 @@ ArmJoint::ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
     DeviceT(deviceId_,
             RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>(),
             RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armPostitionStatus),
+            RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armAdvancedStatus),
             RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>()),
     _rosArmSpeedMsgId(rosArmSpeedMsgId_),
     _rosSharedMsg(rosSharedMsg_)
@@ -73,6 +74,13 @@ void ArmJoint::CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmJointStatus& 
 {
     _rosSharedMsg->get().getThreadSafeAccess().current_position[_rosArmSpeedMsgId] = msg_.getData().currentPosition;
     _rosSharedMsg->get().getThreadSafeAccess().current_speed[_rosArmSpeedMsgId] = msg_.getData().currentSpeed;
+}
+
+void ArmJoint::CB_CAN_armAdvancedStatus(const RoverCan2::Msgs::ArmJointAdvancedStatus& msg_)
+{
+    _rosSharedMsg->get().getThreadSafeAccess().current_torque[_rosArmSpeedMsgId] = msg_.getData().currentTorque;
+    _rosSharedMsg->get().getThreadSafeAccess().current_motor_temp[_rosArmSpeedMsgId] = msg_.getData().currentMotorTemp;
+    _rosSharedMsg->get().getThreadSafeAccess().current_amperage[_rosArmSpeedMsgId] = msg_.getData().currentAmperage;
 }
 
 void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)

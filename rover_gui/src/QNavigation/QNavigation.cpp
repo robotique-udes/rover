@@ -213,7 +213,7 @@ void QNavigation::pathDistanceCalculated(double distanceMeters_, double heading_
     _ui.distanceLabel->setText(distanceText_);
 }
 
-void QNavigation::waypointCreated(const QString& name_, double latitude_, double longitude_, QString& id_)
+void QNavigation::waypointCreated(const QString& name_, double latitude_, double longitude_, const QString& id_)
 {
     for (const auto& waypoint : _waypointsList)
     {
@@ -223,16 +223,10 @@ void QNavigation::waypointCreated(const QString& name_, double latitude_, double
         }
     }
 
-    if (id_.isEmpty())
-    {
-        id_ = "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces);
-    }
-    sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id_.toStdString()};
-    RCLCPP_ERROR(rclcpp::get_logger("GUI"),
-                 "Correctly passed through waypointCreated(): name: %s, latitude: %f, longitude: %f",
-                 waypoint.name.c_str(),
-                 waypoint.latitude,
-                 waypoint.longitude);
+    std::string id;
+    id = id_.isEmpty() ? "waypoint_" + QUuid::createUuid().toString(QUuid::WithoutBraces).toStdString() : id_.toStdString();
+
+    sWaypoint waypoint = {name_.toStdString(), latitude_, longitude_, id};
     this->addWaypointToList(waypoint);
     _waypointManager.syncWaypoints(_waypointsList);
 }

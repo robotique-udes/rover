@@ -71,7 +71,7 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
 
     connect(this, &QVideoPlayerWidget::displayDetectedArucos, this, &QVideoPlayerWidget::onDisplayDetectedArucos);
 
-    connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::updateCamURL);
+    connect(_ui.rtspComboBox, &QComboBox::currentIndexChanged, this, &QVideoPlayerWidget::updateCamURL);
     connect(_ui.defaultStreamPushButton, &QPushButton::clicked, this, &QVideoPlayerWidget::setURLToDefault);
     connect(this, &QVideoPlayerWidget::arucoCameraFailure, this, &QVideoPlayerWidget::onArucoCameraFailed);
 
@@ -90,11 +90,23 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     connect(_panoramaWorkerThread.get(), &QPanoramaWorker::panoramaFinished, this, &QVideoPlayerWidget::onPanoramaFinished);
     connect(_ui.panoramaDurationBox, &QDoubleSpinBox::valueChanged, this, &QVideoPlayerWidget::setPanoramaDuration);
     connect(this, &QVideoPlayerWidget::updateActualAngle, this, &QVideoPlayerWidget::onUpdateActualAngle);
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
-    _ui.rtspTextBox->setAlignment(Qt::AlignCenter);
     _ui.arucoIdsTextBox->setText("Ids: ");
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
+
+    this->setupIRModeBox();
+
+    const QSignalBlocker blocker(_ui.rtspComboBox);
+
+    for (uint16_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
+    {
+        _ui.rtspComboBox->addItem(
+            Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::NAME)]);
+        if (Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::URL)] == _camURL)
+        {
+            _ui.rtspComboBox->setCurrentIndex(static_cast<int>(i));
+        }
+    }
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
 
@@ -162,7 +174,7 @@ void QVideoPlayerWidget::connectUISignals(void)
 {
     connect(_ui.playPauseButton, &QPushButton::clicked, this, &QVideoPlayerWidget::handlePlayPauseButton);
     connect(_ui.toggleViewButton, &QPushButton::clicked, this, &QVideoPlayerWidget::onToggleView);
-    connect(_ui.rtspTextBox, &QLineEdit::textChanged, this, &QVideoPlayerWidget::onUrlTextChanged);
+    connect(_ui.rtspComboBox, &QComboBox::currentTextChanged, this, &QVideoPlayerWidget::onUrlTextChanged);
 
     QPushButton* backToVideoBtn = this->findChild<QPushButton*>("backToVideoBtn");
     if (backToVideoBtn)
@@ -467,13 +479,13 @@ void QVideoPlayerWidget::updateUrlValidationUI(bool isValid_)
 {
     if (isValid_)
     {
-        _ui.rtspTextBox->setStyleSheet("");
-        _ui.rtspTextBox->setToolTip("");
+        _ui.rtspComboBox->setStyleSheet("");
+        _ui.rtspComboBox->setToolTip("");
     }
     else
     {
-        _ui.rtspTextBox->setStyleSheet("border: 1px solid red;");
-        _ui.rtspTextBox->setToolTip("Invalid URL format. Expected: rtsp://[username:password@]host[:port]/path");
+        _ui.rtspComboBox->setStyleSheet("border: 1px solid red;");
+        _ui.rtspComboBox->setToolTip("Invalid URL format. Expected: rtsp://[username:password@]host[:port]/path");
     }
 }
 
@@ -491,20 +503,19 @@ void QVideoPlayerWidget::onToggleView(void)
 
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
-    if (text_.isEmpty())
-    {
-        _ui.rtspTextBox->setStyleSheet("");
-        _ui.rtspTextBox->setToolTip("Enter RTSP URL...");
-    }
-    else
-    {
-        bool isValid = this->validateRtspUrl(text_);
-        this->updateUrlValidationUI(isValid);
+    std::optional<std::string> urlString = Constants::CameraInfo::getURLFromId(text_.toStdString());
+    QString url = QString::fromStdString(urlString.value_or(DEFAULT_URL));
+    bool isValid = this->validateRtspUrl(url);
+    this->updateUrlValidationUI(isValid);
 
-        if (_state == ePlayerState::CONNECTION_FAILED && isValid)
-        {
-            this->setPlayerState(ePlayerState::NOT_CONNECTED);
-        }
+    if (isValid)
+    {
+        startStream(url);
+    }
+
+    if (_state == ePlayerState::CONNECTION_FAILED && isValid)
+    {
+        this->setPlayerState(ePlayerState::NOT_CONNECTED);
     }
 }
 
@@ -639,9 +650,10 @@ void QVideoPlayerWidget::onReconnectTimer(void)
 {
     if (_state == ePlayerState::RECONNECTING)
     {
-        if (!_ui.rtspTextBox->text().isEmpty())
+        if (!_ui.rtspComboBox->currentText().isEmpty())
         {
-            this->startStream(_ui.rtspTextBox->text());
+            std::optional<std::string> url = Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString());
+            this->startStream(QString::fromStdString(url.value_or(DEFAULT_URL)));
         }
     }
 }
@@ -816,14 +828,15 @@ void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
 void QVideoPlayerWidget::setURLToDefault(void)
 {
     _camURL = this->_defaultCamUrl;
-    _ui.rtspTextBox->setText(QString::fromStdString(_camURL));
+    _ui.rtspComboBox->setCurrentText(QString::fromStdString(_camURL));
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
 
 void QVideoPlayerWidget::updateCamURL()
 {
-    _camURL = _ui.rtspTextBox->text().toStdString();
+    std::optional<std::string> url = Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString());
+    _camURL = url.value_or(DEFAULT_URL);
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
@@ -1037,4 +1050,59 @@ void QVideoPlayerWidget::onUpdateActualAngle(const std::string& camURL_, float y
     {
         _ui.actualAngleSlider->setValue(static_cast<int>(yaw_));
     }
+}
+
+void QVideoPlayerWidget::onIRModeChanged(void)
+{
+    std::string_view stream = _camURL;
+
+    const std::size_t protocolPos = stream.find("://");
+    if (protocolPos == std::string_view::npos)
+    {
+        return;  // Invalid RTSP URL
+    }
+
+    const std::size_t ipStart = protocolPos + 3;
+    const std::size_t ipEnd = stream.find(':', ipStart);
+
+    if (ipEnd == std::string_view::npos || ipEnd <= ipStart)
+    {
+        return;  // No port or invalid IP portion
+    }
+
+    const std::string_view ip = stream.substr(ipStart, ipEnd - ipStart);
+
+    QString mode = _ui.IRModeBox->currentText();
+    if (mode == "Day")
+    {
+        if (_playerWorkerThreadAruco.get() != nullptr)
+        {
+            _playerWorkerThreadAruco->toggleIRMode(_client_cameraIR,
+                                                   std::string(ip),
+                                                   rover_msgs::srv::CameraIR::Request::DAYMODE);
+        }
+    }
+    else if (mode == "Night")
+    {
+        if (_playerWorkerThreadAruco.get() != nullptr)
+        {
+            _playerWorkerThreadAruco->toggleIRMode(_client_cameraIR,
+                                                   std::string(ip),
+                                                   rover_msgs::srv::CameraIR::Request::NIGHTMODE);
+        }
+    }
+}
+
+void QVideoPlayerWidget::setupIRModeBox(void)
+{
+    _ui.IRModeBox->addItem("Day");
+    _ui.IRModeBox->addItem("Night");
+    connect(_ui.IRModeBox, &QComboBox::currentIndexChanged, this, &QVideoPlayerWidget::onIRModeChanged);
+    _ui.IRModeBox->setCurrentIndex(0);
+}
+
+void QVideoPlayerWidget::setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_)
+{
+    _client_cameraIR = client_;
+    this->onIRModeChanged();
 }

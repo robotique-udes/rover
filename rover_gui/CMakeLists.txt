@@ -14,7 +14,7 @@ cmake_policy(SET CMP0079 NEW)
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
-find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg DBus)
+find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg DBus Charts)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 find_package(jsoncpp REQUIRED)
@@ -23,17 +23,8 @@ set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
 set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 
 set(CMAKE_AUTOMOC ON)
-set(CMAKE_AUTORCC ON)
-
-add_subdirectory(
-  ${CMAKE_CURRENT_SOURCE_DIR}/../deps/rover_lib
-  ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
-)
-
-ament_target_dependencies(rover_shared_libs
-  rclcpp
-  rover_msgs
-)
+set(CMAKE_AUTORCC ON) 
+set(CMAKE_AUTOUIC ON)
 
 include_directories(
   src
@@ -42,16 +33,11 @@ include_directories(
   ${GSTREAMER_INCLUDE_DIRS}
 )
 
-link_directories(${GSTREAMER_LIBRARY_DIRS})
-
-add_custom_command(
-  OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
-  COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
-  WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-  COMMENT "Generating UI files..."
+set(CMAKE_AUTOUIC_SEARCH_PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui
 )
 
-add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
+link_directories(${GSTREAMER_LIBRARY_DIRS})
 
 add_executable(main_gui
   src/gui.cpp
@@ -60,14 +46,21 @@ add_executable(main_gui
   src/QLogManager.cpp
   src/QScreenInhibitor.cpp
 
-  src/Global/Helpers/QHelpers.cpp
-  src/Global/Helpers/QToastNotification/QToastNotification.cpp
-  src/Global/Helpers/QToastNotification/QNotificationHistoryData.cpp
-  src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
-  src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.cpp
-  src/Global/Workers/QWorker.cpp
-  src/Global/QFlowLayout.cpp
-  src/Global/QTmpFolderManager.cpp
+                   src/MainWindow.cpp
+                   src/SecondaryWindow.cpp
+                   src/QLogManager.cpp
+                   src/QScreenInhibitor.cpp
+                  
+                   src/Global/Helpers/QHelpers.cpp
+                   src/Global/Helpers/QToastNotification/QToastNotification.cpp
+                   src/Global/Helpers/QToastNotification/QNotificationHistoryData.cpp
+                   src/Global/Helpers/QToastNotification/QNotificationShowHistory.cpp
+                   src/Global/Helpers/QSessionFolderManager/QSessionFolderManager.cpp
+                   src/Global/Workers/QWorker.cpp
+                   src/Global/QFlowLayout.cpp
+                   src/Global/QTmpFolderManager.cpp
+                   
+                   src/QArbitration/QArbitration.cpp
 
   src/QArbitration/QArbitration.cpp
 
@@ -94,17 +87,15 @@ add_executable(main_gui
   src/QUtilityBarBottom/QUtilityBarBottom.cpp
   src/QUtilityBarTop/QUtilityBarTop.cpp
 
-  src/QVideoPlayer/Worker/QGStreamerWorker.cpp
-  src/QVideoPlayer/QVideoManagerWidget.cpp
-  src/QVideoPlayer/QVideoPlayerWidget.cpp
-  src/QVideoPlayer/QVideoRecorderWidget.cpp
-  src/QVideoPlayer/Worker/QPlayerWorker.cpp
-  src/QVideoPlayer/Worker/QRecordingWorker.cpp
-  src/QVideoPlayer/Worker/QPanoramaWorker.cpp
+                   src/QBmsData/QBmsData.cpp
+                   src/QBmsData/QCellWidget.cpp
+                   src/QBmsData/QBattChart.cpp
 
-  src/Global/Constant/resources.qrc
-  ui/icons.qrc
-)
+                   src/Global/Constant/resources.qrc
+                   ui/icons.qrc
+                )
+                  
+add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui
   rclcpp
@@ -120,6 +111,7 @@ target_link_libraries(main_gui
   Qt6::WebEngineWidgets
   Qt6::WebChannel
   Qt6::DBus
+  Qt6::Charts
   ${LIBSSH_LIBRARY}
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs

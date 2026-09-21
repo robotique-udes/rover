@@ -314,6 +314,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
     if (_node)
     {
         _client_cameraControlManager = _node->create_client<rover_msgs::srv::CameraControl>(SERVICE_RECORDING_NAME);
+        _client_cameraIR = _node->create_client<rover_msgs::srv::CameraIR>(SERVICE_IR);
     }
     else
     {
@@ -324,6 +325,7 @@ void QVideoManagerWidget::initCameraControlClient(void)
     for (auto& widget : _videoPlaysWidgets)
     {
         widget->setCameraControlClientManager(_client_cameraControlManager);
+        widget->setCameraIRClient(_client_cameraIR);
     }
 
     _timer_clientCameraControlHealth = _node->create_wall_timer(

@@ -1,4 +1,5 @@
 #include <rclcpp/rclcpp.hpp>
+#include <rclcpp/qos.hpp>
 #include <chrono>
 
 #include <rover_msgs/msg/joy.hpp>
@@ -9,6 +10,7 @@
 
 class JoyDemux : public rclcpp::Node
 {
+  private:
     enum class eControllerType : uint8_t
     {
         MAIN = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
@@ -22,6 +24,9 @@ class JoyDemux : public rclcpp::Node
         ANTENNA = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
         NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
+
+    static constexpr std::chrono::milliseconds TELEOP_DEADLINE = std::chrono::milliseconds(200);
+    static constexpr std::chrono::milliseconds TELEOP_LEASE_DURATION = std::chrono::milliseconds(300);
 
   public:
     JoyDemux();
@@ -79,7 +84,16 @@ JoyDemux::JoyDemux():
                                                                      });
 
     _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", QOS_DEFAULT);
-    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", QOS_DEFAULT);
+
+    rclcpp::QoS teleopQos(rclcpp::KeepLast(1));
+    teleopQos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
+    teleopQos.durability(RMW_QOS_POLICY_DURABILITY_VOLATILE);
+    teleopQos.deadline(TELEOP_DEADLINE);
+    teleopQos.liveliness(RMW_QOS_POLICY_LIVELINESS_AUTOMATIC);
+    teleopQos.liveliness_lease_duration(TELEOP_LEASE_DURATION);
+
+    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", teleopQos);
+
     _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("antenna", QOS_DEFAULT);
     _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("demux_status", QOS_DEFAULT);
 

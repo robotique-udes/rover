@@ -10,6 +10,7 @@
 #include "QUtilityBarTop/QUtilityBarTop.hpp"
 #include "QDeviceStatus/QDeviceStatus.hpp"
 #include "QLightsController/QLightsController.hpp"
+#include "QBmsData/QBmsData.hpp"
 
 #include <QMainWindow>
 #include <QShortcut>
@@ -36,7 +37,7 @@ class MainWindow : public QMainWindow
     QTabWidget _mainTabWidget = QTabWidget(this);
 
     QUtilityBarTop _topUtilityBar;
-    QUtilityBarBottom _bottomUtilityBar = QUtilityBarBottom(this);
+    QUtilityBarBottom _bottomUtilityBar;
 
     QSideBar _sideBarWidget = QSideBar(this);
     QHelper::QNotificationShowHistory _notificationHistoryWidget;
@@ -46,6 +47,7 @@ class MainWindow : public QMainWindow
     QDeviceStatus _deviceStatusWidget;
     QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
     QLightsController _ligthsController;
+    QBmsData _bmsDataWidget;
 
     QFrame _topBarSeperator = QFrame(this);
     QFrame _bottomBarSeperator = QFrame(this);

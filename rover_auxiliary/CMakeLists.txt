@@ -16,6 +16,7 @@ find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(jsoncpp REQUIRED)
+find_package(CURL REQUIRED)
 
 add_subdirectory(
   ${CMAKE_CURRENT_SOURCE_DIR}/../deps/cpr
@@ -38,24 +39,32 @@ include_directories(
 )
 
 add_executable(ddb_control src/DDB/ddb_control_node.cpp)
-add_executable(camera_manager
-  src/CameraManager/manager_node.cpp
-  src/CameraManager/arbitration.cpp
-)
-add_executable(antenna
-  src/Antenna/antenna_node.cpp
-  src/Antenna/antenna_driver.cpp
-  src/Antenna/antenna_commands/base/get_status.cpp
-  src/Antenna/antenna_commands/base/get_interface_stats.cpp
-  src/Antenna/antenna_commands/base/login.cpp
-  src/Antenna/antenna_commands/base/validate_auth.cpp
-)
 
-ament_target_dependencies(ddb_control rclcpp rover_msgs rcl_interfaces)
+add_executable(bms_info src/BMS/bms_node.cpp)
+
+add_executable(camera_manager src/CameraManager/manager_node.cpp
+                      src/CameraManager/arbitration.cpp)
+                      
+add_executable(antenna src/Antenna/antenna_node.cpp
+                       src/Antenna/antenna_driver.cpp
+                       src/Antenna/antenna_commands/base/get_status.cpp
+                       src/Antenna/antenna_commands/base/get_interface_stats.cpp
+                       src/Antenna/antenna_commands/base/login.cpp
+                       src/Antenna/antenna_commands/base/validate_auth.cpp)
+
+
 target_link_libraries(ddb_control rover_shared_libs)
-target_include_directories(ddb_control PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
-)
+target_link_libraries(camera_manager rover_shared_libs CURL::libcurl)
+target_link_libraries(bms_info rover_shared_libs)
+target_link_libraries(antenna 
+                      rover_shared_libs
+                      jsoncpp_lib
+                      cpr::cpr)
+
+ament_target_dependencies(ddb_control
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
 
 ament_target_dependencies(camera_manager rclcpp rover_msgs rcl_interfaces)
 target_link_libraries(camera_manager rover_shared_libs ${OpenCV_LIBS})
@@ -63,15 +72,33 @@ target_include_directories(camera_manager PRIVATE
   $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
-ament_target_dependencies(antenna rclcpp rover_msgs rcl_interfaces)
-target_link_libraries(antenna rover_shared_libs jsoncpp_lib cpr::cpr)
-target_include_directories(antenna PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
-)
+ament_target_dependencies(bms_info
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
+ament_target_dependencies(antenna
+                          rclcpp
+                          rover_msgs
+                          rcl_interfaces)
+
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
-install(TARGETS ddb_control camera_manager antenna
-  DESTINATION lib/${PROJECT_NAME})
+install(TARGETS
+        ddb_control
+        DESTINATION lib/${PROJECT_NAME})
+        
+install(TARGETS
+        camera_manager
+        DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+        antenna
+        DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+        bms_info
+        DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

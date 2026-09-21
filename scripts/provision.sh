@@ -19,6 +19,7 @@ sudo apt -y install qt6-base-dev
 sudo apt -y install qt6-tools-dev
 sudo apt -y install qt6-webengine-dev
 sudo apt -y install qt6-webengine-dev-tools
+sudo apt -y install libqt6charts6-dev
 sudo apt -y install libqt6svg6-dev
 sudo apt -y install libqt6webenginecore6-bin
 sudo apt -y install python3-gi

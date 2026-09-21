@@ -1,1 +1,0 @@
-float32 state_of_charge
