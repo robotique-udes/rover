@@ -24,7 +24,7 @@ jobs:
 
     steps:
       - name: Checkout code
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           submodules: recursive
 
@@ -63,11 +63,17 @@ jobs:
         shell: bash
         run: |
           source /opt/ros/jazzy/setup.bash
-          # List packages, skipping anything under deps/
           pkgs=$(colcon list | awk -F'\t' '$2 !~ /^(\.\/)?deps\// {print $1}')
           echo "Running clang-tidy on: $pkgs"
+
+          fail=0
           for pkg in $pkgs; do
             if [ -f build/$pkg/compile_commands.json ]; then
-              ament_clang_tidy --config .clang-tidy build/$pkg
+              if ! ament_clang_tidy --config .clang-tidy build/$pkg; then
+                echo "clang-tidy failed for $pkg"
+                fail=1
+              fi
             fi
           done
+
+          exit $fail
