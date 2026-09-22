@@ -17,12 +17,12 @@ jobs:
 
     steps:
       - name: Checkout rover repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           path: rover
 
       - name: Checkout rover_micro repo
-        uses: actions/checkout@v4
+        uses: actions/checkout@v7
         with:
           repository: 'robotique-udes/rover_micro'
           path: rover_micro
