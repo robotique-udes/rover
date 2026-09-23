@@ -30,7 +30,7 @@ class ArucoDetectionNode : public rclcpp::Node
                 const std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>& response_);
     bool startDetection(const std::string& URL_);
     bool stopDetection(const std::string& URL_);
-    void infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_);
+    void infoDetection(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>& response_);
 
     bool _debugMode = false;
     uint8_t _nbrOngoingDetection = 0;

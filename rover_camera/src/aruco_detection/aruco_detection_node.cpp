@@ -171,7 +171,7 @@ bool ArucoDetectionNode::stopDetection(const std::string& URL_)
     return true;
 }
 
-void ArucoDetectionNode::infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
+void ArucoDetectionNode::infoDetection(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>& response_)
 {
     std::lock_guard lock(_detectedArucosMutex);
 

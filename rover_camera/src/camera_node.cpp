@@ -409,7 +409,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
                                             std::move(filename_),
                                             std::move(cameraURL_),
                                             this->get_logger(),
-                                            [this](std::string url_)
+                                            [this](const std::string& url_)
                                             {
                                                 this->requestShutdown(url_);
                                             }));
