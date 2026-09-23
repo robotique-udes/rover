@@ -11,6 +11,7 @@
 #include "QDeviceStatus/QDeviceStatus.hpp"
 #include "QLightsController/QLightsController.hpp"
 #include "QBmsData/QBmsData.hpp"
+#include "QScience/QScience.hpp"
 
 #include <QMainWindow>
 #include <QShortcut>
@@ -48,6 +49,7 @@ class MainWindow : public QMainWindow
     QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
     QLightsController _ligthsController;
     QBmsData _bmsDataWidget;
+    QScience _scienceWidget;
 
     QFrame _topBarSeperator = QFrame(this);
     QFrame _bottomBarSeperator = QFrame(this);

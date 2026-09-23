@@ -61,15 +61,17 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
 
 void QArbitration::initComboBoxItems()
 {
-    this->_ui.mainComboBox->addItem("Drive Train", 0);
-    this->_ui.mainComboBox->addItem("Arm", 1);
-    this->_ui.mainComboBox->addItem("Antenna", 2);
-    this->_ui.mainComboBox->addItem("None", 3);
+    this->_ui.mainComboBox->addItem("Drive Train", rover_msgs::srv::JoyDemuxSetState::Request::DEST_DRIVE_TRAIN);
+    this->_ui.mainComboBox->addItem("Arm", rover_msgs::srv::JoyDemuxSetState::Request::DEST_ARM);
+    this->_ui.mainComboBox->addItem("Antenna", rover_msgs::srv::JoyDemuxSetState::Request::DEST_ANTENNA);
+    this->_ui.mainComboBox->addItem("Science", rover_msgs::srv::JoyDemuxSetState::Request::DEST_SCIENCE);
+    this->_ui.mainComboBox->addItem("None", rover_msgs::srv::JoyDemuxSetState::Request::DEST_NONE);
 
-    this->_ui.secComboBox->addItem("Drive Train", 0);
-    this->_ui.secComboBox->addItem("Arm", 1);
-    this->_ui.secComboBox->addItem("Antenna", 2);
-    this->_ui.secComboBox->addItem("None", 3);
+    this->_ui.secComboBox->addItem("Drive Train", rover_msgs::srv::JoyDemuxSetState::Request::DEST_DRIVE_TRAIN);
+    this->_ui.secComboBox->addItem("Arm", rover_msgs::srv::JoyDemuxSetState::Request::DEST_ARM);
+    this->_ui.secComboBox->addItem("Antenna", rover_msgs::srv::JoyDemuxSetState::Request::DEST_ANTENNA);
+    this->_ui.secComboBox->addItem("Science", rover_msgs::srv::JoyDemuxSetState::Request::DEST_SCIENCE);
+    this->_ui.secComboBox->addItem("None", rover_msgs::srv::JoyDemuxSetState::Request::DEST_NONE);
 
     this->_ui.driveTrainComboBox->addItem("None", 0);
     this->_ui.driveTrainComboBox->addItem("Teleop", 1);

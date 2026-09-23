@@ -1,10 +1,10 @@
 <?xml version="1.0"?>
 <?xml-model href="http://download.ros.org/schema/package_format3.xsd" schematypens="http://www.w3.org/2001/XMLSchema"?>
 <package format="3">
-  <name>rover_arm</name>
+  <name>rover_science</name>
   <version>0.0.0</version>
   <description>
-    rover_arm pkg contains teleop node for arm controls
+    rover_drive_train pkg contains teleop node
   </description>
   <maintainer email="save1403@usherbrooke.ca">emile</maintainer>
   <maintainer email="micp1402@usherbrooke.ca">phil</maintainer>
@@ -19,7 +19,6 @@
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
   <depend>joy</depend>
-  <depend>Eigen</depend>
   <depend>rover_msgs</depend>
   <depend>rover_joy</depend>
 
