@@ -21,13 +21,13 @@ class BmsPublisher : public rclcpp::Node
     {
         auto msg = rover_msgs::msg::BmsData();
 
-        msg.battery_amps = static_cast<int16_t>(5.0f + 10.0f * static_cast<float>(std::sin(_tick * 0.05)) * -100);
+        msg.battery_amps = static_cast<int16_t>(5.0f + 10.0f * static_cast<float>(std::sin(static_cast<double>(_tick) * 0.05)) * -100);
         msg.state_of_charge = 40;
 
         const std::size_t NUM_CELLS = 6;
         for (std::size_t i = 0; i < NUM_CELLS; ++i)
         {
-            msg.cell_volt[i] = static_cast<uint16_t>(3700 + 500 * std::sin(_tick * 0.03 + static_cast<double>(i) * 0.5));
+            msg.cell_volt[i] = static_cast<uint16_t>(3700 + 500 * std::sin(static_cast<double>(_tick) * 0.03 + static_cast<double>(i) * 0.5));
         }
 
         msg.valid = true;
