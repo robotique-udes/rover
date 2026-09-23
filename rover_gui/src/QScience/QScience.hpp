@@ -15,7 +15,7 @@
 
 #include <vector>
 
-//QT_CHARTS_USE_NAMESPACE
+// QT_CHARTS_USE_NAMESPACE
 
 class QScience : public QWidget
 {
@@ -26,7 +26,7 @@ class QScience : public QWidget
     static constexpr const char* SENSORS_FILE_PATH = "/sensorsData.csv";
     static constexpr int MAX_POINTS_X = 200;
     static constexpr int MAX_POINTS_Y = 10000;
-    static constexpr double SAMPLING_RATE_SENSORS = 20.0; // Hz
+    static constexpr double SAMPLING_RATE_SENSORS = 20.0;  // Hz
 
   public:
     QScience(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
@@ -46,7 +46,6 @@ class QScience : public QWidget
     void appendSensorData(quint32 sampleIdx_, quint16 s1_, quint16 s2_, quint16 s3_);
 
   private:
-
     std::shared_ptr<rclcpp::Node> _node;
     Ui::Science _ui;
 
