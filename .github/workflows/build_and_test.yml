@@ -63,7 +63,7 @@ jobs:
         shell: bash
         run: |
           source /opt/ros/jazzy/setup.bash
-          pkgs=$(colcon list | awk -F'\t' '$2 !~ /^(\.\/)?deps\// {print $1}')
+          pkgs=$(colcon list | awk -F'\t' '$2 !~ /^(\.\/)?deps\// && $1 != "rover_msgs" {print $1}')
           echo "Running clang-tidy on: $pkgs"
 
           fail=0

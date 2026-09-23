@@ -22,8 +22,8 @@ CameraNode::CameraNode():
 {
     _srv_control = this->create_service<rover_msgs::srv::CameraControl>(
         SERVICE_MEDIA_SERVER_NAME,
-        [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request> request_,
-               std::shared_ptr<rover_msgs::srv::CameraControl::Response> response_)
+        [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request>& request_,
+               const std::shared_ptr<rover_msgs::srv::CameraControl::Response>&  response_)
         {
             if (!request_ || !response_)
             {
@@ -61,10 +61,6 @@ void CameraNode::controlIPCam(const rover_msgs::srv::CameraControl::Request& req
                  request_.camera_url.c_str(),
                  request_.capture_name.c_str(),
                  request_.command);
-
-    std::string folderPath;
-    std::string captureName;
-    std::string cameraURL = request_.camera_url;
 
     switch (request_.command)
     {
@@ -208,7 +204,7 @@ void CameraNode::stopRecordingLogic(const rover_msgs::srv::CameraControl::Reques
  * @param fileType_ Whether it is a screenshot or a video
  * @return std::string of the complete filename
  */
-std::string CameraNode::getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_)
+std::string CameraNode::getFileName(const std::string& capture_name_, const std::string& camURL_, eFileFormatNameTypes fileType_)
 {
     std::string filename;
 
@@ -285,7 +281,7 @@ std::optional<std::string> CameraNode::getFolderPath(const std::string& basePath
  * @return true if succesfully taken a screenshot.
  * @return false if unsuccesful in its task
  */
-sScreenshotResult CameraNode::getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_)
+sScreenshotResult CameraNode::getScreenshot(const std::string& screenshotFolderPath_, const std::string& filename_, const std::string& cameraURL_)
 {
     sScreenshotResult result{false, ""};
     std::string captureName = screenshotFolderPath_ + "/" + filename_;
@@ -366,7 +362,7 @@ sScreenshotResult CameraNode::getScreenshot(std::string screenshotFolderPath_, s
  * @return true if successfully stopped the recording.
  * @return false if unsuccesful
  */
-bool CameraNode::stopRecording(std::string cameraURL_)
+bool CameraNode::stopRecording(const std::string& cameraURL_)
 {
     {
         std::lock_guard<std::mutex> lock(_recordingMapMutex);
@@ -409,9 +405,9 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
         else
         {
             _recordingMap.emplace(cameraURL_,
-                                  Recording(videoFolderPath_,
-                                            filename_,
-                                            cameraURL_,
+                                  Recording(std::move(videoFolderPath_),
+                                            std::move(filename_),
+                                            std::move(cameraURL_),
                                             this->get_logger(),
                                             [this](std::string url_)
                                             {
@@ -457,7 +453,7 @@ void CameraNode::callbackPosition(const rover_msgs::msg::Gps& gps_message_)
  *        This function is passed as a callback function to the recording class
  * @param camURL_ key for the hashmap
  */
-void CameraNode::requestShutdown(std::string camURL_)
+void CameraNode::requestShutdown(const std::string& camURL_)
 {
     RCLCPP_WARN(this->get_logger(), "Received shutdown request for %s", camURL_.c_str());
 
@@ -503,7 +499,7 @@ void CameraNode::videoWatchDogFunction(void)
             }
             else
             {
-                for (std::string url : _recordingShutdownRequestSet)
+                for (const std::string& url : _recordingShutdownRequestSet)
                 {
                     RCLCPP_WARN(this->get_logger(), "Processing Shutdown for %s", url.c_str());
                     if (_recordingMap.find(url) != _recordingMap.end())

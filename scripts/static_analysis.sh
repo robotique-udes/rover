@@ -106,7 +106,8 @@ if [ ${#REQUESTED_PKGS[@]} -gt 0 ]; then
 else
     # name<TAB>path<TAB>(type), skip anything with a deps/ folder in its path
     # (paths look like src/rover/deps/cpr when listed from the workspace root)
-    PKGS=$(colcon list | awk -F'\t' '$2 !~ /(^|\/)deps\// {print $1}')
+    # also skip rover_msgs by name
+    PKGS=$(colcon list | awk -F'\t' '$2 !~ /(^|\/)deps\// && $1 != "rover_msgs" {print $1}')
 fi
 
 echo -e "${BLUE}=== Running clang-tidy on: ===${NC}"

@@ -26,8 +26,8 @@ class ArucoDetectionNode : public rclcpp::Node
 
     void CB_arucoPublisher(void);
     void CB_arucoDetection(void);
-    void CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
-                std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_);
+    void CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request>& request_,
+                const std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>& response_);
     bool startDetection(const std::string& URL_);
     bool stopDetection(const std::string& URL_);
     void infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_);
