@@ -130,8 +130,8 @@ std::optional<cv::Mat> PanoramaProcessor::warpCorrection(const cv::Mat& pano, ro
     const int width = pano.cols;
     const int height = pano.rows;
 
-    const int marginX = static_cast<int>(width * CROP_PERCENT);
-    const int marginY = static_cast<int>(height * CROP_PERCENT);
+    const int marginX = static_cast<int>(static_cast<float>(width) * CROP_PERCENT);
+    const int marginY = static_cast<int>(static_cast<float>(height) * CROP_PERCENT);
 
     const int cropWidth = std::max(1, width - 2 * marginX);
     const int cropHeight = std::max(1, height - 2 * marginY);

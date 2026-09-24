@@ -5,8 +5,8 @@ PanoramaManager::PanoramaManager():
 {
     _srv_panorama
         = this->create_service<rover_msgs::srv::Panorama>(PANORAMA_SERVICE_NAME,
-                                                          [this](const rover_msgs::srv::Panorama::Request::SharedPtr request_,
-                                                                 const rover_msgs::srv::Panorama::Response::SharedPtr response_)
+                                                          [this](const rover_msgs::srv::Panorama::Request::SharedPtr& request_,
+                                                                 const rover_msgs::srv::Panorama::Response::SharedPtr& response_)
                                                           {
                                                               this->CB_srvPanorama(*request_, *response_);
                                                           });
