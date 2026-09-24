@@ -51,7 +51,9 @@ class CameraNode : public rclcpp::Node
     std::string getFileName(const std::string& capture_name_, const std::string& camURL_, eFileFormatNameTypes fileType_);
     std::optional<std::string> getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
     void callbackPosition(const rover_msgs::msg::Gps& gps_message_);
-    sScreenshotResult getScreenshot(const std::string& screenshotFolderPath_, const std::string& filename_, const std::string& cameraURL_);
+    sScreenshotResult getScreenshot(const std::string& screenshotFolderPath_,
+                                    const std::string& filename_,
+                                    const std::string& cameraURL_);
 
     bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
     bool stopRecording(const std::string& cameraURL_);

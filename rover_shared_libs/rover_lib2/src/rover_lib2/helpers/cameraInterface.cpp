@@ -152,12 +152,13 @@ void CameraInterface::initTimers()
 
 void CameraInterface::initSub()
 {
-    _sub_powerStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
-                                                                                  QOS_CAMERA,
-                                                                                  [this](const rover_msgs::msg::CameraControl& msg_)
-                                                                                  {
-                                                                                      this->CB_subscriberPowerStatus(msg_);
-                                                                                  });
+    _sub_powerStatus
+        = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
+                                                                     QOS_CAMERA,
+                                                                     [this](const rover_msgs::msg::CameraControl& msg_)
+                                                                     {
+                                                                         this->CB_subscriberPowerStatus(msg_);
+                                                                     });
 
     _sub_PTZStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
                                                                                 QOS_CAMERA,

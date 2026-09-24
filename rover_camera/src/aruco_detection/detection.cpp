@@ -40,7 +40,11 @@ void Detection::update(bool debugMode_)
         return;
     }
 
-    std::vector<uint16_t> detectedIds = detectionResult.value();
+    if (!detectionResult)
+    {
+        return;
+    }
+    std::vector<uint16_t> detectedIds = *detectionResult;
     for (auto it = _validation.begin(); it != _validation.end();)
     {
         uint16_t id = it->first;

@@ -23,7 +23,7 @@ CameraNode::CameraNode():
     _srv_control = this->create_service<rover_msgs::srv::CameraControl>(
         SERVICE_MEDIA_SERVER_NAME,
         [this](const std::shared_ptr<rover_msgs::srv::CameraControl::Request>& request_,
-               const std::shared_ptr<rover_msgs::srv::CameraControl::Response>&  response_)
+               const std::shared_ptr<rover_msgs::srv::CameraControl::Response>& response_)
         {
             if (!request_ || !response_)
             {
@@ -281,7 +281,9 @@ std::optional<std::string> CameraNode::getFolderPath(const std::string& basePath
  * @return true if succesfully taken a screenshot.
  * @return false if unsuccesful in its task
  */
-sScreenshotResult CameraNode::getScreenshot(const std::string& screenshotFolderPath_, const std::string& filename_, const std::string& cameraURL_)
+sScreenshotResult CameraNode::getScreenshot(const std::string& screenshotFolderPath_,
+                                            const std::string& filename_,
+                                            const std::string& cameraURL_)
 {
     sScreenshotResult result{false, ""};
     std::string captureName = screenshotFolderPath_ + "/" + filename_;

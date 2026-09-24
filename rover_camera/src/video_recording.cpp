@@ -43,10 +43,10 @@ Recording::Recording(Recording&& other) noexcept:
     _frameWidth(other._frameWidth),
     _frameHeight(other._frameHeight),
     _fps(other._fps),
-    rLogger(other.rLogger), // NOLINT(performance-move-constructor-init)
-    _cap(std::move(other._cap)), // NOLINT(performance-move-const-arg)
-    _video_writer_short(std::move(other._video_writer_short)), // NOLINT(performance-move-const-arg)
-    _video_writer_long(std::move(other._video_writer_long)), // NOLINT(performance-move-const-arg)
+    rLogger(other.rLogger),                                     // NOLINT(performance-move-constructor-init)
+    _cap(std::move(other._cap)),                                // NOLINT(performance-move-const-arg)
+    _video_writer_short(std::move(other._video_writer_short)),  // NOLINT(performance-move-const-arg)
+    _video_writer_long(std::move(other._video_writer_long)),    // NOLINT(performance-move-const-arg)
     _frame(std::move(other._frame))
 {
     _stopRecording.store(other._stopRecording.load());  // cannot move atomic
@@ -58,7 +58,7 @@ Recording::Recording(Recording&& other) noexcept:
  * @param other Recording object
  * @return Recording&
  */
-Recording& Recording::operator=(Recording&& other) noexcept 
+Recording& Recording::operator=(Recording&& other) noexcept
 {  // move operator just to be safe
     if (this != &other)
     {  // Prevent self-assignment
@@ -81,9 +81,9 @@ Recording& Recording::operator=(Recording&& other) noexcept
         _fps = other._fps;
         rLogger = other.rLogger;
 
-        _video_writer_long = std::move(other._video_writer_long); // NOLINT(performance-move-const-arg)
-        _cap = std::move(other._cap);  // NOLINT(performance-move-const-arg)
-        _video_writer_short = std::move(other._video_writer_short); // NOLINT(performance-move-const-arg)
+        _video_writer_long = std::move(other._video_writer_long);    // NOLINT(performance-move-const-arg)
+        _cap = std::move(other._cap);                                // NOLINT(performance-move-const-arg)
+        _video_writer_short = std::move(other._video_writer_short);  // NOLINT(performance-move-const-arg)
         _frame = std::move(other._frame);
     }
     return *this;

@@ -24,7 +24,8 @@ eAntennaCode Command::Base::GetInterfaceStats::execute(void)
     return result;
 }
 
-eAntennaCode Command::Base::GetInterfaceStats::getHTTPS(const std::shared_ptr<cpr::Session>& session_, cpr::Response& response_) const
+eAntennaCode Command::Base::GetInterfaceStats::getHTTPS(const std::shared_ptr<cpr::Session>& session_,
+                                                        cpr::Response& response_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + IFSTATS_PAGE});
     response_ = session_->Get();

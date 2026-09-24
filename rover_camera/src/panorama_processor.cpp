@@ -14,9 +14,9 @@ const rclcpp::Logger PanoramaProcessor::LOGGER = rclcpp::get_logger("PanoramaMan
 PanoramaProcessor::PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,
                                      Constants::CameraInfo::eCamNames id_,
                                      std::shared_ptr<CameraInterface> cameraInterface_):
-    _node(node_),
+    _node(std::move(node_)),
     _id(id_),
-    _cameraInterface(cameraInterface_)
+    _cameraInterface(std::move(cameraInterface_))
 {
 }
 
@@ -130,8 +130,8 @@ std::optional<cv::Mat> PanoramaProcessor::warpCorrection(const cv::Mat& pano, ro
     const int width = pano.cols;
     const int height = pano.rows;
 
-    const int marginX = width * CROP_PERCENT;
-    const int marginY = height * CROP_PERCENT;
+    const int marginX = static_cast<int>(width * CROP_PERCENT);
+    const int marginY = static_cast<int>(height * CROP_PERCENT);
 
     const int cropWidth = std::max(1, width - 2 * marginX);
     const int cropHeight = std::max(1, height - 2 * marginY);
