@@ -218,7 +218,7 @@ namespace RoverCan2::Constant
 
     namespace LedPatterns
     {
-        constexpr LED::BlinkingPattern DRIVER_NOT_STARTED = LED::BlinkPatterns::OFF;
+        constexpr LED::BlinkingPattern<1UL> DRIVER_NOT_STARTED = {LED::BlinkPatterns::OFF};
         constexpr LED::BlinkingPattern<4UL> RUNNING_OK = {LED::BlinkPatternStep(50UL, 100U),
                                                           LED::BlinkPatternStep(50UL, 25U),
                                                           LED::BlinkPatternStep(50UL, 100U),
@@ -240,7 +240,7 @@ namespace RoverCan2::Constant
                                                              LED::BlinkPatternStep(50UL, 0U),
                                                              LED::BlinkPatternStep(50UL, 100U),
                                                              LED::BlinkPatternStep(50UL, 0U)};
-        constexpr LED::BlinkingPattern WATCHDOG_TRIGGER = TX_QUEUE_FULL;
+        constexpr LED::BlinkingPattern<8UL> WATCHDOG_TRIGGER = TX_QUEUE_FULL;
     }  // namespace LedPatterns
 
 }  // namespace RoverCan2::Constant
