@@ -21,7 +21,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
   public:
-    explicit MainWindow(std::shared_ptr<rclcpp::Node> guiNode_);
+    explicit MainWindow(const rclcpp::Node::SharedPtr& guiNode_);
 
   private slots:
     void onTabChange(QSideBar::eTabIndex index_);

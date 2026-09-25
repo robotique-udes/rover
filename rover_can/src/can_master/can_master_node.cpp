@@ -13,12 +13,13 @@ CanMasterNode::CanMasterNode():
     Node("CanMasterNode")
 {
     _pub_canDeviceErrorState = this->create_publisher<rover_msgs::msg::CanDeviceStatus>(TOPIC_NAME_CAN_DEVICE_STATUS, 1);
-    _srv_canDeviceErrorStateRequest = this->create_service<rover_msgs::srv::Empty>(
-        SERVICE_NAME_ERROR_STATE,
-        [this](rover_msgs::srv::Empty::Request::SharedPtr request_, rover_msgs::srv::Empty::Response::SharedPtr response_)
-        {
-            this->CB_ROS_canDeviceErrorStateRequest(request_, response_);
-        });
+    _srv_canDeviceErrorStateRequest
+        = this->create_service<rover_msgs::srv::Empty>(SERVICE_NAME_ERROR_STATE,
+                                                       [this](const rover_msgs::srv::Empty::Request::SharedPtr& request_,
+                                                              const rover_msgs::srv::Empty::Response::SharedPtr& response_)
+                                                       {
+                                                           this->CB_ROS_canDeviceErrorStateRequest(request_, response_);
+                                                       });
 
     _timerUpdateCan = this->create_wall_timer(std::chrono::milliseconds(CAN_DRIVER_UPDATE_PERIOD_MS),
                                               [this](void)
@@ -44,8 +45,8 @@ void CanMasterNode::CB_updateCan(void)
     _canManager.update();
 }
 
-void CanMasterNode::CB_ROS_canDeviceErrorStateRequest(rover_msgs::srv::Empty::Request::SharedPtr,
-                                                      rover_msgs::srv::Empty::Response::SharedPtr response_)
+void CanMasterNode::CB_ROS_canDeviceErrorStateRequest(const rover_msgs::srv::Empty::Request::SharedPtr& /*_request*/,
+                                                      const rover_msgs::srv::Empty::Response::SharedPtr& response_)
 {
     if (!response_)
     {

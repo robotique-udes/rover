@@ -30,28 +30,28 @@ class CameraTestPub : public rclcpp::Node
             return;
         }
 
-        double targetYaw = PTZcmd_.yaw;
+        float targetYaw = PTZcmd_.yaw;
 
         if (targetYaw < currentYaw)
         {
-            if (currentYaw - targetYaw < 0.15)
+            if (currentYaw - targetYaw < 0.15F)
             {
-                currentYaw -= 0.05;
+                currentYaw -= 0.05F;
             }
             else
             {
-                currentYaw -= 0.1;
+                currentYaw -= 0.1F;
             }
         }
         else if (targetYaw > currentYaw)
         {
-            if (targetYaw - currentYaw < 0.15)
+            if (targetYaw - currentYaw < 0.15F)
             {
-                currentYaw += 0.05;
+                currentYaw += 0.05F;
             }
             else
             {
-                currentYaw += 0.1;
+                currentYaw += 0.1F;
             }
         }
 
@@ -64,7 +64,7 @@ class CameraTestPub : public rclcpp::Node
     rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _publisher;
     rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr _subscriber;
 
-    double currentYaw = 0;
+    float currentYaw = 0;
 };
 
 int main(int argc, char* argv[])

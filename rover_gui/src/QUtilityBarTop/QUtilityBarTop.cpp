@@ -189,9 +189,9 @@ void QUtilityBarTop::onTimerDisplay(void)
     emit this->updateTimer(secondsBeforeTimeout);
 }
 
-void QUtilityBarTop::onUpdateBatteryUI(float _percent)
+void QUtilityBarTop::onUpdateBatteryUI(int16_t _percent)
 {
-    _ui.batteryLabel->setText(QString::number(static_cast<float>(std::round(_percent))) + " %");
+    _ui.batteryLabel->setText(QString::number(_percent) + " %");
     QIcon icon;
 
     if (_percent >= 85)

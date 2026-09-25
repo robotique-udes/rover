@@ -37,8 +37,8 @@ class CanMasterNode : public rclcpp::Node
 
   private:
     void CB_updateCan(void);
-    void CB_ROS_canDeviceErrorStateRequest(rover_msgs::srv::Empty::Request::SharedPtr,
-                                           rover_msgs::srv::Empty::Response::SharedPtr response_);
+    void CB_ROS_canDeviceErrorStateRequest(const rover_msgs::srv::Empty::Request::SharedPtr& /*request_*/,
+                                           const rover_msgs::srv::Empty::Response::SharedPtr& response_);
     void CB_CAN_errorStateRecv(RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& canMsg_);
 
     bool _nodeAttachedToDevices = false;

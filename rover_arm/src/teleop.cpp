@@ -26,7 +26,7 @@ class Teleop : public rclcpp::Node
     static constexpr std::chrono::milliseconds TELEOP_LEASE_DURATION = std::chrono::milliseconds(300);
 
   public:
-    enum class eControlMode : size_t
+    enum class eControlMode : uint8_t
     {
         JOINT = 0,
         CARTESIAN = 1

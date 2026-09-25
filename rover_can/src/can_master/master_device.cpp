@@ -11,8 +11,8 @@ void MasterDevice::attachNode(std::shared_ptr<rclcpp::Node> node_)
         this->detachNode();
     }
 
-    _rosNode = node_;
-    ASSERT_COND_MSG(_rosNode, "Node can't be nullptr");
+    ASSERT_COND_MSG(node_, "Node can't be nullptr");
+    _rosNode = std::move(node_);
 
     this->rosElementInit();
 
