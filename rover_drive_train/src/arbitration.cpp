@@ -180,7 +180,9 @@ void Arbitration::cbTimerSendStatus(void) const
     _pubArbitrationStatus->publish(_arbitration);
 }
 
-void Arbitration::cbHB(const std_msgs::msg::Empty /*msg_*/, bool& HBLostVar_, const rclcpp::TimerBase::SharedPtr& HBWatchdogTimer_)
+void Arbitration::cbHB(const std_msgs::msg::Empty /*msg_*/,
+                       bool& HBLostVar_,
+                       const rclcpp::TimerBase::SharedPtr& HBWatchdogTimer_)
 {
     HBLostVar_ = false;
     HBWatchdogTimer_->reset();
