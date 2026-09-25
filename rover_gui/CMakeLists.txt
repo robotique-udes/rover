@@ -108,7 +108,7 @@ function(suppress_autogen_clang_tidy_warnings target)
   if(_automoc)
     file(GENERATE
       OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}_autogen/.clang-tidy"
-      CONTENT "InheritParentConfig: true\nChecks: '-bugprone-suspicious-include'\n"
+      CONTENT "Checks: '-*'\nHeaderFilterRegex: ''\n"
     )
   endif()
 endfunction()
