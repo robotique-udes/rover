@@ -11,7 +11,7 @@ ArmJoint::ArmJoint(RoverCan2::Constant::eDeviceId deviceId_,
             RoverCan2::SubscriberMember(*this, &ArmJoint::CB_CAN_armAdvancedStatus),
             RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>()),
     _rosArmSpeedMsgId(rosArmSpeedMsgId_),
-    _rosSharedMsg(rosSharedMsg_)
+    _rosSharedMsg(std::move(rosSharedMsg_))
 {
     ASSERT_COND_MSG(_rosSharedMsg, "rosSharedMsg_ can't be nullptr");
 }
@@ -36,8 +36,8 @@ void ArmJoint::rosElementInit(void)
                                                                                 });
     _srv_ArmJointsConfig = this->getAttachedNode()->create_service<rover_msgs::srv::ArmJointConfig>(
         ARM_JOINTS_CONFIG_SERVICE_NAME,
-        [this](const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
-               std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_)
+        [this](const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request>& request_,
+               const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response>& response_)
         {
             this->CB_SRV_armJointsConfig(request_, response_);
         });
@@ -88,8 +88,8 @@ void ArmJoint::CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_)
     _nextArmCmdMsg.data().targetSpeed = rosMsg_.target_speed[_rosArmSpeedMsgId];
 }
 
-void ArmJoint::CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
-                                      std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_)
+void ArmJoint::CB_SRV_armJointsConfig(const rover_msgs::srv::ArmJointConfig::Request::ConstSharedPtr& request_,
+                                      const rover_msgs::srv::ArmJointConfig::Response::SharedPtr& response_)
 {
     if (std::find(VALID_IDS.begin(), VALID_IDS.end(), request_->can_id) == VALID_IDS.end())
     {

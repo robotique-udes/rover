@@ -54,8 +54,8 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     void CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmJointStatus& msg_);
     void CB_CAN_armAdvancedStatus(const RoverCan2::Msgs::ArmJointAdvancedStatus& msg_);
     void CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_);
-    void CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
-                                std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_);
+    void CB_SRV_armJointsConfig(const rover_msgs::srv::ArmJointConfig::Request::ConstSharedPtr& request_,
+                                const rover_msgs::srv::ArmJointConfig::Response::SharedPtr& response_);
     void CB_ROS_canSend(void);
 
     const uint8_t _rosArmSpeedMsgId;
