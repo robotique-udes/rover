@@ -38,6 +38,7 @@ class QVideoManagerWidget : public QWidget
     static constexpr const char* CAMERA_POWER_TOPIC_GUI = "/rover/camera/power_cmd/GUI";
     static constexpr const char* CAMERA_STATUS_TOPIC = "/rover/camera/PTZ_status";
     static constexpr const char* SERVICE_PANORAMA_NAME = "/rover/video/panorama";
+    static constexpr const char* SERVICE_IR = "/rover/camera/IR";
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 5000U;
     static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 50U;
@@ -133,6 +134,8 @@ class QVideoManagerWidget : public QWidget
     rclcpp::TimerBase::SharedPtr _timer_clientCameraControlHealth;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramique;
+
+    rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr _client_cameraIR;
 
     std::array<std::unique_ptr<QVideoPlayerWidget>, NBR_CAM_TO_TRACK> _videoPlaysWidgets;
 };

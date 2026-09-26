@@ -71,7 +71,7 @@ namespace ARM_CONFIGURATION
         {
             constexpr float x = 0.0F;
             constexpr float y = 0.0F;
-            constexpr float z = 0.41F;
+            constexpr float z = 0.309F;
         }  // namespace LEN
     }  // namespace J1
 

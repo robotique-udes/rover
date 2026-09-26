@@ -14,6 +14,7 @@ find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(jsoncpp REQUIRED)
+find_package(CURL REQUIRED)
 
 add_subdirectory(../deps/cpr cpr_build)
 add_subdirectory(../rover_shared_libs/ .build)
@@ -37,7 +38,7 @@ add_executable(antenna src/Antenna/antenna_node.cpp
 
 
 target_link_libraries(ddb_control rover_shared_libs)
-target_link_libraries(camera_manager rover_shared_libs)
+target_link_libraries(camera_manager rover_shared_libs CURL::libcurl)
 target_link_libraries(bms_info rover_shared_libs)
 target_link_libraries(antenna 
                       rover_shared_libs

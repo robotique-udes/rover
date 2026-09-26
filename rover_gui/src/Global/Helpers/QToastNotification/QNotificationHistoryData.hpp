@@ -3,7 +3,7 @@
 
 #include "rclcpp/rclcpp.hpp"
 #include "QToastNotification.hpp"
-#include "UI_NotificationHistory.h"
+#include "ui_NotificationHistory.h"
 
 #include <mutex>
 #include <QtWidgets/QWidget>

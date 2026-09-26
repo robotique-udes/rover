@@ -94,9 +94,18 @@ QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
 
+    this->setupIRModeBox();
+
+    const QSignalBlocker blocker(_ui.rtspComboBox);
+
     for (uint16_t i = 0; i < NBR_IDS_TO_DISPLAY; i++)
     {
-        _ui.rtspComboBox->addItem(Constants::CameraInfo::CAMERA_INFO[i][1]);
+        _ui.rtspComboBox->addItem(
+            Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::NAME)]);
+        if (Constants::CameraInfo::CAMERA_INFO[i][std::to_underlying(Constants::CameraInfo::eInfoType::URL)] == _camURL)
+        {
+            _ui.rtspComboBox->setCurrentIndex(static_cast<int>(i));
+        }
     }
 
     this->setPlayerState(ePlayerState::NOT_CONNECTED);
@@ -494,8 +503,15 @@ void QVideoPlayerWidget::onToggleView(void)
 
 void QVideoPlayerWidget::onUrlTextChanged(const QString& text_)
 {
-    bool isValid = this->validateRtspUrl(text_);
+    std::optional<std::string> urlString = Constants::CameraInfo::getURLFromId(text_.toStdString());
+    QString url = QString::fromStdString(urlString.value_or(DEFAULT_URL));
+    bool isValid = this->validateRtspUrl(url);
     this->updateUrlValidationUI(isValid);
+
+    if (isValid)
+    {
+        startStream(url);
+    }
 
     if (_state == ePlayerState::CONNECTION_FAILED && isValid)
     {
@@ -636,7 +652,8 @@ void QVideoPlayerWidget::onReconnectTimer(void)
     {
         if (!_ui.rtspComboBox->currentText().isEmpty())
         {
-            this->startStream(_ui.rtspComboBox->currentText());
+            std::optional<std::string> url = Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString());
+            this->startStream(QString::fromStdString(url.value_or(DEFAULT_URL)));
         }
     }
 }
@@ -818,7 +835,8 @@ void QVideoPlayerWidget::setURLToDefault(void)
 
 void QVideoPlayerWidget::updateCamURL()
 {
-    _camURL = _ui.rtspComboBox->currentText().toStdString();
+    std::optional<std::string> url = Constants::CameraInfo::getURLFromId(_ui.rtspComboBox->currentText().toStdString());
+    _camURL = url.value_or(DEFAULT_URL);
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
@@ -1032,4 +1050,59 @@ void QVideoPlayerWidget::onUpdateActualAngle(const std::string& camURL_, float y
     {
         _ui.actualAngleSlider->setValue(static_cast<int>(yaw_));
     }
+}
+
+void QVideoPlayerWidget::onIRModeChanged(void)
+{
+    std::string_view stream = _camURL;
+
+    const std::size_t protocolPos = stream.find("://");
+    if (protocolPos == std::string_view::npos)
+    {
+        return;  // Invalid RTSP URL
+    }
+
+    const std::size_t ipStart = protocolPos + 3;
+    const std::size_t ipEnd = stream.find(':', ipStart);
+
+    if (ipEnd == std::string_view::npos || ipEnd <= ipStart)
+    {
+        return;  // No port or invalid IP portion
+    }
+
+    const std::string_view ip = stream.substr(ipStart, ipEnd - ipStart);
+
+    QString mode = _ui.IRModeBox->currentText();
+    if (mode == "Day")
+    {
+        if (_playerWorkerThreadAruco.get() != nullptr)
+        {
+            _playerWorkerThreadAruco->toggleIRMode(_client_cameraIR,
+                                                   std::string(ip),
+                                                   rover_msgs::srv::CameraIR::Request::DAYMODE);
+        }
+    }
+    else if (mode == "Night")
+    {
+        if (_playerWorkerThreadAruco.get() != nullptr)
+        {
+            _playerWorkerThreadAruco->toggleIRMode(_client_cameraIR,
+                                                   std::string(ip),
+                                                   rover_msgs::srv::CameraIR::Request::NIGHTMODE);
+        }
+    }
+}
+
+void QVideoPlayerWidget::setupIRModeBox(void)
+{
+    _ui.IRModeBox->addItem("Day");
+    _ui.IRModeBox->addItem("Night");
+    connect(_ui.IRModeBox, &QComboBox::currentIndexChanged, this, &QVideoPlayerWidget::onIRModeChanged);
+    _ui.IRModeBox->setCurrentIndex(0);
+}
+
+void QVideoPlayerWidget::setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_)
+{
+    _client_cameraIR = client_;
+    this->onIRModeChanged();
 }

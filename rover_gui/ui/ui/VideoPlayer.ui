@@ -39,6 +39,19 @@
           <widget class="QComboBox" name="rtspComboBox"/>
          </item>
          <item>
+          <widget class="QComboBox" name="IRModeBox">
+           <property name="maximumSize">
+            <size>
+             <width>80</width>
+             <height>16777215</height>
+            </size>
+           </property>
+           <property name="placeholderText">
+            <string>Day</string>
+           </property>
+          </widget>
+         </item>
+         <item>
           <widget class="QPushButton" name="toggleViewButton">
            <property name="sizePolicy">
             <sizepolicy hsizetype="Fixed" vsizetype="Fixed">

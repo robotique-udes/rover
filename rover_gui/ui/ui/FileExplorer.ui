@@ -459,7 +459,7 @@ QStatusBar {
   <customwidget>
    <class>QTreeViewExplorer</class>
    <extends>QTreeView</extends>
-   <header>../../src/QSshFileExplorer/QTreeViewExplorer.hpp</header>
+   <header>QSshFileExplorer/QTreeViewExplorer.hpp</header>
   </customwidget>
  </customwidgets>
  <resources/>

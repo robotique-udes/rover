@@ -3,7 +3,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
-#include "UI_Navigation.h"
+#include "ui_Navigation.h"
 
 #include "QWaypoint/QWaypointManager.hpp"
 #include "Worker/QPathManager.hpp"

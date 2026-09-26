@@ -15,7 +15,7 @@ QCellWidget::QCellWidget(uint16_t cellIndex_)
     _progressBar = new QProgressBar();
     _progressBar->setRange(CELL_MIN_VOLT_MV, CELL_MAX_VOLT_MV);
     _progressBar->setValue(CELL_MIN_VOLT_MV);
-    _progressBar->setFormat("%v(%p%)");
+    _progressBar->setFormat("%v mV(%p%)");
     _progressBar->setTextVisible(true);
     _progressBar->setAlignment(Qt::AlignCenter);
     _progressBar->setOrientation(Qt::Vertical);

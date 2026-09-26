@@ -1,4 +1,4 @@
-#if defined(__linux__)
+#if defined(__linux__) && defined(ROS)
 
 #include "serial_com.hpp"
 

@@ -65,6 +65,11 @@ class RobotController
         }
     }
 
+    inline static std::array<float, std::to_underlying(eJointIndex::eLAST)> getNullJointCommands()
+    {
+        return {};
+    }
+
   protected:
     JoyManager& _joyManager;
 };

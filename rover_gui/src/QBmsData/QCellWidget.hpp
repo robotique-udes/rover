@@ -9,7 +9,7 @@ class QCellWidget : public QWidget
     Q_OBJECT
 
   public:
-    static constexpr uint16_t CELL_MIN_VOLT_MV = 3000;
+    static constexpr uint16_t CELL_MIN_VOLT_MV = 3700;
     static constexpr uint16_t CELL_MAX_VOLT_MV = 4200;
 
     explicit QCellWidget(uint16_t cellIndex_);

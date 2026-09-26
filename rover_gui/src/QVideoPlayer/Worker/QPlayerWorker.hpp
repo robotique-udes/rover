@@ -13,6 +13,7 @@
 #include "Global/Workers/QWorker.hpp"
 #include "rover_msgs/srv/aruco_detection.hpp"
 #include "rover_msgs/srv/camera_control.hpp"
+#include "rover_msgs/srv/camera_ir.hpp"
 #include "rclcpp/rclcpp.hpp"
 #include "rover_lib2/helpers/loop_timer.hpp"
 #include "rover_lib2/helpers/time.hpp"
@@ -39,6 +40,9 @@ class QPlayerWorker : public QWorker
 
     void updateDetectionManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
     void updateDetectionInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_);
+    void toggleIRMode(rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_cameraIR_,
+                      const std::string& ip_,
+                      uint8_t mode_);
 
   signals:
     void detectionHandledSuccessfully(bool success_, uint16_t playerIndex_);
@@ -46,6 +50,10 @@ class QPlayerWorker : public QWorker
     void arucoServerInfoFailed(bool success);
 
   private:
+    void toggleIRModeInternal(rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_cameraIR_,
+                              const std::string& ip_,
+                              uint8_t mode_);
+
     LoopTimer<uint64_t, Time::millis> _timer_serviceCall;
 };
 

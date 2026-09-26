@@ -23,6 +23,7 @@ set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
+set(CMAKE_AUTOUIC ON)
 
 include_directories(
   src
@@ -34,16 +35,11 @@ include_directories(
   ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
 )
 
-link_directories(${GSTREAMER_LIBRARY_DIRS})
-
-add_custom_command(
-    OUTPUT ${CMAKE_BINARY_DIR}/ui_generated
-    COMMAND bash ${CMAKE_SOURCE_DIR}/ui/generate_ui.sh
-    WORKING_DIRECTORY ${CMAKE_SOURCE_DIR}
-    COMMENT "Generating UI files..."
+set(CMAKE_AUTOUIC_SEARCH_PATHS
+    ${CMAKE_CURRENT_SOURCE_DIR}/ui/ui
 )
 
-add_custom_target(run_generate_ui ALL DEPENDS ${CMAKE_BINARY_DIR}/ui_generated)
+link_directories(${GSTREAMER_LIBRARY_DIRS})
 
 add_executable(main_gui src/gui.cpp
 
@@ -61,7 +57,6 @@ add_executable(main_gui src/gui.cpp
                    src/Global/QFlowLayout.cpp
                    src/Global/QTmpFolderManager.cpp
                    
-                   src/QArbitration/QArbitration.cpp
                    src/QArbitration/QArbitration.cpp
 
                    src/QDeviceStatus/QDeviceStatus.cpp
@@ -125,7 +120,7 @@ target_link_libraries(main_gui
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs
   jsoncpp_lib
-)         
+)
 
 target_sources(main_gui PRIVATE ${RESOURCES})
                       

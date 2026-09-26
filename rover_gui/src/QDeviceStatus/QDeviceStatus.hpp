@@ -12,7 +12,7 @@
 // QT
 #include <QtWidgets/QGridLayout>
 #include <QLabel>
-#include "UI_DeviceStatus.h"
+#include "ui_DeviceStatus.h"
 #include "Worker/QStatusWorker.hpp"
 #include "Global/QFlowLayout.hpp"
 

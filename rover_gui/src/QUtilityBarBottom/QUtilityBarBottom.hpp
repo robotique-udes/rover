@@ -1,7 +1,7 @@
 #ifndef QUTILITY_BAR_BOTTOM_HPP
 #define QUTILITY_BAR_BOTTOM_HPP
 
-#include "UI_UtilityBarBottom.h"
+#include "ui_UtilityBarBottom.h"
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/arm_msg.hpp>
 
