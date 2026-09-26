@@ -10,8 +10,7 @@
 namespace Actuators
 {
     template<typename ImplT>
-    concept Actuator = RoverObject<ImplT> && requires(ImplT impl_)
-    {
+    concept Actuator = RoverObject<ImplT> && requires(ImplT impl_) {
         // clang-format off
 
         { impl_.setPosition(float{} /*pos_*/) } -> std::same_as<void>;

@@ -4,8 +4,7 @@
 #include <concepts>
 
 template<typename Implt>
-concept RoverObject = requires(Implt impl_)
-{
+concept RoverObject = requires(Implt impl_) {
     // clang-format off
     { impl_.init() } -> std::same_as<void>;
 

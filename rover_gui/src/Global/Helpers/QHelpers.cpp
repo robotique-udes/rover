@@ -9,6 +9,7 @@
 #include <QProcess>
 #include <QString>
 #include <QTimer>
+#include <QThread>
 
 #include "rclcpp/rclcpp.hpp"
 
@@ -19,27 +20,23 @@ namespace QHelper
                                                           const std::string& message_,
                                                           QMessageBox::StandardButtons buttons_)
     {
-        QEventLoop waitForAnswerLoop;
-        QMessageBox::StandardButton userSelection = QMessageBox::StandardButton::NoButton;
+        QMessageBox::StandardButton userSelection = QMessageBox::NoButton;
 
-        QCoreApplication* pApp = QApplication::instance();
-        if (pApp)
+        auto showDialog = [&]()
         {
-            QMetaObject::invokeMethod(pApp,
-                                      [&]()
-                                      {
-                                          userSelection = QMessageBox::question(nullptr,
-                                                                                QString::fromStdString(title_),
-                                                                                QString::fromStdString(message_),
-                                                                                buttons_);
-                                          waitForAnswerLoop.quit();
-                                      });
-            QObject::connect(pApp, &QCoreApplication::aboutToQuit, &waitForAnswerLoop, &QEventLoop::quit);
-            waitForAnswerLoop.exec();
+            userSelection
+                = QMessageBox::question(nullptr, QString::fromStdString(title_), QString::fromStdString(message_), buttons_);
+        };
+
+        if (QThread::currentThread() == QCoreApplication::instance()->thread())
+        {
+            // Already on main thread, call directly
+            showDialog();
         }
         else
         {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "QApplication returned null, something is very wrong");
+            // Cross-thread: block calling thread until main thread completes
+            QMetaObject::invokeMethod(QCoreApplication::instance(), showDialog, Qt::BlockingQueuedConnection);
         }
 
         return userSelection;
@@ -50,47 +47,39 @@ namespace QHelper
                                       OUT std::string& input_,
                                       const bool passwordMode_)
     {
-        bool success = true;
-        QEventLoop waitForAnswerLoop;
+        bool success = false;
 
-        QCoreApplication* pApp = QApplication::instance();
-        if (!pApp)
+        auto showDialog = [&]()
         {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "QApplication returned null, something is very wrong");
-            success = false;
+            QInputDialog inputDialog;
+            inputDialog.setWindowTitle(QString::fromStdString(title_));
+            inputDialog.setLabelText(QString::fromStdString(message_));
+
+            if (passwordMode_)
+            {
+                QLineEdit* pLineEdit = inputDialog.findChild<QLineEdit*>();
+                if (pLineEdit)
+                    pLineEdit->setEchoMode(QLineEdit::Password);
+            }
+
+            if (inputDialog.exec() == QDialog::Accepted)
+            {
+                input_ = inputDialog.textValue().toStdString();
+                success = true;
+            }
+            else
+            {
+                input_ = "";
+            }
+        };
+
+        if (QThread::currentThread() == QCoreApplication::instance()->thread())
+        {
+            showDialog();
         }
         else
         {
-            QMetaObject::invokeMethod(pApp,
-                                      [&]()
-                                      {
-                                          QInputDialog inputDialog;
-                                          inputDialog.setWindowTitle(QString::fromStdString(title_));
-                                          inputDialog.setLabelText(QString::fromStdString(message_));
-
-                                          if (passwordMode_)
-                                          {
-                                              QLineEdit* plineEdit = inputDialog.findChild<QLineEdit*>();
-                                              if (plineEdit)
-                                              {
-                                                  plineEdit->setEchoMode(QLineEdit::Password);
-                                              }
-                                          }
-
-                                          if (inputDialog.exec() == QDialog::Accepted)
-                                          {
-                                              input_ = inputDialog.textValue().toStdString();
-                                          }
-                                          else
-                                          {
-                                              input_ = "";
-                                              success = false;
-                                          }
-
-                                          waitForAnswerLoop.quit();
-                                      });
-
-            waitForAnswerLoop.exec();
+            QMetaObject::invokeMethod(QCoreApplication::instance(), showDialog, Qt::BlockingQueuedConnection);
         }
 
         return success;

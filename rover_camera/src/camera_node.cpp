@@ -314,9 +314,10 @@ sScreenshotResult CameraNode::getScreenshot(std::string screenshotFolderPath_, s
     }
     else  // if not recording proceed normaly
     {
-        std::string pipeline
-            = "rtspsrc location=" + cameraURL_
-              + " latency=0 drop=true ! decodebin ! videorate max-rate=30 ! videoconvert ! queue max-size-buffers=1 ! appsink";
+        std::string pipeline = "rtspsrc location=\"" + cameraURL_
+                               + "\" latency=0 ! "
+                                 "decodebin ! videoconvert ! "
+                                 "appsink sync=false drop=true max-buffers=1";
 
         cv::VideoCapture cap(pipeline, cv::CAP_GSTREAMER);
 

@@ -6,10 +6,12 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     QMainWindow(nullptr),
     _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
     _topUtilityBar(guiNode_, this),
+    _bottomUtilityBar(guiNode_, this),
     _arbitrationWidget(guiNode_, this),
     _navigationWidget(guiNode_, this),
     _deviceStatusWidget(guiNode_, this),
-    _ligthsController(guiNode_, this)
+    _ligthsController(guiNode_, this),
+    _bmsDataWidget(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
@@ -74,6 +76,9 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             grid->addWidget(&_arbitrationWidget, 0, 1);
             grid->addWidget(&_ligthsController, 1, 1);
             grid->addWidget(&_deviceStatusWidget, 2, 1);
+            _bmsDataWidget.setGraphSize(200, 200);
+            _bmsDataWidget.setCellContainerSize(90, 75);
+            grid->addWidget(&_bmsDataWidget, 3, 1);
 
             grid->setColumnStretch(0, 6);
             grid->setColumnStretch(1, 1);
@@ -91,6 +96,12 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
 
         case QSideBar::eTabIndex::FILE_TRANSFER:
             grid->addWidget(&_fileTransferWidget, 0, 1);
+            break;
+
+        case QSideBar::eTabIndex::BMS_DATA:
+            _bmsDataWidget.setGraphSize(800, 800);
+            _bmsDataWidget.setCellContainerSize(200, 400);
+            grid->addWidget(&_bmsDataWidget, 0, 1);
             break;
     }
 

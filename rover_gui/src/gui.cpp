@@ -61,9 +61,7 @@ int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
     QObject::connect(&rosProcess, &QProcess::readyReadStandardError, [&rosProcess](){ forwardPrints(rosProcess); });
     // clang-format on
 
-    rosProcess.start("bash",
-                     QStringList() << "-c"
-                                   << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
+    rosProcess.start("bash", QStringList() << "-c" << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
 
     int ret = QApplication::exec();
 
@@ -109,7 +107,7 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
 
 void nodeThreadFunc(std::shared_ptr<rclcpp::Node> node_)
 {
-    rclcpp::executors::SingleThreadedExecutor rosExecutor;
+    rclcpp::executors::MultiThreadedExecutor rosExecutor;
     rosExecutor.add_node(node_);
     rosExecutor.spin();
 
@@ -123,5 +121,5 @@ void forwardPrints(QProcess& process_)
 }
 
 #ifndef __INTELLISENSE__
-#include "gui.moc"
+// #include "gui.moc"
 #endif  // __INTELLISENSE__

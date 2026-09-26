@@ -1,12 +1,11 @@
 #ifndef Q_UTILITY_BAR_BOTTON_Q_UTILITY_BAR_TOP_HPP
 #define Q_UTILITY_BAR_BOTTON_Q_UTILITY_BAR_TOP_HPP
 
-#include "UI_TopUtilityBar.h"
+#include "ui_TopUtilityBar.h"
 
 #include <rclcpp/rclcpp.hpp>
 #include <rover_msgs/msg/gps.hpp>
-#include <rover_msgs/msg/battery.hpp>
-#include <rover_msgs/msg/gps.hpp>
+#include "rover_msgs/msg/bms_data.hpp"
 #include <rover_msgs/msg/antenna_status.hpp>
 
 #include <rover_lib2/helpers/ip_pinging.hpp>
@@ -23,7 +22,7 @@ class QUtilityBarTop : public QWidget
 {
     Q_OBJECT
 
-    static constexpr const char* TOPIC_BATTERY = "/rover/auxiliary/battery";
+    static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
     static constexpr const char* TOPIC_GNSS = "/rover/gps/position";
 
@@ -43,15 +42,35 @@ class QUtilityBarTop : public QWidget
 
   signals:
     void updateBatteryUI(float _percent);
-    void updateAntennaUI(bool connected_, float rssi_, float speed_);
+    void updateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_);
     void updateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void updateTimer(int secondsBeforeTimeOut_);
 
+    void batteryPubCount();
+    void antennaStatusPubCount();
+    void GNSSPubCount();
+
+    void batteryTimeout();
+    void antennaStatusTimeout();
+    void GNSSTimeout();
+
+    void timerDisplay(void);
+
   private slots:
     void onUpdateBatteryUI(float _percent);
-    void onUpdateAntennaUI(bool connected_, float rssi_, float speed_);
+    void onUpdateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_);
     void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
+
+    void onBatteryPubCount();
+    void onAntennaStatusPubCount();
+    void onGNSSPubCount();
+
+    void onBatteryTimeout();
+    void onAntennaStatusTimeout();
+    void onGNSSTimeout();
+
+    void onTimerDisplay(void);
 
   private:
     void setupUI(void);
@@ -62,26 +81,12 @@ class QUtilityBarTop : public QWidget
     void initTimerDisplay(void);
     void initWatchdog(void);
 
-    void CB_battery(rover_msgs::msg::Battery& msg_);
-    void CB_antennaStatus(rover_msgs::msg::AntennaStatus& msg_);
-    void CB_GNSS(rover_msgs::msg::Gps& msg_);
-    void CB_timerDisplaying(void);
-    void updateTimeZone(void);
-
-    void CB_batteryPubCount();
-    void CB_antennaStatusPubCount();
-    void CB_GNSSPubCount();
-
-    void CB_batteryTimeout();
-    void CB_antennaStatusTimeout();
-    void CB_GNSSTimeout();
-
     void readTimersFromFile(const char* filename_, std::vector<QDateTime>& timersList_);
 
     std::vector<QDateTime> _timersList;
     QTimeZone _timeZone;
 
-    std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Battery>> _sub_battery;
+    std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::BmsData>> _sub_battery;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::AntennaStatus>> _sub_antennaStatus;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Gps>> _sub_GNSS;
 

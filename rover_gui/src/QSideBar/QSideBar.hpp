@@ -1,7 +1,7 @@
 #ifndef QSIDE_BAR_HPP
 #define QSIDE_BAR_HPP
 
-#include "UI_SideBar.h"
+#include "ui_SideBar.h"
 
 class QSideBar : public QWidget
 {
@@ -14,6 +14,7 @@ class QSideBar : public QWidget
         NAVIGATION,
         FILE_TRANSFER,
         DEVICE_STATUS,
+        BMS_DATA
     };
 
     explicit QSideBar(QWidget* parent_);

@@ -163,3 +163,31 @@ void QPlayerWorker::updateDetectionInternal(
     emit this->arucoServerInfoFailed(success);
     emit this->urlFoundInDetection(liveURLs);
 }
+
+void QPlayerWorker::toggleIRMode(rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_cameraIR_,
+                                 const std::string& ip_,
+                                 uint8_t mode_)
+{
+    this->addTask(
+        [this, client_cameraIR_, mode_, ip_](void)
+        {
+            this->toggleIRModeInternal(client_cameraIR_, ip_, mode_);
+        });
+}
+
+void QPlayerWorker::toggleIRModeInternal(rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_cameraIR_,
+                                         const std::string& ip_,
+                                         uint8_t mode_)
+{
+    if (!client_cameraIR_)
+    {
+        return;
+    }
+
+    rover_msgs::srv::CameraIR::Request::SharedPtr request = std::make_shared<rover_msgs::srv::CameraIR::Request>();
+    request->ip = ip_;
+    request->ir_mode = mode_;
+    request->ir_enable = true;
+
+    client_cameraIR_->async_send_request(request);
+}

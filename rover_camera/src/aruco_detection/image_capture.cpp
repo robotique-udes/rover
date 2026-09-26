@@ -6,7 +6,7 @@ ImageCapture::ImageCapture(const std::string& cameraURL_):
     _cameraURL(cameraURL_),
     _timer_cameraPinningRetries(DELAY_CAMERA_PINNING_RETRY_MS)
 {
-    _rtspPipeline = "rtspsrc location=" + _cameraURL + PIPELINE;
+    _rtspPipeline = "rtspsrc location=\"" + _cameraURL + PIPELINE;
     initCam();
 }
 

@@ -2,6 +2,7 @@
 #include "rover_lib2/helpers/constants.hpp"
 #include <QIcon>
 #include <QFile>
+#include <QStyle>
 #include <qdebug.h>
 #include <qtimezone.h>
 
@@ -28,6 +29,16 @@ QUtilityBarTop::QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* par
     connect(this, &QUtilityBarTop::updateAntennaUI, this, &QUtilityBarTop::onUpdateAntennaUI);
     connect(this, &QUtilityBarTop::updateGNSS, this, &QUtilityBarTop::onUpdateGNSS);
     connect(this, &QUtilityBarTop::updateTimer, this, &QUtilityBarTop::onUpdateTimer);
+
+    connect(this, &QUtilityBarTop::batteryPubCount, this, &QUtilityBarTop::onBatteryPubCount);
+    connect(this, &QUtilityBarTop::antennaStatusPubCount, this, &QUtilityBarTop::onAntennaStatusPubCount);
+    connect(this, &QUtilityBarTop::GNSSPubCount, this, &QUtilityBarTop::onGNSSPubCount);
+
+    connect(this, &QUtilityBarTop::batteryTimeout, this, &QUtilityBarTop::onBatteryTimeout);
+    connect(this, &QUtilityBarTop::antennaStatusTimeout, this, &QUtilityBarTop::onAntennaStatusTimeout);
+    connect(this, &QUtilityBarTop::GNSSTimeout, this, &QUtilityBarTop::onGNSSTimeout);
+
+    connect(this, &QUtilityBarTop::timerDisplay, this, &QUtilityBarTop::onTimerDisplay);
 }
 
 void QUtilityBarTop::setupUI(void)
@@ -36,10 +47,14 @@ void QUtilityBarTop::setupUI(void)
 
     _ui.batteryLabel->setText("-- %");
     _ui.signalQualityLabel->setText("RSSI: ---");
-    _ui.connectionSpeedLabel->setText("--.- Mb/s");
+    _ui.upSpeedLabel->setText("--.- Mb/s");
+    _ui.downSpeedLabel->setText("--.- Mb/s");
     _ui.satellitesNbrLabel->setText("Sat: --");
     _ui.GNSSFixLabel->setText("Fix: --.-------");
     _ui.HeadingLabel->setText("---.--");
+
+    _ui.upSpeedButton->setIcon(QIcon::fromTheme("go-up"));
+    _ui.downSpeedButton->setIcon(QIcon::fromTheme("go-down"));
 
     this->setStyleSheet(R"(
     QPushButton {
@@ -51,25 +66,28 @@ void QUtilityBarTop::setupUI(void)
 
 void QUtilityBarTop::initBatterySubscriber(void)
 {
+    QIcon icon(":/icons/BatteryError.svg");
+    _ui.batteryIcon->setIcon(icon);
+
     if (_node)
     {
-        _sub_battery = _node->create_subscription<rover_msgs::msg::Battery>(TOPIC_BATTERY,
+        _sub_battery = _node->create_subscription<rover_msgs::msg::BmsData>(TOPIC_BMS_DATA,
                                                                             QOS_DEFAULT,
-                                                                            [this](rover_msgs::msg::Battery msg_)
+                                                                            [this](rover_msgs::msg::BmsData msg_)
                                                                             {
-                                                                                this->CB_battery(msg_);
+                                                                                emit this->updateBatteryUI(msg_.state_of_charge);
                                                                             });
 
         _timer_batteryPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_BATTERY_PUB_COUNT_MS),
                                                      [this](void)
                                                      {
-                                                         this->CB_batteryPubCount();
+                                                         emit this->batteryPubCount();
                                                      });
 
         _watchdog_battery = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                      [this](void)
                                                      {
-                                                         this->CB_batteryTimeout();
+                                                         emit this->batteryTimeout();
                                                      });
     }
     else
@@ -80,25 +98,29 @@ void QUtilityBarTop::initBatterySubscriber(void)
 
 void QUtilityBarTop::initAntennaStatus(void)
 {
+    QIcon icon(":/icons/ErrorRSSI.png");
+    _ui.RSSILabel->setIcon(icon);
+
     if (_node)
     {
-        _sub_antennaStatus = _node->create_subscription<rover_msgs::msg::AntennaStatus>(TOPIC_ANTENNA_STATUS,
-                                                                                        QOS_DEFAULT,
-                                                                                        [this](rover_msgs::msg::AntennaStatus msg)
-                                                                                        {
-                                                                                            this->CB_antennaStatus(msg);
-                                                                                        });
+        _sub_antennaStatus = _node->create_subscription<rover_msgs::msg::AntennaStatus>(
+            TOPIC_ANTENNA_STATUS,
+            QOS_DEFAULT,
+            [this](rover_msgs::msg::AntennaStatus msg_)
+            {
+                emit this->updateAntennaUI(msg_.connected, msg_.rssi, msg_.txrate, msg_.rxrate);
+            });
 
         _timer_RSSIPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_RSSI_PUB_COUNT_MS),
                                                   [this](void)
                                                   {
-                                                      this->CB_antennaStatusPubCount();
+                                                      emit this->antennaStatusPubCount();
                                                   });
 
         _watchdog_antenna = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                      [this](void)
                                                      {
-                                                         this->CB_antennaStatusTimeout();
+                                                         emit this->antennaStatusTimeout();
                                                      });
     }
     else
@@ -111,23 +133,24 @@ void QUtilityBarTop::initGNSS(void)
 {
     if (_node)
     {
-        _sub_GNSS = _node->create_subscription<rover_msgs::msg::Gps>(TOPIC_GNSS,
-                                                                     QOS_DEFAULT,
-                                                                     [this](rover_msgs::msg::Gps msg_)
-                                                                     {
-                                                                         this->CB_GNSS(msg_);
-                                                                     });
+        _sub_GNSS = _node->create_subscription<rover_msgs::msg::Gps>(
+            TOPIC_GNSS,
+            QOS_DEFAULT,
+            [this](rover_msgs::msg::Gps msg_)
+            {
+                emit this->updateGNSS(msg_.fix_quality, msg_.heading, msg_.satellite, msg_.longitude, msg_.latitude);
+            });
 
         _timer_GNSSPub = _node->create_wall_timer(std::chrono::milliseconds(DELAY_CHECK_GNSS_PUB_COUNT_MS),
                                                   [this](void)
                                                   {
-                                                      this->CB_GNSSPubCount();
+                                                      emit this->GNSSPubCount();
                                                   });
 
         _watchdog_GNSS = _node->create_wall_timer(std::chrono::milliseconds(WATCH_DOG_DELAY_MS),
                                                   [this](void)
                                                   {
-                                                      this->CB_GNSSTimeout();
+                                                      emit this->GNSSTimeout();
                                                   });
     }
     else
@@ -142,32 +165,11 @@ void QUtilityBarTop::initTimerDisplay(void)
     _timer_updateTimer = _node->create_wall_timer(std::chrono::milliseconds(DELAY_UPDATE_TIMER_MS),
                                                   [this](void)
                                                   {
-                                                      this->CB_timerDisplaying();
+                                                      emit this->timerDisplay();
                                                   });
 }
 
-void QUtilityBarTop::CB_battery(rover_msgs::msg::Battery& msg_)
-{
-    QIcon icon(":/icons/BatteryError.svg");
-    _ui.batteryIcon->setIcon(icon);
-
-    emit this->updateBatteryUI(msg_.state_of_charge);
-}
-
-void QUtilityBarTop::CB_antennaStatus(rover_msgs::msg::AntennaStatus& msg_)
-{
-    QIcon icon(":/icons/RSSIError.svg");
-    _ui.RSSILabel->setIcon(icon);
-
-    emit this->updateAntennaUI(msg_.connected, msg_.rssi, msg_.txrate);
-}
-
-void QUtilityBarTop::CB_GNSS(rover_msgs::msg::Gps& msg_)
-{
-    emit this->updateGNSS(msg_.fix_quality, msg_.heading, msg_.satellite, msg_.longitude, msg_.latitude);
-}
-
-void QUtilityBarTop::CB_timerDisplaying(void)
+void QUtilityBarTop::onTimerDisplay(void)
 {
     int secondsBeforeTimeout = -1;
 
@@ -216,13 +218,14 @@ void QUtilityBarTop::onUpdateBatteryUI(float _percent)
     _ui.batteryIcon->setIcon(icon);
 }
 
-void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float speed_)
+void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_)
 {
     QIcon icon;
     if (connected_)
     {
         _ui.signalQualityLabel->setText("RSSI: " + QString::number(static_cast<int>(rssi_)));
-        _ui.connectionSpeedLabel->setText(QString::number(static_cast<float>(speed_ / 1000000.0f), 'f', 1) + " Mb/s");
+        _ui.upSpeedLabel->setText(QString::number(static_cast<float>(upSpeed_ / 1000000.0f), 'f', 1) + " Mb/s");
+        _ui.downSpeedLabel->setText(QString::number(static_cast<float>(downSpeed_ / 1000000.0f), 'f', 1) + " Mb/s");
 
         if (rssi_ <= -85)
         {
@@ -248,7 +251,7 @@ void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float speed
     else
     {
         _ui.signalQualityLabel->setText("RSSI: ---");
-        _ui.connectionSpeedLabel->setText("--.- Mb/s");
+        _ui.upSpeedLabel->setText("--.- Mb/s");
         icon = QIcon(":/icons/ErrorRSSI.png");
     }
 
@@ -326,10 +329,10 @@ void QUtilityBarTop::onUpdateTimer(int secondsBeforeTimeOut_)
     }
 }
 
-void QUtilityBarTop::CB_batteryPubCount()
+void QUtilityBarTop::onBatteryPubCount()
 {
     _lastBatteryTimeMsg = _node->now();
-    size_t count = _node->count_publishers(TOPIC_BATTERY);
+    size_t count = _node->count_publishers(TOPIC_BMS_DATA);
     if (!count)
     {
         QIcon icon(":/icons/BatteryError.svg");
@@ -337,7 +340,7 @@ void QUtilityBarTop::CB_batteryPubCount()
     }
 }
 
-void QUtilityBarTop::CB_antennaStatusPubCount()
+void QUtilityBarTop::onAntennaStatusPubCount()
 {
     _lastAntennaTimeMsg = _node->now();
     size_t count = _node->count_publishers(TOPIC_ANTENNA_STATUS);
@@ -348,7 +351,7 @@ void QUtilityBarTop::CB_antennaStatusPubCount()
     }
 }
 
-void QUtilityBarTop::CB_GNSSPubCount()
+void QUtilityBarTop::onGNSSPubCount()
 {
     _lastGNSSTimeMsg = _node->now();
     size_t count = _node->count_publishers(TOPIC_GNSS);
@@ -363,7 +366,7 @@ void QUtilityBarTop::CB_GNSSPubCount()
     }
 }
 
-void QUtilityBarTop::CB_batteryTimeout()
+void QUtilityBarTop::onBatteryTimeout()
 {
     if ((_node->now() - _lastBatteryTimeMsg) > _batteryTimeout)
     {
@@ -371,7 +374,7 @@ void QUtilityBarTop::CB_batteryTimeout()
         _ui.batteryIcon->setIcon(icon);
     }
 }
-void QUtilityBarTop::CB_antennaStatusTimeout()
+void QUtilityBarTop::onAntennaStatusTimeout()
 {
     if ((_node->now() - _lastAntennaTimeMsg) > _antennaTimeout)
     {
@@ -379,9 +382,9 @@ void QUtilityBarTop::CB_antennaStatusTimeout()
         _ui.RSSILabel->setIcon(icon);
     }
 }
-void QUtilityBarTop::CB_GNSSTimeout()
+void QUtilityBarTop::onGNSSTimeout()
 {
-    if ((_node->now() - _lastBatteryTimeMsg) > _batteryTimeout)
+    if ((_node->now() - _lastGNSSTimeMsg) > _GNSSTimeout)
     {
         QIcon iconSat(":/icons/GNSSError.svg");
         QIcon iconHeading(":/icons/Heading");

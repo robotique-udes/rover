@@ -1,7 +1,7 @@
 #ifndef __QARBITRATION_HPP__
 #define __QARBITRATION_HPP__
 
-#include "UI_Arbitration.h"
+#include "ui_Arbitration.h"
 
 #include "rover_lib2/helpers/log.hpp"
 
@@ -54,14 +54,18 @@ class QArbitration : public QWidget
   public:
     QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
 
+  signals:
+    void joyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
+    void driveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
+
   private slots:
     void onControllerComboChanged(eControllerType controller_, int index_);
     void onDriveTrainComboChanged(int index_);
+    void onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
+    void onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
 
   private:
     void initComboBoxItems();
-    void joyDemuxStatusCallback(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
-    void driveTrainDemuxStatusCallback(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
 
     template<typename T>
     void checkServiceAvailable(rclcpp::Client<T>::SharedPtr client_, const std::string& serviceName_);

@@ -23,16 +23,9 @@ def generate_launch_description():
     description="Whether to launch the gps_test node"
     )
 
-    battery_arg = DeclareLaunchArgument(
-    "gps",
-    default_value="true",
-    description="Whether to launch the gps_test node"
-    )
-
     arm = LaunchConfiguration("arm")
     gps = LaunchConfiguration("gps")
     GNSS_arg = LaunchConfiguration("gnss")
-    battery_arg = LaunchConfiguration(" battery")
 
 
 
@@ -52,13 +45,6 @@ def generate_launch_description():
         condition=IfCondition(gps)
     )
 
-    battery_sim_node = Node(
-        package="rover_sim",
-        namespace="/rover/sim",
-        executable="battery_test",
-        name="battery_test"
-    )
-
     connection_speed_sim_node = Node(
         package="rover_sim",
         namespace="/rover/sim",
@@ -71,7 +57,6 @@ def generate_launch_description():
     ld.add_action(gps_arg)
     ld.add_action(arm_sim_node)
     ld.add_action(gps_sim_node)
-    ld.add_action(battery_sim_node)
     ld.add_action(connection_speed_sim_node)
 
     return ld

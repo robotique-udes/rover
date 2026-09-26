@@ -9,7 +9,7 @@ echo "Waiting 2s"
 sleep 2
 echo "Done, starting!"
 
-source /opt/ros/humble/setup.bash
+source /opt/ros/jazzy/setup.bash
 source $HOME/ros2_ws/install/local_setup.bash
 ros2 launch rover_msgs rover.launch.py &
 pid1=$!

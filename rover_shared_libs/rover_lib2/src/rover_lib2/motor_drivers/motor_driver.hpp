@@ -20,8 +20,7 @@ namespace MotorDrivers
     };
 
     template<typename ImplT>
-    concept MotorDriver = RoverObject<ImplT> && requires(ImplT impl_)
-    {
+    concept MotorDriver = RoverObject<ImplT> && requires(ImplT impl_) {
         // clang-format off
         { impl_.init() } -> std::same_as<void>;
 

@@ -10,8 +10,7 @@ namespace Filters
 {
 
     template<typename ImplT>
-    concept Filter = requires(ImplT impl_)
-    {
+    concept Filter = requires(ImplT impl_) {
         // clang-format off
         { impl_.addValue(float{} /* newValue_ */) } -> std::same_as<float>; 
         { std::as_const(impl_).getFilteredValue() } -> std::same_as<float>;

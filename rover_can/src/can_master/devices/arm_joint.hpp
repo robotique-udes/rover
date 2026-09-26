@@ -7,6 +7,7 @@
 #include <rover_can2/msgs/arm_joint_cmd.hpp>
 #include <rover_can2/rover_can2.hpp>
 #include <rover_can2/msgs/arm_joint_status.hpp>
+#include <rover_can2/msgs/arm_joint_advanced_status.hpp>
 #include <rover_can2/msgs/arm_joint_config.hpp>
 #include <rover_msgs/msg/arm_msg.hpp>
 #include <rover_msgs/srv/arm_joint_config.hpp>
@@ -16,11 +17,13 @@
 
 class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>,
                                           RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointStatus, ArmJoint>,
+                                          RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointAdvancedStatus, ArmJoint>,
                                           RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>>,
                  public MasterDevice
 {
     using DeviceT = RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::ArmJointCmd>,
                                       RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointStatus, ArmJoint>,
+                                      RoverCan2::SubscriberMember<RoverCan2::Msgs::ArmJointAdvancedStatus, ArmJoint>,
                                       RoverCan2::Publisher<RoverCan2::Msgs::ArmJointConfig>>;
 
     static constexpr const char* ARM_CMD_TOPIC = "/rover/arm/joints_cmd";
@@ -49,6 +52,7 @@ class ArmJoint : public RoverCan2::Device<RoverCan2::Publisher<RoverCan2::Msgs::
     std::vector<RoverCan2::Constant::eDeviceId> getManagedDevicesIds(void) override;
 
     void CB_CAN_armPostitionStatus(const RoverCan2::Msgs::ArmJointStatus& msg_);
+    void CB_CAN_armAdvancedStatus(const RoverCan2::Msgs::ArmJointAdvancedStatus& msg_);
     void CB_ROS_armSpeedCmd(const rover_msgs::msg::ArmMsg& rosMsg_);
     void CB_SRV_armJointsConfig(const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request> request_,
                                 std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response> response_);

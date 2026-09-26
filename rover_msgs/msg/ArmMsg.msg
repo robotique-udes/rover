@@ -9,3 +9,7 @@ uint8 GRIPPER_CLOSE = 6
 float32[7] target_speed
 float32[7] current_position
 float32[7] current_speed
+
+float32[7] current_torque
+float32[7] current_motor_temp
+float32[7] current_amperage

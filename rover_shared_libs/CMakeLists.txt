@@ -15,12 +15,14 @@ file(GLOB_RECURSE LIB_SOURCES CONFIGURE_DEPENDS
 
 find_package(rover_msgs REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(ament_index_cpp REQUIRED)
 
 add_library(rover_shared_libs ${LIB_HEADERS} ${LIB_SOURCES})
 
 ament_target_dependencies(rover_shared_libs
                           rclcpp
-                          rover_msgs)
+                          rover_msgs
+                          ament_index_cpp)
 
 target_include_directories(rover_shared_libs PUBLIC
     ${CMAKE_CURRENT_SOURCE_DIR}/rover_can2/src

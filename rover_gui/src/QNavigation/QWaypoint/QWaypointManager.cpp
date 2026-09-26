@@ -131,7 +131,7 @@ void QWaypointManager::initializeWaypoints()
         std::string lastFilePath = lastSessionFolderPath + WAYPOINT_FILE_PATH;
         if (!std::filesystem::exists(lastFilePath))
         {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "Unable to load waypoint from JSON. File missing or invalid.");
+            RCLCPP_WARN(rclcpp::get_logger("GUI"), "Unable to load waypoint from JSON. File missing or invalid.");
             return;
         }
         std::filesystem::copy_file(lastFilePath, currentFilePath);

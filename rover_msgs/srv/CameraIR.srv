@@ -1,0 +1,8 @@
+uint8 NIGHTMODE = 2
+uint8 DAYMODE = 3
+
+# Request
+string ip
+uint8 ir_mode
+bool ir_enable
+---

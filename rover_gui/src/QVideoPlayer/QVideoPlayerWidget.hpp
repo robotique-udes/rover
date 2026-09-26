@@ -2,8 +2,9 @@
 #define QVIDEOPLAYERWIDGER_HPP
 
 #include "rclcpp/rclcpp.hpp"
+#include <rover_lib2/helpers/constants.hpp>
 
-#include "UI_VideoPlayer.h"
+#include "ui_VideoPlayer.h"
 #include "Worker/QPlayerWorker.hpp"
 #include "Worker/QRecordingWorker.hpp"
 #include "Worker/QPanoramaWorker.hpp"
@@ -28,6 +29,8 @@ class QVideoPlayerWidget : public QWidget
     static constexpr size_t DELAY_OPENING_CAM_RETRY_MS = 5'000UL;
     static constexpr size_t MAX_DELAY_SERVICE_CALL = 2'000UL;
     static constexpr size_t NBR_IDS_TO_DISPLAY = 5U;
+    static constexpr const char* DEFAULT_URL
+        = Constants::CameraInfo::CAMERA_INFO[0][std::to_underlying(Constants::CameraInfo::eInfoType::URL)];
 
     static int MAX_RECONNECT_ATTEMPTS;
     static int _instanceCounter;
@@ -77,6 +80,7 @@ class QVideoPlayerWidget : public QWidget
 
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
     void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_);
+    void setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_);
 
     std::string getCamURL(void);
     float getCameraAngle(void);
@@ -136,6 +140,8 @@ class QVideoPlayerWidget : public QWidget
 
     void onNewLogMessage(const QString& message_, QWidget* targetWidget_);
 
+    void onIRModeChanged(void);
+
   private:
     void setupUI(void);
     void connectUISignals(void);
@@ -145,11 +151,13 @@ class QVideoPlayerWidget : public QWidget
     void autoStartGStreamer(void);
 
     void hideAngleSelector(void);
+    void setupIRModeBox(void);
+
     std::shared_ptr<rclcpp::Node> _node;
     Ui::VideoPlayer _ui;
 
     std::string _camURL = "";
-    std::string _defaultCamUrl = "";
+    std::string _defaultCamUrl = Constants::CameraInfo::CAMERA_INFO[0][1];
 
     int _streamIndex;
     uint16_t _playerIndex;
@@ -157,6 +165,7 @@ class QVideoPlayerWidget : public QWidget
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramaManager;
+    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraIR>> _client_cameraIR;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
     std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;

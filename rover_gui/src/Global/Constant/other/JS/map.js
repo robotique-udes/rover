@@ -40,7 +40,8 @@ async function checkConnectivity()
 }
 
 document.addEventListener('DOMContentLoaded', initializeMap);
-window.addEventListener('offline', function () 
+
+window.addEventListener('offline', () => 
 {
     const connectionError = document.getElementById('connectionError');
     if (connectionError)
@@ -48,6 +49,20 @@ window.addEventListener('offline', function ()
         connectionError.style.display = 'block';
     }
 });
-window.addEventListener('online', function () {
-    checkConnectivity();
+
+window.addEventListener('online', async () => {
+    const connection = await checkConnectivity();
+    if (connection)
+    {
+        const connectionError = document.getElementById('connectionError');
+        if (connectionError)
+        {
+            connectionError.style.display = 'none';
+        }
+        if (!mapManager)
+        {
+            initializeMap();
+        }
+        // TODO: Reinitialize mapManager after on-off-on 
+    }
 });

@@ -1,7 +1,7 @@
 #ifndef QTOASTNOTIFICATION
 #define QTOASTNOTIFICATION
 
-#include "UI_ToastNotification.h"
+#include "ui_ToastNotification.h"
 
 #include <mutex>
 #include <QtWidgets/QWidget>

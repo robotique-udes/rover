@@ -1,0 +1,29 @@
+// This assumes your workspace is built as such:
+// ros2_ws
+// └── src
+//     └── rover
+//         ├── rover_arm
+//         ├── ...
+{
+    "configurations": [
+        {
+            "name": "Linux",
+            "includePath": [
+                "${workspaceFolder}/**",
+                "${workspaceFolder}/../../install/rover_msgs/**",
+                "${workspaceFolder}/../../install/rover_joy/**",
+                "${workspaceFolder}/../../install/rover_joy/**",
+                "/opt/ros/**",
+                "/usr/include/**"
+            ],
+            "defines": [
+                "ROS=${env:ROS_DISTRO}"
+            ],
+            "compilerPath": "/usr/bin/gcc",
+            "cStandard": "c23",
+            "cppStandard": "gnu++23",
+            "intelliSenseMode": "linux-gcc-x64"
+        }
+    ],
+    "version": 4
+}

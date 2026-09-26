@@ -7,6 +7,7 @@
 #include "rover_msgs/msg/camera_control.hpp"
 #include "rover_msgs/msg/camera_config.hpp"
 #include "rover_msgs/msg/topic_with_priority.hpp"
+#include "rover_msgs/srv/camera_ir.hpp"
 #include <utility>
 
 namespace CameraManager
@@ -22,6 +23,8 @@ namespace CameraManager
 
         static constexpr const char* TOPIC_WITH_PRIORITY = "/rover/camera/topic_with_priority";
 
+        static constexpr const char* SERVICE_IR = "/rover/camera/IR";
+
       public:
         ManagerNode();
 
@@ -33,6 +36,9 @@ namespace CameraManager
         void CB_storePowerCmd(rover_msgs::msg::CameraControl msg_, size_t topicIndex_);
         void CB_publishFilteredPowerCmd(void);
         void CB_publishTopicWithPriority(void);
+
+        void CB_srvIR(const rover_msgs::srv::CameraIR::Request::SharedPtr request_,
+                      rover_msgs::srv::CameraIR::Response::SharedPtr response_);
 
         void initSubs(void);
         void initPubs(void);
@@ -56,6 +62,8 @@ namespace CameraManager
         rclcpp::Publisher<rover_msgs::msg::CameraControl>::SharedPtr _publisher_filteredPowerCmd;
 
         rclcpp::Publisher<rover_msgs::msg::TopicWithPriority>::SharedPtr _publisher_topicWithPriority;
+
+        rclcpp::Service<rover_msgs::srv::CameraIR>::SharedPtr _srv_IR;
 
         rclcpp::TimerBase::SharedPtr _timer_filtredPTZCmdPub;
         rclcpp::TimerBase::SharedPtr _timer_filtredPTZConfigPub;

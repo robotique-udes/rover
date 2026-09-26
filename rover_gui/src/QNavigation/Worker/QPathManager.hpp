@@ -6,13 +6,6 @@
 
 #include <iostream>
 #include <fstream>
-#include <vector>
-
-struct sPosition
-{
-    double latitude;
-    double longitude;
-};
 
 class QPathManager : public QWorker
 {
@@ -29,13 +22,13 @@ class QPathManager : public QWorker
     QPathManager(bool start_ = false, QObject* parent_ = nullptr);
 
     void setSessionFolderPath(std::string sessionFolderPath_);
-    void initializeCSVFile(std::vector<sPosition>& oldPath_);
+    void initializeCSVFile(QVariantList& oldPath_);
     void writePosToCSV(double latitude_, double longitude_);
 
   private:
     void writePosToCSVInternal(double latitude_, double longitude_);
     std::string findLastSessionFolder(void);
-    void readFromCSV(std::string filePath_, std::vector<sPosition>& oldPath_);
+    void readFromCSV(std::string filePath_, QVariantList& oldPath_);
 
     std::string _sessionFolderPath;
 };

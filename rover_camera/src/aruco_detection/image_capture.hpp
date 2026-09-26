@@ -13,12 +13,17 @@ class ImageCapture
     static constexpr uint64_t DELAY_CAMERA_PINNING_RETRY_MS = 5'000UL;
     static constexpr size_t TIMEOUT_CAMERA_PINNING__MS = 500UL;
     static constexpr size_t CAM_NETWORK_PORT = 554U;
+    static constexpr const char* PIPELINE = "\" latency=0 ! "
+                                            "decodebin ! videoconvert ! "
+                                            "appsink sync=false drop=true max-buffers=1";
+    /*
     static constexpr const char* PIPELINE = " latency=0 drop-on-latency=true protocols=tcp ! "
                                             "decodebin ! "
                                             "videorate max-rate=5 ! "
                                             "videoconvert ! "
                                             "queue max-size-buffers=1 leaky=downstream ! "
                                             "appsink sync=false";
+    */
 
   public:
     explicit ImageCapture(const std::string& cameraURL_);
