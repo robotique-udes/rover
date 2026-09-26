@@ -43,7 +43,7 @@ namespace QHelper
     }
     void QToastNotification::setHistory(std::deque<QToastNotification::sNotificationInfo> history_)
     {
-        _history = history_;
+        _history = std::move(history_);
     }
 
     void QToastNotification::enterEvent(QEnterEvent* event)
@@ -107,9 +107,9 @@ namespace QHelper
         _ui.textErrorMessage->setText(QString::fromStdString(description_));
         _ui.titleLineEdit->setText(QString::fromStdString(title_));
 
-        size_t X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
-        size_t startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
-        size_t endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
+        int X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
+        int startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
+        int endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
 
         _slideInAnim.setStartValue(QPoint(X, startY));
         _slideInAnim.setEndValue(QPoint(X, endY));
@@ -124,7 +124,7 @@ namespace QHelper
         this->raise();
         this->show();
 
-        _progressBarAnim.setDuration(_shownDuration);
+        _progressBarAnim.setDuration(static_cast<int>(_shownDuration));
 
         _fadeInAnim.start();
         _slideInAnim.start();
@@ -253,7 +253,7 @@ namespace QHelper
     {
         connect(&_closeTimer, &QTimer::timeout, this, &QToastNotification::hideNotification);
         _closeTimer.setSingleShot(true);
-        _closeTimer.start(_shownDuration);
+        _closeTimer.start(static_cast<int>(_shownDuration));
     }
 
     void QToastNotification::setupScreenRect(void)

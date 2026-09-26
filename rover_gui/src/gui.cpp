@@ -14,7 +14,7 @@ constexpr char WM_CLASS[] = "Rover Base";
 
 int guiMain(int argc_, char* argv_[], const rclcpp::Node::SharedPtr& guiNode_);
 void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_);
-void nodeThreadFunc(std::shared_ptr<rclcpp::Node> node);
+void nodeThreadFunc(const std::shared_ptr<rclcpp::Node>& node);
 void forwardPrints(QProcess& process_);
 
 int main(int argc, char* argv[])
@@ -105,7 +105,7 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
     }
 }
 
-void nodeThreadFunc(std::shared_ptr<rclcpp::Node> node_)
+void nodeThreadFunc(const std::shared_ptr<rclcpp::Node>& node_)
 {
     rclcpp::executors::MultiThreadedExecutor rosExecutor;
     rosExecutor.add_node(node_);
