@@ -103,7 +103,8 @@ class JoyDemuxController : public rclcpp::Node
                 return;
             }
 
-            rover_msgs::srv::JoyDemuxSetState::Request::SharedPtr request = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Request>();
+            rover_msgs::srv::JoyDemuxSetState::Request::SharedPtr request
+                = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Request>();
             request->controller_type = std::to_underlying(controller_);
             request->force = false;
             request->destination = std::to_underlying(currentDest);

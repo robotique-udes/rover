@@ -252,7 +252,7 @@ namespace QHelper
     }
 
     void QToastNotification::startTimerClose(void)
-    {   
+    {
         _closeTimer.start(static_cast<int>(_shownDuration));
     }
 
