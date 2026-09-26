@@ -9,7 +9,7 @@
 
 QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_)
+    _node(std::move(guiNode_))
 {
     _ui.setupUi(this);
 
@@ -18,18 +18,18 @@ QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pare
     _clientJoy = _node->create_client<rover_msgs::srv::JoyDemuxSetState>(TOPIC_JOY_DEMUX_CONTROL);
     _clientDriveTrain = _node->create_client<rover_msgs::srv::DriveTrainArbitration>(TOPIC_DT_DEMUX_CONTROL);
 
-    _joyDemuxStatusSub = _node->create_subscription<rover_msgs::msg::JoyDemuxStatus>(
-        TOPIC_JOY_DEMUX_STATUS,
-        QOS_DEFAULT,
-        [this](const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_)
-        {
-            emit this->joyDemuxStatusChanged(msg_);
-        });
+    _joyDemuxStatusSub
+        = _node->create_subscription<rover_msgs::msg::JoyDemuxStatus>(TOPIC_JOY_DEMUX_STATUS,
+                                                                      QOS_DEFAULT,
+                                                                      [this](const rover_msgs::msg::JoyDemuxStatus& msg_)
+                                                                      {
+                                                                          emit this->joyDemuxStatusChanged(msg_);
+                                                                      });
 
     _driveTrainStatusSub = _node->create_subscription<rover_msgs::msg::DrivetrainArbitration>(
         TOPIC_DT_DEMUX_STATUS,
         QOS_DEFAULT,
-        [this](const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_)
+        [this](const rover_msgs::msg::DrivetrainArbitration& msg_)
         {
             emit this->driveTrainDemuxStatusChanged(msg_);
         });
@@ -127,33 +127,21 @@ void QArbitration::checkServiceAvailable(rclcpp::Client<T>::SharedPtr client_, c
     }
 }
 
-void QArbitration::onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_)
+void QArbitration::onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus& msg_)
 {
-    if (!msg_)
-    {
-        RCLCPP_WARN(_node->get_logger(), "Received null JoyDemuxStatus message.");
-        return;
-    }
-
     bool wasBlockedMain = _ui.mainComboBox->blockSignals(true);
     bool wasBlockedSec = _ui.secComboBox->blockSignals(true);
 
-    _ui.mainComboBox->setCurrentIndex(msg_->controller_main_topic);
-    _ui.secComboBox->setCurrentIndex(msg_->controller_secondary_topic);
+    _ui.mainComboBox->setCurrentIndex(msg_.controller_main_topic);
+    _ui.secComboBox->setCurrentIndex(msg_.controller_secondary_topic);
 
     _ui.mainComboBox->blockSignals(wasBlockedMain);
     _ui.secComboBox->blockSignals(wasBlockedSec);
 }
 
-void QArbitration::onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg)
+void QArbitration::onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration& msg)
 {
-    if (!msg)
-    {
-        RCLCPP_WARN(_node->get_logger(), "Received null drivetrain demux status message.");
-        return;
-    }
-
     bool wasBlockedMain = _ui.driveTrainComboBox->blockSignals(true);
-    _ui.driveTrainComboBox->setCurrentIndex(msg->arbitration);
+    _ui.driveTrainComboBox->setCurrentIndex(msg.arbitration);
     _ui.driveTrainComboBox->blockSignals(wasBlockedMain);
 }

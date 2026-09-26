@@ -33,8 +33,8 @@ class JoyDemux : public rclcpp::Node
 
   private:
     void CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controller_type_) const;
-    void CB_demux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
-                  std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_);
+    void CB_demux(const rover_msgs::srv::JoyDemuxSetState::Request::ConstSharedPtr& request_,
+                  const rover_msgs::srv::JoyDemuxSetState::Response::SharedPtr& response_);
     void CB_status() const;
 
     void redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& msg_) const;
@@ -99,8 +99,8 @@ JoyDemux::JoyDemux():
 
     _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
         "demux_control",
-        [this](const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request_,
-               std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response_)
+        [this](const rover_msgs::srv::JoyDemuxSetState::Request::SharedPtr& request_,
+               const rover_msgs::srv::JoyDemuxSetState::Response::SharedPtr& response_)
         {
             this->CB_demux(request_, response_);
         });
@@ -185,8 +185,8 @@ bool JoyDemux::isIdle(eDemuxDestination dest_) const
     return (_dest_main != dest_ && _dest_secondary != dest_);
 }
 
-void JoyDemux::CB_demux(const std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Request> request,
-                        std::shared_ptr<rover_msgs::srv::JoyDemuxSetState::Response> response)
+void JoyDemux::CB_demux(const rover_msgs::srv::JoyDemuxSetState::Request::ConstSharedPtr& request,
+                        const rover_msgs::srv::JoyDemuxSetState::Response::SharedPtr& response)
 {
     eDemuxDestination dest = (eDemuxDestination)((int8_t)request->destination);
 

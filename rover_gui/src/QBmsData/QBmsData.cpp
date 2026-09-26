@@ -7,7 +7,7 @@
 
 QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_)
+    _node(std::move(guiNode_))
 {
     _layout = new QFlowLayout(this);
     _layout->setSpacing(2);

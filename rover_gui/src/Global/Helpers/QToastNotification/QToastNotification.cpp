@@ -58,7 +58,7 @@ namespace QHelper
     void QToastNotification::leaveEvent(QEvent* event)
     {
         _progressBarAnim.start();
-        this->setupTimerClose();
+        this->startTimerClose();
         QWidget::leaveEvent(event);
     }
 
@@ -130,7 +130,7 @@ namespace QHelper
         _slideInAnim.start();
         _progressBarAnim.start();
 
-        this->setupTimerClose();
+        this->startTimerClose();
 
         QTime currentTime = QTime::currentTime();
 
@@ -246,13 +246,13 @@ namespace QHelper
         _progressBarAnim.setEndValue(0);
 
         connect(&_fadeOutAnim, &QPropertyAnimation::finished, this, &QWidget::hide);
-        this->setupTimerClose();
-    }
-
-    void QToastNotification::setupTimerClose(void)
-    {
         connect(&_closeTimer, &QTimer::timeout, this, &QToastNotification::hideNotification);
         _closeTimer.setSingleShot(true);
+        this->startTimerClose();
+    }
+
+    void QToastNotification::startTimerClose(void)
+    {   
         _closeTimer.start(static_cast<int>(_shownDuration));
     }
 
@@ -278,21 +278,13 @@ namespace QHelper
                                                  eNotifType type_,
                                                  size_t durationMs_)
     {
-        QCoreApplication* pApp = QApplication::instance();
-        if (pApp)
-        {
-            QMetaObject::invokeMethod(
-                pApp,
-                [this, title_, description_, type_, durationMs_]()
-                {
-                    this->notify(title_, description_, type_, durationMs_);
-                },
-                Qt::QueuedConnection);
-        }
-        else
-        {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "QApplication returned null, something is very wrong");
-        }
+        QMetaObject::invokeMethod(
+            this,
+            [this, title_, description_, type_, durationMs_]()
+            {
+                this->notify(title_, description_, type_, durationMs_);
+            },
+            Qt::QueuedConnection);
     }
 
     void QToastNotification::hideNotification(void)

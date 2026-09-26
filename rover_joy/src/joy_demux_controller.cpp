@@ -103,18 +103,19 @@ class JoyDemuxController : public rclcpp::Node
                 return;
             }
 
-            auto request = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Request>();
+            rover_msgs::srv::JoyDemuxSetState::Request::SharedPtr request = std::make_shared<rover_msgs::srv::JoyDemuxSetState::Request>();
             request->controller_type = std::to_underlying(controller_);
             request->force = false;
             request->destination = std::to_underlying(currentDest);
 
             _client_demuxSetState->async_send_request(
                 request,
+                // NOLINTNEXTLINE(performance-unnecessary-value-param) - rclcpp requires exact SharedFuture signature match
                 [this](rclcpp::Client<rover_msgs::srv::JoyDemuxSetState>::SharedFuture future_)
                 {
                     try
                     {
-                        auto response = future_.get();
+                        const rclcpp::Client<rover_msgs::srv::JoyDemuxSetState>::SharedResponse& response = future_.get();
                         RCLCPP_DEBUG(this->get_logger(), "Service call success: %s", response->success ? "True" : "False");
                     }
                     catch (const std::exception& e)

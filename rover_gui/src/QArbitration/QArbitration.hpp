@@ -55,14 +55,14 @@ class QArbitration : public QWidget
     QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
 
   signals:
-    void joyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
-    void driveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
+    void joyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus& msg_);
+    void driveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration& msg_);
 
   private slots:
     void onControllerComboChanged(eControllerType controller_, int index_);
     void onDriveTrainComboChanged(int index_);
-    void onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
-    void onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
+    void onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus& msg_);
+    void onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration& msg_);
 
   private:
     void initComboBoxItems();

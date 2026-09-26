@@ -32,7 +32,7 @@ constexpr const char* STATUS_ERROR = "QWidget {"
 
 QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_),
+    _node(std::move(guiNode_)),
     _QStatusWorker(true, this)
 {
     ASSERT_COND(_node != nullptr);

@@ -99,22 +99,6 @@ add_executable(main_gui src/gui.cpp
                    ui/icons.qrc
                 )
 
-function(suppress_autogen_clang_tidy_warnings target)
-  if(NOT TARGET ${target})
-    return()
-  endif()
-
-  get_target_property(_automoc ${target} AUTOMOC)
-  if(_automoc)
-    file(GENERATE
-      OUTPUT "${CMAKE_CURRENT_BINARY_DIR}/${target}_autogen/.clang-tidy"
-      CONTENT "Checks: '-*'\nHeaderFilterRegex: ''\n"
-    )
-  endif()
-endfunction()
-
-suppress_autogen_clang_tidy_warnings(main_gui)
-
 add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui

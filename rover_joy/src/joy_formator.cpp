@@ -5,6 +5,9 @@
 #include <rover_lib2/helpers/constants.hpp>
 #include "sensor_msgs/msg/joy.hpp"
 
+#include <array>
+#include <algorithm>
+
 // =============================================================================
 // This node subscribe to a topic of message type "sensor_msgs/msg/joy" and
 // remaps the msg to a more readable/"humain friendly" custom ros msg
@@ -27,7 +30,7 @@ class Keybinding
 {
   public:
     // Enum MUST start at 0 since they are used as array indexes
-    enum eKeybinding
+    enum eKeybinding : uint8_t
     {
         a = 0,
         b,
@@ -57,31 +60,19 @@ class JoyFormator : public rclcpp::Node
   public:
     struct sControllerConfig
     {
-        int8_t buttons[Keybinding::eKeybinding_END] = {0};
-        int8_t axes[Keybinding::eKeybinding_END] = {0};
+        std::array<int8_t, Keybinding::eKeybinding_END> buttons{};
+        std::array<int8_t, Keybinding::eKeybinding_END> axes{};
 
         float trigger_range_min = -1.0f;
         float trigger_range_max = 1.0f;
-
         float joystick_dead_zone = 0.0f;
 
-        // Point this pointer to a function for a controller which needs
-        // specific custom execution each publish loop. This can be used to
-        // handle a weird deconnection from controller
-        void (JoyFormator::*custom_steps)(rover_msgs::msg::Joy* formatted_joy);
+        void (JoyFormator::*custom_steps)(rover_msgs::msg::Joy* formatted_joy) = nullptr;
 
         sControllerConfig()
         {
-            custom_steps = NULL;
-            for (uint8_t i = 0; i < (sizeof(buttons) / sizeof(buttons[0])); i++)
-            {
-                buttons[i] = -1;
-            }
-
-            for (uint8_t i = 0; i < (sizeof(axes) / sizeof(axes[0])); i++)
-            {
-                axes[i] = -1;
-            }
+            std::fill(buttons.begin(), buttons.end(), -1);
+            std::fill(axes.begin(), axes.end(), -1);
         }
     };
 
@@ -103,7 +94,7 @@ class JoyFormator : public rclcpp::Node
 
     void callbackJoy(const sensor_msgs::msg::Joy& msg);
     void callbackPubJoy();
-    void setControllerType(std::string controller_type_name);
+    void setControllerType(const std::string& controller_type_name);
     template<typename T>
     T getJoyValue(Keybinding::eKeybinding key);
     float applyJoystickDeadZone(float value_);
@@ -135,7 +126,7 @@ JoyFormator::JoyFormator():
     rclcpp::Parameter param_controller_type = this->get_parameter("controller_type");
     this->setControllerType(param_controller_type.as_string());
     rclcpp::Parameter param_timeout = this->get_parameter("disconnect_timeout_ms");
-    _timeout = rclcpp::Duration((float)param_timeout.as_int() / 1000.0f, 0U);
+    _timeout = rclcpp::Duration(static_cast<int32_t>((float)param_timeout.as_int() / 1000.0f), 0U);
 
     _sub_joy
         = this->create_subscription<sensor_msgs::msg::Joy>("raw/joy",
@@ -235,7 +226,7 @@ void JoyFormator::callbackPubJoy()
     _last_formatted_joy_msg = formatted_joy_msg;
 }
 
-void JoyFormator::setControllerType(std::string controller_type_name)
+void JoyFormator::setControllerType(const std::string& controller_type_name)
 {
     if (controller_type_name == std::string("DS4") || controller_type_name == std::string("PS4"))
     {
@@ -370,6 +361,7 @@ void JoyFormator::customStepsLogitech(rover_msgs::msg::Joy* formatted_joy)
     // reseted.
 
     // Detect disconnect
+    // NOLINTBEGIN(bugprone-branch-clone)
     if (!connected())
     {
         _controller_reset_needed = true;
@@ -390,6 +382,7 @@ void JoyFormator::customStepsLogitech(rover_msgs::msg::Joy* formatted_joy)
         _controller_reset_needed = true;
         *formatted_joy = rover_msgs::msg::Joy();
     }
+    // NOLINTEND(bugprone-branch-clone)
 
     else if (_controller_reset_needed && formatted_joy->joy_data[rover_msgs::msg::Joy::JOYSTICK_LEFT_FRONT] != 1.0f
              &&                                                                              // left front

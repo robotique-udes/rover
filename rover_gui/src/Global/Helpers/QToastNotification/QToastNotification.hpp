@@ -75,7 +75,7 @@ namespace QHelper
 
         void setupUI(void);
         void setupAnimations(void);
-        void setupTimerClose(void);
+        void startTimerClose(void);
         void setupScreenRect(void);
 
         void hideNotification(void);
