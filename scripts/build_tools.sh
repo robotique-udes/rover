@@ -105,6 +105,7 @@ clean() {
     local build_result=$?
 
     popd > /dev/null
+    source ~/.bashrc
     return "$build_result"
 }
 
