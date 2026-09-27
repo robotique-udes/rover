@@ -151,7 +151,7 @@ ROS 2 Build Tools
 Available commands:
   b                  Build all packages
   bs package1 ...    Build selected packages and their dependencies/dependents
-  clean              Clean workspace and rebuild everything
+  clean              Clean workspace, rebuild everything and source bashrc
   list_packages      List all available packages
   build_help         Show this help message
 
