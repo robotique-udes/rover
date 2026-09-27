@@ -73,7 +73,7 @@ b() {
 
 bs() {
     if [[ $# -eq 0 ]]; then
-        print_status "$YELLOW" "Usage: build_select package1 [package2 ...]"
+        print_status "$YELLOW" "Usage: bs package1 [package2 ...]"
         return 1
     fi
 
