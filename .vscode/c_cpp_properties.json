@@ -22,7 +22,19 @@
             "compilerPath": "/usr/bin/gcc",
             "cStandard": "c23",
             "cppStandard": "gnu++23",
-            "intelliSenseMode": "linux-gcc-x64"
+            "intelliSenseMode": "linux-gcc-x64",
+            "compileCommands": [
+                "${workspaceFolder}/../../build/rover_joy/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_sim/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_arm/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_gui/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_drive_train/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_msgs/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_security/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_camera/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_can/compile_commands.json",
+                "${workspaceFolder}/../../build/rover_auxiliary/compile_commands.json"
+            ]
         }
     ],
     "version": 4
