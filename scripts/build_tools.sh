@@ -18,10 +18,13 @@ print_status() {
 }
 
 get_build_jobs() {
-    local jobs=$(( $(nproc) / 2 ))
-    (( jobs < 1 )) && jobs=1
-
-    printf '%d' "$jobs"
+    if [[ "${WORKER_QUANTITY:-}" =~ ^[1-9][0-9]*$ ]]; then
+        printf '%d' "$WORKER_QUANTITY"
+    else
+        local jobs=$(( $(nproc) / 2 ))
+        (( jobs < 1 )) && jobs=1
+        printf '%d' "$jobs"
+    fi
 }
 
 _build_all_packages() {
@@ -153,7 +156,19 @@ Available commands:
   bs package1 ...    Build selected packages and their dependencies/dependents
   clean              Clean workspace, rebuild everything and source bashrc
   list_packages      List all available packages
-  b_help         Show this help message
+  b_help             Show this help message
+
+Build workers:
+
+  By default, builds use half of the available CPU threads.
+
+  Set WORKER_QUANTITY to override the default:
+
+    export WORKER_QUANTITY=4
+
+  The value must be a positive integer. Invalid values are ignored
+  and the default (half of the available CPU threads) is used.
+
 Examples:
   b
   bs rover_can
