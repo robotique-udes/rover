@@ -6,7 +6,7 @@
 #include <QLabel>
 #include <QStyle>
 
-QLightsController::QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QLightsController::QLightsController(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(std::move(guiNode_))
 {

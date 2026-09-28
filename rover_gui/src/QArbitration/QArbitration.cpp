@@ -7,7 +7,7 @@
 #include <rover_msgs/msg/detail/drivetrain_arbitration__struct.hpp>
 #include <rover_msgs/srv/detail/drive_train_arbitration__struct.hpp>
 
-QArbitration::QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QArbitration::QArbitration(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(std::move(guiNode_))
 {

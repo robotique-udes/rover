@@ -359,7 +359,7 @@ void PanoramaProcessor::waitForAngle(Constants::CameraInfo::eCamNames id_, float
     std::promise<void> angleReachedPromise;
     std::future<void> angleReachedFuture = angleReachedPromise.get_future();
 
-    if (std::shared_ptr<rclcpp::Node> lockedNode = _node.lock())
+    if (rclcpp::Node::SharedPtr lockedNode = _node.lock())
     {
         rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr sub_ptzStatusTemp
             = lockedNode->create_subscription<rover_msgs::msg::CameraControl>(

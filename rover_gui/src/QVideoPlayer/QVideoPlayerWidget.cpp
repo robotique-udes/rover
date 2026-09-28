@@ -16,20 +16,19 @@ using namespace LogUtils;
 int QVideoPlayerWidget::MAX_RECONNECT_ATTEMPTS = 3;
 int QVideoPlayerWidget::_instanceCounter = 0;
 
-QVideoPlayerWidget::QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                                       std::string url_,
+QVideoPlayerWidget::QVideoPlayerWidget(rclcpp::Node::SharedPtr guiNode_,
+                                       const std::string& url_,
                                        uint16_t playerIndex_,
                                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
                                        std::shared_ptr<QRecordingWorker> workerThreadRecording_,
                                        std::shared_ptr<QPanoramaWorker> workerThreadPanorama_):
-    _node(guiNode_),
+    _node(std::move(guiNode_)),
     _camURL(url_),
     _streamIndex(_instanceCounter - 1),
     _playerIndex(playerIndex_),
-    _playerWorkerThreadAruco(workerThreadAruco_),
-    _playerWorkerThreadRecording(workerThreadRecording_),
-    _panoramaWorkerThread(workerThreadPanorama_),
-    _recorderWidget(url_, playerIndex_, workerThreadRecording_),
+    _playerWorkerThreadAruco(std::move(workerThreadAruco_)),
+    _panoramaWorkerThread(std::move(workerThreadPanorama_)),
+    _recorderWidget(url_, playerIndex_, std::move(workerThreadRecording_)),
     _reconnectTimer(),
     _frameTimeoutTimer(),
     _connectionTimeoutTimer()

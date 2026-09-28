@@ -7,16 +7,15 @@
 #include <utility>
 
 #if defined(ROS)
-CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
+CameraInterface::CameraInterface(rclcpp::Node::SharedPtr node_,
                                  const std::string& ptzCommandTopic_,
                                  const std::string& ptzConfigTopic_,
-                                 const std::string& powerCommandTopic_)
+                                 const std::string& powerCommandTopic_):
+    _ptzCommandTopic(ptzCommandTopic_),
+    _ptzConfigTopic(ptzConfigTopic_),
+    _powerCommandTopic(powerCommandTopic_),
+    _node(std::move(node_))
 {
-    _node = std::move(node_);
-    _ptzCommandTopic = ptzCommandTopic_;
-    _ptzConfigTopic = ptzConfigTopic_;
-    _powerCommandTopic = powerCommandTopic_;
-
     if (_node)
     {
         this->initTimers();

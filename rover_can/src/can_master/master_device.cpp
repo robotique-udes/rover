@@ -4,7 +4,7 @@
 
 #include <rover_lib2/helpers/assert.hpp>
 
-void MasterDevice::attachNode(std::shared_ptr<rclcpp::Node> node_)
+void MasterDevice::attachNode(rclcpp::Node::SharedPtr node_)
 {
     if (node_ != _rosNode)
     {

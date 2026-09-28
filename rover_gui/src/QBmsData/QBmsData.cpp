@@ -5,7 +5,7 @@
 #include <QLabel>
 #include <QtCharts>
 
-QBmsData::QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QBmsData::QBmsData(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(std::move(guiNode_))
 {

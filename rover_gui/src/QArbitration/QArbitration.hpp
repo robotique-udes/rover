@@ -52,7 +52,7 @@ class QArbitration : public QWidget
     };
 
   public:
-    QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    QArbitration(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_);
 
   signals:
     void joyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus& msg_);
@@ -70,7 +70,7 @@ class QArbitration : public QWidget
     template<typename T>
     void checkServiceAvailable(rclcpp::Client<T>::SharedPtr client_, const std::string& serviceName_);
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
     Ui::Arbitration _ui;
 
     rclcpp::Subscription<rover_msgs::msg::JoyDemuxStatus>::SharedPtr _joyDemuxStatusSub;

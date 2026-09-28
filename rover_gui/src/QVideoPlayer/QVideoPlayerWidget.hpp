@@ -53,8 +53,8 @@ class QVideoPlayerWidget : public QWidget
         CONNECTION_FAILED
     };
 
-    QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                       std::string url_,
+    QVideoPlayerWidget(rclcpp::Node::SharedPtr guiNode_,
+                       const std::string& url_,
                        uint16_t playerIndex_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
                        std::shared_ptr<QRecordingWorker> workerThreadRecording_,
@@ -153,7 +153,7 @@ class QVideoPlayerWidget : public QWidget
     void hideAngleSelector(void);
     void setupIRModeBox(void);
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
     Ui::VideoPlayer _ui;
 
     std::string _camURL = "";
@@ -167,7 +167,6 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramaManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraIR>> _client_cameraIR;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
-    std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
     QVideoRecorderWidget _recorderWidget;
 

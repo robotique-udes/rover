@@ -30,7 +30,7 @@ constexpr const char* STATUS_ERROR = "QWidget {"
                                      "padding: 5px 10px;"
                                      "}";
 
-QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QDeviceStatus::QDeviceStatus(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(std::move(guiNode_)),
     _QStatusWorker(true, this)

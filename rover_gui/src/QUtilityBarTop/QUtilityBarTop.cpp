@@ -6,9 +6,9 @@
 #include <qdebug.h>
 #include <qtimezone.h>
 
-QUtilityBarTop::QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
+QUtilityBarTop::QUtilityBarTop(rclcpp::Node::SharedPtr node_, QWidget* parent_):
     QWidget(parent_),
-    _node(node_),
+    _node(std::move(node_)),
     _batteryTimeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
     _GNSSTimeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT)),
     _antennaTimeout(rclcpp::Duration::from_seconds(WATCH_DOG_TIMEOUT))
@@ -178,7 +178,7 @@ void QUtilityBarTop::onTimerDisplay(void)
         QDateTime givenTimeUTC = timers.toUTC();
         QDateTime nowUtc = QDateTime::currentDateTimeUtc();
 
-        int secondsDiff = nowUtc.secsTo(givenTimeUTC);
+        int secondsDiff = static_cast<int>(nowUtc.secsTo(givenTimeUTC));
 
         if ((secondsDiff < secondsBeforeTimeout && secondsDiff > 0) || (secondsBeforeTimeout == -1 && secondsDiff > 0))
         {

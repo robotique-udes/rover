@@ -11,7 +11,7 @@ QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
                                            std::shared_ptr<QRecordingWorker> workerThreadRecording_):
     _playerIndex(playerIndex__),
     _camURL(url_),
-    _playerWorkerThreadRecording(workerThreadRecording_)
+    _playerWorkerThreadRecording(std::move(workerThreadRecording_))
 {
     connect(_playerWorkerThreadRecording.get(),
             &QRecordingWorker::screenshotHandledSuccessfully,

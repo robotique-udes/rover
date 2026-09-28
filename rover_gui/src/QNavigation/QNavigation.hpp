@@ -21,7 +21,7 @@ class QNavigation : public QWidget
     Q_OBJECT
 
   public:
-    QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_ = nullptr);
+    QNavigation(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_ = nullptr);
 
   signals:
     void gpsCallback(double latitude_, double longitude_, double heading_);
@@ -60,7 +60,7 @@ class QNavigation : public QWidget
     void onCSVWriteTimer(void);
 
     QWebChannel _webChannel;
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
     rclcpp::Subscription<rover_msgs::msg::Gps>::SharedPtr _gpsSub;
     rclcpp::TimerBase::SharedPtr _csvWriteTimer;
 

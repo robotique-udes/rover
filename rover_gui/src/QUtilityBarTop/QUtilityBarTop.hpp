@@ -38,7 +38,7 @@ class QUtilityBarTop : public QWidget
     static constexpr const char* FILE_PATH = "TaskDateAndTime.txt";
 
   public:
-    QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
+    QUtilityBarTop(rclcpp::Node::SharedPtr node_, QWidget* parent_);
 
   signals:
     void updateBatteryUI(int16_t _percent);
@@ -103,7 +103,7 @@ class QUtilityBarTop : public QWidget
     rclcpp::Time _lastBatteryTimeMsg;
     rclcpp::Time _lastAntennaTimeMsg;
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
 
     rclcpp::Duration _batteryTimeout;
     rclcpp::Duration _GNSSTimeout;
