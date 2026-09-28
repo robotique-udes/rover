@@ -153,8 +153,7 @@ Available commands:
   bs package1 ...    Build selected packages and their dependencies/dependents
   clean              Clean workspace, rebuild everything and source bashrc
   list_packages      List all available packages
-  build_help         Show this help message
-
+  b_help         Show this help message
 Examples:
   b
   bs rover_can
