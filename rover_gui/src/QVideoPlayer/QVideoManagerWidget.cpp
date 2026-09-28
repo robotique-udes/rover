@@ -32,7 +32,11 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
 
-    connect(this, &QVideoManagerWidget::displayArucoDetected, this, &QVideoManagerWidget::onDisplayArucoDetected, Qt::ConnectionType::QueuedConnection);
+    connect(this,
+            &QVideoManagerWidget::displayArucoDetected,
+            this,
+            &QVideoManagerWidget::onDisplayArucoDetected,
+            Qt::ConnectionType::QueuedConnection);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
