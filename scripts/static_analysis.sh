@@ -10,6 +10,16 @@
 #
 # Requirements: ROS 2 Jazzy, clang-tidy, ros-jazzy-ament-clang-tidy
 
+get_build_jobs() {
+    if [[ "${WORKER_QUANTITY:-}" =~ ^[1-9][0-9]*$ ]]; then
+        printf '%d' "$WORKER_QUANTITY"
+    else
+        local jobs=$(( $(nproc) / 2 ))
+        (( jobs < 1 )) && jobs=1
+        printf '%d' "$jobs"
+    fi
+}
+
 set -uo pipefail
 
 ROS_DISTRO_NAME="jazzy"
@@ -81,10 +91,12 @@ if [ "$SKIP_BUILD" = false ]; then
     echo -e "${BLUE}=== Cleaning previous build (build/ install/ log/) ... ===${NC}"
     rm -rf build install log
 
-    echo -e "${BLUE}=== Building ROS2 packages ... ===${NC}"
+    export jobs=$(get_build_jobs)
+
+    echo -e "${BLUE}=== Building ROS2 packages with ${jobs} parallel workers ... ===${NC}"
     export CPR_USE_SYSTEM_CURL=ON
     export CXXFLAGS="-Werror"
-    if colcon build --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; then
+    if colcon build --parallel-workers "$jobs" --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; then
         echo -e "${GREEN}[OK] Build succeeded${NC}"
     else
         echo -e "${RED}[FAILED] Build step triggered warnings or errors${NC}"
