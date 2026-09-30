@@ -41,8 +41,6 @@ namespace MotorDrivers
             _reversed(reversed_),
             _brakeMode(brakeMode_)
         {
-            this->setReversed(_reversed);
-            this->setBrakeMode(brakeMode_);
         }
 
         void init(void)
@@ -171,8 +169,9 @@ namespace MotorDrivers
 
         void setReversed(bool reversed_)
         {
+            const float userCmd = this->getCmd();
             _reversed = reversed_;
-            this->setCmd(this->getCmd());
+            this->setCmd(userCmd);
         }
 
         bool isReversed(void) const
