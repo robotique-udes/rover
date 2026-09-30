@@ -27,7 +27,7 @@ jobs:
         uses: actions/checkout@v7
         with:
           submodules: recursive
-          fetch-depth: 0
+          fetch-depth: 2
 
       - name: Setup environment
         shell: bash
@@ -52,9 +52,7 @@ jobs:
           if [[ "${{ github.event_name }}" == "pull_request" ]]; then
             echo -e "\e[0;34m=== Determining changed packages ===\e[0m"
 
-            changed_files=$(git diff --name-only \
-              "${{ github.event.pull_request.base.sha }}" \
-              "${{ github.event.pull_request.head.sha }}")
+            changed_files=$(git diff --name-only HEAD^1 HEAD^2)
 
             packages=$(printf '%s\n' "$changed_files" |
               grep '^rover_' |
