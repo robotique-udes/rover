@@ -9,5 +9,4 @@ Checks: >
   -performance-avoid-endl
 WarningsAsErrors: '*'
 HeaderFilterRegex: '.*/src/.*'
-ExcludeHeaderFilterRegex: '.*(_autogen/|/moc_[^/]*|/mocs_compilation\.cpp|/deps/).*'
 FormatStyle: none
