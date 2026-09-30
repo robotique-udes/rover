@@ -50,7 +50,7 @@ namespace QHelper
     {
         _ui.progressBar->setValue(_ui.progressBar->maximum());
         _progressBarAnim.stop();
-        _closeTimer.disconnect();
+        _closeTimer.stop();
 
         QWidget::enterEvent(event);
     }

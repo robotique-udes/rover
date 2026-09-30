@@ -394,7 +394,7 @@ bool CameraNode::stopRecording(const std::string& cameraURL_)
  * @return true
  * @return false
  */
-bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_)
+bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename_, const std::string& cameraURL_)
 {
     {
         std::lock_guard<std::mutex> lock(_recordingMapMutex);
@@ -409,7 +409,7 @@ bool CameraNode::newRecording(std::string videoFolderPath_, std::string filename
             _recordingMap.emplace(cameraURL_,
                                   Recording(std::move(videoFolderPath_),
                                             std::move(filename_),
-                                            std::move(cameraURL_),
+                                            cameraURL_,
                                             this->get_logger(),
                                             [this](const std::string& url_)
                                             {
