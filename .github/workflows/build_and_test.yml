@@ -53,6 +53,7 @@ jobs:
             echo -e "\e[0;34m=== Determining changed packages ===\e[0m"
 
             # Fetch the PR base branch ref explicitly so Git can resolve it
+            git config --global --add safe.directory /__w/rover/rover
             git fetch origin ${{ github.base_ref }}:refs/remotes/origin/${{ github.base_ref }}
 
             changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
