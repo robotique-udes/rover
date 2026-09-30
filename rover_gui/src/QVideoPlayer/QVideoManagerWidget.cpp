@@ -367,14 +367,14 @@ void QVideoManagerWidget::setSplitterInitialGeometry(void)
     {
         float total = static_cast<float>(_splitter.width());
         int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
-        int right = total - left;
+        int right = static_cast<int>(total) - left;
         _splitter.setSizes(QList<int>({left, right}));
     }
     else if (index == std::to_underlying(eTabIndex::ARM3))
     {
         float total = static_cast<float>(_arm3Splitter.width());
         int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
-        int right = total - left;
+        int right = static_cast<int>(total) - left;
         _arm3Splitter.setSizes(QList<int>({left, right}));
     }
 }

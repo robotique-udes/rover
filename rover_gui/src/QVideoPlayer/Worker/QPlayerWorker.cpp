@@ -17,8 +17,8 @@ QPlayerWorker::~QPlayerWorker()
 }
 
 void QPlayerWorker::manageDetectionInternal(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,
-    std::string _camURL_,
+    const rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr& client_ArucoDetectionManager_,
+    const std::string& _camURL_,
     uint16_t playerIndex_,
     bool start_)
 {
@@ -93,8 +93,8 @@ void QPlayerWorker::manageDetectionInternal(
 }
 
 void QPlayerWorker::manageDetection(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_,
-    std::string _camURL_,
+    const rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr& client_ArucoDetectionManager_,
+    const std::string& _camURL_,
     uint16_t playerIndex_,
     bool start_)
 {
@@ -106,7 +106,7 @@ void QPlayerWorker::manageDetection(
 }
 
 void QPlayerWorker::updateDetectionManager(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_)
+    const rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr& client_ArucoDetectionManager_)
 {
     this->addTask(
         [this, client_ArucoDetectionManager_](void)
@@ -116,7 +116,7 @@ void QPlayerWorker::updateDetectionManager(
 }
 
 void QPlayerWorker::updateDetectionInternal(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_ArucoDetectionManager_)
+    const rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr& client_ArucoDetectionManager_)
 {
     bool success = false;
 
@@ -164,7 +164,7 @@ void QPlayerWorker::updateDetectionInternal(
     emit this->urlFoundInDetection(liveURLs);
 }
 
-void QPlayerWorker::toggleIRMode(rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_cameraIR_,
+void QPlayerWorker::toggleIRMode(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr& client_cameraIR_,
                                  const std::string& ip_,
                                  uint8_t mode_)
 {
@@ -175,7 +175,7 @@ void QPlayerWorker::toggleIRMode(rclcpp::Client<rover_msgs::srv::CameraIR>::Shar
         });
 }
 
-void QPlayerWorker::toggleIRModeInternal(rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_cameraIR_,
+void QPlayerWorker::toggleIRModeInternal(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr& client_cameraIR_,
                                          const std::string& ip_,
                                          uint8_t mode_)
 {

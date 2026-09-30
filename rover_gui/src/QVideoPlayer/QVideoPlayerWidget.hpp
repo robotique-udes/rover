@@ -62,7 +62,7 @@ class QVideoPlayerWidget : public QWidget
 
     ~QVideoPlayerWidget();
 
-    void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
+    void setArucoClientManager(const rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr& client_);
     void startDetection(void);
     void stopDetection(void);
     void handleArucoDetection(void);
@@ -80,7 +80,7 @@ class QVideoPlayerWidget : public QWidget
 
     void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
     void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_);
-    void setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_);
+    void setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr& client_);
 
     std::string getCamURL(void);
     float getCameraAngle(void);
@@ -96,7 +96,7 @@ class QVideoPlayerWidget : public QWidget
     QString getId(void);
     bool isStreaming(void);
 
-    void CB_cameraListUpdate(std::vector<std::string> urls_);
+    void CB_cameraListUpdate(const std::vector<std::string>& urls_);
     void CB_srvCameraAvailable(bool available_);
 
   signals:

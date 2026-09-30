@@ -55,6 +55,7 @@ QDeviceStatus::QDeviceStatus(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_)
                                                                        QOS_DEFAULT,
                                                                        [this](const rover_msgs::msg::CanDeviceStatus& msg)
                                                                        {
+                                                                           // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
                                                                            QMetaObject::invokeMethod(
                                                                                this,
                                                                                [this, msg]()

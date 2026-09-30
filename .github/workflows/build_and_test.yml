@@ -16,7 +16,7 @@ concurrency:
 
 jobs:
   jazzy-build:
-    name: 'Build and static analysis on ROS2 Jazzy (Ubuntu 24.04)'
+    name: "Build and static analysis on ROS2 Jazzy (Ubuntu 24.04)"
     runs-on: ubuntu-24.04
 
     container:
@@ -69,7 +69,7 @@ jobs:
           fail=0
           for pkg in $pkgs; do
             if [ -f build/$pkg/compile_commands.json ]; then
-              if ! ament_clang_tidy --config .clang-tidy build/$pkg; then
+              if ! ament_clang_tidy --config .clang-tidy --exclude "*_autogen/*" --exclude "*/moc_*.cpp" --exclude "*/mocs_compilation.cpp" build/$pkg; then
                 echo "clang-tidy failed for $pkg"
                 fail=1
               fi

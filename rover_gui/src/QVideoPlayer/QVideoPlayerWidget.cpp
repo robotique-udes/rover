@@ -10,6 +10,7 @@
 #include <optional>
 #include <gst/video/videooverlay.h>
 #include <utility>
+#include <chrono>
 
 using namespace LogUtils;
 
@@ -697,7 +698,7 @@ void QVideoPlayerWidget::autoStartGStreamer(void)
     this->startStream(QString::fromStdString(_camURL));
 }
 
-void QVideoPlayerWidget::setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_)
+void QVideoPlayerWidget::setArucoClientManager(const rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr& client_)
 {
     if (client_)
     {
@@ -819,7 +820,7 @@ float QVideoPlayerWidget::getCameraAngle(void)
 
 void QVideoPlayerWidget::setCamURL(std::string newCamUrl_)
 {
-    _camURL = newCamUrl_;
+    _camURL = std::move(newCamUrl_);
     _recorderWidget.updateCamURL(_camURL);
     this->hideAngleSelector();
 }
@@ -919,12 +920,12 @@ bool QVideoPlayerWidget::isStreaming(void)
     return _state == ePlayerState::STREAMING;
 }
 
-void QVideoPlayerWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_)
+void QVideoPlayerWidget::setCameraControlClientManager(rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr client_)
 {
-    _recorderWidget.setCameraControlClientManager(client_);
+    _recorderWidget.setCameraControlClientManager(std::move(client_));
 }
 
-void QVideoPlayerWidget::CB_cameraListUpdate(std::vector<std::string> urls_)
+void QVideoPlayerWidget::CB_cameraListUpdate(const std::vector<std::string>& urls_)
 {
     _recorderWidget.emitUpdateCameraList(urls_);
 }
@@ -937,13 +938,21 @@ void QVideoPlayerWidget::CB_srvCameraAvailable(bool available_)
 void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
 {
     _ui.cameraAngleBox->setValue(_ui.cameraAngleSlider->value());
-    emit this->updatePTZCmd(_ui.cameraAngleSlider->value(), std::to_underlying(*Constants::CameraInfo::getIdFromURL(_camURL)));
+    std::optional<Constants::CameraInfo::eCamNames> camId = Constants::CameraInfo::getIdFromURL(_camURL);
+    if (camId)
+    {
+        emit this->updatePTZCmd(static_cast<float>(_ui.cameraAngleSlider->value()), std::to_underlying(*camId));
+    }
 }
 
 void QVideoPlayerWidget::onCameraAngleBoxChanged(void)
 {
-    _ui.cameraAngleSlider->setValue(_ui.cameraAngleBox->value());
-    emit this->updatePTZCmd(_ui.cameraAngleBox->value(), std::to_underlying(*Constants::CameraInfo::getIdFromURL(_camURL)));
+    _ui.cameraAngleSlider->setValue(static_cast<int>(_ui.cameraAngleBox->value()));
+    std::optional<Constants::CameraInfo::eCamNames> camId = Constants::CameraInfo::getIdFromURL(_camURL);
+    if (camId)
+    {
+        emit this->updatePTZCmd(static_cast<float>(_ui.cameraAngleBox->value()), std::to_underlying(*camId));
+    }
 }
 
 void QVideoPlayerWidget::hideAngleSelector(void)
@@ -977,7 +986,11 @@ void QVideoPlayerWidget::onCenterAngle(void)
 {
     _ui.cameraAngleSlider->setValue(CAMERA_CENTER_ANGLE);
     _ui.cameraAngleBox->setValue(CAMERA_CENTER_ANGLE);
-    emit this->updatePTZCmd(CAMERA_CENTER_ANGLE, std::to_underlying(*Constants::CameraInfo::getIdFromURL(_camURL)));
+    std::optional<Constants::CameraInfo::eCamNames> camId = Constants::CameraInfo::getIdFromURL(_camURL);
+    if (camId)
+    {
+        emit this->updatePTZCmd(CAMERA_CENTER_ANGLE, std::to_underlying(*camId));
+    }
 }
 
 void QVideoPlayerWidget::handlePanorama(void)
@@ -996,11 +1009,11 @@ void QVideoPlayerWidget::handlePanorama(void)
     }
 }
 
-void QVideoPlayerWidget::setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_)
+void QVideoPlayerWidget::setPanoramaClientManager(rclcpp::Client<rover_msgs::srv::Panorama>::SharedPtr client_)
 {
     if (client_)
     {
-        this->_client_panoramaManager = client_;
+        _client_panoramaManager = std::move(client_);
     }
     else
     {
@@ -1040,7 +1053,11 @@ void QVideoPlayerWidget::onPanoramaFinished(bool success_, const std::string& st
 
 void QVideoPlayerWidget::setPanoramaDuration(void)
 {
-    _panoramaDuration = _ui.panoramaDurationBox->value() * 1000;
+    const std::chrono::duration<double> duration{_ui.panoramaDurationBox->value()};
+
+    const std::chrono::milliseconds durationMs = std::chrono::duration_cast<std::chrono::milliseconds>(duration);
+
+    _panoramaDuration = static_cast<uint16_t>(durationMs.count());
 }
 
 void QVideoPlayerWidget::onUpdateActualAngle(const std::string& camURL_, float yaw_)
@@ -1100,7 +1117,7 @@ void QVideoPlayerWidget::setupIRModeBox(void)
     _ui.IRModeBox->setCurrentIndex(0);
 }
 
-void QVideoPlayerWidget::setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_)
+void QVideoPlayerWidget::setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr& client_)
 {
     _client_cameraIR = client_;
     this->onIRModeChanged();

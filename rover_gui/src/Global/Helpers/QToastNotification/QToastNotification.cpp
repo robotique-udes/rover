@@ -278,6 +278,7 @@ namespace QHelper
                                                  eNotifType type_,
                                                  size_t durationMs_)
     {
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
         QMetaObject::invokeMethod(
             this,
             [this, title_, description_, type_, durationMs_]()
