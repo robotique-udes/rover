@@ -10,7 +10,15 @@
 
 class JoyDemux : public rclcpp::Node
 {
-  private:
+    static constexpr const char* ARM_TELEOP_TOPIC = "/base/joy/arm";
+    static constexpr const char* ANTENNA_TELEOP_TOPIC = "/base/joy/antenna";
+    static constexpr const char* SCIENCE_TELEOP_TOPIC = "/base/joy/science";
+    static constexpr const char* DEMUX_STATUS_TOPIC = "/base/joy/demux_status";
+    static constexpr const char* DRIVE_TRAIN_TOPIC = "/base/joy/drive_train";
+
+    static constexpr const char* MAIN_JOY_TOPIC = "/base/joy/main_joy";
+    static constexpr const char* SECONDARY_JOY_TOPIC = "/base/joy/secondary_joy";
+
     enum class eControllerType : uint8_t
     {
         MAIN = rover_msgs::srv::JoyDemuxSetState_Request::CONTROLLER_MAIN,
@@ -21,6 +29,7 @@ class JoyDemux : public rclcpp::Node
     {
         DRIVE_TRAIN = rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
         ARM = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
+        SCIENCE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_SCIENCE,
         ANTENNA = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
         NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
@@ -45,6 +54,7 @@ class JoyDemux : public rclcpp::Node
 
     rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_drive_train;
     rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_arm;
+    rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_science;
     rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_antenna;
     rclcpp::Publisher<rover_msgs::msg::JoyDemuxStatus>::SharedPtr _pub_status;
 
@@ -69,21 +79,21 @@ int main(int argc_, char* argv_[])
 JoyDemux::JoyDemux():
     Node("joy_demux")
 {
-    _sub_main = this->create_subscription<rover_msgs::msg::Joy>("main_joy",
+    _sub_main = this->create_subscription<rover_msgs::msg::Joy>(MAIN_JOY_TOPIC,
                                                                 QOS_DEFAULT,
                                                                 [this](const rover_msgs::msg::Joy& msg_)
                                                                 {
                                                                     CB_joy(msg_, eControllerType::MAIN);
                                                                 });
 
-    _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>("secondary_joy",
+    _sub_secondary = this->create_subscription<rover_msgs::msg::Joy>(SECONDARY_JOY_TOPIC,
                                                                      QOS_DEFAULT,
                                                                      [this](const rover_msgs::msg::Joy& msg_)
                                                                      {
                                                                          CB_joy(msg_, eControllerType::SECONDARY);
                                                                      });
 
-    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>("drive_train", QOS_DEFAULT);
+    _pub_drive_train = this->create_publisher<rover_msgs::msg::Joy>(DRIVE_TRAIN_TOPIC, QOS_DEFAULT);
 
     rclcpp::QoS teleopQos(rclcpp::KeepLast(1));
     teleopQos.reliability(RMW_QOS_POLICY_RELIABILITY_RELIABLE);
@@ -92,10 +102,11 @@ JoyDemux::JoyDemux():
     teleopQos.liveliness(RMW_QOS_POLICY_LIVELINESS_AUTOMATIC);
     teleopQos.liveliness_lease_duration(TELEOP_LEASE_DURATION);
 
-    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>("arm", teleopQos);
+    _pub_arm = this->create_publisher<rover_msgs::msg::Joy>(ARM_TELEOP_TOPIC, teleopQos);
 
-    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>("antenna", QOS_DEFAULT);
-    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>("demux_status", QOS_DEFAULT);
+    _pub_antenna = this->create_publisher<rover_msgs::msg::Joy>(ANTENNA_TELEOP_TOPIC, QOS_DEFAULT);
+    _pub_science = this->create_publisher<rover_msgs::msg::Joy>(SCIENCE_TELEOP_TOPIC, QOS_DEFAULT);
+    _pub_status = this->create_publisher<rover_msgs::msg::JoyDemuxStatus>(DEMUX_STATUS_TOPIC, QOS_DEFAULT);
 
     _srv_demux = this->create_service<rover_msgs::srv::JoyDemuxSetState>(
         "demux_control",
@@ -146,6 +157,11 @@ void JoyDemux::CB_joy(const rover_msgs::msg::Joy& msg_, eControllerType controll
             _pub_arm->publish(msg_zeros);
         }
 
+        if (isIdle(eDemuxDestination::SCIENCE))
+        {
+            _pub_science->publish(msg_zeros);
+        }
+
         if (isIdle(eDemuxDestination::ANTENNA))
         {
             _pub_antenna->publish(msg_zeros);
@@ -171,6 +187,10 @@ void JoyDemux::redirectMsg(eDemuxDestination dest_, const rover_msgs::msg::Joy& 
     else if (dest_ == eDemuxDestination::ARM)
     {
         _pub_arm->publish(msg_);
+    }
+    else if (dest_ == eDemuxDestination::SCIENCE)
+    {
+        _pub_science->publish(msg_);
     }
     else if (dest_ == eDemuxDestination::ANTENNA)
     {

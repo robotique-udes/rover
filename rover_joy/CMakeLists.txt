@@ -39,6 +39,22 @@ ament_target_dependencies(joy_demux_controller
                           rover_msgs)
 target_link_libraries(joy_demux_controller rover_shared_libs)
 
+add_library(rover_joy_headers INTERFACE)
+target_include_directories(rover_joy_headers INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+install(TARGETS rover_joy_headers
+  EXPORT rover_joy_headersTargets)
+
+ament_export_targets(rover_joy_headersTargets HAS_LIBRARY_TARGET)
+ament_export_include_directories(include)
+
+install(DIRECTORY include/
+  DESTINATION include
+)
+
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
 

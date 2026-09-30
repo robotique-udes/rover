@@ -2,7 +2,7 @@
 #define __ROBOT_CONTROLLER_HPP__
 
 #include "arm_configuration.hpp"
-#include "keybinding.hpp"
+#include "keybinding_arm.hpp"
 #include "joy_manager.hpp"
 
 #include <rover_lib2/helpers/macros.hpp>
@@ -18,7 +18,7 @@ class RobotController
     }
 
     virtual std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
-        const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& inputArray_)
+        const std::array<float, TO_UNDERLYING(Constants::Keybinds::eJoyInput::eLAST)>& inputArray_)
         = 0;
 
     constexpr float getCartVelocity(eJointIndex joint_) const

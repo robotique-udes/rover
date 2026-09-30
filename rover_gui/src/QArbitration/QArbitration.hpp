@@ -41,6 +41,7 @@ class QArbitration : public QWidget
         DRIVE_TRAIN = rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
         ARM = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
         ANTENNA = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
+        SCIENCE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_SCIENCE,
         NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
 

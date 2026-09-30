@@ -1,6 +1,7 @@
 cmake_minimum_required(VERSION 3.8)
-project(rover_arm)
+project(rover_science)
 
+# Default to C++14
 if(NOT CMAKE_CXX_STANDARD)
   set(CMAKE_CXX_STANDARD 23)
 endif()
@@ -12,14 +13,11 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
-find_package(joy REQUIRED)
-find_package(rover_msgs REQUIRED)
 find_package(rover_joy REQUIRED)
-find_package (Eigen3 REQUIRED)
+find_package(rover_msgs REQUIRED)
 
 include_directories(
   include
-  ${EIGEN3_INCLUDE_DIRS}
 )
 
 add_subdirectory(../rover_shared_libs/ .build)
@@ -28,9 +26,11 @@ add_executable(teleop src/teleop.cpp)
 ament_target_dependencies(teleop
                           rclcpp
                           std_msgs
-                          rover_msgs
-                          Eigen3)
-target_link_libraries(teleop Eigen3::Eigen rover_shared_libs rover_joy::rover_joy_headers)
+                          rover_msgs)
+
+target_link_libraries(teleop
+                          rover_shared_libs
+                          rover_joy::rover_joy_headers)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY config DESTINATION share/${PROJECT_NAME})
@@ -38,5 +38,5 @@ install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 install(TARGETS
           teleop
         DESTINATION lib/${PROJECT_NAME})
-    
+
 ament_package()
