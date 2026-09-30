@@ -2,7 +2,6 @@
 #define __JOINT_CONTROLLER_HPP__
 
 #include "arm_configuration.hpp"
-#include "keybinding.hpp"
 #include "robot_controller.hpp"
 
 class JointController : public RobotController
@@ -14,7 +13,7 @@ class JointController : public RobotController
     }
 
     std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> getJointCmdFromInput(
-        const std::array<float, TO_UNDERLYING(eJoyInput::eLAST)>& inputArray_) override
+        const std::array<float, TO_UNDERLYING(Constants::Keybinds::eJoyInput::eLAST)>& inputArray_) override
     {
         std::array<float, TO_UNDERLYING(eJointIndex::eLAST)> jointCommands = {};
 

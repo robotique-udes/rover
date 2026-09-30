@@ -48,6 +48,12 @@ def generate_launch_description():
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
+                PathJoinSubstitution([FindPackageShare('rover_science'), 'launch', 'science.launch.py'])
+            ])
+        ),
+
+        IncludeLaunchDescription(
+            PythonLaunchDescriptionSource([
                 PathJoinSubstitution([FindPackageShare('rover_sim'), 'launch', 'sim.launch.py'])
             ]),
             condition=IfCondition(with_sim)

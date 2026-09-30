@@ -7,6 +7,7 @@
 #include "can_master/devices/light.hpp"
 #include "can_master/devices/gnss.hpp"
 #include "can_master/devices/sensor_box.hpp"
+#include "can_master/devices/science.hpp"
 #include "rover_can2/drivers/driver_linux.hpp"
 
 #include <rover_msgs/msg/can_device_status.hpp>
@@ -95,6 +96,8 @@ class CanMasterNode : public rclcpp::Node
 
     SensorBox sensorBox;
 
+    Science science = Science(RoverCan2::Constant::eDeviceId::SCIENCE);
+
     // Can
     RoverCan2::Drivers::DriverLinux __canDriver;
     RoverCan2::ManagerMaster<RoverCan2::Drivers::DriverLinux,
@@ -116,7 +119,8 @@ class CanMasterNode : public rclcpp::Node
                              ArmJoint&,
                              ArmJoint&,
                              Light&,
-                             SensorBox&>
+                             SensorBox&,
+                             Science&>
         _canManager = RoverCan2::ManagerMaster(
             __canDriver,
             [this](RoverCan2::Constant::eDeviceId deviceId_, const RoverCan2::Msgs::ErrorState& msg_)
@@ -141,9 +145,10 @@ class CanMasterNode : public rclcpp::Node
             gripperRot,
             gripperClose,
             lightMain,
-            sensorBox);
+            sensorBox,
+            science);
 
-    std::array<MasterDevice*, 18U> _deviceArray = {&motorFL,
+    std::array<MasterDevice*, 19U> _deviceArray = {&motorFL,
                                                    &motorFR,
                                                    &motorRL,
                                                    &motorRR,
@@ -161,7 +166,8 @@ class CanMasterNode : public rclcpp::Node
                                                    &gripperRot,
                                                    &gripperClose,
                                                    &lightMain,
-                                                   &sensorBox};
+                                                   &sensorBox,
+                                                   &science};
 };
 
 #endif  // CAN_MASTER_NODE_HPP
