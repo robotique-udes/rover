@@ -12,7 +12,7 @@
 
 QScience::QScience(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_)
+    _node(std::move(guiNode_))
 {
     ASSERT_COND(_node != nullptr);
 
@@ -176,7 +176,7 @@ void QScience::writeToCSV()
 
     if (csv_file.is_open())
     {
-        for (uint16_t i = 0; i < _sensor1.size(); i++)
+        for (size_t i = 0; i < _sensor1.size(); i++)
         {
             csv_file << std::fixed << std::setprecision(8) << _timeValues[i] << _sensor1[i] << "," << _sensor2[i] << ","
                      << _sensor3[i] << std::endl;

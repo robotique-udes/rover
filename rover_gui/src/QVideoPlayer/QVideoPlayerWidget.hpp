@@ -78,7 +78,7 @@ class QVideoPlayerWidget : public QWidget
 
     void handlePlayPauseButton(void);
 
-    void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
+    void setCameraControlClientManager(const std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>>& client_);
     void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_);
     void setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr& client_);
 

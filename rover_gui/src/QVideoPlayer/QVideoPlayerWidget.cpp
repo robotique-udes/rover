@@ -920,9 +920,9 @@ bool QVideoPlayerWidget::isStreaming(void)
     return _state == ePlayerState::STREAMING;
 }
 
-void QVideoPlayerWidget::setCameraControlClientManager(rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr client_)
+void QVideoPlayerWidget::setCameraControlClientManager(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_)
 {
-    _recorderWidget.setCameraControlClientManager(std::move(client_));
+    _recorderWidget.setCameraControlClientManager(client_);
 }
 
 void QVideoPlayerWidget::CB_cameraListUpdate(const std::vector<std::string>& urls_)
