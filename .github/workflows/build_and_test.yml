@@ -42,15 +42,53 @@ jobs:
           apt-get update
           apt-get install -y clang-tidy ros-jazzy-ament-clang-tidy
 
-      - name: Building rover packages
+      - name: Determine packages to analyse
+        id: packages
+        shell: bash
+        run: |
+          source /opt/ros/jazzy/setup.bash
+
+          if [[ "${{ github.event_name }}" == "pull_request" ]]; then
+            echo -e "\e[0;34m=== Determining changed packages ===\e[0m"
+
+            changed_files=$(git diff --name-only \
+              "${{ github.event.pull_request.base.sha }}" \
+              "${{ github.event.pull_request.head.sha }}")
+
+            packages=$(printf '%s\n' "$changed_files" |
+              grep '^rover_' |
+              cut -d/ -f1 |
+              sort -u |
+              grep -Ev '^rover_msgs$' |
+              tr '\n' ' ')
+
+            echo "Changed packages: $packages"
+
+          else
+            echo -e "\e[0;34m=== Analysing all packages ===\e[0m"
+
+            packages=$(colcon list |
+              awk -F'\t' \
+                '$2 !~ /^(\.\/)?deps\// && $1 != "rover_msgs" {print $1}' |
+              tr '\n' ' ')
+
+            echo "Packages: $packages"
+          fi
+
+          echo "packages=$packages" >> "$GITHUB_OUTPUT"
+
+      - name: Build all rover packages
         shell: bash
         run: |
           echo -e "\e[0;34m=== Sourcing for build ... ===\e[0m"
           source /opt/ros/jazzy/setup.bash
           echo -e "\e[0;32m[OK]\e[0m"
+
           export CPR_USE_SYSTEM_CURL=ON
           export CXXFLAGS="-Werror"
-          echo -e "\e[0;34m=== Building ROS2 Packages ... ===\e[0m"
+
+          echo -e "\e[0;34m=== Building all ROS2 Packages ... ===\e[0m"
+
           if colcon build \
               --cmake-args -DCMAKE_EXPORT_COMPILE_COMMANDS=ON; then
             echo -e "\e[0;32m=== [SUCCESS] ===\e[0m"
@@ -63,16 +101,26 @@ jobs:
         shell: bash
         run: |
           source /opt/ros/jazzy/setup.bash
-          pkgs=$(colcon list | awk -F'\t' '$2 !~ /^(\.\/)?deps\// && $1 != "rover_msgs" {print $1}')
-          echo "Running clang-tidy on: $pkgs"
+
+          packages="${{ steps.packages.outputs.packages }}"
+
+          if [[ -z "$packages" ]]; then
+            echo -e "\e[0;33mNo packages require clang-tidy analysis. Skipping.\e[0m"
+            exit 0
+          fi
+
+          echo "Running clang-tidy on: $packages"
 
           fail=0
-          for pkg in $pkgs; do
-            if [ -f build/$pkg/compile_commands.json ]; then
-              if ! ament_clang_tidy --config .clang-tidy build/$pkg; then
+
+          for pkg in $packages; do
+            if [ -f "build/$pkg/compile_commands.json" ]; then
+              if ! ament_clang_tidy --config .clang-tidy "build/$pkg"; then
                 echo "clang-tidy failed for $pkg"
                 fail=1
               fi
+            else
+              echo "No compile_commands.json found for $pkg, skipping"
             fi
           done
 
