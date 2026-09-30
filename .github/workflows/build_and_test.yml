@@ -68,8 +68,14 @@ jobs:
 
           fail=0
           for pkg in $pkgs; do
-            if [ -f build/$pkg/compile_commands.json ]; then
-              if ! ament_clang_tidy --config .clang-tidy --exclude "*_autogen/*" "*/moc_*.cpp" "*/mocs_compilation.cpp" build/$pkg; then
+            db=build/$pkg/compile_commands.json
+            if [ -f "$db" ]; then
+              filtered=$(mktemp -d)/$pkg
+              mkdir -p "$filtered"
+              jq '[ .[] | select(.file | test("_autogen/|/moc_[^/]*\\.cpp$|/mocs_compilation\\.cpp$") | not) ]' \
+                "$db" > "$filtered/compile_commands.json"
+
+              if ! ament_clang_tidy --config .clang-tidy "$filtered"; then
                 echo "clang-tidy failed for $pkg"
                 fail=1
               fi
