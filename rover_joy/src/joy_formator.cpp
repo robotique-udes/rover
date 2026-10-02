@@ -126,7 +126,7 @@ JoyFormator::JoyFormator():
     rclcpp::Parameter param_controller_type = this->get_parameter("controller_type");
     this->setControllerType(param_controller_type.as_string());
     rclcpp::Parameter param_timeout = this->get_parameter("disconnect_timeout_ms");
-    _timeout = rclcpp::Duration(static_cast<int32_t>((float)param_timeout.as_int() / 1000.0f), 0U);
+    _timeout = _timeout = rclcpp::Duration::from_nanoseconds(static_cast<int64_t>(param_timeout.as_int()) * 1'000'000);
 
     _sub_joy
         = this->create_subscription<sensor_msgs::msg::Joy>("raw/joy",

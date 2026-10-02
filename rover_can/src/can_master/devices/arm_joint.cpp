@@ -36,8 +36,8 @@ void ArmJoint::rosElementInit(void)
                                                                                 });
     _srv_ArmJointsConfig = this->getAttachedNode()->create_service<rover_msgs::srv::ArmJointConfig>(
         ARM_JOINTS_CONFIG_SERVICE_NAME,
-        [this](const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Request>& request_,
-               const std::shared_ptr<rover_msgs::srv::ArmJointConfig::Response>& response_)
+        [this](const rover_msgs::srv::ArmJointConfig::Request::SharedPtr& request_,
+               const rover_msgs::srv::ArmJointConfig::Response::SharedPtr& response_)
         {
             this->CB_SRV_armJointsConfig(request_, response_);
         });
