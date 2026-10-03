@@ -25,7 +25,7 @@ class CameraInterface
     static constexpr float EPSILON = 0.1;
 
   public:
-    CameraInterface(std::shared_ptr<rclcpp::Node> node_,
+    CameraInterface(rclcpp::Node::SharedPtr node_,
                     const std::string& ptzCommandTopic_,
                     const std::string& ptzConfigTopic_,
                     const std::string& powerCommandTopic_);
@@ -88,7 +88,7 @@ class CameraInterface
     std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isCamConcernedPower = {false};
     std::array<bool, std::to_underlying(Constants::CameraInfo::eCamNames::eLast)> _isGoalReached = {false};
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
 };
 
 #endif  // defined (ROS)

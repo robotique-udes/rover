@@ -35,8 +35,8 @@ ArucoDetectionNode::ArucoDetectionNode(int argc_, char** argv_):
 
     _srv_detectionManager = this->create_service<rover_msgs::srv::ArucoDetection>(
         SERVICE_SERVER_NAME,
-        [this](const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
-               std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
+        [this](const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request>& request_,
+               const std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>& response_)
         {
             this->CB_srv(request_, response_);
         });
@@ -124,8 +124,8 @@ void ArucoDetectionNode::CB_arucoDetection(void)
     }
 }
 
-void ArucoDetectionNode::CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request> request_,
-                                std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
+void ArucoDetectionNode::CB_srv(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Request>& request_,
+                                const std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>& response_)
 {
     response_->success = true;
 
@@ -171,7 +171,7 @@ bool ArucoDetectionNode::stopDetection(const std::string& URL_)
     return true;
 }
 
-void ArucoDetectionNode::infoDetection(std::shared_ptr<rover_msgs::srv::ArucoDetection::Response> response_)
+void ArucoDetectionNode::infoDetection(const std::shared_ptr<rover_msgs::srv::ArucoDetection::Response>& response_)
 {
     std::lock_guard lock(_detectedArucosMutex);
 

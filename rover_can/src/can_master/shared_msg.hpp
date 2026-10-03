@@ -26,7 +26,7 @@ namespace CanMaster
          * @param rate_ Publishing rate at wish all publishers will publish. If multiple rate are passed only the fastest will be
          * applied
          */
-        bool attachNewPub(std::shared_ptr<rclcpp::Node> pNode_, std::weak_ptr<rclcpp::Publisher<MsgT>> wpPub_, float rate_)
+        bool attachNewPub(rclcpp::Node::SharedPtr pNode_, std::weak_ptr<rclcpp::Publisher<MsgT>> wpPub_, float rate_)
         {
             ASSERT_COND_MSG((!_node && pNode_) || (pNode_ && _node && pNode_ == _node),
                             "A valid node must be passed and it must always be the same one");
@@ -159,7 +159,7 @@ namespace CanMaster
         }
 
         MsgT _msg;
-        std::shared_ptr<rclcpp::Node> _node;
+        rclcpp::Node::SharedPtr _node;
         rclcpp::TimerBase::SharedPtr _timer;
 
         bool _alive;

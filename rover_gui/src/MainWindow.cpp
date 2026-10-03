@@ -2,7 +2,7 @@
 
 #include "Global/Constant/Keybinding.hpp"
 
-MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
+MainWindow::MainWindow(const rclcpp::Node::SharedPtr& guiNode_):
     QMainWindow(nullptr),
     _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
     _topUtilityBar(guiNode_, this),

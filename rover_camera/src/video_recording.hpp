@@ -38,9 +38,9 @@ class Recording
               rclcpp::Logger logger,
               std::function<void(std::string)> RequestShutdown);
 
-    Recording(Recording&& other);
+    Recording(Recording&& other) noexcept;
 
-    Recording& operator=(Recording&& other);
+    Recording& operator=(Recording&& other) noexcept;
 
     ~Recording(void);
 

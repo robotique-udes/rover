@@ -10,7 +10,7 @@ QPathManager::QPathManager(bool start_, QObject* parent_):
 {
 }
 
-void QPathManager::setSessionFolderPath(std::string sessionFolderPath_)
+void QPathManager::setSessionFolderPath(const std::string& sessionFolderPath_)
 {
     if (!sessionFolderPath_.empty())
     {
@@ -71,7 +71,7 @@ void QPathManager::writePosToCSVInternal(double latitude_, double longitude_)
     }
 }
 
-void QPathManager::readFromCSV(std::string filePath_, QVariantList& oldPath_)
+void QPathManager::readFromCSV(const std::string& filePath_, QVariantList& oldPath_)
 {
     std::ifstream file(filePath_);
     if (!file.is_open())

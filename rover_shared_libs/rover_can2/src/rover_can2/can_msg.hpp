@@ -46,9 +46,9 @@ namespace RoverCan2
             }
         }
 
-        CanMsg()
+        CanMsg():
+            CanMsg(Constant::eDeviceId::NOT_SET, nullptr, 0U)
         {
-            CanMsg(Constant::eDeviceId::NOT_SET, nullptr, 0U);
         }
 
         /**
@@ -123,12 +123,12 @@ namespace RoverCan2
             return msgData[TO_UNDERLYING(RoverCan2::Constant::eDataIndex::MSG_CONTENT_ID)];
         };
 
-        uint8_t dataLength;
+        uint8_t dataLength = 0U;
         std::array<uint8_t, 8> msgData = {};
 
       private:
-        RoverCan2::Constant::eDeviceId _canID;
-        uint8_t _msgContentID;
+        RoverCan2::Constant::eDeviceId _canID = Constant::eDeviceId::NOT_SET;
+        uint8_t _msgContentID = 0U;
     };
 }  // namespace RoverCan2
 

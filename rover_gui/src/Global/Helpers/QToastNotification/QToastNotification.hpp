@@ -18,9 +18,9 @@ namespace QHelper
     {
         Q_OBJECT
 
-        static constexpr size_t NOTIF_DURATION_MS = 5'000UL;
+        static constexpr size_t NOTIF_DURATION_MS = 5'000;
         static constexpr size_t HISTORY_MAX_SIZE = 50U;
-        static constexpr size_t MARGIN_NOTIF = 20U;
+        static constexpr int MARGIN_NOTIF = 20U;
 
       public:
         enum class eNotifType : size_t
@@ -75,7 +75,7 @@ namespace QHelper
 
         void setupUI(void);
         void setupAnimations(void);
-        void setupTimerClose(void);
+        void startTimerClose(void);
         void setupScreenRect(void);
 
         void hideNotification(void);

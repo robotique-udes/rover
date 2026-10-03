@@ -25,7 +25,7 @@ QFlowLayout::QFlowLayout(int margin_, int hSpacing_, int vSpacing_):
 QFlowLayout::~QFlowLayout()
 {
     QLayoutItem* item;
-    while ((item = takeAt(0)))
+    while ((item = QFlowLayout::takeAt(0)))
         delete item;
 }
 
@@ -60,7 +60,7 @@ int QFlowLayout::verticalSpacing() const
 
 int QFlowLayout::count() const
 {
-    return _itemList.size();
+    return static_cast<int>(_itemList.size());
 }
 
 QLayoutItem* QFlowLayout::itemAt(int index_) const

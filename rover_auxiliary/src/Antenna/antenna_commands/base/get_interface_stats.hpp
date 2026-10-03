@@ -31,7 +31,7 @@ namespace Command::Base
         float getTxRate(void) const;
 
       private:
-        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const;
+        eAntennaCode getHTTPS(const std::shared_ptr<cpr::Session>& session_, cpr::Response& response_) const;
         eAntennaCode parseResponse(const cpr::Response& response_);
         bool updateRate(std::string_view byteStr_, uint64_t& lastByte_, float& rate_);
 

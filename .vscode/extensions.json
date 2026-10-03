@@ -17,6 +17,7 @@
     "bracketpaircolordlw.bracket-pair-color-dlw",
     "cschlosser.doxdocgen",
     "redhat.vscode-yaml",
-    "redhat.vscode-xml"
+    "redhat.vscode-xml",
+    "Ranch-Hand-Robotics.rde-pack"
   ]
 }

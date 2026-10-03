@@ -3,7 +3,7 @@
 
 Command::Base::GetStatus::GetStatus(const std::string& apiUrl_, std::shared_ptr<cpr::Session> session_):
     AntennaCommand(apiUrl_),
-    _session(session_)
+    _session(std::move(session_))
 {
 }
 
@@ -20,7 +20,7 @@ eAntennaCode Command::Base::GetStatus::execute(void)
     return result;
 }
 
-eAntennaCode Command::Base::GetStatus::getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const
+eAntennaCode Command::Base::GetStatus::getHTTPS(const std::shared_ptr<cpr::Session>& session_, cpr::Response& response_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + STATUS_PAGE});
     response_ = session_->Get();

@@ -100,7 +100,7 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Constant/resources.qrc
                    ui/icons.qrc
                 )
-                  
+
 add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui

@@ -7,7 +7,7 @@
 
 using namespace LogUtils;
 
-QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_, QWidget* parent_):
     QWidget(parent_),
     _node(guiNode_),
     _cameraInterface(guiNode_, CAMERA_PTZ_CMD_TOPIC_GUI, CAMERA_PTZ_CONFIG_TOPIC_GUI, CAMERA_POWER_TOPIC_GUI),
@@ -31,6 +31,12 @@ QVideoManagerWidget::QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
             &QPlayerWorker::urlFoundInDetection,
             this,
             &QVideoManagerWidget::onArucoDetectionIsLive);
+
+    connect(this,
+            &QVideoManagerWidget::displayArucoDetected,
+            this,
+            &QVideoManagerWidget::onDisplayArucoDetected,
+            Qt::ConnectionType::QueuedConnection);
 
     for (size_t i = 0; i < NBR_CAM_TO_TRACK; ++i)
     {
@@ -185,7 +191,7 @@ void QVideoManagerWidget::CB_updateArucoDetectionManager(void)
     }
 }
 
-void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
+void QVideoManagerWidget::onDisplayArucoDetected(const rover_msgs::msg::Aruco& msg_)
 {
     std::string url = msg_.cam_url;
     std::vector<uint16_t> detectedIds = msg_.id;
@@ -200,7 +206,7 @@ void QVideoManagerWidget::CB_displayArucoDetected(rover_msgs::msg::Aruco msg_)
     }
 }
 
-void QVideoManagerWidget::onArucoDetectionIsLive(std::vector<std::string> liveUrlList_)
+void QVideoManagerWidget::onArucoDetectionIsLive(const std::vector<std::string>& liveUrlList_)
 {
     for (auto& widget : _videoPlaysWidgets)
     {
@@ -272,9 +278,9 @@ void QVideoManagerWidget::initArucoPublisher(void)
     {
         _sub_arucoDetection = _node->create_subscription<rover_msgs::msg::Aruco>(TOPIC_ARUCO_DETECTIONS,
                                                                                  5,
-                                                                                 [this](const rover_msgs::msg::Aruco msg)
+                                                                                 [this](const rover_msgs::msg::Aruco& msg)
                                                                                  {
-                                                                                     this->CB_displayArucoDetected(msg);
+                                                                                     emit this->displayArucoDetected(msg);
                                                                                  });
     }
     else
@@ -345,7 +351,7 @@ void QVideoManagerWidget::initCameraListSubscriber(void)
 {
     _sub_cameraList = _node->create_subscription<rover_msgs::msg::CameraList>(TOPIC_RECORDING_INFO,
                                                                               1,
-                                                                              [this](const rover_msgs::msg::CameraList msg)
+                                                                              [this](const rover_msgs::msg::CameraList& msg)
                                                                               {
                                                                                   for (auto& widget : _videoPlaysWidgets)
                                                                                   {
@@ -359,16 +365,16 @@ void QVideoManagerWidget::setSplitterInitialGeometry(void)
     uint16_t index = _tabWidget.currentIndex();
     if (index == std::to_underlying(eTabIndex::ALT))
     {
-        int total = _splitter.width();
+        float total = static_cast<float>(_splitter.width());
         int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
-        int right = total - left;
+        int right = static_cast<int>(total) - left;
         _splitter.setSizes(QList<int>({left, right}));
     }
     else if (index == std::to_underlying(eTabIndex::ARM3))
     {
-        int total = _arm3Splitter.width();
+        float total = static_cast<float>(_arm3Splitter.width());
         int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
-        int right = total - left;
+        int right = static_cast<int>(total) - left;
         _arm3Splitter.setSizes(QList<int>({left, right}));
     }
 }

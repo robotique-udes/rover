@@ -37,11 +37,7 @@ void QSshWorker::refreshStructure(const std::string& username_,
                                   const std::string& newPath_)
 {
     this->addTask(
-        [username = std::move(username_),
-         hostname = std::move(hostname_),
-         oldPath = std::move(oldPath_),
-         newPath = std::move(newPath_),
-         this](void)
+        [username = username_, hostname = hostname_, oldPath = oldPath_, newPath = newPath_, this](void)
         {
             this->refreshStructureInternal(username, hostname, oldPath, newPath);
         });
@@ -52,7 +48,7 @@ void QSshWorker::refreshStructure(const std::string& username_,
 void QSshWorker::openFile(const std::string& rUsername_, const std::string& rHostname_, const std::string& rfilePath_)
 {
     this->addTask(
-        [username = std::move(rUsername_), hostname = std::move(rHostname_), path = std::move(rfilePath_), this](void)
+        [username = rUsername_, hostname = rHostname_, path = rfilePath_, this](void)
         {
             this->downloadFileInternal(username, hostname, path);
         });
@@ -74,19 +70,16 @@ void QSshWorker::transferFile(const std::string& fileName_,
                               const std::string& receiverFolderPath_)
 {
     this->addTask(
-        [username = std::move(ownerUsername_),
-         hostname = std::move(ownerHostname_),
-         filePath = ownerFolderPath_ + "/" + fileName_,
-         this](void)
+        [username = ownerUsername_, hostname = ownerHostname_, filePath = ownerFolderPath_ + "/" + fileName_, this](void)
         {
             this->downloadFileInternal(username, hostname, filePath);
         });
 
     this->addTask(
-        [username = std::move(receiverUsername_),
-         hostname = std::move(receiverHostname_),
-         fileName = std::move(fileName_),
-         folderPath = std::move(receiverFolderPath_),
+        [username = receiverUsername_,
+         hostname = receiverHostname_,
+         fileName = fileName_,
+         folderPath = receiverFolderPath_,
          this](void)
         {
             this->uploadFileInternal(username, hostname, fileName, folderPath);

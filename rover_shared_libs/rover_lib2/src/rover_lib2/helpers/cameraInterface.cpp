@@ -7,16 +7,15 @@
 #include <utility>
 
 #if defined(ROS)
-CameraInterface::CameraInterface(std::shared_ptr<rclcpp::Node> node_,
+CameraInterface::CameraInterface(rclcpp::Node::SharedPtr node_,
                                  const std::string& ptzCommandTopic_,
                                  const std::string& ptzConfigTopic_,
-                                 const std::string& powerCommandTopic_)
+                                 const std::string& powerCommandTopic_):
+    _ptzCommandTopic(ptzCommandTopic_),
+    _ptzConfigTopic(ptzConfigTopic_),
+    _powerCommandTopic(powerCommandTopic_),
+    _node(std::move(node_))
 {
-    _node = node_;
-    _ptzCommandTopic = ptzCommandTopic_;
-    _ptzConfigTopic = ptzConfigTopic_;
-    _powerCommandTopic = powerCommandTopic_;
-
     if (_node)
     {
         this->initTimers();
@@ -152,16 +151,17 @@ void CameraInterface::initTimers()
 
 void CameraInterface::initSub()
 {
-    _sub_powerStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
-                                                                                  QOS_CAMERA,
-                                                                                  [this](rover_msgs::msg::CameraControl msg_)
-                                                                                  {
-                                                                                      this->CB_subscriberPowerStatus(msg_);
-                                                                                  });
+    _sub_powerStatus
+        = _node->create_subscription<rover_msgs::msg::CameraControl>(POWER_STATUS_TOPIC,
+                                                                     QOS_CAMERA,
+                                                                     [this](const rover_msgs::msg::CameraControl& msg_)
+                                                                     {
+                                                                         this->CB_subscriberPowerStatus(msg_);
+                                                                     });
 
     _sub_PTZStatus = _node->create_subscription<rover_msgs::msg::CameraControl>(PTZ_STATUS_TOPIC,
                                                                                 QOS_CAMERA,
-                                                                                [this](rover_msgs::msg::CameraControl msg_)
+                                                                                [this](const rover_msgs::msg::CameraControl& msg_)
                                                                                 {
                                                                                     this->CB_subscriberPtzStatus(msg_);
                                                                                 });
@@ -169,7 +169,7 @@ void CameraInterface::initSub()
     _sub_topicWithPriority
         = _node->create_subscription<rover_msgs::msg::TopicWithPriority>(TOPIC_WITH_PRIORITY,
                                                                          QOS_CAMERA,
-                                                                         [this](rover_msgs::msg::TopicWithPriority msg_)
+                                                                         [this](const rover_msgs::msg::TopicWithPriority& msg_)
                                                                          {
                                                                              this->CB_subscriberTopicWithPriority(msg_);
                                                                          });

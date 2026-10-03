@@ -1,0 +1,12 @@
+---
+Checks: >
+  -*,
+  bugprone-*,
+  performance-*,
+  clang-analyzer-*,
+  -bugprone-easily-swappable-parameters,
+  -bugprone-exception-escape,
+  -performance-avoid-endl
+WarningsAsErrors: '*'
+HeaderFilterRegex: '.*/src/.*'
+FormatStyle: none

@@ -27,7 +27,7 @@ namespace Command::Base
         eAntennaCode execute(void) override;
 
       private:
-        eAntennaCode postHTTPS(std::shared_ptr<cpr::Session> session_) const;
+        eAntennaCode postHTTPS(const std::shared_ptr<cpr::Session>& session_) const;
 
         std::shared_ptr<cpr::Session> _session;
         const std::string _username;

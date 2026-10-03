@@ -13,7 +13,7 @@ class QUtilityBarBottom : public QWidget
     static constexpr const float MAX_TORQUE_GRIPPER = 0.30F;
 
   public:
-    explicit QUtilityBarBottom(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
+    explicit QUtilityBarBottom(rclcpp::Node::SharedPtr node_, QWidget* parent_);
 
   signals:
     void seeHistory();
@@ -26,7 +26,7 @@ class QUtilityBarBottom : public QWidget
     void CB_armStatus(const rover_msgs::msg::ArmMsg& msg_);
 
     Ui::UtilityBarBottom _ui;
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
 
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _sub_armJointStatus;
 };

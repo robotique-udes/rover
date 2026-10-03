@@ -113,10 +113,12 @@ bool BMSDataNode::getData(void)
     return true;
 }
 
-template<size_t N>
-bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_, std::array<int32_t, N>& dataArray_)
+template<typename T, size_t N>
+bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_, std::array<T, N>& dataArray_)
 {
-    std::array<int32_t, N> tempArray{};
+    static_assert(std::is_arithmetic_v<T>, "T must be an arithmetic type");
+
+    std::array<T, N> tempArray{};
     const size_t startPos = view_.find('=');
     if (startPos == std::string_view::npos)
     {
@@ -154,7 +156,7 @@ bool BMSDataNode::parse(std::string_view view_, std::string_view expectedPrefix_
             end = delimPos;
         }
 
-        int32_t value;
+        T value{};
         std::from_chars_result charResult = std::from_chars(view_.data(), view_.data() + end, value);
         if (charResult.ec == std::errc{} && charResult.ptr == view_.data() + end)
         {

@@ -6,8 +6,8 @@ namespace QHelper
 {
 
     QNotificationHistoryData::QNotificationHistoryData(QTime timeStamp_,
-                                                       QString title_,
-                                                       QString description_,
+                                                       const QString& title_,
+                                                       const QString& description_,
                                                        QToastNotification::eNotifType type_)
     {
         _ui.setupUi(this);

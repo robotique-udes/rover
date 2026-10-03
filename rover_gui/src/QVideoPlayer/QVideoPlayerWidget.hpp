@@ -53,8 +53,8 @@ class QVideoPlayerWidget : public QWidget
         CONNECTION_FAILED
     };
 
-    QVideoPlayerWidget(std::shared_ptr<rclcpp::Node> guiNode_,
-                       std::string url_,
+    QVideoPlayerWidget(rclcpp::Node::SharedPtr guiNode_,
+                       const std::string& url_,
                        uint16_t playerIndex_,
                        std::shared_ptr<QPlayerWorker> workerThreadAruco_,
                        std::shared_ptr<QRecordingWorker> workerThreadRecording_,
@@ -62,7 +62,7 @@ class QVideoPlayerWidget : public QWidget
 
     ~QVideoPlayerWidget();
 
-    void setArucoClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> client_);
+    void setArucoClientManager(const rclcpp::Client<rover_msgs::srv::ArucoDetection>::SharedPtr& client_);
     void startDetection(void);
     void stopDetection(void);
     void handleArucoDetection(void);
@@ -78,9 +78,9 @@ class QVideoPlayerWidget : public QWidget
 
     void handlePlayPauseButton(void);
 
-    void setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_);
+    void setCameraControlClientManager(const std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>>& client_);
     void setPanoramaClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_);
-    void setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr client_);
+    void setCameraIRClient(const rclcpp::Client<rover_msgs::srv::CameraIR>::SharedPtr& client_);
 
     std::string getCamURL(void);
     float getCameraAngle(void);
@@ -96,7 +96,7 @@ class QVideoPlayerWidget : public QWidget
     QString getId(void);
     bool isStreaming(void);
 
-    void CB_cameraListUpdate(std::vector<std::string> urls_);
+    void CB_cameraListUpdate(const std::vector<std::string>& urls_);
     void CB_srvCameraAvailable(bool available_);
 
   signals:
@@ -153,7 +153,7 @@ class QVideoPlayerWidget : public QWidget
     void hideAngleSelector(void);
     void setupIRModeBox(void);
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
     Ui::VideoPlayer _ui;
 
     std::string _camURL = "";
@@ -167,7 +167,6 @@ class QVideoPlayerWidget : public QWidget
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> _client_panoramaManager;
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraIR>> _client_cameraIR;
     std::shared_ptr<QPlayerWorker> _playerWorkerThreadAruco;
-    std::shared_ptr<QRecordingWorker> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
     QVideoRecorderWidget _recorderWidget;
 

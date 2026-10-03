@@ -30,9 +30,9 @@ constexpr const char* STATUS_ERROR = "QWidget {"
                                      "padding: 5px 10px;"
                                      "}";
 
-QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QDeviceStatus::QDeviceStatus(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_),
+    _node(std::move(guiNode_)),
     _QStatusWorker(true, this)
 {
     ASSERT_COND(_node != nullptr);
@@ -55,6 +55,7 @@ QDeviceStatus::QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* pa
                                                                        QOS_DEFAULT,
                                                                        [this](const rover_msgs::msg::CanDeviceStatus& msg)
                                                                        {
+                                                                           // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
                                                                            QMetaObject::invokeMethod(
                                                                                this,
                                                                                [this, msg]()
