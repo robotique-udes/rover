@@ -42,6 +42,7 @@ sudo apt -y install libcurl4-openssl-dev
 sudo apt -y install python3-setuptools
 sudo apt -y install python3-can
 sudo apt -y install python3-matplotlib
+sudo apt -y install meson
 
 echo -e "\e[0;32m[OK]\e[0m"
 
