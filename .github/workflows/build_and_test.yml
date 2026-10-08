@@ -59,10 +59,10 @@ jobs:
             changed_files=$(git diff --name-only origin/${{ github.base_ref }}...HEAD)
 
             packages=$(printf '%s\n' "$changed_files" |
-              grep '^rover_' |
+              { grep '^rover_' || true; } |
               cut -d/ -f1 |
               sort -u |
-              grep -Ev '^rover_msgs$' |
+              { grep -Ev '^rover_msgs$' || true; } |
               tr '\n' ' ')
 
             echo "Changed packages: $packages"
