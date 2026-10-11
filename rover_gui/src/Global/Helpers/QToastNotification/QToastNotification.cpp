@@ -43,14 +43,14 @@ namespace QHelper
     }
     void QToastNotification::setHistory(std::deque<QToastNotification::sNotificationInfo> history_)
     {
-        _history = history_;
+        _history = std::move(history_);
     }
 
     void QToastNotification::enterEvent(QEnterEvent* event)
     {
         _ui.progressBar->setValue(_ui.progressBar->maximum());
         _progressBarAnim.stop();
-        _closeTimer.disconnect();
+        _closeTimer.stop();
 
         QWidget::enterEvent(event);
     }
@@ -58,7 +58,7 @@ namespace QHelper
     void QToastNotification::leaveEvent(QEvent* event)
     {
         _progressBarAnim.start();
-        this->setupTimerClose();
+        this->startTimerClose();
         QWidget::leaveEvent(event);
     }
 
@@ -107,9 +107,9 @@ namespace QHelper
         _ui.textErrorMessage->setText(QString::fromStdString(description_));
         _ui.titleLineEdit->setText(QString::fromStdString(title_));
 
-        size_t X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
-        size_t startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
-        size_t endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
+        int X = this->getTargetScreenRect().right() - width() - MARGIN_NOTIF;
+        int startY = this->getTargetScreenRect().bottom() - height() + 2 * MARGIN_NOTIF;
+        int endY = this->getTargetScreenRect().bottom() - height() - 2 * MARGIN_NOTIF;
 
         _slideInAnim.setStartValue(QPoint(X, startY));
         _slideInAnim.setEndValue(QPoint(X, endY));
@@ -124,13 +124,13 @@ namespace QHelper
         this->raise();
         this->show();
 
-        _progressBarAnim.setDuration(_shownDuration);
+        _progressBarAnim.setDuration(static_cast<int>(_shownDuration));
 
         _fadeInAnim.start();
         _slideInAnim.start();
         _progressBarAnim.start();
 
-        this->setupTimerClose();
+        this->startTimerClose();
 
         QTime currentTime = QTime::currentTime();
 
@@ -246,14 +246,14 @@ namespace QHelper
         _progressBarAnim.setEndValue(0);
 
         connect(&_fadeOutAnim, &QPropertyAnimation::finished, this, &QWidget::hide);
-        this->setupTimerClose();
-    }
-
-    void QToastNotification::setupTimerClose(void)
-    {
         connect(&_closeTimer, &QTimer::timeout, this, &QToastNotification::hideNotification);
         _closeTimer.setSingleShot(true);
-        _closeTimer.start(_shownDuration);
+        this->startTimerClose();
+    }
+
+    void QToastNotification::startTimerClose(void)
+    {
+        _closeTimer.start(static_cast<int>(_shownDuration));
     }
 
     void QToastNotification::setupScreenRect(void)
@@ -278,21 +278,14 @@ namespace QHelper
                                                  eNotifType type_,
                                                  size_t durationMs_)
     {
-        QCoreApplication* pApp = QApplication::instance();
-        if (pApp)
-        {
-            QMetaObject::invokeMethod(
-                pApp,
-                [this, title_, description_, type_, durationMs_]()
-                {
-                    this->notify(title_, description_, type_, durationMs_);
-                },
-                Qt::QueuedConnection);
-        }
-        else
-        {
-            RCLCPP_ERROR(rclcpp::get_logger("GUI"), "QApplication returned null, something is very wrong");
-        }
+        // NOLINTNEXTLINE(clang-analyzer-cplusplus.NewDeleteLeaks)
+        QMetaObject::invokeMethod(
+            this,
+            [this, title_, description_, type_, durationMs_]()
+            {
+                this->notify(title_, description_, type_, durationMs_);
+            },
+            Qt::QueuedConnection);
     }
 
     void QToastNotification::hideNotification(void)

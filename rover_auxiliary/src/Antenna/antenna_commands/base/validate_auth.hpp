@@ -25,7 +25,7 @@ namespace Command::Base
 
       private:
         std::shared_ptr<cpr::Session> _session;
-        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const;
+        eAntennaCode getHTTPS(const std::shared_ptr<cpr::Session>& session_, cpr::Response& response_) const;
         eAntennaCode validateFormat(const cpr::Response& response_);
         bool _connected = false;
     };

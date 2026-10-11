@@ -6,9 +6,9 @@
 #include <QLabel>
 #include <QStyle>
 
-QLightsController::QLightsController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QLightsController::QLightsController(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     QWidget(parent_),
-    _node(guiNode_)
+    _node(std::move(guiNode_))
 {
     _ui.setupUi(this);
     _pub_LightCmd = _node->create_publisher<rover_msgs::msg::Light>(TOPIC_LIGHTS_CTRL, QOS_DEFAULT);

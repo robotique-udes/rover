@@ -2,7 +2,7 @@
 
 #include "serial_com.hpp"
 
-SerialCom::SerialCom(std::string path_,
+SerialCom::SerialCom(const std::string& path_,
                      eBaudRate baudRate_,
                      eDataPerPacket char_,
                      tcflag_t cflags_,

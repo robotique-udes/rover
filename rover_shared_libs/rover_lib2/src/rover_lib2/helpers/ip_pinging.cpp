@@ -115,8 +115,8 @@ namespace RoverLib2
         FD_SET(sock, &writefds);
 
         struct timeval tv;
-        tv.tv_sec = timeoutMs_ / 1000;
-        tv.tv_usec = (timeoutMs_ % 1000) * 1000;
+        tv.tv_sec = static_cast<time_t>(timeoutMs_ / 1000);
+        tv.tv_usec = static_cast<suseconds_t>((timeoutMs_ % 1000) * 1000);
 
         result = select(sock + 1, nullptr, &writefds, nullptr, &tv);
         if (result <= 0)

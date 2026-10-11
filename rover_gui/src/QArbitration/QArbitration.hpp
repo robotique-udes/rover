@@ -41,6 +41,7 @@ class QArbitration : public QWidget
         DRIVE_TRAIN = rover_msgs::srv::JoyDemuxSetState_Request::DEST_DRIVE_TRAIN,
         ARM = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ARM,
         ANTENNA = rover_msgs::srv::JoyDemuxSetState_Request::DEST_ANTENNA,
+        SCIENCE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_SCIENCE,
         NONE = rover_msgs::srv::JoyDemuxSetState_Request::DEST_NONE
     };
 
@@ -52,17 +53,17 @@ class QArbitration : public QWidget
     };
 
   public:
-    QArbitration(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    QArbitration(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_);
 
   signals:
-    void joyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
-    void driveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
+    void joyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus& msg_);
+    void driveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration& msg_);
 
   private slots:
     void onControllerComboChanged(eControllerType controller_, int index_);
     void onDriveTrainComboChanged(int index_);
-    void onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus::SharedPtr msg_);
-    void onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration::SharedPtr msg_);
+    void onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus& msg_);
+    void onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration& msg_);
 
   private:
     void initComboBoxItems();
@@ -70,7 +71,7 @@ class QArbitration : public QWidget
     template<typename T>
     void checkServiceAvailable(rclcpp::Client<T>::SharedPtr client_, const std::string& serviceName_);
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
     Ui::Arbitration _ui;
 
     rclcpp::Subscription<rover_msgs::msg::JoyDemuxStatus>::SharedPtr _joyDemuxStatusSub;

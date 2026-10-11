@@ -5,9 +5,9 @@
 
 #include <rover_lib2/helpers/constants.hpp>
 
-QUtilityBarBottom::QUtilityBarBottom(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_):
+QUtilityBarBottom::QUtilityBarBottom(rclcpp::Node::SharedPtr node_, QWidget* parent_):
     QWidget(parent_),
-    _node(node_)
+    _node(std::move(node_))
 {
     _ui.setupUi(this);
     _ui.gripperLabel->setText("Gripper: ");

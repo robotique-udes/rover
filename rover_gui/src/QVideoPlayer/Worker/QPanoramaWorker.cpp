@@ -10,20 +10,20 @@ QPanoramaWorker::~QPanoramaWorker()
     this->finish();
 }
 
-void QPanoramaWorker::takePanoramaManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_panoramique_,
+void QPanoramaWorker::takePanoramaManager(const rclcpp::Client<rover_msgs::srv::Panorama>::SharedPtr& client_panoramique_,
                                           const std::string& cameraUrl_,
                                           uint16_t playerIndex_,
                                           const std::string& basePath_,
                                           uint16_t duration_)
 {
     this->addTask(
-        [this, client_panoramique_, &cameraUrl_, playerIndex_, &basePath_, duration_](void)
+        [this, client_panoramique_, cameraUrl_, playerIndex_, basePath_, duration_](void)
         {
             this->takePanoramaInternal(client_panoramique_, cameraUrl_, playerIndex_, basePath_, duration_);
         });
 }
 
-void QPanoramaWorker::takePanoramaInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Panorama>> client_panoramique_,
+void QPanoramaWorker::takePanoramaInternal(const rclcpp::Client<rover_msgs::srv::Panorama>::SharedPtr& client_panoramique_,
                                            const std::string& cameraUrl_,
                                            uint16_t playerIndex_,
                                            const std::string& basePath_,

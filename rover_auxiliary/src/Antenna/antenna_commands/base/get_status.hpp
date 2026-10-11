@@ -26,7 +26,7 @@ namespace Command::Base
         float getRssi(void) const;
 
       private:
-        eAntennaCode getHTTPS(std::shared_ptr<cpr::Session> session_, cpr::Response& response_) const;
+        eAntennaCode getHTTPS(const std::shared_ptr<cpr::Session>& session_, cpr::Response& response_) const;
         eAntennaCode parseResponse(const cpr::Response& response_);
 
         std::shared_ptr<cpr::Session> _session;

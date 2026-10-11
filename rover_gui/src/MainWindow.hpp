@@ -11,6 +11,7 @@
 #include "QDeviceStatus/QDeviceStatus.hpp"
 #include "QLightsController/QLightsController.hpp"
 #include "QBmsData/QBmsData.hpp"
+#include "QScience/QScience.hpp"
 
 #include <QMainWindow>
 #include <QShortcut>
@@ -21,7 +22,7 @@ class MainWindow : public QMainWindow
     Q_OBJECT
 
   public:
-    explicit MainWindow(std::shared_ptr<rclcpp::Node> guiNode_);
+    explicit MainWindow(const rclcpp::Node::SharedPtr& guiNode_);
 
   private slots:
     void onTabChange(QSideBar::eTabIndex index_);
@@ -48,6 +49,7 @@ class MainWindow : public QMainWindow
     QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
     QLightsController _ligthsController;
     QBmsData _bmsDataWidget;
+    QScience _scienceWidget;
 
     QFrame _topBarSeperator = QFrame(this);
     QFrame _bottomBarSeperator = QFrame(this);

@@ -14,9 +14,9 @@ const rclcpp::Logger PanoramaProcessor::LOGGER = rclcpp::get_logger("PanoramaMan
 PanoramaProcessor::PanoramaProcessor(std::weak_ptr<rclcpp::Node> node_,
                                      Constants::CameraInfo::eCamNames id_,
                                      std::shared_ptr<CameraInterface> cameraInterface_):
-    _node(node_),
+    _node(std::move(node_)),
     _id(id_),
-    _cameraInterface(cameraInterface_)
+    _cameraInterface(std::move(cameraInterface_))
 {
 }
 
@@ -130,8 +130,8 @@ std::optional<cv::Mat> PanoramaProcessor::warpCorrection(const cv::Mat& pano, ro
     const int width = pano.cols;
     const int height = pano.rows;
 
-    const int marginX = width * CROP_PERCENT;
-    const int marginY = height * CROP_PERCENT;
+    const int marginX = static_cast<int>(static_cast<float>(width) * CROP_PERCENT);
+    const int marginY = static_cast<int>(static_cast<float>(height) * CROP_PERCENT);
 
     const int cropWidth = std::max(1, width - 2 * marginX);
     const int cropHeight = std::max(1, height - 2 * marginY);
@@ -359,7 +359,7 @@ void PanoramaProcessor::waitForAngle(Constants::CameraInfo::eCamNames id_, float
     std::promise<void> angleReachedPromise;
     std::future<void> angleReachedFuture = angleReachedPromise.get_future();
 
-    if (std::shared_ptr<rclcpp::Node> lockedNode = _node.lock())
+    if (rclcpp::Node::SharedPtr lockedNode = _node.lock())
     {
         rclcpp::Subscription<rover_msgs::msg::CameraControl>::SharedPtr sub_ptzStatusTemp
             = lockedNode->create_subscription<rover_msgs::msg::CameraControl>(

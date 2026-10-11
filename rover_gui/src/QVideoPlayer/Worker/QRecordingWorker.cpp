@@ -9,7 +9,7 @@ QRecordingWorker::QRecordingWorker(bool start_, QObject* parent_):
 QRecordingWorker::~QRecordingWorker() {}
 
 void QRecordingWorker::takeScreenshotManager(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
     const std::string& cameraUrl_,
     uint16_t playerIndex_,
     const std::string& basePath_)
@@ -22,7 +22,7 @@ void QRecordingWorker::takeScreenshotManager(
 }
 
 void QRecordingWorker::takeScreenshotInternal(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
     const std::string& cameraUrl_,
     uint16_t playerIndex_,
     const std::string& basePath_)
@@ -81,7 +81,7 @@ void QRecordingWorker::takeScreenshotInternal(
 }
 
 void QRecordingWorker::startRecordingManager(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
     const std::string& cameraUrl_,
     uint16_t playerIndex_,
     const std::string& basePath_)
@@ -93,10 +93,11 @@ void QRecordingWorker::startRecordingManager(
         });
 }
 
-void QRecordingWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
-                                            const std::string& cameraUrl_,
-                                            uint16_t playerIndex_,
-                                            const std::string& basePath_)
+void QRecordingWorker::stopRecordingManager(
+    const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
+    const std::string& cameraUrl_,
+    uint16_t playerIndex_,
+    const std::string& basePath_)
 {
     this->addTask(
         [this, client = client_CameraControl_, cameraUrl = cameraUrl_, playerIndex = playerIndex_, basePath = basePath_](void)
@@ -106,7 +107,7 @@ void QRecordingWorker::stopRecordingManager(std::shared_ptr<rclcpp::Client<rover
 }
 
 void QRecordingWorker::startRecordingInternal(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
     const std::string& cameraUrl_,
     uint16_t playerIndex_,
     const std::string& basePath_)
@@ -167,7 +168,7 @@ void QRecordingWorker::startRecordingInternal(
 }
 
 void QRecordingWorker::stopRecordingInternal(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
     const std::string& cameraUrl_,
     uint16_t playerIndex_,
     const std::string& basePath_)
@@ -176,8 +177,7 @@ void QRecordingWorker::stopRecordingInternal(
     bool success = false;
     std::string status;
 
-    std::shared_ptr<rover_msgs::srv::CameraControl::Request> request
-        = std::make_shared<rover_msgs::srv::CameraControl::Request>();
+    rover_msgs::srv::CameraControl::Request::SharedPtr request = std::make_shared<rover_msgs::srv::CameraControl::Request>();
     request->command = rover_msgs::srv::CameraControl::Request::STOP_RECORDING;
     request->camera_url = cameraUrl_;
     request->base_path = basePath_ + "/camera";

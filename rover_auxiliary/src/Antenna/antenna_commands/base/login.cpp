@@ -4,7 +4,7 @@ Command::Base::Login::Login(const std::string& apiUrl_,
                             const std::string& password_,
                             std::shared_ptr<cpr::Session> session_):
     AntennaCommand(apiUrl_),
-    _session(session_),
+    _session(std::move(session_)),
     _username(username_),
     _password(password_)
 {
@@ -15,7 +15,7 @@ eAntennaCode Command::Base::Login::execute(void)
     return this->postHTTPS(_session);
 }
 
-eAntennaCode Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> session_) const
+eAntennaCode Command::Base::Login::postHTTPS(const std::shared_ptr<cpr::Session>& session_) const
 {
     session_->SetUrl(cpr::Url{this->getApiUrl() + LOGIN_PAGE});
     cpr::Payload payload{{"username", _username}, {"password", _password}};
@@ -31,8 +31,7 @@ eAntennaCode Command::Base::Login::postHTTPS(std::shared_ptr<cpr::Session> sessi
         case std::to_underlying(eHttpStatus::FORBIDDEN):
             [[fallthrough]];
         case std::to_underlying(eHttpStatus::UNAUTHORIZED):
-            return eAntennaCode::FAILURE_SESSION_EXPIRED;
-            break;
+            [[fallthrough]];
         case std::to_underlying(eHttpStatus::OFFLINE):
             return eAntennaCode::FAILURE_SESSION_EXPIRED;
             break;

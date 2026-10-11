@@ -58,16 +58,20 @@ class CameraNode : public rclcpp_lifecycle::LifecycleNode
 
     void stopAllRecording(void);
 
-    std::string getFileName(const std::string& capture_name_, std::string camURL_, eFileFormatNameTypes fileType_);
+    void stopAllRecording(void);
+
+    std::string getFileName(const std::string& capture_name_, const std::string& camURL_, eFileFormatNameTypes fileType_);
     std::optional<std::string> getFolderPath(const std::string& basePath_, eFileFormatNameTypes fileType_);
     void callbackPosition(const rover_msgs::msg::Gps& gps_message_);
-    sScreenshotResult getScreenshot(std::string screenshotFolderPath_, std::string filename_, std::string cameraURL_);
+    sScreenshotResult getScreenshot(const std::string& screenshotFolderPath_,
+                                    const std::string& filename_,
+                                    const std::string& cameraURL_);
 
-    bool newRecording(std::string videoFolderPath_, std::string filename_, std::string cameraURL_);
-    bool stopRecording(std::string cameraURL_);
+    bool newRecording(std::string videoFolderPath_, std::string filename_, const std::string& cameraURL_);
+    bool stopRecording(const std::string& cameraURL_);
     bool startWatchDog(void);
     void videoWatchDogFunction(void);
-    void requestShutdown(std::string camURL_);
+    void requestShutdown(const std::string& camURL_);
 
     rclcpp::Service<rover_msgs::srv::CameraControl>::SharedPtr _srv_control;
     rclcpp_lifecycle::LifecyclePublisher<rover_msgs::msg::CameraList>::SharedPtr _pub_urls;

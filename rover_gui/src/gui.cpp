@@ -12,15 +12,15 @@
 
 constexpr char WM_CLASS[] = "Rover Base";
 
-int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_);
+int guiMain(int argc_, char* argv_[], const rclcpp::Node::SharedPtr& guiNode_);
 void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_);
-void nodeThreadFunc(std::shared_ptr<rclcpp::Node> node);
+void nodeThreadFunc(const rclcpp::Node::SharedPtr& node);
 void forwardPrints(QProcess& process_);
 
 int main(int argc, char* argv[])
 {
     rclcpp::init(argc, argv);
-    std::shared_ptr<rclcpp::Node> guiNode = std::make_shared<rclcpp::Node>("gui_node");
+    rclcpp::Node::SharedPtr guiNode = std::make_shared<rclcpp::Node>("gui_node");
     std::jthread rosThread(nodeThreadFunc, guiNode);
 
     int ret = guiMain(argc, argv, guiNode);
@@ -42,7 +42,7 @@ int main(int argc, char* argv[])
  * @param guiNode_
  * @return int
  */
-int guiMain(int argc_, char* argv_[], std::shared_ptr<rclcpp::Node> guiNode_)
+int guiMain(int argc_, char* argv_[], const rclcpp::Node::SharedPtr& guiNode_)
 {
     QApplication app(argc_, argv_);
     QApplication::setApplicationName(WM_CLASS);
@@ -105,7 +105,7 @@ void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_)
     }
 }
 
-void nodeThreadFunc(std::shared_ptr<rclcpp::Node> node_)
+void nodeThreadFunc(const rclcpp::Node::SharedPtr& node_)
 {
     rclcpp::executors::MultiThreadedExecutor rosExecutor;
     rosExecutor.add_node(node_);

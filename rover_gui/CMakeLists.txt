@@ -90,6 +90,8 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QPlayerWorker.cpp
                    src/QVideoPlayer/Worker/QRecordingWorker.cpp
                    src/QVideoPlayer/Worker/QPanoramaWorker.cpp
+                   
+                   src/QScience/QScience.cpp
 
                    src/QBmsData/QBmsData.cpp
                    src/QBmsData/QCellWidget.cpp
@@ -98,7 +100,7 @@ add_executable(main_gui src/gui.cpp
                    src/Global/Constant/resources.qrc
                    ui/icons.qrc
                 )
-                  
+
 add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui

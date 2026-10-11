@@ -18,7 +18,7 @@ class QBmsData : public QWidget
     Q_OBJECT
 
   public:
-    QBmsData(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    QBmsData(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_);
     void setGraphSize(uint16_t width_, uint16_t height_);
     void setCellContainerSize(uint16_t width_, uint16_t height_);
 
@@ -35,7 +35,7 @@ class QBmsData : public QWidget
 
     void initializeWidget(void);
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
     rclcpp::Subscription<rover_msgs::msg::BmsData>::SharedPtr _sub_bmsData;
     QFlowLayout* _layout;
     std::array<QCellWidget*, CELLS_ARRAY_SIZE> _cells;

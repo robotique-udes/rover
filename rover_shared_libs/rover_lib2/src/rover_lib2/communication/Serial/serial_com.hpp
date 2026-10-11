@@ -65,7 +65,7 @@ DEFINE_LOG_NODE(SerialCom, Logger::eNodeState::ON);
 class SerialCom
 {
   public:
-    SerialCom(std::string path_,
+    SerialCom(const std::string& path_,
               eBaudRate baudRate_ = eBaudRate::B_115200,
               eDataPerPacket char_ = eDataPerPacket::EIGHT_BITS,
               tcflag_t cflags_ = CREAD | CLOCAL,

@@ -60,14 +60,17 @@ class QVideoManagerWidget : public QWidget
     static constexpr float CAMERA_MAX_ANGLE = 360.0F;
 
   public:
-    QVideoManagerWidget(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_, QWidget* parent_ = nullptr);
     ~QVideoManagerWidget();
 
     void CB_updateArucoDetectionManager(void);
-    void CB_displayArucoDetected(rover_msgs::msg::Aruco msg_);
+
+  signals:
+    void displayArucoDetected(const rover_msgs::msg::Aruco& msg_);
   private slots:
-    void onArucoDetectionIsLive(std::vector<std::string> liveUrlList_);
+    void onArucoDetectionIsLive(const std::vector<std::string>& liveUrlList_);
     void onSetCursorWaiting(bool waiting_);
+    void onDisplayArucoDetected(const rover_msgs::msg::Aruco& msg_);
 
     /**
      * @brief set the PTZ cmd
@@ -95,7 +98,7 @@ class QVideoManagerWidget : public QWidget
 
     void setSplitterInitialGeometry(void);
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
 
     CameraInterface _cameraInterface;
 

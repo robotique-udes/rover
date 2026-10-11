@@ -63,7 +63,7 @@ size_t QWorker::getTaskNb(void)
     return _taskQueueSize.load();
 }
 
-void QWorker::addTask(std::function<void()> task_)
+void QWorker::addTask(const std::function<void()>& task_)
 {
     if (task_)
     {

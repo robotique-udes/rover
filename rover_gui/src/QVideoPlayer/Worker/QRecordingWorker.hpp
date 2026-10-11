@@ -21,17 +21,17 @@ class QRecordingWorker : public QWorker
     QRecordingWorker(bool start_ = false, QObject* parent_ = nullptr);
     ~QRecordingWorker();
 
-    void takeScreenshotManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    void takeScreenshotManager(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
                                const std::string& cameraUrl_,
                                uint16_t playerIndex_,
                                const std::string& basePath_);
 
-    void startRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    void startRecordingManager(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
                                const std::string& cameraUrl_,
                                uint16_t playerIndex_,
                                const std::string& basePath_);
 
-    void stopRecordingManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    void stopRecordingManager(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
                               const std::string& cameraUrl_,
                               uint16_t playerIndex_,
                               const std::string& basePath_);
@@ -43,17 +43,17 @@ class QRecordingWorker : public QWorker
     void setCursorWaiting(bool waiting_);
 
   private:
-    void takeScreenshotInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    void takeScreenshotInternal(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
                                 const std::string& cameraUrl_,
                                 uint16_t playerIndex_,
                                 const std::string& basePath_);
 
-    void startRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    void startRecordingInternal(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
                                 const std::string& camera_URL_,
                                 uint16_t playerIndex_,
                                 const std::string& basePath_);
 
-    void stopRecordingInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_CameraControl_,
+    void stopRecordingInternal(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_CameraControl_,
                                const std::string& cameraUrl_,
                                uint16_t playerIndex_,
                                const std::string& basePath_);

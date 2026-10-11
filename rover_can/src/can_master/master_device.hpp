@@ -11,7 +11,7 @@
 class MasterDevice
 {
   public:
-    void attachNode(std::shared_ptr<rclcpp::Node> node_);
+    void attachNode(rclcpp::Node::SharedPtr node_);
 
   protected:
     /**
@@ -28,13 +28,13 @@ class MasterDevice
 
     virtual std::vector<RoverCan2::Constant::eDeviceId> getManagedDevicesIds(void) = 0;
 
-    std::shared_ptr<rclcpp::Node> getAttachedNode(void)
+    rclcpp::Node::SharedPtr getAttachedNode(void)
     {
         return _rosNode;
     }
 
   private:
-    std::shared_ptr<rclcpp::Node> _rosNode;
+    rclcpp::Node::SharedPtr _rosNode;
 
     void detachNode(void);
 };

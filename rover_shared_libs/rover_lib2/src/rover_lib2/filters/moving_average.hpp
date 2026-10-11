@@ -14,6 +14,7 @@ namespace Filters
       public:
         MovingAverage(T startingValue = static_cast<T>(0))
         {
+            VALIDATE_CONCEPT(Filter, MovingAverage);
             reset(startingValue);
         }
 
@@ -47,8 +48,6 @@ namespace Filters
         T _avgTable[COEFF_NB] = {};
         uint16_t _cursor = 0U;
         float _avg = 0.0F;
-
-        VALIDATE_CONCEPT(Filter, MovingAverage);
     };
 }  // namespace Filters
 

@@ -4,15 +4,15 @@
 
 #include <rover_lib2/helpers/assert.hpp>
 
-void MasterDevice::attachNode(std::shared_ptr<rclcpp::Node> node_)
+void MasterDevice::attachNode(rclcpp::Node::SharedPtr node_)
 {
     if (node_ != _rosNode)
     {
         this->detachNode();
     }
 
-    _rosNode = node_;
-    ASSERT_COND_MSG(_rosNode, "Node can't be nullptr");
+    ASSERT_COND_MSG(node_, "Node can't be nullptr");
+    _rosNode = std::move(node_);
 
     this->rosElementInit();
 

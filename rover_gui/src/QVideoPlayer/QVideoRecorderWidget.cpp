@@ -7,11 +7,11 @@
 #include <QTimer>
 
 QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
-                                           uint16_t playerIndex__,
+                                           uint16_t playerIndex_,
                                            std::shared_ptr<QRecordingWorker> workerThreadRecording_):
-    _playerIndex(playerIndex__),
+    _playerIndex(playerIndex_),
     _camURL(url_),
-    _playerWorkerThreadRecording(workerThreadRecording_)
+    _playerWorkerThreadRecording(std::move(workerThreadRecording_))
 {
     connect(_playerWorkerThreadRecording.get(),
             &QRecordingWorker::screenshotHandledSuccessfully,
@@ -54,7 +54,7 @@ void QVideoRecorderWidget::updateCamURL(const std::string& url_)
     _camURL = url_;
 }
 
-void QVideoRecorderWidget::setCameraControlClientManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::CameraControl>> client_)
+void QVideoRecorderWidget::setCameraControlClientManager(const rclcpp::Client<rover_msgs::srv::CameraControl>::SharedPtr& client_)
 {
     if (client_)
     {

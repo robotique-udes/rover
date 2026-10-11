@@ -1,6 +1,6 @@
 
 #include "arm_configuration.hpp"
-#include "keybinding.hpp"
+#include "keybinding_arm.hpp"
 #include "joint_controller.hpp"
 #include "cartesian_controller.hpp"
 
@@ -26,7 +26,7 @@ class Teleop : public rclcpp::Node
     static constexpr std::chrono::milliseconds TELEOP_LEASE_DURATION = std::chrono::milliseconds(300);
 
   public:
-    enum class eControlMode : size_t
+    enum class eControlMode : uint8_t
     {
         JOINT = 0,
         CARTESIAN = 1
@@ -117,7 +117,7 @@ class Teleop : public rclcpp::Node
         _deadlineWarningActive = false;
 
         const size_t joyMsgSize = joyMsg_.joy_data.size();
-        std::array<float, TO_UNDERLYING(eJoyInput::eLAST)> joyArray = {};
+        std::array<float, TO_UNDERLYING(Constants::Keybinds::eJoyInput::eLAST)> joyArray = {};
         std::copy_n(joyMsg_.joy_data.begin(), joyMsgSize, joyArray.begin());
         rover_msgs::msg::ArmMsg armMsg;
 

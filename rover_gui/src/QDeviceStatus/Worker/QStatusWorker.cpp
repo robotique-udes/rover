@@ -5,22 +5,23 @@ QStatusWorker::QStatusWorker(bool start_, QObject* parent_):
 {
 }
 
-void QStatusWorker::requestDeviceStatusManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_)
+void QStatusWorker::requestDeviceStatusManager(
+    const rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr& client_requestErrorStatus_)
 {
     this->addTask(
-        [this, client_requestErrorStatus_](void)
+        [this, client = client_requestErrorStatus_](void)
         {
-            this->requestDeviceStatusInternal(client_requestErrorStatus_);
+            this->requestDeviceStatusInternal(client);
         });
 }
 
 void QStatusWorker::requestDeviceStatusInternal(
-    std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_)
+    const rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr& client_requestErrorStatus_)
 {
     bool success = false;
     std::string status;
 
-    std::shared_ptr<rover_msgs::srv::Empty::Request> request = std::make_shared<rover_msgs::srv::Empty::Request>();
+    rover_msgs::srv::Empty::Request::SharedPtr request = std::make_shared<rover_msgs::srv::Empty::Request>();
 
     if (!client_requestErrorStatus_)
     {
@@ -34,7 +35,7 @@ void QStatusWorker::requestDeviceStatusInternal(
     std::future<std::shared_ptr<rover_msgs::srv::Empty::Response>> future_result = std::move(future_and_request.future);
     if (future_result.valid())
     {
-        std::shared_ptr<rover_msgs::srv::Empty::Response> response = future_result.get();
+        rover_msgs::srv::Empty::Response::SharedPtr response = future_result.get();
 
         if (response != nullptr)
         {

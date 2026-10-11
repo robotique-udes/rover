@@ -1,5 +1,5 @@
-#ifndef IM50L35_HPP
-#define IM50L35_HPP
+#ifndef ROVER_LIB2_CAMERAS_IM50L35_HPP
+#define ROVER_LIB2_CAMERAS_IM50L35_HPP
 
 #if defined(__linux__)  // need linux for environment variables
 
@@ -78,4 +78,4 @@ namespace IM50L35
 }  // namespace IM50L35
 
 #endif  // defined __linux__
-#endif  // IM50L35
+#endif  // ROVER_LIB2_CAMERAS_IM50L35_HPP

@@ -36,7 +36,7 @@ class QDeviceStatus : public QWidget
     };
 
   public:
-    QDeviceStatus(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
+    QDeviceStatus(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_);
     void onDashboardPage();
     void onDeviceStatusPage();
 
@@ -62,7 +62,7 @@ class QDeviceStatus : public QWidget
     void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);
 
   private:
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
     Ui::DeviceStatus _ui;
 
     rclcpp::Subscription<rover_msgs::msg::CanDeviceStatus>::SharedPtr _sub_deviceStatus;
