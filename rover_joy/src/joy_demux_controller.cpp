@@ -1,3 +1,5 @@
+//Ce commentaire est inutile
+
 #include <rclcpp/client.hpp>
 #include <rclcpp/logging.hpp>
 #include <rclcpp/node.hpp>
