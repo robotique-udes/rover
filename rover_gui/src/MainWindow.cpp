@@ -110,6 +110,11 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             _bmsDataWidget.setCellContainerSize(200, 400);
             grid->addWidget(&_bmsDataWidget, 0, 1);
             break;
+
+        case QSideBar::eTabIndex::CONTROLLER:
+            grid->addWidget(&_controllerWidget, 0, 1);
+            _controllerWidget.show();
+            break;
     }
 
     std::unique_ptr<QWidget> widget = std::make_unique<QWidget>();
