@@ -152,7 +152,11 @@ Arbitration::Arbitration():
                                              {
                                                  this->watchdog(_roverHBLost);
                                              });
-    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(500),
+
+    this->declare_parameter<int>("watchdog_base_timeout_ms", 500);
+    const int watchdogBaseMs = this->get_parameter("watchdog_base_timeout_ms").as_int();
+
+    _watchdogBase = this->create_wall_timer(std::chrono::milliseconds(watchdogBaseMs),
                                             [this]()
                                             {
                                                 this->watchdog(_baseHBLost);

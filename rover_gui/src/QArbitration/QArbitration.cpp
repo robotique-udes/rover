@@ -17,6 +17,7 @@ QArbitration::QArbitration(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
 
     _clientJoy = _node->create_client<rover_msgs::srv::JoyDemuxSetState>(TOPIC_JOY_DEMUX_CONTROL);
     _clientDriveTrain = _node->create_client<rover_msgs::srv::DriveTrainArbitration>(TOPIC_DT_DEMUX_CONTROL);
+    _clientComms = _node->create_client<rover_msgs::srv::SetCommsLink>(SERVICE_COMMS_CONTROL);
 
     _joyDemuxStatusSub
         = _node->create_subscription<rover_msgs::msg::JoyDemuxStatus>(TOPIC_JOY_DEMUX_STATUS,
@@ -54,6 +55,11 @@ QArbitration::QArbitration(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
             this,
             &QArbitration::onDriveTrainComboChanged);
 
+    connect(_ui.commsModeComboBox,
+            QOverload<int>::of(&QComboBox::currentIndexChanged),
+            this,
+            &QArbitration::onCommsComboChanged);
+
     connect(this, &QArbitration::joyDemuxStatusChanged, this, &QArbitration::onJoyDemuxStatusChanged);
 
     connect(this, &QArbitration::driveTrainDemuxStatusChanged, this, &QArbitration::onDriveTrainDemuxStatusChanged);
@@ -76,6 +82,54 @@ void QArbitration::initComboBoxItems()
     this->_ui.driveTrainComboBox->addItem("None", 0);
     this->_ui.driveTrainComboBox->addItem("Teleop", 1);
     this->_ui.driveTrainComboBox->addItem("Autonomous", 2);
+
+    this->_ui.commsModeComboBox->addItem("900MHz Radio: OFF (Wi-Fi Only)", static_cast<int>(eCommsMode::PRIMARY_5G));
+    this->_ui.commsModeComboBox->addItem("900MHz Radio: AUTO Failover", static_cast<int>(eCommsMode::AUTO));
+    this->_ui.commsModeComboBox->addItem("900MHz Radio: FORCED Active", static_cast<int>(eCommsMode::FALLBACK_900M));
+}
+
+void QArbitration::onCommsComboChanged(int index_)
+{
+    if (index_ < 0)
+    {
+        return;
+    }
+
+    this->checkServiceAvailable<rover_msgs::srv::SetCommsLink>(_clientComms, SERVICE_COMMS_CONTROL);
+
+    auto request = std::make_shared<rover_msgs::srv::SetCommsLink::Request>();
+    request->target_mode = static_cast<uint8_t>(_ui.commsModeComboBox->itemData(index_).toInt());
+
+    _clientComms->async_send_request(
+        request,
+        [this](rclcpp::Client<rover_msgs::srv::SetCommsLink>::SharedFuture future_)
+        {
+            auto response = future_.get();
+            if (response)
+            {
+                if (response->success)
+                {
+                    QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                        "900MHz Radio Add-on",
+                        response->message,
+                        QHelper::QToastNotification::eNotifType::INFO,
+                        2'500);
+                }
+                else
+                {
+                    QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                        "900MHz Radio Add-on",
+                        response->message,
+                        QHelper::QToastNotification::eNotifType::ERROR,
+                        4'000);
+
+                    // Revert ComboBox to OFF (index 0)
+                    bool wasBlocked = _ui.commsModeComboBox->blockSignals(true);
+                    _ui.commsModeComboBox->setCurrentIndex(0);
+                    _ui.commsModeComboBox->blockSignals(wasBlocked);
+                }
+            }
+        });
 }
 
 void QArbitration::onControllerComboChanged(eControllerType controller_, int index_)

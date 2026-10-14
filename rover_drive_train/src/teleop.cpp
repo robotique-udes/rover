@@ -11,6 +11,7 @@
 class Teleop : public rclcpp::Node
 {
     static constexpr const char* TOPIC_JOY = "/base/joy/drive_train";
+    static constexpr const char* TOPIC_FALLBACK_JOY = "/rover/fallback/joy";
     static constexpr const char* TOPIC_WHEEL_CMD = "/rover/drive_train/wheels_cmd_telelop";
     static constexpr float CAR_CONTROL_MAP_FACTOR = 1.0f - Constants::DriveTrain::SMALLEST_RADIUS;
     static constexpr float CAR_MODE_INPUT_BYPASS_THREASHOLD = 0.05F;
@@ -27,7 +28,7 @@ class Teleop : public rclcpp::Node
         return variable_ == 1.0f;
     }
 
-    void CB_joy(const rover_msgs::msg::Joy& msg_) const
+    void CB_joy(const rover_msgs::msg::Joy& msg_, bool isFallback_ = false) const
     {
         rover_msgs::msg::PropulsionMotor message;
 
@@ -42,13 +43,16 @@ class Teleop : public rclcpp::Node
         {
             float speedFactor = Constants::DriveTrain::SPEED_FACTOR_CRAWLER;
 
-            if (modeTurboEnable > 0.5f && this->floatToBool(modeNormalEnable))
+            if (!isFallback_)
             {
-                speedFactor = Constants::DriveTrain::SPEED_FACTOR_TURBO;
-            }
-            else if (this->floatToBool(modeNormalEnable))
-            {
-                speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                if (modeTurboEnable > 0.5f && this->floatToBool(modeNormalEnable))
+                {
+                    speedFactor = Constants::DriveTrain::SPEED_FACTOR_TURBO;
+                }
+                else if (this->floatToBool(modeNormalEnable))
+                {
+                    speedFactor = Constants::DriveTrain::SPEED_FACTOR_NORMAL;
+                }
             }
 
             float speedLeftMotor = linearInput * speedFactor;
@@ -87,6 +91,7 @@ class Teleop : public rclcpp::Node
     }
 
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_formated;
+    rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _sub_joy_fallback;
     rclcpp::Publisher<rover_msgs::msg::PropulsionMotor>::SharedPtr _pub_teleop_in;
 };
 
@@ -98,7 +103,14 @@ Teleop::Teleop():
                                                                         QOS_DEFAULT,
                                                                         [this](const rover_msgs::msg::Joy& msg_)
                                                                         {
-                                                                            this->CB_joy(msg_);
+                                                                            this->CB_joy(msg_, false);
+                                                                        });
+
+    _sub_joy_fallback = this->create_subscription<rover_msgs::msg::Joy>(TOPIC_FALLBACK_JOY,
+                                                                        QOS_DEFAULT,
+                                                                        [this](const rover_msgs::msg::Joy& msg_)
+                                                                        {
+                                                                            this->CB_joy(msg_, true);
                                                                         });
 
     rclcpp::QoS teleopQos(rclcpp::KeepLast(1));

@@ -135,6 +135,16 @@
           <widget class="QComboBox" name="driveTrainComboBox"/>
          </item>
          <item>
+          <widget class="QLabel" name="commsModeLabel">
+           <property name="text">
+            <string>Comms Link</string>
+           </property>
+          </widget>
+         </item>
+         <item>
+          <widget class="QComboBox" name="commsModeComboBox"/>
+         </item>
+         <item>
           <spacer name="verticalSpacer">
            <property name="orientation">
             <enum>Qt::Vertical</enum>

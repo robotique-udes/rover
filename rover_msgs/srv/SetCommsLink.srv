@@ -1,0 +1,9 @@
+uint8 MODE_PRIMARY_5G = 0
+uint8 MODE_AUTO = 1
+uint8 MODE_FALLBACK_900M = 2
+
+uint8 target_mode
+---
+bool success
+uint8 active_mode
+string message

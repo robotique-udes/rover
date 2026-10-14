@@ -11,6 +11,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(jsoncpp REQUIRED)
@@ -37,9 +38,12 @@ add_executable(antenna src/Antenna/antenna_node.cpp
                        src/Antenna/antenna_commands/base/validate_auth.cpp)
 
 
+add_executable(sik_radio src/SikRadio/sik_radio_node.cpp)
+
 target_link_libraries(ddb_control rover_shared_libs)
 target_link_libraries(camera_manager rover_shared_libs CURL::libcurl)
 target_link_libraries(bms_info rover_shared_libs)
+target_link_libraries(sik_radio rover_shared_libs)
 target_link_libraries(antenna 
                       rover_shared_libs
                       jsoncpp_lib
@@ -65,6 +69,12 @@ ament_target_dependencies(antenna
                           rover_msgs
                           rcl_interfaces)
 
+ament_target_dependencies(sik_radio
+                          rclcpp
+                          std_msgs
+                          rover_msgs
+                          rcl_interfaces)
+
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 # install(DIRECTORY include DESTINATION share/${PROJECT_NAME}/)
@@ -84,6 +94,10 @@ install(TARGETS
 
 install(TARGETS
         bms_info
+        DESTINATION lib/${PROJECT_NAME})
+
+install(TARGETS
+        sik_radio
         DESTINATION lib/${PROJECT_NAME})
 
 ament_package()

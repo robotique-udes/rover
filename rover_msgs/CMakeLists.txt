@@ -59,6 +59,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ScienceCmd.msg"
   "msg/ScienceInfo.msg"
   "msg/SensorBox.msg"
+  "msg/SikStatus.msg"
   "msg/TopicWithPriority.msg"
 
   "srv/AntennaArbitration.srv"
@@ -74,6 +75,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "srv/LightControl.srv"
   "srv/RtspStream.srv"
   "srv/Panorama.srv"
+  "srv/SetCommsLink.srv"
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

@@ -22,11 +22,13 @@ QUtilityBarTop::QUtilityBarTop(rclcpp::Node::SharedPtr node_, QWidget* parent_):
     this->setupUI();
     this->initBatterySubscriber();
     this->initAntennaStatus();
+    this->initSikStatus();
     this->initGNSS();
     this->initTimerDisplay();
 
     connect(this, &QUtilityBarTop::updateBatteryUI, this, &QUtilityBarTop::onUpdateBatteryUI);
     connect(this, &QUtilityBarTop::updateAntennaUI, this, &QUtilityBarTop::onUpdateAntennaUI);
+    connect(this, &QUtilityBarTop::updateSikUI, this, &QUtilityBarTop::onUpdateSikUI);
     connect(this, &QUtilityBarTop::updateGNSS, this, &QUtilityBarTop::onUpdateGNSS);
     connect(this, &QUtilityBarTop::updateTimer, this, &QUtilityBarTop::onUpdateTimer);
 
@@ -47,6 +49,7 @@ void QUtilityBarTop::setupUI(void)
 
     _ui.batteryLabel->setText("-- %");
     _ui.signalQualityLabel->setText("RSSI: ---");
+    _ui.sikSignalLabel->setText("SiK: ---");
     _ui.upSpeedLabel->setText("--.- Mb/s");
     _ui.downSpeedLabel->setText("--.- Mb/s");
     _ui.satellitesNbrLabel->setText("Sat: --");
@@ -126,6 +129,20 @@ void QUtilityBarTop::initAntennaStatus(void)
     else
     {
         assert(false && "Error: GUI node is null");
+    }
+}
+
+void QUtilityBarTop::initSikStatus(void)
+{
+    if (_node)
+    {
+        _sub_sikStatus = _node->create_subscription<rover_msgs::msg::SikStatus>(
+            TOPIC_SIK_STATUS,
+            QOS_DEFAULT,
+            [this](const rover_msgs::msg::SikStatus& msg_)
+            {
+                emit this->updateSikUI(msg_.connected, msg_.rssi, msg_.txbuf);
+            });
     }
 }
 
@@ -256,6 +273,33 @@ void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float upSpe
     }
 
     _ui.RSSILabel->setIcon(icon);
+}
+
+void QUtilityBarTop::onUpdateSikUI(bool connected_, float rssi_, uint8_t txbuf_)
+{
+    if (connected_)
+    {
+        _ui.sikSignalLabel->setText(
+            QString("SiK 900M: %1 dBm (Tx: %2%)").arg(static_cast<int>(rssi_)).arg(txbuf_));
+
+        if (rssi_ >= -80.0f)
+        {
+            _ui.sikSignalLabel->setStyleSheet("color: #00FF00; font-weight: bold;");
+        }
+        else if (rssi_ >= -100.0f)
+        {
+            _ui.sikSignalLabel->setStyleSheet("color: #FFA500; font-weight: bold;");
+        }
+        else
+        {
+            _ui.sikSignalLabel->setStyleSheet("color: #FF0000; font-weight: bold;");
+        }
+    }
+    else
+    {
+        _ui.sikSignalLabel->setText("SiK: OFF");
+        _ui.sikSignalLabel->setStyleSheet("color: #777777;");
+    }
 }
 
 void QUtilityBarTop::onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_)

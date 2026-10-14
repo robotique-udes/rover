@@ -11,6 +11,7 @@
 #include <rover_msgs/msg/drivetrain_arbitration.hpp>
 #include <rover_msgs/srv/joy_demux_set_state.hpp>
 #include <rover_msgs/srv/drive_train_arbitration.hpp>
+#include <rover_msgs/srv/set_comms_link.hpp>
 
 // QT
 #include <QComboBox>
@@ -27,6 +28,7 @@ class QArbitration : public QWidget
 
     static constexpr const char* TOPIC_JOY_DEMUX_CONTROL = "/base/joy/demux_control";
     static constexpr const char* TOPIC_DT_DEMUX_CONTROL = "/rover/drive_train/demux_control";
+    static constexpr const char* SERVICE_COMMS_CONTROL = "/rover/network/set_comms_link";
     static constexpr const char* TOPIC_JOY_DEMUX_STATUS = "/base/joy/demux_status";
     static constexpr const char* TOPIC_DT_DEMUX_STATUS = "/rover/drive_train/demux_status";
 
@@ -52,6 +54,13 @@ class QArbitration : public QWidget
         AUTONOMUS = rover_msgs::msg::DrivetrainArbitration::AUTONOMUS
     };
 
+    enum class eCommsMode : uint8_t
+    {
+        AUTO = rover_msgs::srv::SetCommsLink_Request::MODE_AUTO,
+        PRIMARY_5G = rover_msgs::srv::SetCommsLink_Request::MODE_PRIMARY_5G,
+        FALLBACK_900M = rover_msgs::srv::SetCommsLink_Request::MODE_FALLBACK_900M
+    };
+
   public:
     QArbitration(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_);
 
@@ -62,6 +71,7 @@ class QArbitration : public QWidget
   private slots:
     void onControllerComboChanged(eControllerType controller_, int index_);
     void onDriveTrainComboChanged(int index_);
+    void onCommsComboChanged(int index_);
     void onJoyDemuxStatusChanged(const rover_msgs::msg::JoyDemuxStatus& msg_);
     void onDriveTrainDemuxStatusChanged(const rover_msgs::msg::DrivetrainArbitration& msg_);
 
@@ -78,6 +88,7 @@ class QArbitration : public QWidget
     rclcpp::Subscription<rover_msgs::msg::DrivetrainArbitration>::SharedPtr _driveTrainStatusSub;
     rclcpp::Client<rover_msgs::srv::JoyDemuxSetState>::SharedPtr _clientJoy;
     rclcpp::Client<rover_msgs::srv::DriveTrainArbitration>::SharedPtr _clientDriveTrain;
+    rclcpp::Client<rover_msgs::srv::SetCommsLink>::SharedPtr _clientComms;
 };
 
 #endif
