@@ -13,6 +13,12 @@
 class QController : public QWidget
 {
     Q_OBJECT
+
+  public:
+    explicit QController(QWidget* parent_ = nullptr);
+
+  private:
+    Ui::Controller _ui;
 };
 
 #endif  // QCONTROLLER_QCONTROLLER_HPP
