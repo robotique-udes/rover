@@ -12,6 +12,7 @@
 #include "QLightsController/QLightsController.hpp"
 #include "QBmsData/QBmsData.hpp"
 #include "QScience/QScience.hpp"
+#include "QController/QController.hpp"
 
 #include <QMainWindow>
 #include <QShortcut>
@@ -50,6 +51,7 @@ class MainWindow : public QMainWindow
     QLightsController _ligthsController;
     QBmsData _bmsDataWidget;
     QScience _scienceWidget;
+    QController _controllerWidget;
 
     QFrame _topBarSeperator = QFrame(this);
     QFrame _bottomBarSeperator = QFrame(this);

@@ -12,6 +12,6 @@ QSideBar::QSideBar(QWidget* parent_):
     connect(_ui.pb_fileTransfer, &QPushButton::clicked, this, [this]() { emit this->switchPage(eTabIndex::FILE_TRANSFER); });
     connect(_ui.pb_bmsData, &QPushButton::clicked, this, [this]() { emit this->switchPage(eTabIndex::BMS_DATA); });
     connect(_ui.pb_science, &QPushButton::clicked, this, [this]() { emit this->switchPage(eTabIndex::SCIENCE); });
-    connect(_ui.pb_science, &QPushButton::clicked, this, [this]() { emit this->switchPage(eTabIndex::CONTROLLER); });
+    connect(_ui.pb_controller, &QPushButton::clicked, this, [this]() { emit this->switchPage(eTabIndex::CONTROLLER); });
     // clang-format on
 }
