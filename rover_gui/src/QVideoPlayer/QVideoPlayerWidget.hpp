@@ -15,12 +15,16 @@
 #include <QtWidgets/QWidget>
 #include <QtWidgets/QCheckBox>
 #include <QtWidgets/QTextEdit>
+#include <QtWidgets/QLabel>
 #include <QThread>
 #include <QTimer>
 #include <QDateTime>
+#include <QResizeEvent>
 #include <gst/gst.h>
 #include <Global/Helpers/QToastNotification/QToastNotification.hpp>
 #include <rover_lib2/helpers/constants.hpp>
+#include <sensor_msgs/msg/compressed_image.hpp>
+#include <std_msgs/msg/u_int8.hpp>
 
 class QVideoPlayerWidget : public QWidget
 {
@@ -142,6 +146,14 @@ class QVideoPlayerWidget : public QWidget
 
     void onIRModeChanged(void);
 
+    // Emergency camera feed slots
+    void onEmergencyImageReceived(const sensor_msgs::msg::CompressedImage::SharedPtr msg_);
+    void onEmergencyWatchdogTimeout(void);
+    void onCommsModeUpdate(uint8_t mode_);
+
+  protected:
+    void resizeEvent(QResizeEvent* event) override;
+
   private:
     void setupUI(void);
     void connectUISignals(void);
@@ -149,6 +161,7 @@ class QVideoPlayerWidget : public QWidget
     void emitStateChanged(void);
     void cleanupResources(void);
     void autoStartGStreamer(void);
+    void setupEmergencyUI(void);
 
     void hideAngleSelector(void);
     void setupIRModeBox(void);
@@ -183,6 +196,17 @@ class QVideoPlayerWidget : public QWidget
     QTimer _frameTimeoutTimer;
     QTimer _connectionTimeoutTimer;
     uint16_t _panoramaDuration = 5000U;
+
+    // Emergency camera feed widgets and subscribers (Main camera / playerIndex == 0)
+    QWidget* _emergencyContainer{nullptr};
+    QLabel* _emergencyBanner{nullptr};
+    QLabel* _emergencyImageLabel{nullptr};
+    QPixmap _lastEmergencyPixmap;
+    rclcpp::Subscription<sensor_msgs::msg::CompressedImage>::SharedPtr _subEmergencyImage;
+    rclcpp::Subscription<std_msgs::msg::UInt8>::SharedPtr _subCommsMode;
+    QTimer _emergencyWatchdogTimer;
+    bool _isEmergencyModeActive{false};
+    uint8_t _currentCommsMode{0};
 };
 
 #endif

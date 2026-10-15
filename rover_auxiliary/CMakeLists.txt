@@ -12,6 +12,7 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(OpenCV REQUIRED)
 find_package(jsoncpp REQUIRED)
@@ -72,6 +73,7 @@ ament_target_dependencies(antenna
 ament_target_dependencies(sik_radio
                           rclcpp
                           std_msgs
+                          sensor_msgs
                           rover_msgs
                           rcl_interfaces)
 

@@ -17,6 +17,7 @@
 
   <depend>rclcpp</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
   <depend>rover_msgs</depend>
   <depend>rcl_interfaces</depend>
   <depend>libssh2</depend>

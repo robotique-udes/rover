@@ -66,8 +66,22 @@ int guiMain(int argc_, char* argv_[], const rclcpp::Node::SharedPtr& guiNode_)
     int ret = QApplication::exec();
 
     rosProcess.terminate();
-    if (!rosProcess.waitForFinished(3000))
+    qint64 bashPid = rosProcess.processId();
+    if (bashPid > 0)
     {
+        std::string termCmd = "pkill -TERM -P " + std::to_string(bashPid);
+        int unused = system(termCmd.c_str());
+        (void)unused;
+    }
+
+    if (!rosProcess.waitForFinished(1500))
+    {
+        if (bashPid > 0)
+        {
+            std::string killCmd = "pkill -KILL -P " + std::to_string(bashPid);
+            int unused = system(killCmd.c_str());
+            (void)unused;
+        }
         rosProcess.kill();
     }
 

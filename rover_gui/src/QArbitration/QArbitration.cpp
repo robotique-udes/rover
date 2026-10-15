@@ -18,6 +18,7 @@ QArbitration::QArbitration(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     _clientJoy = _node->create_client<rover_msgs::srv::JoyDemuxSetState>(TOPIC_JOY_DEMUX_CONTROL);
     _clientDriveTrain = _node->create_client<rover_msgs::srv::DriveTrainArbitration>(TOPIC_DT_DEMUX_CONTROL);
     _clientComms = _node->create_client<rover_msgs::srv::SetCommsLink>(SERVICE_COMMS_CONTROL);
+    _pubCommsMode = _node->create_publisher<std_msgs::msg::UInt8>(TOPIC_COMMS_MODE, rclcpp::QoS(1));
 
     _joyDemuxStatusSub
         = _node->create_subscription<rover_msgs::msg::JoyDemuxStatus>(TOPIC_JOY_DEMUX_STATUS,
@@ -95,39 +96,83 @@ void QArbitration::onCommsComboChanged(int index_)
         return;
     }
 
-    this->checkServiceAvailable<rover_msgs::srv::SetCommsLink>(_clientComms, SERVICE_COMMS_CONTROL);
+    uint8_t targetMode = static_cast<uint8_t>(_ui.commsModeComboBox->itemData(index_).toInt());
+
+    if (!_clientComms->service_is_ready())
+    {
+        if (targetMode != static_cast<uint8_t>(eCommsMode::PRIMARY_5G))
+        {
+            QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                "900MHz Radio Add-on",
+                "Radio service unavailable. 900MHz link is not active.",
+                QHelper::QToastNotification::eNotifType::WARNING,
+                3'000);
+
+            bool wasBlocked = _ui.commsModeComboBox->blockSignals(true);
+            _ui.commsModeComboBox->setCurrentIndex(0);
+            _ui.commsModeComboBox->blockSignals(wasBlocked);
+        }
+
+        std_msgs::msg::UInt8 modeMsg;
+        modeMsg.data = static_cast<uint8_t>(eCommsMode::PRIMARY_5G);
+        _pubCommsMode->publish(modeMsg);
+        return;
+    }
 
     auto request = std::make_shared<rover_msgs::srv::SetCommsLink::Request>();
-    request->target_mode = static_cast<uint8_t>(_ui.commsModeComboBox->itemData(index_).toInt());
+    request->target_mode = targetMode;
 
     _clientComms->async_send_request(
         request,
         [this](rclcpp::Client<rover_msgs::srv::SetCommsLink>::SharedFuture future_)
         {
-            auto response = future_.get();
-            if (response)
+            try
             {
-                if (response->success)
+                auto response = future_.get();
+                if (response)
                 {
-                    QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                        "900MHz Radio Add-on",
-                        response->message,
-                        QHelper::QToastNotification::eNotifType::INFO,
-                        2'500);
-                }
-                else
-                {
-                    QHelper::QToastNotification::getInstance().notifyFromAnyThread(
-                        "900MHz Radio Add-on",
-                        response->message,
-                        QHelper::QToastNotification::eNotifType::ERROR,
-                        4'000);
+                    if (response->success)
+                    {
+                        QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                            "900MHz Radio Add-on",
+                            response->message,
+                            QHelper::QToastNotification::eNotifType::INFO,
+                            2'500);
+                    }
+                    else
+                    {
+                        QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                            "900MHz Radio Add-on",
+                            response->message,
+                            QHelper::QToastNotification::eNotifType::ERROR,
+                            4'000);
 
-                    // Revert ComboBox to OFF (index 0)
-                    bool wasBlocked = _ui.commsModeComboBox->blockSignals(true);
-                    _ui.commsModeComboBox->setCurrentIndex(0);
-                    _ui.commsModeComboBox->blockSignals(wasBlocked);
+                        // Revert ComboBox to OFF (index 0) without re-triggering signal
+                        bool wasBlocked = _ui.commsModeComboBox->blockSignals(true);
+                        _ui.commsModeComboBox->setCurrentIndex(0);
+                        _ui.commsModeComboBox->blockSignals(wasBlocked);
+
+                        std_msgs::msg::UInt8 modeMsg;
+                        modeMsg.data = static_cast<uint8_t>(eCommsMode::PRIMARY_5G);
+                        _pubCommsMode->publish(modeMsg);
+                    }
                 }
+            }
+            catch (const std::exception& e)
+            {
+                QHelper::QToastNotification::getInstance().notifyFromAnyThread(
+                    "900MHz Radio Add-on",
+                    std::string("Service error: ") + e.what(),
+                    QHelper::QToastNotification::eNotifType::ERROR,
+                    4'000);
+
+                bool wasBlocked = _ui.commsModeComboBox->blockSignals(true);
+                _ui.commsModeComboBox->setCurrentIndex(0);
+                _ui.commsModeComboBox->blockSignals(wasBlocked);
+
+                std_msgs::msg::UInt8 modeMsg;
+                modeMsg.data = static_cast<uint8_t>(eCommsMode::PRIMARY_5G);
+                _pubCommsMode->publish(modeMsg);
             }
         });
 }

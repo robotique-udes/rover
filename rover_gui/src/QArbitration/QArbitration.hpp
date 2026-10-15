@@ -12,6 +12,7 @@
 #include <rover_msgs/srv/joy_demux_set_state.hpp>
 #include <rover_msgs/srv/drive_train_arbitration.hpp>
 #include <rover_msgs/srv/set_comms_link.hpp>
+#include <std_msgs/msg/u_int8.hpp>
 
 // QT
 #include <QComboBox>
@@ -29,6 +30,7 @@ class QArbitration : public QWidget
     static constexpr const char* TOPIC_JOY_DEMUX_CONTROL = "/base/joy/demux_control";
     static constexpr const char* TOPIC_DT_DEMUX_CONTROL = "/rover/drive_train/demux_control";
     static constexpr const char* SERVICE_COMMS_CONTROL = "/rover/network/set_comms_link";
+    static constexpr const char* TOPIC_COMMS_MODE = "/rover/network/comms_mode";
     static constexpr const char* TOPIC_JOY_DEMUX_STATUS = "/base/joy/demux_status";
     static constexpr const char* TOPIC_DT_DEMUX_STATUS = "/rover/drive_train/demux_status";
 
@@ -89,6 +91,7 @@ class QArbitration : public QWidget
     rclcpp::Client<rover_msgs::srv::JoyDemuxSetState>::SharedPtr _clientJoy;
     rclcpp::Client<rover_msgs::srv::DriveTrainArbitration>::SharedPtr _clientDriveTrain;
     rclcpp::Client<rover_msgs::srv::SetCommsLink>::SharedPtr _clientComms;
+    rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr _pubCommsMode;
 };
 
 #endif

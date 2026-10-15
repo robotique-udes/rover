@@ -133,6 +133,11 @@ QVideoPlayerWidget::QVideoPlayerWidget(rclcpp::Node::SharedPtr guiNode_,
     }
 
     UI_LOG_INFO(GENERAL, QString::fromStdString("VideoPlayer Widget initialized for camera: " + _camURL), _ui.logDisplay);
+
+    if (_playerIndex == 0)
+    {
+        this->setupEmergencyUI();
+    }
 }
 
 QVideoPlayerWidget::~QVideoPlayerWidget()
@@ -467,6 +472,10 @@ void QVideoPlayerWidget::tryReconnect(void)
 void QVideoPlayerWidget::updateStatusText(const QString& text_)
 {
     _ui.statusLabel->setText(text_);
+    if (_emergencyContainer && _ui.videoStack->currentWidget() == _emergencyContainer)
+    {
+        return;
+    }
     _ui.videoStack->setCurrentIndex(text_.isEmpty() ? 0 : 1);
 }
 
@@ -1121,4 +1130,166 @@ void QVideoPlayerWidget::setCameraIRClient(const rclcpp::Client<rover_msgs::srv:
 {
     _client_cameraIR = client_;
     this->onIRModeChanged();
+}
+
+void QVideoPlayerWidget::setupEmergencyUI(void)
+{
+    _emergencyContainer = new QWidget(this);
+    auto* emLayout = new QVBoxLayout(_emergencyContainer);
+    emLayout->setContentsMargins(0, 0, 0, 0);
+    emLayout->setSpacing(0);
+
+    _emergencyBanner = new QLabel("⚠ EMERGENCY 900MHz SLOW-SCAN FEED ⚠", _emergencyContainer);
+    _emergencyBanner->setAlignment(Qt::AlignCenter);
+    _emergencyBanner->setStyleSheet(
+        "background-color: #8b0000; color: #ffffff; font-weight: bold; font-size: 11px; padding: 4px; border-bottom: 1px solid #cc0000;");
+
+    _emergencyImageLabel = new QLabel("Waiting for 900MHz emergency snapshot...", _emergencyContainer);
+    _emergencyImageLabel->setAlignment(Qt::AlignCenter);
+    _emergencyImageLabel->setStyleSheet("background-color: #111111; color: #aaaaaa; font-style: italic;");
+
+    emLayout->addWidget(_emergencyBanner);
+    emLayout->addWidget(_emergencyImageLabel, 1);
+
+    _ui.videoStack->addWidget(_emergencyContainer);
+
+    if (_node)
+    {
+        _subEmergencyImage = _node->create_subscription<sensor_msgs::msg::CompressedImage>(
+            "/rover/camera/emergency_image", rclcpp::QoS(1),
+            [this](const sensor_msgs::msg::CompressedImage::SharedPtr msg_)
+            {
+                QMetaObject::invokeMethod(this, [this, msg_]()
+                {
+                    this->onEmergencyImageReceived(msg_);
+                }, Qt::QueuedConnection);
+            });
+
+        _subCommsMode = _node->create_subscription<std_msgs::msg::UInt8>(
+            "/rover/network/comms_mode", rclcpp::QoS(1),
+            [this](const std_msgs::msg::UInt8& msg_)
+            {
+                QMetaObject::invokeMethod(this, [this, mode = msg_.data]()
+                {
+                    this->onCommsModeUpdate(mode);
+                }, Qt::QueuedConnection);
+            });
+    }
+
+    connect(&_emergencyWatchdogTimer, &QTimer::timeout, this, &QVideoPlayerWidget::onEmergencyWatchdogTimeout);
+}
+
+void QVideoPlayerWidget::onEmergencyImageReceived(const sensor_msgs::msg::CompressedImage::SharedPtr msg_)
+{
+    if (!msg_ || msg_->data.empty() || !_emergencyImageLabel)
+    {
+        return;
+    }
+
+    if (_lastEmergencyPixmap.loadFromData(reinterpret_cast<const uchar*>(msg_->data.data()),
+                                         static_cast<uint>(msg_->data.size()), "JPEG"))
+    {
+        QSize labelSize = _emergencyImageLabel->size();
+        if (labelSize.width() > 10 && labelSize.height() > 10)
+        {
+            _emergencyImageLabel->setPixmap(_lastEmergencyPixmap.scaled(
+                labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+        else
+        {
+            _emergencyImageLabel->setPixmap(_lastEmergencyPixmap);
+        }
+
+        if (_ui.videoStack->currentWidget() != _emergencyContainer)
+        {
+            _ui.videoStack->setCurrentWidget(_emergencyContainer);
+        }
+        _emergencyWatchdogTimer.start(6000);
+    }
+}
+
+void QVideoPlayerWidget::onEmergencyWatchdogTimeout(void)
+{
+    // If in FORCED mode (mode 2), keep emergency view in place and notify user waiting for next snapshot
+    if (_currentCommsMode == 2)
+    {
+        if (_emergencyImageLabel && _lastEmergencyPixmap.isNull())
+        {
+            _emergencyImageLabel->setText("Emergency Feed: 900MHz link forced active.\nWaiting for slow-scan snapshot from rover...");
+        }
+        return;
+    }
+
+    // In AUTO or OFF mode: snapshot reception timed out, restore normal video view
+    if (_emergencyContainer && _ui.videoStack->currentWidget() == _emergencyContainer)
+    {
+        _ui.videoStack->setCurrentIndex(this->isStreaming() ? 0 : 1);
+    }
+}
+
+void QVideoPlayerWidget::onCommsModeUpdate(uint8_t mode_)
+{
+    _currentCommsMode = mode_;
+    _isEmergencyModeActive = (mode_ != 0); // 0 = MODE_PRIMARY_5G
+
+    if (_currentCommsMode == 2) // MODE_FALLBACK_900M: Forced 900MHz link
+    {
+        if (_emergencyContainer)
+        {
+            if (_ui.videoStack->currentWidget() != _emergencyContainer)
+            {
+                _ui.videoStack->setCurrentWidget(_emergencyContainer);
+            }
+
+            if (_lastEmergencyPixmap.isNull())
+            {
+                _emergencyImageLabel->setText("Emergency Feed: 900MHz link forced active.\nWaiting for slow-scan snapshot from rover...");
+            }
+            else
+            {
+                QSize labelSize = _emergencyImageLabel->size();
+                if (labelSize.width() > 10 && labelSize.height() > 10)
+                {
+                    _emergencyImageLabel->setPixmap(_lastEmergencyPixmap.scaled(
+                        labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+                }
+                else
+                {
+                    _emergencyImageLabel->setPixmap(_lastEmergencyPixmap);
+                }
+            }
+        }
+    }
+    else if (_currentCommsMode == 0) // MODE_PRIMARY_5G: OFF / 5GHz Wi-Fi only
+    {
+        _emergencyWatchdogTimer.stop();
+        if (_emergencyContainer && _ui.videoStack->currentWidget() == _emergencyContainer)
+        {
+            _ui.videoStack->setCurrentIndex(this->isStreaming() ? 0 : 1);
+        }
+    }
+    else // MODE_AUTO: Auto failover
+    {
+        // In AUTO mode, Wi-Fi is primary unless an emergency snapshot arrives.
+        // If we were showing the emergency container without an active stream, restore normal view.
+        if (_emergencyContainer && _ui.videoStack->currentWidget() == _emergencyContainer && !_emergencyWatchdogTimer.isActive())
+        {
+            _ui.videoStack->setCurrentIndex(this->isStreaming() ? 0 : 1);
+        }
+    }
+}
+
+void QVideoPlayerWidget::resizeEvent(QResizeEvent* event)
+{
+    QWidget::resizeEvent(event);
+    if (_emergencyImageLabel && !_lastEmergencyPixmap.isNull() && _emergencyContainer &&
+        _ui.videoStack->currentWidget() == _emergencyContainer)
+    {
+        QSize labelSize = _emergencyImageLabel->size();
+        if (labelSize.width() > 10 && labelSize.height() > 10)
+        {
+            _emergencyImageLabel->setPixmap(_lastEmergencyPixmap.scaled(
+                labelSize, Qt::KeepAspectRatio, Qt::SmoothTransformation));
+        }
+    }
 }

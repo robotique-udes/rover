@@ -49,7 +49,8 @@ void QUtilityBarTop::setupUI(void)
 
     _ui.batteryLabel->setText("-- %");
     _ui.signalQualityLabel->setText("RSSI: ---");
-    _ui.sikSignalLabel->setText("SiK: ---");
+    _ui.sikSignalLabel->setText("SiK: OFF");
+    _ui.sikSignalLabel->setStyleSheet("color: #777777;");
     _ui.upSpeedLabel->setText("--.- Mb/s");
     _ui.downSpeedLabel->setText("--.- Mb/s");
     _ui.satellitesNbrLabel->setText("Sat: --");
@@ -142,6 +143,17 @@ void QUtilityBarTop::initSikStatus(void)
             [this](const rover_msgs::msg::SikStatus& msg_)
             {
                 emit this->updateSikUI(msg_.connected, msg_.rssi, msg_.txbuf);
+            });
+
+        _sub_commsMode = _node->create_subscription<std_msgs::msg::UInt8>(
+            TOPIC_COMMS_MODE,
+            QOS_DEFAULT,
+            [this](const std_msgs::msg::UInt8& msg_)
+            {
+                QMetaObject::invokeMethod(this, [this, mode = msg_.data]()
+                {
+                    this->onCommsModeUpdate(mode);
+                }, Qt::QueuedConnection);
             });
     }
 }
@@ -277,28 +289,50 @@ void QUtilityBarTop::onUpdateAntennaUI(bool connected_, float rssi_, float upSpe
 
 void QUtilityBarTop::onUpdateSikUI(bool connected_, float rssi_, uint8_t txbuf_)
 {
-    if (connected_)
-    {
-        _ui.sikSignalLabel->setText(
-            QString("SiK 900M: %1 dBm (Tx: %2%)").arg(static_cast<int>(rssi_)).arg(txbuf_));
+    _sikConnected = connected_;
+    _sikRssi = rssi_;
+    _sikTxbuf = txbuf_;
+    this->renderSikStatus();
+}
 
-        if (rssi_ >= -80.0f)
-        {
-            _ui.sikSignalLabel->setStyleSheet("color: #00FF00; font-weight: bold;");
-        }
-        else if (rssi_ >= -100.0f)
-        {
-            _ui.sikSignalLabel->setStyleSheet("color: #FFA500; font-weight: bold;");
-        }
-        else
-        {
-            _ui.sikSignalLabel->setStyleSheet("color: #FF0000; font-weight: bold;");
-        }
-    }
-    else
+void QUtilityBarTop::onCommsModeUpdate(uint8_t mode_)
+{
+    _currentCommsMode = mode_;
+    this->renderSikStatus();
+}
+
+void QUtilityBarTop::renderSikStatus(void)
+{
+    if (_currentCommsMode == 0) // MODE_PRIMARY_5G: OFF
     {
         _ui.sikSignalLabel->setText("SiK: OFF");
         _ui.sikSignalLabel->setStyleSheet("color: #777777;");
+    }
+    else // MODE_AUTO (1) or MODE_FALLBACK_900M (2)
+    {
+        if (_sikConnected)
+        {
+            _ui.sikSignalLabel->setText(
+                QString("SiK 900M: %1 dBm (Tx: %2%)").arg(static_cast<int>(_sikRssi)).arg(_sikTxbuf));
+
+            if (_sikRssi >= -80.0f)
+            {
+                _ui.sikSignalLabel->setStyleSheet("color: #00FF00; font-weight: bold;");
+            }
+            else if (_sikRssi >= -100.0f)
+            {
+                _ui.sikSignalLabel->setStyleSheet("color: #FFA500; font-weight: bold;");
+            }
+            else
+            {
+                _ui.sikSignalLabel->setStyleSheet("color: #FF0000; font-weight: bold;");
+            }
+        }
+        else
+        {
+            _ui.sikSignalLabel->setText("SiK 900M: Disconnected");
+            _ui.sikSignalLabel->setStyleSheet("color: #FF5555; font-weight: bold;");
+        }
     }
 }
 

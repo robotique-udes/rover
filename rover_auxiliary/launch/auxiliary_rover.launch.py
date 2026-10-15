@@ -13,7 +13,7 @@ def generate_launch_description():
     )
     serial_port_arg = DeclareLaunchArgument(
         'sik_serial_port',
-        default_value='/dev/ttySikRadio',
+        default_value='/dev/ttyUSB0',
         description='Serial port for SiK radio'
     )
 

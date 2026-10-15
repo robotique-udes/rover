@@ -8,6 +8,7 @@
 #include "rover_msgs/msg/bms_data.hpp"
 #include <rover_msgs/msg/antenna_status.hpp>
 #include <rover_msgs/msg/sik_status.hpp>
+#include <std_msgs/msg/u_int8.hpp>
 
 #include <rover_lib2/helpers/ip_pinging.hpp>
 #include <rover_lib2/helpers/watchdog.hpp>
@@ -26,6 +27,7 @@ class QUtilityBarTop : public QWidget
     static constexpr const char* TOPIC_BMS_DATA = "/rover/auxiliary/bms_data";
     static constexpr const char* TOPIC_ANTENNA_STATUS = "/rover/antenna/status";
     static constexpr const char* TOPIC_SIK_STATUS = "/rover/antenna/sik_status";
+    static constexpr const char* TOPIC_COMMS_MODE = "/rover/network/comms_mode";
     static constexpr const char* TOPIC_GNSS = "/rover/gps/position";
 
     static constexpr const size_t DELAY_CHECK_BATTERY_PUB_COUNT_MS = 1000UL;
@@ -63,6 +65,7 @@ class QUtilityBarTop : public QWidget
     void onUpdateBatteryUI(int16_t _percent);
     void onUpdateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_);
     void onUpdateSikUI(bool connected_, float rssi_, uint8_t txbuf_);
+    void onCommsModeUpdate(uint8_t mode_);
     void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
 
@@ -82,6 +85,7 @@ class QUtilityBarTop : public QWidget
     void initBatterySubscriber(void);
     void initAntennaStatus(void);
     void initSikStatus(void);
+    void renderSikStatus(void);
     void initGNSS(void);
     void initTimerDisplay(void);
     void initWatchdog(void);
@@ -94,7 +98,13 @@ class QUtilityBarTop : public QWidget
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::BmsData>> _sub_battery;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::AntennaStatus>> _sub_antennaStatus;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::SikStatus>> _sub_sikStatus;
+    std::shared_ptr<rclcpp::Subscription<std_msgs::msg::UInt8>> _sub_commsMode;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Gps>> _sub_GNSS;
+
+    uint8_t _currentCommsMode{0};
+    bool _sikConnected{false};
+    float _sikRssi{0.0f};
+    uint8_t _sikTxbuf{0};
 
     rclcpp::TimerBase::SharedPtr _timer_batteryPub;
     rclcpp::TimerBase::SharedPtr _timer_RSSIPub;

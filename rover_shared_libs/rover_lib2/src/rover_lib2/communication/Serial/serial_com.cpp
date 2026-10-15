@@ -174,6 +174,25 @@ std::optional<std::string> SerialCom::serialRead()
     }
 }
 
+std::optional<std::string> SerialCom::readRaw(size_t maxBytes)
+{
+    if (_state != eState::ACTIVE || _fileDesc < 0)
+    {
+        return std::nullopt;
+    }
+
+    char buffer[1024];
+    size_t toRead = std::min(maxBytes, sizeof(buffer));
+    ssize_t n = read(_fileDesc, buffer, toRead);
+
+    if (n <= 0)
+    {
+        return std::nullopt;
+    }
+
+    return std::string(buffer, static_cast<size_t>(n));
+}
+
 bool SerialCom::reconnect()
 {
     if (_fileDesc >= 0)

@@ -12,9 +12,21 @@ def generate_launch_description():
     )
     
     with_sim = LaunchConfiguration('with_sim')
+    with_sik_radio_arg = DeclareLaunchArgument(
+        'with_sik_radio',
+        default_value='true',
+        description='Whether to launch SiK 900MHz telemetry radio node'
+    )
+    serial_port_arg = DeclareLaunchArgument(
+        'sik_serial_port',
+        default_value='/dev/ttyUSB0',
+        description='Serial port for SiK radio'
+    )
 
     return LaunchDescription([
         with_sim_arg,
+        with_sik_radio_arg,
+        serial_port_arg,
 
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
@@ -37,7 +49,11 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
                 PathJoinSubstitution([FindPackageShare('rover_auxiliary'), 'launch', 'auxiliary_rover.launch.py'])
-            ])
+            ]),
+            launch_arguments={
+                'with_sik_radio': LaunchConfiguration('with_sik_radio'),
+                'sik_serial_port': LaunchConfiguration('sik_serial_port')
+            }.items()
         ),
 
         IncludeLaunchDescription(
@@ -62,6 +78,9 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
                 PathJoinSubstitution([FindPackageShare('rover_camera'), 'launch', 'camera.launch.py'])
-            ])
+            ]),
+            launch_arguments={
+                'with_sik_radio': LaunchConfiguration('with_sik_radio')
+            }.items()
         )
     ])

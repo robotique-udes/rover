@@ -84,6 +84,7 @@ class SerialCom
      * @return Raw bytes read, or std::nullopt on inactive port / read failure.
      */
     std::optional<std::string> serialRead();
+    std::optional<std::string> readRaw(size_t maxBytes = 1024);
     eState getState() const;
     bool reconnect();
     void flushInput();

@@ -12,6 +12,8 @@ endif()
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg DBus Charts)
 find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
@@ -107,6 +109,8 @@ ament_target_dependencies(main_gui
   rclcpp
   rover_msgs
   rcl_interfaces
+  sensor_msgs
+  std_msgs
 )
 
 target_link_libraries(main_gui 

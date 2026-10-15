@@ -22,6 +22,7 @@
   <depend>cpr</depend>
   <depend>jsoncpp</depend>
   <depend>std_msgs</depend>
+  <depend>sensor_msgs</depend>
   <depend>rover_msgs</depend>
   <depend>rcl_interfaces</depend>
   <depend>ament_index_cpp</depend>

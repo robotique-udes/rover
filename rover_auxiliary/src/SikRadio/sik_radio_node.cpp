@@ -2,6 +2,7 @@
 
 #include <cmath>
 #include <filesystem>
+#include <thread>
 
 int main(int argc, char* argv[])
 {
@@ -20,7 +21,7 @@ SikRadioNode::SikRadioNode() : Node("sik_radio_node")
 void SikRadioNode::initNode()
 {
     this->declare_parameter<bool>("is_base", false);
-    this->declare_parameter<std::string>("serial_port", "/dev/ttySikRadio");
+    this->declare_parameter<std::string>("serial_port", "/dev/ttyUSB0");
     this->declare_parameter<int>("baud_rate", 115200);
 
     _isBaseStation = this->get_parameter("is_base").as_bool();
@@ -61,6 +62,9 @@ void SikRadioNode::initNode()
                 this->cbSetComms(req_, res_);
             });
 
+        _pubEmergencyImage = this->create_publisher<sensor_msgs::msg::CompressedImage>(
+            TOPIC_EMERGENCY_IMAGE, QOS_DEFAULT);
+
         LOG_INFO(Logger::Nodes::SikRadio, "SiK Radio Base Node initialized in Standby. Waiting for GUI activation.");
     }
     else
@@ -69,12 +73,29 @@ void SikRadioNode::initNode()
         _pubFallbackJoy = this->create_publisher<rover_msgs::msg::Joy>(TOPIC_FALLBACK_JOY, QOS_DEFAULT);
         _pubHeartbeat = this->create_publisher<std_msgs::msg::Empty>(TOPIC_BASE_HEARTBEAT, QOS_DEFAULT);
 
+        // Emergency snapshot subscriber from rover camera node
+        _subEmergencySnapshot = this->create_subscription<sensor_msgs::msg::CompressedImage>(
+            TOPIC_EMERGENCY_SNAPSHOT, QOS_DEFAULT,
+            [this](const sensor_msgs::msg::CompressedImage& msg_)
+            {
+                this->queueEmergencySnapshot(msg_);
+            });
+
+        // Paced transmission timer for image chunks (35 ms = ~28 chunks/s = ~5 KB/s)
+        _timerImageTx = this->create_wall_timer(
+            std::chrono::milliseconds(35),
+            [this]()
+            {
+                this->loopSendImageChunk();
+            });
+
         // Listen to mode commands from base station
         _subCommsMode = this->create_subscription<std_msgs::msg::UInt8>(
             TOPIC_COMMS_MODE, QOS_DEFAULT,
             [this](const std_msgs::msg::UInt8& msg_)
             {
-                if (msg_.data == rover_msgs::srv::SetCommsLink::Request::MODE_PRIMARY_5G)
+                _activeMode = msg_.data;
+                if (_activeMode == rover_msgs::srv::SetCommsLink::Request::MODE_PRIMARY_5G)
                 {
                     this->disconnectSerial();
                 }
@@ -84,15 +105,9 @@ void SikRadioNode::initNode()
                 }
             });
 
-        // If port exists on rover at boot, open it; otherwise stay dormant without failing
-        if (std::filesystem::exists(_serialPort))
-        {
-            this->connectSerial();
-        }
-        else
-        {
-            LOG_INFO(Logger::Nodes::SikRadio, "SiK Radio port %s not found on rover. Remaining dormant.", _serialPort.c_str());
-        }
+        // Rover starts in DORMANT / STANDBY mode with serial port closed until activated
+        _activeMode = rover_msgs::srv::SetCommsLink::Request::MODE_PRIMARY_5G;
+        LOG_INFO(Logger::Nodes::SikRadio, "SiK Radio Rover Node initialized in Standby (Dormant). Waiting for comms mode activation.");
     }
 
     // Polling timer for serial reading
@@ -117,39 +132,248 @@ void SikRadioNode::initNode()
                                                    });
 }
 
-bool SikRadioNode::connectSerial()
+std::string SikRadioNode::resolveSerialPort()
+{
+    // 1. If configured port exists, use it
+    if (!_serialPort.empty() && std::filesystem::exists(_serialPort))
+    {
+        try
+        {
+            return std::filesystem::canonical(_serialPort).string();
+        }
+        catch (...)
+        {
+            return _serialPort;
+        }
+    }
+
+    // 2. Scan /dev/serial/by-id/ for CP210x, Silicon Labs, FTDI, or SiK devices
+    try
+    {
+        if (std::filesystem::exists("/dev/serial/by-id"))
+        {
+            for (const auto& entry : std::filesystem::directory_iterator("/dev/serial/by-id"))
+            {
+                std::string fname = entry.path().filename().string();
+                if (fname.find("CP210") != std::string::npos ||
+                    fname.find("Silicon_Labs") != std::string::npos ||
+                    fname.find("FTDI") != std::string::npos ||
+                    fname.find("SiK") != std::string::npos ||
+                    fname.find("Holybro") != std::string::npos ||
+                    fname.find("3D_Robotics") != std::string::npos ||
+                    fname.find("RFD") != std::string::npos)
+                {
+                    try
+                    {
+                        std::string canon = std::filesystem::canonical(entry.path()).string();
+                        LOG_INFO(Logger::Nodes::SikRadio, "Auto-detected radio: %s -> %s", entry.path().c_str(), canon.c_str());
+                        return canon;
+                    }
+                    catch (...)
+                    {
+                        LOG_INFO(Logger::Nodes::SikRadio, "Auto-detected radio by-id: %s", entry.path().c_str());
+                        return entry.path().string();
+                    }
+                }
+            }
+        }
+    }
+    catch (const std::exception& e)
+    {
+        LOG_WARN(Logger::Nodes::SikRadio, "Exception scanning /dev/serial/by-id: %s", e.what());
+    }
+
+    // 3. Fallback to standard USB serial ports ONLY if configured port is the default /dev/ttyUSB*
+    if (_serialPort.empty() || _serialPort == "/dev/ttyUSB0" || _serialPort == "/dev/ttyUSB1")
+    {
+        if (std::filesystem::exists("/dev/ttyUSB0"))
+        {
+            LOG_INFO(Logger::Nodes::SikRadio, "Using fallback radio port at /dev/ttyUSB0");
+            return "/dev/ttyUSB0";
+        }
+        if (std::filesystem::exists("/dev/ttyUSB1"))
+        {
+            LOG_INFO(Logger::Nodes::SikRadio, "Using fallback radio port at /dev/ttyUSB1");
+            return "/dev/ttyUSB1";
+        }
+    }
+
+    return "";
+}
+
+bool SikRadioNode::connectSerial(const std::string& port)
 {
     if (_serial && _serial->getState() == eState::ACTIVE)
     {
         return true;
     }
 
-    if (!std::filesystem::exists(_serialPort))
+    std::string portToOpen = port.empty() ? this->resolveSerialPort() : port;
+    if (portToOpen.empty())
     {
-        LOG_WARN(Logger::Nodes::SikRadio, "Radio port %s does not exist on filesystem", _serialPort.c_str());
+        LOG_WARN(Logger::Nodes::SikRadio, "Radio port %s does not exist and no USB serial radio found", _serialPort.c_str());
         return false;
     }
 
-    _serial = std::make_unique<SerialCom>(_serialPort, _baudEnum);
-    if (_serial->getState() != eState::ACTIVE)
+    _activeSerialPort = portToOpen;
+
+    // Retry up to 3 times with 100ms pauses to allow clean driver recovery after disconnect
+    // Note: timeout=0, minChar=0 configures non-blocking reads in POSIX termios
+    for (int attempt = 0; attempt < 3; ++attempt)
     {
-        LOG_ERROR(Logger::Nodes::SikRadio, "Unable to open radio serial port %s", _serialPort.c_str());
+        _serial = std::make_unique<SerialCom>(_activeSerialPort, _baudEnum, eDataPerPacket::EIGHT_BITS, CREAD | CLOCAL, 0, 0);
+        if (_serial->getState() == eState::ACTIVE)
+        {
+            LOG_INFO(Logger::Nodes::SikRadio, "Connected to SiK radio on %s (attempt %d)", _activeSerialPort.c_str(), attempt + 1);
+            return true;
+        }
         _serial.reset();
-        return false;
+        std::this_thread::sleep_for(std::chrono::milliseconds(100));
     }
 
-    LOG_INFO(Logger::Nodes::SikRadio, "Connected to SiK radio on %s", _serialPort.c_str());
-    return true;
+    LOG_ERROR(Logger::Nodes::SikRadio, "Unable to open radio serial port %s after retries", _activeSerialPort.c_str());
+    return false;
 }
 
 void SikRadioNode::disconnectSerial()
 {
     if (_serial)
     {
-        LOG_INFO(Logger::Nodes::SikRadio, "Releasing SiK radio serial port %s", _serialPort.c_str());
+        LOG_INFO(Logger::Nodes::SikRadio, "Releasing SiK radio serial port %s", _activeSerialPort.empty() ? _serialPort.c_str() : _activeSerialPort.c_str());
         _serial.reset();
     }
+    _activeSerialPort.clear();
     _rxBuffer.clear();
+    _outgoingImageChunks.clear();
+    _rxFrameChunks.clear();
+    _rxChunkReceived.clear();
+    _rxChunksCount = 0;
+}
+
+uint8_t SikRadioNode::computeImageChunkChecksum(const sImageChunkPacket& pkt)
+{
+    uint8_t cs = static_cast<uint8_t>(
+        (pkt.frame_id & 0xFF) ^
+        ((pkt.frame_id >> 8) & 0xFF) ^
+        pkt.chunk_idx ^
+        pkt.total_chunks ^
+        pkt.chunk_len ^
+        0x5A);
+    for (size_t i = 0; i < pkt.chunk_len && i < sizeof(pkt.data); ++i)
+    {
+        cs ^= pkt.data[i];
+    }
+    return cs;
+}
+
+void SikRadioNode::queueEmergencySnapshot(const sensor_msgs::msg::CompressedImage& msg_)
+{
+    if (!_serial || _serial->getState() != eState::ACTIVE || _activeMode == rover_msgs::srv::SetCommsLink::Request::MODE_PRIMARY_5G)
+    {
+        return;
+    }
+
+    if (msg_.data.empty() || msg_.data.size() > 65000)
+    {
+        return;
+    }
+
+    // Always replace prior unsent chunks so we transmit the most recent snapshot immediately
+    _outgoingImageChunks.clear();
+
+    const uint8_t* rawData = msg_.data.data();
+    size_t totalSize = msg_.data.size();
+    constexpr size_t CHUNK_SIZE = 180;
+    uint8_t totalChunks = static_cast<uint8_t>((totalSize + CHUNK_SIZE - 1) / CHUNK_SIZE);
+
+    uint16_t currentFrameId = _txFrameId++;
+    if (_txFrameId == 0)
+    {
+        _txFrameId = 1;
+    }
+
+    for (uint8_t idx = 0; idx < totalChunks; ++idx)
+    {
+        sImageChunkPacket pkt;
+        pkt.frame_id = currentFrameId;
+        pkt.chunk_idx = idx;
+        pkt.total_chunks = totalChunks;
+
+        size_t offset = idx * CHUNK_SIZE;
+        size_t len = std::min(CHUNK_SIZE, totalSize - offset);
+        pkt.chunk_len = static_cast<uint8_t>(len);
+        std::memcpy(pkt.data, rawData + offset, len);
+        pkt.checksum = computeImageChunkChecksum(pkt);
+
+        _outgoingImageChunks.push_back(pkt);
+    }
+}
+
+void SikRadioNode::loopSendImageChunk()
+{
+    if (_outgoingImageChunks.empty() || !_serial || _serial->getState() != eState::ACTIVE ||
+        _activeMode == rover_msgs::srv::SetCommsLink::Request::MODE_PRIMARY_5G)
+    {
+        return;
+    }
+
+    const sImageChunkPacket& pkt = _outgoingImageChunks.front();
+    std::string packetStr(reinterpret_cast<const char*>(&pkt), sizeof(pkt));
+    _serial->serialWrite(packetStr);
+    _outgoingImageChunks.pop_front();
+}
+
+void SikRadioNode::handleImageChunk(const sImageChunkPacket& chunk)
+{
+    if (chunk.total_chunks == 0 || chunk.chunk_idx >= chunk.total_chunks || chunk.chunk_len > sizeof(chunk.data))
+    {
+        return;
+    }
+
+    // Check if new frame received
+    if (chunk.frame_id != _rxFrameId)
+    {
+        _rxFrameId = chunk.frame_id;
+        _rxTotalChunks = chunk.total_chunks;
+        _rxFrameChunks.assign(_rxTotalChunks, std::vector<uint8_t>());
+        _rxChunkReceived.assign(_rxTotalChunks, false);
+        _rxChunksCount = 0;
+    }
+
+    if (!_rxChunkReceived[chunk.chunk_idx])
+    {
+        _rxFrameChunks[chunk.chunk_idx].assign(chunk.data, chunk.data + chunk.chunk_len);
+        _rxChunkReceived[chunk.chunk_idx] = true;
+        _rxChunksCount++;
+        _lastChunkTime = this->now();
+    }
+
+    if (_rxChunksCount == _rxTotalChunks && _pubEmergencyImage)
+    {
+        sensor_msgs::msg::CompressedImage imgMsg;
+        imgMsg.header.stamp = this->now();
+        imgMsg.header.frame_id = "emergency_camera";
+        imgMsg.format = "jpeg";
+
+        size_t totalBytes = 0;
+        for (const auto& ch : _rxFrameChunks)
+        {
+            totalBytes += ch.size();
+        }
+        imgMsg.data.reserve(totalBytes);
+        for (const auto& ch : _rxFrameChunks)
+        {
+            imgMsg.data.insert(imgMsg.data.end(), ch.begin(), ch.end());
+        }
+
+        _pubEmergencyImage->publish(imgMsg);
+        LOG_INFO(Logger::Nodes::SikRadio, "Emergency image frame #%u assembled (%zu bytes, %u chunks)",
+                 _rxFrameId, totalBytes, _rxTotalChunks);
+
+        // Reset reassembly for next frame
+        _rxChunksCount = 0;
+        _rxChunkReceived.assign(_rxTotalChunks, false);
+    }
 }
 
 void SikRadioNode::sendJoyPacket(const rover_msgs::msg::Joy& msg_)
@@ -195,7 +419,7 @@ void SikRadioNode::loopReceive()
         return;
     }
 
-    auto data = _serial->serialRead();
+    auto data = _serial->readRaw();
     if (!data.has_value() || data->empty())
     {
         return;
@@ -283,6 +507,28 @@ void SikRadioNode::parseBuffer()
             continue;
         }
 
+        // 4. Check for Image Chunk packet (Base station side)
+        if (_rxBuffer[0] == 0xAA && _rxBuffer[1] == 0x55 && _rxBuffer[2] == 0x03)
+        {
+            if (_rxBuffer.size() < sizeof(sImageChunkPacket))
+            {
+                break;
+            }
+            const sImageChunkPacket* pkt = reinterpret_cast<const sImageChunkPacket*>(_rxBuffer.data());
+            uint8_t expectedChecksum = computeImageChunkChecksum(*pkt);
+
+            if (pkt->checksum == expectedChecksum)
+            {
+                _lastPacketReceivedTime = this->now();
+                if (_isBaseStation)
+                {
+                    this->handleImageChunk(*pkt);
+                }
+                _rxBuffer.erase(_rxBuffer.begin(), _rxBuffer.begin() + sizeof(sImageChunkPacket));
+                continue;
+            }
+        }
+
         // Drop leading byte if no header matched
         _rxBuffer.erase(_rxBuffer.begin());
     }
@@ -313,19 +559,44 @@ void SikRadioNode::cbSetComms(const std::shared_ptr<rover_msgs::srv::SetCommsLin
     }
     else
     {
-        if (!this->connectSerial())
+        std::string targetPort = this->resolveSerialPort();
+        if (targetPort.empty())
         {
+            this->disconnectSerial();
+            _activeMode = rover_msgs::srv::SetCommsLink::Request::MODE_PRIMARY_5G;
+            this->publishSikStatus(0.0f, 0.0f, 0, 0, false);
+
+            std_msgs::msg::UInt8 modeMsg;
+            modeMsg.data = _activeMode;
+            _pubCommsMode->publish(modeMsg);
+
             res_->success = false;
             res_->active_mode = _activeMode;
-            res_->message = "Failed: Radio port " + _serialPort + " not found or could not be opened.";
+            res_->message = "Failed: No serial radio found (checked " + _serialPort + " and USB serial devices).";
+            return;
+        }
+
+        if (!this->connectSerial(targetPort))
+        {
+            this->disconnectSerial();
+            _activeMode = rover_msgs::srv::SetCommsLink::Request::MODE_PRIMARY_5G;
+            this->publishSikStatus(0.0f, 0.0f, 0, 0, false);
+
+            std_msgs::msg::UInt8 modeMsg;
+            modeMsg.data = _activeMode;
+            _pubCommsMode->publish(modeMsg);
+
+            res_->success = false;
+            res_->active_mode = _activeMode;
+            res_->message = "Failed: Unable to open radio port " + targetPort;
             return;
         }
         _activeMode = req_->target_mode;
         res_->success = true;
         res_->active_mode = _activeMode;
         res_->message = (_activeMode == rover_msgs::srv::SetCommsLink::Request::MODE_AUTO)
-                            ? "900MHz Auto Failover enabled."
-                            : "900MHz Radio link forced active.";
+                            ? ("900MHz Auto Failover enabled (" + _activeSerialPort + ").")
+                            : ("900MHz Radio link forced active (" + _activeSerialPort + ").");
     }
 
     LOG_INFO(Logger::Nodes::SikRadio, "Comms mode: %s", res_->message.c_str());

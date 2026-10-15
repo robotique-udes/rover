@@ -9,6 +9,8 @@ find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
 find_package(OpenCV REQUIRED) 
 find_package(rover_msgs REQUIRED)
+find_package(sensor_msgs REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
@@ -50,12 +52,24 @@ target_link_libraries(panorama
                           ${OpenCV_LIBS}
                           rover_shared_libs)
 
+add_executable(emergency_camera src/emergency_camera_node.cpp)
+ament_target_dependencies(emergency_camera
+                          rclcpp
+                          sensor_msgs
+                          std_msgs
+                          rover_msgs
+                          OpenCV)
+target_link_libraries(emergency_camera
+                      ${OpenCV_LIBS}
+                      rover_shared_libs)
+
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS 
             media_server
             aruco_detection
             panorama
+            emergency_camera
         DESTINATION lib/${PROJECT_NAME}/)
 
 ament_package()
