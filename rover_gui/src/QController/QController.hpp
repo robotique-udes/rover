@@ -15,7 +15,7 @@ class QController : public QWidget
     Q_OBJECT
 
   public:
-    explicit QController(QWidget* parent_ = nullptr);
+    QController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
 
   private:
     Ui::Controller _ui;
