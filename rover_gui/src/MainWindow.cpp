@@ -12,7 +12,8 @@ MainWindow::MainWindow(const rclcpp::Node::SharedPtr& guiNode_):
     _deviceStatusWidget(guiNode_, this),
     _ligthsController(guiNode_, this),
     _bmsDataWidget(guiNode_, this),
-    _scienceWidget(guiNode_, this)
+    _scienceWidget(guiNode_, this),
+    _controllerWidget(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
@@ -43,7 +44,8 @@ MainWindow::MainWindow(const rclcpp::Node::SharedPtr& guiNode_):
             &QHelper::QNotificationShowHistory::showHistory);
     connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
 
-    _scienceWidget.hide();  // Hide the science widget because otherwise it just floats at 0,0 when not assigned to a layout
+    _scienceWidget.hide();  // Hide the science and controller widget because otherwise it just floats at 0,0 when not assigned to a layout
+    _controllerWidget.hide(); //
     this->onTabChange(QSideBar::eTabIndex::DASHBOARD);
 }
 

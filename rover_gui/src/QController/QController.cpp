@@ -2,7 +2,7 @@
 
 #include <QPixmap>
 
-QController::QController(QWidget* parent_):
+QController::QController(std::shared_ptr<rclcpp::Node>, QWidget* parent_):
     QWidget(parent_)
 {
     _ui.setupUi(this);
