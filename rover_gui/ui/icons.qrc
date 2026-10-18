@@ -2,6 +2,8 @@
   <qresource prefix="/">
     <file>icons.qrc</file>
     <file>icons/PS4_Controller.svg</file>
+    <file>icons/Logitech_Controller.svg</file>
+    <file>icons/XBox_Controller.svg</file>
     <file>icons/BatteryIcon100.svg</file>
     <file>icons/BatteryIcon75.svg</file>
     <file>icons/BatteryIcon50.svg</file>
