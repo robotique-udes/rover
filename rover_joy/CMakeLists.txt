@@ -24,7 +24,6 @@ ament_target_dependencies(joy_formator
                           rclcpp
                           joy
                           sensor_msgs
-                          std_msgs
                           rover_msgs)
 target_link_libraries(joy_formator rover_shared_libs)
 

@@ -4,7 +4,6 @@
 #include "rover_lib2/helpers/assert.hpp"
 #include <rover_lib2/helpers/constants.hpp>
 #include "sensor_msgs/msg/joy.hpp"
-#include "std_msgs/msg/string.hpp"
 
 #include <array>
 #include <algorithm>
@@ -80,11 +79,9 @@ class JoyFormator : public rclcpp::Node
   private:
     rclcpp::Subscription<sensor_msgs::msg::Joy>::SharedPtr _sub_joy;
     rclcpp::Publisher<rover_msgs::msg::Joy>::SharedPtr _pub_joy_formatted;
-    rclcpp::Publisher<std_msgs::msg::String>::SharedPtr _pub_controller_type;
     rclcpp::TimerBase::SharedPtr _timer;
 
     sControllerConfig _controller_config;
-    std::string _controller_type;
 
     sensor_msgs::msg::Joy _current_joy;
     sensor_msgs::msg::Joy _last_joy;
@@ -136,7 +133,6 @@ JoyFormator::JoyFormator():
                                                            QOS_DEFAULT,
                                                            std::bind(&JoyFormator::callbackJoy, this, std::placeholders::_1));
     _pub_joy_formatted = this->create_publisher<rover_msgs::msg::Joy>("formated/joy", QOS_DEFAULT);
-    _pub_controller_type = this->create_publisher<std_msgs::msg::String>("controller_type", QOS_DEFAULT);
 
     _timer = this->create_wall_timer(10ms, std::bind(&JoyFormator::callbackPubJoy, this));
 }
@@ -153,10 +149,6 @@ void JoyFormator::callbackJoy(const sensor_msgs::msg::Joy& msg)
 
 void JoyFormator::callbackPubJoy()
 {
-    std_msgs::msg::String controller_type_msg;
-    controller_type_msg.data = _controller_type;
-    _pub_controller_type->publish(controller_type_msg);
-
     rover_msgs::msg::Joy formatted_joy_msg;
 
     // Sending zeros if no controller msgs have ever been received but doesn't
@@ -238,7 +230,6 @@ void JoyFormator::setControllerType(const std::string& controller_type_name)
 {
     if (controller_type_name == std::string("DS4") || controller_type_name == std::string("PS4"))
     {
-        _controller_type = "DS4";
         RCLCPP_INFO(this->get_logger(), "Selected DS4 for keybinding mapping");
 
         _controller_config.buttons[Keybinding::a] = 0;
@@ -267,38 +258,8 @@ void JoyFormator::setControllerType(const std::string& controller_type_name)
         _controller_config.joystick_dead_zone = 0.075f;  // Change this value if you start getting stick drift again
         RCLCPP_INFO_ONCE(this->get_logger(), "DS4 custom deadzone set to %f", _controller_config.joystick_dead_zone);
     }
-    else if (controller_type_name == std::string("Xbox") || controller_type_name == std::string("XBox"))
-    {
-        _controller_type = "Xbox";
-        RCLCPP_INFO(this->get_logger(), "Selected Xbox controller for keybinding mapping");
-
-        _controller_config.buttons[Keybinding::a] = 0;
-        _controller_config.buttons[Keybinding::b] = 1;
-        _controller_config.buttons[Keybinding::x] = 2;
-        _controller_config.buttons[Keybinding::y] = 3;
-        _controller_config.buttons[Keybinding::l1] = 4;
-        _controller_config.buttons[Keybinding::r1] = 5;
-        _controller_config.buttons[Keybinding::ext0] = 6;
-        _controller_config.buttons[Keybinding::ext1] = 7;
-        _controller_config.buttons[Keybinding::joystick_left_push] = 9;
-        _controller_config.buttons[Keybinding::joystick_right_push] = 10;
-
-        _controller_config.axes[Keybinding::joystick_left_side] = 0;
-        _controller_config.axes[Keybinding::joystick_left_front] = 1;
-        _controller_config.axes[Keybinding::l2] = 2;
-        _controller_config.axes[Keybinding::joystick_right_side] = 3;
-        _controller_config.axes[Keybinding::joystick_right_front] = 4;
-        _controller_config.axes[Keybinding::r2] = 5;
-        _controller_config.axes[Keybinding::cross_front] = 7;
-        _controller_config.axes[Keybinding::cross_side] = 6;
-
-        _controller_config.trigger_range_min = -1.0f;
-        _controller_config.trigger_range_max = 1.0f;
-        _controller_config.joystick_dead_zone = 0.075f;
-    }
     else if (controller_type_name == std::string("Logitech") || controller_type_name == std::string("Logitech Generic"))
     {
-        _controller_type = "Logitech";
         RCLCPP_INFO_ONCE(this->get_logger(), "Selected Logitech Generic Controller for keybinding mapping");
         RCLCPP_WARN_ONCE(this->get_logger(),
                          "**Logitech controllers are discouraged**\n"
@@ -339,7 +300,7 @@ void JoyFormator::setControllerType(const std::string& controller_type_name)
     {
         RCLCPP_ERROR(this->get_logger(),
                      "controller_type parameter doesn't correspond to any keybinding. \"%s\" entered, possible"
-                     " entries are: \"DS4\", \"PS4\", \"Xbox\", \"XBox\", \"Logitech\"",
+                     " entry are: \"DS4\", \"PS4\"",
                      controller_type_name.c_str());
         ASSERT_MSG("Bad launch parameters: Wrong controller_type");
     }
