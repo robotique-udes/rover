@@ -11,6 +11,7 @@ endif()
 
 find_package(ament_cmake REQUIRED)
 find_package(rclcpp REQUIRED)
+find_package(std_msgs REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(Qt6 REQUIRED COMPONENTS Core Widgets Gui WebEngineWidgets WebChannel Svg DBus Charts)
 find_package(PkgConfig REQUIRED)
@@ -107,6 +108,7 @@ add_subdirectory(../rover_shared_libs/ .build)
 
 ament_target_dependencies(main_gui
   rclcpp
+  std_msgs
   rover_msgs
   rcl_interfaces
 )

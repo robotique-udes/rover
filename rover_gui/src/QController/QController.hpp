@@ -1,24 +1,44 @@
-#ifndef QCONTROLLER_QCONTROLLER_HPP
-#define QCONTROLLER_QCONTROLLER_HPP
+#ifndef QCONTROLLER_HPP
+#define QCONTROLLER_HPP
 
+#include "ui_Controller.h"
 
-// ROS
+#include <QProcess>
+#include <QSet>
+#include <QTimer>
+#include <QWidget>
+
+#include <QJsonObject>
 #include <rclcpp/rclcpp.hpp>
 
-// QT
-#include "ui_Controller.h"
-#include <QtWidgets/QGridLayout>
+class QController : public QWidget {
+  Q_OBJECT
 
+public:
+  explicit QController(std::shared_ptr<rclcpp::Node> guiNode, QWidget *parent = nullptr);
 
-class QController : public QWidget
-{
-    Q_OBJECT
+private:
+  void enumerateControllers();
+  void handleEnumerationFinished(int exitCode, QProcess::ExitStatus exitStatus);
+  void offerManualSelection();
+  void toggleControllerEnrollment();
+  void savePendingControllerProfile();
+  void updateControllerImage(const QString &controllerType);
 
-  public:
-    QController(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_);
-
-  private:
-    Ui::Controller _ui;
+  Ui::Controller _ui;
+  rclcpp::Node::SharedPtr _node;
+  QProcess _enumerationProcess;
+  QTimer _enumerationTimer;
+  QTimer _manualFallbackTimer;
+  QSet<QString> _knownDeviceSignatures;
+  QList<QJsonObject> _pendingNewDevices;
+  QString _enrollmentType;
+  bool _enumerationErrorLogged = false;
+  bool _profileReadErrorLogged = false;
+  bool _manualSelectionOffered = false;
+  bool _manualTypeChosen = false;
+  bool _enrollmentActive = false;
+  bool _hasDeviceSnapshot = false;
 };
 
-#endif  // QCONTROLLER_QCONTROLLER_HPP
+#endif // QCONTROLLER_HPP

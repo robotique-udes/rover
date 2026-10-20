@@ -11,33 +11,41 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Manette</string>
   </property>
-  <widget class="QLabel" name="label">
-   <property name="geometry">
-    <rect>
-     <x>50</x>
-     <y>50</y>
-     <width>801</width>
-     <height>1121</height>
-    </rect>
-   </property>
-   <property name="text">
-    <string/>
-   </property>
-   <property name="pixmap">
-    <pixmap resource="../icons.qrc">:/icons/PS4_Controller.svg</pixmap>
-   </property>
-  </widget>
-  <widget class="QComboBox" name="comboBox">
+  <widget class="QLabel" name="controllerTypeLabel">
    <property name="geometry">
     <rect>
      <x>20</x>
      <y>20</y>
-     <width>141</width>
+     <width>190</width>
      <height>27</height>
     </rect>
    </property>
+   <property name="text">
+    <string>Choisir le type de manette :</string>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QComboBox" name="controllerTypeComboBox">
+   <property name="geometry">
+    <rect>
+     <x>215</x>
+     <y>20</y>
+     <width>150</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+   <item>
+    <property name="text">
+     <string>Sélectionner un type…</string>
+    </property>
+   </item>
    <item>
     <property name="text">
      <string>PS4</string>
@@ -45,14 +53,65 @@
    </item>
    <item>
     <property name="text">
-     <string>Logitech</string>
+     <string>Xbox</string>
     </property>
    </item>
    <item>
     <property name="text">
-     <string>Xbox</string>
+     <string>Logitech</string>
     </property>
    </item>
+  </widget>
+  <widget class="QPushButton" name="addControllerButton">
+   <property name="geometry">
+    <rect>
+     <x>385</x>
+     <y>20</y>
+     <width>210</width>
+     <height>27</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Ajouter une manette</string>
+   </property>
+  </widget>
+  <widget class="QLabel" name="registrationStatusLabel">
+   <property name="geometry">
+    <rect>
+     <x>20</x>
+     <y>55</y>
+     <width>900</width>
+     <height>35</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="wordWrap">
+    <bool>true</bool>
+   </property>
+   <property name="visible">
+    <bool>false</bool>
+   </property>
+  </widget>
+  <widget class="QLabel" name="label">
+   <property name="geometry">
+    <rect>
+     <x>50</x>
+     <y>95</y>
+     <width>801</width>
+     <height>820</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string/>
+   </property>
+   <property name="alignment">
+    <set>Qt::AlignCenter</set>
+   </property>
+   <property name="pixmap">
+    <pixmap/>
+   </property>
   </widget>
  </widget>
  <resources>
