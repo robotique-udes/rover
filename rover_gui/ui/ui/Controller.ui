@@ -54,6 +54,19 @@
     </property>
    </item>
   </widget>
+  <widget class="QLabel" name="label_2">
+   <property name="geometry">
+    <rect>
+     <x>330</x>
+     <y>30</y>
+     <width>181</width>
+     <height>19</height>
+    </rect>
+   </property>
+   <property name="text">
+    <string>Reading...</string>
+   </property>
+  </widget>
  </widget>
  <resources>
   <include location="../icons.qrc"/>
