@@ -124,5 +124,3 @@ void forwardPrints(QProcess& process_)
 // #include "gui.moc"
 #endif  // __INTELLISENSE__
 
-
-//test_push
