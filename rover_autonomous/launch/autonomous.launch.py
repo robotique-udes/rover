@@ -12,7 +12,7 @@ def generate_launch_description():
     ld: LaunchDescription = LaunchDescription()
 
     ld.add_action(DeclareLaunchArgument('use_rviz', default_value='false'))
-    ld.add_action(DeclareLaunchArgument('lidar_port', default_value='/dev/ttyUSB0'))
+    ld.add_action(DeclareLaunchArgument('lidar_port', default_value='/dev/ttyUSB0', description='Serial port of the lidar'))
 
 
     # Lidar
