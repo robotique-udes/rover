@@ -28,7 +28,8 @@ QVideoRecorderWidget::QVideoRecorderWidget(const std::string& url_,
             this,
             &QVideoRecorderWidget::onStopRecordingHandledSuccessfully);
 
-    connect(this, &QVideoRecorderWidget::updateCameraList, this, &QVideoRecorderWidget::onUpdateCameraList);
+    connect(this, &QVideoRecorderWidget::updateCameraList, this, &QVideoRecorderWidget::onUpdateCameraList, Qt::QueuedConnection);
+    connect(this, &QVideoRecorderWidget::srvAvailable, this, &QVideoRecorderWidget::onSrvAvailable, Qt::QueuedConnection);
 
     std::optional<std::string> optionalSessionFolderPath = QSessionFolderManager::getInstance().getSessionFolderPath();
     if (optionalSessionFolderPath.has_value())
@@ -242,7 +243,12 @@ void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& ur
     }
 }
 
-void QVideoRecorderWidget::CB_srvAvailable(bool available_)
+void QVideoRecorderWidget::emitSrvAvailable(bool available_) 
+{
+    emit this->srvAvailable(available_);
+}
+
+void QVideoRecorderWidget::onSrvAvailable(bool available_)
 {
     if (_sButtons.screenshotButton && _sButtons.startRecordingButton)
     {
