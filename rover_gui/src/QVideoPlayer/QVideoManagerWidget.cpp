@@ -85,6 +85,13 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
 
 QVideoManagerWidget::~QVideoManagerWidget()
 {
+    disconnect(&_tabWidget, nullptr, this, nullptr);
+    _timer_detectionManagerUpdate.reset();
+    _timer_clientCameraControlHealth.reset();
+    _sub_arucoDetection.reset();
+    _sub_cameraList.reset();
+    _sub_cameraStatus.reset();
+    
     rover_msgs::msg::CameraControl powerMsg;
     powerMsg.power_on = false;
     for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
