@@ -42,7 +42,7 @@ class QVideoManagerWidget : public QWidget
 
     static constexpr uint16_t DELAY_DETECTION_MANAGER_UPDATE = 5000U;
     static constexpr uint16_t TIMEOUT_SERVICE_AVAILABLE = 50U;
-    static constexpr uint16_t NBR_CAM_TO_TRACK = 6U;
+    static constexpr size_t NBR_CAM_TO_TRACK = std::to_underlying(Constants::CameraInfo::eCamNames::eLast);
     static constexpr uint16_t CAMERA_CENTER_ANGLE = 180U;
 
     static constexpr float ALT_CAM_LAYOUT_PROPORTION = 0.7F;
