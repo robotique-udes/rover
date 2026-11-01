@@ -932,7 +932,7 @@ void QVideoPlayerWidget::CB_cameraListUpdate(const std::vector<std::string>& url
 
 void QVideoPlayerWidget::CB_srvCameraAvailable(bool available_)
 {
-    _recorderWidget.CB_srvAvailable(available_);
+    _recorderWidget.emitSrvAvailable(available_);
 }
 
 void QVideoPlayerWidget::onCameraAngleSliderChanged(void)
