@@ -106,11 +106,11 @@ class QVideoManagerWidget : public QWidget
     std::array<std::shared_ptr<QRecordingWorker>, NBR_CAM_TO_TRACK> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
 
-    QTabWidget _tabWidget;
+    QTabWidget* _tabWidget;
     QVBoxLayout _mainLayout;
 
-    QGridLayout _gridLayout;
-    QWidget _gridContainer;
+    QGridLayout* _gridLayout;
+    QWidget* _gridContainer;
 
     QHBoxLayout _altLayout;
     QVBoxLayout _vSubLayout;
@@ -123,9 +123,9 @@ class QVideoManagerWidget : public QWidget
     QWidget _arm3SubLayoutContainer;
     QWidget _arm4LayoutContainer;
 
-    QSplitter _splitter;
+    QSplitter* _splitter;
     QSplitter _arm3Splitter;
-    QPushButton _resetLayout_PB;
+    QPushButton* _resetLayout_PB;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
