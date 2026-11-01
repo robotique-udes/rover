@@ -291,14 +291,13 @@ void QVideoManagerWidget::initArucoPublisher(void)
 
 void QVideoManagerWidget::initArucoClient(void)
 {
-    if (_node)
-    {
-        _client_arucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_ARUCO_NAME);
-    }
-    else
+    if (!_node)
     {
         UI_LOG_ERROR(GENERAL, "Error, GUI node is invalid", nullptr);
+        return;
     }
+
+    _client_arucoDetectionManager = _node->create_client<rover_msgs::srv::ArucoDetection>(SERVICE_ARUCO_NAME);
 
     for (auto& widget : _videoPlaysWidgets)
     {
