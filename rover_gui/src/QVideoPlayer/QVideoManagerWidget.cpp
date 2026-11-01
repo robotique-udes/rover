@@ -13,19 +13,23 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
     _cameraInterface(guiNode_, CAMERA_PTZ_CMD_TOPIC_GUI, CAMERA_PTZ_CONFIG_TOPIC_GUI, CAMERA_POWER_TOPIC_GUI),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
     _panoramaWorkerThread(std::make_shared<QPanoramaWorker>()),
-    _tabWidget(this),
-    _gridContainer(nullptr),
     _vSubLayoutContainer(nullptr),
     _altLayoutContainer(nullptr),
     _arm3LayoutContainer(nullptr),
     _arm4LayoutContainer(nullptr)
 {
+    _tabWidget = new QTabWidget(this);
+    _gridContainer = new QWidget(this);                 // reparented by addTab
+    _gridLayout = new QGridLayout(_gridContainer);  // setLayout is implicit
+    _resetLayout_PB = new QPushButton(this);        // reparented by setCornerWidget
+    _splitter = new QSplitter(this);
+
     this->initWidget();
 
-    _resetLayout_PB.setIcon(QIcon(":/icons/refresh.png"));
-    _tabWidget.setCornerWidget(&_resetLayout_PB, Qt::TopRightCorner);
+    _resetLayout_PB->setIcon(QIcon(":/icons/refresh.png"));
+    _tabWidget->setCornerWidget(_resetLayout_PB, Qt::TopRightCorner);
 
-    connect(&_resetLayout_PB, &QPushButton::clicked, this, &QVideoManagerWidget::setSplitterInitialGeometry);
+    connect(_resetLayout_PB, &QPushButton::clicked, this, &QVideoManagerWidget::setSplitterInitialGeometry);
 
     connect(_playerWorkerThreadAruco.get(),
             &QPlayerWorker::urlFoundInDetection,
@@ -47,7 +51,7 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
                 &QVideoManagerWidget::onSetCursorWaiting);
     }
 
-    connect(&_tabWidget, &QTabWidget::currentChanged, this, &QVideoManagerWidget::onTabChanged);
+    connect(_tabWidget, &QTabWidget::currentChanged, this, &QVideoManagerWidget::onTabChanged);
 
     this->initArucoClient();
     this->initArucoPublisher();
@@ -56,23 +60,22 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
     this->initCameraListSubscriber();
     this->initCameraStatusSubscriber();
 
-    _gridContainer.setLayout(&_gridLayout);
     _altLayoutContainer.setLayout(&_altLayout);
     _vSubLayoutContainer.setLayout(&_vSubLayout);
     _arm3LayoutContainer.setLayout(&_arm3Layout);
     _arm3SubLayoutContainer.setLayout(&_arm3SubLayout);
     _arm4LayoutContainer.setLayout(&_arm4Layout);
 
-    _mainLayout.addWidget(&_tabWidget);
+    _mainLayout.addWidget(_tabWidget);
     this->setLayout(&_mainLayout);
 
-    _altLayout.addWidget(&_splitter);
+    _altLayout.addWidget(_splitter);
     _arm3Layout.addWidget(&_arm3Splitter);
-    _tabWidget.addTab(&_gridContainer, "grid");
-    _tabWidget.addTab(&_altLayoutContainer, "alt");
-    _tabWidget.addTab(&_arm3LayoutContainer, "arm3");
-    _tabWidget.addTab(&_arm4LayoutContainer, "arm4");
-    _tabWidget.setCurrentIndex(std::to_underlying(eTabIndex::ALT));
+    _tabWidget->addTab(_gridContainer, "grid");
+    _tabWidget->addTab(&_altLayoutContainer, "alt");
+    _tabWidget->addTab(&_arm3LayoutContainer, "arm3");
+    _tabWidget->addTab(&_arm4LayoutContainer, "arm4");
+    _tabWidget->setCurrentIndex(std::to_underlying(eTabIndex::ALT));
 
     this->initPanoramaClient();
     this->initCameraInterface();
@@ -85,13 +88,13 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
 
 QVideoManagerWidget::~QVideoManagerWidget()
 {
-    disconnect(&_tabWidget, nullptr, this, nullptr);
+    disconnect(_tabWidget, nullptr, this, nullptr);
     _timer_detectionManagerUpdate.reset();
     _timer_clientCameraControlHealth.reset();
     _sub_arucoDetection.reset();
     _sub_cameraList.reset();
     _sub_cameraStatus.reset();
-    
+
     rover_msgs::msg::CameraControl powerMsg;
     powerMsg.power_on = false;
     for (size_t id = 0; id < std::to_underlying(Constants::CameraInfo::eCamNames::eLast); ++id)
@@ -112,11 +115,11 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
             {
                 int row = index / 3;
                 int col = index % 3;
-                _gridLayout.addWidget(widget.get(), row, col);
+                _gridLayout->addWidget(widget.get(), row, col);
                 index++;
             }
         }
-        _resetLayout_PB.setVisible(false);
+        _resetLayout_PB->setVisible(false);
     }
     else if (index_ == std::to_underlying(eTabIndex::ALT))
     {
@@ -130,13 +133,13 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
             _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
         }
 
-        _splitter.addWidget(&_vSubLayoutContainer);
+        _splitter->addWidget(&_vSubLayoutContainer);
 
         if (_videoPlaysWidgets[0])
         {
-            _splitter.insertWidget(0, _videoPlaysWidgets[0].get());
+            _splitter->insertWidget(0, _videoPlaysWidgets[0].get());
         }
-        _resetLayout_PB.setVisible(true);
+        _resetLayout_PB->setVisible(true);
         this->setSplitterInitialGeometry();
     }
     else if (index_ == std::to_underlying(eTabIndex::ARM3))
@@ -159,7 +162,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
                                        _videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get());
         }
         this->setSplitterInitialGeometry();
-        _resetLayout_PB.setVisible(true);
+        _resetLayout_PB->setVisible(true);
     }
     else if (index_ == std::to_underlying(eTabIndex::ARM4))
     {
@@ -182,7 +185,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
         {
             _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)].get(), 0, 0);
         }
-        _resetLayout_PB.setVisible(false);
+        _resetLayout_PB->setVisible(false);
     }
 }
 
@@ -273,7 +276,7 @@ void QVideoManagerWidget::initWidget(void)
         {
             int row = index / 3;
             int col = index % 3;
-            _gridLayout.addWidget(widget.get(), row, col);
+            _gridLayout->addWidget(widget.get(), row, col);
             index++;
         }
     }
@@ -368,13 +371,13 @@ void QVideoManagerWidget::initCameraListSubscriber(void)
 
 void QVideoManagerWidget::setSplitterInitialGeometry(void)
 {
-    uint16_t index = _tabWidget.currentIndex();
+    uint16_t index = _tabWidget->currentIndex();
     if (index == std::to_underlying(eTabIndex::ALT))
     {
-        float total = static_cast<float>(_splitter.width());
+        float total = static_cast<float>(_splitter->width());
         int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
         int right = static_cast<int>(total) - left;
-        _splitter.setSizes(QList<int>({left, right}));
+        _splitter->setSizes(QList<int>({left, right}));
     }
     else if (index == std::to_underlying(eTabIndex::ARM3))
     {
