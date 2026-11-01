@@ -100,11 +100,7 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             grid->addWidget(&_scienceWidget, 0, 1);
             _scienceWidget.show();
             break;
-
-        case QSideBar::eTabIndex::FILE_TRANSFER:
-            grid->addWidget(&_fileTransferWidget, 0, 1);
-            break;
-
+            
         case QSideBar::eTabIndex::BMS_DATA:
             _bmsDataWidget.setGraphSize(800, 800);
             _bmsDataWidget.setCellContainerSize(200, 400);
