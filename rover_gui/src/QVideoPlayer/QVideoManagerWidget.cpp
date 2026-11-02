@@ -12,17 +12,28 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
     _node(guiNode_),
     _cameraInterface(guiNode_, CAMERA_PTZ_CMD_TOPIC_GUI, CAMERA_PTZ_CONFIG_TOPIC_GUI, CAMERA_POWER_TOPIC_GUI),
     _playerWorkerThreadAruco(std::make_shared<QPlayerWorker>()),
-    _panoramaWorkerThread(std::make_shared<QPanoramaWorker>()),
-    _vSubLayoutContainer(nullptr),
-    _altLayoutContainer(nullptr),
-    _arm3LayoutContainer(nullptr),
-    _arm4LayoutContainer(nullptr)
+    _panoramaWorkerThread(std::make_shared<QPanoramaWorker>())
 {
     _tabWidget = new QTabWidget(this);
-    _gridContainer = new QWidget(this);                 // reparented by addTab
+    _gridContainer = new QWidget(this);             // reparented by addTab
     _gridLayout = new QGridLayout(_gridContainer);  // setLayout is implicit
     _resetLayout_PB = new QPushButton(this);        // reparented by setCornerWidget
     _splitter = new QSplitter(this);
+
+    _vSubLayoutContainer = new QWidget(this);
+    _altLayoutContainer = new QWidget(this);
+    _arm3LayoutContainer = new QWidget(this);
+    _arm3SubLayoutContainer = new QWidget(this);
+    _arm4LayoutContainer = new QWidget(this);
+
+    _altLayout = new QHBoxLayout(_altLayoutContainer);
+    _vSubLayout = new QVBoxLayout(_vSubLayoutContainer);
+    _arm3Layout = new QVBoxLayout(_arm3LayoutContainer);
+    _arm3SubLayout = new QVBoxLayout(_arm3SubLayoutContainer);
+    _arm4Layout = new QGridLayout(_arm4LayoutContainer);
+
+    _splitter->addWidget(_vSubLayoutContainer);
+    _arm3Splitter.addWidget(_arm3SubLayoutContainer);
 
     this->initWidget();
 
@@ -60,21 +71,15 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
     this->initCameraListSubscriber();
     this->initCameraStatusSubscriber();
 
-    _altLayoutContainer.setLayout(&_altLayout);
-    _vSubLayoutContainer.setLayout(&_vSubLayout);
-    _arm3LayoutContainer.setLayout(&_arm3Layout);
-    _arm3SubLayoutContainer.setLayout(&_arm3SubLayout);
-    _arm4LayoutContainer.setLayout(&_arm4Layout);
-
     _mainLayout.addWidget(_tabWidget);
     this->setLayout(&_mainLayout);
 
-    _altLayout.addWidget(_splitter);
-    _arm3Layout.addWidget(&_arm3Splitter);
+    _altLayout->addWidget(_splitter);
+    _arm3Layout->addWidget(&_arm3Splitter);
     _tabWidget->addTab(_gridContainer, "grid");
-    _tabWidget->addTab(&_altLayoutContainer, "alt");
-    _tabWidget->addTab(&_arm3LayoutContainer, "arm3");
-    _tabWidget->addTab(&_arm4LayoutContainer, "arm4");
+    _tabWidget->addTab(_altLayoutContainer, "alt");
+    _tabWidget->addTab(_arm3LayoutContainer, "arm3");
+    _tabWidget->addTab(_arm4LayoutContainer, "arm4");
     _tabWidget->setCurrentIndex(std::to_underlying(eTabIndex::ALT));
 
     this->initPanoramaClient();
@@ -125,15 +130,15 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     {
         if (_videoPlaysWidgets[1])
         {
-            _vSubLayout.addWidget(_videoPlaysWidgets[1].get());
+            _vSubLayout->addWidget(_videoPlaysWidgets[1].get());
         }
 
         if (_videoPlaysWidgets[2])
         {
-            _vSubLayout.addWidget(_videoPlaysWidgets[2].get());
+            _vSubLayout->addWidget(_videoPlaysWidgets[2].get());
         }
 
-        _splitter->addWidget(&_vSubLayoutContainer);
+        _splitter->addWidget(_vSubLayoutContainer);
 
         if (_videoPlaysWidgets[0])
         {
@@ -146,15 +151,15 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     {
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)])
         {
-            _arm3SubLayout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get());
+            _arm3SubLayout->addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get());
         }
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)])
         {
-            _arm3SubLayout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get());
+            _arm3SubLayout->addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get());
         }
 
-        _arm3Splitter.addWidget(&_arm3SubLayoutContainer);
+        _arm3Splitter.addWidget(_arm3SubLayoutContainer);
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)])
         {
@@ -168,22 +173,24 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
     {
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get(), 1, 0);
+            _arm4Layout->addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get(),
+                                   1,
+                                   0);
         }
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get(), 1, 1);
+            _arm4Layout->addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_TOP)].get(), 1, 1);
         }
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get(), 0, 1);
+            _arm4Layout->addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get(), 0, 1);
         }
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)])
         {
-            _arm4Layout.addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)].get(), 0, 0);
+            _arm4Layout->addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::MAIN)].get(), 0, 0);
         }
         _resetLayout_PB->setVisible(false);
     }
