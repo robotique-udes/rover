@@ -11905,365 +11905,337 @@
             </material>
         </visual>
     </link>
-    <joint name="cylindrical_1" type="prismatic">
+    <joint name="cylindrical_1" type="fixed">
         <origin xyz="-0.0902567 3.33067e-16 0.012" rpy="0 1.5708 -1.08258e-19" />
         <axis xyz="7.5592e-17 1.66425e-16 -1" />
         <parent link="side_input_cap_1" />
         <child link="cylindrical_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_10_loop_closure" type="prismatic">
+    <joint name="cylindrical_10_loop_closure" type="fixed">
         <origin xyz="0 1.04083e-17 -0.0015" rpy="-1.5708 -0 1.5708" />
         <axis xyz="0 -1 0" />
         <parent link="bearing_od10_id6_ep3_11" />
         <child link="cylindrical_10_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_10_loop_closure_1" type="continuous">
+    <joint name="cylindrical_10_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="cylindrical_10_loop_closure" />
         <child link="planet__2__loop_closure" />
     </joint>
-    <joint name="cylindrical_11_loop_closure" type="prismatic">
+    <joint name="cylindrical_11_loop_closure" type="fixed">
         <origin xyz="1.73472e-18 0 0.003" rpy="-1.5708 -5.27666e-16 3.14159" />
         <axis xyz="0 -1 0" />
         <parent link="bearing_od10_id6_ep3_12" />
         <child link="cylindrical_11_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_11_loop_closure_1" type="continuous">
+    <joint name="cylindrical_11_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="cylindrical_11_loop_closure" />
         <child link="planet__3__loop_closure" />
     </joint>
-    <joint name="cylindrical_13_loop_closure" type="prismatic">
+    <joint name="cylindrical_13_loop_closure" type="fixed">
         <origin xyz="-2.41906e-08 -5.55112e-17 1.54393e-08" rpy="3.14159 -1.21494 1.49303e-15" />
         <axis xyz="0 1 0" />
         <parent link="planet_1" />
         <child link="cylindrical_13_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_13_loop_closure_1" type="continuous">
+    <joint name="cylindrical_13_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="cylindrical_13_loop_closure" />
         <child link="sleeve_planet__2__loop_closure" />
     </joint>
-    <joint name="cylindrical_14" type="prismatic">
+    <joint name="cylindrical_14" type="fixed">
         <origin xyz="0.00714279 0.0015 0.00136983" rpy="-3.14159 6.38378e-16 -5.56418e-16" />
         <axis xyz="0 1 0" />
         <parent link="planet_2" />
         <child link="cylindrical_14" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_14_1" type="continuous">
+    <joint name="cylindrical_14_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="cylindrical_14" />
         <child link="sleeve_planet_1" />
     </joint>
-    <joint name="cylindrical_15_loop_closure" type="prismatic">
+    <joint name="cylindrical_15_loop_closure" type="fixed">
         <origin xyz="-0.0045582 -2.77556e-17 0.00495201" rpy="3.14159 3.37785e-14 -5.59265e-17" />
         <axis xyz="0 1 0" />
         <parent link="planet" />
         <child link="cylindrical_15_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_15_loop_closure_1" type="continuous">
+    <joint name="cylindrical_15_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="cylindrical_15_loop_closure" />
         <child link="sleeve_planet__1__loop_closure" />
     </joint>
-    <joint name="cylindrical_16" type="prismatic">
+    <joint name="cylindrical_16" type="fixed">
         <origin xyz="0.0987439 -0.0214 0.01775" rpy="-8.32667e-17 -6.47052e-16 -1.8735e-16" />
         <axis xyz="0 -1 0" />
         <parent link="ring_1" />
         <child link="cylindrical_16" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_16_1" type="continuous">
+    <joint name="cylindrical_16_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="cylindrical_16" />
         <child link="part_1_10" />
     </joint>
-    <joint name="cylindrical_17" type="prismatic">
+    <joint name="cylindrical_17" type="fixed">
         <origin xyz="-4.02456e-16 -0.0095 2.77556e-16" rpy="0 -1.5708 1.5708" />
         <axis xyz="0 0 1" />
         <parent link="part_1_10" />
         <child link="cylindrical_17" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_17_1" type="continuous">
+    <joint name="cylindrical_17_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="cylindrical_17" />
         <child link="part_1_9" />
     </joint>
-    <joint name="cylindrical_18" type="prismatic">
+    <joint name="cylindrical_18" type="fixed">
         <origin xyz="3.46945e-18 0.0225 0" rpy="1.5708 -1.41225 -1.05481e-15" />
         <axis xyz="0 0 1" />
         <parent link="centre_sun" />
         <child link="cylindrical_18" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_18_1" type="continuous">
+    <joint name="cylindrical_18_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="cylindrical_18" />
         <child link="part_1_11" />
     </joint>
-    <joint name="cylindrical_19" type="prismatic">
+    <joint name="cylindrical_19" type="fixed">
         <origin xyz="-3.81639e-17 0.0184 1.38778e-17" rpy="1.5708 1.45024 -3.14159" />
         <axis xyz="0 0 -1" />
         <parent link="carrier_1" />
         <child link="cylindrical_19" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_19_1" type="continuous">
+    <joint name="cylindrical_19_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="cylindrical_19" />
         <child link="part_1_7" />
     </joint>
-    <joint name="cylindrical_1_1" type="continuous">
+    <joint name="cylindrical_1_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="7.5592e-17 1.66425e-16 -1" />
         <parent link="cylindrical_1" />
         <child link="6mm_shaft___50_mm" />
     </joint>
-    <joint name="cylindrical_1_2" type="prismatic">
+    <joint name="cylindrical_1_2" type="fixed">
         <origin xyz="0.0307439 -0.0214 0.01775" rpy="-1.5708 -0.158544 -1.68649e-16" />
         <axis xyz="-0 -0 -1" />
         <parent link="ring_1" />
         <child link="cylindrical_1_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_1_3" type="continuous">
+    <joint name="cylindrical_1_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="cylindrical_1_1" />
         <child link="bearing_od42_id30_ep7" />
     </joint>
-    <joint name="cylindrical_2" type="prismatic">
+    <joint name="cylindrical_2" type="fixed">
         <origin xyz="0.0307439 -0.0144 0.01775" rpy="-3.14159 -1.03849e-15 8.25913e-16" />
         <axis xyz="0 1 0" />
         <parent link="ring_1" />
         <child link="cylindrical_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_2_1" type="continuous">
+    <joint name="cylindrical_2_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="cylindrical_2" />
         <child link="centre_sun" />
     </joint>
-    <joint name="cylindrical_2_2" type="prismatic">
+    <joint name="cylindrical_2_2" type="fixed">
         <origin xyz="0.0075 -0.0075 0.042" rpy="-1.22177e-16 -1.24588e-16 3.81639e-16" />
         <axis xyz="0 0 1" />
         <parent link="tensionneur" />
         <child link="cylindrical_2_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_2_3" type="continuous">
+    <joint name="cylindrical_2_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="cylindrical_2_1" />
         <child link="hex_socket_head_cap_screw_m6x1_00_x_30_1" />
     </joint>
-    <joint name="cylindrical_2_loop_closure" type="prismatic">
+    <joint name="cylindrical_2_loop_closure" type="fixed">
         <origin xyz="5.55112e-17 -4.44089e-16 0.0229657" rpy="0 -1.5708 1.36291" />
         <axis xyz="1 0 0" />
         <parent link="6mm_shaft___50_mm" />
         <child link="cylindrical_2_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_2_loop_closure_1" type="continuous">
+    <joint name="cylindrical_2_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1 0 0" />
         <parent link="cylindrical_2_loop_closure" />
         <child link="carrier__1__loop_closure" />
     </joint>
-    <joint name="cylindrical_3" type="prismatic">
+    <joint name="cylindrical_3" type="fixed">
         <origin xyz="0.0307439 0.0135 0.01775" rpy="3.14159 7.795e-16 1.35131e-17" />
         <axis xyz="0 1 0" />
         <parent link="ring_1" />
         <child link="cylindrical_3" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_3_1" type="continuous">
+    <joint name="cylindrical_3_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="cylindrical_3" />
         <child link="cover" />
     </joint>
-    <joint name="cylindrical_4" type="prismatic">
+    <joint name="cylindrical_4" type="fixed">
         <origin xyz="6.93889e-18 -0.0174 0" rpy="-3.14159 -1.41225 -1.90072e-15" />
         <axis xyz="-0 1 -0" />
         <parent link="centre_sun" />
         <child link="cylindrical_4" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_4_1" type="continuous">
+    <joint name="cylindrical_4_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 1 -0" />
         <parent link="cylindrical_4" />
         <child link="part_1_8" />
     </joint>
-    <joint name="cylindrical_4_loop_closure" type="prismatic">
+    <joint name="cylindrical_4_loop_closure" type="fixed">
         <origin xyz="1.38778e-17 1.38778e-17 0.025" rpy="-7.94031e-17 -1.01071e-16 5.89284e-16" />
         <axis xyz="0 0 -1" />
         <parent link="hex_socket_head_cap_screw_m6x1_00_x_30" />
         <child link="cylindrical_4_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_4_loop_closure_1" type="continuous">
+    <joint name="cylindrical_4_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="cylindrical_4_loop_closure" />
         <child link="hex__2__loop_closure" />
     </joint>
-    <joint name="cylindrical_5" type="prismatic">
+    <joint name="cylindrical_5" type="fixed">
         <origin xyz="0.0307439 0.01 0.01775" rpy="7.39211e-17 6.46245e-15 7.94558e-16" />
         <axis xyz="0 -1 0" />
         <parent link="ring_1" />
         <child link="cylindrical_5" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_5_1" type="continuous">
+    <joint name="cylindrical_5_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="cylindrical_5" />
         <child link="carrier_1" />
     </joint>
-    <joint name="cylindrical_5_loop_closure" type="prismatic">
+    <joint name="cylindrical_5_loop_closure" type="fixed">
         <origin xyz="-0.021 -2.1684e-19 2.77556e-17" rpy="3.14159 3.20924e-16 -3.14159" />
         <axis xyz="-1 -0 -0" />
         <parent link="carrier_tensio_m_1" />
         <child link="cylindrical_5_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_5_loop_closure_1" type="continuous">
+    <joint name="cylindrical_5_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-1 -0 -0" />
         <parent link="cylindrical_5_loop_closure" />
         <child link="carrier_tensio_m__2__loop_closure" />
     </joint>
-    <joint name="cylindrical_6" type="prismatic">
+    <joint name="cylindrical_6" type="fixed">
         <origin xyz="0.00705992 -0.012 -0.0165577" rpy="1.5708 0.235302 3.14159" />
         <axis xyz="-0 -0 -1" />
         <parent link="carrier_1" />
         <child link="cylindrical_6" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_6_1" type="continuous">
+    <joint name="cylindrical_6_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="cylindrical_6" />
         <child link="bearing_od10_id6_ep3_13" />
     </joint>
-    <joint name="cylindrical_6_2" type="prismatic">
+    <joint name="cylindrical_6_2" type="fixed">
         <origin xyz="-4.33681e-19 0 5.41234e-16" rpy="-2.05927e-16 1.1913e-16 1.5708" />
         <axis xyz="-0 -0 -1" />
         <parent link="hex_socket_head_cap_screw_m6x1_00_x_30_1" />
         <child link="cylindrical_6_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_6_3" type="continuous">
+    <joint name="cylindrical_6_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="cylindrical_6_1" />
         <child link="carrier_tensio_m" />
     </joint>
-    <joint name="cylindrical_7" type="prismatic">
+    <joint name="cylindrical_7" type="fixed">
         <origin xyz="-0.0178694 -0.012 0.00216478" rpy="-1.5708 1.33549 -1.52387e-14" />
         <axis xyz="-0 -0 -1" />
         <parent link="carrier_1" />
         <child link="cylindrical_7" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_7_1" type="continuous">
+    <joint name="cylindrical_7_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="cylindrical_7" />
         <child link="bearing_od10_id6_ep3_11" />
     </joint>
-    <joint name="cylindrical_7_2" type="prismatic">
+    <joint name="cylindrical_7_2" type="fixed">
         <origin xyz="-2.1684e-19 1.38778e-17 0.0275" rpy="3.14159 -7.28584e-17 -1.5708" />
         <axis xyz="0 0 -1" />
         <parent link="hex_socket_head_cap_screw_m6x1_00_x_30" />
         <child link="cylindrical_7_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_7_3" type="continuous">
+    <joint name="cylindrical_7_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="cylindrical_7_1" />
         <child link="carrier_tensio_m_1" />
     </joint>
-    <joint name="cylindrical_8" type="prismatic">
+    <joint name="cylindrical_8" type="fixed">
         <origin xyz="0.0108094 -0.015 0.0143929" rpy="-1.5708 -0.235302 3.48213e-15" />
         <axis xyz="-0 -0 -1" />
         <parent link="carrier_1" />
         <child link="cylindrical_8" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_8_1" type="continuous">
+    <joint name="cylindrical_8_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="cylindrical_8" />
         <child link="bearing_od10_id6_ep3_12" />
     </joint>
-    <joint name="cylindrical_8_2" type="prismatic">
+    <joint name="cylindrical_8_2" type="fixed">
         <origin xyz="-0.01 -2.1684e-19 1.38778e-17" rpy="1.87065e-15 -0.439229 1.5708" />
         <axis xyz="-0 -1 -0" />
         <parent link="carrier_tensio_m_1" />
         <child link="cylindrical_8_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_8_3" type="continuous">
+    <joint name="cylindrical_8_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
         <parent link="cylindrical_8_1" />
         <child link="part_1_12" />
     </joint>
-    <joint name="cylindrical_9" type="prismatic">
+    <joint name="cylindrical_9" type="fixed">
         <origin xyz="-0.0175 -2.1684e-19 0" rpy="1.2292e-15 0.322749 -1.5708" />
         <axis xyz="-0 1 -0" />
         <parent link="carrier_tensio_m_1" />
         <child link="cylindrical_9" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_9_1" type="continuous">
+    <joint name="cylindrical_9_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 1 -0" />
         <parent link="cylindrical_9" />
         <child link="part_1_13" />
     </joint>
-    <joint name="cylindrical_9_loop_closure" type="prismatic">
+    <joint name="cylindrical_9_loop_closure" type="fixed">
         <origin xyz="0.00714279 0.0015 0.00136983" rpy="-1.5708 1.47889 -3.14159" />
         <axis xyz="-0 -0 -1" />
         <parent link="planet_2" />
         <child link="cylindrical_9_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrical_9_loop_closure_1" type="continuous">
+    <joint name="cylindrical_9_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="cylindrical_9_loop_closure" />
         <child link="bearing_od10_id6_ep3__1__loop_closure" />
     </joint>
-    <joint name="cylindrique_1" type="prismatic">
+    <joint name="cylindrique_1" type="fixed">
         <origin xyz="8.74301e-16 5.58581e-16 -0.268277" rpy="3.14159 -1.43692e-15 1.69135" />
         <axis xyz="-0 -0 -1" />
         <parent link="threaded_rod" />
         <child link="cylindrique_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="cylindrique_1_1" type="continuous">
+    <joint name="cylindrique_1_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="cylindrique_1" />
@@ -12833,26 +12805,23 @@
         <parent link="root" />
         <child link="jlin_hockey_1" />
     </joint>
-    <joint name="glissière_1" type="prismatic">
+    <joint name="glissière_1" type="fixed">
         <origin xyz="0.0552247 -0.0176725 0.0635" rpy="-7.77156e-16 -1.51268e-15 3.85803e-15" />
         <axis xyz="2.39308e-18 8.34592e-19 -1" />
         <parent link="motor_cover" />
         <child link="pcb_cover" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="glissière_1_loop_closure" type="prismatic">
+    <joint name="glissière_1_loop_closure" type="fixed">
         <origin xyz="0.0719474 -0.02754 -0.0068139" rpy="1.61364e-30 -1.66533e-16 -4.31368e-16" />
         <axis xyz="1 -0 -0" />
         <parent link="mid_support_2_haut" />
         <child link="jlin_hockey__2__loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="glissière_2" type="prismatic">
+    <joint name="glissière_2" type="fixed">
         <origin xyz="0.0740955 -0.0379782 -0.0495" rpy="4.94793e-16 1.87071e-16 -0.523599" />
         <axis xyz="-7.11782e-17 -1.35109e-16 1" />
         <parent link="arm_holder" />
         <child link="arm_cap" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
     <joint name="group_1_fastened_joint" type="fixed">
         <origin xyz="0 0 -1.11022e-16" rpy="1.16682e-61 -2.95823e-31 -7.88861e-31" />
@@ -13610,222 +13579,191 @@
         <parent link="mid_support_2_haut" />
         <child link="mid_support_2_bas" />
     </joint>
-    <joint name="parallel_1" type="prismatic">
+    <joint name="parallel_1" type="fixed">
         <origin xyz="0.0075 -0.03259 0.03455" rpy="-5.02668e-16 -6.27605e-16 0.357053" />
         <axis xyz="0.936931 -0.349514 0" />
         <parent link="tensionneur" />
         <child link="parallel_1_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_1_1" type="prismatic">
+    <joint name="parallel_1_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="parallel_1_2" />
         <child link="parallel_1_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_1_2" type="prismatic">
+    <joint name="parallel_1_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0.349514 0.936931 0" />
         <parent link="parallel_1_1" />
         <child link="parallel_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_1_3" type="continuous">
+    <joint name="parallel_1_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0.349514 0.936931 0" />
         <parent link="parallel_1" />
         <child link="hex_1" />
     </joint>
-    <joint name="parallel_1_4" type="prismatic">
+    <joint name="parallel_1_4" type="fixed">
         <origin xyz="-0.0328 -0.111016 0.000433063" rpy="-1.5708 -2.10942e-15 -1.5708" />
         <axis xyz="1 0 0" />
         <parent link="topplate" />
         <child link="parallel_1_5" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_1_5" type="prismatic">
+    <joint name="parallel_1_5" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="parallel_1_5" />
         <child link="parallel_1_4" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_1_6" type="prismatic">
+    <joint name="parallel_1_6" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="parallel_1_4" />
         <child link="parallel_1_3" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_1_7" type="continuous">
+    <joint name="parallel_1_7" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="parallel_1_3" />
         <child link="holder_nutleadscrew" />
     </joint>
-    <joint name="parallel_2" type="prismatic">
+    <joint name="parallel_2" type="fixed">
         <origin xyz="0.0075 -0.01241 0.03455" rpy="-8.3344e-16 -5.09831e-16 0.357053" />
         <axis xyz="0.936931 -0.349514 0" />
         <parent link="tensionneur" />
         <child link="parallel_2_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_2_1" type="prismatic">
+    <joint name="parallel_2_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="parallel_2_2" />
         <child link="parallel_2_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_2_2" type="prismatic">
+    <joint name="parallel_2_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0.349514 -0.936931 0" />
         <parent link="parallel_2_1" />
         <child link="parallel_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallel_2_3" type="continuous">
+    <joint name="parallel_2_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0.349514 -0.936931 0" />
         <parent link="parallel_2" />
         <child link="hex" />
     </joint>
-    <joint name="parallèle_1" type="prismatic">
+    <joint name="parallèle_1" type="fixed">
         <origin xyz="-0.0332 1.74357e-06 0.421801" rpy="3.14159 -1.23025e-15 1.5708" />
         <axis xyz="1 0 0" />
         <parent link="tubecarbone_42x42x1_5" />
         <child link="parallèle_1_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallèle_1_1" type="prismatic">
+    <joint name="parallèle_1_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="parallèle_1_2" />
         <child link="parallèle_1_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallèle_1_10" type="prismatic">
+    <joint name="parallèle_1_10" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_7" />
         <child link="parallèle_1_6" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
-    <joint name="parallèle_1_11" type="revolute">
+    <joint name="parallèle_1_11" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_6" />
         <child link="part_9_2" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
-    <joint name="parallèle_1_12" type="prismatic">
+    <joint name="parallèle_1_12" type="fixed">
         <origin xyz="-0.142016 0.0227 0.00709001" rpy="-5.55112e-16 -1.06294e-14 5.89806e-16" />
         <axis xyz="-1 -0 -0" />
         <parent link="part_1_5" />
         <child link="parallèle_1_11" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallèle_1_13" type="prismatic">
+    <joint name="parallèle_1_13" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 1" />
         <parent link="parallèle_1_11" />
         <child link="parallèle_1_10" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallèle_1_14" type="prismatic">
+    <joint name="parallèle_1_14" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
         <parent link="parallèle_1_10" />
         <child link="parallèle_1_9" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
-    <joint name="parallèle_1_15" type="continuous">
+    <joint name="parallèle_1_15" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
         <parent link="parallèle_1_9" />
         <child link="part_1_15" />
     </joint>
-    <joint name="parallèle_1_16" type="prismatic">
+    <joint name="parallèle_1_16" type="fixed">
         <origin xyz="1.11022e-15 0.00794261 0.0943481" rpy="1.5708 -1.62891e-15 -3.14159" />
         <axis xyz="1 0 1.04872e-14" />
         <parent link="part_1_4" />
         <child link="parallèle_1_14" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_20" />
     </joint>
-    <joint name="parallèle_1_17" type="prismatic">
+    <joint name="parallèle_1_17" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="parallèle_1_14" />
         <child link="parallèle_1_13" />
-        <limit effort="1" velocity="1" lower="-0.272265" upper="0.136535" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_21" />
     </joint>
-    <joint name="parallèle_1_18" type="prismatic">
+    <joint name="parallèle_1_18" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_13" />
         <child link="parallèle_1_12" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_22" />
     </joint>
-    <joint name="parallèle_1_19" type="revolute">
+    <joint name="parallèle_1_19" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_12" />
         <child link="part_9_1" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_23" />
     </joint>
-    <joint name="parallèle_1_2" type="prismatic">
+    <joint name="parallèle_1_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="parallèle_1_1" />
         <child link="parallèle_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="parallèle_1_20" type="prismatic">
+    <joint name="parallèle_1_20" type="fixed">
         <origin xyz="1.09635e-15 0.00794261 0.139948" rpy="1.5708 -5.20417e-18 -3.14159" />
         <axis xyz="1 0 1.04872e-14" />
         <parent link="part_1_4" />
         <child link="parallèle_1_17" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
-    <joint name="parallèle_1_21" type="prismatic">
+    <joint name="parallèle_1_21" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="parallèle_1_17" />
         <child link="parallèle_1_16" />
-        <limit effort="1" velocity="1" lower="-0.272265" upper="0.136535" />
     </joint>
-    <joint name="parallèle_1_22" type="prismatic">
+    <joint name="parallèle_1_22" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_16" />
         <child link="parallèle_1_15" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
-    <joint name="parallèle_1_23" type="revolute">
+    <joint name="parallèle_1_23" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_15" />
         <child link="part_9" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
-    <joint name="parallèle_1_3" type="continuous">
+    <joint name="parallèle_1_3" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="parallèle_1" />
         <child link="enveloppe_machoir_bas" />
     </joint>
-    <joint name="parallèle_1_4" type="prismatic">
+    <joint name="parallèle_1_4" type="fixed">
         <origin xyz="-3.16414e-15 0.00794261 -0.305652" rpy="1.5708 -8.62158e-16 -3.14159" />
         <axis xyz="1 0 1.04872e-14" />
         <parent link="part_1_14" />
         <child link="parallèle_1_5" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_8" />
     </joint>
     <joint name="parallèle_1_5" type="prismatic">
         <origin xyz="0 0 0" rpy="0 -0 0" />
@@ -13835,28 +13773,23 @@
         <limit effort="1" velocity="1" lower="-0.272265" upper="0.136535" />
         <mimic offset="0" multiplier="1" joint="parallèle_1_9" />
     </joint>
-    <joint name="parallèle_1_6" type="prismatic">
+    <joint name="parallèle_1_6" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_4" />
         <child link="parallèle_1_3" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_10" />
     </joint>
-    <joint name="parallèle_1_7" type="revolute">
+    <joint name="parallèle_1_7" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1.04872e-14 0 -1" />
         <parent link="parallèle_1_3" />
         <child link="part_9_3" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_11" />
     </joint>
-    <joint name="parallèle_1_8" type="prismatic">
+    <joint name="parallèle_1_8" type="fixed">
         <origin xyz="-3.13638e-15 0.00794261 -0.260052" rpy="1.5708 -5.11743e-16 3.14159" />
         <axis xyz="1 0 1.04872e-14" />
         <parent link="part_1_14" />
         <child link="parallèle_1_8" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
     <joint name="parallèle_1_9" type="prismatic">
         <origin xyz="0 0 0" rpy="0 -0 0" />
@@ -13872,7 +13805,7 @@
         <child link="harmonic_body_1" />
         <limit effort="1" velocity="1" lower="-2.18024" upper="1.31042" />
     </joint>
-    <joint name="pivot_1_1" type="continuous">
+    <joint name="pivot_1_1" type="fixed">
         <origin xyz="5.55112e-17 0 -1.38778e-17" rpy="-2.18024 -9.56963e-16 -1.01699e-15" />
         <axis xyz="-1 0 0" />
         <parent link="harmonic_body_1" />
@@ -13885,525 +13818,475 @@
         <child link="output_bloc" />
         <limit effort="1" velocity="1" lower="-1.83006" upper="3.05686" />
     </joint>
-    <joint name="pivot_2" type="continuous">
+    <joint name="pivot_2" type="fixed">
         <origin xyz="0.042 -0.0279777 0.0597766" rpy="1.5708 0.961351 -1.5708" />
         <axis xyz="-7.11782e-17 -1.35109e-16 1" />
         <parent link="harmonic_body_1" />
         <child link="arm_holder" />
     </joint>
-    <joint name="pivot_2_1" type="continuous">
+    <joint name="pivot_2_1" type="fixed">
         <origin xyz="0.0306569 -0.056 -2.77556e-17" rpy="0 1.5708 1.55058e-16" />
         <axis xyz="6.22846e-19 -2.45671e-18 1" />
         <parent link="motorhousing" />
         <child link="ak60_6_kv80_v3_0" />
     </joint>
-    <joint name="pivot_3" type="continuous">
+    <joint name="pivot_3" type="fixed">
         <origin xyz="0.00361389 0.00932415 -0.031" rpy="-2.6778e-16 -3.28278e-16 1.63282" />
         <axis xyz="-7.11782e-17 -1.35109e-16 1" />
         <parent link="ak60_6_kv80_v3_0" />
         <child link="motorplate" />
     </joint>
-    <joint name="pivot_4" type="continuous">
+    <joint name="pivot_4" type="fixed">
         <origin xyz="0.00726754 -0.129728 -0.02825" rpy="4.11269e-16 -8.63667e-17 -0.523599" />
         <axis xyz="-2.4988e-64 -1.35109e-16 1" />
         <parent link="arm_holder" />
         <child link="cable_clamp1" />
     </joint>
-    <joint name="planaire_1" type="prismatic">
+    <joint name="planaire_1" type="fixed">
         <origin xyz="-0.026 0.171051 0.021" rpy="0 -1.5708 4.71239" />
         <axis xyz="-1.65212e-16 1 0" />
         <parent link="output_bloc" />
         <child link="planaire_1_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_10" type="prismatic">
+    <joint name="planaire_10" type="fixed">
         <origin xyz="-6.66134e-16 0.0107 0.17935" rpy="3.14159 -2.03103e-15 -1.5708" />
         <axis xyz="1 0 0" />
         <parent link="tubecarbone_42x42x1_5" />
         <child link="planaire_10_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_10_1" type="prismatic">
+    <joint name="planaire_10_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planaire_10_1" />
         <child link="planaire_10" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_10_2" type="continuous">
+    <joint name="planaire_10_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="planaire_10" />
         <child link="side_holder_hex" />
     </joint>
-    <joint name="planaire_14" type="prismatic">
+    <joint name="planaire_14" type="fixed">
         <origin xyz="-0.0405 0.000500009 -0.197449" rpy="3.14159 8.23451e-16 1.5708" />
         <axis xyz="1 0 0" />
         <parent link="tubecarbone_42x42x1_5" />
         <child link="planaire_14_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_14_1" type="prismatic">
+    <joint name="planaire_14_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="planaire_14_1" />
         <child link="planaire_14" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_14_2" type="continuous">
+    <joint name="planaire_14_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="planaire_14" />
         <child link="embout_visse" />
     </joint>
-    <joint name="planaire_1_1" type="prismatic">
+    <joint name="planaire_1_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="planaire_1_1" />
         <child link="planaire_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_1_2" type="continuous">
+    <joint name="planaire_1_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1 1.65212e-16 0" />
         <parent link="planaire_1" />
         <child link="tubecarbone_42x42x1_5" />
     </joint>
-    <joint name="planaire_1_3" type="prismatic">
+    <joint name="planaire_1_3" type="fixed">
         <origin xyz="0.0858401 0.15818 0.0068139" rpy="-8.87953e-17 1.11716e-15 1.5893e-15" />
         <axis xyz="1 0 0" />
         <parent link="jlin_haut_gauche" />
         <child link="planaire_1_3" />
-        <limit effort="1" velocity="1" lower="0" upper="0" />
     </joint>
-    <joint name="planaire_1_4" type="prismatic">
+    <joint name="planaire_1_4" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="planaire_1_3" />
         <child link="planaire_1_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_1_5" type="continuous">
+    <joint name="planaire_1_5" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="planaire_1_2" />
         <child link="mid_support_2_haut" />
     </joint>
-    <joint name="planaire_2" type="prismatic">
+    <joint name="planaire_2" type="fixed">
         <origin xyz="0.08125 0.0264138 -0.0075" rpy="0 1.5708 -2.0944" />
         <axis xyz="-1.65212e-16 1 0" />
         <parent link="arm_holder" />
         <child link="planaire_2_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_2_1" type="prismatic">
+    <joint name="planaire_2_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planaire_2_1" />
         <child link="planaire_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_2_2" type="continuous">
+    <joint name="planaire_2_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-1 -1.65212e-16 0" />
         <parent link="planaire_2" />
         <child link="tubecarbone_42x42x1_5_1" />
     </joint>
-    <joint name="planaire_3" type="prismatic">
+    <joint name="planaire_3" type="fixed">
         <origin xyz="0.0133431 2.77556e-17 -0.1575" rpy="1.5708 5.49844e-16 -6.90167e-16" />
         <axis xyz="1 1.23841e-16 0" />
         <parent link="tubecarbone_42x42x1_5_1" />
         <child link="planaire_3_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_3_1" type="prismatic">
+    <joint name="planaire_3_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planaire_3_1" />
         <child link="planaire_3" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_3_2" type="continuous">
+    <joint name="planaire_3_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-1.23841e-16 1 0" />
         <parent link="planaire_3" />
         <child link="motorhousing" />
     </joint>
-    <joint name="planaire_4" type="prismatic">
+    <joint name="planaire_4" type="fixed">
         <origin xyz="-0.0386 -0.0174 0.205" rpy="3.14159 -2.03103e-15 -1.5708" />
         <axis xyz="1 -1.0563e-32 -7.5592e-17" />
         <parent link="tubecarbone_42x42x1_5" />
         <child link="planaire_4_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_4_1" type="prismatic">
+    <joint name="planaire_4_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 -1.39737e-16" />
         <parent link="planaire_4_1" />
         <child link="planaire_4" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_4_2" type="continuous">
+    <joint name="planaire_4_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="7.5592e-17 1.39737e-16 1" />
         <parent link="planaire_4" />
         <child link="motor_mount" />
     </joint>
-    <joint name="planaire_5_loop_closure" type="prismatic">
+    <joint name="planaire_5_loop_closure" type="fixed">
         <origin xyz="-0.026 0.0593423 1.66533e-16" rpy="0 1.5708 -1.5708" />
         <axis xyz="1.65212e-16 -1 -0" />
         <parent link="arm_cap" />
         <child link="planaire_5_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_5_loop_closure_1" type="prismatic">
+    <joint name="planaire_5_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 1" />
         <parent link="planaire_5_loop_closure_1" />
         <child link="planaire_5_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_5_loop_closure_2" type="continuous">
+    <joint name="planaire_5_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="1 1.65212e-16 -0" />
         <parent link="planaire_5_loop_closure" />
         <child link="tubecarbone_42x42x1_5__1__loop_closure" />
     </joint>
-    <joint name="planaire_7" type="prismatic">
+    <joint name="planaire_7" type="fixed">
         <origin xyz="-0.021 -0.021 0.0515" rpy="0 -1.5708 3.14159" />
         <axis xyz="1 0 0" />
         <parent link="tubecarbone_42x42x1_5" />
         <child link="planaire_7_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_7_1" type="prismatic">
+    <joint name="planaire_7_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="planaire_7_1" />
         <child link="planaire_7" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_7_2" type="continuous">
+    <joint name="planaire_7_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="planaire_7" />
         <child link="base" />
     </joint>
-    <joint name="planaire_9" type="prismatic">
+    <joint name="planaire_9" type="fixed">
         <origin xyz="-0.0212 -0.021 0.17935" rpy="3.14159 -2.03103e-15 -1.5708" />
         <axis xyz="0 1 0" />
         <parent link="tubecarbone_42x42x1_5" />
         <child link="planaire_9_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_9_1" type="prismatic">
+    <joint name="planaire_9_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-4.95635e-17 0 -1" />
         <parent link="planaire_9_1" />
         <child link="planaire_9" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planaire_9_2" type="continuous">
+    <joint name="planaire_9_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-1 0 4.95635e-17" />
         <parent link="planaire_9" />
         <child link="side_holder" />
     </joint>
-    <joint name="planar_11" type="prismatic">
+    <joint name="planar_11" type="fixed">
         <origin xyz="0.00672492 -0.012 -0.0238229" rpy="-3.43929e-15 -1.4274 -3.14159" />
         <axis xyz="-1 -0 -0" />
         <parent link="carrier_1" />
         <child link="planar_11_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_11_1" type="prismatic">
+    <joint name="planar_11_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 1" />
         <parent link="planar_11_1" />
         <child link="planar_11" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_11_2" type="continuous">
+    <joint name="planar_11_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
         <parent link="planar_11" />
         <child link="planet_2" />
     </joint>
-    <joint name="planar_12" type="prismatic">
+    <joint name="planar_12" type="fixed">
         <origin xyz="-0.0211474 -0.012 -0.00371345" rpy="9.25015e-17 0.235302 3.14159" />
         <axis xyz="-1 -0 -0" />
         <parent link="carrier_1" />
         <child link="planar_12_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_12_1" type="prismatic">
+    <joint name="planar_12_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 1" />
         <parent link="planar_12_1" />
         <child link="planar_12" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_12_2" type="continuous">
+    <joint name="planar_12_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
         <parent link="planar_12" />
         <child link="planet" />
     </joint>
-    <joint name="planar_13" type="prismatic">
+    <joint name="planar_13" type="fixed">
         <origin xyz="0.0108095 -0.012 0.0143929" rpy="-3.14159 0.120557 -2.14141e-16" />
         <axis xyz="1 0 0" />
         <parent link="carrier_1" />
         <child link="planar_13_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_13_1" type="prismatic">
+    <joint name="planar_13_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="planar_13_1" />
         <child link="planar_13" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_13_2" type="continuous">
+    <joint name="planar_13_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="planar_13" />
         <child link="planet_1" />
     </joint>
-    <joint name="planar_15_loop_closure" type="prismatic">
+    <joint name="planar_15_loop_closure" type="fixed">
         <origin xyz="2.1684e-18 0 0" rpy="1.5708 4.44089e-16 -1.5708" />
         <axis xyz="1 0 0" />
         <parent link="bearing_od10_id6_ep3_13" />
         <child link="planar_15_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_15_loop_closure_1" type="prismatic">
+    <joint name="planar_15_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planar_15_loop_closure_1" />
         <child link="planar_15_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_15_loop_closure_2" type="continuous">
+    <joint name="planar_15_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="planar_15_loop_closure" />
         <child link="sleeve_planet__3__loop_closure" />
     </joint>
-    <joint name="planar_16" type="prismatic">
+    <joint name="planar_16" type="fixed">
         <origin xyz="-1.73472e-18 0 0.003" rpy="1.5708 2.22045e-16 1.5708" />
         <axis xyz="1 0 0" />
         <parent link="bearing_od10_id6_ep3_12" />
         <child link="planar_16_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_16_1" type="prismatic">
+    <joint name="planar_16_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planar_16_1" />
         <child link="planar_16" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_16_2" type="continuous">
+    <joint name="planar_16_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="planar_16" />
         <child link="sleeve_planet" />
     </joint>
-    <joint name="planar_17" type="prismatic">
+    <joint name="planar_17" type="fixed">
         <origin xyz="0 1.04083e-17 -2.77556e-17" rpy="1.5708 3.33067e-16 1.5708" />
         <axis xyz="1 0 0" />
         <parent link="bearing_od10_id6_ep3_11" />
         <child link="planar_17_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_17_1" type="prismatic">
+    <joint name="planar_17_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planar_17_1" />
         <child link="planar_17" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_17_2" type="continuous">
+    <joint name="planar_17_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="planar_17" />
         <child link="sleeve_planet_2" />
     </joint>
-    <joint name="planar_19_loop_closure" type="prismatic">
+    <joint name="planar_19_loop_closure" type="fixed">
         <origin xyz="0.0107359 -0.0671472 0.006" rpy="3.14159 -3.94417e-16 0.0293666" />
         <axis xyz="-1 -0 -0" />
         <parent link="part_1_11" />
         <child link="planar_19_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_19_loop_closure_1" type="prismatic">
+    <joint name="planar_19_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
         <parent link="planar_19_loop_closure_1" />
         <child link="planar_19_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_19_loop_closure_2" type="continuous">
+    <joint name="planar_19_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="planar_19_loop_closure" />
         <child link="part_1__1__loop_closure" />
     </joint>
-    <joint name="planar_1_loop_closure" type="prismatic">
+    <joint name="planar_1_loop_closure" type="fixed">
         <origin xyz="9.75782e-18 0.03 -5.82867e-16" rpy="5.42498e-16 -2.76278e-16 1.37371" />
         <axis xyz="-1 -0 -0" />
         <parent link="hex_socket_head_cap_screw_m6x1_00_x_30" />
         <child link="planar_1_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_1_loop_closure_1" type="prismatic">
+    <joint name="planar_1_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 1 -0" />
         <parent link="planar_1_loop_closure_1" />
         <child link="planar_1_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_1_loop_closure_2" type="continuous">
+    <joint name="planar_1_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 1" />
         <parent link="planar_1_loop_closure" />
         <child link="hex_socket_head_cap_screw_m6x1_00_x_30__2__loop_closure" />
     </joint>
-    <joint name="planar_2" type="prismatic">
+    <joint name="planar_2" type="fixed">
         <origin xyz="0.0075 -0.0375 0.012" rpy="-3.87735e-17 -6.62294e-16 -4.85201e-16" />
         <axis xyz="1 0 0" />
         <parent link="tensionneur" />
         <child link="planar_2_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_2_1" type="prismatic">
+    <joint name="planar_2_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="planar_2_1" />
         <child link="planar_2" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_2_2" type="continuous">
+    <joint name="planar_2_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planar_2" />
         <child link="hex_socket_head_cap_screw_m6x1_00_x_30" />
     </joint>
-    <joint name="planar_2_loop_closure" type="prismatic">
+    <joint name="planar_2_loop_closure" type="fixed">
         <origin xyz="4.12864e-16 -2.77556e-16 9.99201e-16" rpy="1.5708 0.158544 7.16757e-16" />
         <axis xyz="-0 -1 -0" />
         <parent link="centre_sun" />
         <child link="planar_2_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_2_loop_closure_1" type="prismatic">
+    <joint name="planar_2_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-1 -0 -0" />
         <parent link="planar_2_loop_closure_1" />
         <child link="planar_2_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_2_loop_closure_2" type="continuous">
+    <joint name="planar_2_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 1" />
         <parent link="planar_2_loop_closure" />
         <child link="bearing_od42_id30_ep7__1__loop_closure" />
     </joint>
-    <joint name="planar_3" type="prismatic">
+    <joint name="planar_3" type="fixed">
         <origin xyz="-3.5639e-09 -0.001 -1.40645e-09" rpy="-3.14159 -1.41225 -9.79844e-16" />
         <axis xyz="1 0 0" />
         <parent link="centre_sun" />
         <child link="planar_3_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_3_1" type="prismatic">
+    <joint name="planar_3_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="planar_3_1" />
         <child link="planar_3" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_3_2" type="continuous">
+    <joint name="planar_3_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="planar_3" />
         <child link="sun" />
     </joint>
-    <joint name="planar_3_loop_closure" type="prismatic">
+    <joint name="planar_3_loop_closure" type="fixed">
         <origin xyz="0.00876931 0.0235076 0.00245" rpy="-3.41706e-16 9.97434e-17 -1.66533e-16" />
         <axis xyz="1 0 0" />
         <parent link="hex_1" />
         <child link="planar_3_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_3_loop_closure_1" type="prismatic">
+    <joint name="planar_3_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 1 0" />
         <parent link="planar_3_loop_closure_1" />
         <child link="planar_3_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_3_loop_closure_2" type="continuous">
+    <joint name="planar_3_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 1" />
         <parent link="planar_3_loop_closure" />
         <child link="hex__1__loop_closure" />
     </joint>
-    <joint name="planar_6" type="prismatic">
+    <joint name="planar_6" type="fixed">
         <origin xyz="-5.16948e-16 -0.0035 -1.05471e-15" rpy="-1.5708 1.0472 -1.55431e-15" />
         <axis xyz="1 0 0" />
         <parent link="cover" />
         <child link="planar_6_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_6_1" type="prismatic">
+    <joint name="planar_6_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="planar_6_1" />
         <child link="planar_6" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_6_2" type="continuous">
+    <joint name="planar_6_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 0 -1" />
         <parent link="planar_6" />
         <child link="part_1_6" />
     </joint>
-    <joint name="planar_7_loop_closure" type="prismatic">
+    <joint name="planar_7_loop_closure" type="fixed">
         <origin xyz="0 5.55112e-17 4.16334e-17" rpy="1.5708 0.365055 -1.57482e-15" />
         <axis xyz="-0 -1 -0" />
         <parent link="carrier_1" />
         <child link="planar_7_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_7_loop_closure_1" type="prismatic">
+    <joint name="planar_7_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-1 -0 -0" />
         <parent link="planar_7_loop_closure_1" />
         <child link="planar_7_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_7_loop_closure_2" type="continuous">
+    <joint name="planar_7_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 1" />
         <parent link="planar_7_loop_closure" />
         <child link="part_1__5__loop_closure" />
     </joint>
-    <joint name="planar_9_loop_closure" type="prismatic">
+    <joint name="planar_9_loop_closure" type="fixed">
         <origin xyz="-3.46945e-18 0.005 -1.38778e-17" rpy="-5.42015e-16 -0.11648 3.14159" />
         <axis xyz="-1 -0 -0" />
         <parent link="part_1_12" />
         <child link="planar_9_loop_closure_1" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_9_loop_closure_1" type="prismatic">
+    <joint name="planar_9_loop_closure_1" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -0 -1" />
         <parent link="planar_9_loop_closure_1" />
         <child link="planar_9_loop_closure" />
-        <limit effort="1" velocity="1" lower="-10000" upper="10000" />
     </joint>
-    <joint name="planar_9_loop_closure_2" type="continuous">
+    <joint name="planar_9_loop_closure_2" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 1 -0" />
         <parent link="planar_9_loop_closure" />
@@ -14415,49 +14298,49 @@
         <parent link="mandibule_droit" />
         <child link="axe_pince" />
     </joint>
-    <joint name="revolute_10" type="continuous">
+    <joint name="revolute_10" type="fixed">
         <origin xyz="-0.0051 -0.0213366 -0.0127828" rpy="-8.60423e-16 2.18399e-16 -1.34947e-16" />
         <axis xyz="1 0 0" />
         <parent link="cam_pivot" />
         <child link="cam_mount_mount" />
     </joint>
-    <joint name="revolute_2" type="continuous">
+    <joint name="revolute_2" type="fixed">
         <origin xyz="-1.38778e-17 -5.55112e-17 -0.00891248" rpy="3.45557e-15 1.31434e-15 2.78911e-16" />
         <axis xyz="-0 -0 -1" />
         <parent link="bague_6mm" />
         <child link="retainer" />
     </joint>
-    <joint name="revolute_3" type="continuous">
+    <joint name="revolute_3" type="fixed">
         <origin xyz="0.011 0.014 -0.0045" rpy="0 -1.5708 4.71239" />
         <axis xyz="1 0 0" />
         <parent link="4058蜗杆减速箱盖" />
         <child link="coupling_8mm_1" />
     </joint>
-    <joint name="revolute_4" type="continuous">
+    <joint name="revolute_4" type="fixed">
         <origin xyz="0.011 0.014 -0.0045" rpy="0 -1.5708 -1.5708" />
         <axis xyz="1 0 0" />
         <parent link="4058蜗杆减速箱盖_1" />
         <child link="coupling_8mm" />
     </joint>
-    <joint name="revolute_5" type="continuous">
+    <joint name="revolute_5" type="fixed">
         <origin xyz="0.0118881 -0.0192 0.0428586" rpy="0 -1.5708 -5.75848e-16" />
         <axis xyz="0 0 -1" />
         <parent link="carrier" />
         <child link="bearing_od10_id6_ep3_4" />
     </joint>
-    <joint name="revolute_6" type="continuous">
+    <joint name="revolute_6" type="fixed">
         <origin xyz="1.38778e-17 -5.55112e-17 0.0389221" rpy="1.51268e-15 8.59698e-16 -2.01673e-15" />
         <axis xyz="-7.5592e-17 -1.66425e-16 1" />
         <parent link="6mm_shaft___50_mm_1" />
         <child link="output_pince" />
     </joint>
-    <joint name="revolute_8" type="continuous">
+    <joint name="revolute_8" type="fixed">
         <origin xyz="-0.00414448 0.0149001 0.0202881" rpy="4.4062e-15 -2.7448e-16 3.14159" />
         <axis xyz="1 0 0" />
         <parent link="carrier" />
         <child link="carrier_mount" />
     </joint>
-    <joint name="revolute_9" type="continuous">
+    <joint name="revolute_9" type="fixed">
         <origin xyz="0.00605 -0.0297682 0.00388699" rpy="-3.1225e-16 -1.40387e-16 6.98788e-16" />
         <axis xyz="-1 0 0" />
         <parent link="carrier_mount" />
