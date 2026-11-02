@@ -57,11 +57,11 @@ class QScience : public QWidget
     std::vector<double> _timeValues;
 
     QChart* _chart = nullptr;
-    QChartView _chartView;
-    QLineSeries _series1;
-    QLineSeries _series2;
-    QLineSeries _series3;
-    QVBoxLayout _layout;
+    QChartView* _chartView = nullptr;
+    QLineSeries* _series1 = nullptr;
+    QLineSeries* _series2 = nullptr;
+    QLineSeries* _series3 = nullptr;
+    QVBoxLayout* _layout = nullptr;
 
     bool _dataPaused = false;
 

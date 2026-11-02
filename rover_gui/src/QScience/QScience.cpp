@@ -19,20 +19,27 @@ QScience::QScience(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     _ui.setupUi(this);
 
     this->createScienceFolder();
+
+    _layout = new QVBoxLayout(_ui.chartWidget);
     _chart = new QChart();
+    _series1 = new QLineSeries(_chart);
+    _series2 = new QLineSeries(_chart);
+    _series3 = new QLineSeries(_chart);
 
-    _series1.setName("Sensor 1");
-    _series2.setName("Sensor 2");
-    _series3.setName("Sensor 3");
+    _chartView = new QChartView(_ui.chartWidget);
+    _chartView->setChart(_chart);
 
-    _chart->addSeries(&_series1);
-    _chart->addSeries(&_series2);
-    _chart->addSeries(&_series3);
+    _layout->addWidget(_chartView);
+
+    _series1->setName("Sensor 1");
+    _series2->setName("Sensor 2");
+    _series3->setName("Sensor 3");
+
+    _chart->addSeries(_series1);
+    _chart->addSeries(_series2);
+    _chart->addSeries(_series3);
     _chart->createDefaultAxes();
     _chart->legend()->setVisible(true);
-
-    _chartView.setChart(_chart);
-    _chartView.setParent(this);
 
     QValueAxis* axisX = qobject_cast<QValueAxis*>(_chart->axes(Qt::Horizontal).first());
     QValueAxis* axisY = qobject_cast<QValueAxis*>(_chart->axes(Qt::Vertical).first());
@@ -41,10 +48,7 @@ QScience::QScience(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     axisX->setTitleText("Time (s)");
     axisY->setTitleText("CO₂ (PPM)");
 
-    _chartView.setRenderHint(QPainter::Antialiasing);
-
-    _layout.addWidget(&_chartView);
-    _ui.chartWidget->setLayout(&_layout);
+    _chartView->setRenderHint(QPainter::Antialiasing);
 
     _sub_scienceStatus = _node->create_subscription<rover_msgs::msg::ScienceInfo>(
         TOPIC_SCIENCE_INFO,
@@ -76,15 +80,15 @@ void QScience::updateSensorValues(const rover_msgs::msg::ScienceInfo& msg_)
 void QScience::appendSensorData(quint32 sampleIdx_, quint16 s1_, quint16 s2_, quint16 s3_)
 {
     double timeValue = sampleIdx_ / SAMPLING_RATE_SENSORS;
-    _series1.append(timeValue, s1_);
-    _series2.append(timeValue, s2_);
-    _series3.append(timeValue, s3_);
+    _series1->append(timeValue, s1_);
+    _series2->append(timeValue, s2_);
+    _series3->append(timeValue, s3_);
 
-    if (_series1.count() > MAX_POINTS_X)
+    if (_series1->count() > MAX_POINTS_X)
     {
-        _series1.remove(0);
-        _series2.remove(0);
-        _series3.remove(0);
+        _series1->remove(0);
+        _series2->remove(0);
+        _series3->remove(0);
     }
 
     QValueAxis* axisX = qobject_cast<QValueAxis*>(_chart->axes(Qt::Horizontal).first());
@@ -97,9 +101,9 @@ void QScience::onClearClicked()
     _sensor2.clear();
     _sensor3.clear();
 
-    _series1.clear();
-    _series2.clear();
-    _series3.clear();
+    _series1->clear();
+    _series2->clear();
+    _series3->clear();
 }
 
 void QScience::onSaveClicked()
