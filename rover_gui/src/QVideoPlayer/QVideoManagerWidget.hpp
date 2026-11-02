@@ -112,16 +112,17 @@ class QVideoManagerWidget : public QWidget
     QGridLayout* _gridLayout;
     QWidget* _gridContainer;
 
-    QHBoxLayout _altLayout;
-    QVBoxLayout _vSubLayout;
-    QVBoxLayout _arm3Layout;
-    QVBoxLayout _arm3SubLayout;
-    QGridLayout _arm4Layout;
-    QWidget _vSubLayoutContainer;
-    QWidget _altLayoutContainer;
-    QWidget _arm3LayoutContainer;
-    QWidget _arm3SubLayoutContainer;
-    QWidget _arm4LayoutContainer;
+    QWidget* _vSubLayoutContainer;
+    QWidget* _altLayoutContainer;
+    QWidget* _arm3LayoutContainer;
+    QWidget* _arm3SubLayoutContainer;
+    QWidget* _arm4LayoutContainer;
+
+    QHBoxLayout* _altLayout;
+    QVBoxLayout* _vSubLayout;
+    QVBoxLayout* _arm3Layout;
+    QVBoxLayout* _arm3SubLayout;
+    QGridLayout* _arm4Layout;
 
     QSplitter* _splitter;
     QSplitter _arm3Splitter;
