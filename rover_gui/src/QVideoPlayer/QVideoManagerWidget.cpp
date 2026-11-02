@@ -19,6 +19,7 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
     _gridLayout = new QGridLayout(_gridContainer);  // setLayout is implicit
     _resetLayout_PB = new QPushButton(this);        // reparented by setCornerWidget
     _splitter = new QSplitter(this);
+    _arm3Splitter = new QSplitter(this);
 
     _vSubLayoutContainer = new QWidget(this);
     _altLayoutContainer = new QWidget(this);
@@ -33,7 +34,9 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
     _arm4Layout = new QGridLayout(_arm4LayoutContainer);
 
     _splitter->addWidget(_vSubLayoutContainer);
-    _arm3Splitter.addWidget(_arm3SubLayoutContainer);
+    _arm3Splitter->addWidget(_arm3SubLayoutContainer);
+
+    _mainLayout = new QVBoxLayout(this);
 
     this->initWidget();
 
@@ -71,11 +74,11 @@ QVideoManagerWidget::QVideoManagerWidget(const rclcpp::Node::SharedPtr& guiNode_
     this->initCameraListSubscriber();
     this->initCameraStatusSubscriber();
 
-    _mainLayout.addWidget(_tabWidget);
-    this->setLayout(&_mainLayout);
+    _mainLayout->addWidget(_tabWidget);
+    this->setLayout(_mainLayout);
 
     _altLayout->addWidget(_splitter);
-    _arm3Layout->addWidget(&_arm3Splitter);
+    _arm3Layout->addWidget(_arm3Splitter);
     _tabWidget->addTab(_gridContainer, "grid");
     _tabWidget->addTab(_altLayoutContainer, "alt");
     _tabWidget->addTab(_arm3LayoutContainer, "arm3");
@@ -159,11 +162,11 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
             _arm3SubLayout->addWidget(_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ANTENNA)].get());
         }
 
-        _arm3Splitter.addWidget(_arm3SubLayoutContainer);
+        _arm3Splitter->addWidget(_arm3SubLayoutContainer);
 
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)])
         {
-            _arm3Splitter.insertWidget(0,
+            _arm3Splitter->insertWidget(0,
                                        _videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get());
         }
         this->setSplitterInitialGeometry();
@@ -388,10 +391,10 @@ void QVideoManagerWidget::setSplitterInitialGeometry(void)
     }
     else if (index == std::to_underlying(eTabIndex::ARM3))
     {
-        float total = static_cast<float>(_arm3Splitter.width());
+        float total = static_cast<float>(_arm3Splitter->width());
         int left = static_cast<int>(ALT_CAM_LAYOUT_PROPORTION * total);
         int right = static_cast<int>(total) - left;
-        _arm3Splitter.setSizes(QList<int>({left, right}));
+        _arm3Splitter->setSizes(QList<int>({left, right}));
     }
 }
 

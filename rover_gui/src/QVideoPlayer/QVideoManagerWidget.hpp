@@ -106,27 +106,27 @@ class QVideoManagerWidget : public QWidget
     std::array<std::shared_ptr<QRecordingWorker>, NBR_CAM_TO_TRACK> _playerWorkerThreadRecording;
     std::shared_ptr<QPanoramaWorker> _panoramaWorkerThread;
 
-    QTabWidget* _tabWidget;
-    QVBoxLayout _mainLayout;
+    QTabWidget* _tabWidget = nullptr;
+    QVBoxLayout* _mainLayout = nullptr;
 
-    QGridLayout* _gridLayout;
-    QWidget* _gridContainer;
+    QGridLayout* _gridLayout = nullptr;
+    QWidget* _gridContainer = nullptr;
 
-    QWidget* _vSubLayoutContainer;
-    QWidget* _altLayoutContainer;
-    QWidget* _arm3LayoutContainer;
-    QWidget* _arm3SubLayoutContainer;
-    QWidget* _arm4LayoutContainer;
+    QWidget* _vSubLayoutContainer = nullptr;
+    QWidget* _altLayoutContainer = nullptr;
+    QWidget* _arm3LayoutContainer = nullptr;
+    QWidget* _arm3SubLayoutContainer = nullptr;
+    QWidget* _arm4LayoutContainer = nullptr;
 
-    QHBoxLayout* _altLayout;
-    QVBoxLayout* _vSubLayout;
-    QVBoxLayout* _arm3Layout;
-    QVBoxLayout* _arm3SubLayout;
-    QGridLayout* _arm4Layout;
+    QHBoxLayout* _altLayout = nullptr;
+    QVBoxLayout* _vSubLayout = nullptr;
+    QVBoxLayout* _arm3Layout = nullptr;
+    QVBoxLayout* _arm3SubLayout = nullptr;
+    QGridLayout* _arm4Layout = nullptr;
 
-    QSplitter* _splitter;
-    QSplitter _arm3Splitter;
-    QPushButton* _resetLayout_PB;
+    QSplitter* _splitter = nullptr;
+    QSplitter* _arm3Splitter = nullptr;
+    QPushButton* _resetLayout_PB = nullptr;
 
     std::shared_ptr<rclcpp::Client<rover_msgs::srv::ArucoDetection>> _client_arucoDetectionManager;
     std::shared_ptr<rclcpp::Subscription<rover_msgs::msg::Aruco>> _sub_arucoDetection;
