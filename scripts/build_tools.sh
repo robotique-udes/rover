@@ -87,6 +87,7 @@ b() {
     local build_result=$?
 
     popd > /dev/null
+    source "$WORKSPACE_DIR/install/local_setup.bash"
     return "$build_result"
 }
 
@@ -107,6 +108,7 @@ bs() {
     local build_result=$?
 
     popd > /dev/null
+    source "$WORKSPACE_DIR/install/local_setup.bash"
     return "$build_result"
 }
 
@@ -120,6 +122,7 @@ bd() {
     local build_result=$?
 
     popd > /dev/null
+    source "$WORKSPACE_DIR/install/local_setup.bash"
     return "$build_result"
 }
 
@@ -137,7 +140,7 @@ clean() {
     local build_result=$?
 
     popd > /dev/null
-    source ~/.bashrc
+    source "$WORKSPACE_DIR/install/local_setup.bash"
     return "$build_result"
 }
 

@@ -19,7 +19,7 @@ def generate_launch_description():
           executable="main_gui",
           name="main_gui",
           prefix=PythonExpression([
-              "'valgrind --leak-check=full --log-file=/tmp/main_gui.log' if '",
+              "'valgrind --leak-check=full --track-origins=yes --num-callers=30 --log-file=/tmp/main_gui.log' if '",
               use_valgrind, "' == 'true' else ''"
           ]),
       ),
