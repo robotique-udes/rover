@@ -17,9 +17,6 @@ find_package(PkgConfig REQUIRED)
 pkg_check_modules(GSTREAMER REQUIRED gstreamer-1.0 gstreamer-plugins-base-1.0 gstreamer-video-1.0 gstreamer-app-1.0)
 find_package(jsoncpp REQUIRED)
 
-set(LIBSSH_INCLUDE_DIR "/usr/include/libssh/include")
-set(LIBSSH_LIBRARY "/usr/lib/x86_64-linux-gnu/libssh.so")
-
 # Qt requirements for auto compiles of .ui and .qrc files
 set(CMAKE_AUTOMOC ON)
 set(CMAKE_AUTORCC ON) 
@@ -29,7 +26,6 @@ include_directories(
   src
   ui/include
   ${rover_msgs_INCLUDE_DIRS}
-  ${LIBSSH_INCLUDE_DIR}
   ${GSTREAMER_INCLUDE_DIRS}
   ${Python3_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
@@ -70,15 +66,6 @@ add_executable(main_gui src/gui.cpp
 
                    src/QSideBar/QSideBar.cpp
 
-                   src/QSshFileExplorer/Worker/LibSshSupportModule.cpp
-                   src/QSshFileExplorer/Worker/QSshWorker.cpp
-                   src/QSshFileExplorer/QDownloadedFileManager.cpp
-                   src/QSshFileExplorer/QFileItem.cpp
-                   src/QSshFileExplorer/QFileTransferWidget.cpp
-                   src/QSshFileExplorer/QIconManager.cpp
-                   src/QSshFileExplorer/QSshFileExplorerWidget.cpp
-                   src/QSshFileExplorer/QTreeViewExplorer.cpp
-
                    src/QUtilityBarBottom/QUtilityBarBottom.cpp
 
                    src/QUtilityBarTop/QUtilityBarTop.cpp
@@ -118,7 +105,6 @@ target_link_libraries(main_gui
   Qt6::WebChannel
   Qt6::DBus
   Qt6::Charts
-  ${LIBSSH_LIBRARY}
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs
   jsoncpp_lib

@@ -1,6 +1,7 @@
 name: Build & Static tests
 
 on:
+  workflow_dispatch:
   pull_request:
     branches:
       - release/**
