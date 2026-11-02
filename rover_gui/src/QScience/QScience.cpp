@@ -19,22 +19,23 @@ QScience::QScience(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     _ui.setupUi(this);
 
     this->createScienceFolder();
+    _chart = new QChart();
 
     _series1.setName("Sensor 1");
     _series2.setName("Sensor 2");
     _series3.setName("Sensor 3");
 
-    _chart.addSeries(&_series1);
-    _chart.addSeries(&_series2);
-    _chart.addSeries(&_series3);
-    _chart.createDefaultAxes();
-    _chart.legend()->setVisible(true);
+    _chart->addSeries(&_series1);
+    _chart->addSeries(&_series2);
+    _chart->addSeries(&_series3);
+    _chart->createDefaultAxes();
+    _chart->legend()->setVisible(true);
 
-    _chartView.setChart(&_chart);
+    _chartView.setChart(_chart);
     _chartView.setParent(this);
 
-    QValueAxis* axisX = qobject_cast<QValueAxis*>(_chart.axes(Qt::Horizontal).first());
-    QValueAxis* axisY = qobject_cast<QValueAxis*>(_chart.axes(Qt::Vertical).first());
+    QValueAxis* axisX = qobject_cast<QValueAxis*>(_chart->axes(Qt::Horizontal).first());
+    QValueAxis* axisY = qobject_cast<QValueAxis*>(_chart->axes(Qt::Vertical).first());
     axisX->setRange(0, MAX_POINTS_X);
     axisY->setRange(0, MAX_POINTS_Y);
     axisX->setTitleText("Time (s)");
@@ -86,7 +87,7 @@ void QScience::appendSensorData(quint32 sampleIdx_, quint16 s1_, quint16 s2_, qu
         _series3.remove(0);
     }
 
-    QValueAxis* axisX = qobject_cast<QValueAxis*>(_chart.axes(Qt::Horizontal).first());
+    QValueAxis* axisX = qobject_cast<QValueAxis*>(_chart->axes(Qt::Horizontal).first());
     axisX->setRange(timeValue - MAX_POINTS_X, timeValue);
 }
 
