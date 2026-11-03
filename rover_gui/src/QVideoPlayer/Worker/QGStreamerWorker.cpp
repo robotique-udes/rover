@@ -5,35 +5,36 @@
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
 #include <QUrl>
+#include <rclcpp/logging.hpp>
+#include <mutex>
 
 using namespace LogUtils;
 
 static constexpr int MAX_CONSECUTIVE_ERRORS = 3;
 static int consecutive_errors_count = 0;
 
-static void glib_log_handler(const gchar* log_domain_, GLogLevelFlags log_level_, const gchar* message_, gpointer user_data_)
+static void glib_log_handler(const gchar* log_domain, GLogLevelFlags log_level, const gchar* message, gpointer /*user_data*/)
 {
-    auto* worker = static_cast<GStreamerWorker*>(user_data_);
-    QWidget* targetWidget = worker ? worker->getTargetWidget() : nullptr;
+    static const rclcpp::Logger logger = rclcpp::get_logger("gstreamer");
 
-    QString domain = log_domain_ ? log_domain_ : "GLib";
-    QString msg = QString("%1: %2").arg(domain).arg(message_);
+    const char* domain = log_domain ? log_domain : "GLib";
+    const char* msg = message ? message : "";
 
-    if (log_level_ & G_LOG_LEVEL_ERROR || log_level_ & G_LOG_LEVEL_CRITICAL)
+    if (log_level & (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL))
     {
-        UI_LOG_ERROR_RTSP(msg, targetWidget);
+        RCLCPP_ERROR(logger, "%s: %s", domain, msg);
     }
-    else if (log_level_ & G_LOG_LEVEL_WARNING)
+    else if (log_level & G_LOG_LEVEL_WARNING)
     {
-        UI_LOG_WARNING_RTSP(msg, targetWidget);
+        RCLCPP_WARN(logger, "%s: %s", domain, msg);
     }
-    else if (log_level_ & G_LOG_LEVEL_MESSAGE || log_level_ & G_LOG_LEVEL_INFO)
+    else if (log_level & (G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO))
     {
-        UI_LOG_INFO_RTSP(msg, targetWidget);
+        RCLCPP_INFO(logger, "%s: %s", domain, msg);
     }
     else
     {
-        UI_LOG_DEBUG_RTSP(msg, targetWidget);
+        RCLCPP_DEBUG(logger, "%s: %s", domain, msg);
     }
 }
 
@@ -254,25 +255,29 @@ static void my_gst_debug_log_function(GstDebugCategory* category_,
 GStreamerWorker::GStreamerWorker(QObject* parent):
     QObject(parent)
 {
-    qputenv("GST_DEBUG_NO_COLOR", "1");
-    qputenv("GST_DEBUG", "3");
-
-    gst_init(nullptr, nullptr);
+    static std::once_flag once;
+    std::call_once(once,
+                   []
+                   {
+                       qputenv("GST_DEBUG_NO_COLOR", "1");  // must come before gst_init
+                       qputenv("GST_DEBUG", "3");
+                       gst_init(nullptr, nullptr);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-    gst_debug_add_log_function(my_gst_debug_log_function, this, NULL);
-    gst_debug_remove_log_function(gst_debug_log_default);
+                       gst_debug_remove_log_function(gst_debug_log_default);
+                       gst_debug_add_log_function(my_gst_debug_log_function, nullptr, nullptr);
 #pragma GCC diagnostic pop
 
-    GLogLevelFlags log_levels = static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION);
+                       const GLogLevelFlags levels
+                           = static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION);
+                       for (const char* domain : {"GLib", "GLib-GObject", "GStreamer", (const char*)nullptr})
+                       {
+                           g_log_set_handler(domain, levels, glib_log_handler, nullptr);
+                       }
 
-    g_log_set_handler("GLib", log_levels, glib_log_handler, this);
-    g_log_set_handler("GLib-GObject", log_levels, glib_log_handler, this);
-    g_log_set_handler("GStreamer", log_levels, glib_log_handler, this);
-    g_log_set_handler(NULL, log_levels, glib_log_handler, this);
-
-    gst_debug_set_default_threshold(GST_LEVEL_WARNING);
+                       gst_debug_set_default_threshold(GST_LEVEL_WARNING);
+                   });
 }
 
 GStreamerWorker::~GStreamerWorker()
