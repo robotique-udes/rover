@@ -215,40 +215,39 @@ static gboolean on_any_message(GstBus* bus_, GstMessage* msg_, gpointer user_dat
     return TRUE;
 }
 
-static void my_gst_debug_log_function(GstDebugCategory* category_,
-                                      GstDebugLevel level_,
-                                      const gchar* file_,
-                                      const gchar* function_,
-                                      gint line_,
-                                      GObject* object_,
-                                      GstDebugMessage* message_,
-                                      gpointer user_data_)
+static void my_gst_debug_log_function(GstDebugCategory* category,
+                                      GstDebugLevel level,
+                                      const gchar* /*file*/,
+                                      const gchar* /*function*/,
+                                      gint /*line*/,
+                                      GObject* /*object*/,
+                                      GstDebugMessage* message,
+                                      gpointer /*user_data*/)
 {
-    Q_UNUSED(file_);
-    Q_UNUSED(function_);
-    Q_UNUSED(line_);
-    Q_UNUSED(object_);
+    static const rclcpp::Logger logger = rclcpp::get_logger("gstreamer");
 
-    auto* worker = static_cast<GStreamerWorker*>(user_data_);
-    QWidget* targetWidget = worker ? worker->getTargetWidget() : nullptr;
-    QString msg = gst_debug_message_get(message_);
-    QString cat = gst_debug_category_get_name(category_);
+    const char* cat = gst_debug_category_get_name(category);
+    const char* msg = gst_debug_message_get(message);
+    if (!msg)
+    {
+        msg = "";
+    }
 
-    if (level_ <= GST_LEVEL_ERROR)
+    if (level <= GST_LEVEL_ERROR)
     {
-        UI_LOG_ERROR_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_ERROR(logger, "%s: %s", cat, msg);
     }
-    else if (level_ <= GST_LEVEL_WARNING)
+    else if (level <= GST_LEVEL_WARNING)
     {
-        UI_LOG_WARNING_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_WARN(logger, "%s: %s", cat, msg);
     }
-    else if (level_ <= GST_LEVEL_INFO)
+    else if (level <= GST_LEVEL_INFO)
     {
-        UI_LOG_INFO_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_INFO(logger, "%s: %s", cat, msg);
     }
     else
     {
-        UI_LOG_DEBUG_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_DEBUG(logger, "%s: %s", cat, msg);
     }
 }
 
@@ -343,12 +342,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
     }
 
     g_object_set(G_OBJECT(appSink), "emit-signals", TRUE, "sync", FALSE, "max-buffers", 2, "drop", TRUE, nullptr);
-
-    static gulong signal_id = 0;
-    if (signal_id != 0)
-    {
-        g_signal_handler_disconnect(appSink, signal_id);
-    }
 
     if (_newSampleSignalId != 0)
     {

@@ -243,7 +243,7 @@ void QVideoRecorderWidget::onUpdateCameraList(const std::vector<std::string>& ur
     }
 }
 
-void QVideoRecorderWidget::emitSrvAvailable(bool available_) 
+void QVideoRecorderWidget::emitSrvAvailable(bool available_)
 {
     emit this->srvAvailable(available_);
 }

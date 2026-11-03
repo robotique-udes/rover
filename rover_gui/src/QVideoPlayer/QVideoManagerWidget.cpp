@@ -167,7 +167,7 @@ void QVideoManagerWidget::onTabChanged(uint16_t index_)
         if (_videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)])
         {
             _arm3Splitter->insertWidget(0,
-                                       _videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get());
+                                        _videoPlaysWidgets[std::to_underlying(Constants::CameraInfo::eCamNames::ARM_SIDE)].get());
         }
         this->setSplitterInitialGeometry();
         _resetLayout_PB->setVisible(true);
