@@ -39,8 +39,11 @@ void QWorker::start(void)
 
 void QWorker::finish(void)
 {
-    _alive = false;
-    _newTaskCv.notify_one();
+    {
+        std::lock_guard<std::mutex> lock(_pendingTaskMtx);
+        _alive = false;
+    }
+    _newTaskCv.notify_all();
     if (_thread.joinable())
     {
         _thread.join();
@@ -79,6 +82,11 @@ void QWorker::addTask(const std::function<void()>& task_)
     {
         RCLCPP_ERROR(rclcpp::get_logger("GUI"), "QWorker::addTask(): Nullptr is not a valid task, nothing done");
     }
+}
+
+bool QWorker::isStopping() const
+{
+    return !_alive.load() || _cancelCurrentTasksFlag.load();
 }
 
 void QWorker::execLoop(void)

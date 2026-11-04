@@ -10,6 +10,9 @@ class QStatusWorker : public QWorker
 {
     Q_OBJECT
 
+  private:
+    static constexpr std::chrono::milliseconds SERVICE_TIMEOUT_MS = std::chrono::milliseconds(2'000U);
+
   public:
     QStatusWorker(bool start_ = false, QObject* parent_ = nullptr);
 
