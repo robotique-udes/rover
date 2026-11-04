@@ -1,7 +1,7 @@
 from launch_ros.substitutions import FindPackageShare
 from launch import LaunchDescription
 from launch.actions import IncludeLaunchDescription, DeclareLaunchArgument
-from launch.conditions import IfCondition
+from launch.conditions import IfCondition, UnlessCondition
 from launch.launch_description_sources import PythonLaunchDescriptionSource
 from launch.substitutions import PathJoinSubstitution, LaunchConfiguration
 
@@ -19,7 +19,8 @@ def generate_launch_description():
         IncludeLaunchDescription(
             PythonLaunchDescriptionSource([
                 PathJoinSubstitution([FindPackageShare('rover_can'), 'launch', 'can.launch.py'])
-            ])
+            ]),
+            condition=UnlessCondition(with_sim)
         ),
         
         IncludeLaunchDescription(

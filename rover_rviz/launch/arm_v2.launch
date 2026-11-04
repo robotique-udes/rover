@@ -1,7 +1,7 @@
 <launch>
   <arg name="urdf_file"   default="$(find-pkg-share rover_rviz)/urdf/arm_v2.urdf"/>
   <arg name="rviz_config" default="$(find-pkg-share rover_rviz)/rviz/arm.rviz"/>
-  <arg name="use_gui"     default="true"/>
+  <arg name="use_gui"     default="false"/>
 
   <node pkg="robot_state_publisher" exec="robot_state_publisher" output="screen">
     <param name="robot_description" value="$(command 'cat $(var urdf_file)')"/>
