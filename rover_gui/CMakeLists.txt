@@ -27,7 +27,10 @@ set(CMAKE_AUTOUIC ON)
 include_directories(
   src
   ui/include
+  ${rover_msgs_INCLUDE_DIRS}
   ${GSTREAMER_INCLUDE_DIRS}
+  ${Python3_INCLUDE_DIRS}
+  ${CMAKE_CURRENT_SOURCE_DIR}/rover_shared_libs/
 )
 
 set(CMAKE_AUTOUIC_SEARCH_PATHS
@@ -71,7 +74,16 @@ add_executable(main_gui
                    src/QSideBar/QSideBar.cpp
 
                    src/QUtilityBarBottom/QUtilityBarBottom.cpp
+
                    src/QUtilityBarTop/QUtilityBarTop.cpp
+
+                   src/QVideoPlayer/Worker/QGStreamerWorker.cpp
+                   src/QVideoPlayer/QVideoManagerWidget.cpp
+                   src/QVideoPlayer/QVideoPlayerWidget.cpp
+                   src/QVideoPlayer/QVideoRecorderWidget.cpp
+                   src/QVideoPlayer/Worker/QPlayerWorker.cpp
+                   src/QVideoPlayer/Worker/QRecordingWorker.cpp
+                   src/QVideoPlayer/Worker/QPanoramaWorker.cpp
 
                    src/QScience/QScience.cpp
 
@@ -107,6 +119,8 @@ target_link_libraries(main_gui
   rover_shared_libs
   jsoncpp_lib
 )
+
+target_sources(main_gui PRIVATE ${RESOURCES})
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
