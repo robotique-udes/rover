@@ -22,43 +22,29 @@ add_subdirectory(
   ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
 )
 
-ament_target_dependencies(rover_shared_libs
-  rclcpp
-  rover_msgs
-)
-
 add_executable(gps_test src/gps_test_pub.cpp)
 add_executable(camera_interface_test src/camera_interface_test.cpp)
 add_executable(camera_test_pub src/camera_test_pub.cpp)
 add_executable(connection_speed_test src/connection_speed_test_pub.cpp)
 add_executable(bms_data_logger_test src/bms_data_logger_test_pub.cpp)
 
-ament_target_dependencies(gps_test rclcpp rover_msgs)
-ament_target_dependencies(camera_interface_test rclcpp rover_msgs)
-ament_target_dependencies(camera_test_pub rclcpp rover_msgs)
-ament_target_dependencies(battery_test rclcpp rover_msgs)
-ament_target_dependencies(connection_speed_test rclcpp rover_msgs)
-
-target_link_libraries(camera_interface_test rover_shared_libs)
-target_include_directories(camera_interface_test PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
-)
-
+ament_target_dependencies(gps_test 
+                          rclcpp 
+                          rover_msgs)
+ament_target_dependencies(camera_interface_test 
+                          rclcpp 
+                          rover_msgs)
 ament_target_dependencies(camera_test_pub
                           rclcpp
                           rover_msgs)
-
 ament_target_dependencies(connection_speed_test
                           rclcpp
                           rover_msgs)
-                          
 ament_target_dependencies(bms_data_logger_test
                           rclcpp
                           rover_msgs)              
 
-
-target_link_libraries(camera_interface_test 
-                        rover_shared_libs)
+target_link_libraries(camera_interface_test rover_shared_libs)
 
 install(TARGETS
         connection_speed_test
