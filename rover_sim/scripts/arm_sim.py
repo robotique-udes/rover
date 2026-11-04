@@ -69,7 +69,7 @@ class ArmSimulation(Node):
 
     def publish_joint_positions(self):
         msg = ArmMsg()
-        msg.target_speed = [
+        msg.current_position = [
             self.JL_pos,    # JL
             0.0,            # BASE (unused)
             self.J1_pos,    # J1
@@ -82,10 +82,10 @@ class ArmSimulation(Node):
         self.current_position_publisher.publish(msg)
 
         qPosition = np.array([
-            msg.target_speed[ArmMsg.JL],
-            msg.target_speed[ArmMsg.J1],
-            msg.target_speed[ArmMsg.J2],
-            msg.target_speed[ArmMsg.GRIPPER_TILT]
+            msg.current_position[ArmMsg.JL],
+            msg.current_position[ArmMsg.J1],
+            msg.current_position[ArmMsg.J2],
+            msg.current_position[ArmMsg.GRIPPER_TILT]
         ])
         pointPos = self.computeDirectKin(qPosition)
         self.plot(pointPos)
