@@ -20,7 +20,10 @@ include_directories(
   include
 )
 
-add_subdirectory(../rover_shared_libs/ .build)
+add_subdirectory(
+  ${CMAKE_CURRENT_SOURCE_DIR}/../deps/rover_lib
+  ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
+)
 
 add_executable(teleop src/teleop.cpp)
 ament_target_dependencies(teleop

@@ -83,7 +83,10 @@ add_executable(main_gui
                    ui/icons.qrc
                 )
 
-add_subdirectory(../rover_lib/ .build)
+add_subdirectory(
+  ${CMAKE_CURRENT_SOURCE_DIR}/../deps/rover_lib
+  ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
+)
 
 ament_target_dependencies(main_gui
   rclcpp

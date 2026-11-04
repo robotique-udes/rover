@@ -14,7 +14,10 @@ find_package(rover_msgs REQUIRED)
 find_package(rcl_interfaces REQUIRED)
 
 include_directories( ${OpenCV_INCLUDE_DIRS} )
-add_subdirectory(../deps/rover_lib/ .build)
+add_subdirectory(
+  ${CMAKE_CURRENT_SOURCE_DIR}/../deps/rover_lib
+  ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
+)
 
 add_executable(media_server src/camera_node.cpp
                 src/video_recording.cpp)

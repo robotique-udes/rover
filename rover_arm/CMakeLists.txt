@@ -24,8 +24,6 @@ add_subdirectory(
   ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
 )
 
-add_subdirectory(../deps/rover_lib/ .build)
-
 include_directories(include)
 
 add_executable(teleop src/teleop.cpp)
