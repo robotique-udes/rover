@@ -13,22 +13,22 @@ using namespace LogUtils;
 static constexpr int MAX_CONSECUTIVE_ERRORS = 3;
 static int consecutive_errors_count = 0;
 
-static void glib_log_handler(const gchar* log_domain, GLogLevelFlags log_level, const gchar* message, gpointer /*user_data*/)
+static void glib_log_handler(const gchar* log_domain_, GLogLevelFlags log_level_, const gchar* message, gpointer /*user_data_*/)
 {
     static const rclcpp::Logger logger = rclcpp::get_logger("gstreamer");
 
-    const char* domain = log_domain ? log_domain : "GLib";
+    const char* domain = log_domain_ ? log_domain_ : "GLib";
     const char* msg = message ? message : "";
 
-    if (log_level & (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL))
+    if (log_level_ & (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL))
     {
         RCLCPP_ERROR(logger, "%s: %s", domain, msg);
     }
-    else if (log_level & G_LOG_LEVEL_WARNING)
+    else if (log_level_ & G_LOG_LEVEL_WARNING)
     {
         RCLCPP_WARN(logger, "%s: %s", domain, msg);
     }
-    else if (log_level & (G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO))
+    else if (log_level_ & (G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO))
     {
         RCLCPP_INFO(logger, "%s: %s", domain, msg);
     }
@@ -215,33 +215,33 @@ static gboolean on_any_message(GstBus* bus_, GstMessage* msg_, gpointer user_dat
     return TRUE;
 }
 
-static void my_gst_debug_log_function(GstDebugCategory* category,
-                                      GstDebugLevel level,
-                                      const gchar* /*file*/,
-                                      const gchar* /*function*/,
-                                      gint /*line*/,
-                                      GObject* /*object*/,
-                                      GstDebugMessage* message,
-                                      gpointer /*user_data*/)
+static void my_gst_debug_log_function(GstDebugCategory* category_,
+                                      GstDebugLevel level_,
+                                      const gchar* /*file_*/,
+                                      const gchar* /*function_*/,
+                                      gint /*line_*/,
+                                      GObject* /*object_*/,
+                                      GstDebugMessage* message_,
+                                      gpointer /*user_data_*/)
 {
     static const rclcpp::Logger logger = rclcpp::get_logger("gstreamer");
 
-    const char* cat = gst_debug_category_get_name(category);
-    const char* msg = gst_debug_message_get(message);
+    const char* cat = gst_debug_category_get_name(category_);
+    const char* msg = gst_debug_message_get(message_);
     if (!msg)
     {
         msg = "";
     }
 
-    if (level <= GST_LEVEL_ERROR)
+    if (level_ <= GST_LEVEL_ERROR)
     {
         RCLCPP_ERROR(logger, "%s: %s", cat, msg);
     }
-    else if (level <= GST_LEVEL_WARNING)
+    else if (level_ <= GST_LEVEL_WARNING)
     {
         RCLCPP_WARN(logger, "%s: %s", cat, msg);
     }
-    else if (level <= GST_LEVEL_INFO)
+    else if (level_ <= GST_LEVEL_INFO)
     {
         RCLCPP_INFO(logger, "%s: %s", cat, msg);
     }
@@ -251,8 +251,8 @@ static void my_gst_debug_log_function(GstDebugCategory* category,
     }
 }
 
-GStreamerWorker::GStreamerWorker(QObject* parent):
-    QObject(parent)
+GStreamerWorker::GStreamerWorker(QObject* parent_):
+    QObject(parent_)
 {
     static std::once_flag once;
     std::call_once(once,
@@ -405,9 +405,9 @@ void GStreamerWorker::cleanupGStreamer()
     }
 }
 
-void GStreamerWorker::setTargetWidget(QWidget* widget)
+void GStreamerWorker::setTargetWidget(QWidget* widget_)
 {
-    _targetWidget = widget;
+    _targetWidget = widget_;
 }
 
 QWidget* GStreamerWorker::getTargetWidget() const
