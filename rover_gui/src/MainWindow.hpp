@@ -31,9 +31,9 @@ class MainWindow : public QMainWindow
 
     QShortcut _closeShortCut;
 
-    QWidget _centralWidget = QWidget(this);
-    QHBoxLayout _layout;
-    QVBoxLayout _verticalLayout = QVBoxLayout(&_centralWidget);
+    QWidget* _centralWidget = nullptr;
+    QVBoxLayout* _verticalLayout = nullptr;
+    QHBoxLayout* _layout;
     QTabWidget _mainTabWidget = QTabWidget(this);
 
     QUtilityBarTop _topUtilityBar;

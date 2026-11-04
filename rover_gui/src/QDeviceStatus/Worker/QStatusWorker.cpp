@@ -29,11 +29,18 @@ void QStatusWorker::requestDeviceStatusInternal(
         return;
     }
 
+    if (!client_requestErrorStatus_->service_is_ready())
+    {
+        emit this->onRequestDeviceStatusSuccessful(false, "Device status service is not ready");
+        return;
+    }
+
     rclcpp::Client<rover_msgs::srv::Empty>::FutureAndRequestId future_and_request
         = client_requestErrorStatus_->async_send_request(request);
 
     std::future<std::shared_ptr<rover_msgs::srv::Empty::Response>> future_result = std::move(future_and_request.future);
-    if (future_result.valid())
+
+    if (future_result.wait_for(SERVICE_TIMEOUT_MS) == std::future_status::ready)
     {
         rover_msgs::srv::Empty::Response::SharedPtr response = future_result.get();
 
@@ -44,5 +51,14 @@ void QStatusWorker::requestDeviceStatusInternal(
         }
 
         emit this->onRequestDeviceStatusSuccessful(success, status);
+    }
+    else
+    {
+        client_requestErrorStatus_->remove_pending_request(future_and_request.request_id);  // don't leak the request
+        if (!this->isStopping())
+        {
+            emit this->onRequestDeviceStatusSuccessful(false, "Timed out waiting for device status");
+        }
+        return;
     }
 }
