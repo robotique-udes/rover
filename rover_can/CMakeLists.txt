@@ -31,6 +31,7 @@ set(SOURCES_CAN_MASTER
   src/can_master/devices/light.cpp
   src/can_master/devices/propulsion_motors.cpp
   src/can_master/devices/sensor_box.cpp
+  src/can_master/devices/science.cpp
 )
 
 add_executable(can_master ${SOURCES_CAN_MASTER})
