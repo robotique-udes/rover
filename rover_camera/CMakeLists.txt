@@ -24,7 +24,7 @@ ament_target_dependencies(media_server
                           OpenCV)
 target_link_libraries(media_server 
                         ${OpenCV_LIBS}
-                        rover_lib)
+                        rover_shared_libs)
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
@@ -36,9 +36,6 @@ add_executable(aruco_detection
 )
 ament_target_dependencies(aruco_detection rclcpp rover_msgs rcl_interfaces)
 target_link_libraries(aruco_detection ${OpenCV_LIBS} rover_shared_libs)
-target_include_directories(aruco_detection PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
-)
 
 add_executable(panorama
   src/panorama_manager.cpp
@@ -46,9 +43,6 @@ add_executable(panorama
 )
 ament_target_dependencies(panorama rclcpp rover_msgs rcl_interfaces)
 target_link_libraries(panorama ${OpenCV_LIBS} rover_shared_libs)
-target_include_directories(panorama PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
-)
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 

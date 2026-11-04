@@ -83,7 +83,7 @@ add_executable(main_gui
                    ui/icons.qrc
                 )
 
-add_subdirectory(../rover_shared_libs/ .build)
+add_subdirectory(../rover_lib/ .build)
 
 ament_target_dependencies(main_gui
   rclcpp
@@ -103,10 +103,6 @@ target_link_libraries(main_gui
   ${GSTREAMER_LIBRARIES}
   rover_shared_libs
   jsoncpp_lib
-)
-
-target_include_directories(main_gui PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

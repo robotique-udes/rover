@@ -37,11 +37,7 @@ ament_target_dependencies(teleop
                           Eigen3)
 target_link_libraries(teleop
   Eigen3::Eigen
-  rover_shared_libs  # was rover_lib, must match the target name in rover_lib/CMakeLists.txt
-)
-
-target_include_directories(teleop PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs rover_joy::rover_joy_headers,INTERFACE_INCLUDE_DIRECTORIES>
+  rover_shared_libs
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

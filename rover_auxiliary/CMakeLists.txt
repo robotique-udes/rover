@@ -28,11 +28,6 @@ add_subdirectory(
   ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
 )
 
-ament_target_dependencies(rover_shared_libs
-  rclcpp
-  rover_msgs
-)
-
 include_directories(
   ${OpenCV_INCLUDE_DIRS}
   ${CMAKE_CURRENT_SOURCE_DIR}/src
@@ -68,9 +63,6 @@ ament_target_dependencies(ddb_control
 
 ament_target_dependencies(camera_manager rclcpp rover_msgs rcl_interfaces)
 target_link_libraries(camera_manager rover_shared_libs ${OpenCV_LIBS})
-target_include_directories(camera_manager PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
-)
 
 ament_target_dependencies(bms_info
                           rclcpp

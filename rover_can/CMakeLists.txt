@@ -20,11 +20,6 @@ add_subdirectory(
   ${CMAKE_CURRENT_BINARY_DIR}/rover_lib_build
 )
 
-ament_target_dependencies(rover_shared_libs
-  rclcpp
-  rover_msgs
-)
-
 include_directories(include)
 
 set(SOURCES_CAN_MASTER
@@ -44,7 +39,6 @@ ament_target_dependencies(can_master rclcpp rover_msgs rcl_interfaces)
 
 target_include_directories(can_master PRIVATE
   src
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 target_link_libraries(can_master rover_shared_libs)
