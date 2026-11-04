@@ -28,23 +28,6 @@ target_link_libraries(media_server
 
 include_directories(${OpenCV_INCLUDE_DIRS})
 
-target_link_libraries(media_server ${OpenCV_LIBS})
-target_link_libraries(aruco_detection 
-                          ${OpenCV_LIBS}
-                          rover_libs)
-                
-add_executable(panorama src/panorama_manager.cpp
-                        src/panorama_processor.cpp)
-                          
-ament_target_dependencies(panorama
-                          rclcpp
-                          rover_msgs
-                          rcl_interfaces
-                          OpenCV)
-target_link_libraries(panorama
-                          ${OpenCV_LIBS}
-                          rover_libs)
-
 add_executable(aruco_detection
   src/aruco_detection/aruco_detection_node.cpp
   src/aruco_detection/detection.cpp
