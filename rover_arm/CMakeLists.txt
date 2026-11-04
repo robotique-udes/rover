@@ -16,7 +16,8 @@ find_package(rclcpp REQUIRED)
 find_package(std_msgs REQUIRED)
 find_package(joy REQUIRED)
 find_package(rover_msgs REQUIRED)
-find_package(Eigen3 REQUIRED)
+find_package(rover_joy REQUIRED)
+find_package (Eigen3 REQUIRED)
 
 add_subdirectory(
   ${CMAKE_CURRENT_SOURCE_DIR}/../deps/rover_lib
@@ -34,15 +35,13 @@ ament_target_dependencies(teleop
                           std_msgs
                           rover_msgs
                           Eigen3)
-target_link_libraries(teleop Eigen3::Eigen rover_lib)
-
 target_link_libraries(teleop
   Eigen3::Eigen
   rover_shared_libs  # was rover_lib, must match the target name in rover_lib/CMakeLists.txt
 )
 
 target_include_directories(teleop PRIVATE
-  $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
+  $<TARGET_PROPERTY:rover_shared_libs rover_joy::rover_joy_headers,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)

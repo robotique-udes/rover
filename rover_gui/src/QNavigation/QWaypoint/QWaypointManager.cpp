@@ -107,11 +107,10 @@ void QWaypointManager::deleteWaypointFromJson(const std::string& index_)
 
     Json::Value& waypointsArray = root[WAYPOINT_JSON];
     Json::Value newWaypoints(Json::arrayValue);
-    std::string idToRemove = index_;
 
     for (const Json::Value& waypoint : waypointsArray)
     {
-        if (!waypoint.isMember(WAYPOINT_JSON_ID) || waypoint[WAYPOINT_JSON_ID].asString() != idToRemove)
+        if (!waypoint.isMember(WAYPOINT_JSON_ID) || waypoint[WAYPOINT_JSON_ID].asString() != index_)
         {
             newWaypoints.append(waypoint);
         }

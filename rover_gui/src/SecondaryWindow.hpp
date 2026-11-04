@@ -13,7 +13,7 @@ class SecondaryWindow : public QMainWindow
     Q_OBJECT
 
   public:
-    explicit SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_);
+    explicit SecondaryWindow(const rclcpp::Node::SharedPtr& guiNode_);
 
   private:
     void closeEvent(QCloseEvent* event_) override;

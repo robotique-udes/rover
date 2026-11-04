@@ -8,9 +8,9 @@ PropulsionMotor::PropulsionMotor(RoverCan2::Constant::eDeviceId deviceId_,
             RoverCan2::Publisher<RoverCan2::Msgs::PropSpeedCmd>(),
             RoverCan2::SubscriberMember(*this, &PropulsionMotor::CB_CAN_propSpeedStatus)),
     _rosPropSpeedMsgId(rosPropSpeedMsgId_),
-    _rosSharedMsg(rosSharedMsg_)
+    _rosSharedMsg(std::move(rosSharedMsg_))
 {
-    ASSERT_COND_MSG(rosSharedMsg_, "rosSharedMsg_ can't be nullptr");
+    ASSERT_COND_MSG(_rosSharedMsg, "rosSharedMsg_ can't be nullptr");
     ASSERT_COND_MSG_ARGS(_rosPropSpeedMsgId < rover_msgs::msg::PropulsionMotor::MOTOR_MAX,
                          "_rosPropSpeedMsgId (%u) must be in range [0; %u]",
                          _rosPropSpeedMsgId,

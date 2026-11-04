@@ -38,10 +38,10 @@ class QUtilityBarTop : public QWidget
     static constexpr const char* FILE_PATH = "TaskDateAndTime.txt";
 
   public:
-    QUtilityBarTop(std::shared_ptr<rclcpp::Node> node_, QWidget* parent_);
+    QUtilityBarTop(rclcpp::Node::SharedPtr node_, QWidget* parent_);
 
   signals:
-    void updateBatteryUI(float _percent);
+    void updateBatteryUI(int16_t _percent);
     void updateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_);
     void updateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void updateTimer(int secondsBeforeTimeOut_);
@@ -57,7 +57,7 @@ class QUtilityBarTop : public QWidget
     void timerDisplay(void);
 
   private slots:
-    void onUpdateBatteryUI(float _percent);
+    void onUpdateBatteryUI(int16_t _percent);
     void onUpdateAntennaUI(bool connected_, float rssi_, float upSpeed_, float downSpeed_);
     void onUpdateGNSS(uint8_t fix_, float heading_, uint8_t satNbr_, float long_, float lat_);
     void onUpdateTimer(int secondsBeforeTimeOut_);
@@ -103,7 +103,7 @@ class QUtilityBarTop : public QWidget
     rclcpp::Time _lastBatteryTimeMsg;
     rclcpp::Time _lastAntennaTimeMsg;
 
-    std::shared_ptr<rclcpp::Node> _node;
+    rclcpp::Node::SharedPtr _node;
 
     rclcpp::Duration _batteryTimeout;
     rclcpp::Duration _GNSSTimeout;

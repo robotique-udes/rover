@@ -51,6 +51,22 @@ target_include_directories(joy_demux_controller PRIVATE
   $<TARGET_PROPERTY:rover_shared_libs,INTERFACE_INCLUDE_DIRECTORIES>
 )
 
+add_library(rover_joy_headers INTERFACE)
+target_include_directories(rover_joy_headers INTERFACE
+  $<BUILD_INTERFACE:${CMAKE_CURRENT_SOURCE_DIR}/include>
+  $<INSTALL_INTERFACE:include>
+)
+
+install(TARGETS rover_joy_headers
+  EXPORT rover_joy_headersTargets)
+
+ament_export_targets(rover_joy_headersTargets HAS_LIBRARY_TARGET)
+ament_export_include_directories(include)
+
+install(DIRECTORY include/
+  DESTINATION include
+)
+
 install(DIRECTORY launch DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS

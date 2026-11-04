@@ -20,7 +20,7 @@ std::optional<cv::Mat> ProcessFrame::updateDetection(bool debugMode_)
     cv::aruco::detectMarkers(frame.value(), DICTIONNARY, _corners, _ids, _detectorParams);
     _detectedIds.clear();
 
-    for (uint8_t i = 0; i < _ids.rows; ++i)
+    for (int i = 0; i < _ids.rows; ++i)
     {
         _detectedIds.push_back(_ids.at<uint16_t>(i, 0));
     }

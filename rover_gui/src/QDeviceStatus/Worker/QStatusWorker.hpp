@@ -13,8 +13,8 @@ class QStatusWorker : public QWorker
   public:
     QStatusWorker(bool start_ = false, QObject* parent_ = nullptr);
 
-    void requestDeviceStatusManager(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_);
-    void requestDeviceStatusInternal(std::shared_ptr<rclcpp::Client<rover_msgs::srv::Empty>> client_requestErrorStatus_);
+    void requestDeviceStatusManager(const rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr& client_requestErrorStatus_);
+    void requestDeviceStatusInternal(const rclcpp::Client<rover_msgs::srv::Empty>::SharedPtr& client_requestErrorStatus_);
 
   signals:
     void onRequestDeviceStatusSuccessful(bool success_, const std::string& response_);

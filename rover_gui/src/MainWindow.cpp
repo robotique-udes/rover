@@ -2,7 +2,7 @@
 
 #include "Global/Constant/Keybinding.hpp"
 
-MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
+MainWindow::MainWindow(const rclcpp::Node::SharedPtr& guiNode_):
     QMainWindow(nullptr),
     _closeShortCut(Constants::Keybinding::CLOSE_APP, this),
     _topUtilityBar(guiNode_, this),
@@ -11,7 +11,8 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
     _navigationWidget(guiNode_, this),
     _deviceStatusWidget(guiNode_, this),
     _ligthsController(guiNode_, this),
-    _bmsDataWidget(guiNode_, this)
+    _bmsDataWidget(guiNode_, this),
+    _scienceWidget(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);
@@ -42,6 +43,7 @@ MainWindow::MainWindow(std::shared_ptr<rclcpp::Node> guiNode_):
             &QHelper::QNotificationShowHistory::showHistory);
     connect(&_closeShortCut, &QShortcut::activated, this, &QWidget::close);
 
+    _scienceWidget.hide();  // Hide the science widget because otherwise it just floats at 0,0 when not assigned to a layout
     this->onTabChange(QSideBar::eTabIndex::DASHBOARD);
 }
 
@@ -94,8 +96,9 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
             _deviceStatusWidget.onDeviceStatusPage();
             break;
 
-        case QSideBar::eTabIndex::FILE_TRANSFER:
-            grid->addWidget(&_fileTransferWidget, 0, 1);
+        case QSideBar::eTabIndex::SCIENCE:
+            grid->addWidget(&_scienceWidget, 0, 1);
+            _scienceWidget.show();
             break;
 
         case QSideBar::eTabIndex::BMS_DATA:

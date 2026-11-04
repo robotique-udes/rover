@@ -21,6 +21,7 @@
   <depend>joy</depend>
   <depend>Eigen</depend>
   <depend>rover_msgs</depend>
+  <depend>rover_joy</depend>
 
   <exec_depend>ros2launch</exec_depend>
 

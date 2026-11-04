@@ -1,4 +1,4 @@
-float32 battery_amps
+int16 battery_amps
 uint16[6] cell_volt
-float32 state_of_charge
+int16 state_of_charge
 bool valid

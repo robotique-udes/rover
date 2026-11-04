@@ -5,7 +5,7 @@
 #include <QStackedWidget>
 #include <QCloseEvent>
 
-SecondaryWindow::SecondaryWindow(std::shared_ptr<rclcpp::Node> guiNode_):
+SecondaryWindow::SecondaryWindow(const rclcpp::Node::SharedPtr& guiNode_):
     QMainWindow(nullptr),
     _centralWidget(this),
     _layout(&_centralWidget),

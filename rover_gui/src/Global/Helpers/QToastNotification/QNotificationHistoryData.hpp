@@ -18,7 +18,10 @@ namespace QHelper
         Q_OBJECT
 
       public:
-        QNotificationHistoryData(QTime timeStamp_, QString title_, QString description_, QToastNotification::eNotifType type_);
+        QNotificationHistoryData(QTime timeStamp_,
+                                 const QString& title_,
+                                 const QString& description_,
+                                 QToastNotification::eNotifType type_);
 
       private:
         void setStyle(void);

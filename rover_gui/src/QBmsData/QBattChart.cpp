@@ -2,7 +2,7 @@
 #include "Global/Constant/StyleSheet.hpp"
 
 QBattChart::QBattChart(rclcpp::Time initTime_):
-    _initTime(initTime_)
+    _initTime(std::move(initTime_))
 {
     setStyleSheet(Constants::Style::BMS_STYLE);
 
@@ -35,9 +35,9 @@ QBattChart::QBattChart(rclcpp::Time initTime_):
     layout->addWidget(_chartView);
 }
 
-void QBattChart::updateGraph(rclcpp::Time now_, float amps_)
+void QBattChart::updateGraph(const rclcpp::Time& now_, int16_t amps_)
 {
-    const double elapsed = (now_.nanoseconds() - _initTime.nanoseconds()) / NS_TO_SECONDS;
+    const double elapsed = static_cast<double>(now_.nanoseconds() - _initTime.nanoseconds()) / NS_TO_SECONDS;
     _battAmpsSeries->append(elapsed, amps_ / -CENTIAMP_TO_AMP);
 
     if (_battAmpsSeries->count() > GRAPH_MAX_SAMPLES)

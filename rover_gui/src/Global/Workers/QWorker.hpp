@@ -81,7 +81,7 @@ class QWorker : public QObject
      *
      * @param task_ function pointer to a task
      */
-    void addTask(std::function<void()> task_);
+    void addTask(const std::function<void()>& task_);
 
     std::atomic<bool> _cancelCurrentTasksFlag = false;
 

@@ -10,10 +10,12 @@ sudo apt -y install python3-pip
 sudo apt -y upgrade pip
 sudo apt -y install python3-venv
 sudo apt -y install python-is-python3
+sudo apt -y install clang-tidy
 sudo apt -y install ros-jazzy-desktop
 sudo apt -y install ros-jazzy-ros-base
 sudo apt -y install ros-dev-tools
 sudo apt -y install ros-jazzy-joy
+sudo apt -y install ros-jazzy-ament-clang-tidy
 sudo apt -y install can-utils
 sudo apt -y install qt6-base-dev
 sudo apt -y install qt6-tools-dev
@@ -40,6 +42,7 @@ sudo apt -y install libcurl4-openssl-dev
 sudo apt -y install python3-setuptools
 sudo apt -y install python3-can
 sudo apt -y install python3-matplotlib
+sudo apt -y install valgrind
 
 echo -e "\e[0;32m[OK]\e[0m"
 

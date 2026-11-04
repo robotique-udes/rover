@@ -19,10 +19,10 @@ constexpr double DEFAULT_LATITUDE = 45.377755;
 constexpr double DEFAULT_LONGITUDE = -71.924652;
 constexpr double DEFAULT_HEADING = 0.0;
 
-QNavigation::QNavigation(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
+QNavigation::QNavigation(rclcpp::Node::SharedPtr guiNode_, QWidget* parent_):
     QWidget(parent_),
     _webChannel(this),
-    _node(guiNode_),
+    _node(std::move(guiNode_)),
     _pathManager(true, this)
 {
     _ui.setupUi(this);
