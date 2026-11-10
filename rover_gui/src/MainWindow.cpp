@@ -12,7 +12,8 @@ MainWindow::MainWindow(const rclcpp::Node::SharedPtr& guiNode_):
     _deviceStatusWidget(guiNode_, this),
     _ligthsController(guiNode_, this),
     _bmsDataWidget(guiNode_, this),
-    _scienceWidget(guiNode_, this)
+    _scienceWidget(guiNode_, this),
+    _jointWidget(guiNode_, this)
 {
     this->setCentralWidget(&_centralWidget);
     _centralWidget.setLayout(&_verticalLayout);

@@ -16,3 +16,5 @@ public:
     std::shared_ptr<rclcpp::Node> _node;
     Ui::Joint _ui;
 };
+
+#endif // QJOINT_QJOINT_HPP

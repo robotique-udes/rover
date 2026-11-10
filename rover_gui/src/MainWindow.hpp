@@ -12,6 +12,7 @@
 #include "QLightsController/QLightsController.hpp"
 #include "QBmsData/QBmsData.hpp"
 #include "QScience/QScience.hpp"
+#include "QJoint/QJoint.hpp"
 
 #include <QMainWindow>
 #include <QShortcut>

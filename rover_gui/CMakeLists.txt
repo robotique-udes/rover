@@ -92,6 +92,8 @@ add_executable(main_gui src/gui.cpp
                    src/QVideoPlayer/Worker/QPanoramaWorker.cpp
                    
                    src/QScience/QScience.cpp
+                   
+                   src/QJoint/QJoint.cpp
 
                    src/QBmsData/QBmsData.cpp
                    src/QBmsData/QCellWidget.cpp
