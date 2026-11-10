@@ -50,6 +50,7 @@ class MainWindow : public QMainWindow
     QLightsController _ligthsController;
     QBmsData _bmsDataWidget;
     QScience _scienceWidget;
+    QJoint _jointWidget;
 
     QFrame _topBarSeperator = QFrame(this);
     QFrame _bottomBarSeperator = QFrame(this);
