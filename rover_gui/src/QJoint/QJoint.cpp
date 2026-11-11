@@ -12,7 +12,7 @@ QJoint::QJoint(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
 
     _ui.setupUi(this);
 
-    connect(this, &QJoint::jointCommandReceived, this, &QJoint::JointCommandChanged);
+    connect(this, &QJoint::jointCommandReceived, this, &QJoint::jointCommandChanged);
 
     rclcpp::QoS jointCommandQoS(rclcpp::KeepLast(1));
     jointCommandQoS.transient_local();
@@ -22,13 +22,13 @@ QJoint::QJoint(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
         jointCommandQoS,
     [this](const rover_msgs::msg::JointInfo::SharedPtr msg_)
     {
-        emit jointCommandReceived(msg_->data);
+        emit jointCommandReceived(msg_->arm_mode);
     });
 }
     void QJoint::jointCommandChanged(uint8_t mode)
     {
         if (mode==0)
-        {_ui.armModeLabel->setText("Control Mode: JOINT");}
+        {_ui.armModeLabel->setText("JOINT");}
         else if (mode==1)
-        {_ui.armModeLabel->setText("Control Mode: CARTESIAN");}
+        {_ui.armModeLabel->setText("CARTESIAN");}
     }
