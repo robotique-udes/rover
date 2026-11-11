@@ -67,7 +67,25 @@
     <string>Reading...</string>
    </property>
   </widget>
+  <widget class="QControllerDrawing" name="drawingWidget" native="true">
+   <property name="geometry">
+    <rect>
+     <x>80</x>
+     <y>130</y>
+     <width>691</width>
+     <height>451</height>
+    </rect>
+   </property>
+  </widget>
  </widget>
+ <customwidgets>
+  <customwidget>
+   <class>QControllerDrawing</class>
+   <extends>QWidget</extends>
+   <header>QControllerDrawing.hpp</header>
+   <container>1</container>
+  </customwidget>
+ </customwidgets>
  <resources>
   <include location="../icons.qrc"/>
  </resources>
