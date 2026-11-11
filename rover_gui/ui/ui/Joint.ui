@@ -31,8 +31,8 @@
       <height>19</height>
      </rect>
     </property>
-    <property name="text">
-     <string>TextLabel</string>
+    <property name="Text">
+     <string>JOINT</string>
     </property>
    </widget>
   </widget>
