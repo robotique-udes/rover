@@ -17,11 +17,14 @@
 #include <rclcpp/subscription_options.hpp>
 #include <utility>
 
+#include <rover_msgs/msg/joint_info.hpp>
+
 class Teleop : public rclcpp::Node
 {
     static constexpr const char* TOPIC_JOY_ARM = "/base/joy/arm";
     static constexpr const char* TOPIC_ARM_STATUS = "/rover/arm/joints_status";
     static constexpr const char* TOPIC_ARM_CMD = "/rover/arm/joints_cmd";
+    static constexpr const char* TOPIC_ARM_MODE = "/rover/arm/mode";
     static constexpr std::chrono::milliseconds TELEOP_DEADLINE = std::chrono::milliseconds(200);
     static constexpr std::chrono::milliseconds TELEOP_LEASE_DURATION = std::chrono::milliseconds(300);
 
@@ -36,6 +39,7 @@ class Teleop : public rclcpp::Node
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyArm;
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmPositions;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
+    rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr _pubArmMode;
 
     JoyManager _joyManager;
     JointController _jointController;
@@ -110,6 +114,10 @@ class Teleop : public rclcpp::Node
                                                                               });
 
         _pubArmCmd = this->create_publisher<rover_msgs::msg::ArmMsg>(TOPIC_ARM_CMD, QOS_DEFAULT);
+
+        rclcpp::QoS armModeQoS(rclcpp::KeepLast(1));
+        armModeQoS.transient_local();
+        _pubArmMode = this->create_publisher<rover_msgs::msg::JointInfo>(TOPIC_ARM_MODE, armModeQoS);
     }
 
     void joy_CB(const rover_msgs::msg::Joy& joyMsg_)
@@ -136,6 +144,8 @@ class Teleop : public rclcpp::Node
                 _controlMode = eControlMode::JOINT;
                 RCLCPP_INFO(this->get_logger(), "Control mode is now JOINT");
             }
+
+            publishArmMode();
         }
 
         // JOINT CONTROL -- DEFAULT MODE
@@ -194,6 +204,12 @@ class Teleop : public rclcpp::Node
             = armMsg_.current_position[rover_msgs::msg::ArmMsg::GRIPPER_TILT];
         _jointPositions[std::to_underlying(eJointIndex::GRIPPER_CLOSE)]
             = armMsg_.current_position[rover_msgs::msg::ArmMsg::GRIPPER_CLOSE];
+    }
+
+    void publishArmMode(){
+        rover_msgs::msg::JointInfo modeMsg;
+        modeMsg.data = static_cast<uint8_t>(_controlMode);
+        _pubArmMode->publish(modeMsg);  
     }
 };
 

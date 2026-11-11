@@ -60,6 +60,7 @@ rosidl_generate_interfaces(${PROJECT_NAME}
   "msg/ScienceInfo.msg"
   "msg/SensorBox.msg"
   "msg/TopicWithPriority.msg"
+  "msg/JointInfo.msg"
 
   "srv/AntennaArbitration.srv"
   "srv/ArmJointConfig.srv"
