@@ -2,7 +2,7 @@
 #include <rover_lib2/helpers/assert.hpp>
 #include <memory>
 #include <rclcpp/rclcpp.hpp>
-#include <ui_Joint.h>
+
 
 QJoint::QJoint(std::shared_ptr<rclcpp::Node> guiNode_, QWidget* parent_):
     QWidget(parent_),

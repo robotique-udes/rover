@@ -3,7 +3,7 @@
 
 #include <rclcpp/rclcpp.hpp>
 #include <QWidget>
-#include "ui_Joint.h"
+#include <ui_Joint.h>  
 #include <rover_msgs/msg/joint_info.hpp>
 
 class QJoint : public QWidget
@@ -15,7 +15,6 @@ public:
 
 signals:
     void jointCommandReceived(uint8_t armMode);
-
 
 private slots:
     void jointCommandChanged(uint8_t armMode)
