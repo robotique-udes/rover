@@ -22,6 +22,19 @@
      <height>21</height>
     </rect>
    </property>
+   <widget class="QLabel" name="armModeLabel">
+    <property name="geometry">
+     <rect>
+      <x>20</x>
+      <y>0</y>
+      <width>66</width>
+      <height>19</height>
+     </rect>
+    </property>
+    <property name="Text">
+     <string>JOINT</string>
+    </property>
+   </widget>
   </widget>
  </widget>
  <resources/>

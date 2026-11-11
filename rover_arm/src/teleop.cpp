@@ -39,7 +39,7 @@ class Teleop : public rclcpp::Node
     rclcpp::Subscription<rover_msgs::msg::Joy>::SharedPtr _subJoyArm;
     rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmPositions;
     rclcpp::Publisher<rover_msgs::msg::ArmMsg>::SharedPtr _pubArmCmd;
-    rclcpp::Publisher<std_msgs::msg::UInt8>::SharedPtr _pubArmMode;
+    rclcpp::Publisher<rover_msgs::msg::JointInfo>::SharedPtr _pubArmMode;
 
     JoyManager _joyManager;
     JointController _jointController;
@@ -208,7 +208,7 @@ class Teleop : public rclcpp::Node
 
     void publishArmMode(){
         rover_msgs::msg::JointInfo modeMsg;
-        modeMsg.data = static_cast<uint8_t>(_controlMode);
+        modeMsg.arm_mode= std::to_underlying(_controlMode);
         _pubArmMode->publish(modeMsg);  
     }
 };
