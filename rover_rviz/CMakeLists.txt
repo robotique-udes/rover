@@ -14,6 +14,8 @@ find_package(rclcpp REQUIRED)
 find_package(rover_msgs REQUIRED)
 find_package(sensor_msgs REQUIRED)
 
+add_subdirectory(../rover_shared_libs/ .build)
+
 add_executable(arm_to_joint_state src/arm_to_joint_state.cpp)
 
 target_link_libraries(arm_to_joint_state rover_shared_libs)

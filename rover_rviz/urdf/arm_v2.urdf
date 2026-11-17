@@ -9632,7 +9632,7 @@
     <link name="parallèle_1_6" />
     <link name="parallèle_1_7" />
     <link name="parallèle_1_8" />
-    <link name="parallèle_1_9" />
+    <link name="JL" />
     <link name="part_1">
         <inertial>
             <mass value="2.72712e-07" />
@@ -13691,12 +13691,12 @@
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
         <parent link="parallèle_1_10" />
-        <child link="parallèle_1_9" />
+        <child link="JL" />
     </joint>
     <joint name="parallèle_1_15" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="-0 -1 -0" />
-        <parent link="parallèle_1_9" />
+        <parent link="JL" />
         <child link="part_1_15" />
     </joint>
     <joint name="parallèle_1_16" type="fixed">
@@ -13771,7 +13771,7 @@
         <parent link="parallèle_1_5" />
         <child link="parallèle_1_4" />
         <limit effort="1" velocity="1" lower="-0.272265" upper="0.136535" />
-        <mimic offset="0" multiplier="1" joint="parallèle_1_9" />
+        <mimic offset="0" multiplier="1" joint="JL" />
     </joint>
     <joint name="parallèle_1_6" type="fixed">
         <origin xyz="0 0 0" rpy="0 -0 0" />
@@ -13791,14 +13791,14 @@
         <parent link="part_1_14" />
         <child link="parallèle_1_8" />
     </joint>
-    <joint name="parallèle_1_9" type="prismatic">
+    <joint name="JL" type="prismatic">
         <origin xyz="0 0 0" rpy="0 -0 0" />
         <axis xyz="0 -1 0" />
         <parent link="parallèle_1_8" />
         <child link="parallèle_1_7" />
         <limit effort="1" velocity="1" lower="-0.272265" upper="0.136535" />
     </joint>
-    <joint name="pivot_1" type="revolute">
+    <joint name="J1" type="revolute">
         <origin xyz="0.00763109 0.00646269 -0.00635" rpy="0 1.5708 1.5708" />
         <axis xyz="-1 0 0" />
         <parent link="motor_plate" />
@@ -13811,7 +13811,7 @@
         <parent link="harmonic_body_1" />
         <child link="harmonic_input_1" />
     </joint>
-    <joint name="pivot_1_2" type="revolute">
+    <joint name="J2" type="revolute">
         <origin xyz="-0.034 0.051 -2.77556e-17" rpy="2.17913 2.34919e-16 -2.29371e-16" />
         <axis xyz="1 -0 -0" />
         <parent link="harmonic_body" />
@@ -14292,7 +14292,7 @@
         <parent link="planar_9_loop_closure" />
         <child link="part_1__1__loop_closure_1" />
     </joint>
-    <joint name="revolute_1" type="continuous">
+    <joint name="GRIPPER_CLOSE" type="continuous">
         <origin xyz="0.0493483 -0.0225 -0.0517125" rpy="-1.249e-16 5.00779e-15 8.95164e-15" />
         <axis xyz="1 0 0" />
         <parent link="mandibule_droit" />
