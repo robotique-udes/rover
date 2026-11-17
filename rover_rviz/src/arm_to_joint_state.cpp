@@ -19,6 +19,7 @@ class ArmToJointStateNode : public rclcpp::Node
 {
     static constexpr const char* TOPIC_JOINT_STATE = "joint_states";
     static constexpr const char* TOPIC_ARM_STATUS = "/rover/arm/joints_status";
+    static constexpr float PI = 3.14159265358979;
 
     public:
         ArmToJointStateNode();
@@ -26,6 +27,7 @@ class ArmToJointStateNode : public rclcpp::Node
     private:
         void cbArmToJoint(rover_msgs::msg::ArmMsg msg_);
         static constexpr std::string_view getJointName(eJointIndex joint_);
+        float getJointPos(eJointIndex joint_, rover_msgs::msg::ArmMsg msg_);
 
         rclcpp::Publisher<sensor_msgs::msg::JointState>::SharedPtr _publisher;
         rclcpp::Subscription<rover_msgs::msg::ArmMsg>::SharedPtr _subArmMsg;
@@ -56,7 +58,7 @@ void ArmToJointStateNode::cbArmToJoint(rover_msgs::msg::ArmMsg msg_)
     for (size_t i=0; i<std::to_underlying(eJointIndex::eLAST); i++)
     {
         jointMsg.name.emplace_back(getJointName(static_cast<eJointIndex>(i)));
-        jointMsg.position.push_back(msg_.current_position[i]);
+        jointMsg.position.emplace_back(getJointPos(static_cast<eJointIndex>(i), msg_));
         jointMsg.velocity.push_back(msg_.current_speed[i]);
     }
 
@@ -83,6 +85,30 @@ constexpr std::string_view ArmToJointStateNode::getJointName(eJointIndex joint_)
             return "GRIPPER_CLOSE";
         case eJointIndex::eLAST:
             return "";
+    }
+    std::unreachable();
+}
+
+float ArmToJointStateNode::getJointPos(eJointIndex joint_, rover_msgs::msg::ArmMsg msg_)
+{
+    switch (joint_)
+    {
+        case eJointIndex::JL:
+            return msg_.current_position[std::to_underlying(eJointIndex::JL)];
+        case eJointIndex::J0:
+            return msg_.current_position[std::to_underlying(eJointIndex::J0)];
+        case eJointIndex::J1:
+            return msg_.current_position[std::to_underlying(eJointIndex::J1)] + (PI/4);
+        case eJointIndex::J2:
+            return msg_.current_position[std::to_underlying(eJointIndex::J2)] - (PI/2);
+        case eJointIndex::GRIPPER_TILT:
+            return msg_.current_position[std::to_underlying(eJointIndex::GRIPPER_TILT)];
+        case eJointIndex::GRIPPER_ROT:
+            return msg_.current_position[std::to_underlying(eJointIndex::GRIPPER_ROT)];
+        case eJointIndex::GRIPPER_CLOSE:
+            return msg_.current_position[std::to_underlying(eJointIndex::GRIPPER_CLOSE)];
+        case eJointIndex::eLAST:
+            return 0;
     }
     std::unreachable();
 }
