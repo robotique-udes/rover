@@ -20,6 +20,8 @@ class ArmToJointStateNode : public rclcpp::Node
     static constexpr const char* TOPIC_JOINT_STATE = "joint_states";
     static constexpr const char* TOPIC_ARM_STATUS = "/rover/arm/joints_status";
     static constexpr float PI = 3.14159265358979;
+    static constexpr float HARD_FIX_J1_POS = 0.09;
+    static constexpr float HARD_FIX_J2_POS = -0.6;
 
     public:
         ArmToJointStateNode();
@@ -98,9 +100,9 @@ float ArmToJointStateNode::getJointPos(eJointIndex joint_, rover_msgs::msg::ArmM
         case eJointIndex::J0:
             return msg_.current_position[std::to_underlying(eJointIndex::J0)];
         case eJointIndex::J1:
-            return msg_.current_position[std::to_underlying(eJointIndex::J1)] + (PI/4);
+            return msg_.current_position[std::to_underlying(eJointIndex::J1)]- (PI/4) + HARD_FIX_J1_POS;
         case eJointIndex::J2:
-            return msg_.current_position[std::to_underlying(eJointIndex::J2)] - (PI/2);
+            return msg_.current_position[std::to_underlying(eJointIndex::J2)]- (PI/2) + HARD_FIX_J2_POS;
         case eJointIndex::GRIPPER_TILT:
             return msg_.current_position[std::to_underlying(eJointIndex::GRIPPER_TILT)];
         case eJointIndex::GRIPPER_ROT:
