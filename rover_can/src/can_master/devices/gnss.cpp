@@ -58,6 +58,7 @@ void Gnss::CB_CAN_FixPosition(const RoverCan2::Msgs::FixPosition& canMsg_)
 {
     _rosGpsMsg.latitude = canMsg_.getData().latitude;
     _rosGpsMsg.longitude = canMsg_.getData().longitude;
+    _rosGpsMsg.altitude = canMsg_.getData().altitude;
 }
 
 uint8_t Gnss::fixQualityEnumToUint8(Constants::eGGAQuality fixQuality_)
