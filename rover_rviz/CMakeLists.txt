@@ -25,7 +25,7 @@ ament_target_dependencies(arm_to_joint_state
                           rover_msgs
                           sensor_msgs)
 
-install(DIRECTORY launch meshes urdf DESTINATION share/${PROJECT_NAME}/)
+install(DIRECTORY launch meshes rviz urdf DESTINATION share/${PROJECT_NAME}/)
 
 install(TARGETS
         arm_to_joint_state

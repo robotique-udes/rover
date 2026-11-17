@@ -1,0 +1,2034 @@
+Panels:
+  - Class: rviz_common/Displays
+    Help Height: 78
+    Name: Displays
+    Property Tree Widget:
+      Expanded:
+        - /Global Options1
+        - /Status1
+        - /RobotModel1
+        - /RobotModel1/Description Topic1
+      Splitter Ratio: 0.5
+    Tree Height: 827
+  - Class: rviz_common/Selection
+    Name: Selection
+  - Class: rviz_common/Tool Properties
+    Expanded:
+      - /2D Goal Pose1
+      - /Publish Point1
+    Name: Tool Properties
+    Splitter Ratio: 0.5886790156364441
+  - Class: rviz_common/Views
+    Expanded:
+      - /Current View1
+    Name: Views
+    Splitter Ratio: 0.5
+  - Class: rviz_common/Time
+    Experimental: false
+    Name: Time
+    SyncMode: 0
+    SyncSource: ""
+Visualization Manager:
+  Class: ""
+  Displays:
+    - Alpha: 0.5
+      Cell Size: 1
+      Class: rviz_default_plugins/Grid
+      Color: 160; 160; 164
+      Enabled: true
+      Line Style:
+        Line Width: 0.029999999329447746
+        Value: Lines
+      Name: Grid
+      Normal Cell Count: 0
+      Offset:
+        X: 0
+        Y: 0
+        Z: 0
+      Plane: XY
+      Plane Cell Count: 10
+      Reference Frame: <Fixed Frame>
+      Value: true
+    - Alpha: 1
+      Class: rviz_default_plugins/RobotModel
+      Collision Enabled: false
+      Description File: ""
+      Description Source: Topic
+      Description Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /robot_description
+      Enabled: true
+      Links:
+        4058蜗杆减速箱壳_13孔:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        4058蜗杆减速箱壳_13孔_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        4058蜗杆减速箱盖:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        4058蜗杆减速箱盖_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        6mm_shaft___50_mm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        6mm_shaft___50_mm_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        8mm_flanged_lead_screw_nut_with_2mm_thread:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        8mm_flanged_lead_screw_nut_with_2mm_thread__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        All Links Enabled: true
+        Expand Joint Details: false
+        Expand Link Details: false
+        Expand Tree: false
+        Link Tree Style: Links in Alphabetic Order
+        ak60_6_kv80_v3_0:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ak60_6_kv80_v3_0_107:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        amt_103_base_rev_k:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        amt_103_base_rev_k_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm_cap:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        arm_holder:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        assembly_1__1_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        axe_pince:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bague_6mm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ball:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ball_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bas_tensionneur:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        base:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_10:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_11:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_12:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_13:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od10_id6_ep3__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        bearing_od42_id30_ep7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bearing_od42_id30_ep7__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        belt_cover:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bracket_droit:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        bracket_gauche:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        c_0805_2012metric_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        c_0805_2012metric_3_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cable_clamp1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cable_clamp2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cam_mount:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cam_mount_mount:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cam_mount_tpu:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cam_pivot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        carrier:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        carrier_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        carrier__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        carrier_mount:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        carrier_pivot:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        carrier_tensio_m:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        carrier_tensio_m_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        carrier_tensio_m__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        centre_sun:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        conic_cage:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        coupler_10mm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        coupler_10mm_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        coupler_10mm_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        coupling_6mm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        coupling_8mm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        coupling_8mm_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cover:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        cylindrical_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_10_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_11_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_13_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_14:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_15_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_16:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_17:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_18:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_19:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_1_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_2_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_2_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_4_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_5_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_6_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_7_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_8_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrical_9_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        cylindrique_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        embout_visse:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        embout_visse___serrage:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        encoder_holder:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        encoder_holder_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        end_piece:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        enveloppe_machoir_bas:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        enveloppe_machoir_top:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        gt2_20t_sh8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        harmonic_body:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        harmonic_body_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        harmonic_input:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        harmonic_input_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        harmonicplate:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        haut_tensionneur:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        hex__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        hex_socket_head_cap_screw_m4x0_70_x_30:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_10:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m4x0_70_x_30_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m6x1_00_x_30:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m6x1_00_x_30_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        hex_socket_head_cap_screw_m6x1_00_x_30__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        holder_nutleadscrew:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        input_pince:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        inputtubeclamp:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        j1_v5__1_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        jlin_2026__1_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_bas_droite:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_bas_gauche:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_haut_droite_1_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_haut_droite__2_2_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_haut_gauche:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_hockey:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_hockey_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        jlin_hockey__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        jlin_rail__1_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        jlin_rail__2_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        jmk105bj105mvhf_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lid:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        lid_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m2_5x8_十字螺丝_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m3x5十字螺丝:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m3x5十字螺丝_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m3x5十字螺丝_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        m3x5十字螺丝_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        main_bracket:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        mandibule_droit:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        mandibule_gauche:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        mid_support_2_bas:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        mid_support_2_haut:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        mid_support_bas:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        mid_support_haut:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        middle_gear:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        motor_cover:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        motor_mount:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        motor_mount__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        motor_plate:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        motorhousing:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        motorplate:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        new_version_casing:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        new_version_casing_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        outer_conic_race:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        output_bloc:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        output_pince:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        output_tube_cover:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        output_worm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        par_dessus_bering_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        parallel_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_1_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_1_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_1_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_1_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_1_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_2_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallel_2_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_10:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_11:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_12:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_13:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_14:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_15:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_16:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_17:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        parallèle_1_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_13:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_10:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_11:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_12:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_13:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_14:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_15:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_16:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_1__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_1__1__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_1__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_1__3__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_1__3__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_1__5__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_20:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_2_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_2_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_2_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_2_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_2__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_2__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_3_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_3_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_3_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_3_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_3__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_3__1__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_3__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_3__2__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_4_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_4_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_4_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_4__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_4__1__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_4__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_4__2__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_5_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_5_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_5_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_5_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_5__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_5__1__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_5__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_5__2__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_6_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_6_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_6_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_6__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_6__1__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_6__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_6__2__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_7_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_7_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_7_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_7_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_7__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_7__1__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_7__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_7__2__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_8:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_8_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_8_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_8_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_8_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_8__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_8__1__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_8__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_8__2__loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_9_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_9_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_9_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        part_9__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        part_9__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        pcb_cover:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        pcbhousing:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        pcbtop:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ph_countersunk_flat_head_screw_m3x0_5_x_12:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ph_countersunk_flat_head_screw_m3x0_5_x_12_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ph_countersunk_flat_head_screw_m3x0_5_x_12_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ph_countersunk_flat_head_screw_m3x0_5_x_12_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ph_countersunk_flat_head_screw_m3x0_5_x_12_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ph_countersunk_flat_head_screw_m3x0_5_x_12_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        planaire_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_10:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_10_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_14:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_14_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_1_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_1_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_1_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_2_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_3_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_4_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_5_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_5_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_7:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_7_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_9:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planaire_9_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_11:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_11_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_12:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_12_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_13:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_13_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_15_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_15_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_16:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_16_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_17:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_17_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_19_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_19_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_1_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_1_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_2_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_2_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_2_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_3_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_3_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_3_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_6:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_6_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_7_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_7_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_9_loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planar_9_loop_closure_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planet:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        planet_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        planet_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        planet__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        planet__3__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        plaque_renfort:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        plaque_renfort_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        plaque_renfort_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        plaque_renfort_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        r3_arm__1_:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        retainer:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ring:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ring_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        ring_cap:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        root:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        rs_555电机轴伸16_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        rs_555电机轴伸16_5_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        servocity_118_rpm_12v:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        shaft_plate:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        side_holder:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        side_holder__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        side_holder_hex:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        side_input:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        side_input_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        side_input_cap:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        side_input_cap_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        sleeve_planet:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        sleeve_planet_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        sleeve_planet_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        sleeve_planet__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        sleeve_planet__2__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        sleeve_planet__3__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        socket_2_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        socket_71:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        spacer:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        spacer_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        spacer_2:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        spacer_3:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        spacer_side_input:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        spacer_side_input_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        sun:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        taster_v4:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tensionneur:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        threaded_rod:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        thrust_spacer:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        top:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        topplate:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tpu_arm:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tubecarbone_42x42x1_5:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tubecarbone_42x42x1_5_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        tubecarbone_42x42x1_5__1__loop_closure:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+        xt30pw_f_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        输出轴a:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+        输出轴a_1:
+          Alpha: 1
+          Show Axes: false
+          Show Trail: false
+          Value: true
+      Mass Properties:
+        Inertia: false
+        Mass: false
+      Name: RobotModel
+      TF Prefix: ""
+      Update Interval: 0
+      Value: true
+      Visual Enabled: true
+  Enabled: true
+  Global Options:
+    Background Color: 48; 48; 48
+    Fixed Frame: root
+    Frame Rate: 30
+  Name: root
+  Tools:
+    - Class: rviz_default_plugins/Interact
+      Hide Inactive Objects: true
+    - Class: rviz_default_plugins/MoveCamera
+    - Class: rviz_default_plugins/Select
+    - Class: rviz_default_plugins/FocusCamera
+    - Class: rviz_default_plugins/Measure
+      Line color: 128; 128; 0
+    - Class: rviz_default_plugins/SetInitialPose
+      Covariance x: 0.25
+      Covariance y: 0.25
+      Covariance yaw: 0.06853891909122467
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /initialpose
+    - Class: rviz_default_plugins/SetGoal
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /goal_pose
+    - Class: rviz_default_plugins/PublishPoint
+      Single click: true
+      Topic:
+        Depth: 5
+        Durability Policy: Volatile
+        History Policy: Keep Last
+        Reliability Policy: Reliable
+        Value: /clicked_point
+  Transformation:
+    Current:
+      Class: rviz_default_plugins/TF
+  Value: true
+  Views:
+    Current:
+      Class: rviz_default_plugins/Orbit
+      Distance: 2.550762891769409
+      Enable Stereo Rendering:
+        Stereo Eye Separation: 0.05999999865889549
+        Stereo Focal Distance: 1
+        Swap Stereo Eyes: false
+        Value: false
+      Focal Point:
+        X: 0
+        Y: 0
+        Z: 0
+      Focal Shape Fixed Size: true
+      Focal Shape Size: 0.05000000074505806
+      Invert Z Axis: false
+      Name: Current View
+      Near Clip Distance: 0.009999999776482582
+      Pitch: 0.29039761424064636
+      Target Frame: <Fixed Frame>
+      Value: Orbit (rviz)
+      Yaw: 0.3953969180583954
+    Saved: ~
+Window Geometry:
+  Displays:
+    collapsed: false
+  Height: 1131
+  Hide Left Dock: false
+  Hide Right Dock: false
+  QMainWindow State: 000000ff00000000fd000000040000000000000156000003c9fc0200000008fb0000001200530065006c0065006300740069006f006e00000001e10000009b0000005d00fffffffb0000001e0054006f006f006c002000500072006f007000650072007400690065007302000001ed000001df00000185000000a3fb000000120056006900650077007300200054006f006f02000001df000002110000018500000122fb000000200054006f006f006c002000500072006f0070006500720074006900650073003203000002880000011d000002210000017afb000000100044006900730070006c006100790073010000003f000003c9000000cc00fffffffb0000002000730065006c0065006300740069006f006e00200062007500660066006500720200000138000000aa0000023a00000294fb00000014005700690064006500530074006500720065006f02000000e6000000d2000003ee0000030bfb0000000c004b0069006e0065006300740200000186000001060000030c00000261000000010000010f000003c9fc0200000003fb0000001e0054006f006f006c002000500072006f00700065007200740069006500730100000041000000780000000000000000fb0000000a00560069006500770073010000003f000003c9000000a900fffffffb0000001200530065006c0065006300740069006f006e010000025a000000b200000000000000000000000200000490000000a9fc0100000001fb0000000a00560069006500770073030000004e00000080000002e100000197000000030000073e0000003efc0100000002fb0000000800540069006d006501000000000000073e0000026f00fffffffb0000000800540069006d00650100000000000004500000000000000000000004cd000003c900000004000000040000000800000008fc0000000100000002000000010000000a0054006f006f006c00730100000000ffffffff0000000000000000
+  Selection:
+    collapsed: false
+  Time:
+    collapsed: false
+  Tool Properties:
+    collapsed: false
+  Views:
+    collapsed: false
+  Width: 1854
+  X: 66
+  Y: 32
