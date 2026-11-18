@@ -35,6 +35,6 @@ def generate_launch_description():
         lidar_launch,
     ])
 
-    ld.add_action(lidar_group)
+    ld.add_action(lidar_launch)
 
     return ld
