@@ -1,6 +1,7 @@
 # From GNSS
 float32 latitude
 float32 longitude
+float32 altitude
 float32 heading
 uint8 satellite
 uint8 fix_quality
