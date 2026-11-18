@@ -60,13 +60,6 @@
       </widget>
      </item>
      <item>
-      <widget class="QPushButton" name="pb_fileTransfer">
-       <property name="text">
-        <string>File transfer</string>
-       </property>
-      </widget>
-     </item>
-     <item>
       <widget class="QPushButton" name="pb_deviceStatus">
        <property name="text">
         <string>Device status</string>

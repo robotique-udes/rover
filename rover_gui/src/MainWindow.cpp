@@ -14,25 +14,27 @@ MainWindow::MainWindow(const rclcpp::Node::SharedPtr& guiNode_):
     _bmsDataWidget(guiNode_, this),
     _scienceWidget(guiNode_, this)
 {
-    this->setCentralWidget(&_centralWidget);
-    _centralWidget.setLayout(&_verticalLayout);
+    _centralWidget = new QWidget(this);
+    _verticalLayout = new QVBoxLayout(_centralWidget);
+    this->setCentralWidget(_centralWidget);
 
-    _verticalLayout.addWidget(&_topUtilityBar);
-    _verticalLayout.setSpacing(0);
-    _verticalLayout.setContentsMargins(0, 0, 0, 0);
+    _verticalLayout->addWidget(&_topUtilityBar);
+    _verticalLayout->setSpacing(0);
+    _verticalLayout->setContentsMargins(0, 0, 0, 0);
 
     _topBarSeperator.setFrameShape(QFrame::HLine);
-    _verticalLayout.addWidget(&_topBarSeperator);
+    _verticalLayout->addWidget(&_topBarSeperator);
 
-    _verticalLayout.addLayout(&_layout);
+    _layout = new QHBoxLayout();
+    _verticalLayout->addLayout(_layout);
 
     _bottomBarSeperator.setFrameShape(QFrame::HLine);
-    _verticalLayout.addWidget(&_bottomBarSeperator);
-    _verticalLayout.addWidget(&_bottomUtilityBar);
+    _verticalLayout->addWidget(&_bottomBarSeperator);
+    _verticalLayout->addWidget(&_bottomUtilityBar);
 
-    _layout.addWidget(&_sideBarWidget);
-    _layout.addWidget(&_mainTabWidget);
-    _layout.addWidget(&_notificationHistoryWidget);
+    _layout->addWidget(&_sideBarWidget);
+    _layout->addWidget(&_mainTabWidget);
+    _layout->addWidget(&_notificationHistoryWidget);
 
     _mainTabWidget.tabBar()->hide();
 
@@ -99,10 +101,6 @@ void MainWindow::onTabChange(QSideBar::eTabIndex index_)
         case QSideBar::eTabIndex::SCIENCE:
             grid->addWidget(&_scienceWidget, 0, 1);
             _scienceWidget.show();
-            break;
-
-        case QSideBar::eTabIndex::FILE_TRANSFER:
-            grid->addWidget(&_fileTransferWidget, 0, 1);
             break;
 
         case QSideBar::eTabIndex::BMS_DATA:

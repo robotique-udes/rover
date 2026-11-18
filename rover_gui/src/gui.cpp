@@ -8,14 +8,11 @@
 #include <QLabel>
 #include <QWidget>
 
-#include <QProcess>
-
 constexpr char WM_CLASS[] = "Rover Base";
 
 int guiMain(int argc_, char* argv_[], const rclcpp::Node::SharedPtr& guiNode_);
 void displayWindows(MainWindow& mainWindow_, SecondaryWindow& secondWindow_);
 void nodeThreadFunc(const rclcpp::Node::SharedPtr& node);
-void forwardPrints(QProcess& process_);
 
 int main(int argc, char* argv[])
 {
@@ -49,27 +46,19 @@ int guiMain(int argc_, char* argv_[], const rclcpp::Node::SharedPtr& guiNode_)
     QApplication::setStyle("Fusion");
     app.setStyleSheet(QString(Constants::Style::STYLE_DARK_MODE) + QString(Constants::Style::STATUS_STYLE));
 
+    rclcpp::on_shutdown(
+        []
+        {
+            QMetaObject::invokeMethod(qApp, &QCoreApplication::quit, Qt::QueuedConnection);
+        });
+
     ScreenInhibitor screenInhibitor;
 
     MainWindow mainWindow(guiNode_);
     SecondaryWindow secondaryWindow(guiNode_);
     displayWindows(mainWindow, secondaryWindow);
 
-    QProcess rosProcess;
-    // clang-format off
-    QObject::connect(&rosProcess, &QProcess::readyReadStandardOutput, [&rosProcess](){ forwardPrints(rosProcess); });
-    QObject::connect(&rosProcess, &QProcess::readyReadStandardError, [&rosProcess](){ forwardPrints(rosProcess); });
-    // clang-format on
-
-    rosProcess.start("bash", QStringList() << "-c" << "source ~/.bashrc && ros2 launch rover_msgs base.launch.py");
-
     int ret = QApplication::exec();
-
-    rosProcess.terminate();
-    if (!rosProcess.waitForFinished(3000))
-    {
-        rosProcess.kill();
-    }
 
     return ret;
 }
@@ -112,12 +101,6 @@ void nodeThreadFunc(const rclcpp::Node::SharedPtr& node_)
     rosExecutor.spin();
 
     rosExecutor.remove_node(node_);
-}
-
-void forwardPrints(QProcess& process_)
-{
-    std::cout << process_.readAllStandardOutput().toStdString();
-    std::cerr << process_.readAllStandardError().toStdString();
 }
 
 #ifndef __INTELLISENSE__
