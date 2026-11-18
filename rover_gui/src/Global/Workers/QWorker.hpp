@@ -83,6 +83,8 @@ class QWorker : public QObject
      */
     void addTask(const std::function<void()>& task_);
 
+    bool isStopping(void) const;
+
     std::atomic<bool> _cancelCurrentTasksFlag = false;
 
   private:

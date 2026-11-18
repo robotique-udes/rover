@@ -40,6 +40,22 @@ _build_all_packages() {
         -DCMAKE_EXPORT_COMPILE_COMMANDS=ON
 }
 
+_build_all_packages_debug() {
+    local jobs
+    jobs=$(get_build_jobs)
+
+    print_status "$BLUE" "Building all packages in debug mode with $jobs parallel workers..."
+
+    rm -rf "${WORKSPACE_DIR}"/{build,install,log}
+
+    colcon build \
+        --parallel-workers "$jobs" \
+        --symlink-install \
+        --cmake-args \
+        -DCMAKE_EXPORT_COMPILE_COMMANDS=ON \
+        -DCMAKE_BUILD_TYPE=Debug
+}
+
 _build_selected_packages() {
     local packages=("$@")
 
@@ -71,6 +87,7 @@ b() {
     local build_result=$?
 
     popd > /dev/null
+    source "$WORKSPACE_DIR/install/local_setup.bash"
     return "$build_result"
 }
 
@@ -91,6 +108,21 @@ bs() {
     local build_result=$?
 
     popd > /dev/null
+    source "$WORKSPACE_DIR/install/local_setup.bash"
+    return "$build_result"
+}
+
+bd() {
+    pushd "$WORKSPACE_DIR" > /dev/null || {
+        print_status "$RED" "Failed to access workspace directory: $WORKSPACE_DIR"
+        return 1
+    }
+
+    _build_all_packages_debug
+    local build_result=$?
+
+    popd > /dev/null
+    source "$WORKSPACE_DIR/install/local_setup.bash"
     return "$build_result"
 }
 
@@ -108,7 +140,7 @@ clean() {
     local build_result=$?
 
     popd > /dev/null
-    source ~/.bashrc
+    source "$WORKSPACE_DIR/install/local_setup.bash"
     return "$build_result"
 }
 
@@ -154,6 +186,7 @@ ROS 2 Build Tools
 Available commands:
   b                  Build all packages
   bs package1 ...    Build selected packages and their dependencies/dependents
+  bd                 Build all packages in debug mode
   clean              Clean workspace, rebuild everything and source bashrc
   list_packages      List all available packages
   b_help             Show this help message

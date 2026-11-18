@@ -12,7 +12,6 @@ class QSideBar : public QWidget
     {
         DASHBOARD = 0,
         NAVIGATION,
-        FILE_TRANSFER,
         DEVICE_STATUS,
         BMS_DATA,
         SCIENCE

@@ -5,7 +5,6 @@
 #include "QNavigation/QNavigation.hpp"
 #include "Global/Helpers/QToastNotification/QNotificationShowHistory.hpp"
 #include "QSideBar/QSideBar.hpp"
-#include "QSshFileExplorer/QFileTransferWidget.hpp"
 #include "QUtilityBarBottom/QUtilityBarBottom.hpp"
 #include "QUtilityBarTop/QUtilityBarTop.hpp"
 #include "QDeviceStatus/QDeviceStatus.hpp"
@@ -32,9 +31,9 @@ class MainWindow : public QMainWindow
 
     QShortcut _closeShortCut;
 
-    QWidget _centralWidget = QWidget(this);
-    QHBoxLayout _layout;
-    QVBoxLayout _verticalLayout = QVBoxLayout(&_centralWidget);
+    QWidget* _centralWidget = nullptr;
+    QVBoxLayout* _verticalLayout = nullptr;
+    QHBoxLayout* _layout;
     QTabWidget _mainTabWidget = QTabWidget(this);
 
     QUtilityBarTop _topUtilityBar;
@@ -46,7 +45,6 @@ class MainWindow : public QMainWindow
     QArbitration _arbitrationWidget;
     QNavigation _navigationWidget;
     QDeviceStatus _deviceStatusWidget;
-    QFileTransferWidget _fileTransferWidget = QFileTransferWidget(this);
     QLightsController _ligthsController;
     QBmsData _bmsDataWidget;
     QScience _scienceWidget;

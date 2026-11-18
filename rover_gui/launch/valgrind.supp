@@ -1,0 +1,190 @@
+# ---- Mesa / OpenGL ----
+{
+   mesa
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libgallium-*.so
+}
+{
+   mesa_glx
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libGLX_mesa.so*
+}
+{
+   libglx
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libGLX.so*
+}
+{
+   qt_glx_integration
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libqxcb-glx-integration.so
+}
+
+# ---- QtWebEngine / Chromium / NSS ----
+{
+   webengine_leak
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libQt6WebEngineCore.so*
+}
+{
+   webengine_cond
+   Memcheck:Cond
+   ...
+   obj:*/libQt6WebEngineCore.so*
+}
+{
+   webengine_value8
+   Memcheck:Value8
+   ...
+   obj:*/libQt6WebEngineCore.so*
+}
+{
+   nss
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libnss3.so
+}
+{
+   nssckbi
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libnssckbi.so
+}
+
+# ---- Qt platform plugins / GUI internals ----
+{
+   qt_xcb
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libQt6XcbQpa.so*
+}
+{
+   qt_quickwidgets
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libQt6QuickWidgets.so*
+}
+{
+   xcb_writev
+   Memcheck:Param
+   writev(vector[...])
+   ...
+   obj:*/libxcb.so*
+}
+{
+   qprocess_waitid
+   Memcheck:Param
+   waitid(infop)
+   fun:syscall
+   obj:*/libQt6Core.so*
+   ...
+}
+
+# ---- GLib / GTK / fontconfig / misc system libs ----
+{
+   glib_init
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   fun:call_init*
+   fun:_dl_init
+}
+{
+   glib_gio_gtk
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libgio-2.0.so*
+}
+{
+   glib_gtk
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libgtk-*.so*
+}
+{
+   gvfs
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libgvfsdbus.so
+}
+{
+   ibus
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libibusplatforminputcontextplugin.so
+}
+{
+   fontconfig
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libfontconfig.so*
+}
+{
+   expat
+   Memcheck:Leak
+   match-leak-kinds: possible,definite
+   ...
+   obj:*/libexpat.so*
+}
+{
+   lttng
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/liblttng-ust.so*
+}
+
+# ---- ROS 2 / DDS ----
+{
+   cyclonedds
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libddsc.so*
+}
+{
+   rmw_cyclonedds
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/librmw_cyclonedds_cpp.so
+}
+
+# ---- glibc TLS allocation by pthread_create (valgrind false positive) ----
+{
+   glibc_tls_dtv
+   Memcheck:Leak
+   match-leak-kinds: possible
+   fun:calloc
+   ...
+   fun:allocate_dtv
+   fun:_dl_allocate_tls
+}
+
+# ---- Qt D-Bus worker thread (connect() leaks) ----
+{
+   qt_dbus
+   Memcheck:Leak
+   match-leak-kinds: possible
+   ...
+   obj:*/libQt6DBus.so*
+}

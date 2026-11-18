@@ -5,35 +5,36 @@
 #include <gst/gst.h>
 #include <gst/video/videooverlay.h>
 #include <QUrl>
+#include <rclcpp/logging.hpp>
+#include <mutex>
 
 using namespace LogUtils;
 
 static constexpr int MAX_CONSECUTIVE_ERRORS = 3;
 static int consecutive_errors_count = 0;
 
-static void glib_log_handler(const gchar* log_domain_, GLogLevelFlags log_level_, const gchar* message_, gpointer user_data_)
+static void glib_log_handler(const gchar* log_domain_, GLogLevelFlags log_level_, const gchar* message, gpointer /*user_data_*/)
 {
-    auto* worker = static_cast<GStreamerWorker*>(user_data_);
-    QWidget* targetWidget = worker ? worker->getTargetWidget() : nullptr;
+    static const rclcpp::Logger logger = rclcpp::get_logger("gstreamer");
 
-    QString domain = log_domain_ ? log_domain_ : "GLib";
-    QString msg = QString("%1: %2").arg(domain).arg(message_);
+    const char* domain = log_domain_ ? log_domain_ : "GLib";
+    const char* msg = message ? message : "";
 
-    if (log_level_ & G_LOG_LEVEL_ERROR || log_level_ & G_LOG_LEVEL_CRITICAL)
+    if (log_level_ & (G_LOG_LEVEL_ERROR | G_LOG_LEVEL_CRITICAL))
     {
-        UI_LOG_ERROR_RTSP(msg, targetWidget);
+        RCLCPP_ERROR(logger, "%s: %s", domain, msg);
     }
     else if (log_level_ & G_LOG_LEVEL_WARNING)
     {
-        UI_LOG_WARNING_RTSP(msg, targetWidget);
+        RCLCPP_WARN(logger, "%s: %s", domain, msg);
     }
-    else if (log_level_ & G_LOG_LEVEL_MESSAGE || log_level_ & G_LOG_LEVEL_INFO)
+    else if (log_level_ & (G_LOG_LEVEL_MESSAGE | G_LOG_LEVEL_INFO))
     {
-        UI_LOG_INFO_RTSP(msg, targetWidget);
+        RCLCPP_INFO(logger, "%s: %s", domain, msg);
     }
     else
     {
-        UI_LOG_DEBUG_RTSP(msg, targetWidget);
+        RCLCPP_DEBUG(logger, "%s: %s", domain, msg);
     }
 }
 
@@ -216,63 +217,66 @@ static gboolean on_any_message(GstBus* bus_, GstMessage* msg_, gpointer user_dat
 
 static void my_gst_debug_log_function(GstDebugCategory* category_,
                                       GstDebugLevel level_,
-                                      const gchar* file_,
-                                      const gchar* function_,
-                                      gint line_,
-                                      GObject* object_,
+                                      const gchar* /*file_*/,
+                                      const gchar* /*function_*/,
+                                      gint /*line_*/,
+                                      GObject* /*object_*/,
                                       GstDebugMessage* message_,
-                                      gpointer user_data_)
+                                      gpointer /*user_data_*/)
 {
-    Q_UNUSED(file_);
-    Q_UNUSED(function_);
-    Q_UNUSED(line_);
-    Q_UNUSED(object_);
+    static const rclcpp::Logger logger = rclcpp::get_logger("gstreamer");
 
-    auto* worker = static_cast<GStreamerWorker*>(user_data_);
-    QWidget* targetWidget = worker ? worker->getTargetWidget() : nullptr;
-    QString msg = gst_debug_message_get(message_);
-    QString cat = gst_debug_category_get_name(category_);
+    const char* cat = gst_debug_category_get_name(category_);
+    const char* msg = gst_debug_message_get(message_);
+    if (!msg)
+    {
+        msg = "";
+    }
 
     if (level_ <= GST_LEVEL_ERROR)
     {
-        UI_LOG_ERROR_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_ERROR(logger, "%s: %s", cat, msg);
     }
     else if (level_ <= GST_LEVEL_WARNING)
     {
-        UI_LOG_WARNING_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_WARN(logger, "%s: %s", cat, msg);
     }
     else if (level_ <= GST_LEVEL_INFO)
     {
-        UI_LOG_INFO_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_INFO(logger, "%s: %s", cat, msg);
     }
     else
     {
-        UI_LOG_DEBUG_RTSP(QString("%1: %2").arg(cat).arg(msg), targetWidget);
+        RCLCPP_DEBUG(logger, "%s: %s", cat, msg);
     }
 }
 
-GStreamerWorker::GStreamerWorker(QObject* parent):
-    QObject(parent)
+GStreamerWorker::GStreamerWorker(QObject* parent_):
+    QObject(parent_)
 {
-    qputenv("GST_DEBUG_NO_COLOR", "1");
-    qputenv("GST_DEBUG", "3");
-
-    gst_init(nullptr, nullptr);
+    static std::once_flag once;
+    std::call_once(once,
+                   []
+                   {
+                       qputenv("GST_DEBUG_NO_COLOR", "1");  // must come before gst_init
+                       qputenv("GST_DEBUG", "3");
+                       gst_init(nullptr, nullptr);
 
 #pragma GCC diagnostic push
 #pragma GCC diagnostic ignored "-Wpedantic"
-    gst_debug_add_log_function(my_gst_debug_log_function, this, NULL);
-    gst_debug_remove_log_function(gst_debug_log_default);
+                       gst_debug_remove_log_function(gst_debug_log_default);
+                       gst_debug_add_log_function(my_gst_debug_log_function, nullptr, nullptr);
 #pragma GCC diagnostic pop
 
-    GLogLevelFlags log_levels = static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION);
+                       const GLogLevelFlags levels
+                           = static_cast<GLogLevelFlags>(G_LOG_LEVEL_MASK | G_LOG_FLAG_FATAL | G_LOG_FLAG_RECURSION);
+                       for (const char* domain : {"GLib", "GLib-GObject", "GStreamer", (const char*)nullptr})
+                       {
+                           g_log_set_handler(domain, levels, glib_log_handler, nullptr);
+                       }
 
-    g_log_set_handler("GLib", log_levels, glib_log_handler, this);
-    g_log_set_handler("GLib-GObject", log_levels, glib_log_handler, this);
-    g_log_set_handler("GStreamer", log_levels, glib_log_handler, this);
-    g_log_set_handler(NULL, log_levels, glib_log_handler, this);
-
-    gst_debug_set_default_threshold(GST_LEVEL_WARNING);
+                       gst_debug_set_default_threshold(GST_LEVEL_WARNING);
+                   });
 }
 
 GStreamerWorker::~GStreamerWorker()
@@ -339,12 +343,6 @@ void GStreamerWorker::startPipeline(const QString& rtspUrl_)
 
     g_object_set(G_OBJECT(appSink), "emit-signals", TRUE, "sync", FALSE, "max-buffers", 2, "drop", TRUE, nullptr);
 
-    static gulong signal_id = 0;
-    if (signal_id != 0)
-    {
-        g_signal_handler_disconnect(appSink, signal_id);
-    }
-
     if (_newSampleSignalId != 0)
     {
         g_signal_handler_disconnect(appSink, _newSampleSignalId);
@@ -407,9 +405,9 @@ void GStreamerWorker::cleanupGStreamer()
     }
 }
 
-void GStreamerWorker::setTargetWidget(QWidget* widget)
+void GStreamerWorker::setTargetWidget(QWidget* widget_)
 {
-    _targetWidget = widget;
+    _targetWidget = widget_;
 }
 
 QWidget* GStreamerWorker::getTargetWidget() const

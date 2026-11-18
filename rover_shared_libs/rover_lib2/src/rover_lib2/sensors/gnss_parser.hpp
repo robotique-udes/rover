@@ -75,6 +75,7 @@ namespace GNSSParser
     {
         float latitude = 0.0F;
         float longitude = 0.0F;
+        float altitude = 0.0F;
         Constants::eGGAQuality fixQuality = Constants::eGGAQuality::NO_FIX;
         uint8_t satellitesUsed = 0U;
     };
@@ -265,10 +266,32 @@ namespace GNSSParser
                 }
             }
 
+            if (getField(rawSentence_, commaIndices, field, static_cast<size_t>(eGGAFields::MSL_ALTITUDE))
+                && getField(rawSentence_, commaIndices, secondField, static_cast<size_t>(eGGAFields::ALTITUDE_UNITS)) && !problem)
+            {
+                float altitude = 0.0F;
+                auto result = std::from_chars(field.data(), field.data() + std::strlen(field.data()), altitude);
+                if (result.ec != std::errc())
+                {
+                    LOG_WARN(Logger::Nodes::GNSS_PARSER, "Failed to parse the altitude");
+                    problem = true;
+                }
+                else if (secondField[0] != 'M')
+                {
+                    LOG_WARN(Logger::Nodes::GNSS_PARSER, "Wrong altitude units parsed");
+                    problem = true;
+                }
+                else
+                {
+                    out_.altitude = altitude;
+                }
+            }
+
             if (problem)
             {
                 out_.latitude = 0.0F;
                 out_.longitude = 0.0F;
+                out_.altitude = 0.0F;
                 out_.fixQuality = Constants::eGGAQuality::NO_FIX;
             }
 
