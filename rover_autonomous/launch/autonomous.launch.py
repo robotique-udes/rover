@@ -21,7 +21,7 @@ def generate_launch_description():
             os.path.join(
                 get_package_share_directory('unitree_lidar_ros2'),
                 'launch',
-                'launch.py',  # use your actual filename
+                'lidar.launch.py',  # use your actual filename
             )
         ),
         launch_arguments={
@@ -31,10 +31,10 @@ def generate_launch_description():
     )
 
     lidar_group = GroupAction([
-        PushRosNamespace('/rover/lidar'),
+        PushRosNamespace('rover'),
         lidar_launch,
     ])
 
-    ld.add_action(lidar_launch)
+    ld.add_action(lidar_group)
 
     return ld
