@@ -14,7 +14,6 @@ def generate_launch_description():
     rviz_config = LaunchConfiguration('rviz_config')
     use_gui = LaunchConfiguration('use_gui')
 
-    # value_type=str : sinon launch essaie de parser le URDF comme du YAML
     robot_description = ParameterValue(Command(['cat ', urdf_file]), value_type=str)
 
     return LaunchDescription([
@@ -32,13 +31,11 @@ def generate_launch_description():
             output='screen',
             parameters=[{'robot_description': robot_description}]),
 
-        # Debug : sliders manuels, sans le vrai arm
         Node(
             package='joint_state_publisher_gui',
             executable='joint_state_publisher_gui',
             condition=IfCondition(use_gui)),
 
-        # Normal : positions réelles venant de /rover/arm/joints_status
         Node(
             package='rover_rviz',
             executable='arm_to_joint_state',
